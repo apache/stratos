@@ -200,52 +200,65 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         List<String> instanceIds = new ArrayList<String>();
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
-        for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-            if (networkPartition.isActiveByDefault()) {
-                ApplicationLevelNetworkPartitionContext context =
-                        new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
-                instanceId = createApplicationInstance(application, networkPartition.getId());
-                context.addInstanceContext(application.getInstanceContexts(instanceId));
 
-                this.networkPartitionCtxts.put(context.getId(), context);
+        if(deploymentPolicy == null) {
+            //FIXME for docker with deployment policy
+            instanceId = createApplicationInstance(application, null);
+            instanceIds.add(instanceId);
+        } else {
+            for (ApplicationLevelNetworkPartition networkPartition :
+                                        deploymentPolicy.getApplicationLevelNetworkPartitions()) {
+                if (networkPartition.isActiveByDefault()) {
+                    ApplicationLevelNetworkPartitionContext context =
+                            new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                    instanceId = createApplicationInstance(application, networkPartition.getId());
+                    context.addInstanceContext(application.getInstanceContexts(instanceId));
 
-                instanceIds.add(instanceId);
-                log.info("Application instance has been added for the [network partition] " +
-                        networkPartition.getId() + " [appInstanceId] " + instanceId);
+                    this.networkPartitionCtxts.put(context.getId(), context);
+
+                    instanceIds.add(instanceId);
+                    log.info("Application instance has been added for the [network partition] " +
+                            networkPartition.getId() + " [appInstanceId] " + instanceId);
+                }
+
             }
-
         }
         startDependency(application, instanceIds);
-
-
     }
 
     public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
             PolicyValidationException,
             ParentMonitorNotFoundException {
-        //TODO get lock
         Application application = ApplicationHolder.getApplications().getApplication(appId);
         if (application == null) {
             String msg = "Application cannot be found in the Topology.";
             throw new TopologyInConsistentException(msg);
         }
+        boolean burstNPFound = false;
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId = null;
         //Find out the inActive network partition
-        boolean burstNPFound = false;
-        for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-            if (!networkPartition.isActiveByDefault()) {
-                if (!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
-                    ApplicationLevelNetworkPartitionContext context =
-                            new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
-                    context.setCreatedOnBurst(true);
-                    instanceId = createApplicationInstance(application, networkPartition.getId());
-                    context.addInstanceContext(application.getInstanceContexts(instanceId));
-                    this.networkPartitionCtxts.put(context.getId(), context);
-                    burstNPFound = true;
+        if(deploymentPolicy == null) {
+            //FIXME for docker with deployment policy
+            instanceId = createApplicationInstance(application, null);
+
+        } else {
+            for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.
+                                                            getApplicationLevelNetworkPartitions()) {
+                if (!networkPartition.isActiveByDefault()) {
+                    if (!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
+                        ApplicationLevelNetworkPartitionContext context =
+                                new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                        context.setCreatedOnBurst(true);
+                        instanceId = createApplicationInstance(application, networkPartition.getId());
+                        context.addInstanceContext(application.getInstanceContexts(instanceId));
+                        this.networkPartitionCtxts.put(context.getId(), context);
+                        burstNPFound = true;
+                    }
                 }
             }
         }
+
 
         if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
@@ -257,22 +270,21 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
         String deploymentPolicyName = application.getDeploymentPolicy();
-        if (deploymentPolicyName == null) {
+        /*if (deploymentPolicyName == null) {
             String msg = "Deployment Policy is not specified to the [Application]:" + appId;
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
-
-        DeploymentPolicy deploymentPolicy =
-                PolicyManager.getInstance()
-                        .getDeploymentPolicy(deploymentPolicyName);
-        if (deploymentPolicy == null) {
+*/      DeploymentPolicy deploymentPolicy = null;
+        if(deploymentPolicyName != null) {
+            deploymentPolicy = PolicyManager.getInstance()
+                    .getDeploymentPolicy(deploymentPolicyName);
             if (deploymentPolicy == null) {
                 String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
                 log.error(msg);
                 throw new PolicyValidationException(msg);
             }
-        }
+            }
 
         return deploymentPolicy;
     }

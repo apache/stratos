@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
@@ -45,17 +46,17 @@ public interface AutoscaleAlgorithm {
 
     /**
      * Returns a {@link Partition} to scale up from the given {@link org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition} according to algorithm
-     * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
+     * @param clusterInstanceContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale up
      */
-    public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId);
+    public Partition getNextScaleUpPartition(ClusterInstanceContext clusterInstanceContext, String clusterId);
 
     /**
      * Returns a {@link Partition} to scale down from the given {@link org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition} according to algorithm
-     * @param clusterLevelNetworkPartitionContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
+     * @param clusterInstanceContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
      * @param clusterId Id of the cluster which need the {@link Partition}
      * @return {@link Partition} to scale down
      */
-    public Partition getNextScaleDownPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId);
+    public Partition getNextScaleDownPartition(ClusterInstanceContext clusterInstanceContext, String clusterId);
 }

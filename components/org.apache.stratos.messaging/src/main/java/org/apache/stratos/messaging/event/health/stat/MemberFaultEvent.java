@@ -29,15 +29,17 @@ public class MemberFaultEvent extends Event {
     private final String memberId;
     private final String partitionId;
     private final String instanceId;
+    private final String networkPartitionId;
 
     private final float value;
 
     public MemberFaultEvent(String clusterId, String memberId, String partitionId,
-                            String instanceId, float value) {
+                            String instanceId, String networkPartitionId, float value) {
         this.clusterId = clusterId;
         this.instanceId = instanceId;
         this.memberId = memberId;
         this.partitionId = partitionId;
+        this.networkPartitionId = networkPartitionId;
         this.value = value;
     }
 
@@ -60,5 +62,9 @@ public class MemberFaultEvent extends Event {
 
     public String getInstanceId() {
         return instanceId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }

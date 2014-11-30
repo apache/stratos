@@ -35,6 +35,9 @@ public class ClusterDataHolder implements Serializable {
     // Cluster id
     private String clusterId;
 
+    private int minInstances;
+    private int maxInstances;
+
     public ClusterDataHolder (String serviceType, String clusterId) {
 
         this.serviceType = serviceType;
@@ -47,5 +50,21 @@ public class ClusterDataHolder implements Serializable {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public int getMinInstances() {
+        return minInstances;
+    }
+
+    public void setMinInstances(int minInstances) {
+        this.minInstances = minInstances;
+    }
+
+    public int getMaxInstances() {
+        return maxInstances;
+    }
+
+    public void setMaxInstances(int maxInstances) {
+        this.maxInstances = maxInstances;
     }
 }

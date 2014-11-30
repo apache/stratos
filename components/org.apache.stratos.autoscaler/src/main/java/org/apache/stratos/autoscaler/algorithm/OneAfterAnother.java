@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
@@ -44,7 +45,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
     private static final Log log = LogFactory.getLog(OneAfterAnother.class);
 
-    public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
+    /*public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
 
         try {
             if (log.isDebugEnabled())
@@ -134,7 +135,7 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
         }
         return null;
     }
-
+*/
 
     @Override
     public boolean scaleUpPartitionAvailable(String clusterId) {
@@ -144,6 +145,16 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
     @Override
     public boolean scaleDownPartitionAvailable(String clusterId) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Partition getNextScaleUpPartition(ClusterInstanceContext clusterInstanceContext, String clusterId) {
+        return null;
+    }
+
+    @Override
+    public Partition getNextScaleDownPartition(ClusterInstanceContext clusterInstanceContext, String clusterId) {
+        return null;
     }
 
 }

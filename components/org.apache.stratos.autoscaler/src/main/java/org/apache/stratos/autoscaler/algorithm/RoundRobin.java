@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
@@ -36,17 +37,16 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
 	private static final Log log = LogFactory.getLog(RoundRobin.class);
 
-    public Partition getNextScaleUpPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId){
-        try{
+    public Partition getNextScaleUpPartition(ClusterInstanceContext instanceContext, String clusterId){
+        /*try{
 
             if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to scale up [network partition] %s",
-                        clusterLevelNetworkPartitionContext.getId()))  ;
-            List<?> partitions = Arrays.asList(clusterLevelNetworkPartitionContext.getPartitions());
+                log.debug(String.format("Searching for a partition to scale up [ClsuterInstance] %s",
+                        instanceContext.getId()))  ;
+            List<?> partitions = Arrays.asList(instanceContext.getPartitionCtxts());
             int noOfPartitions = partitions.size();
 
-            for(int i=0; i < noOfPartitions; i++)
-            {
+            for(int i=0; i < noOfPartitions; i++) {
                 int currentPartitionIndex = clusterLevelNetworkPartitionContext.getCurrentPartitionIndex();
                 if (partitions.get(currentPartitionIndex) instanceof Partition) {
                     Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
@@ -55,7 +55,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
                     // point to next partition
                     int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
                     clusterLevelNetworkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
-                    int nonTerminatedMemberCountOfPartition = clusterLevelNetworkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId);
+                    int nonTerminatedMemberCountOfPartition = clusterLevelNetworkPartitionContext.(currentPartitionId);
                     if(nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()){
                         // current partition is free
                         if (log.isDebugEnabled())
@@ -77,14 +77,14 @@ public class RoundRobin implements AutoscaleAlgorithm{
     	    }
         } catch (Exception e) {
             log.error("Error occurred while searching for next scale up partition", e);
-        }
+        }*/
     return null;
     }
 
 
 	@Override
-    public Partition getNextScaleDownPartition(ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext, String clusterId) {
-        try{
+    public Partition getNextScaleDownPartition(ClusterInstanceContext instanceContext, String clusterId) {
+        /*try{
             if (log.isDebugEnabled())
                 log.debug(String.format("Searching for a partition to scale up [network partition] %s",
                         clusterLevelNetworkPartitionContext.getId()))  ;
@@ -138,7 +138,7 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         } catch (Exception e) {
             log.error("Error occurred while searching for next scale down partition", e);
-        }
+        }*/
         return null;
     }
 

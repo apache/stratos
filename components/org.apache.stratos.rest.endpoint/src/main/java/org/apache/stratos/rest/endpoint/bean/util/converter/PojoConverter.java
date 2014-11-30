@@ -25,15 +25,13 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.DependencyContext;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableInfoContext;
-import org.apache.stratos.autoscaler.stub.pojo.PropertiesE;
-import org.apache.stratos.autoscaler.stub.pojo.PropertyE;
+import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.stub.pojo.DependencyContext;
+import org.apache.stratos.autoscaler.stub.pojo.GroupContext;
+import org.apache.stratos.autoscaler.stub.pojo.SubscribableInfoContext;
 import org.apache.stratos.cloud.controller.stub.domain.*;
-import org.apache.stratos.cloud.controller.stub.pojo.Properties;
-import org.apache.stratos.cloud.controller.stub.pojo.Property;
+import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
@@ -257,7 +255,7 @@ public class PojoConverter {
     }
 
 
-    public static PropertiesE getASProperties(List<PropertyBean> propertyBeans) {
+    public static Properties getASProperties(List<PropertyBean> propertyBeans) {
         if (propertyBeans == null || propertyBeans.isEmpty()) {
             return null;
         }
@@ -265,16 +263,16 @@ public class PojoConverter {
         //convert to an array
         PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
         propertyBeans.toArray(propertyBeansArray);
-        PropertyE[] propertyArray = new PropertyE[propertyBeansArray.length];
+        Property[] propertyArray = new Property[propertyBeansArray.length];
 
         for (int j = 0; j < propertyBeansArray.length; j++) {
-            PropertyE property = new PropertyE();
+            Property property = new Property();
             property.setName(propertyBeansArray[j].name);
             property.setValue(propertyBeansArray[j].value);
             propertyArray[j] = property;
         }
 
-        PropertiesE properties = new PropertiesE();
+        Properties properties = new Properties();
         properties.setProperties(propertyArray);
         return properties;
     }
@@ -316,11 +314,11 @@ public class PojoConverter {
         return partition;
     }
 
-    public static org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy convertToCCAutoscalerPojo(AutoscalePolicy
+    public static org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy convertToCCAutoscalerPojo(AutoscalePolicy
                                                                                                                     autoscalePolicyBean) {
 
-        org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy autoscalePolicy = new
-                org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy();
+        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = new
+                org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy();
 
         autoscalePolicy.setId(autoscalePolicyBean.getId());
         autoscalePolicy.setDescription(autoscalePolicyBean.getDescription());
@@ -330,14 +328,14 @@ public class PojoConverter {
 
         if (autoscalePolicyBean.getLoadThresholds() != null) {
 
-            org.apache.stratos.autoscaler.stub.policy.model.LoadThresholds loadThresholds = new
-                    org.apache.stratos.autoscaler.stub.policy.model.LoadThresholds();
+            org.apache.stratos.autoscaler.stub.autoscale.policy.LoadThresholds loadThresholds = new
+                    org.apache.stratos.autoscaler.stub.autoscale.policy.LoadThresholds();
 
             if (autoscalePolicyBean.getLoadThresholds().loadAverage != null) {
 
                 //set load average information
-                org.apache.stratos.autoscaler.stub.policy.model.LoadAverageThresholds loadAverage = new
-                        org.apache.stratos.autoscaler.stub.policy.model.LoadAverageThresholds();
+                org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds loadAverage = new
+                        org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds();
                 loadAverage.setUpperLimit(autoscalePolicyBean.getLoadThresholds().loadAverage.upperLimit);
                 loadAverage.setLowerLimit(autoscalePolicyBean.getLoadThresholds().loadAverage.lowerLimit);
                 //set load average
@@ -345,8 +343,8 @@ public class PojoConverter {
             }
             if (autoscalePolicyBean.getLoadThresholds().requestsInFlight != null) {
 
-                org.apache.stratos.autoscaler.stub.policy.model.RequestsInFlightThresholds requestsInFlight = new
-                        org.apache.stratos.autoscaler.stub.policy.model.RequestsInFlightThresholds();
+                org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds requestsInFlight = new
+                        org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds();
                 //set request in flight information
                 requestsInFlight.setUpperLimit(autoscalePolicyBean.getLoadThresholds().requestsInFlight.upperLimit);
                 requestsInFlight.setLowerLimit(autoscalePolicyBean.getLoadThresholds().requestsInFlight.lowerLimit);
@@ -355,8 +353,8 @@ public class PojoConverter {
             }
             if (autoscalePolicyBean.getLoadThresholds().memoryConsumption != null) {
 
-                org.apache.stratos.autoscaler.stub.policy.model.MemoryConsumptionThresholds memoryConsumption = new
-                        org.apache.stratos.autoscaler.stub.policy.model.MemoryConsumptionThresholds();
+                org.apache.stratos.autoscaler.stub.autoscale.policy.MemoryConsumptionThresholds memoryConsumption = new
+                        org.apache.stratos.autoscaler.stub.autoscale.policy.MemoryConsumptionThresholds();
 
                 //set memory consumption information
                 memoryConsumption.setUpperLimit(autoscalePolicyBean.getLoadThresholds().memoryConsumption.upperLimit);
@@ -371,11 +369,11 @@ public class PojoConverter {
         return autoscalePolicy;
     }
 
-    public static org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
+    public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToCCDeploymentPolicyPojo(DeploymentPolicy
                                                                                                                           deploymentPolicyBean) {
 
-        org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy deploymentPolicy = new
-                org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy();
+        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = new
+                org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
         deploymentPolicy.setId(deploymentPolicyBean.getId());
         deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
@@ -567,7 +565,7 @@ public class PojoConverter {
         return propertyBeans;
     }
 
-    public static AutoscalePolicy[] populateAutoscalePojos(org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy[]
+    public static AutoscalePolicy[] populateAutoscalePojos(org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[]
                                                                    autoscalePolicies) {
 
         AutoscalePolicy[] autoscalePolicyBeans;
@@ -583,7 +581,7 @@ public class PojoConverter {
         return autoscalePolicyBeans;
     }
 
-    public static AutoscalePolicy populateAutoscalePojo(org.apache.stratos.autoscaler.stub.policy.model.AutoscalePolicy
+    public static AutoscalePolicy populateAutoscalePojo(org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy
                                                                 autoscalePolicy) {
 
         AutoscalePolicy autoscalePolicyBean = new AutoscalePolicy();
@@ -604,7 +602,7 @@ public class PojoConverter {
         return autoscalePolicyBean;
     }
 
-    private static LoadThresholds populateLoadThresholds(org.apache.stratos.autoscaler.stub.policy.model.LoadThresholds
+    private static LoadThresholds populateLoadThresholds(org.apache.stratos.autoscaler.stub.autoscale.policy.LoadThresholds
                                                                  loadThresholds) {
 
         LoadThresholds loadThresholdBean = new LoadThresholds();
@@ -630,7 +628,7 @@ public class PojoConverter {
         return loadThresholdBean;
     }
 
-    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy[]
+    public static DeploymentPolicy[] populateDeploymentPolicyPojos(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[]
                                                                            deploymentPolicies) {
         DeploymentPolicy[] deploymentPolicyBeans;
         if (deploymentPolicies == null) {
@@ -645,7 +643,7 @@ public class PojoConverter {
         return deploymentPolicyBeans;
     }
 
-    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.policy.model.DeploymentPolicy
+    public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy
                                                                         deploymentPolicy) {
 
         DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
@@ -744,10 +742,10 @@ public class PojoConverter {
         return serviceDefinitionBeans;
     }
 
-    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup convertToASKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
+    public static org.apache.stratos.common.kubernetes.KubernetesGroup convertToASKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
 
-        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup = new
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup();
+        org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup = new
+                org.apache.stratos.common.kubernetes.KubernetesGroup();
 
         kubernetesGroup.setGroupId(kubernetesGroupBean.getGroupId());
         kubernetesGroup.setDescription(kubernetesGroupBean.getDescription());
@@ -759,13 +757,13 @@ public class PojoConverter {
         return kubernetesGroup;
     }
 
-    private static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
+    private static org.apache.stratos.common.kubernetes.KubernetesHost[] convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
         if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
             return null;
         }
         int kubernetesHostCount = kubernetesHosts.size();
-        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
-                kubernetesHostsArr = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[kubernetesHostCount];
+        org.apache.stratos.common.kubernetes.KubernetesHost[]
+                kubernetesHostsArr = new org.apache.stratos.common.kubernetes.KubernetesHost[kubernetesHostCount];
         for (int i = 0; i < kubernetesHostCount; i++) {
             KubernetesHost kubernetesHostBean = kubernetesHosts.get(i);
             kubernetesHostsArr[i] = convertToASKubernetesHostPojo(kubernetesHostBean);
@@ -774,24 +772,24 @@ public class PojoConverter {
     }
 
 
-    private static org.apache.stratos.autoscaler.stub.kubernetes.PortRange convertToASPortRange(PortRange portRangeBean) {
+    private static org.apache.stratos.common.kubernetes.PortRange convertToASPortRange(PortRange portRangeBean) {
         if (portRangeBean == null) {
             return null;
         }
-        org.apache.stratos.autoscaler.stub.kubernetes.PortRange
-                portRange = new org.apache.stratos.autoscaler.stub.kubernetes.PortRange();
+        org.apache.stratos.common.kubernetes.PortRange
+                portRange = new org.apache.stratos.common.kubernetes.PortRange();
         portRange.setLower(portRangeBean.getLower());
         portRange.setUpper(portRangeBean.getUpper());
         return portRange;
     }
 
-    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost convertToASKubernetesHostPojo(KubernetesHost kubernetesHostBean) {
+    public static org.apache.stratos.common.kubernetes.KubernetesHost convertToASKubernetesHostPojo(KubernetesHost kubernetesHostBean) {
         if (kubernetesHostBean == null) {
             return null;
         }
 
-        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost
-                kubernetesHost = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost();
+        org.apache.stratos.common.kubernetes.KubernetesHost
+                kubernetesHost = new org.apache.stratos.common.kubernetes.KubernetesHost();
         kubernetesHost.setHostId(kubernetesHostBean.getHostId());
         kubernetesHost.setHostIpAddress(kubernetesHostBean.getHostIpAddress());
         kubernetesHost.setHostname(kubernetesHostBean.getHostname());
@@ -800,13 +798,13 @@ public class PojoConverter {
         return kubernetesHost;
     }
 
-    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster convertToASKubernetesMasterPojo(KubernetesMaster kubernetesMasterBean) {
+    public static org.apache.stratos.common.kubernetes.KubernetesMaster convertToASKubernetesMasterPojo(KubernetesMaster kubernetesMasterBean) {
         if (kubernetesMasterBean == null) {
             return null;
         }
 
-        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
-                kubernetesMaster = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster();
+        org.apache.stratos.common.kubernetes.KubernetesMaster
+                kubernetesMaster = new org.apache.stratos.common.kubernetes.KubernetesMaster();
         kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
         kubernetesMaster.setHostIpAddress(kubernetesMasterBean.getHostIpAddress());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
@@ -816,7 +814,7 @@ public class PojoConverter {
         return kubernetesMaster;
     }
 
-    public static KubernetesGroup[] populateKubernetesGroupsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[] kubernetesGroups) {
+    public static KubernetesGroup[] populateKubernetesGroupsPojo(org.apache.stratos.common.kubernetes.KubernetesGroup[] kubernetesGroups) {
 
         if (kubernetesGroups == null){
             return null;
@@ -828,7 +826,7 @@ public class PojoConverter {
         return kubernetesGroupsBean;
     }
 
-    public static KubernetesGroup populateKubernetesGroupPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup) {
+    public static KubernetesGroup populateKubernetesGroupPojo(org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup) {
         if (kubernetesGroup == null){
             return null;
         }
@@ -842,7 +840,7 @@ public class PojoConverter {
         return kubernetesGroupBean;
     }
 
-    public static KubernetesMaster populateKubernetesMasterPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster) {
+    public static KubernetesMaster populateKubernetesMasterPojo(org.apache.stratos.common.kubernetes.KubernetesMaster kubernetesMaster) {
         if (kubernetesMaster == null){
             return null;
         }
@@ -855,7 +853,7 @@ public class PojoConverter {
         return kubernetesMasterBean;
     }
 
-    public static List<KubernetesHost> populateKubernetesHostsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] kubernetesHosts) {
+    public static List<KubernetesHost> populateKubernetesHostsPojo(org.apache.stratos.common.kubernetes.KubernetesHost[] kubernetesHosts) {
         if (kubernetesHosts == null){
             return null;
         }
@@ -866,7 +864,7 @@ public class PojoConverter {
         return kubernetesHostList;
     }
 
-    private static KubernetesHost populateKubernetesHostPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost) {
+    private static KubernetesHost populateKubernetesHostPojo(org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost) {
         if (kubernetesHost == null){
             return null;
         }
@@ -878,7 +876,7 @@ public class PojoConverter {
         return kubernetesHostBean;
     }
 
-    private static List<PropertyBean> populateASProperties(PropertiesE properties) {
+    private static List<PropertyBean> populateASProperties(Properties properties) {
         if (properties == null || properties.getProperties() == null){
             return null;
         }
@@ -889,7 +887,7 @@ public class PojoConverter {
         return propertyBeanList;
     }
 
-    private static PropertyBean populateASProperty(PropertyE propertyE) {
+    private static PropertyBean populateASProperty(Property propertyE) {
         if (propertyE == null){
             return null;
         }
@@ -899,7 +897,7 @@ public class PojoConverter {
         return propertyBean;
     }
 
-    private static PortRange populatePortRangePojo(org.apache.stratos.autoscaler.stub.kubernetes.PortRange portRange) {
+    private static PortRange populatePortRangePojo(org.apache.stratos.common.kubernetes.PortRange portRange) {
         if (portRange == null){
             return null;
         }
@@ -911,16 +909,16 @@ public class PojoConverter {
 
     public static ApplicationContext convertApplicationBeanToApplicationContext (ApplicationDefinition compositeAppDefinition) {
 
-        org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext applicationContext =
-                new org.apache.stratos.autoscaler.applications.pojo.xsd.ApplicationContext();
+        org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
+                new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
         applicationContext.setAlias(compositeAppDefinition.getAlias());
         applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
 
         // convert and set components
         if (compositeAppDefinition.getComponents() != null) {
-            org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext componentContext =
-                    new org.apache.stratos.autoscaler.applications.pojo.xsd.ComponentContext();
+            org.apache.stratos.autoscaler.stub.pojo.ComponentContext componentContext =
+                    new org.apache.stratos.autoscaler.stub.pojo.ComponentContext();
             // top level subscribables
             if (compositeAppDefinition.getComponents().getSubscribables() != null) {
                 componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
@@ -961,12 +959,12 @@ public class PojoConverter {
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
             subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
             if (subscribableInfo.getProperty() != null) {
-                org.apache.stratos.cloud.controller.stub.pojo.Properties properties = new Properties();
+                Properties properties = new Properties();
                 for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
                     Property property = new Property();
                     property.setName(propertyBean.getName());
                     property.setValue(propertyBean.getValue());
-                    properties.addProperties(property);
+                    properties.addProperty(property);
                 }
                 subscribableInfoContext.setProperties(properties);
             }
@@ -989,7 +987,7 @@ public class PojoConverter {
         return dependencyContext;
     }
 
-    private static org.apache.stratos.autoscaler.applications.pojo.xsd.GroupContext[]
+    private static org.apache.stratos.autoscaler.stub.pojo.GroupContext[]
     getgroupContextArrayFromGroupDefinitions (List<GroupDefinition> groupDefinitions) {
 
         GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
@@ -1019,15 +1017,15 @@ public class PojoConverter {
         return groupContexts;
     }
 
-    private static org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext []
+    private static org.apache.stratos.autoscaler.stub.pojo.SubscribableContext []
     getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
-        org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[] subscribableContexts =
-                new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext[subscribableDefinitions.size()];
+        org.apache.stratos.autoscaler.stub.pojo.SubscribableContext[] subscribableContexts =
+                new org.apache.stratos.autoscaler.stub.pojo.SubscribableContext[subscribableDefinitions.size()];
         int i = 0;
         for (SubscribableDefinition subscribableDefinition : subscribableDefinitions) {
-            org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext subscribableContext =
-                    new org.apache.stratos.autoscaler.applications.pojo.xsd.SubscribableContext();
+            org.apache.stratos.autoscaler.stub.pojo.SubscribableContext subscribableContext =
+                    new org.apache.stratos.autoscaler.stub.pojo.SubscribableContext();
             subscribableContext.setType(subscribableDefinition.getType());
             subscribableContext.setAlias(subscribableDefinition.getAlias());
             subscribableContexts[i++] = subscribableContext;

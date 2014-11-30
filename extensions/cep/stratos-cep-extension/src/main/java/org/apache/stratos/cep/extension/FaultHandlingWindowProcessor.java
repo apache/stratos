@@ -23,15 +23,7 @@ import org.apache.log4j.Logger;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
-import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
-import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
-import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
-import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
-import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.Util;
 import org.wso2.siddhi.core.config.SiddhiContext;
@@ -214,7 +206,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         log.info("Publishing member fault event for [member-id] " + memberId);
 
         MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getInstanceId(), member.getMemberId(),
-                member.getPartitionId(), 0);
+                member.getPartitionId(), member.getNetworkPartitionId(), 0);
 
         memberFaultEventMessageMap.put("message", memberFaultEvent);
         healthStatPublisher.publish(MemberFaultEventMap, true);

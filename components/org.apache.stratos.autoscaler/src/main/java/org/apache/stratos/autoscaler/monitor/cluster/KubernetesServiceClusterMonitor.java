@@ -18,15 +18,9 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
@@ -39,6 +33,9 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
+import java.util.Arrays;
+import java.util.List;
+
 /*
  * It is monitoring a kubernetes service cluster periodically.
  */
@@ -50,10 +47,10 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     public KubernetesServiceClusterMonitor(String serviceType, String clusterId) {
         super(serviceType, clusterId,
-        		new AutoscalerRuleEvaluator(
-                      StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
-                      StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE,
-                      StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE));
+                new AutoscalerRuleEvaluator(
+                        StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
+                        StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE,
+                        StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE));
         readConfigurations();
     }
 
@@ -64,6 +61,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             log.debug("KubernetesServiceClusterMonitor is running..." + this.toString());
         }
         try {
+
             if (!ClusterStatus.Active.getNextStates().contains(getStatus())) {
                 monitor();
             } else {
@@ -74,27 +72,25 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             }
         } catch (Exception e) {
             log.error("KubernetesServiceClusterMonitor: Monitor failed." + this.toString(),
-                      e);
+                    e);
         }
     }
 
     @Override
     protected void monitor() {
+        final String instanceId = this.getKubernetesClusterCtxt().getInstanceId();
+        Runnable monitoringRunnable = new Runnable() {
 
-        Set<Map.Entry<String, AbstractClusterContext>> instanceIdToClusterCtxtEntries = instanceIdToClusterContextMap.entrySet();
-        for (final Map.Entry<String, AbstractClusterContext> instanceIdToClusterCtxtEntry : instanceIdToClusterCtxtEntries) {
-            Runnable monitoringRunnable = new Runnable() {
-
-                @Override
-                public void run() {
-                    obsoleteCheck();
-                    minCheck();
-                    scaleCheck(instanceIdToClusterCtxtEntry.getKey());
-                }
-            };
-            monitoringRunnable.run();
-        }
+            @Override
+            public void run() {
+                obsoleteCheck();
+                minCheck();
+                scaleCheck(instanceId);
+            }
+        };
+        monitoringRunnable.run();
     }
+
 
     private void scaleCheck(String instanceId) {
         boolean rifReset = getKubernetesClusterCtxt().isRifReset();
@@ -102,9 +98,9 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         boolean loadAverageReset = getKubernetesClusterCtxt().isLoadAverageReset();
         if (log.isDebugEnabled()) {
             log.debug("flag of rifReset : " + rifReset
-                      + " flag of memoryConsumptionReset : "
-                      + memoryConsumptionReset + " flag of loadAverageReset : "
-                      + loadAverageReset);
+                    + " flag of memoryConsumptionReset : "
+                    + memoryConsumptionReset + " flag of loadAverageReset : "
+                    + loadAverageReset);
         }
         String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
         String clusterId = getClusterId();
@@ -125,40 +121,40 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             getKubernetesClusterCtxt().setLoadAverageReset(false);
         } else if (log.isDebugEnabled()) {
             log.debug(String.format("Scale check will not run since none of the statistics have not received yet for "
-                                    + "[kub-cluster] : %s [cluster] : %s", kubernetesClusterID, clusterId));
+                    + "[kub-cluster] : %s [cluster] : %s", kubernetesClusterID, clusterId));
         }
     }
 
     private AutoscalePolicy getAutoscalePolicy(String instanceId) {
-        KubernetesClusterContext kubernetesClusterContext = (KubernetesClusterContext) instanceIdToClusterContextMap.get(instanceId);
+        KubernetesClusterContext kubernetesClusterContext = (KubernetesClusterContext) this.clusterContext;
         return kubernetesClusterContext.getAutoscalePolicy();
     }
 
     private void minCheck() {
-		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-		String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+        getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+        String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Running min check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
         }
-		minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
-				getMinCheckKnowledgeSession(), minCheckFactHandle,
-				getKubernetesClusterCtxt());
-	}
+        minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+                getMinCheckKnowledgeSession(), minCheckFactHandle,
+                getKubernetesClusterCtxt());
+    }
 
-	private void obsoleteCheck() {
-		getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-		String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+    private void obsoleteCheck() {
+        getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+        String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Running obsolete check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
         }
-		obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
-				getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle,
-				getKubernetesClusterCtxt());
-	}
+        obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+                getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle,
+                getKubernetesClusterCtxt());
+    }
 
-	@Override
+    @Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
         getObsoleteCheckKnowledgeSession().dispose();
@@ -183,8 +179,8 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     @Override
     public String toString() {
         return "KubernetesServiceClusterMonitor "
-               + "[ kubernetesHostClusterId=" + getKubernetesClusterCtxt().getKubernetesClusterID()
-               + ", clusterId=" + getClusterId() + "]";
+                + "[ kubernetesHostClusterId=" + getKubernetesClusterCtxt().getKubernetesClusterID()
+                + ", clusterId=" + getClusterId() + "]";
     }
 
     public String getLbReferenceType() {
@@ -197,23 +193,23 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     public void handleDynamicUpdates(Properties properties) throws InvalidArgumentException {
-        
+
         if (properties != null) {
             Property[] propertyArray = properties.getProperties();
             if (propertyArray == null) {
                 return;
             }
             List<Property> propertyList = Arrays.asList(propertyArray);
-            
+
             for (Property property : propertyList) {
                 String key = property.getName();
                 String value = property.getValue();
-                
+
                 if (StratosConstants.KUBERNETES_MIN_REPLICAS.equals(key)) {
                     int min = Integer.parseInt(value);
                     int max = getKubernetesClusterCtxt().getMaxReplicas();
                     if (min > max) {
-                        String msg = String.format("%s should be less than %s . But %s is not less than %s.", 
+                        String msg = String.format("%s should be less than %s . But %s is not less than %s.",
                                 StratosConstants.KUBERNETES_MIN_REPLICAS, StratosConstants.KUBERNETES_MAX_REPLICAS, min, max);
                         log.error(msg);
                         throw new InvalidArgumentException(msg);
@@ -222,7 +218,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                     break;
                 }
             }
-            
+
         }
     }
 

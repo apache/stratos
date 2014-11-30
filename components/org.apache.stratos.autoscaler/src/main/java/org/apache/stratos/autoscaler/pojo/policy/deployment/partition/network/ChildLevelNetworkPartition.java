@@ -92,4 +92,14 @@ public class ChildLevelNetworkPartition implements Serializable {
     public void setChildLevelPartitions(ChildLevelPartition[] childLevelPartitions) {
         this.childLevelPartitions = childLevelPartitions;
     }
+
+    public ChildLevelPartition getChildLevelPartition(String partitionId) {
+        for(ChildLevelPartition partition : childLevelPartitions) {
+            if(partition.getPartitionId().equals(partitionId)) {
+                return partition;
+            }
+        }
+        return null;
+    }
+
 }

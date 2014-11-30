@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.status.processor.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
@@ -65,7 +66,7 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
                 getClusterMonitor(clusterId);
 
         boolean clusterInActive;
-        clusterInActive = getClusterInactive(monitor);
+        clusterInActive = getClusterInactive(instanceId, monitor);
         if(clusterInActive) {
             //if the monitor is dependent, temporarily pausing it
             if (monitor.hasStartupDependents()) {
@@ -89,10 +90,11 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
         return clusterInActive;
     }
 
-    private boolean getClusterInactive(VMClusterMonitor monitor) {
+    private boolean getClusterInactive(String instanceId, VMClusterMonitor monitor) {
         boolean clusterInActive = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
-            for (ClusterLevelPartitionContext partition : clusterLevelNetworkPartitionContext.getPartitionCtxts().values()) {
+            ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+            for (ClusterLevelPartitionContext partition : instanceContext.getPartitionCtxts().values()) {
                 if (partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
                     clusterInActive = true;
                     return clusterInActive;

@@ -8,12 +8,14 @@ public class AverageRequestsServingCapabilityEvent extends  Event{
     private final String networkPartitionId;
     private final String clusterId;
     private final float value;
+    private final String instanceId;
 
-    public AverageRequestsServingCapabilityEvent(String networkPartitionId, String clusterId, float value) {
+    public AverageRequestsServingCapabilityEvent(String networkPartitionId, String clusterId, float value, String instanceId) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
         this.value = value;
 
+        this.instanceId = instanceId;
     }
     public String getClusterId() {
         return clusterId;
@@ -28,4 +30,7 @@ public class AverageRequestsServingCapabilityEvent extends  Event{
     }
 
 
+    public String getInstanceId() {
+        return instanceId;
+    }
 }
