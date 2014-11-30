@@ -21,7 +21,7 @@ package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment;
 
 
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.NetworkPartition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -36,7 +36,7 @@ public class DeploymentPolicy {
     private boolean isPublic;
 
     //partition groups
-    private List<PartitionGroup> partitionGroup;
+    private List<NetworkPartition> networkPartition;
 
     //partitions
     private List<Partition> partition;
@@ -65,12 +65,12 @@ public class DeploymentPolicy {
         this.isPublic = isPublic;
     }
 
-    public List<PartitionGroup> getPartitionGroup() {
-        return partitionGroup;
+    public List<NetworkPartition> getNetworkPartition() {
+        return networkPartition;
     }
 
-    public void setPartitionGroup(List<PartitionGroup> partitionGroup) {
-        this.partitionGroup = partitionGroup;
+    public void setNetworkPartition(List<NetworkPartition> networkPartition) {
+        this.networkPartition = networkPartition;
     }
 
     public List<Partition> getPartition() {

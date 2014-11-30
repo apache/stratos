@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class PartitionGroup {
+public class NetworkPartition {
 
     public String id;
 

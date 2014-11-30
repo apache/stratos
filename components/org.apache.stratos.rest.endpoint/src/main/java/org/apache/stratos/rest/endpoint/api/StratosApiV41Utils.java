@@ -66,8 +66,7 @@ import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.PartitionGroup;
+import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.NetworkPartition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
@@ -651,7 +650,7 @@ public class StratosApiV41Utils {
         return PojoConverter.populateDeploymentPolicyPojo(deploymentPolicy);
     }
 
-    public static PartitionGroup[] getPartitionGroups(String deploymentPolicyId)
+    public static NetworkPartition[] getPartitionGroups(String deploymentPolicyId)
             throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.partition.PartitionGroup[] partitionGroups = null;
