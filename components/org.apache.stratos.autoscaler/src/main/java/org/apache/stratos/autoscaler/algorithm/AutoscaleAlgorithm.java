@@ -19,9 +19,7 @@
 
 package org.apache.stratos.autoscaler.algorithm;
 
-import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 
 
 /**
@@ -30,33 +28,31 @@ import org.apache.stratos.cloud.controller.stub.domain.Partition;
  */
 public interface AutoscaleAlgorithm {
 
-    /**
-     * Returns whether there is available {@link Partition} to scale up considering the current count and maximum
-     * @param clusterId Id of the cluster which need the availability information
-     * @return availability of {@link Partition}s to scale up
-     */
-    public boolean scaleUpPartitionAvailable(String clusterId);
+//    /**
+//     * Returns whether there is available {@link Partition} to scale up considering the current count and maximum
+//     * @param clusterId Id of the cluster which need the availability information
+//     * @return availability of {@link Partition}s to scale up
+//     */
+//    public boolean scaleUpPartitionAvailable(String clusterId);
+//
+//    /**
+//     * Returns whether there is available {@link Partition} to scale down considering the current count and minimum
+//     * @param clusterId Id of the cluster which need the availability information
+//     * @return availability of {@link Partition}s to scale down
+//     */
+//    public boolean scaleDownPartitionAvailable(String clusterId);
 
     /**
-     * Returns whether there is available {@link Partition} to scale down considering the current count and minimum
-     * @param clusterId Id of the cluster which need the availability information
-     * @return availability of {@link Partition}s to scale down
+     * Returns a {@link PartitionContext} to scale up from the given list
+     * @param partitionContexts
+     * @return {@link PartitionContext} to scale up
      */
-    public boolean scaleDownPartitionAvailable(String clusterId);
+    public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts);
 
     /**
-     * Returns a {@link Partition} to scale up from the given {@link org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition} according to algorithm
-     * @param clusterInstanceContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
-     * @param clusterId Id of the cluster which need the {@link Partition}
-     * @return {@link Partition} to scale up
+     * Returns a {@link PartitionContext} to scale down from the given list
+     * @param partitionContexts
+     * @return {@link PartitionContext} to scale down
      */
-    public Partition getNextScaleUpPartition(ClusterInstanceContext clusterInstanceContext, String clusterId);
-
-    /**
-     * Returns a {@link Partition} to scale down from the given {@link org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition} according to algorithm
-     * @param clusterInstanceContext {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext} which need the {@link Partition}
-     * @param clusterId Id of the cluster which need the {@link Partition}
-     * @return {@link Partition} to scale down
-     */
-    public Partition getNextScaleDownPartition(ClusterInstanceContext clusterInstanceContext, String clusterId);
+    public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts);
 }
