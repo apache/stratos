@@ -478,10 +478,9 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(predictedValue);
     }
 
-    public double getLoadAveragePredictedValue(String instanceId, ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+    public double getLoadAveragePredictedValue(ClusterInstanceContext clusterInstanceContext) {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
-        ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
         for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
@@ -506,10 +505,9 @@ public class RuleTasksDelegator {
         }
     }
 
-    public double getMemoryConsumptionPredictedValue(String instanceId, ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
+    public double getMemoryConsumptionPredictedValue(ClusterInstanceContext clusterInstanceContext) {
         double memoryConsumptionPredicted = 0.0d;
         int totalMemberCount = 0;
-        ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
         for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
