@@ -121,7 +121,8 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
      */
     private boolean clusterMonitorHasMembers(VMClusterMonitor monitor) {
         boolean hasMember = false;
-        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
+        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
+                                                monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
             for(ClusterInstanceContext clusterInstanceContext :
                     clusterLevelNetworkPartitionContext.getClusterInstanceContextMap().values()) {

@@ -25,8 +25,7 @@ import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.HashMap;

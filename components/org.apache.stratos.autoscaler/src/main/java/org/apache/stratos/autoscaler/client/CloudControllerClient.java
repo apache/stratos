@@ -32,9 +32,11 @@ import org.apache.stratos.autoscaler.exception.kubernetes.NonExistingKubernetesG
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.*;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -43,6 +45,7 @@ import org.apache.stratos.common.kubernetes.KubernetesMaster;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -91,7 +94,8 @@ public class CloudControllerClient {
                 log.info(String.format("Validating partitions of policy via cloud controller: [id] %s", deploymentPolicy.getId()));
             }
             long startTime = System.currentTimeMillis();
-            boolean result = stub.validateDeploymentPolicy(cartridgeType, deploymentPolicy.getAllPartitions());
+            boolean result = stub.validateDeploymentPolicy(cartridgeType, getAllCCPartitions(deploymentPolicy.
+                    getAllPartitions()));
             if (log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call validateDeploymentPolicy() returned in %dms", (endTime - startTime)));
@@ -109,6 +113,32 @@ public class CloudControllerClient {
         }
 
     }
+
+    public org.apache.stratos.cloud.controller.stub.domain.Partition[]
+    getAllCCPartitions(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] partitions) {
+
+        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions1 =
+                new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
+
+        for(int i = 0; i < partitions.length; i++) {
+            partitions1[i] = convertTOCCPartition(partitions[i]);
+        }
+        return partitions1;
+    }
+
+    private org.apache.stratos.cloud.controller.stub.domain.Partition convertTOCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
+        org.apache.stratos.cloud.controller.stub.domain.Partition partition1 = new
+                org.apache.stratos.cloud.controller.stub.domain.Partition();
+
+        partition1.setId(partition.getId());
+        partition1.setProvider(partition.getProvider());
+        partition1.setProperties(partition.getProperties());
+
+        return partition1;
+    }
+
+
+
 
     /*
      * Calls the CC to validate the partition.

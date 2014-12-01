@@ -22,7 +22,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.constants.StratosConstants;

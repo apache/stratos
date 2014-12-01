@@ -17,25 +17,18 @@
  * under the License.
  */
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment;
-
-
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class DeploymentPolicy {
+public class ApplicationLevelNetworkPartition {
 
     public String id;
-    
-    public String description;
-    
-    public boolean isPublic;
 
-    public ApplicationPolicy applicationPolicy;
+    public boolean activeByDefault;
 
-    public List<ChildPolicy> childPolicies;
+    //partition Ids
+    public List<Partition> partitions;
 }

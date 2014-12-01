@@ -22,7 +22,7 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildPolicyHolder;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ public class DeploymentPolicy implements Serializable{
     private boolean isPublic;
     private ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions;
     private ChildPolicyHolder childPolicyHolder;
+    private ChildPolicy[] childPolicies;
     private int tenantId;
 
     /**
@@ -138,14 +139,25 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public Partition[] getAllPartitions() {
-    	ArrayList<Partition> partitionsList = new ArrayList<Partition>();
-    	for (ApplicationLevelNetworkPartition networkPartition : this.getApplicationLevelNetworkPartitions()) {
+        ArrayList<Partition> partitionsList = new ArrayList<Partition>();
+        for (ApplicationLevelNetworkPartition networkPartition : this.getApplicationLevelNetworkPartitions()) {
             Partition[] partitions = networkPartition.getPartitions();
-            if(partitions != null) {
-            	partitionsList.addAll(Arrays.asList(partitions));
+            if (partitions != null) {
+                partitionsList.addAll(Arrays.asList(partitions));
             }
         }
         return partitionsList.toArray(new Partition[partitionsList.size()]);
+    }
+
+    private org.apache.stratos.cloud.controller.stub.domain.Partition convertTOCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
+        org.apache.stratos.cloud.controller.stub.domain.Partition partition1 = new
+                org.apache.stratos.cloud.controller.stub.domain.Partition();
+
+        partition1.setId(partition.getId());
+        partition1.setProvider(partition.getProvider());
+        partition1.setProperties(partition.getProperties());
+
+        return partition1;
     }
         
     public Partition getPartitionById(String id){
@@ -196,5 +208,17 @@ public class DeploymentPolicy implements Serializable{
 
     public void setChildPolicyHolder(ChildPolicyHolder childPolicyHolder) {
         this.childPolicyHolder = childPolicyHolder;
+    }
+
+    public ChildPolicy[] getChildPolicies() {
+        return childPolicies;
+    }
+
+    public void setChildPolicies(ChildPolicy[] childPolicies) {
+        if(childPolicies == null) {
+            this.childPolicies = new ChildPolicy[0];
+        } else {
+            this.childPolicies = Arrays.copyOf(childPolicies, childPolicies.length);
+        }
     }
 }

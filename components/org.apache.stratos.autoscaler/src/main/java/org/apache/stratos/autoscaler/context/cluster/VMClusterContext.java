@@ -28,9 +28,10 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -240,7 +241,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
         Partition partition1 = deploymentPolicy.getApplicationLevelNetworkPartition(networkPartition.getId()).
                 getPartition(partition.getPartitionId());
-        CloudControllerClient.getInstance().validatePartition(partition1);
+        CloudControllerClient.getInstance().validatePartition(convertTOCCPartition(partition1));
         if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext =
                     new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId()
@@ -283,7 +284,7 @@ public class VMClusterContext extends AbstractClusterContext {
                 memberContext.setClusterId(member.getClusterId());
                 memberContext.setMemberId(memberId);
                 memberContext.setInitTime(member.getInitTime());
-                memberContext.setPartition(partition);
+                memberContext.setPartition(convertTOCCPartition(partition));
                 //FIXME********memberContext.setProperties(convertMemberPropsToMemberContextProps(member.getProperties()));
 
                 if (MemberStatus.Activated.equals(member.getStatus())) {
@@ -313,6 +314,17 @@ public class VMClusterContext extends AbstractClusterContext {
             }
 
         }
+    }
+
+    private org.apache.stratos.cloud.controller.stub.domain.Partition convertTOCCPartition(Partition partition) {
+        org.apache.stratos.cloud.controller.stub.domain.Partition partition1 = new
+                org.apache.stratos.cloud.controller.stub.domain.Partition();
+
+        partition1.setId(partition.getId());
+        partition1.setProvider(partition.getProvider());
+        partition1.setProperties(partition.getProperties());
+
+        return partition1;
     }
 
     //FIXME**********

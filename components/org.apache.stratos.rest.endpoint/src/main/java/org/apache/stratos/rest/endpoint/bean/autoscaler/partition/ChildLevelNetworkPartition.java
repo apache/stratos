@@ -16,26 +16,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment;
-
-
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
+package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class DeploymentPolicy {
-
+public class ChildLevelNetworkPartition {
     public String id;
-    
-    public String description;
-    
-    public boolean isPublic;
 
-    public ApplicationPolicy applicationPolicy;
+    public String partitionAlgo;
 
-    public List<ChildPolicy> childPolicies;
+    public int min;
+
+    public List<ChildLevelPartition> childLevelPartitions;
 }

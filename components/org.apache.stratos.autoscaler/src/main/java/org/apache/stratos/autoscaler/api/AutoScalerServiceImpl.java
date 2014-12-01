@@ -43,8 +43,8 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
@@ -147,14 +147,14 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions();
     }
 
-    public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) {
+    /*public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) {
         DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
         if (null == depPol) {
             return null;
         }
 
         return depPol.getAllPartitions();
-    }
+    }*/
 
     @Override
     public KubernetesGroup[] getAllKubernetesGroups() {

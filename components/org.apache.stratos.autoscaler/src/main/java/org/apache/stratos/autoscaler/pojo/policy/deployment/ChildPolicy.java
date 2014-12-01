@@ -16,21 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
-package org.apache.stratos.rest.endpoint.bean.autoscaler.partition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+/**
+ * Created by reka on 12/1/14.
+ */
+public class ChildPolicy {
+    private String id;
 
-@XmlRootElement
-public class NetworkPartition {
+    private ChildLevelNetworkPartition[] childLevelNetworkPartitions;
 
-    public String id;
+    public String getId() {
+        return id;
+    }
 
-    public String partitionAlgo;
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    public boolean activeByDefault;
+    public ChildLevelNetworkPartition[] getChildLevelNetworkPartitions() {
+        return childLevelNetworkPartitions;
+    }
 
-    //partition Ids
-    public List<Partition> partition;
+    public void setChildLevelNetworkPartitions(ChildLevelNetworkPartition[] childLevelNetworkPartitions) {
+        this.childLevelNetworkPartitions = childLevelNetworkPartitions;
+    }
 }

@@ -19,9 +19,7 @@
 
 package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.ChildLevelPartition;
 import java.io.Serializable;
-import java.util.Map;
 
 /**
 * The model class for NetworkPartition definition at child level.

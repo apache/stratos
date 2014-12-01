@@ -282,7 +282,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
 //    @GET
-//    @Path("/partitions")
+//    @Path("/childLevelPartitions")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -291,7 +291,7 @@ public class StratosApiV41 extends AbstractApi {
 //    }
 
 //    @POST
-//    @Path("/partitions")
+//    @Path("/childLevelPartitions")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/add/partition")
@@ -304,7 +304,7 @@ public class StratosApiV41 extends AbstractApi {
 //    }
 //
 //    @GET
-//    @Path("/partitions/{partitionId}")
+//    @Path("/childLevelPartitions/{partitionId}")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -321,7 +321,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
 
         StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.getId()).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.id).build();
         return Response.created(url).build();
     }
 

@@ -122,6 +122,11 @@
                 <value>groups</value>
                 <value>clusters</value>
                 <value>startupOrders</value>
+                <value>childPolicies</value>
+                <value>childLevelNetworkPartition</value>
+                <value>childLevelPartitions</value>
+                <value>networkPartition</value>
+                <value>partitions</value>
             </list>
         </property>
     </bean>
