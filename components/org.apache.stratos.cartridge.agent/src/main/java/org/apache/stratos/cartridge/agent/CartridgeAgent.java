@@ -538,8 +538,7 @@ public class CartridgeAgent implements Runnable {
             }
         });
 
-        Thread tenantEventReceiverThread = new Thread(tenantEventReceiver);
-        tenantEventReceiverThread.start();
+	    tenantEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Tenant event message receiver thread started");
         }

@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.util.Util;
  * A thread for receiving tenant information from message broker and
  * build tenant information in tenant manager.
  */
-public class TenantEventReceiver implements Runnable {
+public class TenantEventReceiver{
     private static final Log log = LogFactory.getLog(TenantEventReceiver.class);
     private TenantEventMessageDelegator messageDelegator;
     private TenantEventMessageListener messageListener;
@@ -46,8 +46,8 @@ public class TenantEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
+
+    public void execute() {
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.TENANT_TOPIC.getTopicName(), messageListener);
@@ -65,13 +65,7 @@ public class TenantEventReceiver implements Runnable {
                 log.debug("Tenant event message delegator thread started");
             }
 
-            // Keep the thread live until terminated
-            while (!terminated) {
-            	try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
-            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Tenant receiver failed", e);

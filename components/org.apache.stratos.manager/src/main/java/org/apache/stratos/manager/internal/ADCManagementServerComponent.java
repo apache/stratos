@@ -68,8 +68,8 @@ import java.util.concurrent.ExecutorService;
 public class ADCManagementServerComponent {
 
 	private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
-	public static final String STRATOS_MANAGER = "Stratos_manager";
-	public static final int THREAD_POOL_SIZE = 20;
+	private static final String STRATOS_MANAGER = "Stratos_manager";
+	private static final int THREAD_POOL_SIZE = 20;
 	private StratosManagerTopologyEventReceiver stratosManagerTopologyEventReceiver;
 	private ExecutorService executorService;
 
@@ -211,6 +211,7 @@ public class ADCManagementServerComponent {
         EventPublisherPool.close(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
         EventPublisherPool.close(Util.Topics.TENANT_TOPIC.getTopicName());
 
+	    executorService.shutdownNow();
         //terminate Stratos Manager Topology Receiver
         stratosManagerTopologyEventReceiver.terminate();
     }
