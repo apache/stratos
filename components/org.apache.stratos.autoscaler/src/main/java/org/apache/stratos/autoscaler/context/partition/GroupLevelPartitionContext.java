@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.context.partition;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -75,9 +76,6 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
     //Keep statistics come from CEP
     private Map<String, MemberStatsContext> instanceStatsContexts;
 
-    //group instances kept inside a partition
-    private Map<String, Instance> instanceIdToInstanceContextMap;
-
     // for the use of tests
     public GroupLevelPartitionContext(long instanceExpiryTime) {
 
@@ -97,7 +95,6 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         this.terminationPendingInstances = new ArrayList<Instance>();
         this.obsoletedInstances = new ConcurrentHashMap<String, Instance>();
         instanceStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
-        instanceIdToInstanceContextMap = new HashMap<String, Instance>();
 
 
         terminationPendingStartedTime = new HashMap<String, Long>();
@@ -120,19 +117,6 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
 
     public long getTerminationPendingStartedTimeOfInstance(String instanceId) {
         return terminationPendingStartedTime.get(instanceId);
-    }
-
-    public Map<String, Instance> getInstanceIdToInstanceContextMap() {
-        return instanceIdToInstanceContextMap;
-    }
-
-    public void setInstanceIdToInstanceContextMap(Map<String, Instance> instanceIdToInstanceContextMap) {
-        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
-    }
-
-    public void addInstanceContext(Instance context) {
-        this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
-
     }
 
     public List<Instance> getPendingInstances() {

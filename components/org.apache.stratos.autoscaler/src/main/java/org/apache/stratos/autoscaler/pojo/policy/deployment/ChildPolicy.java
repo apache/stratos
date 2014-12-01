@@ -45,4 +45,14 @@ public class ChildPolicy implements Serializable {
     public void setChildLevelNetworkPartitions(ChildLevelNetworkPartition[] childLevelNetworkPartitions) {
         this.childLevelNetworkPartitions = childLevelNetworkPartitions;
     }
+
+    public ChildLevelNetworkPartition getChildLevelNetworkPartition(String id) {
+        for(ChildLevelNetworkPartition partition : childLevelNetworkPartitions) {
+            if(partition.getId().equals(id)) {
+                return partition;
+            }
+        }
+
+        return null;
+    }
 }

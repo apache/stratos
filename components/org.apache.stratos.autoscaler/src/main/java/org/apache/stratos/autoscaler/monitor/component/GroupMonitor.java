@@ -26,6 +26,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
@@ -36,6 +37,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -47,7 +49,10 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -372,7 +377,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 //Partition partition = algorithm.getNextScaleUpPartitionContext(groupLevelNetworkPartitionContext, this.id);
                 //TODO need to find the partition. partitionId=?
             }
+
             instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
+            GroupInstanceContext instanceContext = new GroupInstanceContext(instanceId);
+            //TODO to add new partitionContext
             instanceIds.add(instanceId);
         }
         startDependency(group, instanceIds);
@@ -411,16 +419,21 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         }
         String partitionId = null;
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
-        if (deploymentPolicyName != null) {
-            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance()
-                    .getDeploymentPolicy(deploymentPolicyName);
-            ChildLevelNetworkPartition networkPartition = deploymentPolicy.
-                    getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
 
+        ChildPolicy policy = PolicyManager.getInstance().
+                getDeploymentPolicyByApplication(group.getApplicationId()).
+                getChildPolicy(group.getUniqueIdentifier());
+
+        ChildLevelNetworkPartition networkPartition = policy.
+                getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
+
+        if(policy != null) {
             AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
-            //Partition partition = algorithm.getNextScaleUpPartitionContext(groupLevelNetworkPartitionContext, this.id);
-            //TODO need to find the partition. partitionId=?
+            /*Partition partition = algorithm.getNextScaleUpPartitionContext(networkPartition.getChildLevelPartitions());
+            //TODO need to find the partition. partitionId=? */
         }
+
+
         instanceId = createGroupInstance(group, parentInstanceId, partitionId, networkPartitionId);
         startDependency(group, instanceId);
     }

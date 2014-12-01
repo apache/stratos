@@ -20,31 +20,28 @@ package org.apache.stratos.autoscaler.context.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
-import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.messaging.domain.topology.Member;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /*
  * It holds the runtime data of a VM cluster
  */
-public class ClusterInstanceContext {
+public class ClusterInstanceContext extends InstanceContext {
 
     private static final Log log = LogFactory.getLog(ClusterInstanceContext.class);
-    private final String id;
-
-
 
     private final String partitionAlgorithm;
-
+    // Map<PartitionId, Partition Context>
+    protected List<ClusterLevelPartitionContext> partitionCtxts;
     //boolean values to keep whether the requests in flight parameters are reset or not
     private boolean rifReset = false, averageRifReset = false, gradientRifReset = false, secondDerivativeRifRest = false;
     //boolean values to keep whether the memory consumption parameters are reset or not
@@ -55,37 +52,25 @@ public class ClusterInstanceContext {
             secondDerivativeLoadAverageRest = false;
     //boolean values to keep whether average requests served per instance parameters are reset or not
     private boolean averageRequestServedPerInstanceReset = false;
-
-
-
     //Following information will keep events details
     private RequestsInFlight requestsInFlight;
     private MemoryConsumption memoryConsumption;
     private LoadAverage loadAverage;
-
     private int scaleDownRequestsCount = 0;
     private float averageRequestsServedPerInstance;
     private float requestsServedPerInstance;
-
     private int minInstanceCount = 0, maxInstanceCount = 0;
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
-
     private int min;
-
-
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-
-    // Map<PartitionId, Partition Context>
-    protected List<ClusterLevelPartitionContext> partitionCtxts;
-
     private ChildLevelPartition[] partitions;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions,
                                   int min) {
 
-        this.id = clusterInstanceId;
+        super(clusterInstanceId);
         this.min = min;
         if (partitions == null) {
             this.partitions = new ChildLevelPartition[0];
@@ -107,27 +92,27 @@ public class ClusterInstanceContext {
 
     }
 
-    public List<ClusterLevelPartitionContext> getPartitionCtxts(){
+    public List<ClusterLevelPartitionContext> getPartitionCtxts() {
         return partitionCtxts;
     }
 
-    public ClusterLevelPartitionContext[] getPartitionCtxtsAsAnArray(){
-
-        return partitionCtxts.toArray(new ClusterLevelPartitionContext[0]);
+    public void setPartitionCtxts(List<ClusterLevelPartitionContext> partitionCtxt) {
+        this.partitionCtxts = partitionCtxt;
     }
 
 //    public ClusterLevelPartitionContext getNetworkPartitionCtxt(String PartitionId) {
 //        return partitionCtxts.get(PartitionId);
 //    }
 
-    public void setPartitionCtxts(List<ClusterLevelPartitionContext> partitionCtxt) {
-        this.partitionCtxts = partitionCtxt;
+    public ClusterLevelPartitionContext[] getPartitionCtxtsAsAnArray() {
+
+        return partitionCtxts.toArray(new ClusterLevelPartitionContext[0]);
     }
 
     public boolean partitionCtxtAvailable(String partitionId) {
 
-        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
                 return true;
             }
         }
@@ -140,8 +125,8 @@ public class ClusterInstanceContext {
 
     public ClusterLevelPartitionContext getPartitionCtxt(String id) {
 
-        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(id)){
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(id)) {
                 return partitionContext;
             }
         }
@@ -152,8 +137,8 @@ public class ClusterInstanceContext {
         log.info("Getting [Partition] " + member.getPartitionId());
         String partitionId = member.getPartitionId();
 
-        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
                 log.info("Returning partition context, of [partition] " + partitionId);
                 return partitionContext;
             }
@@ -388,11 +373,6 @@ public class ClusterInstanceContext {
         this.averageLoadAverageReset = loadAverageReset;
         this.gradientLoadAverageReset = loadAverageReset;
         this.secondDerivativeLoadAverageRest = loadAverageReset;
-    }
-
-
-    public String getId() {
-        return id;
     }
 
    /* public Map<String, ClusterLevelPartitionContext> getPartitionCtxts() {

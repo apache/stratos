@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
@@ -48,8 +49,8 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     //details required for partition selection algorithms
     private int currentPartitionIndex;
 
-    //partitions of this network partition
-    private final List<GroupLevelPartitionContext> partitionCtxts;
+    //group instances kept inside a partition
+    private Map<String, GroupInstanceContext> instanceIdToInstanceContextMap;
 
     public GroupLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
         this.id = id;
@@ -59,13 +60,27 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new ArrayList<GroupLevelPartitionContext>();
         for (Partition partition : partitions) {
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
         }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
+        instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
+
+
+    }
+
+    public Map<String, GroupInstanceContext> getInstanceIdToInstanceContextMap() {
+        return instanceIdToInstanceContextMap;
+    }
+
+    public void setInstanceIdToInstanceContextMap(Map<String, GroupInstanceContext> instanceIdToInstanceContextMap) {
+        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    }
+
+    public void addInstanceContext(GroupInstanceContext context) {
+        this.instanceIdToInstanceContextMap.put(context.getId(), context);
 
     }
 
@@ -134,25 +149,7 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         return id;
     }
 
-    public List<GroupLevelPartitionContext> getPartitionCtxts() {
 
-        return partitionCtxts;
-    }
-
-    public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
-
-
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
-                return partitionContext;
-            }
-        }
-        return null;
-    }
-
-    public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
-        partitionCtxts.add(partitionContext);
-    }
 
     public String getPartitionAlgorithm() {
         return partitionAlgorithm;
@@ -160,26 +157,6 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
 
     public Partition[] getPartitions() {
         return partitions;
-    }
-
-    public int getNonTerminatedMemberCountOfPartition(String partitionId) {
-
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
-                return partitionContext.getNonTerminatedInstanceCount();
-            }
-        }
-        return 0;
-    }
-
-    public int getActiveMemberCount(String currentPartitionId) {
-
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(currentPartitionId)){
-                return partitionContext.getActiveInstanceCount();
-            }
-        }
-        return 0;
     }
 
     public int getScaleDownRequestsCount() {

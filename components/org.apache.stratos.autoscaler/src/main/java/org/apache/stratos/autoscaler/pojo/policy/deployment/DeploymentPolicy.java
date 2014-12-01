@@ -231,4 +231,13 @@ public class DeploymentPolicy implements Serializable{
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
+
+    public ChildPolicy getChildPolicy(String id) {
+        for(ChildPolicy childPolicy : childPolicies) {
+            if (childPolicy.getId().equals(id)) {
+                return childPolicy;
+            }
+        }
+        return null;
+    }
 }

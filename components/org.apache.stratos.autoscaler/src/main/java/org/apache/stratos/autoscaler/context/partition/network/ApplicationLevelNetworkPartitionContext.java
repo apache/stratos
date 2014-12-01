@@ -20,9 +20,11 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,22 +37,23 @@ public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionCon
     private boolean createdOnBurst;
 
     //group instances kept inside a partition
-    private Map<String, ApplicationInstance> instanceIdToInstanceContextMap;
+    private Map<String, ApplicationInstanceContext> instanceIdToInstanceContextMap;
 
     public ApplicationLevelNetworkPartitionContext(String id) {
         this.id = id;
+        this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstanceContext>();
     }
 
-    public Map<String, ApplicationInstance> getInstanceIdToInstanceContextMap() {
+    public Map<String, ApplicationInstanceContext> getInstanceIdToInstanceContextMap() {
         return instanceIdToInstanceContextMap;
     }
 
-    public void setInstanceIdToInstanceContextMap(Map<String, ApplicationInstance> instanceIdToInstanceContextMap) {
+    public void setInstanceIdToInstanceContextMap(Map<String, ApplicationInstanceContext> instanceIdToInstanceContextMap) {
         this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
     }
 
-    public void addInstanceContext(ApplicationInstance context) {
-        this.instanceIdToInstanceContextMap.put(context.getInstanceId(), context);
+    public void addInstanceContext(ApplicationInstanceContext context) {
+        this.instanceIdToInstanceContextMap.put(context.getId(), context);
 
     }
 

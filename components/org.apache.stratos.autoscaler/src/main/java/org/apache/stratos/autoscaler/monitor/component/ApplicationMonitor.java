@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
@@ -212,7 +213,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     ApplicationLevelNetworkPartitionContext context =
                             new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
                     instanceId = createApplicationInstance(application, networkPartition.getId());
-                    context.addInstanceContext(application.getInstanceContexts(instanceId));
+                    ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
+                    context.addInstanceContext(instanceContext);
 
                     this.networkPartitionCtxts.put(context.getId(), context);
 
@@ -251,7 +253,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                                 new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
                         context.setCreatedOnBurst(true);
                         instanceId = createApplicationInstance(application, networkPartition.getId());
-                        context.addInstanceContext(application.getInstanceContexts(instanceId));
+
+                        ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
+                        context.addInstanceContext(instanceContext);
                         this.networkPartitionCtxts.put(context.getId(), context);
                         burstNPFound = true;
                     }
@@ -270,12 +274,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
         String deploymentPolicyName = application.getDeploymentPolicy();
-        /*if (deploymentPolicyName == null) {
-            String msg = "Deployment Policy is not specified to the [Application]:" + appId;
-            log.error(msg);
-            throw new PolicyValidationException(msg);
-        }
-*/      DeploymentPolicy deploymentPolicy = null;
+        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
+                getDeploymentPolicyByApplication(application.getUniqueIdentifier());
         if(deploymentPolicyName != null) {
             deploymentPolicy = PolicyManager.getInstance()
                     .getDeploymentPolicy(deploymentPolicyName);
@@ -284,7 +284,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 log.error(msg);
                 throw new PolicyValidationException(msg);
             }
-            }
+        }
 
         return deploymentPolicy;
     }

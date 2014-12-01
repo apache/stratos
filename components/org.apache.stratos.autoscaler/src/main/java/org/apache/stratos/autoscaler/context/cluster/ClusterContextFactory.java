@@ -28,7 +28,9 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -60,14 +62,14 @@ public class ClusterContextFactory {
         if (log.isDebugEnabled()) {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
-        String deploymentPolicyName;
         DeploymentPolicy deploymentPolicy;
         ApplicationHolder.acquireReadLock();
         try {
             Application application = ApplicationHolder.getApplications().
                     getApplication(cluster.getAppId());
-            deploymentPolicyName = application.getDeploymentPolicy();
-            deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName);
+            deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getAppId());
+            ChildPolicy policy = deploymentPolicy.
+                    getChildPolicy(AutoscalerUtil.getAliasFromClusterId(cluster.getClusterId()));
         } finally {
             ApplicationHolder.releaseReadLock();
         }
