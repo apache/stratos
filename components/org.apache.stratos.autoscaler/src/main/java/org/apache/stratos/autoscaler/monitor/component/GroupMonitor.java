@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetwork
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.monitor.EventHandler;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
@@ -48,22 +47,26 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
  * groups and clusters
  */
-public class GroupMonitor extends ParentComponentMonitor implements EventHandler {
+public class GroupMonitor extends ParentComponentMonitor implements Runnable {
+
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
+
     //whether groupScaling enabled or not
     private boolean groupScalingEnabled;
+
+    private int monitoringIntervalMilliseconds = 60000;
+    //TODO get this from config file
+
     //network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
 
+    private boolean isDestroyed;
 
     /**
      * Constructor of GroupMonitor
@@ -81,6 +84,41 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
         //starting the minimum start able dependencies
         //startMinimumDependencies(group, parentInstanceId);
     }
+
+    @Override
+    public void run() {
+        while (!isDestroyed) {
+            try {
+
+                if (log.isDebugEnabled()) {
+                    log.debug("Group monitor is running : " + this.toString());
+                }
+                monitor();
+            } catch (Exception e) {
+                log.error("Group monitor failed : " + this.toString(), e);
+            }
+            try {
+                Thread.sleep(monitoringIntervalMilliseconds);
+            } catch (InterruptedException ignore) {
+            }
+        }
+
+
+    }
+
+
+    public void monitor() {
+
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                //TODO implement group monitor
+
+            }
+        };
+        monitoringRunnable.run();
+    }
+
 
     /**
      * Will set the status of the monitor based on Topology Group status/child status like scaling
@@ -424,5 +462,9 @@ public class GroupMonitor extends ParentComponentMonitor implements EventHandler
 
     public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {
         this.networkPartitionCtxts.put(clusterLevelNetworkPartitionContext.getId(), clusterLevelNetworkPartitionContext);
+    }
+
+    public void setDestroyed(boolean isDestroyed) {
+        this.isDestroyed = isDestroyed;
     }
 }
