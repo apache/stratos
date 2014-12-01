@@ -16,14 +16,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.iaas.validators;
+package org.apache.stratos.cloud.controller.iaases.validators;
 
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaas.Iaas;
+import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 
 
@@ -31,11 +31,13 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
  * The VCloud {@link PartitionValidator} implementation.
  *
  */
-public class GCEPartitionValidator implements PartitionValidator {
+public class VCloudPartitionValidator implements PartitionValidator {
     
-    private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
     private IaasProvider iaasProvider;
-    private Iaas iaas;
+    @SuppressWarnings("unused")
+	private Iaas iaas;
 
     @Override
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {

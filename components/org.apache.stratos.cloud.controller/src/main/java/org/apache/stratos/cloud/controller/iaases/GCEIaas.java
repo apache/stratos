@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.iaas;
+package org.apache.stratos.cloud.controller.iaases;
 
 import java.util.*;
 
@@ -26,8 +26,8 @@ import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.NetworkInterface;
-import org.apache.stratos.cloud.controller.iaas.validators.GCEPartitionValidator;
-import org.apache.stratos.cloud.controller.iaas.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.GCEPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
@@ -52,14 +52,19 @@ import org.jclouds.googlecomputeengine.domain.Zone;
 import org.jclouds.googlecomputeengine.domain.Operation;
 import org.jclouds.googlecomputeengine.options.AttachDiskOptions;
 import org.jclouds.googlecomputeengine.options.AttachDiskOptions.DiskType;
+
 import com.google.inject.Key;
 import com.google.inject.Injector;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+
 import static org.jclouds.util.Predicates2.retry;
 import static java.util.concurrent.TimeUnit.SECONDS;
+
 import com.google.common.base.Predicate;
+
 import java.util.concurrent.atomic.AtomicReference;
+
 import com.google.common.util.concurrent.Atomics;
 
 public class GCEIaas extends Iaas {

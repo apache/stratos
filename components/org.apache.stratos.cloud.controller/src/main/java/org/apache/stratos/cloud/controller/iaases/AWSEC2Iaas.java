@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.iaas;
+package org.apache.stratos.cloud.controller.iaases;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
@@ -34,8 +34,8 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.NetworkInterface;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.iaas.validators.AWSEC2PartitionValidator;
-import org.apache.stratos.cloud.controller.iaas.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.AWSEC2PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.jclouds.aws.ec2.AWSEC2Api;
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.aws.ec2.features.AWSKeyPairApi;

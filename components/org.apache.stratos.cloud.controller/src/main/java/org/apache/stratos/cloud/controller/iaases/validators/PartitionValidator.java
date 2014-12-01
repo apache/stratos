@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.iaas.validators;
+package org.apache.stratos.cloud.controller.iaases.validators;
 
 import java.util.Properties;
 

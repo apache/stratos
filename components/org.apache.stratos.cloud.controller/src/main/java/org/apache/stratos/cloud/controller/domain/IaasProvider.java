@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.domain;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
-import org.apache.stratos.cloud.controller.iaas.Iaas;
+import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
@@ -45,7 +45,7 @@ public class IaasProvider implements Serializable{
 
 
     /**
-     * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.iaas.Iaas}
+     * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.iaases.Iaas}
      */
     private String className;
     
@@ -78,7 +78,7 @@ public class IaasProvider implements Serializable{
     private byte[] payload;
     
     /** 
-     * Corresponding {@link org.apache.stratos.cloud.controller.iaas.Iaas} implementation
+     * Corresponding {@link org.apache.stratos.cloud.controller.iaases.Iaas} implementation
      */
     private transient Iaas iaas;
     

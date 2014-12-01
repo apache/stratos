@@ -1,4 +1,4 @@
-package org.apache.stratos.cloud.controller.iaas;
+package org.apache.stratos.cloud.controller.iaases;
 
 
 import org.apache.commons.lang.StringUtils;
@@ -11,8 +11,8 @@ import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.iaas.validators.CloudstackPartitionValidator;
-import org.apache.stratos.cloud.controller.iaas.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.CloudstackPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.jclouds.cloudstack.CloudStackApi;
 import org.jclouds.cloudstack.compute.options.CloudStackTemplateOptions;
 import org.jclouds.cloudstack.domain.*;

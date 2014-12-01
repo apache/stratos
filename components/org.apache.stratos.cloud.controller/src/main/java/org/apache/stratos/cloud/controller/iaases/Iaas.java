@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.iaas;
+package org.apache.stratos.cloud.controller.iaases;
 
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -25,7 +25,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.iaas.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 
 /**
  * All IaaSes that are going to support by Cloud Controller, should extend this abstract class.
