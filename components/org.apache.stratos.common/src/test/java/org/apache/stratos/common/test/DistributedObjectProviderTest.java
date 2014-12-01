@@ -19,7 +19,10 @@
 
 package org.apache.stratos.common.test;
 
+import com.hazelcast.core.Hazelcast;
+import com.hazelcast.core.HazelcastInstance;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -30,13 +33,32 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+/**
+ * Distributed object provider unit tests.
+ */
 public class DistributedObjectProviderTest {
+
+    private static HazelcastInstance hazelcastInstance;
+
+    @BeforeClass
+    public static void setUpClass() {
+        hazelcastInstance = Hazelcast.newHazelcastInstance();
+    }
 
     @Test
     public void testPutToMapLocal() {
         DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
-        Map<String, String> map = provider.getMap("MAP1");
+        testPutToMap(provider);
+    }
 
+    @Test
+    public void testPutToMapDistributed() {
+        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        testPutToMap(provider);
+    }
+
+    private void testPutToMap(DistributedObjectProvider provider) {
+        Map<String, String> map = provider.getMap("MAP1");
         provider.putToMap(map, "key1", "value1");
         assertEquals(map.get("key1"), "value1");
     }
@@ -44,8 +66,17 @@ public class DistributedObjectProviderTest {
     @Test
     public void testRemoveFromMapLocal() {
         DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
-        Map<String, String> map = provider.getMap("MAP1");
+        testRemoveFromMap(provider);
+    }
 
+    @Test
+    public void testRemoveFromMapDistributed() {
+        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        testRemoveFromMap(provider);
+    }
+
+    private void testRemoveFromMap(DistributedObjectProvider provider) {
+        Map<String, String> map = provider.getMap("MAP1");
         provider.putToMap(map, "key1", "value1");
         assertEquals(map.get("key1"), "value1");
         provider.removeFromMap(map, "key1");
@@ -55,8 +86,17 @@ public class DistributedObjectProviderTest {
     @Test
     public void testAddToListLocal() {
         DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
-        List list = provider.getList("LIST1");
+        testAddToList(provider);
+    }
 
+    @Test
+    public void testAddToListDistributed() {
+        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        testAddToList(provider);
+    }
+
+    private void testAddToList(DistributedObjectProvider provider) {
+        List list = provider.getList("LIST1");
         String value1 = "value1";
         provider.addToList(list, value1);
         assertTrue(list.contains(value1));
@@ -65,8 +105,17 @@ public class DistributedObjectProviderTest {
     @Test
     public void testRemoveFromListLocal() {
         DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
-        List list = provider.getList("LIST1");
+        testRemovalFromList(provider);
+    }
 
+    @Test
+    public void testRemoveFromListDistributed() {
+        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        testRemovalFromList(provider);
+    }
+
+    private void testRemovalFromList(DistributedObjectProvider provider) {
+        List list = provider.getList("LIST1");
         String value1 = "value1";
         provider.addToList(list, value1);
         assertTrue(list.contains(value1));

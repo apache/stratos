@@ -58,6 +58,10 @@ public class DistributedObjectProvider implements Serializable {
     }
 
     private void releaseDistributedLock(ILock lock) {
+        if(lock == null) {
+            return;
+        }
+
         if (log.isDebugEnabled()) {
             log.debug(String.format("Releasing distributed lock for %s...", lock.getKey()));
         }
@@ -105,8 +109,9 @@ public class DistributedObjectProvider implements Serializable {
          if(clustered) {
              ILock lock = null;
              try {
-                 lock = acquireDistributedLock(map);
-                 ((IMap)map).set(key, value);
+                 IMap imap = (IMap) map;
+                 lock = acquireDistributedLock(imap.getName());
+                 imap.set(key, value);
              } finally {
                  releaseDistributedLock(lock);
              }
@@ -124,8 +129,9 @@ public class DistributedObjectProvider implements Serializable {
         if(clustered) {
             ILock lock = null;
             try {
-                lock = acquireDistributedLock(map);
-                ((IMap)map).delete(key);
+                IMap imap = (IMap) map;
+                lock = acquireDistributedLock(imap.getName());
+                imap.delete(key);
             } finally {
                 releaseDistributedLock(lock);
             }
@@ -143,8 +149,9 @@ public class DistributedObjectProvider implements Serializable {
         if(clustered) {
             ILock lock = null;
             try {
-                lock = acquireDistributedLock(list);
-                ((IList)list).add(value);
+                IList ilist = (IList) list;
+                lock = acquireDistributedLock(ilist.getName());
+                ilist.add(value);
             } finally {
                 releaseDistributedLock(lock);
             }
@@ -162,8 +169,9 @@ public class DistributedObjectProvider implements Serializable {
         if(clustered) {
             ILock lock = null;
             try {
-                lock = acquireDistributedLock(list);
-                ((IList)list).remove(value);
+                IList ilist = (IList) list;
+                lock = acquireDistributedLock(ilist.getName());
+                ilist.remove(value);
             } finally {
                 releaseDistributedLock(lock);
             }
