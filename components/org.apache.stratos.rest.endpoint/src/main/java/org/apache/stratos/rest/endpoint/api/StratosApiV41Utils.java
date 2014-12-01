@@ -172,12 +172,12 @@ public class StratosApiV41Utils {
         applicationContext.setTeantAdminUsername(userName);
 
         if (appDefinition.getProperty() != null) {
-            org.apache.stratos.common.Properties properties = new org.apache.stratos.common.Properties();
+            org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
             for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : appDefinition.getProperty()) {
-                Property property = new Property();
+                org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
                 property.setName(propertyBean.getName());
                 property.setValue(propertyBean.getValue());
-                properties.addProperty(property);
+                properties.addProperties(property);
             }
             applicationContext.setProperties(properties);
         }
@@ -763,7 +763,7 @@ public class StratosApiV41Utils {
                     cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
                     if (cartridgeInfo.getProperties() != null) {
-                        for (Property property : cartridgeInfo.getProperties()) {
+                        for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo.getProperties()) {
                             if (property.getName().equals("load.balancer")) {
                                 cartridge.setLoadBalancer(true);
                             }
@@ -1081,7 +1081,7 @@ public class StratosApiV41Utils {
                     .getPortMappings());
 
             if (subscription.getCartridgeInfo().getProperties() != null) {
-                for (Property property : subscription.getCartridgeInfo().getProperties()) {
+                for (org.apache.stratos.cloud.controller.stub.Property property : subscription.getCartridgeInfo().getProperties()) {
                     if (property.getName().equals("load.balancer")) {
                         cartridge.setLoadBalancer(true);
                     }
@@ -1620,7 +1620,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup =
+            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup =
                     PojoConverter.convertToASKubernetesGroupPojo(kubernetesGroupBean);
 
             try {
@@ -1642,7 +1642,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
                     PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
 
             try {
@@ -1667,7 +1667,7 @@ public class StratosApiV41Utils {
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.common.kubernetes.KubernetesMaster kubernetesMaster =
+            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster =
                     PojoConverter.convertToASKubernetesMasterPojo(kubernetesMasterBean);
 
             try {
@@ -1693,7 +1693,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.common.kubernetes.KubernetesGroup[]
+                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[]
                         kubernetesGroups = autoscalerServiceClient.getAvailableKubernetesGroups();
                 return PojoConverter.populateKubernetesGroupsPojo(kubernetesGroups);
 
@@ -1710,7 +1710,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.common.kubernetes.KubernetesGroup
+                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup
                         kubernetesGroup = autoscalerServiceClient.getKubernetesGroup(kubernetesGroupId);
                 return PojoConverter.populateKubernetesGroupPojo(kubernetesGroup);
 
@@ -1769,7 +1769,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.common.kubernetes.KubernetesHost[]
+                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
                         kubernetesHosts = autoscalerServiceClient.getKubernetesHosts(kubernetesGroupId);
 
                 List<KubernetesHost> arrayList = PojoConverter.populateKubernetesHostsPojo(kubernetesHosts);
@@ -1792,7 +1792,7 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
-                org.apache.stratos.common.kubernetes.KubernetesMaster
+                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
                         kubernetesMaster = autoscalerServiceClient.getKubernetesMaster(kubernetesGroupId);
                 return PojoConverter.populateKubernetesMasterPojo(kubernetesMaster);
 
@@ -1811,7 +1811,7 @@ public class StratosApiV41Utils {
     public static boolean updateKubernetesHost(KubernetesHost kubernetesHostBean) throws RestAPIException {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
-            org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
                     PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
             try {
                 return autoscalerServiceClient.updateKubernetesHost(kubernetesHost);

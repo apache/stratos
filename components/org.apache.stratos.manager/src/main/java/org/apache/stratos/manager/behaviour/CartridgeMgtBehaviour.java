@@ -38,7 +38,6 @@ import org.apache.stratos.manager.subscriber.Subscriber;
 import org.apache.stratos.manager.subscription.utils.CartridgeSubscriptionUtils;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -92,18 +91,26 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
         // get the payload parameters defined in the cartridge definition file for this cartridge type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
-            for (org.apache.stratos.common.Property property : cartridgeInfo.getProperties()) {
-                // check if a property is related to the payload. Currently this is done by checking if the
-                // property name starts with 'payload_parameter.' suffix. If so the payload param name will
-                // be taken as the substring from the index of '.' to the end of the property name.
-                if (property.getName()
-                        .startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
-                    String payloadParamName = property.getName();
-                    String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
-                    if("DEPLOYMENT".equals(payloadParamSubstring)) {
-                    	isDeploymentParam = true;
+            org.apache.stratos.common.Properties cartridgeProps = ApplicationManagementUtil
+                    .toCommonProperties(cartridgeInfo.getProperties());
+
+            if (cartridgeProps != null) {
+
+                for (org.apache.stratos.common.Property property : cartridgeProps.getProperties()) {
+                    // check if a property is related to the payload. Currently
+                    // this is done by checking if the
+                    // property name starts with 'payload_parameter.' suffix. If
+                    // so the payload param name will
+                    // be taken as the substring from the index of '.' to the
+                    // end of the property name.
+                    if (property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
+                        String payloadParamName = property.getName();
+                        String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
+                        if ("DEPLOYMENT".equals(payloadParamSubstring)) {
+                            isDeploymentParam = true;
+                        }
+                        payloadData.add(payloadParamSubstring, property.getValue());
                     }
-                    payloadData.add(payloadParamSubstring, property.getValue());
                 }
             }
         }

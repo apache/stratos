@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.stub.domain.Dependencies;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.rmi.RemoteException;
@@ -128,7 +129,7 @@ public class CloudControllerServiceClient {
 	    registrant.setCartridgeType(cartridgeType);
 	    registrant.setTenantRange(tenantRange);
 	    registrant.setHostName(hostName);
-	    registrant.setProperties(properties);
+	    registrant.setProperties(ApplicationManagementUtil.toCCStubProperties(properties));
 	    registrant.setPayload(payload);
 	    registrant.setAutoScalerPolicyName(autoscalorPolicyName);
         registrant.setDeploymentPolicyName(deploymentPolicyName);
@@ -136,27 +137,6 @@ public class CloudControllerServiceClient {
 		return stub.registerService(registrant);
 
 	}
-
-    @SuppressWarnings("unused")
-    private Properties
-        extractProperties(java.util.Properties properties) {
-        Properties props = new Properties();
-        if (properties != null) {
-
-            for (Iterator<Object> iterator = properties.keySet().iterator(); iterator.hasNext();) {
-                String key = (String) iterator.next();
-                String value = properties.getProperty(key);
-
-                Property prop = new Property();
-                prop.setName(key);
-                prop.setValue(value);
-
-                props.addProperties(prop);
-
-            }
-        }
-        return props;
-    }
 
     public void terminateAllInstances(String clusterId) throws RemoteException, 
     CloudControllerServiceInvalidClusterExceptionException {

@@ -99,30 +99,30 @@ public class LBCreationSubscriptionFilter implements SubscriptionFilter {
                     lbCartridgeSubscriptionProperties.setProperties(lbProperperties.toArray(new Property[lbProperperties.size()]));
                     for (Property property : lbProperperties){
                         if (StratosConstants.LOAD_BALANCER_REF.equals(property.getName())) {
-                            filterProperties.addProperties(property);
+                            filterProperties.addProperty(property);
                         }
                     }
                 }
 
-				if (lbCartridgeSubscription != null) {
-					// determine the LB cluster id, if available
-					Property lbClusterIdProp = new Property();
-					lbClusterIdProp.setName(CartridgeConstants.LB_CLUSTER_ID);
-					lbClusterIdProp.setValue(lbCartridgeSubscription
-							.getClusterDomain());
-					lbCartridgeSubscriptionProperties
-							.addProperties(lbClusterIdProp);
-                    filterProperties.addProperties(lbClusterIdProp);
-
-					// register LB cartridge subscription
-					if (log.isDebugEnabled()) {
-						log.debug(" Registering LB Cartridge subscription ");
-					}
-					CartridgeSubscriptionManager.registerCartridgeSubscription(
-							lbCartridgeSubscription,
-							lbCartridgeSubscriptionProperties,
-							subscriptionData.getPersistence());
-				}
+//				if (lbCartridgeSubscription != null) {
+//					// determine the LB cluster id, if available
+//					Property lbClusterIdProp = new Property();
+//					lbClusterIdProp.setName(CartridgeConstants.LB_CLUSTER_ID);
+//					lbClusterIdProp.setValue(lbCartridgeSubscription
+//							.getClusterDomain());
+//					lbCartridgeSubscriptionProperties
+//							.addProperty(lbClusterIdProp);
+//                    filterProperties.addProperty(lbClusterIdProp);
+//
+//					// register LB cartridge subscription
+//					if (log.isDebugEnabled()) {
+//						log.debug(" Registering LB Cartridge subscription ");
+//					}
+//					CartridgeSubscriptionManager.registerCartridgeSubscription(
+//							lbCartridgeSubscription,
+//							lbCartridgeSubscriptionProperties,
+//							subscriptionData.getPersistence());
+//				}
 			}
 		} catch (Exception e) {
         	log.error(e.getMessage(), e);

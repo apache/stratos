@@ -583,7 +583,7 @@ public class StratosApiV40Utils {
                     cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
-                        for(Property property: cartridgeInfo.getProperties()) {
+                        for(org.apache.stratos.cloud.controller.stub.Property property: cartridgeInfo.getProperties()) {
                             if(property.getName().equals("load.balancer")) {
                                 cartridge.setLoadBalancer(true);
                             }
@@ -898,7 +898,7 @@ public class StratosApiV40Utils {
                     .getPortMappings());
 
             if(subscription.getCartridgeInfo().getLbConfig() != null && subscription.getCartridgeInfo().getProperties() != null) {
-                for(Property property: subscription.getCartridgeInfo().getProperties()) {
+                for(org.apache.stratos.cloud.controller.stub.Property property: subscription.getCartridgeInfo().getProperties()) {
                     if(property.getName().equals("load.balancer")) {
                         cartridge.setLoadBalancer(true);
                     }

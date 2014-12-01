@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.payload.BasicPayloadData;
 import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.payload.PayloadFactory;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 import org.apache.stratos.common.Property;
@@ -209,18 +210,25 @@ public class ApplicationUtils {
         // get the payload parameters defined in the cartridgeInfo definition file for this cartridgeInfo type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
-            for (Property propertyEntry : cartridgeInfo.getProperties()) {
-                // check if a property is related to the payload. Currently this is done by checking if the
-                // property name starts with 'payload_parameter.' suffix. If so the payload param name will
-                // be taken as the substring from the index of '.' to the end of the property name.
-                if (propertyEntry.getName()
-                        .startsWith("payload_parameter.")) {
-                    String payloadParamName = propertyEntry.getName();
-                    String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
-                    if("DEPLOYMENT".equals(payloadParamSubstring)) {
-                        isDeploymentParam = true;
+            org.apache.stratos.common.Properties cartridgeProps = AutoscalerUtil.toCommonProperties(cartridgeInfo.getProperties());
+            
+            if (cartridgeProps != null) {
+
+                for (Property propertyEntry : cartridgeProps.getProperties()) {
+                    // check if a property is related to the payload. Currently
+                    // this is done by checking if the
+                    // property name starts with 'payload_parameter.' suffix. If
+                    // so the payload param name will
+                    // be taken as the substring from the index of '.' to the
+                    // end of the property name.
+                    if (propertyEntry.getName().startsWith("payload_parameter.")) {
+                        String payloadParamName = propertyEntry.getName();
+                        String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
+                        if ("DEPLOYMENT".equals(payloadParamSubstring)) {
+                            isDeploymentParam = true;
+                        }
+                        payloadData.add(payloadParamSubstring, propertyEntry.getValue());
                     }
-                    payloadData.add(payloadParamSubstring, propertyEntry.getValue());
                 }
             }
         }

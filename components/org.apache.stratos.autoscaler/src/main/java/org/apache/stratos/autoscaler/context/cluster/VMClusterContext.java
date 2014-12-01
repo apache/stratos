@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
@@ -322,7 +323,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
         partition1.setId(partition.getId());
         partition1.setProvider(partition.getProvider());
-        partition1.setProperties(partition.getProperties());
+        partition1.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
         return partition1;
     }

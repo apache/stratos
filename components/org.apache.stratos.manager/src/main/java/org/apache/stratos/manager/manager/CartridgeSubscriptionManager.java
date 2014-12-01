@@ -318,7 +318,7 @@ public class CartridgeSubscriptionManager {
 		if (propertiesReturnedByFilters.getProperties() != null && propertiesReturnedByFilters.getProperties().length > 0) {
 			for (Property prop : propertiesReturnedByFilters.getProperties()) {
 
-				serviceCartridgeSubscriptionProperties.addProperties(prop);
+				serviceCartridgeSubscriptionProperties.addProperty(prop);
 			}
 		}
 
@@ -326,7 +326,7 @@ public class CartridgeSubscriptionManager {
         if (persistenceMappingProperties != null && persistenceMappingProperties.getProperties().length > 0) {
             // add the properties to send to CC via register method
             for (Property persistenceMappingProperty : persistenceMappingProperties.getProperties()) {
-                serviceCartridgeSubscriptionProperties.addProperties(persistenceMappingProperty);
+                serviceCartridgeSubscriptionProperties.addProperty(persistenceMappingProperty);
             }
         }
 
@@ -358,7 +358,7 @@ public class CartridgeSubscriptionManager {
     	for (Property property : newProperties.getProperties()) {
     		if (property != null) {
     			
-    			propertiesReturnedByFilters.addProperties(property);
+    			propertiesReturnedByFilters.addProperty(property);
     		}
 		}
     	

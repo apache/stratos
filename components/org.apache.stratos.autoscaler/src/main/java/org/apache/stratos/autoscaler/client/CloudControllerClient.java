@@ -33,6 +33,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.*;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
@@ -132,7 +133,7 @@ public class CloudControllerClient {
 
         partition1.setId(partition.getId());
         partition1.setProvider(partition.getProvider());
-        partition1.setProperties(partition.getProperties());
+        partition1.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
         return partition1;
     }
@@ -200,7 +201,7 @@ public class CloudControllerClient {
 
             memberContextProps.addProperty(isPrimaryProp);
             memberContextProps.addProperty(minCountProp);
-            member.setProperties(memberContextProps);
+            member.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
 
 
             long startTime = System.currentTimeMillis();
@@ -261,7 +262,7 @@ public class CloudControllerClient {
             dto.setTenantRange(context.getTenantRange());
             dto.setTextPayload(context.getTextPayload());
             dto.setLbCluster(context.isLbCluster());
-            dto.setProperties(context.getProperties());
+            dto.setProperties(AutoscalerUtil.toStubProperties(context.getProperties()));
             contextDTOs.add(dto);
         }
 
@@ -373,7 +374,7 @@ public class CloudControllerClient {
             kubernetesClusterPortRangeProps.setName(StratosConstants.KUBERNETES_PORT_RANGE);
             kubernetesClusterPortRangeProps.setValue(portRange);
             memberContextProps.addProperty(kubernetesClusterPortRangeProps);
-            context.setProperties(memberContextProps);
+            context.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
             long startTime = System.currentTimeMillis();
             MemberContext[] memberContexts = stub.startContainers(context);
 

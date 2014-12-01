@@ -23,6 +23,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ap
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildPolicyHolder;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -155,7 +156,7 @@ public class DeploymentPolicy implements Serializable{
 
         partition1.setId(partition.getId());
         partition1.setProvider(partition.getProvider());
-        partition1.setProperties(partition.getProperties());
+        partition1.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
         return partition1;
     }

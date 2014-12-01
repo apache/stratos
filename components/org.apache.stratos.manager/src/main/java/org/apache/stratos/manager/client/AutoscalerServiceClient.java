@@ -25,17 +25,17 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
+import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
+import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.*;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.KubernetesHost;
-import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.rmi.RemoteException;
@@ -311,6 +311,6 @@ public class AutoscalerServiceClient {
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
-        stub.updateClusterMonitor(clusterId, properties);
+        stub.updateClusterMonitor(clusterId, ApplicationManagementUtil.toAutoscalerStubProperties(properties));
     }
 }

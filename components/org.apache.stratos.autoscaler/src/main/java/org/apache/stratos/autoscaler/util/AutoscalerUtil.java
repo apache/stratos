@@ -238,6 +238,54 @@ public class AutoscalerUtil {
         properties.setProperties(propertyArray);
         return properties;
     }
+    
+    public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
+            org.apache.stratos.common.Properties properties) {
+        org.apache.stratos.cloud.controller.stub.Properties stubProps = new org.apache.stratos.cloud.controller.stub.Properties();
+
+        if (properties != null && properties.getProperties() != null) {
+
+            for (Property property : properties.getProperties()) {
+                if ((property != null) && (property.getValue() != null)) {
+                    org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
+                    newProperty.setName(property.getName());
+                    newProperty.setValue(property.getValue());
+                    stubProps.addProperties(newProperty);
+                }
+            }
+
+        }
+
+        return stubProps;
+    }
+
+    public static org.apache.stratos.common.Properties toCommonProperties(
+            org.apache.stratos.cloud.controller.stub.Properties properties) {
+        org.apache.stratos.common.Properties commonProps = new org.apache.stratos.common.Properties();
+
+        if (properties != null && properties.getProperties() != null) {
+
+            for (org.apache.stratos.cloud.controller.stub.Property property : properties.getProperties()) {
+                if ((property != null) && (property.getValue() != null)) {
+                    Property newProperty = new Property();
+                    newProperty.setName(property.getName());
+                    newProperty.setValue(property.getValue());
+                    commonProps.addProperty(newProperty);
+                }
+            }
+
+        }
+
+        return commonProps;
+    }
+
+    public static org.apache.stratos.common.Properties toCommonProperties(
+            org.apache.stratos.cloud.controller.stub.Property[] propertyArray) {
+
+        org.apache.stratos.cloud.controller.stub.Properties properties = new org.apache.stratos.cloud.controller.stub.Properties();
+        properties.setProperties(propertyArray);
+        return toCommonProperties(properties);
+    }
 
 //    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
 //        if (null == cluster) {

@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
@@ -93,7 +94,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {
-        Properties props = memberContext.getProperties();
+        Properties props = AutoscalerUtil.toCommonProperties(memberContext.getProperties());
         if (log.isDebugEnabled()) {
             log.debug(" Properties [" + props + "] ");
         }

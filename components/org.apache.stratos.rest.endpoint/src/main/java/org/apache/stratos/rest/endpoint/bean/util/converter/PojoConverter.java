@@ -108,7 +108,7 @@ public class PojoConverter {
         }
         //Properties
         if (cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
-            cartridgeConfig.setProperties(getProperties(cartridgeDefinitionBean.property));
+            cartridgeConfig.setProperties(getCCProperties(cartridgeDefinitionBean.property));
         }
 
         if (cartridgeDefinitionBean.getExportingProperties() != null) {
@@ -143,7 +143,7 @@ public class PojoConverter {
         LoadbalancerConfig lbConfig = new LoadbalancerConfig();
         lbConfig.setType(loadBalancer.type);
         if (loadBalancer.property != null && !loadBalancer.property.isEmpty()) {
-            lbConfig.setProperties(getProperties(loadBalancer.property));
+            lbConfig.setProperties(getCCProperties(loadBalancer.property));
         }
         return lbConfig;
     }
@@ -186,7 +186,7 @@ public class PojoConverter {
 
             if (iaasProviderBeansArray[i].property != null && !iaasProviderBeansArray[i].property.isEmpty()) {
                 //set the Properties instance to IaasConfig instance
-                iaasConfig.setProperties(getProperties(iaasProviderBeansArray[i].property));
+                iaasConfig.setProperties(getCCProperties(iaasProviderBeansArray[i].property));
             }
 
             if (iaasProviderBeansArray[i].networkInterfaces != null && !iaasProviderBeansArray[i].networkInterfaces.isEmpty()) {
@@ -242,9 +242,28 @@ public class PojoConverter {
         properties.setProperties(propertyArray);
         return properties;
     }
+    
+    public static org.apache.stratos.cloud.controller.stub.Properties getCCProperties(List<PropertyBean> propertyBeans) {
+
+        //convert to an array
+        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+        propertyBeans.toArray(propertyBeansArray);
+        org.apache.stratos.cloud.controller.stub.Property[] propertyArray = new org.apache.stratos.cloud.controller.stub.Property[propertyBeansArray.length];
+
+        for (int j = 0; j < propertyBeansArray.length; j++) {
+            org.apache.stratos.cloud.controller.stub.Property property = new org.apache.stratos.cloud.controller.stub.Property();
+            property.setName(propertyBeansArray[j].name);
+            property.setValue(propertyBeansArray[j].value);
+            propertyArray[j] = property;
+        }
+
+        org.apache.stratos.cloud.controller.stub.Properties properties = new org.apache.stratos.cloud.controller.stub.Properties();
+        properties.setProperties(propertyArray);
+        return properties;
+    }
 
 
-    public static Properties getASProperties(List<PropertyBean> propertyBeans) {
+    public static org.apache.stratos.autoscaler.stub.Properties getASProperties(List<PropertyBean> propertyBeans) {
         if (propertyBeans == null || propertyBeans.isEmpty()) {
             return null;
         }
@@ -252,16 +271,16 @@ public class PojoConverter {
         //convert to an array
         PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
         propertyBeans.toArray(propertyBeansArray);
-        Property[] propertyArray = new Property[propertyBeansArray.length];
+        org.apache.stratos.autoscaler.stub.Property[] propertyArray = new org.apache.stratos.autoscaler.stub.Property[propertyBeansArray.length];
 
         for (int j = 0; j < propertyBeansArray.length; j++) {
-            Property property = new Property();
+            org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
             property.setName(propertyBeansArray[j].name);
             property.setValue(propertyBeansArray[j].value);
             propertyArray[j] = property;
         }
 
-        Properties properties = new Properties();
+        org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
         properties.setProperties(propertyArray);
         return properties;
     }
@@ -295,7 +314,7 @@ public class PojoConverter {
         partition.setProvider(partitionBean.provider);
 
         if (partitionBean.property != null && !partitionBean.property.isEmpty()) {
-            partition.setProperties(getProperties(partitionBean.property));
+            partition.setProperties(getASProperties(partitionBean.property));
         }
 
         return partition;
@@ -586,6 +605,22 @@ public class PojoConverter {
         }
         return propertyBeans;
     }
+    
+    private static List<PropertyBean> getPropertyBeans(org.apache.stratos.cloud.controller.stub.Properties properties) {
+
+        List<PropertyBean> propertyBeans = null;
+        if (properties.getProperties() != null && properties.getProperties().length != 0) {
+            org.apache.stratos.cloud.controller.stub.Property[] propertyArr = properties.getProperties();
+            propertyBeans = new ArrayList<PropertyBean>();
+            for (int i = 0; i < propertyArr.length; i++) {
+                PropertyBean propertyBean = new PropertyBean();
+                propertyBean.name = propertyArr[i].getName();
+                propertyBean.value = propertyArr[i].getValue();
+                propertyBeans.add(propertyBean);
+            }
+        }
+        return propertyBeans;
+    }
 
     private static List<PropertyBean> getPropertyBeans(java.util.Properties properties) {
 
@@ -784,10 +819,10 @@ public class PojoConverter {
         return serviceDefinitionBeans;
     }
 
-    public static org.apache.stratos.common.kubernetes.KubernetesGroup convertToASKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
+    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup convertToASKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
 
-        org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup = new
-                org.apache.stratos.common.kubernetes.KubernetesGroup();
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup = new
+                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup();
 
         kubernetesGroup.setGroupId(kubernetesGroupBean.getGroupId());
         kubernetesGroup.setDescription(kubernetesGroupBean.getDescription());
@@ -799,13 +834,13 @@ public class PojoConverter {
         return kubernetesGroup;
     }
 
-    private static org.apache.stratos.common.kubernetes.KubernetesHost[] convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
+    private static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
         if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
             return null;
         }
         int kubernetesHostCount = kubernetesHosts.size();
-        org.apache.stratos.common.kubernetes.KubernetesHost[]
-                kubernetesHostsArr = new org.apache.stratos.common.kubernetes.KubernetesHost[kubernetesHostCount];
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
+                kubernetesHostsArr = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[kubernetesHostCount];
         for (int i = 0; i < kubernetesHostCount; i++) {
             KubernetesHost kubernetesHostBean = kubernetesHosts.get(i);
             kubernetesHostsArr[i] = convertToASKubernetesHostPojo(kubernetesHostBean);
@@ -814,24 +849,24 @@ public class PojoConverter {
     }
 
 
-    private static org.apache.stratos.common.kubernetes.PortRange convertToASPortRange(PortRange portRangeBean) {
+    private static org.apache.stratos.autoscaler.stub.kubernetes.PortRange convertToASPortRange(PortRange portRangeBean) {
         if (portRangeBean == null) {
             return null;
         }
-        org.apache.stratos.common.kubernetes.PortRange
-                portRange = new org.apache.stratos.common.kubernetes.PortRange();
+        org.apache.stratos.autoscaler.stub.kubernetes.PortRange
+                portRange = new org.apache.stratos.autoscaler.stub.kubernetes.PortRange();
         portRange.setLower(portRangeBean.getLower());
         portRange.setUpper(portRangeBean.getUpper());
         return portRange;
     }
 
-    public static org.apache.stratos.common.kubernetes.KubernetesHost convertToASKubernetesHostPojo(KubernetesHost kubernetesHostBean) {
+    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost convertToASKubernetesHostPojo(KubernetesHost kubernetesHostBean) {
         if (kubernetesHostBean == null) {
             return null;
         }
 
-        org.apache.stratos.common.kubernetes.KubernetesHost
-                kubernetesHost = new org.apache.stratos.common.kubernetes.KubernetesHost();
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost
+                kubernetesHost = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost();
         kubernetesHost.setHostId(kubernetesHostBean.getHostId());
         kubernetesHost.setHostIpAddress(kubernetesHostBean.getHostIpAddress());
         kubernetesHost.setHostname(kubernetesHostBean.getHostname());
@@ -840,13 +875,13 @@ public class PojoConverter {
         return kubernetesHost;
     }
 
-    public static org.apache.stratos.common.kubernetes.KubernetesMaster convertToASKubernetesMasterPojo(KubernetesMaster kubernetesMasterBean) {
+    public static org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster convertToASKubernetesMasterPojo(KubernetesMaster kubernetesMasterBean) {
         if (kubernetesMasterBean == null) {
             return null;
         }
 
-        org.apache.stratos.common.kubernetes.KubernetesMaster
-                kubernetesMaster = new org.apache.stratos.common.kubernetes.KubernetesMaster();
+        org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
+                kubernetesMaster = new org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster();
         kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
         kubernetesMaster.setHostIpAddress(kubernetesMasterBean.getHostIpAddress());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
@@ -856,7 +891,7 @@ public class PojoConverter {
         return kubernetesMaster;
     }
 
-    public static KubernetesGroup[] populateKubernetesGroupsPojo(org.apache.stratos.common.kubernetes.KubernetesGroup[] kubernetesGroups) {
+    public static KubernetesGroup[] populateKubernetesGroupsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[] kubernetesGroups) {
 
         if (kubernetesGroups == null) {
             return null;
@@ -868,7 +903,7 @@ public class PojoConverter {
         return kubernetesGroupsBean;
     }
 
-    public static KubernetesGroup populateKubernetesGroupPojo(org.apache.stratos.common.kubernetes.KubernetesGroup kubernetesGroup) {
+    public static KubernetesGroup populateKubernetesGroupPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup) {
         if (kubernetesGroup == null) {
             return null;
         }
@@ -882,7 +917,7 @@ public class PojoConverter {
         return kubernetesGroupBean;
     }
 
-    public static KubernetesMaster populateKubernetesMasterPojo(org.apache.stratos.common.kubernetes.KubernetesMaster kubernetesMaster) {
+    public static KubernetesMaster populateKubernetesMasterPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster) {
         if (kubernetesMaster == null) {
             return null;
         }
@@ -895,7 +930,7 @@ public class PojoConverter {
         return kubernetesMasterBean;
     }
 
-    public static List<KubernetesHost> populateKubernetesHostsPojo(org.apache.stratos.common.kubernetes.KubernetesHost[] kubernetesHosts) {
+    public static List<KubernetesHost> populateKubernetesHostsPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[] kubernetesHosts) {
         if (kubernetesHosts == null) {
             return null;
         }
@@ -906,7 +941,7 @@ public class PojoConverter {
         return kubernetesHostList;
     }
 
-    private static KubernetesHost populateKubernetesHostPojo(org.apache.stratos.common.kubernetes.KubernetesHost kubernetesHost) {
+    private static KubernetesHost populateKubernetesHostPojo(org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost) {
         if (kubernetesHost == null) {
             return null;
         }
@@ -918,7 +953,7 @@ public class PojoConverter {
         return kubernetesHostBean;
     }
 
-    private static List<PropertyBean> populateASProperties(Properties properties) {
+    private static List<PropertyBean> populateASProperties(org.apache.stratos.autoscaler.stub.Properties properties) {
         if (properties == null || properties.getProperties() == null) {
             return null;
         }
@@ -929,7 +964,7 @@ public class PojoConverter {
         return propertyBeanList;
     }
 
-    private static PropertyBean populateASProperty(Property propertyE) {
+    private static PropertyBean populateASProperty(org.apache.stratos.autoscaler.stub.Property propertyE) {
         if (propertyE == null) {
             return null;
         }
@@ -939,7 +974,7 @@ public class PojoConverter {
         return propertyBean;
     }
 
-    private static PortRange populatePortRangePojo(org.apache.stratos.common.kubernetes.PortRange portRange) {
+    private static PortRange populatePortRangePojo(org.apache.stratos.autoscaler.stub.kubernetes.PortRange portRange) {
         if (portRange == null) {
             return null;
         }
@@ -1001,12 +1036,12 @@ public class PojoConverter {
             subscribableInfoContext.setRepoPassword(subscribableInfo.getRepoPassword());
             subscribableInfoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
             if (subscribableInfo.getProperty() != null) {
-                Properties properties = new Properties();
+                org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
                 for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : subscribableInfo.getProperty()) {
-                    Property property = new Property();
+                    org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
                     property.setName(propertyBean.getName());
                     property.setValue(propertyBean.getValue());
-                    properties.addProperty(property);
+                    properties.addProperties(property);
                 }
                 subscribableInfoContext.setProperties(properties);
             }
