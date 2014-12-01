@@ -46,6 +46,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.common.*,
+                            org.apache.stratos.common.clustering.*
                             org.apache.stratos.common.statistics.publisher.*,
                         </Export-Package>
                         <Import-Package>

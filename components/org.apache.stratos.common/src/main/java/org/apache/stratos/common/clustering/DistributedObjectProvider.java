@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.clustering;
+package org.apache.stratos.common.clustering;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.IList;
@@ -32,15 +32,15 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * An object handler for managing objects in distributed and non-distributed environments.
+ * Provides objects to be managed in distributed and non-distributed environments.
  */
-public class DistributedObjectHandler {
-    private static final Log log = LogFactory.getLog(DistributedObjectHandler.class);
+public class DistributedObjectProvider {
+    private static final Log log = LogFactory.getLog(DistributedObjectProvider.class);
 
     private final boolean clustered;
     private final HazelcastInstance hazelcastInstance;
 
-    public DistributedObjectHandler(boolean clustered, HazelcastInstance hazelcastInstance) {
+    public DistributedObjectProvider(boolean clustered, HazelcastInstance hazelcastInstance) {
         this.clustered = clustered;
         this.hazelcastInstance = hazelcastInstance;
     }
@@ -66,6 +66,12 @@ public class DistributedObjectHandler {
         }
     }
 
+    /**
+     * If clustering is enabled returns a distributed map object, otherwise returns a
+     * concurrent local map object.
+     * @param key
+     * @return
+     */
     public Map getMap(String key) {
         if(clustered) {
             return hazelcastInstance.getMap(key);
@@ -74,6 +80,12 @@ public class DistributedObjectHandler {
         }
     }
 
+    /**
+     * If clustering is enabled returns a distributed list, otherwise returns
+     * a local array list.
+     * @param name
+     * @return
+     */
     public List getList(String name) {
         if(clustered) {
             return hazelcastInstance.getList(name);
@@ -82,6 +94,12 @@ public class DistributedObjectHandler {
         }
     }
 
+    /**
+     * Put a key value pair to a map, if clustered use a distributed lock.
+     * @param map
+     * @param key
+     * @param value
+     */
     public void putToMap(Map map, Object key, Object value) {
          if(clustered) {
              ILock lock = null;
@@ -96,6 +114,11 @@ public class DistributedObjectHandler {
          }
     }
 
+    /**
+     * Remove an object from a map, if clustered use a distributed lock.
+     * @param map
+     * @param key
+     */
     public void removeFromMap(Map map, Object key) {
         if(clustered) {
             ILock lock = null;
@@ -110,6 +133,11 @@ public class DistributedObjectHandler {
         }
     }
 
+    /**
+     * Add an object to a list, if clustered use a distributed lock.
+     * @param list
+     * @param value
+     */
     public void addToList(List list, Object value) {
         if(clustered) {
             ILock lock = null;
@@ -124,6 +152,11 @@ public class DistributedObjectHandler {
         }
     }
 
+    /**
+     * Remove an object from a list, if clustered use a distributed lock.
+     * @param list
+     * @param value
+     */
     public void removeFromList(List list, Object value) {
         if(clustered) {
             ILock lock = null;
