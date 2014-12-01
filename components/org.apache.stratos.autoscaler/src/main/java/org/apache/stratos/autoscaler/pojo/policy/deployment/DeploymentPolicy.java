@@ -36,6 +36,7 @@ public class DeploymentPolicy implements Serializable{
 
     private static final long serialVersionUID = 5675507196284400099L;
     private String id;
+    private String applicationId;
     private String description;
     private boolean isPublic;
     private ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions;
@@ -221,5 +222,13 @@ public class DeploymentPolicy implements Serializable{
         } else {
             this.childPolicies = Arrays.copyOf(childPolicies, childPolicies.length);
         }
+    }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 }

@@ -27,6 +27,12 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.MonitorFactory;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -76,6 +82,10 @@ public class AutoscalerUtil {
 
     public static void removeApplication (String applicationId) {
         RegistryManager.getInstance().removeApplication(applicationId);
+    }
+
+    public static String getAliasFromClusterId(String clusterId) {
+        return clusterId.substring(0, clusterId.indexOf("."));
     }
 
     /*public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
@@ -286,6 +296,81 @@ public class AutoscalerUtil {
         properties.setProperties(propertyArray);
         return toCommonProperties(properties);
     }
+
+    protected synchronized void startApplicationMonitor(String applicationId) {
+        Thread th = null;
+        if (AutoscalerContext.getInstance().getAppMonitor(applicationId) == null) {
+            th = new Thread(new ApplicationMonitorAdder(applicationId));
+        }
+        if (th != null) {
+            th.start();
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug(String
+                        .format("Application monitor thread already exists: " +
+                                "[application] %s ", applicationId));
+            }
+        }
+    }
+
+    private class ApplicationMonitorAdder implements Runnable {
+        private String appId;
+
+        public ApplicationMonitorAdder(String appId) {
+            this.appId = appId;
+        }
+
+        public void run() {
+            ApplicationMonitor applicationMonitor = null;
+            int retries = 5;
+            boolean success = false;
+            do {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                }
+                try {
+                    long start = System.currentTimeMillis();
+                    if (log.isDebugEnabled()) {
+                        log.debug("application monitor is going to be started for [application] " +
+                                appId);
+                    }
+                    try {
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
+                    } catch (PolicyValidationException e) {
+                        String msg = "Application monitor creation failed for Application: ";
+                        log.warn(msg, e);
+                        retries--;
+                    }
+                    long end = System.currentTimeMillis();
+                    log.info("Time taken to start app monitor: " + (end - start) / 1000);
+                    success = true;
+                } catch (DependencyBuilderException e) {
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Application monitor creation failed for Application: ";
+                    log.warn(msg, e);
+                    retries--;
+                }
+            } while (!success && retries != 0);
+
+            if (applicationMonitor == null) {
+                String msg = "Application monitor creation failed, even after retrying for 5 times, "
+                        + "for Application: " + appId;
+                log.error(msg);
+                throw new RuntimeException(msg);
+            }
+
+            AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Application monitor has been added successfully: " +
+                        "[application] %s", applicationMonitor.getId()));
+            }
+        }
+    }
+
 
 //    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
 //        if (null == cluster) {

@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 
 /**
- * Created by reka on 12/1/14.
+ * This will keep the Children's policy in an application
  */
 public class ChildPolicy {
     private String id;
