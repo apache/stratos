@@ -385,8 +385,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     @Override
     public int getActiveInstanceCount() {
-        //return active cluster member count
-        return 0;
+        
+        return getNonTerminatedMemberCount();
     }
 
 
