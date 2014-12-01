@@ -21,11 +21,15 @@ package org.apache.stratos.cloud.controller.internal;
 */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 
 import com.hazelcast.core.HazelcastInstance;
 
 =======
 >>>>>>> ddf277b... Remove unnessary threads in messaging model
+=======
+
+>>>>>>> ad3e45c... Remove unnessary threads in messaging model
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -63,17 +67,22 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
 =======
  * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
- * cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ *                cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
  * @scr.reference name="ntask.component"
- * interface="org.wso2.carbon.ntask.core.service.TaskService"
- * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ *                interface="org.wso2.carbon.ntask.core.service.TaskService"
+ *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
  * @scr.reference name="registry.service"
- * interface="org.wso2.carbon.registry.core.service.RegistryService"
- * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ *                interface="org.wso2.carbon.registry.core.service.RegistryService"
+ *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="config.context.service"
+<<<<<<< HEAD
  * interface="org.wso2.carbon.utils.ConfigurationContextService"
  * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
 >>>>>>> ddf277b... Remove unnessary threads in messaging model
+=======
+ *                interface="org.wso2.carbon.utils.ConfigurationContextService"
+ *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+>>>>>>> ad3e45c... Remove unnessary threads in messaging model
  */
 public class CloudControllerServiceComponent {
 
