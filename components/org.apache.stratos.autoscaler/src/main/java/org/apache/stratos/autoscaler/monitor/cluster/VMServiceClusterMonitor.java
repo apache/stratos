@@ -178,8 +178,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
 
                                     VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
 
-                                    getScaleCheckKnowledgeSession().setGlobal("instance",
-                                            instanceContext);
+                                    getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
                                     getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                     getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
                                     getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
