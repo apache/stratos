@@ -27,7 +27,5 @@ public class ChildLevelNetworkPartition {
 
     public String partitionAlgo;
 
-    public int min;
-
-    public List<ChildLevelPartition> childLevelPartitions;
+    public List<ChildLevelPartition> partitions;
 }

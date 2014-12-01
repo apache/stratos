@@ -20,12 +20,14 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
 import org.apache.stratos.common.Properties;
 
+import java.io.Serializable;
+
 /**
  * This is keep the partition information
  */
-public class Partition {
+public class Partition implements Serializable {
 
-    private static final long serialVersionUID = 3725971214092010720L;
+    private static final long serialVersionUID = 3725971287992010720L;
     /**
      * provider should match with an IaasProvider type.
      */

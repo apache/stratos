@@ -33,10 +33,6 @@ public class Partition {
     
     public boolean isPublic;
 
-    public int partitionMin;
-
-    public int partitionMax;
-
     public String provider;
 
     public List<PropertyBean> property;

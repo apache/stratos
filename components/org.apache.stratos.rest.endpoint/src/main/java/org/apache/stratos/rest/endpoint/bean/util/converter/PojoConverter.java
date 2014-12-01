@@ -409,7 +409,7 @@ public class PojoConverter {
         for (int i = 0; i < childPolicies.size(); i++) {
             ChildPolicy childPolicy = new ChildPolicy();
             childPolicy.setId(childPolicies.get(i).childId);
-            childPolicy.setChildLevelNetworkPartitions(convertToCCChildNetworkPartition(childPolicies.get(i).childLevelNetworkPartition));
+            childPolicy.setChildLevelNetworkPartitions(convertToCCChildNetworkPartition(childPolicies.get(i).networkPartition));
 
 
             childPolicies1[i] = childPolicy;
@@ -426,7 +426,7 @@ public class PojoConverter {
             ChildLevelNetworkPartition childLevelNetworkPartition = new ChildLevelNetworkPartition();
             childLevelNetworkPartition.setId(networkPartitions.get(i).id);
             childLevelNetworkPartition.setPartitionAlgo(networkPartitions.get(i).partitionAlgo);
-            childLevelNetworkPartition.setChildLevelPartitions(convertToCCChildPartitionPojos(networkPartitions.get(i).childLevelPartitions));
+            childLevelNetworkPartition.setChildLevelPartitions(convertToCCChildPartitionPojos(networkPartitions.get(i).partitions));
 
             childLevelNetworkPartitions[i] = childLevelNetworkPartition;
         }
@@ -532,8 +532,8 @@ public class PojoConverter {
         partitionBeans.description = partition.getDescription();
         partitionBeans.isPublic = partition.getIsPublic();
         partitionBeans.provider = partition.getProvider();
-        partitionBeans.partitionMin = partition.getPartitionMin();
-        partitionBeans.partitionMax = partition.getPartitionMax();
+        /*partitionBeans.partitionMin = partition.getPartitionMin();
+        partitionBeans.partitionMax = partition.getPartitionMax();*/
         //properties 
         if (partition.getProperties() != null) {
             List<PropertyBean> propertyBeans = getPropertyBeans(partition.getProperties());
@@ -750,8 +750,8 @@ public class PojoConverter {
             Partition partition = new Partition();
             partition.id = partitions[i].getId();
             partition.provider = partitions[i].getProvider();
-            partition.partitionMin = partitions[i].getPartitionMin();
-            partition.partitionMax = partitions[i].getPartitionMax();
+            /*partition.partitionMin = partitions[i].getPartitionMin();
+            partition.partitionMax = partitions[i].getPartitionMax();*/
             if (partitions[i].getProperties() != null) {
                 partition.property = getPropertyBeans(partitions[i].getProperties());
             }

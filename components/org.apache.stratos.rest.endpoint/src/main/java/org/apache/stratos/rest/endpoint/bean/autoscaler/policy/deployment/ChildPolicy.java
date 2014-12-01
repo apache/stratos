@@ -27,5 +27,5 @@ import java.util.List;
 public class ChildPolicy {
     public String childId;
 
-    public List<ChildLevelNetworkPartition> childLevelNetworkPartition;
+    public List<ChildLevelNetworkPartition> networkPartition;
 }

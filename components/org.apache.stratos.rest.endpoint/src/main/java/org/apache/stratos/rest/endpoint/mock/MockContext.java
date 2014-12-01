@@ -597,7 +597,7 @@ public class MockContext {
     	int tenantId = getTenantId();
     	if(!partitionMap.containsKey(tenantId)){
         	if(!partitionMap.containsKey(PUBLIC_DEFINITION)){
-        		throw new RestAPIException(Status.NO_CONTENT,"No childLevelPartitions have been defined for the tenant");
+        		throw new RestAPIException(Status.NO_CONTENT,"No partitions have been defined for the tenant");
         	}
         	if(!(partitionMap.get(PUBLIC_DEFINITION)).containsKey(partitionId)){
         		throw new RestAPIException("There is no partition with the id: " + partitionId);

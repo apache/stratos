@@ -454,62 +454,62 @@ public class StratosApiV41Utils {
 
 //    public static Partition[] getAvailablePartitions() throws RestAPIException {
 //
-//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] childLevelPartitions = null;
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
 //        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions = autoscalerServiceClient.getAvailablePartitions();
+//                partitions = autoscalerServiceClient.getAvailablePartitions();
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions. Cause : " + e.getMessage();
+//                String errorMsg = "Error while getting available partitions. Cause : " + e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
 //            }
 //        }
 //
-//        return PojoConverter.populatePartitionPojos(childLevelPartitions);
+//        return PojoConverter.populatePartitionPojos(partitions);
 //    }
 //
 //    public static Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId)
 //            throws RestAPIException {
 //
-//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] childLevelPartitions = null;
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
 //        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions =
+//                partitions =
 //                        autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions for deployment policy id " +
+//                String errorMsg = "Error while getting available partitions for deployment policy id " +
 //                        deploymentPolicyId + ". Cause: " + e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
 //            }
 //        }
 //
-//        return PojoConverter.populatePartitionPojos(childLevelPartitions);
+//        return PojoConverter.populatePartitionPojos(partitions);
 //    }
 //
 //    public static Partition[]
 //    getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
 //
-//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] childLevelPartitions = null;
+//        org.apache.stratos.cloud.controller.stub.deployment.partition.Partition[] partitions = null;
 //        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions =
+//                partitions =
 //                        autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions for deployment policy id " + deploymentPolicyId +
+//                String errorMsg = "Error while getting available partitions for deployment policy id " + deploymentPolicyId +
 //                        ", group id " + groupId + ". Cause: " + e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
 //            }
 //        }
 //
-//        return PojoConverter.populatePartitionPojos(childLevelPartitions);
+//        return PojoConverter.populatePartitionPojos(partitions);
 //    }
 //
 //    public static Partition getPartition(String partitionId) throws RestAPIException {

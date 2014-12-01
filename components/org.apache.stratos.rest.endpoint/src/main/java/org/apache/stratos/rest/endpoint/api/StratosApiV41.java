@@ -282,7 +282,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
 //    @GET
-//    @Path("/childLevelPartitions")
+//    @Path("/partitions")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/view/partition")
@@ -291,7 +291,7 @@ public class StratosApiV41 extends AbstractApi {
 //    }
 
 //    @POST
-//    @Path("/childLevelPartitions")
+//    @Path("/partitions")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/add/partition")
@@ -304,7 +304,7 @@ public class StratosApiV41 extends AbstractApi {
 //    }
 //
 //    @GET
-//    @Path("/childLevelPartitions/{partitionId}")
+//    @Path("/partitions/{partitionId}")
 //    @Produces("application/json")
 //    @Consumes("application/json")
 //    @AuthorizationAction("/permission/admin/manage/view/partition")

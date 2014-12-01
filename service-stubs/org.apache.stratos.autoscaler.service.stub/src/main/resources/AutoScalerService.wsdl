@@ -129,6 +129,7 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationLevelNetworkPartitions" nillable="true" type="ax214:ApplicationLevelNetworkPartition"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelNetworkPartitions" nillable="true" type="ax214:ChildLevelNetworkPartition"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="childPolicies" nillable="true" type="ax211:ChildPolicy"></xs:element>
+                    <xs:element minOccurs="0" name="childPolicyHolder" nillable="true" type="ax214:ChildPolicyHolder"></xs:element>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
@@ -171,6 +172,7 @@
                 <xs:sequence>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelPartitions" nillable="true" type="ax212:ChildLevelPartition"></xs:element>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="min" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
@@ -179,6 +181,12 @@
                     <xs:element minOccurs="0" name="max" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="ChildPolicyHolder">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelNetworkPartitions" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="deploymentPolicyId" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>

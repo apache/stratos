@@ -25,7 +25,7 @@ import java.util.Arrays;
 /**
 * The model class for NetworkPartition definition.
 */
-public class ApplicationLevelNetworkPartition implements Serializable{
+public class ApplicationLevelNetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
     private String id;

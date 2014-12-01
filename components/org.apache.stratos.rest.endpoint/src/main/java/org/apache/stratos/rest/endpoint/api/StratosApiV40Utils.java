@@ -277,10 +277,10 @@ public class StratosApiV40Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions = autoscalerServiceClient.getAvailablePartitions();
+//                partitions = autoscalerServiceClient.getAvailablePartitions();
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions. Cause : " + e.getMessage();
+//                String errorMsg = "Error while getting available partitions. Cause : " + e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
 //            }
@@ -296,11 +296,11 @@ public class StratosApiV40Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions =
+//                partitions =
 //                        autoscalerServiceClient.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions for deployment policy id " +
+//                String errorMsg = "Error while getting available partitions for deployment policy id " +
 //                        deploymentPolicyId+". Cause: "+e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
@@ -317,11 +317,11 @@ public class StratosApiV40Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 //        if (autoscalerServiceClient != null) {
 //            try {
-//                childLevelPartitions =
+//                partitions =
 //                        autoscalerServiceClient.getPartitionsOfGroup(deploymentPolicyId, groupId);
 //
 //            } catch (RemoteException e) {
-//                String errorMsg = "Error while getting available childLevelPartitions for deployment policy id " + deploymentPolicyId +
+//                String errorMsg = "Error while getting available partitions for deployment policy id " + deploymentPolicyId +
 //                        ", group id " + groupId+". Cause: "+e.getMessage();
 //                log.error(errorMsg, e);
 //                throw new RestAPIException(errorMsg, e);
