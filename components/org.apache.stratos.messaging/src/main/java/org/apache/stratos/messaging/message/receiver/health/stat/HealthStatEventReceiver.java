@@ -28,7 +28,7 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * A thread for receiving health stat information from message broker
  */
-public class HealthStatEventReceiver implements Runnable {
+public class HealthStatEventReceiver {
 	private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
 
 	private final HealthStatEventMessageDelegator messageDelegator;
@@ -46,8 +46,8 @@ public class HealthStatEventReceiver implements Runnable {
 		messageDelegator.addEventListener(eventListener);
 	}
 
-	@Override
-	public void run() {
+
+	public void execute() {
 		try {
 			// Start topic subscriber thread
 			subscriber = new Subscriber(Util.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);

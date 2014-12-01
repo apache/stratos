@@ -28,7 +28,7 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class ClusterStatusEventReceiver implements Runnable {
+public class ClusterStatusEventReceiver{
     private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
     private final ClusterStatusEventMessageDelegator messageDelegator;
     private final ClusterStatusEventMessageListener messageListener;
@@ -45,8 +45,8 @@ public class ClusterStatusEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
+
+    public void execute() {
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);

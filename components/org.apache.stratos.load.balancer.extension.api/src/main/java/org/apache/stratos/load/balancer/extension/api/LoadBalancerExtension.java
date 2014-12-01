@@ -28,6 +28,8 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Load balancer extension thread for executing load balancer life-cycle according to the topology updates
  * received from the message broker.
@@ -41,7 +43,7 @@ public class LoadBalancerExtension implements Runnable {
     private TopologyEventReceiver topologyEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
     private boolean terminated;
-
+	private ExecutorService executorService;
     /**
      * Load balancer extension constructor.
      * @param loadBalancer Load balancer instance: Mandatory.
@@ -62,8 +64,9 @@ public class LoadBalancerExtension implements Runnable {
             // Start topology receiver thread
             topologyEventReceiver = new TopologyEventReceiver();
             addEventListeners();
-            Thread topologyReceiverThread = new Thread(topologyEventReceiver);
-            topologyReceiverThread.start();
+	        topologyEventReceiver.setExecutorService(executorService);
+	        topologyEventReceiver.execute();
+
 
             if(statsReader != null) {
                 // Start stats notifier thread
@@ -162,4 +165,12 @@ public class LoadBalancerExtension implements Runnable {
         }
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

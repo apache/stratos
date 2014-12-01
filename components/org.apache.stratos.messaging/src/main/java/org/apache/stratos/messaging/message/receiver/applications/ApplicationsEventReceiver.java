@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
-public class ApplicationsEventReceiver implements Runnable {
+public class ApplicationsEventReceiver {
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
 
     private ApplicationsEventMessageDelegator messageDelegator;
@@ -42,12 +42,12 @@ public class ApplicationsEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
+
+    public void execute() {
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.APPLICATIONS_TOPIC.getTopicName(), messageListener);
-//            subscriber.setMessageListener(messageListener);
+
             Thread subscriberThread = new Thread(subscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {

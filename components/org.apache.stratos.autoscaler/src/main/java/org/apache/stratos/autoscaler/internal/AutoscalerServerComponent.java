@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.internal;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 //import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
@@ -33,9 +34,11 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
@@ -43,6 +46,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -59,19 +63,30 @@ import java.util.List;
 
 public class AutoscalerServerComponent {
 
-    private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
+	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
+	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
+	private static final String THREAD_POOL_SIZE_KEY= "threadPool.autoscaler.threadPoolSize";
+	private static final String COMPONENTS_CONFIG = "components-config";
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
-    private AutoscalerTopologyEventReceiver asTopologyReceiver;
+
+	private AutoscalerTopologyEventReceiver asTopologyReceiver;
     private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
-    protected void activate(ComponentContext componentContext) throws Exception {
+	protected void activate(ComponentContext componentContext) throws Exception {
         try {
             // Start topology receiver
+	        XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
+	        int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
+	        String threadIdentifier=conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
+	        ExecutorService executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
             asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-            Thread topologyTopicSubscriberThread = new Thread(asTopologyReceiver);
-            topologyTopicSubscriberThread.start();
+	        asTopologyReceiver.setExecutorService(executorService);
+	        asTopologyReceiver.execute();
+
             if (log.isDebugEnabled()) {
-                log.debug("Topology receiver thread started");
+                log.debug("Topology receiver executor service started");
             }
 
             // Start health stat receiver

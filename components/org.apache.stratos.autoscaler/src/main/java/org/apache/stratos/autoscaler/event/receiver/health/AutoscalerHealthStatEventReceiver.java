@@ -86,19 +86,14 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
         }
-        Thread thread = new Thread(healthStatEventReceiver);
-        thread.start();
+        healthStatEventReceiver.execute();
+
         if(log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread started");
         }
 
         // Keep the thread live until terminated
-        while (!terminated){
-        	try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
+
         if(log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread terminated");
         }

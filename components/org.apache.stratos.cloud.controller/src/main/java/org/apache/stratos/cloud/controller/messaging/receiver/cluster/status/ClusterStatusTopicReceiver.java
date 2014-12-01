@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
 
-public class ClusterStatusTopicReceiver implements Runnable{
+public class ClusterStatusTopicReceiver{
     private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
     private ClusterStatusEventReceiver statusEventReceiver;
@@ -37,26 +37,16 @@ public class ClusterStatusTopicReceiver implements Runnable{
         addEventListeners();
     }
 
-    public void run() {
-        Thread thread = new Thread(statusEventReceiver);
-        thread.start();
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller Cluster status thread started");
-        }
+	public void execute() {
 
-        // Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread terminated");
-        }
+		statusEventReceiver.execute();
+		if (log.isInfoEnabled()) {
+			log.info("Cloud controller Cluster status thread started");
+		}
 
-    }
-    private void addEventListeners() {
+	}
+
+	private void addEventListeners() {
         // Listen to topology events that affect clusters
         statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
             @Override

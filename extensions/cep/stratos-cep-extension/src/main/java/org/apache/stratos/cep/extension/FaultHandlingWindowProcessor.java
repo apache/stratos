@@ -20,6 +20,7 @@ package org.apache.stratos.cep.extension;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -46,6 +47,7 @@ import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -255,6 +257,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     protected void init(Expression[] parameters, QueryPostProcessingElement nextProcessor,
                         AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext siddhiContext) {
+
         if (parameters[0] instanceof IntConstant) {
             timeToKeep = ((IntConstant) parameters[0]).getValue();
         } else {
@@ -271,8 +274,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         }
         MemberFaultEventMap.put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-        Thread topologyTopicSubscriberThread = new Thread(cepTopologyEventReceiver);
-        topologyTopicSubscriberThread.start();
+	    ExecutorService executorService= StratosThreadPool.getExecutorService("AutoScaler",10);
+	    cepTopologyEventReceiver.setExecutorService(executorService);
+	    executorService.execute(cepTopologyEventReceiver);
 
         //Ordinary scheduling
         window.schedule();

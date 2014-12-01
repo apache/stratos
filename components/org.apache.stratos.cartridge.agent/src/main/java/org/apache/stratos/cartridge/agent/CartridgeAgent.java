@@ -247,8 +247,9 @@ public class CartridgeAgent implements Runnable {
                 }
             }
         });
-        Thread eventReceiverThread = new Thread(instanceNotifierEventReceiver);
-        eventReceiverThread.start();
+
+	    instanceNotifierEventReceiver.execute();
+
         if(log.isInfoEnabled()) {
             log.info("Instance notifier event message receiver thread started");
         }
@@ -414,8 +415,8 @@ public class CartridgeAgent implements Runnable {
             }
         });
 
-        Thread thread = new Thread(topologyEventReceiver);
-        thread.start();
+//        Thread thread = new Thread(topologyEventReceiver);
+//        thread.start();
         if (log.isDebugEnabled()) {
             log.info("Cartridge Agent topology receiver thread started");
         }

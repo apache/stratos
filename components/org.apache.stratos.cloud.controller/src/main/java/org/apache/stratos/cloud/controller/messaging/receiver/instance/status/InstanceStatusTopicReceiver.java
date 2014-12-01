@@ -35,7 +35,7 @@ import org.apache.stratos.messaging.message.receiver.instance.status.InstanceSta
 /**
  * This will handle the instance status events
  */
-public class InstanceStatusTopicReceiver implements Runnable {
+public class InstanceStatusTopicReceiver{
     private static final Log log = LogFactory.getLog(InstanceStatusTopicReceiver.class);
 
     private InstanceStatusEventReceiver statusEventReceiver;
@@ -47,20 +47,14 @@ public class InstanceStatusTopicReceiver implements Runnable {
     }
 
 
-    @Override
-    public void run() {
-        Thread thread = new Thread(statusEventReceiver);
-        thread.start();
+
+    public void execute() {
+        statusEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Cloud controller application status thread started");
         }
-        ///* Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
+
+
         if (log.isInfoEnabled()) {
             log.info("Cloud controller application status thread terminated");
         }

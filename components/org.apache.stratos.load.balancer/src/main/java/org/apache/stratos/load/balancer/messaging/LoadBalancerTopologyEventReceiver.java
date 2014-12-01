@@ -53,8 +53,8 @@ public class LoadBalancerTopologyEventReceiver implements Runnable {
 
     @Override
     public void run() {
-        Thread thread = new Thread(topologyEventReceiver);
-        thread.start();
+    //    Thread thread = new Thread(topologyEventReceiver);
+    //    thread.start();
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
         }

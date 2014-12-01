@@ -68,24 +68,22 @@ public class CloudControllerServiceComponent {
     protected void activate(ComponentContext context) {
         try {
             applicationTopicReceiver = new ApplicationTopicReceiver();
-            Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
-            tApplicationTopicReceiver.start();
+            applicationTopicReceiver.execute();
 
             if (log.isInfoEnabled()) {
                 log.info("Application event receiver thread started");
             }
 
             clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-            Thread tClusterStatusTopicReceiver = new Thread(clusterStatusTopicReceiver);
-            tClusterStatusTopicReceiver.start();
+	        clusterStatusTopicReceiver.execute();
 
             if (log.isInfoEnabled()) {
                 log.info("Cluster status receiver thread started");
             }
 
             instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-            Thread tInstanceStatusTopicReceiver = new Thread(instanceStatusTopicReceiver);
-            tInstanceStatusTopicReceiver.start();
+            instanceStatusTopicReceiver.execute();
+
             if(log.isInfoEnabled()) {
                 log.info("Instance status message receiver thread started");
             }
