@@ -175,7 +175,7 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, String lbRefType, boolean isPrimary) {
+    public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, boolean isPrimary) {
 
         try {
 
