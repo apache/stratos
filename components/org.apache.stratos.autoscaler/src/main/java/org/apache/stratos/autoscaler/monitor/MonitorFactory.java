@@ -77,13 +77,13 @@ public class MonitorFactory {
                 //((AbstractClusterMonitor)monitor).startScheduler();
                 ClusterChildContext clusterChildCtxt = (ClusterChildContext) context;
                 AbstractClusterMonitor clusterMonitor = (AbstractClusterMonitor) monitor;
+                AutoscalerContext.getInstance().
+                        addClusterMonitor((AbstractClusterMonitor) monitor);
                 // FIXME: passing null as alias for cluster instance temporarily. should be removed.
                 for(String parentInstanceId : parentInstanceIds) {
                     createClusterInstance(clusterChildCtxt.getServiceName(),
-                                            clusterMonitor.getClusterId(), null,
-                                            parentInstanceIds.get(0));
-                    AutoscalerContext.getInstance().
-                                            addClusterMonitor((AbstractClusterMonitor) monitor);
+                            clusterMonitor.getClusterId(), null,
+                            parentInstanceId);
                 }
 
             }
