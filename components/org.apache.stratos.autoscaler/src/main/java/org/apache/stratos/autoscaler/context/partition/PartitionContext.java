@@ -84,4 +84,8 @@ public abstract class PartitionContext implements Serializable{
     public ChildLevelPartition getChildLevelPartition() {
         return childLevelPartition;
     }
+
+    public int getMax() {
+        return max;
+    }
 }

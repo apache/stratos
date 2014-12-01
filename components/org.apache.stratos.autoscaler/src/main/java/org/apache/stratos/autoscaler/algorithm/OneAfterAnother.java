@@ -150,11 +150,24 @@ public class OneAfterAnother implements AutoscaleAlgorithm {
 
     @Override
     public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts) {
+        for(PartitionContext partitionContext : partitionContexts){
+            if(partitionContext.getActiveInstanceCount() < partitionContext.getMax()){
+                return partitionContext;
+            }
+        }
         return null;
     }
 
     @Override
     public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts) {
+
+        for(int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--){
+
+            if(partitionContexts[partitionIndex].getActiveInstanceCount() > 0) {
+
+                return partitionContexts[partitionIndex];
+            }
+        }
         return null;
     }
 
