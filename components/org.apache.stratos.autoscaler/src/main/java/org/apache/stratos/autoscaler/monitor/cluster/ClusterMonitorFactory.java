@@ -71,13 +71,13 @@ public class ClusterMonitorFactory {
         java.util.Properties props = cluster.getProperties();
 
         if (props != null) {
-            if (props.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
-                String value = props.getProperty(StratosConstants.LOAD_BALANCER_REF);
-                clusterMonitor.setLbReferenceType(value);
-                if (log.isDebugEnabled()) {
-                    log.debug("Set the lb reference type: " + value);
-                }
-            }
+//            if (props.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
+//                String value = props.getProperty(StratosConstants.LOAD_BALANCER_REF);
+//                clusterMonitor.setLbReferenceType(value);
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Set the lb reference type: " + value);
+//                }
+//            }
 
             // set hasPrimary property
             // hasPrimary is true if there are primary members available in that cluster

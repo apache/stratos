@@ -52,7 +52,7 @@ import java.util.List;
 public class VMServiceClusterMonitor extends VMClusterMonitor {
 
     private static final Log log = LogFactory.getLog(VMServiceClusterMonitor.class);
-    private String lbReferenceType;
+//    private String lbReferenceType;
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
@@ -146,7 +146,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                                 }
                                 primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
                                 getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+//                                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                                 getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 getMinCheckKnowledgeSession().setGlobal("instanceId",
                                         instanceContext.getId());
@@ -185,7 +185,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                                     getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                     getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                     getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+//                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                                     getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
                                     getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
 
@@ -240,17 +240,17 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
     @Override
     public String toString() {
         return "VMServiceClusterMonitor [clusterId=" + getClusterId() +
-                ", lbReferenceType=" + lbReferenceType +
+//                ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
     }
 
-    public String getLbReferenceType() {
-        return lbReferenceType;
-    }
-
-    public void setLbReferenceType(String lbReferenceType) {
-        this.lbReferenceType = lbReferenceType;
-    }
+//    public String getLbReferenceType() {
+//        return lbReferenceType;
+//    }
+//
+//    public void setLbReferenceType(String lbReferenceType) {
+//        this.lbReferenceType = lbReferenceType;
+//    }
 
     public boolean isHasPrimary() {
         return hasPrimary;
