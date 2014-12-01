@@ -481,7 +481,7 @@ public class RuleTasksDelegator {
     public double getLoadAveragePredictedValue(ClusterInstanceContext clusterInstanceContext) {
         double loadAveragePredicted = 0.0d;
         int totalMemberCount = 0;
-        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberAverageLoadAverage = memberStatsContext.getLoadAverage().getAverage();
@@ -508,7 +508,7 @@ public class RuleTasksDelegator {
     public double getMemoryConsumptionPredictedValue(ClusterInstanceContext clusterInstanceContext) {
         double memoryConsumptionPredicted = 0.0d;
         int totalMemberCount = 0;
-        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts().values()) {
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts()) {
             for (MemberStatsContext memberStatsContext : partitionContext.getMemberStatsContexts().values()) {
 
                 float memberMemoryConsumptionAverage = memberStatsContext.getMemoryConsumption().getAverage();

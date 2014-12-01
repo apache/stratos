@@ -687,7 +687,7 @@ abstract public class VMClusterMonitor extends AbstractClusterMonitor {
 
                 for (ClusterLevelNetworkPartitionContext networkPartitionContext : getAllNetworkPartitionCtxts().values()) {
                     for(ClusterInstanceContext instanceContext : networkPartitionContext.getClusterInstanceContextMap().values()) {
-                        for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts().values()) {
+                        for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                             //if (log.isDebugEnabled()) {
                             log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
                                     networkPartitionContext.getId() + " ], Partition [ " +

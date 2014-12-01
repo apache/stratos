@@ -127,7 +127,7 @@ public class VMServiceClusterMonitor extends VMClusterMonitor {
                         //FIXME to check the status of the instance
                         if (true) {
                             for (ClusterLevelPartitionContext partitionContext :
-                                    instanceContext.getPartitionCtxts().values()) {
+                                    instanceContext.getPartitionCtxts()) {
                                 // store primary members in the partition context
                                 List<String> primaryMemberListInPartition = new ArrayList<String>();
                                 // get active primary members in this partition context

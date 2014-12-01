@@ -21,15 +21,17 @@ package org.apache.stratos.autoscaler.context.cluster;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.messaging.domain.topology.Member;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /*
  * It holds the runtime data of a VM cluster
@@ -76,13 +78,21 @@ public class ClusterInstanceContext {
     private int currentPartitionIndex;
 
     // Map<PartitionId, Partition Context>
-    protected Map<String, ClusterLevelPartitionContext> partitionCtxts;
+    protected List<ClusterLevelPartitionContext> partitionCtxts;
+
+    private ChildLevelPartition[] partitions;
+
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions,
                                   int min) {
 
         this.id = clusterInstanceId;
         this.min = min;
-        partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
+        if (partitions == null) {
+            this.partitions = new ChildLevelPartition[0];
+        } else {
+            this.partitions = Arrays.copyOf(partitions, partitions.length);
+        }
+        partitionCtxts = new ArrayList<ClusterLevelPartitionContext>();
         this.partitionAlgorithm = partitionAlgo;
         //partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         requestsInFlight = new RequestsInFlight();
@@ -97,42 +107,57 @@ public class ClusterInstanceContext {
 
     }
 
-    public Map<String, ClusterLevelPartitionContext> getPartitionCtxts(){
+    public List<ClusterLevelPartitionContext> getPartitionCtxts(){
         return partitionCtxts;
     }
-    public PartitionContext[] getPartitionCtxtsAsAnArray(){
 
-        return (PartitionContext[])getPartitionCtxts().values().toArray();
+    public ClusterLevelPartitionContext[] getPartitionCtxtsAsAnArray(){
+
+        return partitionCtxts.toArray(new ClusterLevelPartitionContext[0]);
     }
 
-    public ClusterLevelPartitionContext getNetworkPartitionCtxt(String PartitionId) {
-        return partitionCtxts.get(PartitionId);
-    }
+//    public ClusterLevelPartitionContext getNetworkPartitionCtxt(String PartitionId) {
+//        return partitionCtxts.get(PartitionId);
+//    }
 
-    public void setPartitionCtxt(Map<String, ClusterLevelPartitionContext> partitionCtxt) {
+    public void setPartitionCtxts(List<ClusterLevelPartitionContext> partitionCtxt) {
         this.partitionCtxts = partitionCtxt;
     }
 
     public boolean partitionCtxtAvailable(String partitionId) {
-        return partitionCtxts.containsKey(partitionId);
+
+        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(partitionId)){
+                return true;
+            }
+        }
+        return false;
     }
 
     public void addPartitionCtxt(ClusterLevelPartitionContext ctxt) {
-        this.partitionCtxts.put(ctxt.getPartitionId(), ctxt);
+        this.partitionCtxts.add(ctxt);
     }
 
     public ClusterLevelPartitionContext getPartitionCtxt(String id) {
-        return this.partitionCtxts.get(id);
+
+        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(id)){
+                return partitionContext;
+            }
+        }
+        return null;
     }
 
     public ClusterLevelPartitionContext getPartitionCtxt(Member member) {
         log.info("Getting [Partition] " + member.getPartitionId());
         String partitionId = member.getPartitionId();
-        if (partitionCtxts.containsKey(partitionId)) {
-            log.info("Returning partition context, of [partition] " + partitionCtxts.get(partitionId));
-            return partitionCtxts.get(partitionId);
-        }
 
+        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(partitionId)){
+                log.info("Returning partition context, of [partition] " + partitionId);
+                return partitionContext;
+            }
+        }
         return null;
     }
 
