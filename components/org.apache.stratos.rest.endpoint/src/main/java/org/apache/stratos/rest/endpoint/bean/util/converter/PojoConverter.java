@@ -390,6 +390,7 @@ public class PojoConverter {
                 !deploymentPolicyBean.applicationPolicy.networkPartition.isEmpty()) {
             deploymentPolicy.setApplicationLevelNetworkPartitions(
                     convertToCCPartitionGroup(deploymentPolicyBean.applicationPolicy.networkPartition));
+            deploymentPolicy.setApplicationId(deploymentPolicyBean.applicationPolicy.applicationId);
         }
 
         if (deploymentPolicyBean.childPolicies != null && !deploymentPolicyBean.childPolicies.isEmpty()) {
