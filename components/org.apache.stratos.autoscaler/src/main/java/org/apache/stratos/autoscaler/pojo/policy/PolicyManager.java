@@ -286,4 +286,13 @@ public class PolicyManager {
         return deploymentPolicyListMap.get(id);
     }
 
+    public DeploymentPolicy getDeploymentPolicyByApplication(String appId) {
+        for(DeploymentPolicy deploymentPolicy : deploymentPolicyListMap.values()) {
+            if(deploymentPolicy.getApplicationId().equals(appId)) {
+                return deploymentPolicy;
+            }
+        }
+        return null;
+    }
+
 }

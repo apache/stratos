@@ -19,16 +19,12 @@
 
 package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
-public class ChildLevelPartition {
+import java.io.Serializable;
+
+public class ChildLevelPartition implements Serializable {
     private String partitionId;
     private String networkPartitionId;
     private int max;
-
-    public ChildLevelPartition(String partitionId, String networkPartitionId, int max) {
-        this.partitionId = partitionId;
-        this.networkPartitionId = networkPartitionId;
-        this.max = max;
-    }
 
     public int getMax() {
         return max;
@@ -40,5 +36,17 @@ public class ChildLevelPartition {
 
     public String getPartitionId() {
         return partitionId;
+    }
+
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
+    }
+
+    public void setMax(int max) {
+        this.max = max;
     }
 }

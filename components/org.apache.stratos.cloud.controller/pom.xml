@@ -49,12 +49,10 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-			    !org.apache.stratos.cloud.controller.services.impl.*,
 			    !org.apache.stratos.cloud.controller.internal.*,
 			    org.apache.stratos.cloud.controller.*,
                         </Export-Package>
                         <Private-Package>
-			    org.apache.stratos.cloud.controller.services.impl.*,
 			    org.apache.stratos.cloud.controller.internal.*,
                         </Private-Package>
                         <Import-Package>

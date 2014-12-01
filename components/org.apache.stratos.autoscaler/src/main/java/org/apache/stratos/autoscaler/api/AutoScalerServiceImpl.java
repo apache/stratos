@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.api;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 //import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
@@ -45,12 +46,14 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
@@ -111,6 +114,30 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     public boolean addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
         boolean hasDeployed = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
         //Need to start the application Monitor after validation of the deployment policies.
+
+        //Check whether all the clusters are there
+        ApplicationHolder.acquireReadLock();
+        boolean allClusterInitialized = false;
+
+        try {
+            Application application = ApplicationHolder.getApplications().
+                    getApplication(deploymentPolicy.getApplicationId());
+            if(application != null) {
+                allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
+            }
+
+        } finally {
+            ApplicationHolder.releaseReadLock();
+        }
+
+        if(allClusterInitialized) {
+            AutoscalerUtil.getInstance().
+                    startApplicationMonitor(deploymentPolicy.getApplicationId());
+
+        } else {
+            log.info("The application clusters are not yet created. " +
+                    "Waiting for them to be created");
+        }
 
         return hasDeployed;
     }

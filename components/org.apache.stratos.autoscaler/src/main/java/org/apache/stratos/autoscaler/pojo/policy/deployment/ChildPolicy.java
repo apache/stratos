@@ -20,10 +20,12 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 
+import java.io.Serializable;
+
 /**
  * This will keep the Children's policy in an application
  */
-public class ChildPolicy {
+public class ChildPolicy implements Serializable {
     private String id;
 
     private ChildLevelNetworkPartition[] childLevelNetworkPartitions;

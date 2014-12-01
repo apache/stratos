@@ -38,6 +38,10 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 
 /**
@@ -49,6 +53,13 @@ public class AutoscalerUtil {
 
     private AutoscalerUtil() {
 
+    }
+
+    public static AutoscalerUtil getInstance() {
+        return Holder.INSTANCE;
+    }
+    private static class Holder {
+        private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
     }
 
     public static Applications  getApplications () {
@@ -87,6 +98,47 @@ public class AutoscalerUtil {
     public static String getAliasFromClusterId(String clusterId) {
         return clusterId.substring(0, clusterId.indexOf("."));
     }
+
+    public static boolean allClustersInitialized(Application application) {
+        boolean allClustersInitialized = false;
+        for (ClusterDataHolder holder : application.getClusterDataRecursively()) {
+            TopologyManager.acquireReadLockForCluster(holder.getServiceType(),
+                    holder.getClusterId());
+
+            try {
+                Topology topology = TopologyManager.getTopology();
+                if (topology != null) {
+                    Service service = topology.getService(holder.getServiceType());
+                    if (service != null) {
+                        if (service.clusterExists(holder.getClusterId())) {
+                            allClustersInitialized = true;
+                            return allClustersInitialized;
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
+                                        "the Topology");
+                            }
+                            allClustersInitialized = false;
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Service is null in the CompleteTopologyEvent");
+                        }
+                    }
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Topology is null in the CompleteTopologyEvent");
+                    }
+                }
+            } finally {
+                TopologyManager.releaseReadLockForCluster(holder.getServiceType(),
+                        holder.getClusterId());
+            }
+        }
+        return allClustersInitialized;
+    }
+
+
 
     /*public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
         // FIXME fix the following code to correctly update
@@ -297,7 +349,7 @@ public class AutoscalerUtil {
         return toCommonProperties(properties);
     }
 
-    protected synchronized void startApplicationMonitor(String applicationId) {
+    public synchronized void startApplicationMonitor(String applicationId) {
         Thread th = null;
         if (AutoscalerContext.getInstance().getAppMonitor(applicationId) == null) {
             th = new Thread(new ApplicationMonitorAdder(applicationId));

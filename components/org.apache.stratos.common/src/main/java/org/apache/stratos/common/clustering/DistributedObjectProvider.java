@@ -26,6 +26,7 @@ import com.hazelcast.core.IMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Provides objects to be managed in distributed and non-distributed environments.
  */
-public class DistributedObjectProvider {
+public class DistributedObjectProvider implements Serializable {
     private static final Log log = LogFactory.getLog(DistributedObjectProvider.class);
 
     private final boolean clustered;
