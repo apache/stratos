@@ -25,6 +25,9 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+
 /**
  * A thread for receiving instance notifier information from message broker.
  */
@@ -34,6 +37,7 @@ public class ClusterStatusEventReceiver{
     private final ClusterStatusEventMessageListener messageListener;
     private Subscriber subscriber;
     private boolean terminated;
+	private ExecutorService executorService;
 
     public ClusterStatusEventReceiver() {
         ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
@@ -50,27 +54,19 @@ public class ClusterStatusEventReceiver{
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
-//            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
-            subscriberThread.start();
+            executorService.execute(subscriber);
+
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
             }
 
             // Start instance notifier event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+	        executorService.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
 
-            // Keep the thread live until terminated
-            while (!terminated) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
-            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("InstanceNotifier receiver failed", e);
@@ -87,4 +83,12 @@ public class ClusterStatusEventReceiver{
         messageDelegator.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

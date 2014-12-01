@@ -26,6 +26,8 @@ import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEven
 import org.apache.stratos.messaging.listener.applications.ApplicationTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * This is to receive the application topic messages.
  */
@@ -33,6 +35,7 @@ public class ApplicationTopicReceiver {
 	private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
 	private ApplicationsEventReceiver applicationsEventReceiver;
 	private boolean terminated;
+	private ExecutorService executorService;
 
 	public ApplicationTopicReceiver() {
 		this.applicationsEventReceiver = new ApplicationsEventReceiver();
@@ -46,6 +49,7 @@ public class ApplicationTopicReceiver {
 			log.info("Cloud controller application status thread started");
 		}
 		applicationsEventReceiver.execute();
+		applicationsEventReceiver.setExecutorService(executorService);
 
 		if (log.isInfoEnabled()) {
 			log.info("Cloud controller application status thread terminated");
@@ -68,5 +72,13 @@ public class ApplicationTopicReceiver {
 
 	public void setTerminated(boolean terminated) {
 		this.terminated = terminated;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

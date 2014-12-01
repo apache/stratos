@@ -26,14 +26,18 @@ import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
 
+import java.util.concurrent.ExecutorService;
+
 public class ClusterStatusTopicReceiver {
 	private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
 	private ClusterStatusEventReceiver statusEventReceiver;
 	private boolean terminated;
+	private ExecutorService executorService;
 
 	public ClusterStatusTopicReceiver() {
 		this.statusEventReceiver = new ClusterStatusEventReceiver();
+		this.statusEventReceiver.setExecutorService(executorService);
 		addEventListeners();
 	}
 
@@ -100,5 +104,13 @@ public class ClusterStatusTopicReceiver {
 
 	public void setTerminated(boolean terminated) {
 		this.terminated = terminated;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

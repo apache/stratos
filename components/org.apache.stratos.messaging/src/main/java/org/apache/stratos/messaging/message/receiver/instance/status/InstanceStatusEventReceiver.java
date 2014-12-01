@@ -25,6 +25,8 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * A thread for receiving instance notifier information from message broker.
  */
@@ -34,6 +36,7 @@ public class InstanceStatusEventReceiver {
     private final InstanceStatusEventMessageListener messageListener;
     private Subscriber subscriber;
     private boolean terminated;
+	private ExecutorService executorService;
 
     public InstanceStatusEventReceiver() {
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
@@ -51,15 +54,13 @@ public class InstanceStatusEventReceiver {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), messageListener);
 //            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
-            subscriberThread.start();
+            executorService.submit(subscriber);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
             }
 
-            // Start instance notifier event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+            // Start instance notifier event message delegate thread
+            executorService.submit(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
@@ -81,4 +82,12 @@ public class InstanceStatusEventReceiver {
         messageDelegator.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

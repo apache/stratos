@@ -415,8 +415,8 @@ public class CartridgeAgent implements Runnable {
             }
         });
 
-//        Thread thread = new Thread(topologyEventReceiver);
-//        thread.start();
+	    topologyEventReceiver.execute();
+
         if (log.isDebugEnabled()) {
             log.info("Cartridge Agent topology receiver thread started");
         }

@@ -66,12 +66,13 @@ public class AutoscalerServerComponent {
 	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
 	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
 	private static final String THREAD_POOL_SIZE_KEY = "threadPool.autoscaler.threadPoolSize";
-	private static final String COMPONENTS_CONFIG = "components-config";
+	private static final String COMPONENTS_CONFIG = "stratos-config";
 	private static final int THREAD_POOL_SIZE = 10;
 	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
 	private AutoscalerTopologyEventReceiver asTopologyReceiver;
 	private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+
 
 	protected void activate(ComponentContext componentContext) throws Exception {
 <<<<<<< HEAD
@@ -214,8 +215,8 @@ public class AutoscalerServerComponent {
 
 			// Start health stat receiver
 			autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-			Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
-			healthDelegatorThread.start();
+			autoscalerHealthStatEventReceiver.setExecutorService(executorService);
+			autoscalerHealthStatEventReceiver.execute();
 			if (log.isDebugEnabled()) {
 				log.debug("Health statistics receiver thread started");
 			}

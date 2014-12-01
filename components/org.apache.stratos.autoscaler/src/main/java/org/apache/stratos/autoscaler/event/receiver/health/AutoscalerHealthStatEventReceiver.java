@@ -63,24 +63,25 @@ import org.apache.stratos.messaging.listener.health.stat.SecondDerivativeOfReque
 import org.apache.stratos.messaging.message.receiver.health.stat.HealthStatEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.concurrent.ExecutorService;
 
 /**
  * A thread for processing topology messages and updating the topology data structure.
  */
-public class AutoscalerHealthStatEventReceiver implements Runnable {
+public class AutoscalerHealthStatEventReceiver {
 
     private static final Log log = LogFactory.getLog(AutoscalerHealthStatEventReceiver.class);
     private boolean terminated = false;
 
     private HealthStatEventReceiver healthStatEventReceiver;
+	private ExecutorService executorService;
 
     public AutoscalerHealthStatEventReceiver() {
 		this.healthStatEventReceiver = new HealthStatEventReceiver();
         addEventListeners();
     }
 
-    @Override
-    public void run() {
+    public void execute() {
         //FIXME this activated before autoscaler deployer activated.
         try {
             Thread.sleep(15000);
@@ -92,11 +93,7 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
             log.info("Autoscaler health stat event receiver thread started");
         }
 
-        // Keep the thread live until terminated
 
-        if(log.isInfoEnabled()) {
-            log.info("Autoscaler health stat event receiver thread terminated");
-        }
     }
 
     private void addEventListeners() {
@@ -519,4 +516,12 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
     public void terminate() {
         this.terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

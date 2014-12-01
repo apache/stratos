@@ -32,6 +32,8 @@ import org.apache.stratos.messaging.listener.instance.status.InstanceReadyToShut
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * This will handle the instance status events
  */
@@ -40,6 +42,7 @@ public class InstanceStatusTopicReceiver {
 
 	private InstanceStatusEventReceiver statusEventReceiver;
 	private boolean terminated;
+	private ExecutorService executorService;
 
 	public InstanceStatusTopicReceiver() {
 		this.statusEventReceiver = new InstanceStatusEventReceiver();
@@ -98,4 +101,11 @@ public class InstanceStatusTopicReceiver {
 
 	}
 
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }
