@@ -65,16 +65,16 @@ public class AutoscalerServerComponent {
 
 	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
 	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
-	private static final String THREAD_POOL_SIZE_KEY= "threadPool.autoscaler.threadPoolSize";
+	private static final String THREAD_POOL_SIZE_KEY = "threadPool.autoscaler.threadPoolSize";
 	private static final String COMPONENTS_CONFIG = "components-config";
 	private static final int THREAD_POOL_SIZE = 10;
 	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
-
 	private AutoscalerTopologyEventReceiver asTopologyReceiver;
-    private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+	private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
 	protected void activate(ComponentContext componentContext) throws Exception {
+<<<<<<< HEAD
         try {
             // Start topology receiver
 	        XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
@@ -197,3 +197,128 @@ public class AutoscalerServerComponent {
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
 }
+=======
+		try {
+			// Start topology receiver
+			XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
+			int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
+			String threadIdentifier = conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
+			ExecutorService executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
+			asTopologyReceiver = new AutoscalerTopologyEventReceiver();
+			asTopologyReceiver.setExecutorService(executorService);
+			asTopologyReceiver.execute();
+
+			if (log.isDebugEnabled()) {
+				log.debug("Topology receiver executor service started");
+			}
+
+			// Start health stat receiver
+			autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
+			Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
+			healthDelegatorThread.start();
+			if (log.isDebugEnabled()) {
+				log.debug("Health statistics receiver thread started");
+			}
+
+			// Adding the registry stored partitions to the information model
+			List<Partition> partitions = RegistryManager.getInstance().retrievePartitions();
+			Iterator<Partition> partitionIterator = partitions.iterator();
+			while (partitionIterator.hasNext()) {
+				Partition partition = partitionIterator.next();
+				PartitionManager.getInstance().addPartitionToInformationModel(partition);
+			}
+
+			// Adding the network partitions stored in registry to the information model
+			List<NetworkPartitionLbHolder> nwPartitionHolders =
+					RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
+			Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
+			while (nwPartitionIterator.hasNext()) {
+				NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
+				PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
+			}
+
+			List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
+			Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
+			while (asPolicyIterator.hasNext()) {
+				AutoscalePolicy asPolicy = asPolicyIterator.next();
+				PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
+			}
+
+			List<DeploymentPolicy> depPolicies = RegistryManager.getInstance().retrieveDeploymentPolicies();
+			Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
+			while (depPolicyIterator.hasNext()) {
+				DeploymentPolicy depPolicy = depPolicyIterator.next();
+				PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
+			}
+
+			// Adding KubernetesGroups stored in registry to the information model
+			List<KubernetesGroup> kubernetesGroupList = RegistryManager.getInstance().retrieveKubernetesGroups();
+			Iterator<KubernetesGroup> kubernetesGroupIterator = kubernetesGroupList.iterator();
+			while (kubernetesGroupIterator.hasNext()) {
+				KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
+				KubernetesManager.getInstance().addNewKubernetesGroup(kubernetesGroup);
+			}
+
+			//starting the processor chain
+			ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
+			ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
+
+			GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
+			ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
+
+			if (log.isInfoEnabled()) {
+				log.info("Scheduling tasks to publish applications");
+			}
+
+			ApplicationSynchronizerTaskScheduler
+					.schedule(ServiceReferenceHolder.getInstance()
+					                                .getTaskService());
+
+			if (log.isInfoEnabled()) {
+				log.info("Autoscaler server Component activated");
+			}
+		} catch (Throwable e) {
+			log.error("Error in activating the autoscaler component ", e);
+		}
+	}
+
+	protected void deactivate(ComponentContext context) {
+		asTopologyReceiver.terminate();
+		autoscalerHealthStatEventReceiver.terminate();
+	}
+
+	protected void setRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting the Registry Service");
+		}
+		try {
+			ServiceReferenceHolder.getInstance().setRegistry(registryService.getGovernanceSystemRegistry());
+		} catch (RegistryException e) {
+			String msg = "Failed when retrieving Governance System Registry.";
+			log.error(msg, e);
+			throw new AutoScalerException(msg, e);
+		}
+	}
+
+	protected void unsetRegistryService(RegistryService registryService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Un-setting the Registry Service");
+		}
+		ServiceReferenceHolder.getInstance().setRegistry(null);
+	}
+
+	protected void setTaskService(TaskService taskService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting the Task Service");
+		}
+		ServiceReferenceHolder.getInstance().setTaskService(taskService);
+	}
+
+	protected void unsetTaskService(TaskService taskService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Un-setting the Task Service");
+		}
+		ServiceReferenceHolder.getInstance().setTaskService(null);
+	}
+}
+>>>>>>> ddf277b... Remove unnessary threads in messaging model

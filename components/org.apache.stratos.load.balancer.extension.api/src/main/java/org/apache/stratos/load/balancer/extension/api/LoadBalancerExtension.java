@@ -35,136 +35,134 @@ import java.util.concurrent.ExecutorService;
  * received from the message broker.
  */
 public class LoadBalancerExtension implements Runnable {
-    private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
+	private static final Log log = LogFactory.getLog(LoadBalancerExtension.class);
 
-    private LoadBalancer loadBalancer;
-    private LoadBalancerStatisticsReader statsReader;
-    private boolean loadBalancerStarted;
-    private TopologyEventReceiver topologyEventReceiver;
-    private LoadBalancerStatisticsNotifier statisticsNotifier;
-    private boolean terminated;
+	private LoadBalancer loadBalancer;
+	private LoadBalancerStatisticsReader statsReader;
+	private boolean loadBalancerStarted;
+	private TopologyEventReceiver topologyEventReceiver;
+	private LoadBalancerStatisticsNotifier statisticsNotifier;
+	private boolean terminated;
 	private ExecutorService executorService;
-    /**
-     * Load balancer extension constructor.
-     * @param loadBalancer Load balancer instance: Mandatory.
-     * @param statsReader Statistics reader: If null statistics notifier thread will not be started.
-     */
-    public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader) {
-        this.loadBalancer = loadBalancer;
-        this.statsReader = statsReader;
-    }
 
-    @Override
-    public void run() {
-        try {
-            if(log.isInfoEnabled()) {
-                log.info("Load balancer extension started");
-            }
+	/**
+	 * Load balancer extension constructor.
+	 *
+	 * @param loadBalancer Load balancer instance: Mandatory.
+	 * @param statsReader  Statistics reader: If null statistics notifier thread will not be started.
+	 */
+	public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader) {
+		this.loadBalancer = loadBalancer;
+		this.statsReader = statsReader;
+	}
 
-            // Start topology receiver thread
-            topologyEventReceiver = new TopologyEventReceiver();
-            addEventListeners();
-	        topologyEventReceiver.setExecutorService(executorService);
-	        topologyEventReceiver.execute();
+	@Override
+	public void run() {
+		try {
+			if (log.isInfoEnabled()) {
+				log.info("Load balancer extension started");
+			}
 
+			// Start topology receiver thread
+			topologyEventReceiver = new TopologyEventReceiver();
+			addEventListeners();
+			topologyEventReceiver.setExecutorService(executorService);
+			topologyEventReceiver.execute();
 
-            if(statsReader != null) {
-                // Start stats notifier thread
-                statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
-                Thread statsNotifierThread = new Thread(statisticsNotifier);
-                statsNotifierThread.start();
-            }
-            else {
-                if(log.isWarnEnabled()) {
-                    log.warn("Load balancer statistics reader not found");
-                }
-            }
+			if (statsReader != null) {
+				// Start stats notifier thread
+				statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
+				Thread statsNotifierThread = new Thread(statisticsNotifier);
+				statsNotifierThread.start();
+			} else {
+				if (log.isWarnEnabled()) {
+					log.warn("Load balancer statistics reader not found");
+				}
+			}
 
-            // Keep the thread live until terminated
-            while (!terminated);
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("Could not start load balancer extension", e);
-            }
-        }
-    }
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error("Could not start load balancer extension", e);
+			}
+		}
+	}
 
-    private void addEventListeners() {
-        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+	private void addEventListeners() {
+		topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
 
-            @Override
-            protected void onEvent(Event event) {
-                try {
+			@Override
+			protected void onEvent(Event event) {
+				try {
 
-                    if (!loadBalancerStarted) {
-                        // Configure load balancer
-                        loadBalancer.configure(TopologyManager.getTopology());
+					if (!loadBalancerStarted) {
+						// Configure load balancer
+						loadBalancer.configure(TopologyManager.getTopology());
 
-                        // Start load balancer
-                        loadBalancer.start();
-                        loadBalancerStarted = true;
-                    }
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Could not start load balancer", e);
-                    }
-                    terminate();
-                }
-            }
-        });
-        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                reloadConfiguration();
-            }
-        });
-        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                reloadConfiguration();
-            }
-        });
-        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                reloadConfiguration();
-            }
-        });
-        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                reloadConfiguration();
-            }
-        });
-        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                reloadConfiguration();
-            }
-        });
-    }
+						// Start load balancer
+						loadBalancer.start();
+						loadBalancerStarted = true;
+					}
+				} catch (Exception e) {
+					if (log.isErrorEnabled()) {
+						log.error("Could not start load balancer", e);
+					}
+					terminate();
+				}
+			}
+		});
+		topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				reloadConfiguration();
+			}
+		});
+		topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				reloadConfiguration();
+			}
+		});
+		topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				reloadConfiguration();
+			}
+		});
+		topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				reloadConfiguration();
+			}
+		});
+		topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				reloadConfiguration();
+			}
+		});
+	}
 
-    private void reloadConfiguration() {
-        try {
-            if (loadBalancerStarted) {
-                loadBalancer.reload(TopologyManager.getTopology());
-            }
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("Could not reload load balancer configuration", e);
-            }
-        }
-    }
+	private void reloadConfiguration() {
+		try {
+			if (loadBalancerStarted) {
+				loadBalancer.reload(TopologyManager.getTopology());
+			}
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error("Could not reload load balancer configuration", e);
+			}
+		}
+	}
 
-    public void terminate() {
-        if(topologyEventReceiver != null) {
-            topologyEventReceiver.terminate();
-        }
-        if(statisticsNotifier != null) {
-            statisticsNotifier.terminate();
-        }
-        terminated = true;
-    }
+	public void terminate() {
+		if (topologyEventReceiver != null) {
+			topologyEventReceiver.terminate();
+		}
+		if (statisticsNotifier != null) {
+			statisticsNotifier.terminate();
+		}
+		terminated = true;
+	}
 
 	public ExecutorService getExecutorService() {
 		return executorService;

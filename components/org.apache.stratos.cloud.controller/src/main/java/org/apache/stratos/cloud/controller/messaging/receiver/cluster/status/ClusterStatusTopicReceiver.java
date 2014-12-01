@@ -26,16 +26,16 @@ import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.listener.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.cluster.status.ClusterStatusEventReceiver;
 
-public class ClusterStatusTopicReceiver{
-    private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
+public class ClusterStatusTopicReceiver {
+	private static final Log log = LogFactory.getLog(ClusterStatusTopicReceiver.class);
 
-    private ClusterStatusEventReceiver statusEventReceiver;
-    private boolean terminated;
+	private ClusterStatusEventReceiver statusEventReceiver;
+	private boolean terminated;
 
-    public ClusterStatusTopicReceiver() {
-        this.statusEventReceiver = new ClusterStatusEventReceiver();
-        addEventListeners();
-    }
+	public ClusterStatusTopicReceiver() {
+		this.statusEventReceiver = new ClusterStatusEventReceiver();
+		addEventListeners();
+	}
 
 	public void execute() {
 
@@ -47,58 +47,58 @@ public class ClusterStatusTopicReceiver{
 	}
 
 	private void addEventListeners() {
-        // Listen to topology events that affect clusters
-        statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
-            }
-        });
+		// Listen to topology events that affect clusters
+		statusEventReceiver.addEventListener(new ClusterStatusClusterResetEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterReset((ClusterStatusClusterResetEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                //TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
-            }
-        });
+		statusEventReceiver.addEventListener(new ClusterStatusClusterInstanceCreatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				//TopologyBuilder.handleClusterInstanceCreated((ClusterStatusClusterInstanceCreatedEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
-            }
-        });
+		statusEventReceiver.addEventListener(new ClusterStatusClusterCreatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterCreated((ClusterStatusClusterCreatedEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
-            }
-        });
+		statusEventReceiver.addEventListener(new ClusterStatusClusterActivatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterActivatedEvent((ClusterStatusClusterActivatedEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
-            }
-        });
+		statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterTerminatedEvent((ClusterStatusClusterTerminatedEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
-            }
-        });
+		statusEventReceiver.addEventListener(new ClusterStatusClusterTerminatingEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterTerminatingEvent((ClusterStatusClusterTerminatingEvent) event);
+			}
+		});
 
-        statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                TopologyBuilder.handleClusterInActivateEvent((ClusterStatusClusterInactivateEvent) event);
-            }
-        });
-    }
+		statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				TopologyBuilder.handleClusterInActivateEvent((ClusterStatusClusterInactivateEvent) event);
+			}
+		});
+	}
 
-    public void setTerminated(boolean terminated) {
-        this.terminated = terminated;
-    }
+	public void setTerminated(boolean terminated) {
+		this.terminated = terminated;
+	}
 }

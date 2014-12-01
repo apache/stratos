@@ -29,45 +29,44 @@ import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEv
 /**
  * This is to receive the application topic messages.
  */
-public class ApplicationTopicReceiver{
-    private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
-    private ApplicationsEventReceiver applicationsEventReceiver;
-    private boolean terminated;
+public class ApplicationTopicReceiver {
+	private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
+	private ApplicationsEventReceiver applicationsEventReceiver;
+	private boolean terminated;
 
-    public ApplicationTopicReceiver() {
-        this.applicationsEventReceiver = new ApplicationsEventReceiver();
-        addEventListeners();
+	public ApplicationTopicReceiver() {
+		this.applicationsEventReceiver = new ApplicationsEventReceiver();
+		addEventListeners();
 
-    }
+	}
 
-    
+	public void execute() {
 
-    public void execute() {
+		if (log.isInfoEnabled()) {
+			log.info("Cloud controller application status thread started");
+		}
+		applicationsEventReceiver.execute();
 
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread started");
-        }
-	    applicationsEventReceiver.execute();
+		if (log.isInfoEnabled()) {
+			log.info("Cloud controller application status thread terminated");
+		}
 
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread terminated");
-        }
+	}
 
-    }
-    private void addEventListeners() {
-        applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                //Remove the application related data
-                ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent)event;
-                log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
-                String appId = terminatedEvent.getAppId();
-                TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
-            }
-        });
-    }
+	private void addEventListeners() {
+		applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
+			@Override
+			protected void onEvent(Event event) {
+				//Remove the application related data
+				ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent) event;
+				log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
+				String appId = terminatedEvent.getAppId();
+				TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
+			}
+		});
+	}
 
-    public void setTerminated(boolean terminated) {
-        this.terminated = terminated;
-    }
+	public void setTerminated(boolean terminated) {
+		this.terminated = terminated;
+	}
 }

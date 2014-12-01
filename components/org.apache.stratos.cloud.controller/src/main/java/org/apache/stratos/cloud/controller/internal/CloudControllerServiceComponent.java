@@ -20,9 +20,12 @@ package org.apache.stratos.cloud.controller.internal;
  *
 */
 
+<<<<<<< HEAD
 
 import com.hazelcast.core.HazelcastInstance;
 
+=======
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -49,6 +52,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * Registering Cloud Controller Service.
  *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
+<<<<<<< HEAD
  * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.clustering.DistributedObjectProvider"
  *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
@@ -57,42 +61,72 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+=======
+ * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
+ * cardinality="1..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ * @scr.reference name="ntask.component"
+ * interface="org.wso2.carbon.ntask.core.service.TaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ * @scr.reference name="registry.service"
+ * interface="org.wso2.carbon.registry.core.service.RegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * @scr.reference name="config.context.service"
+ * interface="org.wso2.carbon.utils.ConfigurationContextService"
+ * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
  */
 public class CloudControllerServiceComponent {
 
-    private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
-    private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
-    private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
-    private ApplicationTopicReceiver applicationTopicReceiver;
+	private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
+	private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
+	private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
+	private ApplicationTopicReceiver applicationTopicReceiver;
 
-    protected void activate(ComponentContext context) {
-        try {
-            applicationTopicReceiver = new ApplicationTopicReceiver();
-            applicationTopicReceiver.execute();
+	protected void activate(ComponentContext context) {
+		try {
+			applicationTopicReceiver = new ApplicationTopicReceiver();
+			applicationTopicReceiver.execute();
 
+			if (log.isInfoEnabled()) {
+				log.info("Application Receiver thread started");
+			}
+
+<<<<<<< HEAD
             if (log.isInfoEnabled()) {
                 log.info("Application event receiver thread started");
             }
+=======
+			clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
+			clusterStatusTopicReceiver.execute();
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 
-            clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-	        clusterStatusTopicReceiver.execute();
+			if (log.isInfoEnabled()) {
+				log.info("Cluster status Receiver thread started");
+			}
 
+<<<<<<< HEAD
             if (log.isInfoEnabled()) {
                 log.info("Cluster status receiver thread started");
             }
+=======
+			instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
+			instanceStatusTopicReceiver.execute();
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 
-            instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-            instanceStatusTopicReceiver.execute();
+			if (log.isInfoEnabled()) {
+				log.info("Instance status message receiver thread started");
+			}
 
-            if(log.isInfoEnabled()) {
-                log.info("Instance status message receiver thread started");
-            }
+			// Register cloud controller service
+			BundleContext bundleContext = context.getBundleContext();
+			bundleContext.registerService(CloudControllerService.class.getName(),
+			                              new CloudControllerServiceImpl(), null);
 
-        	// Register cloud controller service
-            BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(),
-                    new CloudControllerServiceImpl(), null);
+			if (log.isInfoEnabled()) {
+				log.info("Scheduling tasks");
+			}
 
+<<<<<<< HEAD
             if(log.isInfoEnabled()) {
                 log.info("Scheduling tasks");
             }
@@ -123,29 +157,71 @@ public class CloudControllerServiceComponent {
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
     
+=======
+			TopologySynchronizerTaskScheduler
+					.schedule(ServiceReferenceHolder.getInstance()
+					                                .getTaskService());
+
+		} catch (Throwable e) {
+			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
+		}
+	}
+
+	protected void setTaskService(TaskService taskService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Setting the Task Service");
+		}
+		ServiceReferenceHolder.getInstance().setTaskService(taskService);
+	}
+
+	protected void unsetTaskService(TaskService taskService) {
+		if (log.isDebugEnabled()) {
+			log.debug("Unsetting the Task Service");
+		}
+		ServiceReferenceHolder.getInstance().setTaskService(null);
+	}
+
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 	protected void setRegistryService(RegistryService registryService) {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting the Registry Service");
 		}
-		
-		try {			
+
+		try {
 			UserRegistry registry = registryService.getGovernanceSystemRegistry();
+<<<<<<< HEAD
 	        ServiceReferenceHolder.getInstance().setRegistry(registry);
         } catch (RegistryException e) {
         	String msg = "Failed when retrieving Governance System Registry.";
         	log.error(msg, e);
         	throw new CloudControllerException(msg, e);
         } 
+=======
+			ServiceReferenceHolder.getInstance()
+			                      .setRegistry(registry);
+		} catch (RegistryException e) {
+			String msg = "Failed when retrieving Governance System Registry.";
+			log.error(msg, e);
+			throw new CloudControllerException(msg, e);
+		}
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 	}
 
 	protected void unsetRegistryService(RegistryService registryService) {
 		if (log.isDebugEnabled()) {
+<<<<<<< HEAD
             log.debug("Un-setting the Registry Service");
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
+=======
+			log.debug("Unsetting the Registry Service");
+		}
+		ServiceReferenceHolder.getInstance().setRegistry(null);
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 	}
-	
+
 	protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
+<<<<<<< HEAD
         ServiceReferenceHolder.getInstance().setAxisConfiguration(
                 cfgCtxService.getServerConfigContext().getAxisConfiguration());
     }
@@ -162,8 +238,26 @@ public class CloudControllerServiceComponent {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
     }
 	
+=======
+		ServiceReferenceHolder.getInstance().setAxisConfiguration(
+				cfgCtxService.getServerConfigContext().getAxisConfiguration());
+	}
+
+	protected void unsetConfigurationContextService(ConfigurationContextService cfgCtxService) {
+		ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
+	}
+
+	protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
+		ServiceReferenceHolder.getInstance().setDistributedMapProvider(mapProvider);
+	}
+
+	protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
+		ServiceReferenceHolder.getInstance().setDistributedMapProvider(null);
+	}
+
+>>>>>>> ddf277b... Remove unnessary threads in messaging model
 	protected void deactivate(ComponentContext ctx) {
-        // Close event publisher connections to message broker
-        EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
+		// Close event publisher connections to message broker
+		EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
 	}
 }
