@@ -20,13 +20,12 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holds runtime data of a network partition.
@@ -50,7 +49,7 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     private int currentPartitionIndex;
 
     //partitions of this network partition
-    private final Map<String, GroupLevelPartitionContext> partitionCtxts;
+    private final List<GroupLevelPartitionContext> partitionCtxts;
 
     public GroupLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
         this.id = id;
@@ -60,7 +59,7 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
         }
-        partitionCtxts = new HashMap<String, GroupLevelPartitionContext>();
+        partitionCtxts = new ArrayList<GroupLevelPartitionContext>();
         for (Partition partition : partitions) {
             minInstanceCount += partition.getPartitionMin();
             maxInstanceCount += partition.getPartitionMax();
@@ -135,16 +134,24 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         return id;
     }
 
-    public Map<String, GroupLevelPartitionContext> getPartitionCtxts() {
+    public List<GroupLevelPartitionContext> getPartitionCtxts() {
+
         return partitionCtxts;
     }
 
     public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
-        return partitionCtxts.get(partitionId);
+
+
+        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(partitionId)){
+                return partitionContext;
+            }
+        }
+        return null;
     }
 
     public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
-        partitionCtxts.put(partitionContext.getPartitionId(), partitionContext);
+        partitionCtxts.add(partitionContext);
     }
 
     public String getPartitionAlgorithm() {
@@ -156,15 +163,21 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     }
 
     public int getNonTerminatedMemberCountOfPartition(String partitionId) {
-        if (partitionCtxts.containsKey(partitionId)) {
-            return getPartitionCtxt(partitionId).getNonTerminatedInstanceCount();
+
+        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(partitionId)){
+                return partitionContext.getNonTerminatedInstanceCount();
+            }
         }
         return 0;
     }
 
     public int getActiveMemberCount(String currentPartitionId) {
-        if (partitionCtxts.containsKey(currentPartitionId)) {
-            return getPartitionCtxt(currentPartitionId).getActiveInstanceCount();
+
+        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
+            if(partitionContext.getPartitionId().equals(currentPartitionId)){
+                return partitionContext.getActiveInstanceCount();
+            }
         }
         return 0;
     }
