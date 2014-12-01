@@ -30,8 +30,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
-* This class is used for selecting a {@link Partition} in round robin manner and checking availability of
- * {@link Partition}s of a {@link org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext}
+* This class is used for selecting a {@link PartitionContext} in round robin manner and checking availability of
+ * {@link PartitionContext}s according to the partitions defined
+ * in {@link org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy}
  *
 */
 public class RoundRobin implements AutoscaleAlgorithm{
@@ -39,63 +40,52 @@ public class RoundRobin implements AutoscaleAlgorithm{
 	private static final Log log = LogFactory.getLog(RoundRobin.class);
 
     @Override
-    public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts){
-        /*try{
+    public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts) {
 
-            if (log.isDebugEnabled())
-                log.debug(String.format("Searching for a partition to scale up [ClsuterInstance] %s",
-                        instanceContext.getId()))  ;
-            List<?> partitions = Arrays.asList(instanceContext.getPartitionCtxts());
-            int noOfPartitions = partitions.size();
+        int selectedIndex = 0;
+        int lowestInstanceCount = 0;
 
-            for(int i=0; i < noOfPartitions; i++) {
-                int currentPartitionIndex = clusterLevelNetworkPartitionContext.getCurrentPartitionIndex();
-                if (partitions.get(currentPartitionIndex) instanceof Partition) {
-                    Partition currentPartition = (Partition) partitions.get(currentPartitionIndex);
-                    String currentPartitionId =  currentPartition.getId();
+        for(int partitionIndex = 0; partitionIndex < partitionContexts.length - 1; partitionIndex++) {
 
-                    // point to next partition
-                    int nextPartitionIndex = currentPartitionIndex  == noOfPartitions - 1 ? 0 : currentPartitionIndex+1;
-                    clusterLevelNetworkPartitionContext.setCurrentPartitionIndex(nextPartitionIndex);
-                    int nonTerminatedMemberCountOfPartition = clusterLevelNetworkPartitionContext.(currentPartitionId);
-                    if(nonTerminatedMemberCountOfPartition < currentPartition.getPartitionMax()){
-                        // current partition is free
-                        if (log.isDebugEnabled())
-                            log.debug(String.format("A free space found for scale up in partition %s [current] %s [max] %s",
-                                    currentPartitionId, clusterLevelNetworkPartitionContext.getNonTerminatedMemberCountOfPartition(currentPartitionId),
-                                                                    currentPartition.getPartitionMax()))  ;
-                        return currentPartition;
-                    }
+            if(partitionContexts[partitionIndex].getActiveInstanceCount() < lowestInstanceCount) {
 
-                    if(log.isDebugEnabled())
-                        log.debug("No free space for a new instance in partition " + currentPartition.getId());
-
-                }
+                lowestInstanceCount = partitionContexts[partitionIndex].getActiveInstanceCount();
+                selectedIndex = partitionIndex;
             }
+        }
 
-            // none of the partitions were free.
-            if(log.isDebugEnabled()) {
-                log.debug("No free partition found at network partition " + clusterLevelNetworkPartitionContext);
-    	    }
-        } catch (Exception e) {
-            log.error("Error occurred while searching for next scale up partition", e);
-        }*/
-    return null;
+        if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
+
+            return partitionContexts[selectedIndex];
+        } else {
+
+            return null;
+        }
     }
 
     @Override
     public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts) {
-        return null;
+
+        int selectedIndex = 0;
+        int highestInstanceCount = 0;
+
+        for(int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
+
+            if(partitionContexts[partitionIndex].getActiveInstanceCount() > highestInstanceCount) {
+
+                highestInstanceCount = partitionContexts[partitionIndex].getActiveInstanceCount();
+                selectedIndex = partitionIndex;
+            }
+        }
+
+        if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
+
+            return partitionContexts[selectedIndex];
+        } else {
+
+            return null;
+        }
     }
 
 
-//    @Override
-//    public boolean scaleUpPartitionContextAvailable(String clusterId) {
-//        return false;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
-//
-//    @Override
-//    public boolean scaleDownPartitionContextAvailable(String clusterId) {
-//        return false;  //To change body of implemented methods use File | Settings | File Templates.
-//    }
 }
