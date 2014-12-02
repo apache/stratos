@@ -19,13 +19,14 @@
 
 package org.apache.stratos.common.clustering;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
 /**
  * Distributed object provider service interface.
  */
-public interface DistributedObjectProvider {
+public interface DistributedObjectProvider extends Serializable {
     Map getMap(String key);
 
     List getList(String name);
