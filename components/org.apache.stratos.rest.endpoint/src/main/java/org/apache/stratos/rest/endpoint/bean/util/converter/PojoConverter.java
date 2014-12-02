@@ -375,21 +375,20 @@ public class PojoConverter {
         return autoscalePolicy;
     }
 
-    public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy
-    convetToCCDeploymentPolicyPojo(DeploymentPolicy
-                                           deploymentPolicyBean) {
+    public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToASDeploymentPolicyPojo(
+            DeploymentPolicy deploymentPolicyBean) {
 
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy = new
-                org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
+        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
+                new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
         deploymentPolicy.setId(deploymentPolicyBean.id);
         deploymentPolicy.setDescription(deploymentPolicyBean.description);
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
-        if (deploymentPolicyBean.applicationPolicy != null &&
-                deploymentPolicyBean.applicationPolicy.networkPartition != null &&
-                !deploymentPolicyBean.applicationPolicy.networkPartition.isEmpty()) {
-            deploymentPolicy.setApplicationLevelNetworkPartitions(
-                    convertToCCPartitionGroup(deploymentPolicyBean.applicationPolicy.networkPartition));
+        if (deploymentPolicyBean.applicationPolicy != null
+                && deploymentPolicyBean.applicationPolicy.networkPartition != null
+                && !deploymentPolicyBean.applicationPolicy.networkPartition.isEmpty()) {
+            deploymentPolicy
+                    .setApplicationLevelNetworkPartitions(convertToCCPartitionGroup(deploymentPolicyBean.applicationPolicy.networkPartition));
             deploymentPolicy.setApplicationId(deploymentPolicyBean.applicationPolicy.applicationId);
         }
 

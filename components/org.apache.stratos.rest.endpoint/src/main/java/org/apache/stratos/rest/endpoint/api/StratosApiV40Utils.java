@@ -236,7 +236,7 @@ public class StratosApiV40Utils {
         if (autoscalerServiceClient != null) {
 
             DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
+                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
                 autoscalerServiceClient

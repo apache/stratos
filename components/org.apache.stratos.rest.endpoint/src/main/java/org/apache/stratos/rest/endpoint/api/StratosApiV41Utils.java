@@ -397,7 +397,7 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
+                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
                 autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
@@ -423,7 +423,7 @@ public class StratosApiV41Utils {
         if (autoscalerServiceClient != null) {
 
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToCCDeploymentPolicyPojo(deploymentPolicyBean);
+                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
 
             try {
