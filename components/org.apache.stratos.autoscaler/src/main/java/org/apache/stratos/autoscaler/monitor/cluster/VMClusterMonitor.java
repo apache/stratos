@@ -202,7 +202,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                            getMinCheckKnowledgeSession().setGlobal("algorithmName", networkPartitionContext.getPartitionAlgorithm());
+                            getMinCheckKnowledgeSession().setGlobal("algorithmName",
+                                    networkPartitionContext.getPartitionAlgorithm());
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",
@@ -232,7 +233,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                                 getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
+                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
+                                        vmClusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
@@ -240,7 +242,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
 
                                 if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                                    log.debug(String.format("Running scale check for network partition %s ",
+                                            networkPartitionContext.getId()));
                                     log.debug(" Primary members : " + primaryMemberListInClusterInstance);
                                 }
 
@@ -251,8 +254,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 instanceContext.setMemoryConsumptionReset(false);
                                 instanceContext.setLoadAverageReset(false);
                             } else if (log.isDebugEnabled()) {
-                                log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
-                                        "cycle for network partition %s", networkPartitionContext.getId()));
+                                log.debug(String.format("Scale rule will not run since the LB statistics have not " +
+                                        "received before this cycle for network partition %s",
+                                        networkPartitionContext.getId()));
                             }
 
 
@@ -492,7 +496,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         }
     }
 
-    public void handleAverageRequestsServingCapabilityEvent(AverageRequestsServingCapabilityEvent averageRequestsServingCapabilityEvent) {
+    public void handleAverageRequestsServingCapabilityEvent(
+            AverageRequestsServingCapabilityEvent averageRequestsServingCapabilityEvent) {
 
         String clusterId = averageRequestsServingCapabilityEvent.getClusterId();
         String instanceId = averageRequestsServingCapabilityEvent.getInstanceId();
@@ -849,8 +854,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             }
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member is terminated and removed from the active members list: [member] %s [partition] %s [cluster] %s ",
-                        memberId, partitionId, clusterId));
+                log.info(String.format("Member is terminated and removed from the active members list: [member] %s " +
+                                "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
             }
         } catch (Exception e) {
             String msg = "Error processing event " + e.getLocalizedMessage();

@@ -198,8 +198,8 @@ public class ClusterInstanceContext extends InstanceContext {
         averageRequestServedPerInstanceReset = true;
 
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Average Requesets Served Per Instance stats are reset, ready to do scale check [network partition] %s"
-                    , this.id));
+            log.debug(String.format("Average Requesets Served Per Instance stats are reset, ready to do scale check " +
+                    "[network partition] %s" , this.id));
 
         }
     }
@@ -460,9 +460,9 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public void setMinMembers(int minMembers) {
         this.minMembers = minMembers;
-    }
 
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
+  }
 }

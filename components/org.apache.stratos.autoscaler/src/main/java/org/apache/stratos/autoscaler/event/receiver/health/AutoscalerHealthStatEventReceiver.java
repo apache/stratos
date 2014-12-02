@@ -375,7 +375,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         healthStatEventReceiver.addEventListener(new MemberGradientOfMemoryConsumptionEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent = (MemberGradientOfMemoryConsumptionEvent) event;
+                MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent
+                        = (MemberGradientOfMemoryConsumptionEvent) event;
                 String memberId = memberGradientOfMemoryConsumptionEvent.getMemberId();
                 Member member = getMemberByMemberId(memberId);
                 if (null == member) {
@@ -488,7 +489,8 @@ public class AutoscalerHealthStatEventReceiver implements Runnable {
         healthStatEventReceiver.addEventListener(new SecondDerivativeOfRequestsInFlightEventListener() {
             @Override
             protected void onEvent(org.apache.stratos.messaging.event.Event event) {
-                SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent = (SecondDerivativeOfRequestsInFlightEvent) event;
+                SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent
+                        = (SecondDerivativeOfRequestsInFlightEvent) event;
                 String clusterId = secondDerivativeOfRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
