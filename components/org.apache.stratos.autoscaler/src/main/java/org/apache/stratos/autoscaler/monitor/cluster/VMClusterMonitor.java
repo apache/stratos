@@ -177,10 +177,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             getClusterInstanceContextMap().values()) {
                         //FIXME to check the status of the instance
                         if (true) {
+                            // store primary members in the partition context
+                            List<String> primaryMemberListInPartition = new ArrayList<String>();
                             for (ClusterLevelPartitionContext partitionContext :
                                     instanceContext.getPartitionCtxts()) {
-                                // store primary members in the partition context
-                                List<String> primaryMemberListInPartition = new ArrayList<String>();
                                 // get active primary members in this partition context
                                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
                                     if (isPrimaryMember(memberContext)) {
@@ -194,67 +194,69 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                         primaryMemberListInPartition.add(memberContext.getMemberId());
                                     }
                                 }
-                                primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
-                                getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-//                                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
-                                getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                                getMinCheckKnowledgeSession().setGlobal("instanceId",
-                                        instanceContext.getId());
-
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Running minimum check for partition %s ",
-                                            partitionContext.getPartitionId()));
-                                }
-
-                                minCheckFactHandle = AutoscalerRuleEvaluator.
-                                        evaluateMinCheck(getMinCheckKnowledgeSession()
-                                                , minCheckFactHandle, partitionContext);
-
-                                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.
-                                        evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
-                                                obsoleteCheckFactHandle, partitionContext);
-
-                                //checking the status of the cluster
-
-                                boolean rifReset = instanceContext.isRifReset();
-                                boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
-                                boolean loadAverageReset = instanceContext.isLoadAverageReset();
-
-                                if (log.isDebugEnabled()) {
-                                    log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
-                                            + " flag of loadAverageReset" + loadAverageReset);
-                                }
-                                if (rifReset || memoryConsumptionReset || loadAverageReset) {
-
-
-                                    VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
-
-                                    getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
-                                    getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                    getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
-                                    getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
-                                    getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-//                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
-                                    getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
-                                    getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
-
-                                    if (log.isDebugEnabled()) {
-                                        log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
-                                        log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
-                                    }
-
-                                    scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
-                                            , scaleCheckFactHandle, networkPartitionContext);
-
-                                    instanceContext.setRifReset(false);
-                                    instanceContext.setMemoryConsumptionReset(false);
-                                    instanceContext.setLoadAverageReset(false);
-                                } else if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
-                                            "cycle for network partition %s", networkPartitionContext.getId()));
-                                }
                             }
+
+                            primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
+                            getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+//                                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+                            getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                            getMinCheckKnowledgeSession().setGlobal("instanceId",
+                                    instanceContext.getId());
+
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("Running minimum check for cluster instance %s ",
+                                        instanceContext.getId()));
+                            }
+
+                            minCheckFactHandle = AutoscalerRuleEvaluator.
+                                    evaluateMinCheck(getMinCheckKnowledgeSession()
+                                            , minCheckFactHandle, instanceContext);
+
+                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.
+                                    evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
+                                            obsoleteCheckFactHandle, instanceContext);
+
+                            //checking the status of the cluster
+
+                            boolean rifReset = instanceContext.isRifReset();
+                            boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
+                            boolean loadAverageReset = instanceContext.isLoadAverageReset();
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
+                                        + " flag of loadAverageReset" + loadAverageReset);
+                            }
+                            if (rifReset || memoryConsumptionReset || loadAverageReset) {
+
+
+                                VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+
+                                getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
+                                getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy", vmClusterContext.getAutoscalePolicy());
+                                getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                                getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+                                getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+//                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
+                                getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
+
+                                if (log.isDebugEnabled()) {
+                                    log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
+                                    log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
+                                }
+
+                                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
+                                        , scaleCheckFactHandle, networkPartitionContext);
+
+                                instanceContext.setRifReset(false);
+                                instanceContext.setMemoryConsumptionReset(false);
+                                instanceContext.setLoadAverageReset(false);
+                            } else if (log.isDebugEnabled()) {
+                                log.debug(String.format("Scale rule will not run since the LB statistics have not received before this " +
+                                        "cycle for network partition %s", networkPartitionContext.getId()));
+                            }
+
 
                         }
                     }
