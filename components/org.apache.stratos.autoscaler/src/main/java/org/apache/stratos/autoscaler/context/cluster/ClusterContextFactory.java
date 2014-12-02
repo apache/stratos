@@ -48,7 +48,7 @@ public class ClusterContextFactory {
 
     private static final Log log = LogFactory.getLog(ClusterContextFactory.class);
 
-    public static VMServiceClusterContext getVMServiceClusterContext(String instanceId, Cluster cluster)
+    public static VMClusterContext getVMClusterContext(String instanceId, Cluster cluster)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
@@ -74,7 +74,7 @@ public class ClusterContextFactory {
             ApplicationHolder.releaseReadLock();
         }
 
-        return new VMServiceClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
+        return new VMClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
                 deploymentPolicy);
     }
 
