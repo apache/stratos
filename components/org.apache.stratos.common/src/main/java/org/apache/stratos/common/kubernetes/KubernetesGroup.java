@@ -29,6 +29,7 @@ import java.util.Arrays;
  */
 public class KubernetesGroup implements Serializable {
 
+    private static final long serialVersionUID = 3210149484906093132L;
     private String groupId;
     private KubernetesHost[] kubernetesHosts;
     private KubernetesMaster kubernetesMaster;

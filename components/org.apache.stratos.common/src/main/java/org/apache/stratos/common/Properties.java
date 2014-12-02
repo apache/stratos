@@ -65,21 +65,44 @@ public class Properties implements Serializable {
     }
 
     @Override
-    public boolean equals(Object object) {
-        if (object == null) {
-            return false;
-        }
-
-        if (!(object instanceof Properties)) {
-            return false;
-        }
-
-        Properties propertiesObject = (Properties) object;
-        return Arrays.equals(propertiesObject.getProperties(), this.getProperties());
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        return this.hashCode();
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Properties other = (Properties) obj;
+        if (properties == null) {
+            if (other.properties != null)
+                return false;
+        } else if (!Arrays.equals(other.getProperties(), this.getProperties()))
+            return false;
+        return true;
     }
+
+//    @Override
+//    public boolean equals(Object object) {
+//        if (object == null) {
+//            return false;
+//        }
+//
+//        if (!(object instanceof Properties)) {
+//            return false;
+//        }
+//
+//        Properties propertiesObject = (Properties) object;
+//        return Arrays.equals(propertiesObject.getProperties(), this.getProperties());
+//    }
+    
+    
+
 }

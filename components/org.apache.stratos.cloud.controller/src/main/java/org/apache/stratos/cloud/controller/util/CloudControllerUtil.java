@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,12 +27,20 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesGroupException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
+import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
+
+import com.google.common.net.InetAddresses;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -395,4 +404,107 @@ public class CloudControllerUtil {
 		}
 		return clusterId;
 	}
+	
+	public static void validateKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException {
+        CloudControllerContext context = CloudControllerContext.getInstance();
+	    
+	    if (kubernetesGroup == null) {
+            throw new InvalidKubernetesGroupException("Kubernetes group can not be null");
+        }
+        if (StringUtils.isEmpty(kubernetesGroup.getGroupId())) {
+            throw new InvalidKubernetesGroupException("Kubernetes group groupId can not be empty");
+        }
+        if (context.kubernetesGroupExists(kubernetesGroup)) {
+            throw new InvalidKubernetesGroupException(String.format("Kubernetes group already exists " +
+                    "[id] %s", kubernetesGroup.getGroupId()));
+        }
+        if (kubernetesGroup.getKubernetesMaster() == null) {
+            throw new InvalidKubernetesGroupException("Mandatory field master has not been set " +
+                    "for the Kubernetes group [id] " + kubernetesGroup.getGroupId());
+        }
+        if (kubernetesGroup.getPortRange() == null) {
+            throw new InvalidKubernetesGroupException("Mandatory field portRange has not been set " +
+                    "for the Kubernetes group [id] " + kubernetesGroup.getGroupId());
+        }
+
+        // Port range validation
+        if (kubernetesGroup.getPortRange().getUpper() > CloudControllerConstants.PORT_RANGE_MAX ||
+                kubernetesGroup.getPortRange().getUpper() < CloudControllerConstants.PORT_RANGE_MIN ||
+                kubernetesGroup.getPortRange().getLower() > CloudControllerConstants.PORT_RANGE_MAX ||
+                kubernetesGroup.getPortRange().getLower() < CloudControllerConstants.PORT_RANGE_MIN ||
+                kubernetesGroup.getPortRange().getUpper() < kubernetesGroup.getPortRange().getLower()) {
+            throw new InvalidKubernetesGroupException("Port range is invalid " +
+                    "for the Kubernetes group [id]" + kubernetesGroup.getGroupId());
+        }
+        try {
+            validateKubernetesMaster(kubernetesGroup.getKubernetesMaster());
+            validateKubernetesHosts(kubernetesGroup.getKubernetesHosts());
+
+            // check whether master already exists
+            if (context.kubernetesHostExists(kubernetesGroup.getKubernetesMaster().getHostId())) {
+                throw new InvalidKubernetesGroupException("Kubernetes host already exists [id] " +
+                        kubernetesGroup.getKubernetesMaster().getHostId());
+            }
+
+            // Check for duplicate hostIds
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                List<String> hostIds = new ArrayList<String>();
+                hostIds.add(kubernetesGroup.getKubernetesMaster().getHostId());
+
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (hostIds.contains(kubernetesHost.getHostId())) {
+                        throw new InvalidKubernetesGroupException(
+                                String.format("Kubernetes host [id] %s already defined in the request", kubernetesHost.getHostId()));
+                    }
+
+                    // check whether host already exists
+                    if (context.kubernetesHostExists(kubernetesHost.getHostId())) {
+                        throw new InvalidKubernetesGroupException("Kubernetes host already exists [id] " +
+                                kubernetesHost.getHostId());
+                    }
+
+                    hostIds.add(kubernetesHost.getHostId());
+                }
+            }
+
+        } catch (InvalidKubernetesHostException e) {
+            throw new InvalidKubernetesGroupException(e.getMessage());
+        } catch (InvalidKubernetesMasterException e) {
+            throw new InvalidKubernetesGroupException(e.getMessage());
+        }
+    }
+	
+	private static void validateKubernetesHosts(KubernetesHost[] kubernetesHosts) throws InvalidKubernetesHostException {
+        if (kubernetesHosts == null || kubernetesHosts.length == 0) {
+            return;
+        }
+        for (KubernetesHost kubernetesHost : kubernetesHosts) {
+            validateKubernetesHost(kubernetesHost);
+        }
+    }
+
+    public static void validateKubernetesHost(KubernetesHost kubernetesHost) throws InvalidKubernetesHostException {
+        if (kubernetesHost == null) {
+            throw new InvalidKubernetesHostException("Kubernetes host can not be null");
+        }
+        if (StringUtils.isEmpty(kubernetesHost.getHostId())) {
+            throw new InvalidKubernetesHostException("Kubernetes host id can not be empty");
+        }
+        if (kubernetesHost.getHostIpAddress() == null) {
+            throw new InvalidKubernetesHostException("Mandatory field Kubernetes host IP address has not been set " +
+                    "for [hostId] " + kubernetesHost.getHostId());
+        }
+        if (!InetAddresses.isInetAddress(kubernetesHost.getHostIpAddress())) {
+            throw new InvalidKubernetesHostException("Kubernetes host ip address is invalid: " + kubernetesHost.getHostIpAddress());
+        }
+    }
+
+    public static void validateKubernetesMaster(KubernetesMaster kubernetesMaster) throws InvalidKubernetesMasterException {
+        try {
+            validateKubernetesHost(kubernetesMaster);
+        } catch (InvalidKubernetesHostException e) {
+            throw new InvalidKubernetesMasterException(e.getMessage());
+        }
+    }
+
 }

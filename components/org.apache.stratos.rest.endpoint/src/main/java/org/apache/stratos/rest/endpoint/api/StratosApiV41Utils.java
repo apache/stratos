@@ -26,9 +26,16 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
+import org.apache.stratos.autoscaler.stub.exception.InvalidKubernetesGroupException;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesHostExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesMasterExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesGroupExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesHostExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesMasterExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
@@ -1618,17 +1625,17 @@ public class StratosApiV41Utils {
 
     public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup kubernetesGroup =
-                    PojoConverter.convertToASKubernetesGroupPojo(kubernetesGroupBean);
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup kubernetesGroup =
+                    PojoConverter.convertToCCKubernetesGroupPojo(kubernetesGroupBean);
 
             try {
-                return autoscalerServiceClient.deployKubernetesGroup(kubernetesGroup);
+                return cloudControllerServiceClient.deployKubernetesGroup(kubernetesGroup);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceInvalidKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getInvalidKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1640,21 +1647,21 @@ public class StratosApiV41Utils {
     public static boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHostBean)
             throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
-                    PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
+                    PojoConverter.convertToCCKubernetesHostPojo(kubernetesHostBean);
 
             try {
-                return autoscalerServiceClient.deployKubernetesHost(kubernetesGroupId, kubernetesHost);
+                return cloudControllerServiceClient.deployKubernetesHost(kubernetesGroupId, kubernetesHost);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidKubernetesHostExceptionException e) {
+            } catch (CloudControllerServiceInvalidKubernetesHostExceptionException e) {
                 String message = e.getFaultMessage().getInvalidKubernetesHostException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoScalerServiceNonExistingKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1665,21 +1672,21 @@ public class StratosApiV41Utils {
 
     public static boolean updateKubernetesMaster(KubernetesMaster kubernetesMasterBean) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster kubernetesMaster =
-                    PojoConverter.convertToASKubernetesMasterPojo(kubernetesMasterBean);
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster kubernetesMaster =
+                    PojoConverter.convertToCCKubernetesMasterPojo(kubernetesMasterBean);
 
             try {
-                return autoscalerServiceClient.updateKubernetesMaster(kubernetesMaster);
+                return cloudControllerServiceClient.updateKubernetesMaster(kubernetesMaster);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidKubernetesMasterExceptionException e) {
+            } catch (CloudControllerServiceInvalidKubernetesMasterExceptionException e) {
                 String message = e.getFaultMessage().getInvalidKubernetesMasterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoScalerServiceNonExistingKubernetesMasterExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesMasterExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesMasterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1690,11 +1697,11 @@ public class StratosApiV41Utils {
 
     public static KubernetesGroup[] getAvailableKubernetesGroups() throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup[]
-                        kubernetesGroups = autoscalerServiceClient.getAvailableKubernetesGroups();
+                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup[]
+                        kubernetesGroups = cloudControllerServiceClient.getAvailableKubernetesGroups();
                 return PojoConverter.populateKubernetesGroupsPojo(kubernetesGroups);
 
             } catch (RemoteException e) {
@@ -1707,17 +1714,17 @@ public class StratosApiV41Utils {
 
     public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup
-                        kubernetesGroup = autoscalerServiceClient.getKubernetesGroup(kubernetesGroupId);
+                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup
+                        kubernetesGroup = cloudControllerServiceClient.getKubernetesGroup(kubernetesGroupId);
                 return PojoConverter.populateKubernetesGroupPojo(kubernetesGroup);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceNonExistingKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1766,11 +1773,11 @@ public class StratosApiV41Utils {
 
     public static KubernetesHost[] getKubernetesHosts(String kubernetesGroupId) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost[]
-                        kubernetesHosts = autoscalerServiceClient.getKubernetesHosts(kubernetesGroupId);
+                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[]
+                        kubernetesHosts = cloudControllerServiceClient.getKubernetesHosts(kubernetesGroupId);
 
                 List<KubernetesHost> arrayList = PojoConverter.populateKubernetesHostsPojo(kubernetesHosts);
                 KubernetesHost[] array = new KubernetesHost[arrayList.size()];
@@ -1779,7 +1786,7 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceNonExistingKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1789,17 +1796,17 @@ public class StratosApiV41Utils {
     }
 
     public static KubernetesMaster getKubernetesMaster(String kubernetesGroupId) throws RestAPIException {
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster
-                        kubernetesMaster = autoscalerServiceClient.getKubernetesMaster(kubernetesGroupId);
+                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster
+                        kubernetesMaster = cloudControllerServiceClient.getKubernetesMaster(kubernetesGroupId);
                 return PojoConverter.populateKubernetesMasterPojo(kubernetesMaster);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceNonExistingKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1809,20 +1816,20 @@ public class StratosApiV41Utils {
     }
 
     public static boolean updateKubernetesHost(KubernetesHost kubernetesHostBean) throws RestAPIException {
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost kubernetesHost =
-                    PojoConverter.convertToASKubernetesHostPojo(kubernetesHostBean);
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
+                    PojoConverter.convertToCCKubernetesHostPojo(kubernetesHostBean);
             try {
-                return autoscalerServiceClient.updateKubernetesHost(kubernetesHost);
+                return cloudControllerServiceClient.updateKubernetesHost(kubernetesHost);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidKubernetesHostExceptionException e) {
+            } catch (CloudControllerServiceInvalidKubernetesHostExceptionException e) {
                 String message = e.getFaultMessage().getInvalidKubernetesHostException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoScalerServiceNonExistingKubernetesHostExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesHostExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesHostException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);

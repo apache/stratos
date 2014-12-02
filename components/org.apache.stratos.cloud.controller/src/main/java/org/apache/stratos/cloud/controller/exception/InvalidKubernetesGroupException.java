@@ -1,4 +1,5 @@
 /*
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -7,7 +8,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -15,37 +16,34 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *
+*/
 
-package org.apache.stratos.common.kubernetes;
-
-import java.io.Serializable;
+package org.apache.stratos.cloud.controller.exception;
 
 /**
- * The model class for PortRange definition.
+ * Exception class for handling invalid Kubernetes Group
  */
-public class PortRange implements Serializable {
-    private static final long serialVersionUID = -8658155576745059779L;
-    int upper;
-    int lower;
+public class InvalidKubernetesGroupException extends Exception {
 
-    public int getUpper() {
-        return upper;
+    private String message;
+
+    public InvalidKubernetesGroupException(String message, Exception exception){
+        super(message, exception);
+        this.message = message;
     }
 
-    public void setUpper(int upper) {
-        this.upper = upper;
+    public InvalidKubernetesGroupException(Exception exception){
+        super(exception);
     }
 
-    public int getLower() {
-        return lower;
+    public InvalidKubernetesGroupException(String msg){
+        super(msg);
+        this.message = msg;
     }
 
-    public void setLower(int lower) {
-        this.lower = lower;
-    }
-
-    public String toString() {
-        return "[ upper=" + upper + " , lower=" + lower + " ]";
+    @Override
+    public String getMessage() {
+        return this.message;
     }
 }

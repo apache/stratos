@@ -20,10 +20,15 @@ package org.apache.stratos.cloud.controller.context;
 
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
@@ -31,8 +36,12 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import com.google.common.net.InetAddresses;
+
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +58,7 @@ public class CloudControllerContext implements Serializable {
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
+    public static final String KUB_GROUP_ID_TO_GROUP_MAP = "KUB_GROUP_ID_TO_GROUP_MAP";
     public static final String CC_CLUSTER_ID_TO_MEMBER_CTX = "CC_CLUSTER_ID_TO_MEMBER_CTX";
     public static final String CC_MEMBER_ID_TO_MEMBER_CTX = "CC_MEMBER_ID_TO_MEMBER_CTX";
     public static final String CC_MEMBER_ID_TO_SCH_TASK = "CC_MEMBER_ID_TO_SCH_TASK";
@@ -63,6 +73,13 @@ public class CloudControllerContext implements Serializable {
     private final DistributedObjectProvider distributedObjectProvider;
 
 	/* We keep following maps in order to make the look up time, small. */
+    
+    /** 
+     * KubernetesGroups against groupIds
+     * Key - Kubernetes group id
+     * Value - {@link KubernetesGroup}
+     */
+    private Map<String, KubernetesGroup> kubernetesGroupsMap;
 
     /**
      * Key - cluster id
@@ -134,6 +151,7 @@ public class CloudControllerContext implements Serializable {
         distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
 
         // Initialize objects
+        kubernetesGroupsMap = distributedObjectProvider.getMap(KUB_GROUP_ID_TO_GROUP_MAP);
         clusterIdToMemberContextListMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_MEMBER_CTX);
         memberIdToMemberContextMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_MEMBER_CTX);
         memberIdToScheduledTaskMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_SCH_TASK);
@@ -364,6 +382,143 @@ public class CloudControllerContext implements Serializable {
                 kubernetesClusterContext.getKubernetesClusterId(),
                 kubernetesClusterContext);
     }
+    
+    /**
+     * Remove a registered Kubernetes group from registry
+     */
+    public synchronized void removeKubernetesGroup(String kubernetesGroupId) {
+        // Remove entry from information model
+        distributedObjectProvider.removeFromMap(kubernetesGroupsMap, kubernetesGroupId);
+    }
+
+    /**
+     * Remove a registered Kubernetes host from registry
+     */
+    public synchronized boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
+        if (kubernetesHostId == null) {
+            throw new NonExistingKubernetesHostException("Kubernetes host id can not be null");
+        }
+        if (log.isInfoEnabled()) {
+            log.info("Removing Kubernetes Host: " + kubernetesHostId);
+        }
+        try {
+            KubernetesGroup kubernetesGroupStored = getKubernetesGroupContainingHost(kubernetesHostId);
+
+            // Kubernetes master can not be removed
+            if (kubernetesGroupStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
+                throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
+            }
+
+            List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
+            for (KubernetesHost kubernetesHost : kubernetesGroupStored.getKubernetesHosts()) {
+                if (!kubernetesHost.getHostId().equals(kubernetesHostId)) {
+                    kubernetesHostList.add(kubernetesHost);
+                }
+            }
+            // member count will be equal only when host object was not found
+            if (kubernetesHostList.size() == kubernetesGroupStored.getKubernetesHosts().length) {
+                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
+            }
+            KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
+            kubernetesHostList.toArray(kubernetesHostsArray);
+
+            // Update information model
+            kubernetesGroupStored.setKubernetesHosts(kubernetesHostsArray);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
+            }
+
+            return true;
+        } catch (Exception e) {
+            throw new NonExistingKubernetesHostException(e.getMessage(), e);
+        }
+    }
+
+    public void addKubernetesGroupToInformationModel(KubernetesGroup kubernetesGroup) {
+        distributedObjectProvider.putToMap(kubernetesGroupsMap, kubernetesGroup.getGroupId(), kubernetesGroup);
+    }
+    
+    public boolean kubernetesGroupExists(KubernetesGroup kubernetesGroup) {
+        return kubernetesGroupsMap.containsKey(kubernetesGroup);
+    }
+
+    public boolean kubernetesHostExists(String hostId) {
+        if (StringUtils.isEmpty(hostId)) {
+            return false;
+        }
+        for (KubernetesGroup kubernetesGroup : kubernetesGroupsMap.values()) {
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (kubernetesHost.getHostId().equals(hostId)) {
+                        return true;
+                    }
+                }
+            }
+            if (hostId.equals(kubernetesGroup.getKubernetesMaster().getHostId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public KubernetesHost[] getKubernetesHostsInGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Cannot find for empty group id");
+        }
+
+        KubernetesGroup kubernetesGroup = kubernetesGroupsMap.get(kubernetesGroupId);
+        if (kubernetesGroup != null) {
+            return kubernetesGroup.getKubernetesHosts();
+        }
+        throw new NonExistingKubernetesGroupException("Kubernetes group not found for group id: " + kubernetesGroupId);
+    }
+
+    public KubernetesMaster getKubernetesMasterInGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Cannot find for empty group id");
+        }
+        KubernetesGroup kubernetesGroup = kubernetesGroupsMap.get(kubernetesGroupId);
+        if (kubernetesGroup != null) {
+            return kubernetesGroup.getKubernetesMaster();
+        }
+        throw new NonExistingKubernetesGroupException("Kubernetes master not found for group id: " + kubernetesGroupId);
+    }
+
+    public KubernetesGroup getKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException {
+        if (StringUtils.isEmpty(groupId)) {
+            throw new NonExistingKubernetesGroupException("Cannot find for empty group id");
+        }
+        KubernetesGroup kubernetesGroup = kubernetesGroupsMap.get(groupId);
+        if (kubernetesGroup != null) {
+            return kubernetesGroup;
+        }
+        throw new NonExistingKubernetesGroupException("Kubernetes group not found for id: " + groupId);
+    }
+
+    public KubernetesGroup getKubernetesGroupContainingHost(String hostId) throws NonExistingKubernetesGroupException {
+        if (StringUtils.isEmpty(hostId)) {
+            return null;
+        }
+        for (KubernetesGroup kubernetesGroup : kubernetesGroupsMap.values()) {
+            if (hostId.equals(kubernetesGroup.getKubernetesMaster().getHostId())) {
+                return kubernetesGroup;
+            }
+            if (kubernetesGroup.getKubernetesHosts() != null) {
+                for (KubernetesHost kubernetesHost : kubernetesGroup.getKubernetesHosts()) {
+                    if (kubernetesHost.getHostId().equals(hostId)) {
+                        return kubernetesGroup;
+                    }
+                }
+            }
+        }
+        throw new NonExistingKubernetesGroupException("Kubernetes group not found containing host id: " + hostId);
+    }
+
+    public KubernetesGroup[] getKubernetesGroups() {
+        return kubernetesGroupsMap.values().toArray(new KubernetesGroup[kubernetesGroupsMap.size()]);
+    }
 
     public boolean isClustered() {
         return clustered;
@@ -390,6 +545,7 @@ public class CloudControllerContext implements Serializable {
                     if (dataObj instanceof CloudControllerContext) {
                         CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
 
+                        copyMap(kubernetesGroupsMap, serializedObj.kubernetesGroupsMap);
                         copyMap(clusterIdToMemberContextListMap, serializedObj.clusterIdToMemberContextListMap);
                         copyMap(memberIdToMemberContextMap, serializedObj.memberIdToMemberContextMap);
                         copyMap(memberIdToScheduledTaskMap, serializedObj.memberIdToScheduledTaskMap);

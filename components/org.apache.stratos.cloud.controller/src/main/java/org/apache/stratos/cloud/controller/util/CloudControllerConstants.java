@@ -285,4 +285,10 @@ public final class CloudControllerConstants {
     public static final String NETWORK_IDS= "networkIds";
     
     public static final String IS_LOAD_BALANCER = "load.balancer";
+    
+    /**
+     * PortRange min max
+     */
+    public static final int PORT_RANGE_MAX = 65535;
+    public static final int PORT_RANGE_MIN = 1;
 }

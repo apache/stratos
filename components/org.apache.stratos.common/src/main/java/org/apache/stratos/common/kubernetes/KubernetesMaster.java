@@ -30,6 +30,8 @@ import java.io.Serializable;
  * The model class for KubernetesMaster beans. This represents a Kubernetes CoreOS master host instance
  */
 public class KubernetesMaster extends KubernetesHost implements Serializable {
+    private static final long serialVersionUID = -4369535909362724532L;
+
     private static final Log log = LogFactory.getLog(KubernetesMaster.class);
 
     private String endpoint;

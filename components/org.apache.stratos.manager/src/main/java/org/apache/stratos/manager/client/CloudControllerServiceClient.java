@@ -32,14 +32,15 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.Registrant;
 import org.apache.stratos.cloud.controller.stub.domain.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.domain.Dependencies;
+import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup;
+import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost;
+import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 
 public class CloudControllerServiceClient {
 
@@ -160,5 +161,58 @@ public class CloudControllerServiceClient {
     public ClusterContext getClusterContext (String clusterId) throws RemoteException {
 
         return stub.getClusterContext(clusterId);
+    }
+    
+    public boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RemoteException,
+            CloudControllerServiceInvalidKubernetesGroupExceptionException {
+        return stub.addKubernetesGroup(kubernetesGroup);
+    }
+
+    public boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
+            throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
+            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+
+        return stub.addKubernetesHost(kubernetesGroupId, kubernetesHost);
+    }
+
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RemoteException,
+            CloudControllerServiceInvalidKubernetesMasterExceptionException,
+            CloudControllerServiceNonExistingKubernetesMasterExceptionException {
+        return stub.updateKubernetesMaster(kubernetesMaster);
+    }
+
+    public KubernetesGroup[] getAvailableKubernetesGroups() throws RemoteException {
+        return stub.getAllKubernetesGroups();
+    }
+
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean undeployKubernetesGroup(String kubernetesGroupId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.removeKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean undeployKubernetesHost(String kubernetesHostId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesHostExceptionException {
+        return stub.removeKubernetesHost(kubernetesHostId);
+    }
+
+    public KubernetesHost[] getKubernetesHosts(String kubernetesGroupId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getHostsForKubernetesGroup(kubernetesGroupId);
+    }
+
+    public KubernetesMaster getKubernetesMaster(String kubernetesGroupId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+        return stub.getMasterForKubernetesGroup(kubernetesGroupId);
+    }
+
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws RemoteException,
+            CloudControllerServiceInvalidKubernetesHostExceptionException,
+            CloudControllerServiceNonExistingKubernetesHostExceptionException {
+        return stub.updateKubernetesHost(kubernetesHost);
     }
 }

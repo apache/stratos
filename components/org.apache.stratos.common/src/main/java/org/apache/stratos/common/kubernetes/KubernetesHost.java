@@ -31,6 +31,7 @@ import java.io.Serializable;
  * The model class for KubernetesHost beans. This represents a Kubernetes CoreOS host instance
  */
 public class KubernetesHost implements Serializable {
+    private static final long serialVersionUID = 1798748592432690645L;
     private static final Log log = LogFactory.getLog(KubernetesHost.class);
     protected String hostId;
     protected String hostname;

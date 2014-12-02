@@ -19,8 +19,10 @@
 package org.apache.stratos.cloud.controller.services;
 
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
@@ -228,4 +230,82 @@ public interface CloudControllerService {
      */
     public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) throws
             ClusterInstanceCreationException;
+    
+    /**
+     * Retrieves registered Kubernetes Groups.
+     */
+    public KubernetesGroup[] getAllKubernetesGroups();
+
+    /**
+     * Retrieves Kubernetes Group for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+
+    /**
+     * Retrieves Kubernetes Master for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+
+    /**
+     * Retrieves Kubernetes Hosts for given Kubernetes Group ID.
+     *
+     * @param kubernetesGroupId
+     */
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+
+    /**
+     * Register a Kubernetes cluster.
+     *
+     * @param kubernetesGroup
+     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesGroupException
+     */
+    public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException;
+
+    /**
+     * Add a Kubernetes host to a Kubernetes Group.
+     *
+     * @param groupId
+     * @param kubernetesHost
+     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesHostException
+     */
+    public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesGroupException;
+
+    /**
+     * Update a Kubernetes host.
+     *
+     * @param kubernetesHost
+     * @throws InvalidKubernetesHostException
+     */
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesHostException;
+
+    /**
+     * Remove a Kubernetes host.
+     *
+     * @param groupId
+     * @throws NonExistingKubernetesGroupException
+     */
+    public boolean removeKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException;
+
+    /**
+     * Update a Kubernetes host.
+     *
+     * @param hostId
+     * @throws InvalidKubernetesHostException
+     */
+    public boolean removeKubernetesHost(String hostId) throws NonExistingKubernetesHostException;
+
+    /**
+     * Update a Kubernetes Master in a Kubernetes Group.
+     *
+     * @param kubernetesMaster
+     * @throws NonExistingKubernetesMasterException
+     */
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException;
 }

@@ -49,6 +49,9 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.common.*;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.kubernetes.KubernetesHost;
+import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.Label;
@@ -2048,6 +2051,221 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias, instanceId);
 
         persist();
+    }
+    
+    @Override
+    public KubernetesGroup[] getAllKubernetesGroups() {
+        return cloudControllerContext.getKubernetesGroups();
+    }
+
+    @Override
+    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return cloudControllerContext.getKubernetesGroup(kubernetesGroupId);
+    }
+
+    @Override
+    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return cloudControllerContext.getKubernetesMasterInGroup(kubernetesGroupId);
+    }
+
+    @Override
+    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        return cloudControllerContext.getKubernetesHostsInGroup(kubernetesGroupId);
+    }
+
+
+    @Override
+    public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException {
+        if (kubernetesGroup == null) {
+            throw new InvalidKubernetesGroupException("Kubernetes Group can not be null");
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Deploying new Kubernetes group: " + kubernetesGroup);
+        }
+        CloudControllerUtil.validateKubernetesGroup(kubernetesGroup);
+        try {
+            // Add to information model
+            cloudControllerContext.addKubernetesGroupToInformationModel(kubernetesGroup);
+
+            persist();
+            
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Kubernetes group deployed successfully: [id] %s, [description] %s",
+                        kubernetesGroup.getGroupId(), kubernetesGroup.getDescription()));
+            }
+            
+            return true;
+        } catch (Exception e) {
+            throw new InvalidKubernetesGroupException(e.getMessage(), e);
+        }
+    }
+    
+    @Override
+    public boolean addKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesGroupException {
+        if (kubernetesHost == null) {
+            throw new InvalidKubernetesHostException("Kubernetes host can not be null");
+        }
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Kubernetes group id can not be null");
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Deploying new Kubernetes Host: " + kubernetesHost + " for Kubernetes group id: " + kubernetesGroupId);
+        }
+        CloudControllerUtil.validateKubernetesHost(kubernetesHost);
+        try {
+            KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
+            ArrayList<KubernetesHost> kubernetesHostArrayList;
+
+            if (kubernetesGroupStored.getKubernetesHosts() == null) {
+                kubernetesHostArrayList = new ArrayList<KubernetesHost>();
+            } else {
+                if (cloudControllerContext.kubernetesHostExists(kubernetesHost.getHostId())) {
+                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [id] " + kubernetesHost.getHostId());
+                }
+                kubernetesHostArrayList = new
+                        ArrayList<KubernetesHost>(Arrays.asList(kubernetesGroupStored.getKubernetesHosts()));
+            }
+            kubernetesHostArrayList.add(kubernetesHost);
+
+            // Update information model
+            kubernetesGroupStored.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
+
+            persist();
+            
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Kubernetes host deployed successfully: [id] %s", kubernetesGroupStored.getGroupId()));
+            }
+            
+            return true;
+        } catch (Exception e) {
+            throw new InvalidKubernetesHostException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean removeKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
+        if (StringUtils.isEmpty(kubernetesGroupId)) {
+            throw new NonExistingKubernetesGroupException("Kubernetes group id can not be empty");
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Removing Kubernetes group: " + kubernetesGroupId);
+        }
+        try {
+            // Remove entry from information model
+            cloudControllerContext.removeKubernetesGroup(kubernetesGroupId);
+
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Kubernetes group removed successfully: [id] %s", kubernetesGroupId));
+            }
+            
+            persist();
+            
+            return true;
+        } catch (Exception e) {
+            throw new NonExistingKubernetesGroupException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean removeKubernetesHost(String kubernetesHostId) throws NonExistingKubernetesHostException {
+        if (kubernetesHostId == null) {
+            throw new NonExistingKubernetesHostException("Kubernetes host id can not be null");
+        }
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Removing Kubernetes Host: " + kubernetesHostId);
+        }
+        try {
+            KubernetesGroup kubernetesGroupStored = cloudControllerContext.getKubernetesGroupContainingHost(kubernetesHostId);
+
+            // Kubernetes master can not be removed
+            if (kubernetesGroupStored.getKubernetesMaster().getHostId().equals(kubernetesHostId)) {
+                throw new NonExistingKubernetesHostException("Kubernetes master is not allowed to be removed [id] " + kubernetesHostId);
+            }
+
+            List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
+            for (KubernetesHost kubernetesHost : kubernetesGroupStored.getKubernetesHosts()) {
+                if (!kubernetesHost.getHostId().equals(kubernetesHostId)) {
+                    kubernetesHostList.add(kubernetesHost);
+                }
+            }
+            // member count will be equal only when host object was not found
+            if (kubernetesHostList.size() == kubernetesGroupStored.getKubernetesHosts().length) {
+                throw new NonExistingKubernetesHostException("Kubernetes host not found for [id] " + kubernetesHostId);
+            }
+            KubernetesHost[] kubernetesHostsArray = new KubernetesHost[kubernetesHostList.size()];
+            kubernetesHostList.toArray(kubernetesHostsArray);
+
+            // Update information model
+            kubernetesGroupStored.setKubernetesHosts(kubernetesHostsArray);
+
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Kubernetes host removed successfully: [id] %s", kubernetesHostId));
+            }
+            
+            persist();
+
+            return true;
+        } catch (Exception e) {
+            throw new NonExistingKubernetesHostException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
+            throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException {
+        CloudControllerUtil.validateKubernetesMaster(kubernetesMaster);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Updating Kubernetes master: " + kubernetesMaster);
+        }
+        try {
+            KubernetesGroup kubernetesGroupStored = cloudControllerContext.getKubernetesGroupContainingHost(kubernetesMaster.getHostId());
+
+            // Update information model
+            kubernetesGroupStored.setKubernetesMaster(kubernetesMaster);
+            
+            persist();
+
+            if (LOG.isInfoEnabled()) {
+                LOG.info(String.format("Kubernetes master updated successfully: [id] %s", kubernetesMaster.getHostId()));
+            }
+            
+            return true;
+        } catch (Exception e) {
+            throw new InvalidKubernetesMasterException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
+            InvalidKubernetesHostException, NonExistingKubernetesHostException {
+        CloudControllerUtil.validateKubernetesHost(kubernetesHost);
+        if (LOG.isInfoEnabled()) {
+            LOG.info("Updating Kubernetes Host: " + kubernetesHost);
+        }
+
+        try {
+            KubernetesGroup kubernetesGroupStored = cloudControllerContext.getKubernetesGroupContainingHost(kubernetesHost.getHostId());
+
+            for (int i = 0; i < kubernetesGroupStored.getKubernetesHosts().length; i++) {
+                if (kubernetesGroupStored.getKubernetesHosts()[i].getHostId().equals(kubernetesHost.getHostId())) {
+
+                    // Update the information model
+                    kubernetesGroupStored.getKubernetesHosts()[i] = kubernetesHost;
+
+                    if (LOG.isInfoEnabled()) {
+                        LOG.info(String.format("Kubernetes host updated successfully: [id] %s", kubernetesHost.getHostId()));
+                    }
+                    
+                    persist();
+
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            throw new InvalidKubernetesHostException(e.getMessage(), e);
+        }
+        throw new NonExistingKubernetesHostException("Kubernetes host not found [id] " + kubernetesHost.getHostId());
     }
 
 //    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException {
