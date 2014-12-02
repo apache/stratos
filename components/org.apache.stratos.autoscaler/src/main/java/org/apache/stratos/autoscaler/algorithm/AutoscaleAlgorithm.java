@@ -23,35 +23,20 @@ import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 
 
 /**
- * This interface is should be implemented by all the algorithms that are there to select partitions of a particular
- * partition group
+ * This interface is should be implemented by all the algorithms that are there to select partitions context
  */
 public interface AutoscaleAlgorithm {
 
-//    /**
-//     * Returns whether there is available {@link Partition} to scale up considering the current count and maximum
-//     * @param clusterId Id of the cluster which need the availability information
-//     * @return availability of {@link Partition}s to scale up
-//     */
-//    public boolean scaleUpPartitionAvailable(String clusterId);
-//
-//    /**
-//     * Returns whether there is available {@link Partition} to scale down considering the current count and minimum
-//     * @param clusterId Id of the cluster which need the availability information
-//     * @return availability of {@link Partition}s to scale down
-//     */
-//    public boolean scaleDownPartitionAvailable(String clusterId);
-
     /**
      * Returns a {@link PartitionContext} to scale up from the given list
-     * @param partitionContexts
+     * @param partitionContexts is the array of partition contexts which will be select the partition context from
      * @return {@link PartitionContext} to scale up
      */
     public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts);
 
     /**
      * Returns a {@link PartitionContext} to scale down from the given list
-     * @param partitionContexts
+     * @param partitionContexts is the array of partition contexts which will be select the partition context from
      * @return {@link PartitionContext} to scale down
      */
     public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts);
