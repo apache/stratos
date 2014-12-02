@@ -37,7 +37,6 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMServiceClusterMonitor;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -222,10 +221,10 @@ public class RuleTasksDelegator {
 
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        if (clusterMonitor instanceof VMServiceClusterMonitor) {
+        if (clusterMonitor instanceof VMClusterMonitor) {
 
-            VMServiceClusterMonitor vmServiceClusterMonitor = (VMServiceClusterMonitor) clusterMonitor;
-            vmServiceClusterMonitor.sendClusterScalingEvent(networkPartitionId, factor);
+            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;
+            vmClusterMonitor.sendClusterScalingEvent(networkPartitionId, factor);
         }
 
     }

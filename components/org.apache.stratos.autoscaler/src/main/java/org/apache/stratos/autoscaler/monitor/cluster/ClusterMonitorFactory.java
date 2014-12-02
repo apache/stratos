@@ -26,7 +26,6 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
@@ -52,20 +51,20 @@ public class ClusterMonitorFactory {
 //        } else if (cluster.isLbCluster()) {
 //            clusterMonitor = getVMLbClusterMonitor(cluster);
         } else {
-            clusterMonitor = getVMServiceClusterMonitor(cluster);
+            clusterMonitor = getVMClusterMonitor(cluster);
         }
 
         return clusterMonitor;
     }
 
-    private static VMServiceClusterMonitor getVMServiceClusterMonitor(Cluster cluster)
+    private static VMClusterMonitor getVMClusterMonitor(Cluster cluster)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
             return null;
         }
 
-        VMServiceClusterMonitor clusterMonitor = new VMServiceClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
+        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
 
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
