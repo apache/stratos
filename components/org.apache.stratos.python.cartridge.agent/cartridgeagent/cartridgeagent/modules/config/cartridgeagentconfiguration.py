@@ -93,6 +93,8 @@ class CartridgeAgentConfiguration:
             """ :type : str  """
             self.is_primary = False
             """ :type : bool  """
+            self.instance_id = None
+            """ :type : str  """
 
             self.payload_params = {}
             self.__read_conf_file()
@@ -123,6 +125,7 @@ class CartridgeAgentConfiguration:
                 self.app_path = self.read_property(cartridgeagentconstants.APP_PATH, False)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
+                self.instance_id= self.read_property(cartridgeagentconstants.INSTANCE_ID)
 
                 try:
                     self.log_file_paths = str(
