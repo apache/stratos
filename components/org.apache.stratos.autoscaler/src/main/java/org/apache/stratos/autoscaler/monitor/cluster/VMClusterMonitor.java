@@ -163,8 +163,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
     public void monitor() {
+
         final Collection<ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContexts =
                 ((VMClusterContext) this.clusterContext).getNetworkPartitionCtxts().values();
+
         Runnable monitoringRunnable = new Runnable() {
             @Override
             public void run() {
@@ -182,6 +184,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         if (true) {
 
                             for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+
                                 // get active primary members in this partition context
                                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
                                     if (isPrimaryMember(memberContext)) {
@@ -206,23 +209,21 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                         instanceContext.getId()));
                             }
 
-                            minCheckFactHandle = AutoscalerRuleEvaluator.
-                                    evaluateMinCheck(getMinCheckKnowledgeSession()
-                                            , minCheckFactHandle, instanceContext);
+                            minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
+                                    minCheckFactHandle, instanceContext);
 
-                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.
-                                    evaluateObsoleteCheck(getObsoleteCheckKnowledgeSession(),
-                                            obsoleteCheckFactHandle, instanceContext);
+                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateObsoleteCheck(
+                                    getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, instanceContext);
 
                             //checking the status of the cluster
-
                             boolean rifReset = instanceContext.isRifReset();
                             boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
                             boolean loadAverageReset = instanceContext.isLoadAverageReset();
 
                             if (log.isDebugEnabled()) {
-                                log.debug("flag of rifReset: " + rifReset + " flag of memoryConsumptionReset" + memoryConsumptionReset
-                                        + " flag of loadAverageReset" + loadAverageReset);
+                                log.debug("Is rif Reset: " + rifReset
+                                        + " Is memoryConsumption Reset: " + memoryConsumptionReset
+                                        + " Is loadAverage Reset: " + loadAverageReset);
                             }
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
@@ -235,7 +236,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-//                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
 
