@@ -19,6 +19,7 @@
 package org.apache.stratos.autoscaler.pojo;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ServiceGroup implements Serializable {
 
@@ -29,7 +30,7 @@ public class ServiceGroup implements Serializable {
 
     private boolean isGroupscalingEnabled;
 
-    private String [] subGroups;
+    private List<ServiceGroup> groups;
 
     private String [] cartridges;
 
@@ -43,13 +44,6 @@ public class ServiceGroup implements Serializable {
         this.name = name;
     }
 
-    public String [] getSubGroups() {
-        return subGroups;
-    }
-
-    public void setSubGroups(String [] subGroups) {
-        this.subGroups = subGroups;
-    }
 
     public String [] getCartridges() {
         return cartridges;
@@ -73,5 +67,13 @@ public class ServiceGroup implements Serializable {
 
     public void setGroupscalingEnabled(boolean isGroupscalingEnabled) {
         this.isGroupscalingEnabled = isGroupscalingEnabled;
+    }
+
+    public List<ServiceGroup> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<ServiceGroup> groups) {
+        this.groups = groups;
     }
 }

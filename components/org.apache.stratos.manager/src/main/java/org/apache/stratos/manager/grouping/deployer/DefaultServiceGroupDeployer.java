@@ -121,15 +121,19 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         }
 
         // if any sub groups are specified in the group, they should be already deployed
-        if (serviceGroupDefinition.getSubGroups() != null) {
+        if (serviceGroupDefinition.getGroups() != null) {
 
             if (log.isDebugEnabled()) {
                 log.debug("checking subGroups in service group " + serviceGroupDefinition.getName());
             }
 
-            List<String> subGroupNames = serviceGroupDefinition.getSubGroups();
+            List<ServiceGroupDefinition> groupDefinitions = serviceGroupDefinition.getGroups();
+            List<String>  groupNames = new ArrayList<String>();
+            for (ServiceGroupDefinition groupList : groupDefinitions) {
+                groupNames.add(groupList.getName());
+            }
 
-            Set<String> duplicates = this.findDuplicates(subGroupNames);
+            Set<String> duplicates = this.findDuplicates(groupNames);
 
             if (duplicates.size() > 0) {
 
@@ -143,7 +147,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
             }
 
-            for (String subGroupName : subGroupNames) {
+            for (String subGroupName : groupNames) {
                 if (getServiceGroupDefinition(subGroupName) == null) {
                     // sub group not deployed, can't continue
                     if (log.isDebugEnabled()) {
@@ -268,26 +272,26 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         // implement conversion (mostly List -> Array)
         servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
-        List<String> subGroupsDef = serviceGroupDefinition.getSubGroups();
+        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 
         servicegroup.setName(serviceGroupDefinition.getName());
         
-        if (subGroupsDef == null) {
-            subGroupsDef = new ArrayList<String>(0);
+        if (groupsDef == null) {
+            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
         }
 
         if (cartridgesDef == null) {
             cartridgesDef = new ArrayList<String>(0);
         }
 
-        String[] subGroups = new String[subGroupsDef.size()];
+        String[] subGroups = new String[groupsDef.size()];
         String[] cartridges = new String[cartridgesDef.size()];
 
-        subGroups = subGroupsDef.toArray(subGroups);
+        subGroups = groupsDef.toArray(subGroups);
         cartridges = cartridgesDef.toArray(cartridges);
 
-        servicegroup.setSubGroups(subGroups);
+        servicegroup.setGroups(subGroups);
         servicegroup.setCartridges(cartridges);
 
         DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
@@ -313,7 +317,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
         servicegroupDef.setName(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
-        String[] subGroups = serviceGroup.getSubGroups();
+        ServiceGroupDefinition groups = (ServiceGroupDefinition) serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
 
         if (deps != null) {
@@ -335,12 +339,12 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         }
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
-        List<String> subGroupsDef = new ArrayList<String>(Arrays.asList(subGroups));
+        List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(Arrays.asList(groups));
         if (cartridges[0] != null) {
             servicegroupDef.setCartridges(cartridgesDef);
         }
-        if (subGroups[0] != null) {
-            servicegroupDef.setSubGroups(subGroupsDef);
+        if (groups != null) {
+            servicegroupDef.setGroups(subGroupsDef);
         }
 
         return servicegroupDef;

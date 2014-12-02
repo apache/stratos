@@ -28,7 +28,7 @@ public class ServiceGroupDefinition implements Serializable {
 
     private String name;
 
-    private List<String> subGroups;
+    private List<ServiceGroupDefinition> groups;
 
     private List<String> cartridges;
 
@@ -42,14 +42,6 @@ public class ServiceGroupDefinition implements Serializable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public List<String> getSubGroups() {
-        return subGroups;
-    }
-
-    public void setSubGroups(List<String> subGroups) {
-        this.subGroups = subGroups;
     }
 
     public List<String> getCartridges() {
@@ -74,5 +66,13 @@ public class ServiceGroupDefinition implements Serializable {
 
     public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
         this.isGroupScalingEnabled = isGroupScalingEnabled;
+    }
+
+    public List<ServiceGroupDefinition> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(List<ServiceGroupDefinition> groups) {
+        this.groups = groups;
     }
 }
