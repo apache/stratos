@@ -63,9 +63,9 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected DependencyTree scalingDependencyTree;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
-    //monitors map, stopped monitors
+    //instanceIds map, stopped monitors
     protected List<String> inactiveMonitorsList;
-    //terminating monitors list
+    //terminating instances list
     protected List<String> terminatingMonitorsList;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
@@ -109,6 +109,18 @@ public abstract class ParentComponentMonitor extends Monitor {
      * This will start the parallel dependencies at once from the top level.
      * it will get invoked when the monitor starts up only.
      */
+    public boolean startDependencyByInstanceCreation(String childId, String instanceId) throws
+            ParentMonitorNotFoundException {
+        //start the first dependency
+        List<ApplicationChildContext> applicationContexts =
+                this.startupDependencyTree.getStarAbleDependencies(childId);
+        return startDependency(applicationContexts, instanceId);
+    }
+
+    /**
+     * This will start the parallel dependencies at once from the top level.
+     * it will get invoked when the monitor starts up only.
+     */
     public void startDependency(ParentComponent component) {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
@@ -132,7 +144,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                 .getStarAbleDependencies(id);
         List<String> instanceIds = new ArrayList<String>();
         instanceIds.add(instanceId);
-        return startDependency(applicationContexts, instanceIds);
+        boolean startup = startDependency(applicationContexts, instanceIds);
+        return startup;
     }
 
     public boolean startAllChildrenDependency(ParentComponent component, String instanceId)
@@ -242,8 +255,13 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (this.terminatingMonitorsList.contains(eventId)) {
                 this.terminatingMonitorsList.remove(eventId);
             }
+            boolean startDep;
+            if(!aliasToActiveMonitorsMap.containsKey(eventId)) {
+               startDep = startDependency(eventId, instanceId);
+            } else {
+                startDep = startDependencyByInstanceCreation(eventId, instanceId);
+            }
 
-            boolean startDep = startDependency(eventId, instanceId);
             if (log.isDebugEnabled()) {
                 log.debug("started a child: " + startDep + " by the group/cluster: " + eventId);
 
@@ -351,8 +369,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         boolean allParentsActive = false;
         //make sure all the parent contexts got terminated or whether all of them are active
         if (parentContexts != null) {
-            parentsTerminated = allParentTerminated(parentContexts);
-            allParentsActive = allParentActive(parentContexts);
+            parentsTerminated = allParentTerminated(parentContexts, instanceId);
+            allParentsActive = allParentActive(parentContexts, instanceId);
         }
 
         if ((terminationList.isEmpty() || allDependentTerminated) &&
@@ -391,7 +409,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
 
-    private boolean allParentTerminated(List<ApplicationChildContext> parentContexts) {
+    private boolean allParentTerminated(List<ApplicationChildContext> parentContexts,
+                                        String instanceId) {
         boolean parentsTerminated = false;
         for (ApplicationChildContext context1 : parentContexts) {
             if (this.inactiveMonitorsList.contains(context1.getId())) {
@@ -413,11 +432,11 @@ public abstract class ParentComponentMonitor extends Monitor {
         return parentsTerminated;
     }
 
-    private boolean allParentActive(List<ApplicationChildContext> parentContexts) {
+    private boolean allParentActive(List<ApplicationChildContext> parentContexts, String instanceId) {
         boolean parentsActive = false;
         for (ApplicationChildContext context1 : parentContexts) {
-            if (this.inactiveMonitorsList.contains(context1.getId()) ||
-                    this.terminatingMonitorsList.contains(context1.getId())) {
+            if (this.inactiveMonitorsList.contains(instanceId) ||
+                    this.terminatingMonitorsList.contains(instanceId)) {
                 parentsActive = false;
                 log.info("Dependent [Monitor] " + context1.getId()
                         + " is not yet active");

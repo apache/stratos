@@ -34,6 +34,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
@@ -212,7 +213,9 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         return status;
     }
 
-    public void setStatus(ClusterStatus status) {
+    public void setStatus(ClusterStatus status, String instanceId) {
+
+        this.clusterContext.getClusterInstance(instanceId).setStatus(status);
         /**
          * notifying the parent monitor about the state change
          * If the cluster in_active and if it is a in_dependent cluster,
@@ -415,4 +418,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     public void setClusterContext(AbstractClusterContext clusterContext) {
         this.clusterContext = clusterContext;
     }
+
+
 }

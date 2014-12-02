@@ -39,6 +39,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ap
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -52,6 +53,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     //network partition contexts
     private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
+    //application instance id map
+    private Map<String, ApplicationInstance> applicationInstanceIdMap;
+
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
@@ -59,10 +63,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         networkPartitionCtxts = new HashMap<String, ApplicationLevelNetworkPartitionContext>();
-
-        //starting the first set of dependencies from its children
-        //TODO startMinimumDependencies(application);
-
+        setApplicationInstanceIdMap(new HashMap<String, ApplicationInstance>());
     }
 
     /**
@@ -72,7 +73,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @return the found GroupMonitor
      */
     public Monitor findGroupMonitorWithId(String groupId) {
-        Monitor monitor;
         //searching within active monitors
         return findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
     }
@@ -107,6 +107,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
+        this.applicationInstanceIdMap.get(instanceId).setStatus(status);
+
         //notify the children about the state change
         try {
             MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId, instanceId));
@@ -216,6 +218,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
                     context.addInstanceContext(instanceContext);
 
+                    ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
+                    instance.setStatus(ApplicationStatus.Created);
+                    this.applicationInstanceIdMap.put(instanceId, instance);
+
                     this.networkPartitionCtxts.put(context.getId(), context);
 
                     instanceIds.add(instanceId);
@@ -257,6 +263,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
                         context.addInstanceContext(instanceContext);
                         this.networkPartitionCtxts.put(context.getId(), context);
+
+                        ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
+                        instance.setStatus(ApplicationStatus.Created);
+                        this.applicationInstanceIdMap.put(instanceId, instance);
+
                         burstNPFound = true;
                     }
                 }
@@ -305,5 +316,22 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public void addApplicationLevelNetworkPartitionContext(ApplicationLevelNetworkPartitionContext applicationLevelNetworkPartitionContext) {
         this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
+    }
+
+    public Map<String, ApplicationInstance> getApplicationInstanceIdMap() {
+        return applicationInstanceIdMap;
+    }
+
+    public void setApplicationInstanceIdMap(Map<String, ApplicationInstance> applicationInstanceIdMap) {
+        this.applicationInstanceIdMap = applicationInstanceIdMap;
+    }
+
+    public void addApplicationInstance(ApplicationInstance instance) {
+        this.applicationInstanceIdMap.put(instance.getInstanceId(), instance);
+
+    }
+
+    public ApplicationInstance getApplicationInstance(String instanceId) {
+        return this.applicationInstanceIdMap.get(instanceId);
     }
 }

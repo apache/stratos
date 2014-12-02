@@ -40,10 +40,12 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -71,6 +73,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     //network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
 
+    private Map<String, GroupInstance> groupInstanceIdMap;
+
     private boolean isDestroyed;
 
     /**
@@ -85,9 +89,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         super(group);
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
-
-        //starting the minimum start able dependencies
-        //startMinimumDependencies(group, parentInstanceId);
+        setGroupInstanceIdMap(new HashMap<String, GroupInstance>());
     }
 
     @Override
@@ -131,6 +133,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param status status of the group
      */
     public void setStatus(GroupStatus status, String instanceId) {
+        this.groupInstanceIdMap.get(instanceId).setStatus(status);
 
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
@@ -192,14 +195,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     AutoscalerContext.getInstance().removeClusterMonitor(id);
                 }
             }
-            //If cluster monitor, need to terminate the existing one
-            //TODO block
-            /*if (this.status == GroupStatus.Terminating) {
-                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
-            } else {
-                onChildTerminatedEvent(id);
-            }*/
-
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
             this.markMonitorAsTerminating(id);
@@ -212,11 +207,24 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            //TODO block
-            /*if (this.status == GroupStatus.Terminating || this.status == GroupStatus.Terminated) {
-                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
-                log.info("Executing the un-subscription request for the [monitor] " + id);
-            }*/
+            //If cluster monitor, need to terminate the existing one
+            ApplicationHolder.releaseReadLock();
+            GroupStatus instanceStatus;
+            try {
+                Group group = ApplicationHolder.getApplications().
+                        getApplication(appId).getGroupRecursively(this.id);
+                instanceStatus = group.getInstanceContexts(instanceId).getStatus();
+
+            } finally {
+                ApplicationHolder.releaseReadLock();
+            }
+
+            if (instanceStatus == GroupStatus.Terminating) {
+                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
+                        appId, instanceId);
+            } else {
+                onChildTerminatedEvent(id, instanceId);
+            }
         }
     }
 
@@ -258,7 +266,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
         //Notifying children, if this group has scaling dependencies
         if (currentChildContextInScalingTree.isGroupScalingEnabled()) {
-            for (ApplicationChildContext applicationChildContext : currentChildContextInScalingTree.getApplicationChildContextList()) {
+            for (ApplicationChildContext applicationChildContext :
+                    currentChildContextInScalingTree.getApplicationChildContextList()) {
 
                 //Get group monitor so that it can notify it's children
                 Monitor monitor = aliasToActiveMonitorsMap.get(applicationChildContext.getId());
@@ -479,5 +488,22 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     public void setDestroyed(boolean isDestroyed) {
         this.isDestroyed = isDestroyed;
+    }
+
+    public Map<String, GroupInstance> getGroupInstanceIdMap() {
+        return groupInstanceIdMap;
+    }
+
+    public void setGroupInstanceIdMap(Map<String, GroupInstance> groupInstanceIdMap) {
+        this.groupInstanceIdMap = groupInstanceIdMap;
+    }
+
+    public void addGroupInstance(GroupInstance instance) {
+        this.groupInstanceIdMap.put(instance.getInstanceId(), instance);
+
+    }
+
+    public GroupInstance getGroupInstance(String instanceId) {
+        return this.groupInstanceIdMap.get(instanceId);
     }
 }

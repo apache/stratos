@@ -23,8 +23,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /*
  * It holds the runtime data of a service cluster
@@ -37,13 +40,32 @@ public class AbstractClusterContext implements Serializable {
     // cluster id
     protected String clusterId;
     private String serviceId;
+    protected Map<String, ClusterInstance> clusterInstanceMap;
+
 
     public AbstractClusterContext(String clusterId, String serviceId){
         this.clusterId = clusterId;
         this.serviceId = serviceId;
+        clusterInstanceMap = new HashMap<String, ClusterInstance>();
     }
 
     public String getServiceId() {
         return serviceId;
+    }
+
+    public Map<String, ClusterInstance> getClusterInstanceMap() {
+        return clusterInstanceMap;
+    }
+
+    public void setClusterInstanceMap(Map<String, ClusterInstance> clusterInstanceMap) {
+        this.clusterInstanceMap = clusterInstanceMap;
+    }
+
+    public void addClusterInstance(ClusterInstance instance) {
+        this.clusterInstanceMap.put(instance.getInstanceId(), instance);
+    }
+
+    public ClusterInstance getClusterInstance(String instanceId) {
+        return this.clusterInstanceMap.get(instanceId);
     }
 }

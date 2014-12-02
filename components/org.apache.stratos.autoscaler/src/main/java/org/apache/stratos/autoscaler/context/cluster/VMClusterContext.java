@@ -54,6 +54,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
     // Map<NetworkpartitionId, Network Partition Context>
     protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
+
     protected DeploymentPolicy deploymentPolicy;
     protected AutoscalePolicy autoscalePolicy;
 
