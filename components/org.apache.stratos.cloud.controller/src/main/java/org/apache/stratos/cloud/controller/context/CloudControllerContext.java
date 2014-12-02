@@ -545,16 +545,16 @@ public class CloudControllerContext implements Serializable {
                     if (dataObj instanceof CloudControllerContext) {
                         CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
 
-                        copyMap(kubernetesGroupsMap, serializedObj.kubernetesGroupsMap);
-                        copyMap(clusterIdToMemberContextListMap, serializedObj.clusterIdToMemberContextListMap);
-                        copyMap(memberIdToMemberContextMap, serializedObj.memberIdToMemberContextMap);
-                        copyMap(memberIdToScheduledTaskMap, serializedObj.memberIdToScheduledTaskMap);
-                        copyMap(kubClusterIdToKubClusterContextMap, serializedObj.kubClusterIdToKubClusterContextMap);
-                        copyMap(clusterIdToContextMap, serializedObj.clusterIdToContextMap);
-                        copyMap(cartridgeTypeToPartitionIdsMap, serializedObj.cartridgeTypeToPartitionIdsMap);
+                        copyMap(serializedObj.kubernetesGroupsMap, kubernetesGroupsMap);
+                        copyMap(serializedObj.clusterIdToMemberContextListMap, clusterIdToMemberContextListMap);
+                        copyMap(serializedObj.memberIdToMemberContextMap, memberIdToMemberContextMap);
+                        copyMap(serializedObj.memberIdToScheduledTaskMap, memberIdToScheduledTaskMap);
+                        copyMap(serializedObj.kubClusterIdToKubClusterContextMap, kubClusterIdToKubClusterContextMap);
+                        copyMap(serializedObj.clusterIdToContextMap, clusterIdToContextMap);
+                        copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
 
-                        copyList(cartridges, serializedObj.getCartridges());
-                        copyList(serviceGroups, serializedObj.getServiceGroups());
+                        copyList(serializedObj.getCartridges(), cartridges);
+                        copyList(serializedObj.getServiceGroups(), serviceGroups);
 
                         if (log.isDebugEnabled()) {
                             log.debug("Cloud controller context is read from the registry");
