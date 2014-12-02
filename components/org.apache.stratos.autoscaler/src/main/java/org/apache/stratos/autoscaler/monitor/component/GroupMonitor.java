@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
+import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
@@ -45,7 +45,6 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -168,7 +167,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         //notify the children about the state change
         try {
             MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, this.id, instanceId));
-        } catch (ParentMonitorNotFoundException e) {
+        } catch (MonitorNotFoundException e) {
             log.error("Error while notifying the children from the [group] " + this.id, e);
             //TODO revert siblings
         }
@@ -184,20 +183,20 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             onChildActivatedEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            this.markMonitorAsInactive(id);
+            this.markMonitorAsInactive(instanceId);
             onChildInactiveEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.terminatingMonitorsList.contains(id)) {
-                this.terminatingMonitorsList.remove(id);
-                this.aliasToActiveMonitorsMap.remove(id);
+            if (this.terminatingMonitorsList.contains(instanceId)) {
+                this.terminatingMonitorsList.remove(instanceId);
+                this.aliasToActiveMonitorsMap.remove(instanceId);
                 if (AutoscalerContext.getInstance().getClusterMonitors().containsKey(id)) {
                     AutoscalerContext.getInstance().removeClusterMonitor(id);
                 }
             }
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
-            this.markMonitorAsTerminating(id);
+            this.markMonitorAsTerminating(instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
@@ -230,7 +229,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     @Override
     public void onParentStatusEvent(MonitorStatusEvent statusEvent)
-            throws ParentMonitorNotFoundException {
+            throws MonitorNotFoundException {
         String instanceId = statusEvent.getInstanceId();
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
@@ -400,10 +399,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      *
      * @param group
      * @param parentInstanceId
-     * @throws ParentMonitorNotFoundException
+     * @throws org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException
      */
     public void createInstanceAndStartDependency(Group group, String parentInstanceId)
-            throws ParentMonitorNotFoundException {
+            throws MonitorNotFoundException {
         String deploymentPolicyName = group.getDeploymentPolicy();
 
         String instanceId;

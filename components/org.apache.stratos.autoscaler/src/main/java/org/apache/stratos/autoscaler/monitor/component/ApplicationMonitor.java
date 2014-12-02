@@ -25,7 +25,7 @@ import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
+import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -112,7 +112,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //notify the children about the state change
         try {
             MonitorStatusEventBuilder.notifyChildren(this, new ApplicationStatusEvent(status, appId, instanceId));
-        } catch (ParentMonitorNotFoundException e) {
+        } catch (MonitorNotFoundException e) {
             log.error("Error while notifying the children from [application] " + appId, e);
             //TODO revert siblings
         }
@@ -236,7 +236,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
             PolicyValidationException,
-            ParentMonitorNotFoundException {
+            MonitorNotFoundException {
         Application application = ApplicationHolder.getApplications().getApplication(appId);
         if (application == null) {
             String msg = "Application cannot be found in the Topology.";

@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildC
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
+import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
@@ -42,6 +42,7 @@ import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.status.processor.StatusChecker;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.messaging.domain.instance.Instance;
@@ -97,7 +98,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * it will get invoked when the monitor starts up only.
      */
     public void startDependency(ParentComponent component, String instanceId) throws
-                                                                    ParentMonitorNotFoundException {
+            MonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependencies();
@@ -110,7 +111,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * it will get invoked when the monitor starts up only.
      */
     public boolean startDependencyByInstanceCreation(String childId, String instanceId) throws
-            ParentMonitorNotFoundException {
+            MonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts =
                 this.startupDependencyTree.getStarAbleDependencies(childId);
@@ -139,7 +140,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      *
      * @param id alias/clusterId of which receive the activated event
      */
-    public boolean startDependency(String id, String instanceId) throws ParentMonitorNotFoundException {
+    public boolean startDependency(String id, String instanceId) throws MonitorNotFoundException {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
                 .getStarAbleDependencies(id);
         List<String> instanceIds = new ArrayList<String>();
@@ -203,7 +204,7 @@ public abstract class ParentComponentMonitor extends Monitor {
      * @param applicationContexts the found applicationContexts to be started
      */
     private boolean startDependency(List<ApplicationChildContext> applicationContexts, String instanceId)
-            throws ParentMonitorNotFoundException {
+            throws MonitorNotFoundException {
         if (applicationContexts != null && applicationContexts.isEmpty()) {
             //all the groups/clusters have been started and waiting for activation
             log.info("There is no child found for the [group]: " + this.id);
@@ -217,7 +218,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //FIXME whether to start new monitor or throw exception
             if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 String msg = "Required Monitor cannot be fount in the hierarchy";
-                throw new ParentMonitorNotFoundException(msg);
+                throw new MonitorNotFoundException(msg);
             } else {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
@@ -255,6 +256,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (this.terminatingMonitorsList.contains(eventId)) {
                 this.terminatingMonitorsList.remove(eventId);
             }
+
             boolean startDep;
             if(!aliasToActiveMonitorsMap.containsKey(eventId)) {
                startDep = startDependency(eventId, instanceId);
@@ -262,14 +264,13 @@ public abstract class ParentComponentMonitor extends Monitor {
                 startDep = startDependencyByInstanceCreation(eventId, instanceId);
             }
 
-            if (log.isDebugEnabled()) {
-                log.debug("started a child: " + startDep + " by the group/cluster: " + eventId);
-
-            }
             if (!startDep) {
-                StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
+                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                        process(this.id, this.appId, instanceId);
+            } else {
+                log.info("started a child: " + startDep + " by the group/cluster: " + eventId);
             }
-        } catch (ParentMonitorNotFoundException e) {
+        } catch (MonitorNotFoundException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
             log.error(e);
         }

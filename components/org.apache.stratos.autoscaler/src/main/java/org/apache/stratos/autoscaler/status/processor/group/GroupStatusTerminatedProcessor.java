@@ -94,11 +94,14 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
                     if (component instanceof Application) {
                         log.info("sending app terminated: " + appId);
                         ApplicationBuilder.handleApplicationTerminatedEvent(appId);
+                        return true;
                     } else if (component instanceof Group) {
                         //send activation to the parent
                         if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
                             log.info("sending group terminated : " + component.getUniqueIdentifier());
-                            ApplicationBuilder.handleGroupTerminatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                            ApplicationBuilder.handleGroupTerminatedEvent(appId,
+                                    component.getUniqueIdentifier(), instanceId);
+                            return true;
                         }
                     }
                 }
@@ -111,7 +114,7 @@ public class GroupStatusTerminatedProcessor extends GroupStatusProcessor {
         }
 
 
-        return true;
+        return false;
     }
 
 

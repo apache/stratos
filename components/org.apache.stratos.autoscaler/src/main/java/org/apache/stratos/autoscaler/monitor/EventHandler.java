@@ -18,8 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.autoscaler.exception.application.ParentMonitorNotFoundException;
-import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 
@@ -40,7 +39,7 @@ public interface EventHandler {
      * @param statusEvent
      */
     public abstract void onParentStatusEvent(MonitorStatusEvent statusEvent) throws
-                                        ParentMonitorNotFoundException;
+            MonitorNotFoundException;
 
     /**
      * Triggered when a scaling event is received from a child.

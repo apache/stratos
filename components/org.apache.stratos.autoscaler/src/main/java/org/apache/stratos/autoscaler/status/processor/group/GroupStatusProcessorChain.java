@@ -18,12 +18,16 @@
  */
 package org.apache.stratos.autoscaler.status.processor.group;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessorChain;
 
 /**
  * Cluster status tracking processor chain
  */
 public class GroupStatusProcessorChain extends StatusProcessorChain {
+    private static final Log log = LogFactory.getLog(GroupStatusActiveProcessor.class);
+
     private GroupStatusActiveProcessor groupStatusActiveProcessor;
     private GroupStatusTerminatedProcessor groupStatusTerminatedProcessor;
     private GroupStatusTerminatingProcessor groupStatusTerminatingProcessor;
@@ -51,6 +55,11 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
         if (root == null) {
             throw new RuntimeException("Message processor chain is not initialized");
         }
+        if (log.isInfoEnabled()) {
+            log.info("GroupProcessor chain calculating the status for the group " +
+                    "[ " + idOfComponent + " ]");
+        }
+
         return root.process(idOfComponent, appId, instanceId);
     }
 

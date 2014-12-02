@@ -65,10 +65,6 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
         Map<String, Group> groups;
         Map<String, ClusterDataHolder> clusterData;
 
-        if (log.isInfoEnabled()) {
-            log.info("StatusChecker calculating the status for the group [ " + idOfComponent + " ]");
-        }
-
         try {
             ApplicationHolder.acquireWriteLock();
             if (idOfComponent.equals(appId)) {
@@ -96,23 +92,21 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
                         //send application activated event
                         log.info("sending app activate: " + appId);
                         ApplicationBuilder.handleApplicationActivatedEvent(appId, instanceId);
+                        return true;
                     } else if (component instanceof Group) {
                         //send activation to the parent
                         log.info("sending group activate: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        return true;
                     }
 
                 }
             }
-
-
         } finally {
             ApplicationHolder.releaseWriteLock();
 
         }
-
-
-        return true;
+        return false;
     }
 
 

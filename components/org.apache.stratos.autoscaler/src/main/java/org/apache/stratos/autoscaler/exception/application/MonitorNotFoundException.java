@@ -21,24 +21,24 @@ package org.apache.stratos.autoscaler.exception.application;
 /**
  * This will throw when required monitor not found
  */
-public class ParentMonitorNotFoundException extends Exception{
+public class MonitorNotFoundException extends Exception{
     private static final long serialVersionUID = -9163807860189126883L;
     private String message;
 
-    public ParentMonitorNotFoundException(final String message, final Exception exception) {
+    public MonitorNotFoundException(final String message, final Exception exception) {
 
         super(message, exception);
         this.setMessage(message);
 
     }
 
-    public ParentMonitorNotFoundException(final Exception exception) {
+    public MonitorNotFoundException(final Exception exception) {
 
         super(exception);
 
     }
 
-    public ParentMonitorNotFoundException(final String msg) {
+    public MonitorNotFoundException(final String msg) {
 
         super(msg);
         this.setMessage(msg);

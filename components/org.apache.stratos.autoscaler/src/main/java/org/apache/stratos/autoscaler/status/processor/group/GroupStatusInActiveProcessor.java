@@ -96,12 +96,14 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
                 if (component instanceof Application) {
                     //send application activated event
                     log.warn("Application can't be in in-active : " + appId);
+                    return true;
                     //ApplicationBuilder.handleApp(appId);
                 } else if (component instanceof Group) {
                     //send activation to the parent
                     if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        return true;
                     }
                 }
             }
@@ -113,7 +115,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
         }
 
 
-        return true;
+        return false;
     }
 
 
