@@ -460,9 +460,10 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public void setMinMembers(int minMembers) {
         this.minMembers = minMembers;
-
+    }
+    
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
-  }
+
 }
