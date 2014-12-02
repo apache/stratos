@@ -30,7 +30,7 @@ public class ServiceGroup implements Serializable {
 
     private boolean isGroupscalingEnabled;
 
-    private List<ServiceGroup> groups;
+    private ServiceGroup[] groups;
 
     private String [] cartridges;
 
@@ -43,7 +43,6 @@ public class ServiceGroup implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-
 
     public String [] getCartridges() {
         return cartridges;
@@ -69,11 +68,11 @@ public class ServiceGroup implements Serializable {
         this.isGroupscalingEnabled = isGroupscalingEnabled;
     }
 
-    public List<ServiceGroup> getGroups() {
+    public ServiceGroup[] getGroups() {
         return groups;
     }
 
-    public void setGroups(List<ServiceGroup> groups) {
+    public void setGroups(ServiceGroup[] groups) {
         this.groups = groups;
     }
 }

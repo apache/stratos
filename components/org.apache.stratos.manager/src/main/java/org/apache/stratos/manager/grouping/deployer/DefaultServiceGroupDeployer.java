@@ -36,6 +36,7 @@ import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 
+import java.lang.reflect.Array;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -147,15 +148,15 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 throw new InvalidServiceGroupException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
             }
 
-            for (String subGroupName : groupNames) {
-                if (getServiceGroupDefinition(subGroupName) == null) {
-                    // sub group not deployed, can't continue
-                    if (log.isDebugEnabled()) {
-                        log.debug("invalid sub group found in service group " + subGroupName);
-                    }
-                    throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
-                }
-            }
+//            for (String subGroupName : groupNames) {
+//                if (getServiceGroupDefinition(subGroupName) == null) {
+//                    // sub group not deployed, can't continue
+//                    if (log.isDebugEnabled()) {
+//                        log.debug("invalid sub group found in service group " + subGroupName);
+//                    }
+//                    throw new InvalidServiceGroupException("No Service Group Definition found with name " + subGroupName);
+//                }
+//            }
         }
 
         AutoscalerServiceClient asServiceClient = null;
@@ -285,10 +286,16 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             cartridgesDef = new ArrayList<String>(0);
         }
 
-        String[] subGroups = new String[groupsDef.size()];
+        ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
         String[] cartridges = new String[cartridgesDef.size()];
 
-        subGroups = groupsDef.toArray(subGroups);
+        for (ServiceGroupDefinition groupDefinition : groupsDef) {
+            int i = 0;
+            subGroups[i] = pojoConversion(groupDefinition);
+            ++i;
+        }
+
+        //subGroups = groupsDef.toArray(subGroups);
         cartridges = cartridgesDef.toArray(cartridges);
 
         servicegroup.setGroups(subGroups);
@@ -313,11 +320,57 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         return servicegroup;
     }
 
+    private ServiceGroup pojoConversion (ServiceGroupDefinition serviceGroupDefinition) {
+        ServiceGroup servicegroup = new ServiceGroup();
+
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
+        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
+
+        servicegroup.setName(serviceGroupDefinition.getName());
+
+        if (cartridgesDef == null) {
+            cartridgesDef = new ArrayList<String>(0);
+        }
+
+        if (groupsDef == null) {
+            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
+        }
+
+        ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
+        String[] cartridges = new String[cartridgesDef.size()];
+
+        cartridges = cartridgesDef.toArray(cartridges);
+        servicegroup.setCartridges(cartridges);
+
+        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+
+        if (depDefs != null) {
+            Dependencies deps = new Dependencies();
+            List<String> startupOrdersDef = depDefs.getStartupOrders();
+            if (startupOrdersDef != null) {
+                String[] startupOrders = new String[startupOrdersDef.size()];
+                startupOrders = startupOrdersDef.toArray(startupOrders);
+                deps.setStartupOrders(startupOrders);
+            }
+            // validate termination behavior
+            //validateTerminationBehavior(depDefs.getTerminationBehaviour());
+            deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
+            servicegroup.setDependencies(deps);
+        }
+
+        for (ServiceGroupDefinition groupDefinition : groupsDef) {
+            pojoConversion(groupDefinition);
+        }
+
+        return servicegroup;
+    }
+
     private ServiceGroupDefinition populateServiceGroupDefinitionPojo(ServiceGroup serviceGroup) {
         ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
         servicegroupDef.setName(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
-        ServiceGroupDefinition groups = (ServiceGroupDefinition) serviceGroup.getGroups();
+        ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
 
         if (deps != null) {
@@ -339,7 +392,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         }
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
-        List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(Arrays.asList(groups));
+        List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(groups.length);
         if (cartridges[0] != null) {
             servicegroupDef.setCartridges(cartridgesDef);
         }

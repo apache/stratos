@@ -23,10 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
-import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.stub.pojo.DependencyContext;
-import org.apache.stratos.autoscaler.stub.pojo.GroupContext;
-import org.apache.stratos.autoscaler.stub.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -35,6 +32,7 @@ import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
 import org.apache.stratos.manager.deploy.service.Service;
+import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
@@ -125,9 +123,57 @@ public class PojoConverter {
     public static ServiceGroup populateServiceGroupPojo(ServiceGroupDefinition serviceGroupDefinition) {
         ServiceGroup servicegroup = new ServiceGroup();
 
-        // implement conversion (mostly List -> Array)
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
+        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
+
+        servicegroup.setName(serviceGroupDefinition.getName());
+
+        if (cartridgesDef == null) {
+            cartridgesDef = new ArrayList<String>(0);
+        }
+
+        if (groupsDef == null) {
+            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
+        }
+
+        ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
+        String[] cartridges = new String[cartridgesDef.size()];
+
+        cartridges = cartridgesDef.toArray(cartridges);
+        servicegroup.setCartridges(cartridges);
+
+        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+
+        if (depDefs != null) {
+            Dependencies deps = new Dependencies();
+            List<String> startupOrdersDef = depDefs.getStartupOrders();
+            if (startupOrdersDef != null) {
+                String[] startupOrders = new String[startupOrdersDef.size()];
+                startupOrders = startupOrdersDef.toArray(startupOrders);
+                deps.setStartupOrders(startupOrders);
+            }
+            // validate termination behavior
+            //validateTerminationBehavior(depDefs.getTerminationBehaviour());
+            deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
+            servicegroup.setDependencies(deps);
+        }
+
+        for (ServiceGroupDefinition groupDefinition : groupsDef) {
+            populateServiceGroupPojo(groupDefinition);
+        }
 
         return servicegroup;
+    }
+
+    private static void validateTerminationBehavior(String terminationBehavior) throws ServiceGroupDefinitioException {
+
+        if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
+                "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
+            throw new ServiceGroupDefinitioException("Invalid Termination Behaviour specified: [ " +
+                    terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
+                    " 'terminate-all' ");
+        }
     }
 
 
