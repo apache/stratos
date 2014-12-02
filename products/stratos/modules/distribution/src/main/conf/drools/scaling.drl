@@ -132,7 +132,7 @@ dialect "mvel"
             int count = 0;
 
             //Calculating the factor scaling
-            float factor = numberOfRequiredInstances / clusterInstanceContext.getMin();
+            float factor = numberOfRequiredInstances / clusterInstanceContext.getMinMembers();
             delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
 
             while(count != additionalInstances){
@@ -146,7 +146,7 @@ dialect "mvel"
           }    
         } else if(scaleDown){
 
-            float factor = numberOfRequiredInstances / clusterInstanceContext.getMin();
+            float factor = numberOfRequiredInstances / clusterInstanceContext.getMinMembers();
             delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
 
             log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
