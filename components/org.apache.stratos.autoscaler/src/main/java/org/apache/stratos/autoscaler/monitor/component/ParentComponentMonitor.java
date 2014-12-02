@@ -64,6 +64,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected DependencyTree scalingDependencyTree;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
+    //Pending monitors list
+    protected List<String> pendingMonitorsList;
     //instanceIds map, stopped monitors
     protected List<String> inactiveMonitorsList;
     //terminating instances list
@@ -73,6 +75,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
         inactiveMonitorsList = new ArrayList<String>();
         terminatingMonitorsList = new ArrayList<String>();
+        pendingMonitorsList = new ArrayList<String>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
@@ -258,7 +261,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
 
             boolean startDep;
-            if(!aliasToActiveMonitorsMap.containsKey(eventId)) {
+            if(!aliasToActiveMonitorsMap.containsKey(eventId) || !pendingMonitorsList.contains(eventId)) {
                startDep = startDependency(eventId, instanceId);
             } else {
                 startDep = startDependencyByInstanceCreation(eventId, instanceId);
@@ -498,6 +501,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                                              ApplicationChildContext context, List<String> instanceId) {
         Thread th = null;
         if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+            pendingMonitorsList.add(context.getId());
             th = new Thread(
                     new MonitorAdder(parent, context, this.appId, instanceId));
             if (log.isDebugEnabled()) {
@@ -643,6 +647,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
 
             aliasToActiveMonitorsMap.put(context.getId(), monitor);
+            pendingMonitorsList.remove(context.getId());
             // ApplicationBuilder.
             if (log.isInfoEnabled()) {
                 log.info(String.format("Monitor has been added successfully for: %s",
