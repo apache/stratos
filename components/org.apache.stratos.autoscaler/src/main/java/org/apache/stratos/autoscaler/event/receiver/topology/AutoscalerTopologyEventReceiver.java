@@ -300,7 +300,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 if (monitor.getStatus() == ClusterStatus.Active) {
                     // terminated gracefully
                     monitor.setStatus(ClusterStatus.Terminating, instanceId);
-                    InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId);
+                    InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId, instanceId);
                 } else {
                     monitor.setStatus(ClusterStatus.Terminating, instanceId);
                     monitor.terminateAllMembers();
@@ -328,7 +328,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                     // if the cluster monitor is null, assume that its termianted
                     ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId());
                     if (appMonitor != null) {
-                        appMonitor.onChildStatusEvent(new ClusterStatusEvent(ClusterStatus.Terminated, clusterId, null));
+                        appMonitor.onChildStatusEvent(
+                                new ClusterStatusEvent(ClusterStatus.Terminated,
+                                                        clusterId, instanceId));
                     }
                     return;
                 }

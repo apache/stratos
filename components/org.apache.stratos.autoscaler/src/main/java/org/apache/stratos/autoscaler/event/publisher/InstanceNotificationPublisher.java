@@ -39,9 +39,9 @@ public class InstanceNotificationPublisher {
         instanceNotifyingEvent.publish(event);
     }
 
-    public static void sendInstanceCleanupEventForCluster(String clusterId) {
+    public static void sendInstanceCleanupEventForCluster(String clusterId, String instanceId) {
         log.info(String.format("Publishing Instance Cleanup Event: [cluster] %s", clusterId));
-        publish(new InstanceCleanupClusterEvent(clusterId));
+        publish(new InstanceCleanupClusterEvent(clusterId, instanceId));
     }
 
     /**
