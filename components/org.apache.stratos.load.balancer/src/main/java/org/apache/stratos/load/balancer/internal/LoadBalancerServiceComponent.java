@@ -120,30 +120,13 @@ public class LoadBalancerServiceComponent {
             TopologyFilterConfigurator.configure(configuration);
 
             if (configuration.isMultiTenancyEnabled()) {
-<<<<<<< HEAD
                 // Start tenant event receiver
                 startTenantEventReceiver();
-=======
-
-                tenantReceiver = new LoadBalancerTenantEventReceiver();
-				tenantReceiver.execute();
-
-                if (log.isInfoEnabled()) {
-                    log.info("Tenant receiver thread started");
-                }
->>>>>>> ae876c1... Remove unnessary threads in messaging model
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
-<<<<<<< HEAD
                 startTopologyEventReceiver();
-=======
-                topologyReceiver = new LoadBalancerTopologyEventReceiver();
-                topologyReceiver.execute();
-                if (log.isInfoEnabled()) {
-                    log.info("Topology receiver thread started");
-                }
 
                 if (log.isInfoEnabled()) {
                     if (TopologyServiceFilter.getInstance().isActive()) {
@@ -177,7 +160,7 @@ public class LoadBalancerServiceComponent {
                         log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
                     }
                 }
->>>>>>> ae876c1... Remove unnessary threads in messaging model
+
             }
 
             if(configuration.isCepStatsPublisherEnabled()) {
@@ -197,18 +180,16 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startTenantEventReceiver() {
-        tenantReceiver = new LoadBalancerTenantEventReceiver();
-        Thread tenantReceiverThread = new Thread(tenantReceiver);
-        tenantReceiverThread.start();
+	    tenantReceiver = new LoadBalancerTenantEventReceiver();
+	    tenantReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Tenant receiver thread started");
         }
     }
 
     private void startTopologyEventReceiver() {
-        topologyReceiver = new LoadBalancerTopologyEventReceiver();
-        Thread topologyReceiverThread = new Thread(topologyReceiver);
-        topologyReceiverThread.start();
+	    topologyReceiver = new LoadBalancerTopologyEventReceiver();
+	    topologyReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
