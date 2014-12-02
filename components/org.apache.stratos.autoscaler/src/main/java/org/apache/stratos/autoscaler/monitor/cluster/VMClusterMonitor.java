@@ -168,40 +168,38 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         Runnable monitoringRunnable = new Runnable() {
             @Override
             public void run() {
+
                 for (ClusterLevelNetworkPartitionContext networkPartitionContext :
                         clusterLevelNetworkPartitionContexts) {
-                    // store primary members in the network partition context
-                    List<String> primaryMemberListInNetworkPartition = new ArrayList<String>();
-                    //minimum check per partition
+
                     for (ClusterInstanceContext instanceContext : networkPartitionContext.
                             getClusterInstanceContextMap().values()) {
+
+                        // store primary members in the cluster instance context
+                        List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
+
                         //FIXME to check the status of the instance
                         if (true) {
-                            // store primary members in the partition context
-                            List<String> primaryMemberListInPartition = new ArrayList<String>();
-                            for (ClusterLevelPartitionContext partitionContext :
-                                    instanceContext.getPartitionCtxts()) {
+
+                            for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                                 // get active primary members in this partition context
                                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
                                     if (isPrimaryMember(memberContext)) {
-                                        primaryMemberListInPartition.add(memberContext.getMemberId());
+                                        primaryMemberListInClusterInstance.add(memberContext.getMemberId());
                                     }
                                 }
 
                                 // get pending primary members in this partition context
                                 for (MemberContext memberContext : partitionContext.getPendingMembers()) {
                                     if (isPrimaryMember(memberContext)) {
-                                        primaryMemberListInPartition.add(memberContext.getMemberId());
+                                        primaryMemberListInClusterInstance.add(memberContext.getMemberId());
                                     }
                                 }
                             }
 
-                            primaryMemberListInNetworkPartition.addAll(primaryMemberListInPartition);
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-//                                getMinCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                            getMinCheckKnowledgeSession().setGlobal("instanceId",
-                                    instanceContext.getId());
+                            getMinCheckKnowledgeSession().setGlobal("instanceId", instanceContext.getId());
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",
@@ -239,11 +237,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
 //                                    getScaleCheckKnowledgeSession().setGlobal("lbRef", lbReferenceType);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
-                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInNetworkPartition);
+                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
 
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running scale check for network partition %s ", networkPartitionContext.getId()));
-                                    log.debug(" Primary members : " + primaryMemberListInNetworkPartition);
+                                    log.debug(" Primary members : " + primaryMemberListInClusterInstance);
                                 }
 
                                 scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
