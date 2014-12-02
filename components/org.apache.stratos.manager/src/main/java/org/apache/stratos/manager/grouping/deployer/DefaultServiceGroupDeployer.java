@@ -291,14 +291,12 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
 
         for (ServiceGroupDefinition groupDefinition : groupsDef) {
             int i = 0;
-            subGroups[i] = pojoConversion(groupDefinition);
+            subGroups[i] = populateServiceGroupPojo(groupDefinition);
             ++i;
         }
 
-        //subGroups = groupsDef.toArray(subGroups);
-        cartridges = cartridgesDef.toArray(cartridges);
-
         servicegroup.setGroups(subGroups);
+        cartridges = cartridgesDef.toArray(cartridges);
         servicegroup.setCartridges(cartridges);
 
         DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
@@ -315,52 +313,6 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             validateTerminationBehavior(depDefs.getTerminationBehaviour());
             deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
             servicegroup.setDependencies(deps);
-        }
-
-        return servicegroup;
-    }
-
-    private ServiceGroup pojoConversion (ServiceGroupDefinition serviceGroupDefinition) {
-        ServiceGroup servicegroup = new ServiceGroup();
-
-        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
-        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
-        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
-
-        servicegroup.setName(serviceGroupDefinition.getName());
-
-        if (cartridgesDef == null) {
-            cartridgesDef = new ArrayList<String>(0);
-        }
-
-        if (groupsDef == null) {
-            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
-        }
-
-        ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
-        String[] cartridges = new String[cartridgesDef.size()];
-
-        cartridges = cartridgesDef.toArray(cartridges);
-        servicegroup.setCartridges(cartridges);
-
-        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
-
-        if (depDefs != null) {
-            Dependencies deps = new Dependencies();
-            List<String> startupOrdersDef = depDefs.getStartupOrders();
-            if (startupOrdersDef != null) {
-                String[] startupOrders = new String[startupOrdersDef.size()];
-                startupOrders = startupOrdersDef.toArray(startupOrders);
-                deps.setStartupOrders(startupOrders);
-            }
-            // validate termination behavior
-            //validateTerminationBehavior(depDefs.getTerminationBehaviour());
-            deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
-            servicegroup.setDependencies(deps);
-        }
-
-        for (ServiceGroupDefinition groupDefinition : groupsDef) {
-            pojoConversion(groupDefinition);
         }
 
         return servicegroup;
