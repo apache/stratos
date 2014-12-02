@@ -19,164 +19,22 @@
 
 package org.apache.stratos.common.clustering;
 
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
-import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Provides objects to be managed in distributed and non-distributed environments.
+ * Distributed object provider service interface.
  */
-public class DistributedObjectProvider implements Serializable {
-    private static final Log log = LogFactory.getLog(DistributedObjectProvider.class);
+public interface DistributedObjectProvider {
+    Map getMap(String key);
 
-    private final boolean clustered;
-    private final HazelcastInstance hazelcastInstance;
+    List getList(String name);
 
-    public DistributedObjectProvider(boolean clustered, HazelcastInstance hazelcastInstance) {
-        this.clustered = clustered;
-        this.hazelcastInstance = hazelcastInstance;
-    }
+    void putToMap(Map map, Object key, Object value);
 
-    private com.hazelcast.core.ILock acquireDistributedLock(Object object) {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Acquiring distributed lock for %s...", object.getClass().getSimpleName()));
-        }
-        ILock lock = hazelcastInstance.getLock(object);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Distributed lock acquired for %s", object.getClass().getSimpleName()));
-        }
-        return lock;
-    }
+    void removeFromMap(Map map, Object key);
 
-    private void releaseDistributedLock(ILock lock) {
-        if(lock == null) {
-            return;
-        }
+    void addToList(List list, Object value);
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Releasing distributed lock for %s...", lock.getKey()));
-        }
-        lock.forceUnlock();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Distributed lock released for %s", lock.getKey()));
-        }
-    }
-
-    /**
-     * If clustering is enabled returns a distributed map object, otherwise returns a
-     * concurrent local map object.
-     * @param key
-     * @return
-     */
-    public Map getMap(String key) {
-        if(clustered) {
-            return hazelcastInstance.getMap(key);
-        } else {
-            return new ConcurrentHashMap<Object, Object>();
-        }
-    }
-
-    /**
-     * If clustering is enabled returns a distributed list, otherwise returns
-     * a local array list.
-     * @param name
-     * @return
-     */
-    public List getList(String name) {
-        if(clustered) {
-            return hazelcastInstance.getList(name);
-        } else {
-            return new ArrayList();
-        }
-    }
-
-    /**
-     * Put a key value pair to a map, if clustered use a distributed lock.
-     * @param map
-     * @param key
-     * @param value
-     */
-    public void putToMap(Map map, Object key, Object value) {
-         if(clustered) {
-             ILock lock = null;
-             try {
-                 IMap imap = (IMap) map;
-                 lock = acquireDistributedLock(imap.getName());
-                 imap.set(key, value);
-             } finally {
-                 releaseDistributedLock(lock);
-             }
-         } else {
-            map.put(key, value);
-         }
-    }
-
-    /**
-     * Remove an object from a map, if clustered use a distributed lock.
-     * @param map
-     * @param key
-     */
-    public void removeFromMap(Map map, Object key) {
-        if(clustered) {
-            ILock lock = null;
-            try {
-                IMap imap = (IMap) map;
-                lock = acquireDistributedLock(imap.getName());
-                imap.delete(key);
-            } finally {
-                releaseDistributedLock(lock);
-            }
-        } else {
-            map.remove(key);
-        }
-    }
-
-    /**
-     * Add an object to a list, if clustered use a distributed lock.
-     * @param list
-     * @param value
-     */
-    public void addToList(List list, Object value) {
-        if(clustered) {
-            ILock lock = null;
-            try {
-                IList ilist = (IList) list;
-                lock = acquireDistributedLock(ilist.getName());
-                ilist.add(value);
-            } finally {
-                releaseDistributedLock(lock);
-            }
-        } else {
-            list.add(value);
-        }
-    }
-
-    /**
-     * Remove an object from a list, if clustered use a distributed lock.
-     * @param list
-     * @param value
-     */
-    public void removeFromList(List list, Object value) {
-        if(clustered) {
-            ILock lock = null;
-            try {
-                IList ilist = (IList) list;
-                lock = acquireDistributedLock(ilist.getName());
-                ilist.remove(value);
-            } finally {
-                releaseDistributedLock(lock);
-            }
-        } else {
-            list.remove(value);
-        }
-    }
+    void removeFromList(List list, Object value);
 }

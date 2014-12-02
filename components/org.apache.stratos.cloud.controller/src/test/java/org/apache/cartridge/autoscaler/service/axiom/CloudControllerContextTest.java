@@ -23,6 +23,7 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import junit.framework.TestCase;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
+import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvider;
 
 public class CloudControllerContextTest extends TestCase {
 
@@ -37,6 +38,8 @@ public class CloudControllerContextTest extends TestCase {
     public final void testMemberContextOperations() throws Exception {
         AxisConfiguration axisConfiguration = new AxisConfiguration();
         axisConfiguration.setClusteringAgent(null);
+
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(new HazelcastDistributedObjectProvider());
         ServiceReferenceHolder.getInstance().setAxisConfiguration(axisConfiguration);
 
     	CloudControllerContext context = CloudControllerContext.getInstance();

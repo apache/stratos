@@ -27,7 +27,7 @@ import org.apache.stratos.common.config.CloudServiceConfig;
 import org.apache.stratos.common.config.CloudServicesDescConfig;
 import org.apache.stratos.common.config.PermissionConfig;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.internal.CloudCommonServiceComponent;
+import org.apache.stratos.common.internal.ServiceReferenceHolder;
 import org.wso2.carbon.registry.core.Collection;
 import org.wso2.carbon.registry.core.RegistryConstants;
 import org.wso2.carbon.registry.core.Resource;
@@ -115,9 +115,9 @@ public class CloudServicesUtil {
         }
 
         UserRegistry govRegistry =
-                CloudCommonServiceComponent.getGovernanceSystemRegistry(
+                ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
                         MultitenantConstants.SUPER_TENANT_ID);
-        UserRegistry configRegistry = CloudCommonServiceComponent.getConfigSystemRegistry(tenantId);
+        UserRegistry configRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getConfigSystemRegistry(tenantId);
         String cloudServiceInfoPath = StratosConstants.CLOUD_SERVICE_INFO_STORE_PATH +
                                       RegistryConstants.PATH_SEPARATOR + tenantId +
                                       RegistryConstants.PATH_SEPARATOR + cloudServiceName;
@@ -153,8 +153,8 @@ public class CloudServicesUtil {
 
     public static boolean isCloudServiceActive(String cloudServiceName,
                                                int tenantId) throws Exception {
-        UserRegistry govRegistry = CloudCommonServiceComponent.getGovernanceSystemRegistry(
-                                                                                           MultitenantConstants.SUPER_TENANT_ID);
+        UserRegistry govRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry(
+                MultitenantConstants.SUPER_TENANT_ID);
         return isCloudServiceActive(cloudServiceName, tenantId, govRegistry);
     }
 

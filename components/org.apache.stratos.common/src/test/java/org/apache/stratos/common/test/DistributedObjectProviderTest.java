@@ -21,7 +21,8 @@ package org.apache.stratos.common.test;
 
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvider;
+import org.apache.stratos.common.internal.ServiceReferenceHolder;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -47,17 +48,19 @@ public class DistributedObjectProviderTest {
 
     @Test
     public void testPutToMapLocal() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testPutToMap(provider);
     }
 
     @Test
     public void testPutToMapDistributed() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testPutToMap(provider);
     }
 
-    private void testPutToMap(DistributedObjectProvider provider) {
+    private void testPutToMap(HazelcastDistributedObjectProvider provider) {
         Map<String, String> map = provider.getMap("MAP1");
         provider.putToMap(map, "key1", "value1");
         assertEquals(map.get("key1"), "value1");
@@ -65,17 +68,19 @@ public class DistributedObjectProviderTest {
 
     @Test
     public void testRemoveFromMapLocal() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testRemoveFromMap(provider);
     }
 
     @Test
     public void testRemoveFromMapDistributed() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testRemoveFromMap(provider);
     }
 
-    private void testRemoveFromMap(DistributedObjectProvider provider) {
+    private void testRemoveFromMap(HazelcastDistributedObjectProvider provider) {
         Map<String, String> map = provider.getMap("MAP1");
         provider.putToMap(map, "key1", "value1");
         assertEquals(map.get("key1"), "value1");
@@ -85,17 +90,19 @@ public class DistributedObjectProviderTest {
 
     @Test
     public void testAddToListLocal() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testAddToList(provider);
     }
 
     @Test
     public void testAddToListDistributed() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testAddToList(provider);
     }
 
-    private void testAddToList(DistributedObjectProvider provider) {
+    private void testAddToList(HazelcastDistributedObjectProvider provider) {
         List list = provider.getList("LIST1");
         String value1 = "value1";
         provider.addToList(list, value1);
@@ -104,17 +111,19 @@ public class DistributedObjectProviderTest {
 
     @Test
     public void testRemoveFromListLocal() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(false, null);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testRemovalFromList(provider);
     }
 
     @Test
     public void testRemoveFromListDistributed() {
-        DistributedObjectProvider provider = new DistributedObjectProvider(true, hazelcastInstance);
+        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testRemovalFromList(provider);
     }
 
-    private void testRemovalFromList(DistributedObjectProvider provider) {
+    private void testRemovalFromList(HazelcastDistributedObjectProvider provider) {
         List list = provider.getList("LIST1");
         String value1 = "value1";
         provider.addToList(list, value1);

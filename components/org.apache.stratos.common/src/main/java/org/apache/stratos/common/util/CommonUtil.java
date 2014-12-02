@@ -23,7 +23,8 @@ import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.internal.CloudCommonServiceComponent;
+import org.apache.stratos.common.internal.ServiceReferenceHolder;
+import org.apache.stratos.common.internal.StratosCommonServiceComponent;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;
@@ -504,7 +505,7 @@ public class CommonUtil {
 			log.debug("Unable to locate the stratos configurations file. "
 					+ "Default Settings will be used.");
 		}
-        return config; // return the default configuratiosn, if the file not found.
+        return config; // return the default configuration, if the file not found.
     }
     
     
@@ -587,7 +588,7 @@ public class CommonUtil {
      */
     public static boolean isDomainNameAvailable(String tenantDomain) throws Exception {
 
-        TenantManager tenantManager = CloudCommonServiceComponent.getTenantManager();
+        TenantManager tenantManager = ServiceReferenceHolder.getInstance().getRealmService().getTenantManager();
           // The registry reserved words are checked first.
           if (tenantDomain.equals("atom") || tenantDomain.equals("registry")
                   || tenantDomain.equals("resource")) {

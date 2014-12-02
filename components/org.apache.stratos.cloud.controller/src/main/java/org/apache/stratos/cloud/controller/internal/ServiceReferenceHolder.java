@@ -18,9 +18,8 @@
  */
 package org.apache.stratos.cloud.controller.internal;
 
-import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.wso2.carbon.caching.impl.DistributedMapProvider;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -34,8 +33,7 @@ public class ServiceReferenceHolder {
     private TaskService taskService;
     private Registry registry;
     private AxisConfiguration axisConfiguration;
-    private DistributedMapProvider distributedMapProvider;
-    private HazelcastInstance hazelcastInstance;
+    private DistributedObjectProvider distributedObjectProvider;
 
     private ServiceReferenceHolder() {
     }
@@ -71,19 +69,11 @@ public class ServiceReferenceHolder {
 	    return registry;
     }
 
-    public void setDistributedMapProvider(DistributedMapProvider distributedMapProvider) {
-        this.distributedMapProvider = distributedMapProvider;
+    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        this.distributedObjectProvider = distributedObjectProvider;
     }
 
-    public DistributedMapProvider getDistributedMapProvider() {
-        return distributedMapProvider;
-    }
-
-    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.hazelcastInstance = hazelcastInstance;
-    }
-
-    public HazelcastInstance getHazelcastInstance() {
-        return hazelcastInstance;
+    public DistributedObjectProvider getDistributedObjectProvider() {
+        return distributedObjectProvider;
     }
 }

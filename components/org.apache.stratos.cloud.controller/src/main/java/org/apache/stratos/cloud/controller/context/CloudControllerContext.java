@@ -130,9 +130,8 @@ public class CloudControllerContext implements Serializable {
             clustered = true;
         }
 
-        // Initialize distributed object handler
-        distributedObjectProvider = new DistributedObjectProvider(isClustered(),
-                ServiceReferenceHolder.getInstance().getHazelcastInstance());
+        // Initialize distributed object provider
+        distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
 
         // Initialize objects
         clusterIdToMemberContextListMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_MEMBER_CTX);

@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Util;
 import org.osgi.framework.BundleContext;
@@ -48,10 +49,8 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  * Registering Cloud Controller Service.
  *
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
- * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
- *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
- * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
- *                cardinality="0..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.clustering.DistributedObjectProvider"
+ *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
@@ -133,8 +132,7 @@ public class CloudControllerServiceComponent {
 		
 		try {			
 			UserRegistry registry = registryService.getGovernanceSystemRegistry();
-	        ServiceReferenceHolder.getInstance()
-	                                             .setRegistry(registry);
+	        ServiceReferenceHolder.getInstance().setRegistry(registry);
         } catch (RegistryException e) {
         	String msg = "Failed when retrieving Governance System Registry.";
         	log.error(msg, e);
@@ -158,20 +156,12 @@ public class CloudControllerServiceComponent {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(null);
     }
 
-    protected void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+    protected void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(distributedObjectProvider);
     }
 
-    protected void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
-    }
-
-    protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
-        ServiceReferenceHolder.getInstance().setDistributedMapProvider(mapProvider);
-    }
-
-    protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
-        ServiceReferenceHolder.getInstance().setDistributedMapProvider(null);
+    protected void unsetDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
     }
 	
 	protected void deactivate(ComponentContext ctx) {

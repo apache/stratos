@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.common.services;
 
-import org.apache.stratos.common.internal.CloudCommonServiceComponent;
+import org.apache.stratos.common.internal.StratosCommonServiceComponent;
 import org.apache.stratos.common.packages.PackageInfo;
 
 import java.util.List;
@@ -26,10 +26,10 @@ import java.util.List;
 
 public class PackageInfoService {
 
-	public PackageInfo[] getPackageInfos() throws Exception {
-		List<PackageInfo> list = CloudCommonServiceComponent.getPackageInfos().
-		                                                     getMultitenancyPackages();
-		PackageInfo[] packageInfos = list.toArray(new PackageInfo[list.size()]);
-		return packageInfos;
-	}
+//	public PackageInfo[] getPackageInfos() throws Exception {
+//		List<PackageInfo> list = StratosCommonServiceComponent.getPackageInfos().
+//		                                                     getMultitenancyPackages();
+//		PackageInfo[] packageInfos = list.toArray(new PackageInfo[list.size()]);
+//		return packageInfos;
+//	}
 }
