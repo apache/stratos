@@ -185,14 +185,14 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
 
-                                // get active primary members in this partition context
+                                // get active primary members in this cluster instance context
                                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
                                     if (isPrimaryMember(memberContext)) {
                                         primaryMemberListInClusterInstance.add(memberContext.getMemberId());
                                     }
                                 }
 
-                                // get pending primary members in this partition context
+                                // get pending primary members in this cluster instance context
                                 for (MemberContext memberContext : partitionContext.getPendingMembers()) {
                                     if (isPrimaryMember(memberContext)) {
                                         primaryMemberListInClusterInstance.add(memberContext.getMemberId());
@@ -202,7 +202,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                            getMinCheckKnowledgeSession().setGlobal("instanceId", instanceContext.getId());
+                            getMinCheckKnowledgeSession().setGlobal("algorithmName", networkPartitionContext.getPartitionAlgorithm());
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",

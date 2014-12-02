@@ -199,7 +199,7 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(instance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions(), networkPartition.getMin());
+                    networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartitionId);
         }
 
         for (ChildLevelPartition partition : networkPartition.getChildLevelPartitions()) {
@@ -287,7 +287,7 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions(), networkPartition.getMin());
+                    networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartition.getId());
         }
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);

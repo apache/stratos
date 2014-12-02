@@ -68,10 +68,13 @@ public class ClusterInstanceContext extends InstanceContext {
     private int currentPartitionIndex;
     private ChildLevelPartition[] partitions;
 
+    private String networkPartitionId;
+
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions,
-                                  int min) {
+                                  int min, String networkPartitionId) {
 
         super(clusterInstanceId);
+        this.networkPartitionId = networkPartitionId;
         this.setMinMembers(min);
         if (partitions == null) {
             this.partitions = new ChildLevelPartition[0];
@@ -146,7 +149,15 @@ public class ClusterInstanceContext extends InstanceContext {
         }
         return null;
     }
+    public  int getNonTerminatedMemberCount(){
 
+        int nonTerminatedMemberCount = 0;
+        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
+
+            nonTerminatedMemberCount += partitionContext.getNonTerminatedMemberCount();
+        }
+        return nonTerminatedMemberCount;
+    }
 
     public int getMinInstanceCount() {
         return minInstanceCount;
@@ -449,5 +460,9 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public void setMinMembers(int minMembers) {
         this.minMembers = minMembers;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
     }
 }
