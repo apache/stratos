@@ -272,6 +272,12 @@ public class Cluster implements Serializable {
         return clusterId.hashCode();
     }
 
+    public String toString () {
+
+        return " [ Cluster Id: " + clusterId + ", Service Name: " + serviceName + ", Autoscale Policy Name: "
+                + autoscalePolicyName + ", Deployment Policy Name: " + deploymentPolicyName +
+                ", Tenant Range: " + tenantRange + ", Is a Kubernetes Cluster: " + isKubernetesCluster + " ] ";
+    }
     public String getAppId() {
         return appId;
     }
