@@ -19,12 +19,12 @@
 
 package org.apache.stratos.load.balancer.internal;
 
-import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.clustering.ClusteringAgent;
 import org.apache.axis2.deployment.DeploymentEngine;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTenantEventReceiver;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTopologyEventReceiver;
@@ -45,7 +45,6 @@ import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.deployers.SynapseArtifactDeploymentStore;
 import org.apache.synapse.endpoints.Endpoint;
 import org.osgi.service.component.ComponentContext;
-import org.wso2.carbon.caching.impl.DistributedMapProvider;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.mediation.initializer.ServiceBusConstants;
 import org.wso2.carbon.mediation.initializer.ServiceBusUtils;
@@ -64,10 +63,8 @@ import java.util.Set;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
- * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
- *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
- * @scr.reference name="distributedMapProvider" interface="org.wso2.carbon.caching.impl.DistributedMapProvider"
- *                cardinality="0..1" policy="dynamic" bind="setDistributedMapProvider" unbind="unsetDistributedMapProvider"
+ * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.clustering.DistributedObjectProvider"
+ *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="configuration.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  * @scr.reference name="synapse.config.service" interface="org.wso2.carbon.mediation.initializer.services.SynapseConfigurationService"
@@ -417,19 +414,11 @@ public class LoadBalancerServiceComponent {
         ServiceReferenceHolder.getInstance().setRealmService(null);
     }
 
-    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
+    protected void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(distributedObjectProvider);
     }
 
-    public void unsetHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
-    }
-
-    protected void setDistributedMapProvider(DistributedMapProvider mapProvider) {
-        ServiceReferenceHolder.getInstance().setDistributedMapProvider(mapProvider);
-    }
-
-    protected void unsetDistributedMapProvider(DistributedMapProvider mapProvider) {
-        ServiceReferenceHolder.getInstance().setDistributedMapProvider(null);
+    protected void unsetDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
     }
 }

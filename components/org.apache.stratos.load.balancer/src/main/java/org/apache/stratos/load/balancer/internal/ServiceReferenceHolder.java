@@ -19,14 +19,13 @@
 
 package org.apache.stratos.load.balancer.internal;
 
-import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.synapse.config.SynapseConfiguration;
-import org.wso2.carbon.caching.impl.DistributedMapProvider;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -45,9 +44,8 @@ public class ServiceReferenceHolder {
     private UserRegistry configRegistry;
     private UserRegistry governanceRegistry;
     private DependencyManagementService dependencyManager;
-    private DistributedMapProvider distributedMapProvider;
-    private HazelcastInstance hazelcastInstance;
     private RealmService realmService;
+    private DistributedObjectProvider distributedObjectProvider;
 
     private ServiceReferenceHolder() {
     }
@@ -130,19 +128,11 @@ public class ServiceReferenceHolder {
         this.configCtxt = configCtxt;
     }
 
-    public void setDistributedMapProvider(DistributedMapProvider distributedMapProvider) {
-        this.distributedMapProvider = distributedMapProvider;
+    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        this.distributedObjectProvider = distributedObjectProvider;
     }
 
-    public DistributedMapProvider getDistributedMapProvider() {
-        return distributedMapProvider;
-    }
-
-    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.hazelcastInstance = hazelcastInstance;
-    }
-
-    public HazelcastInstance getHazelcastInstance() {
-        return hazelcastInstance;
+    public DistributedObjectProvider getDistributedObjectProvider() {
+        return distributedObjectProvider;
     }
 }
