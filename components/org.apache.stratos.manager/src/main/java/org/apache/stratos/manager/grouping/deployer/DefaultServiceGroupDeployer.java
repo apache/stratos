@@ -325,6 +325,13 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
 
+        List<ServiceGroupDefinition> groupDefinitions = new ArrayList<ServiceGroupDefinition>(groups.length);
+        for (ServiceGroup group : groups) {
+            if (group != null) {
+                groupDefinitions.add(populateServiceGroupDefinitionPojo(group));
+            }
+        }
+
         if (deps != null) {
             DependencyDefinitions depsDef = new DependencyDefinitions();
             String[] startupOrders = deps.getStartupOrders();
@@ -344,12 +351,12 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         }
 
         List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
-        List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(groups.length);
+        //List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(groups.length);
         if (cartridges[0] != null) {
             servicegroupDef.setCartridges(cartridgesDef);
         }
         if (groups != null) {
-            servicegroupDef.setGroups(subGroupsDef);
+            servicegroupDef.setGroups(groupDefinitions);
         }
 
         return servicegroupDef;
