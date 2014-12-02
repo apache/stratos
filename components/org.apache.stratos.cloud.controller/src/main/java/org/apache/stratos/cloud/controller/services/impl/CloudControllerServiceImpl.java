@@ -78,7 +78,6 @@ import java.util.concurrent.Future;
 public class CloudControllerServiceImpl implements CloudControllerService {
 
 	private static final Log LOG = LogFactory.getLog(CloudControllerServiceImpl.class);
-	public static final String IS_LOAD_BALANCER = "load.balancer";
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext
             .getInstance();
@@ -1159,7 +1158,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         Properties props = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-        String property = props.getProperty(IS_LOAD_BALANCER);
+        String property = props.getProperty(CloudControllerConstants.IS_LOAD_BALANCER);
         boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
 
         //TODO fix the properties issue

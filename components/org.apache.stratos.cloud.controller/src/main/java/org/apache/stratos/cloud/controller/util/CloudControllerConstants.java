@@ -283,4 +283,6 @@ public final class CloudControllerConstants {
     public static final String DOMAIN_ID = "domainId";
     public static final String DISK_OFFERING = "diskOffering";
     public static final String NETWORK_IDS= "networkIds";
+    
+    public static final String IS_LOAD_BALANCER = "load.balancer";
 }
