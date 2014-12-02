@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.context.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
@@ -34,6 +35,8 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ch
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -271,6 +274,16 @@ public class VMClusterContext extends AbstractClusterContext {
 
         ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
                 getClusterInstanceContext(clusterInstance.getInstanceId());
+        ApplicationHolder.acquireReadLock();
+        try {
+            Application application = ApplicationHolder.getApplications().
+                    getApplication(cluster.getAppId());
+            ClusterDataHolder dataHolder = application.getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
+            clusterInstanceContext.setMinMembers(dataHolder.getMinInstances());
+            clusterInstanceContext.setMaxMembers(dataHolder.getMaxInstances());
+        } finally {
+            ApplicationHolder.releaseReadLock();
+        }
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),

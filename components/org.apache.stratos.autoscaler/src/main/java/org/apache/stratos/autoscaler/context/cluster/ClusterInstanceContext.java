@@ -62,7 +62,8 @@ public class ClusterInstanceContext extends InstanceContext {
     private int minInstanceCount = 0, maxInstanceCount = 0;
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
-    private int min;
+    private int minMembers;
+    private int maxMembers;
     //details required for partition selection algorithms
     private int currentPartitionIndex;
     private ChildLevelPartition[] partitions;
@@ -71,7 +72,7 @@ public class ClusterInstanceContext extends InstanceContext {
                                   int min) {
 
         super(clusterInstanceId);
-        this.min = min;
+        this.setMinMembers(min);
         if (partitions == null) {
             this.partitions = new ChildLevelPartition[0];
         } else {
@@ -434,7 +435,19 @@ public class ClusterInstanceContext extends InstanceContext {
     }
 
 
-    public int getMin() {
-        return min;
+    public int getMinMembers() {
+        return minMembers;
+    }
+
+    public int getMaxMembers() {
+        return maxMembers;
+    }
+
+    public void setMaxMembers(int maxMembers) {
+        this.maxMembers = maxMembers;
+    }
+
+    public void setMinMembers(int minMembers) {
+        this.minMembers = minMembers;
     }
 }

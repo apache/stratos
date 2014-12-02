@@ -476,9 +476,9 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                                    ClusterContextFactory.
                                                            getVMClusterContext(instanceId,
                                                                    cluster));
-                                       } else {
-                                           clusterContext.addInstanceContext(instanceId, cluster);
                                        }
+                                       clusterContext.addInstanceContext(instanceId, cluster);
+
 
                                    }
                                    if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {

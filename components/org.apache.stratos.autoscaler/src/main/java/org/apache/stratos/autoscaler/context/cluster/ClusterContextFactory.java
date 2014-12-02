@@ -65,11 +65,7 @@ public class ClusterContextFactory {
         DeploymentPolicy deploymentPolicy;
         ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationHolder.getApplications().
-                    getApplication(cluster.getAppId());
             deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(cluster.getAppId());
-            ChildPolicy policy = deploymentPolicy.
-                    getChildPolicy(AutoscalerUtil.getAliasFromClusterId(cluster.getClusterId()));
         } finally {
             ApplicationHolder.releaseReadLock();
         }
