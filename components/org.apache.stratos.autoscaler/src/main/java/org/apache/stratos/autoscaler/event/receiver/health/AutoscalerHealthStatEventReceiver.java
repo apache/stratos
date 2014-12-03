@@ -83,7 +83,11 @@ public class AutoscalerHealthStatEventReceiver {
 
     public void execute() {
         //FIXME this activated before autoscaler deployer activated.
-        healthStatEventReceiver.setExecutorService(executorService);
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException ignore) {
+        }
+	    healthStatEventReceiver.setExecutorService(executorService);
         healthStatEventReceiver.execute();
 
         if(log.isInfoEnabled()) {
