@@ -291,6 +291,10 @@ public class PojoConverter {
             networkInterface.setNetworkUuid(nib.networkUuid);
             networkInterface.setFixedIp(nib.fixedIp);
             networkInterface.setPortUuid(nib.portUuid);
+            if (nib.floatingNetworks != null && !nib.floatingNetworks.isEmpty()) {
+            	networkInterface.setFloatingNetworks(PojoConverter.getFloatingNetworks(nib.floatingNetworks));
+            }
+
             networkInterfacesArray[i++] = networkInterface;
         }
 
@@ -298,6 +302,24 @@ public class PojoConverter {
         networkInterfaces.setNetworkInterfaces(networkInterfacesArray);
         return networkInterfaces;
     }
+    
+    private static FloatingNetworks getFloatingNetworks(List<FloatingNetworkBean> floatingNetworkBeans) {
+    	
+    	FloatingNetwork[] floatingNetworksArray = new FloatingNetwork[floatingNetworkBeans.size()];
+    	
+    	int i =0;
+    	for (FloatingNetworkBean floatingNetworkBean : floatingNetworkBeans) {
+    	FloatingNetwork floatingNetwork = new FloatingNetwork();
+    	floatingNetwork.setName(floatingNetworkBean.name);
+    	floatingNetwork.setNetworkUuid(floatingNetworkBean.networkUuid);
+    	floatingNetwork.setFloatingIP(floatingNetworkBean.floatingIP);
+    	floatingNetworksArray[i++] = floatingNetwork;
+    	}
+    	
+    	FloatingNetworks floatingNetworks = new FloatingNetworks();
+    	floatingNetworks.setFloatingNetworks(floatingNetworksArray);
+    	return floatingNetworks;
+    	}
 
     public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertToCCPartitionPojo
             (Partition partitionBean) {

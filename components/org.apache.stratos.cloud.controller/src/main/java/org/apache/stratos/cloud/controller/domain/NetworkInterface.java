@@ -29,6 +29,7 @@ public class NetworkInterface implements Serializable {
 	private String networkUuid;
 	private String fixedIp;
 	private String portUuid;
+	private FloatingNetworks floatingNetworks;
 	
 	public NetworkInterface() {
 	}
@@ -74,6 +75,20 @@ public class NetworkInterface implements Serializable {
 	 */
 	public void setPortUuid(String portUuid) {
 		this.portUuid = portUuid;
+	}
+	
+	/**
+	* @return {@link FloatingNetworks}
+	*/
+	public FloatingNetworks getFloatingNetworks() {
+		return floatingNetworks;
+	}
+	
+	/**
+	* @param floatingNetworks the {@link FloatingNetworks} to be set
+	*/
+	public void setFloatingNetworks(FloatingNetworks floatingNetworks) {
+		this.floatingNetworks = floatingNetworks;
 	}
 	
 	public String toString() {
