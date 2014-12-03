@@ -54,7 +54,7 @@ public class ConfUtil {
 	/**
 	 * Get the instance of the configuration file
 	 *
-	 * @param configFilePath configuration file name
+	 * @param configFilePath Configuration file name
 	 * @return ConfUtil instance
 	 */
 	public static ConfUtil getInstance(String configFilePath) {
