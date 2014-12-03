@@ -275,7 +275,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         int monitorInterval = conf.getInt(AutoScalerConstants.VMService_Cluster_MONITOR_INTERVAL, 90000);
         setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
-            log.debug("VMServiceClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());
+            log.debug("VMClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());
         }
     }
 
@@ -287,13 +287,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         setDestroyed(true);
         stopScheduler();
         if (log.isDebugEnabled()) {
-            log.debug("VMServiceClusterMonitor Drools session has been disposed. " + this.toString());
+            log.debug("VMClusterMonitor Drools session has been disposed. " + this.toString());
         }
     }
 
     @Override
     public String toString() {
-        return "VMServiceClusterMonitor [clusterId=" + getClusterId() +
+        return "VMClusterMonitor [clusterId=" + getClusterId() +
 //                ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
     }

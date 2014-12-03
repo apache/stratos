@@ -84,7 +84,7 @@ public class ClusterMonitorFactory {
         }
 
 
-        log.info("VMServiceClusterMonitor created: " + clusterMonitor.toString());
+        log.info("VMClusterMonitor created: " + clusterMonitor.toString());
         return clusterMonitor;
     }
 //
