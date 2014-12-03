@@ -23,20 +23,14 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.Properties;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.exception.InvalidKubernetesGroupException;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesHostExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesMasterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesHostExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesMasterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -244,8 +238,14 @@ public class StratosApiV41Utils {
     }
 
     public static void undeployDeploymentPolicy(String applicationId) throws RestAPIException {
-        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-        if (cloudControllerServiceClient != null) {
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                autoscalerServiceClient.unDeployDeploymentPolicy(applicationId);
+            } catch (RemoteException e) {
+                log.error("Error while unDeploying the Deployment Policy for  " + applicationId);
+                throw new RestAPIException(e);
+            }
         }
 
 

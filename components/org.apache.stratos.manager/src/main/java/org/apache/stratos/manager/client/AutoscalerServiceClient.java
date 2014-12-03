@@ -170,6 +170,10 @@ public class AutoscalerServiceClient {
         return deploymentPolicies;
     }
 
+    public void unDeployDeploymentPolicy(String applicationId) throws RemoteException {
+        stub.undeployDeploymentPolicy(applicationId);
+    }
+
 //    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws RemoteException,
 //            AutoScalerServiceNonExistingLBExceptionException {
 //        stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
