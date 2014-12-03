@@ -22,19 +22,19 @@ package org.apache.stratos.messaging.domain.applications;
 import java.io.Serializable;
 import java.util.List;
 
-public class ScalingOrder implements Serializable {
+public class ScalingDependentList implements Serializable {
 
-    private List<String> scalingOrderComponentsList;
+    private List<String> scalingDependentListComponents;
 
-    public ScalingOrder(List<String> scalingOrderList) {
-        this.scalingOrderComponentsList = scalingOrderList;
+    public ScalingDependentList(List<String> scalingOrderList) {
+        this.scalingDependentListComponents = scalingOrderList;
     }
 
-    public List<String> getScalingOrderComponentsList() {
-        return scalingOrderComponentsList;
+    public List<String> getScalingDependentListComponents() {
+        return scalingDependentListComponents;
     }
 
-    public void setScalingOrderComponentsList(List<String> scalingOrderComponentsList) {
-        this.scalingOrderComponentsList = scalingOrderComponentsList;
+    public void setScalingDependentListComponents(List<String> scalingDependentListComponents) {
+        this.scalingDependentListComponents = scalingDependentListComponents;
     }
 }

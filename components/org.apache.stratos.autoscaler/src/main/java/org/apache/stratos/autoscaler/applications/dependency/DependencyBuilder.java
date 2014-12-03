@@ -132,15 +132,15 @@ public class DependencyBuilder {
             }
 
             //Parsing the scaling order
-            Set<ScalingOrder> scalingOrders = dependencyOrder.getScalingOrders();
+            Set<ScalingDependentList> scalingDependentLists = dependencyOrder.getScalingDependentLists();
 
-            if (scalingOrders != null) {
-                for (ScalingOrder scalingOrder : scalingOrders) {
+            if (scalingDependentLists != null) {
+                for (ScalingDependentList scalingDependentList : scalingDependentLists) {
                     foundContext = null;
                     parentContext = null;
 
 
-                    for (String scalingOrderComponent : scalingOrder.getScalingOrderComponentsList()) {
+                    for (String scalingOrderComponent : scalingDependentList.getScalingDependentListComponents()) {
 
 
                         if (scalingOrderComponent != null){
