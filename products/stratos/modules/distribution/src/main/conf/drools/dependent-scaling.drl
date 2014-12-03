@@ -19,6 +19,9 @@
 
 package org.apache.stratos.autoscaler.rule;
 
+
+global org.apache.stratos.autoscaler.rule.RuleLog log;
+
 rule "Dependent Scaling Rule"
 dialect "mvel"
 	when
