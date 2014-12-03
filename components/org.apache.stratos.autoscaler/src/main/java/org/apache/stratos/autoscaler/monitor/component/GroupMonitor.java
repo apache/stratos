@@ -65,16 +65,12 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     //whether groupScaling enabled or not
     private boolean groupScalingEnabled;
-
-    private int monitoringIntervalMilliseconds = 60000;
-    //TODO get this from config file
-
     //network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
-
-    private Map<String, GroupInstance> groupInstanceIdMap;
-
+    //Whether the monitor is destroyed or not
     private boolean isDestroyed;
+    //monitoring interval of the monitor
+    private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
 
     /**
      * Constructor of GroupMonitor
@@ -88,7 +84,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         super(group);
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
-        setGroupInstanceIdMap(new HashMap<String, GroupInstance>());
     }
 
     @Override
@@ -132,7 +127,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param status status of the group
      */
     public void setStatus(GroupStatus status, String instanceId) {
-        this.groupInstanceIdMap.get(instanceId).setStatus(status);
+        ((GroupInstance)this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
@@ -234,7 +229,20 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         // send the ClusterTerminating event
         if (statusEvent.getStatus() == GroupStatus.Terminating ||
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
-            ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
+            //Get all the instances which related to this instanceId
+            GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
+            if(instance != null) {
+                ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
+            } else {
+                //Using parentId need to get the children
+                List<String> instanceIds = this.getInstancesByParentInstanceId(instanceId);
+                if(!instanceIds.isEmpty()) {
+                    for(String instanceId1 : instanceIds) {
+                        ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
+                    }
+                }
+
+            }
         } else if (statusEvent.getStatus() == ClusterStatus.Created ||
                 statusEvent.getStatus() == GroupStatus.Created) {
             Application application = ApplicationHolder.getApplications().getApplication(this.appId);
@@ -489,20 +497,5 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.isDestroyed = isDestroyed;
     }
 
-    public Map<String, GroupInstance> getGroupInstanceIdMap() {
-        return groupInstanceIdMap;
-    }
 
-    public void setGroupInstanceIdMap(Map<String, GroupInstance> groupInstanceIdMap) {
-        this.groupInstanceIdMap = groupInstanceIdMap;
-    }
-
-    public void addGroupInstance(GroupInstance instance) {
-        this.groupInstanceIdMap.put(instance.getInstanceId(), instance);
-
-    }
-
-    public GroupInstance getGroupInstance(String instanceId) {
-        return this.groupInstanceIdMap.get(instanceId);
-    }
 }

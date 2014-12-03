@@ -55,6 +55,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
     //application instance id map
     private Map<String, ApplicationInstance> applicationInstanceIdMap;
+    //Flag to set whether application is terminating
+    private boolean isTerminating;
 
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
@@ -333,5 +335,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public ApplicationInstance getApplicationInstance(String instanceId) {
         return this.applicationInstanceIdMap.get(instanceId);
+    }
+
+    public boolean isTerminating() {
+        return isTerminating;
+    }
+
+    public void setTerminating(boolean isTerminating) {
+        this.isTerminating = isTerminating;
     }
 }

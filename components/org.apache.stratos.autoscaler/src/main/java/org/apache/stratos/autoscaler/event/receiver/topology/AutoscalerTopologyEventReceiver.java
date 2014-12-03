@@ -39,6 +39,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -319,6 +320,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 String instanceId = clusterTerminatedEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
+                ApplicationMonitor appMonitor = null;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -326,7 +328,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                 + "[cluster] %s", clusterId));
                     }
                     // if the cluster monitor is null, assume that its termianted
-                    ApplicationMonitor appMonitor = AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId());
+                    appMonitor = AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId());
                     if (appMonitor != null) {
                         appMonitor.onChildStatusEvent(
                                 new ClusterStatusEvent(ClusterStatus.Terminated,
@@ -336,9 +338,13 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                 }
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.setStatus(ClusterStatus.Terminated, instanceId);
-                //Destroying and Removing the Cluster monitor
-                monitor.destroy();
-                AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
+                monitor.removeInstance(instanceId);
+                if(!monitor.hasInstance() && appMonitor.isTerminating()) {
+                    //Destroying and Removing the Cluster monitor
+                    monitor.destroy();
+                    AutoscalerContext.getInstance().removeClusterMonitor(clusterId);
+                }
+
             }
         });
 
@@ -483,6 +489,16 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                                                    cluster));
                                        }
                                        clusterContext.addInstanceContext(instanceId, cluster);
+                                       if(clusterMonitor.getInstance(instanceId) == null) {
+                                           ClusterInstance clusterInstance = cluster.
+                                                   getInstanceContexts(instanceId);
+                                           ClusterInstance instance = new ClusterInstance(clusterInstance.getAlias(),
+                                                   cluster.getClusterId(),
+                                                   clusterInstance.getInstanceId());
+                                           instance.setParentId(clusterInstance.getParentId());
+                                           instance.setStatus(clusterInstance.getStatus());
+                                           clusterMonitor.addInstance(instance);
+                                       }
 
 
                                    }

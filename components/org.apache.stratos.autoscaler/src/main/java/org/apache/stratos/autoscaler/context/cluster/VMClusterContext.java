@@ -290,6 +290,7 @@ public class VMClusterContext extends AbstractClusterContext {
                     networkPartition.getPartitionAlgo(),
                     networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartition.getId());
         }
+
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
 
