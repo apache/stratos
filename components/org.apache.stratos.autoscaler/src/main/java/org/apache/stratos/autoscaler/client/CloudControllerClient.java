@@ -169,7 +169,7 @@ public class CloudControllerClient {
 
     public synchronized MemberContext spawnAnInstance(Partition partition,
                                                       String clusterId,
-                                                      String networkPartitionId, boolean isPrimary,
+                                                      String networkPartitionId,String instanceID, boolean isPrimary,
                                                       int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
@@ -186,6 +186,7 @@ public class CloudControllerClient {
             MemberContext member = new MemberContext();
             member.setClusterId(clusterId);
             member.setPartition(partition);
+	        member.setInstanceId(instanceID);
 //            member.setLbClusterId(lbClusterId);
             member.setObsoleteExpiryTime(expiryTime);
             member.setInitTime(System.currentTimeMillis());
