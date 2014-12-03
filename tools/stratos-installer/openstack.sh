@@ -54,6 +54,7 @@ ${SED} -i "s@OPENSTACK_PROVIDER_START@@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_IDENTITY@$openstack_identity@g"  repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_CREDENTIAL@$openstack_credential@g"  repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_ENDPOINT@$openstack_jclouds_endpoint@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@OPENSTACK_NETWORKING_PROVIDER@$openstack_networking_provider@g"  repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_PROVIDER_END@@g"  repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_SECURITY_GROUPS@$openstack_security_groups@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_KEYPAIR@$openstack_keypair_name@g" repository/conf/cloud-controller.xml

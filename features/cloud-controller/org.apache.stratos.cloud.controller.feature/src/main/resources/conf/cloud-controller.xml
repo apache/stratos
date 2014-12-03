@@ -57,6 +57,7 @@
 			<property name="jclouds.endpoint" value="http://192.168.16.20:5000/" />
            		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
 			<property name="jclouds.api-version" value="2.0/" />
+			<property name="openstack.networking.provider" value="nova" />
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
 		</iaasProvider -->
