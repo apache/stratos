@@ -320,8 +320,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response deployDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
 
-        StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.id).build();
+        String policyId = StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(policyId).build();
         return Response.created(url).build();
     }
 

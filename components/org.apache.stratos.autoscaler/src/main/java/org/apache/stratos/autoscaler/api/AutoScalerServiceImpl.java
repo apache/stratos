@@ -111,8 +111,8 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 //    }
 
     @Override
-    public boolean addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        boolean hasDeployed = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
+    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
         //Need to start the application Monitor after validation of the deployment policies.
 
         //Check whether all the clusters are there
@@ -139,7 +139,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     "Waiting for them to be created");
         }
 
-        return hasDeployed;
+        return policyId;
     }
 
     @Override

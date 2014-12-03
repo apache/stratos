@@ -29,8 +29,6 @@ import java.util.List;
 @XmlRootElement
 public class DeploymentPolicy {
 
-    public String id;
-    
     public String description;
     
     public boolean isPublic;

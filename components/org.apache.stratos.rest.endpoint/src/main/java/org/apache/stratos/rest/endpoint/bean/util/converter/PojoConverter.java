@@ -378,7 +378,6 @@ public class PojoConverter {
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                 new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
-        deploymentPolicy.setId(deploymentPolicyBean.id);
         deploymentPolicy.setDescription(deploymentPolicyBean.description);
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
         if (deploymentPolicyBean.applicationPolicy != null
@@ -724,7 +723,6 @@ public class PojoConverter {
             return deploymentPolicyBean;
         }
 
-        deploymentPolicyBean.id = deploymentPolicy.getId();
         deploymentPolicyBean.description = deploymentPolicy.getDescription();
         deploymentPolicyBean.isPublic = deploymentPolicy.getIsPublic();
 //TODO populate the Network partition based on new policy structure
