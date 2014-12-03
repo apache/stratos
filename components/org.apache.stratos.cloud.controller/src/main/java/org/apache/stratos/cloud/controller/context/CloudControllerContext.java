@@ -145,6 +145,7 @@ public class CloudControllerContext implements Serializable {
     private boolean clustered;
 
     private transient AsyncDataPublisher dataPublisher;
+    private boolean coordinator;
 
     private CloudControllerContext() {
         // Check clustering status
@@ -580,9 +581,11 @@ public class CloudControllerContext implements Serializable {
     }
 
     public boolean isCoordinator() {
-        AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
-        ClusteringAgent clusteringAgent = axisConfiguration.getClusteringAgent();
-        return ((axisConfiguration != null) && (clusteringAgent != null) && (clusteringAgent.isCoordinator()));
+        return coordinator;
+    }
+
+    public void setCoordinator(boolean coordinator) {
+        this.coordinator = coordinator;
     }
 
     public void persist() throws RegistryException {
