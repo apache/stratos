@@ -50,6 +50,7 @@ public class InstanceStatusTopicReceiver {
 	}
 
 	public void execute() {
+		statusEventReceiver.setExecutorService(executorService);
 		statusEventReceiver.execute();
 		if (log.isInfoEnabled()) {
 			log.info("Cloud controller application status thread started");

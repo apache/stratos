@@ -26,7 +26,6 @@ import com.hazelcast.core.HazelcastInstance;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -36,7 +35,6 @@ import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchroni
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.common.util.ConfUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Util;
 import org.osgi.framework.BundleContext;
@@ -78,10 +76,9 @@ public class CloudControllerServiceComponent {
 	protected void activate(ComponentContext context) {
 		try {
 
-			XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
-			int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
-			String threadIdentifier = conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
-			ExecutorService executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
+
+
+			ExecutorService executorService = StratosThreadPool.getExecutorService(DEFAULT_IDENTIFIER, THREAD_POOL_SIZE);
 			applicationTopicReceiver = new ApplicationTopicReceiver();
 			applicationTopicReceiver.setExecutorService(executorService);
 			applicationTopicReceiver.execute();
@@ -99,6 +96,7 @@ public class CloudControllerServiceComponent {
 			}
 
 			instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
+			instanceStatusTopicReceiver.setExecutorService(executorService);
 			instanceStatusTopicReceiver.execute();
 
 			if (log.isInfoEnabled()) {

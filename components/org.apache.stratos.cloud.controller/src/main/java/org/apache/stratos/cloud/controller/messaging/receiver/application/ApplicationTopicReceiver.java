@@ -48,8 +48,9 @@ public class ApplicationTopicReceiver {
 		if (log.isInfoEnabled()) {
 			log.info("Cloud controller application status thread started");
 		}
-		applicationsEventReceiver.execute();
 		applicationsEventReceiver.setExecutorService(executorService);
+		applicationsEventReceiver.execute();
+
 
 		if (log.isInfoEnabled()) {
 			log.info("Cloud controller application status thread terminated");

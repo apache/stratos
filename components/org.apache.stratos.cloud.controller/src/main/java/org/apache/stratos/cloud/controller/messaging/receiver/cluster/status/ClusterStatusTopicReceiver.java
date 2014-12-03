@@ -37,12 +37,12 @@ public class ClusterStatusTopicReceiver {
 
 	public ClusterStatusTopicReceiver() {
 		this.statusEventReceiver = new ClusterStatusEventReceiver();
-		this.statusEventReceiver.setExecutorService(executorService);
+
 		addEventListeners();
 	}
 
 	public void execute() {
-
+		statusEventReceiver.setExecutorService(executorService);
 		statusEventReceiver.execute();
 		if (log.isInfoEnabled()) {
 			log.info("Cloud controller Cluster status thread started");
