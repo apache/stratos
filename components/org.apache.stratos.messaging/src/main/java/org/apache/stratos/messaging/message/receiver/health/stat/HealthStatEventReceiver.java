@@ -67,14 +67,6 @@ public class HealthStatEventReceiver {
 			if (log.isDebugEnabled()) {
 				log.debug("Health stats event message delegator thread started");
 			}
-
-			// Keep the thread live until terminated
-			while (!terminated) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ignore) {
-				}
-			}
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error("Topology receiver failed", e);
