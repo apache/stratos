@@ -50,10 +50,10 @@ public class TestRulesPackaged {
 //        parseDroolsFile(dependentScalingDrlFilePath);
 //    }
 
-    /*@Test
+    @Test
     public void testScalingDroolsFile() {
         parseDroolsFile(scalingDrlFilePath);
-    }*/
+    }
 
     @Test
     public void testTerminateAllDroolsFile() {
