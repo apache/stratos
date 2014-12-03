@@ -285,9 +285,11 @@ public class CloudControllerClient {
 
     }
 
-    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId){
+    public void createClusterInstance (String serviceType, String clusterId, String alias,
+                                       String instanceId, String partitionId, String networkPartitionId){
         try {
-            stub.createClusterInstance(serviceType, clusterId, alias, instanceId);
+            stub.createClusterInstance(serviceType, clusterId, alias, instanceId,
+                    partitionId, networkPartitionId);
 
         } catch (RemoteException e) {
             String msg = e.getMessage();

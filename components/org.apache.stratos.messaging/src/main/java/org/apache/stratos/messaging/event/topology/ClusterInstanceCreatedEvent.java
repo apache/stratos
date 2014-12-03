@@ -29,13 +29,17 @@ public class ClusterInstanceCreatedEvent extends Event {
     private final String clusterId;
     private String instanceId;
     private String alias;
+    private String partitionId;
+    private String networkPartitionId;
 
 
-    public ClusterInstanceCreatedEvent(String alias, String serviceName, String clusterId, String instanceId) {
+    public ClusterInstanceCreatedEvent(String alias, String serviceName, String clusterId,
+                                       String instanceId, String networkPartitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.instanceId = instanceId;
         this.alias = alias;
+        this.setNetworkPartitionId(networkPartitionId);
 
     }
 
@@ -61,4 +65,19 @@ public class ClusterInstanceCreatedEvent extends Event {
         return alias;
     }
 
+    public String getPartitionId() {
+        return partitionId;
+    }
+
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
+    }
 }

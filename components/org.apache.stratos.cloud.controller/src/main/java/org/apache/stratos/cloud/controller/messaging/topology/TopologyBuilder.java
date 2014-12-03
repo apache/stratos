@@ -277,7 +277,9 @@ public class TopologyBuilder {
 
     }
 
-    public static void handleClusterInstanceCreated(String serviceType, String clusterId, String alias, String instanceId) {
+    public static void handleClusterInstanceCreated(String serviceType, String clusterId,
+                                                    String alias, String instanceId, String partitionId,
+                                                    String networkPartitionId) {
 
         TopologyManager.acquireWriteLock();
 
@@ -308,7 +310,9 @@ public class TopologyBuilder {
             TopologyManager.updateTopology(topology);
 
             ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
-                    new ClusterInstanceCreatedEvent(alias, serviceType, clusterId, instanceId);
+                    new ClusterInstanceCreatedEvent(alias, serviceType, clusterId,
+                            instanceId, networkPartitionId);
+            clusterInstanceCreatedEvent.setPartitionId(partitionId);
             TopologyEventPublisher.sendClusterInstanceCreatedEvent(clusterInstanceCreatedEvent);
 
         } finally {

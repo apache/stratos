@@ -111,4 +111,8 @@ public class AutoscalerContext {
     public boolean containsPendingMonitor(String appId) {
         return this.pendingApplicationMonitors.contains(appId);
     }
+
+    public boolean monitorExists(String appId) {
+        return this.applicationMonitors.containsKey(appId);
+    }
 }

@@ -253,8 +253,9 @@ public class TopologyEventPublisher {
     public static void sendClusterInstanceCreatedEvent(ClusterInstanceCreatedEvent clusterInstanceCreatedEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster Instance Created event: [service] %s [cluster] %s " +
-                            "[instance-id] %s",
+                            " in [network partition] %s [instance-id] %s",
                     clusterInstanceCreatedEvent.getServiceName(), clusterInstanceCreatedEvent.getClusterId(),
+                    clusterInstanceCreatedEvent.getNetworkPartitionId(),
                     clusterInstanceCreatedEvent.getInstanceId()));
         }
         publishEvent(clusterInstanceCreatedEvent);

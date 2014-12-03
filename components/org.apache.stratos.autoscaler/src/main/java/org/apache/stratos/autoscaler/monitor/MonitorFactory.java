@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
@@ -38,6 +40,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
@@ -49,6 +52,8 @@ import java.util.List;
  * Factory class to get the Monitors.
  */
 public class MonitorFactory {
+    private static final Log log = LogFactory.getLog(MonitorFactory.class);
+
 
     /**
      * Factor method used to create relevant monitors based on the given context
@@ -81,9 +86,16 @@ public class MonitorFactory {
                         addClusterMonitor((AbstractClusterMonitor) monitor);
                 // FIXME: passing null as alias for cluster instance temporarily. should be removed.
                 for(String parentInstanceId : parentInstanceIds) {
-                    createClusterInstance(clusterChildCtxt.getServiceName(),
-                            clusterMonitor.getClusterId(), null,
-                            parentInstanceId);
+                    Instance instance = parentMonitor.getInstance(parentInstanceId);
+                    if(instance != null) {
+                        createClusterInstance(clusterChildCtxt.getServiceName(),
+                                clusterMonitor.getClusterId(), null,
+                                parentInstanceId, instance.getPartitionId(),
+                                instance.getNetworkPartitionId());
+                    } else {
+
+                    }
+
                 }
 
             }
@@ -94,8 +106,9 @@ public class MonitorFactory {
     }
 
     private static void createClusterInstance(String serviceType, String clusterId, String alias,
-                                              String instanceId) {
-        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias, instanceId);
+                                              String instanceId, String partitionId, String networkPartitionId) {
+        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias,
+                instanceId, partitionId, networkPartitionId);
     }
 
     /**

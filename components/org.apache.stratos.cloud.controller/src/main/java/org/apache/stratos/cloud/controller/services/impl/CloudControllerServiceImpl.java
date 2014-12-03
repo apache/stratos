@@ -2046,10 +2046,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     }
 
-    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) throws
+    public void createClusterInstance (String serviceType, String clusterId,
+                                       String alias, String instanceId, String partitionId,
+                                       String networkPartitionId) throws
             ClusterInstanceCreationException {
 
-        TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias, instanceId);
+        TopologyBuilder.handleClusterInstanceCreated(serviceType, clusterId, alias,
+                                                instanceId, partitionId, networkPartitionId);
 
         persist();
     }

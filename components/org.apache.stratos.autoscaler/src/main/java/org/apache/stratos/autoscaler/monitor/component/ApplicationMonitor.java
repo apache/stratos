@@ -219,6 +219,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                     ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
                     instance.setStatus(ApplicationStatus.Created);
+                    instance.setNetworkPartitionId(networkPartition.getId());
                     this.applicationInstanceIdMap.put(instanceId, instance);
 
                     this.networkPartitionCtxts.put(context.getId(), context);

@@ -131,13 +131,17 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             ApplicationHolder.releaseReadLock();
         }
 
-        if (allClusterInitialized && !AutoscalerContext.getInstance().containsPendingMonitor(appId)) {
-            AutoscalerUtil.getInstance().
-                    startApplicationMonitor(appId);
-
+        if (!AutoscalerContext.getInstance().containsPendingMonitor(appId)
+                                    || !AutoscalerContext.getInstance().monitorExists(appId)) {
+            if(allClusterInitialized) {
+                AutoscalerUtil.getInstance().
+                        startApplicationMonitor(appId);
+            } else {
+                log.info("The application clusters are not yet created. " +
+                        "Waiting for them to be created");
+            }
         } else {
-            log.info("The application clusters are not yet created. " +
-                    "Waiting for them to be created");
+            log.info("The application Monitor has already been created for [Application] " + appId);
         }
         return policyId;
     }

@@ -154,27 +154,27 @@ public class VMClusterContext extends AbstractClusterContext {
     private ClusterLevelNetworkPartitionContext parseDeploymentPolicy(
             ClusterInstance instance,
             Cluster cluster,
-            ChildPolicy deploymentPolicy,
+            ChildPolicy childPolicy,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext)
             throws PolicyValidationException, PartitionValidationException {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + deploymentPolicy.getId());
+            log.debug("Deployment policy name: " + childPolicy.getId());
         }
 
-        if (deploymentPolicy == null) {
-            String msg = "Deployment policy is null: [policy-name] " + deploymentPolicy.getId();
+        if (childPolicy == null) {
+            String msg = "Deployment policy is null: [policy-name] " + childPolicy.getId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
 
-        ChildLevelPartition[] childLevelPartitions = deploymentPolicy.
+        ChildLevelPartition[] childLevelPartitions = childPolicy.
                 getChildLevelNetworkPartition(
                         clusterLevelNetworkPartitionContext.getId()).
                 getChildLevelPartitions();
         if (childLevelPartitions == null) {
             String msg =
                     "Partitions are null in deployment policy: [policy-name]: " +
-                            deploymentPolicy.getId();
+                            childPolicy.getId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -188,7 +188,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
 
         ChildLevelNetworkPartition networkPartition;
-        networkPartition = deploymentPolicy.getChildLevelNetworkPartition(instance.getNetworkPartitionId());
+        networkPartition = childPolicy.getChildLevelNetworkPartition(instance.getNetworkPartitionId());
         String networkPartitionId = networkPartition.getId();
 
         if (clusterLevelNetworkPartitionContext == null) {
