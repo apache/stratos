@@ -144,6 +144,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     @Override
     public boolean undeployDeploymentPolicy(String deploymentPolicyName) {
+
         //PolicyManager.getInstance().undeployDeploymentPolicy(deploymentPolicyName);
         return false;
     }

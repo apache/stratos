@@ -326,12 +326,12 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @DELETE
-    @Path("/deploymentPolicies/{deploymentPolicyName}")
+    @Path("/deploymentPolicies/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
-    public Response unDeployDeploymentPolicy(@PathParam("deploymentPolicyName") String cartridgeType) throws RestAPIException {
-        StratosApiV41Utils.undeployCartridge(cartridgeType);
+    public Response unDeployDeploymentPolicy(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        StratosApiV41Utils.undeployDeploymentPolicy(applicationId);
         return Response.noContent().build();
     }
 

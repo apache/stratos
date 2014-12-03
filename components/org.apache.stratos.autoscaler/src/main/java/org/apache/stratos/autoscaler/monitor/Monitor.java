@@ -19,7 +19,6 @@
 package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.util.ArrayList;
@@ -141,6 +140,7 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * This will add the instance
+     *
      * @param instance instance to be added
      */
     public void addInstance(Instance instance) {
@@ -150,6 +150,7 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * Using instanceId, instance can be retrieved
+     *
      * @param instanceId instance id
      * @return the instance
      */
@@ -159,6 +160,7 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * This will remove the instance
+     *
      * @param instanceId instance id
      */
     public void removeInstance(String instanceId) {
@@ -167,13 +169,14 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * This will return all the instances which has the same parent id as given
+     *
      * @param parentInstanceId parent instance id
      * @return all the instances
      */
     public List<String> getInstancesByParentInstanceId(String parentInstanceId) {
         List<String> instances = new ArrayList<String>();
-        for(Instance instance : this.instanceIdToInstanceMap.values()) {
-            if(instance.getParentId().equals(parentInstanceId)) {
+        for (Instance instance : this.instanceIdToInstanceMap.values()) {
+            if (instance.getParentId().equals(parentInstanceId)) {
                 instances.add(instance.getInstanceId());
             }
         }
@@ -182,10 +185,11 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * This will check whether instances are there in the map
+     *
      * @return true/false
      */
     public boolean hasInstance() {
-        if(this.instanceIdToInstanceMap.isEmpty()) {
+        if (this.instanceIdToInstanceMap.isEmpty()) {
             return true;
         } else {
             return false;

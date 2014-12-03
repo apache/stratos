@@ -243,6 +243,14 @@ public class StratosApiV41Utils {
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
 
+    public static void undeployDeploymentPolicy(String applicationId) throws RestAPIException {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
+        }
+
+
+    }
+
     public static void undeployCartridge(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
