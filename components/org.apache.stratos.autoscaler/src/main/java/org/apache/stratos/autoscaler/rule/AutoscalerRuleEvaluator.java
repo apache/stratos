@@ -35,6 +35,8 @@ import org.drools.runtime.rule.FactHandle;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -45,60 +47,67 @@ public class AutoscalerRuleEvaluator {
 	
 	private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 
-	//vm drool files as default
-	private String minCheckDroolFileName = StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE;
-	private String obsoleteCheckDroolFileName = StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE;
-	private String scaleCheckDroolFileName = StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE;
-	private String terminateAllDroolFileName = "terminateall.drl";
+//	//vm drool files as default
+//	private String minCheckDroolFileName = StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE;
+//	private String obsoleteCheckDroolFileName = StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE;
+//	private String scaleCheckDroolFileName = StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE;
+//
+//	private static KnowledgeBase minCheckKbase;
+//	private static KnowledgeBase obsoleteCheckKbase;
+//	private static KnowledgeBase scaleCheckKbase;
 
-	private static KnowledgeBase minCheckKbase;
-	private static KnowledgeBase obsoleteCheckKbase;
-	private static KnowledgeBase scaleCheckKbase;
-	@SuppressWarnings("unused")
-	private static KnowledgeBase terminateAllKbase;
+    private static Map<String, KnowledgeBase> knowledgeBases;
 
-    public AutoscalerRuleEvaluator(String minCheckDroolFileName, String obsoleteCheckDroolFileName, String scaleCheckDroolFileName){
-    	
-    	if (minCheckDroolFileName != null && !minCheckDroolFileName.isEmpty()) {
-    		this.minCheckDroolFileName = minCheckDroolFileName;
-		}
+    public AutoscalerRuleEvaluator(){
 
-    	if (obsoleteCheckDroolFileName != null && !obsoleteCheckDroolFileName.isEmpty()) {
-    		this.obsoleteCheckDroolFileName = obsoleteCheckDroolFileName;
-		}
-    	
-    	if (scaleCheckDroolFileName != null && !scaleCheckDroolFileName.isEmpty()) {
-    		this.scaleCheckDroolFileName = scaleCheckDroolFileName;
-		}
+        knowledgeBases = new HashMap<String, KnowledgeBase>();
+//    	if (minCheckDroolFileName != null && !minCheckDroolFileName.isEmpty()) {
+//    		this.minCheckDroolFileName = minCheckDroolFileName;
+//		}
+//
+//    	if (obsoleteCheckDroolFileName != null && !obsoleteCheckDroolFileName.isEmpty()) {
+//    		this.obsoleteCheckDroolFileName = obsoleteCheckDroolFileName;
+//		}
+//
+//    	if (scaleCheckDroolFileName != null && !scaleCheckDroolFileName.isEmpty()) {
+//    		this.scaleCheckDroolFileName = scaleCheckDroolFileName;
+//		}
+//
+//        minCheckKbase = readKnowledgeBase(this.minCheckDroolFileName);
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Minimum check rule is parsed successfully : " + this.minCheckDroolFileName);
+//        }
+//
+//        obsoleteCheckKbase = readKnowledgeBase(this.obsoleteCheckDroolFileName);
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Obsolete check rule is parsed successfully : " + this.obsoleteCheckDroolFileName);
+//        }
+//
+//        scaleCheckKbase = readKnowledgeBase(this.scaleCheckDroolFileName);
+//
+//        if (log.isDebugEnabled()) {
+//            log.debug("Scale check rule is parsed successfully : " + this.scaleCheckDroolFileName);
+//        }
+//
+    }
 
-        minCheckKbase = readKnowledgeBase(this.minCheckDroolFileName);
+    public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName){
+
+        knowledgeBases.put(drlFileName, readKnowledgeBase(drlFileName));
 
         if (log.isDebugEnabled()) {
-            log.debug("Minimum check rule is parsed successfully : " + this.minCheckDroolFileName);
-        }
-        
-        obsoleteCheckKbase = readKnowledgeBase(this.obsoleteCheckDroolFileName);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Obsolete check rule is parsed successfully : " + this.obsoleteCheckDroolFileName);
+            log.debug("Drools file is parsed successfully : " + drlFileName);
         }
 
-        scaleCheckKbase = readKnowledgeBase(this.scaleCheckDroolFileName);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Scale check rule is parsed successfully : " + this.scaleCheckDroolFileName);
-        }
-        
-        terminateAllKbase = readKnowledgeBase(this.terminateAllDroolFileName);
-
-        if (log.isDebugEnabled()) {
-            log.debug("Terminate all rule is parsed successfully : " + this.terminateAllDroolFileName);
-        }
     }
     
-    public static FactHandle evaluateMinCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+    public static FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+
+
         if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            ksession.setGlobal("delegator", new RuleTasksDelegator());
             handle = ksession.insert(obj);
         } else {
             ksession.update(handle, obj);
@@ -109,110 +118,110 @@ public class AutoscalerRuleEvaluator {
         }
         return handle;
     }
-    
-    public static FactHandle evaluateObsoleteCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-        if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        ksession.fireAllRules();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Obsolete check executed for : %s ", obj));
-        }
-        return handle;
-    }
+//
+//    public static FactHandle evaluateObsoleteCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+//        if (handle == null) {
+//            ksession.setGlobal("delegator", new RuleTasksDelegator());
+//            handle = ksession.insert(obj);
+//        } else {
+//            ksession.update(handle, obj);
+//        }
+//        ksession.fireAllRules();
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Obsolete check executed for : %s ", obj));
+//        }
+//        return handle;
+//    }
+//
+//    public static FactHandle evaluateScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+//        if (handle == null) {
+//            ksession.setGlobal("delegator", new RuleTasksDelegator());
+//            handle = ksession.insert(obj);
+//        } else {
+//            ksession.update(handle, obj);
+//        }
+//        ksession.fireAllRules();
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Scale check executed for : %s ", obj));
+//        }
+//        return handle;
+//    }
+//
+//    public static FactHandle evaluateDependentScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+//        if (handle == null) {
+//            ksession.setGlobal("delegator", new RuleTasksDelegator());
+//            handle = ksession.insert(obj);
+//        } else {
+//            ksession.update(handle, obj);
+//        }
+//        ksession.fireAllRules();
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Dependent scale check executed for : %s ", obj));
+//        }
+//        return handle;
+//    }
+//
+//    public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+//        if (handle == null) {
+//            ksession.setGlobal("delegator", new RuleTasksDelegator());
+//            handle = ksession.insert(obj);
+//        } else {
+//            ksession.update(handle, obj);
+//        }
+//        ksession.fireAllRules();
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Terminate all check executed for : %s ", obj));
+//        }
+//        return handle;
+//    }
+//
+//    public static FactHandle evaluateTerminateDependency(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
+//    	if(log.isDebugEnabled()){
+//            log.debug(String.format("Terminate dependency check executing for : %s ", obj));
+//        }
+//        if (handle == null) {
+//            ksession.setGlobal("delegator", new RuleTasksDelegator());
+//            handle = ksession.insert(obj);
+//        } else {
+//            ksession.update(handle, obj);
+//        }
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Terminate dependency check firing rules for : %s ", ksession));
+//        }
+//        ksession.fireAllRules();
+//        if(log.isDebugEnabled()){
+//            log.debug(String.format("Terminate dependency check executed for : %s ", obj));
+//        }
+//        return handle;
+//    }
 
-    public static FactHandle evaluateScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-        if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        ksession.fireAllRules();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Scale check executed for : %s ", obj));
-        }
-        return handle;
-    }
-
-    public static FactHandle evaluateDependentScaleCheck(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-        if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        ksession.fireAllRules();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Dependent scale check executed for : %s ", obj));
-        }
-        return handle;
-    }
-
-    public static FactHandle evaluateTerminateAll(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-        if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        ksession.fireAllRules();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Terminate all check executed for : %s ", obj));
-        }
-        return handle;
-    }
-    
-    public static FactHandle evaluateTerminateDependency(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
-    	if(log.isDebugEnabled()){
-            log.debug(String.format("Terminate dependency check executing for : %s ", obj));
-        }
-        if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
-            handle = ksession.insert(obj);
-        } else {
-            ksession.update(handle, obj);
-        }
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Terminate dependency check firing rules for : %s ", ksession));
-        }
-        ksession.fireAllRules();
-        if(log.isDebugEnabled()){
-            log.debug(String.format("Terminate dependency check executed for : %s ", obj));
-        }
-        return handle;
-    }
-
-    public StatefulKnowledgeSession getMinCheckStatefulSession() {
+    public StatefulKnowledgeSession getStatefulSession(String drlFileName) {
         StatefulKnowledgeSession ksession;
-        ksession = minCheckKbase.newStatefulKnowledgeSession();
+        ksession = knowledgeBases.get(drlFileName).newStatefulKnowledgeSession();
         ksession.setGlobal("log", RuleLog.getInstance());
         return ksession;
     }
     
-    public StatefulKnowledgeSession getObsoleteCheckStatefulSession() {
-        StatefulKnowledgeSession ksession;
-        ksession = obsoleteCheckKbase.newStatefulKnowledgeSession();
-        ksession.setGlobal("log", RuleLog.getInstance());
-        return ksession;
-    }
-    
-    public StatefulKnowledgeSession getScaleCheckStatefulSession() {
-        StatefulKnowledgeSession ksession;
-        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
-        ksession.setGlobal("log", RuleLog.getInstance());
-        return ksession;
-    }
-    
-    public StatefulKnowledgeSession getTerminateAllStatefulSession() {
-        StatefulKnowledgeSession ksession;
-        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
-        ksession.setGlobal("log", RuleLog.getInstance());
-        return ksession;
-    }
+//    public StatefulKnowledgeSession getObsoleteCheckStatefulSession() {
+//        StatefulKnowledgeSession ksession;
+//        ksession = obsoleteCheckKbase.newStatefulKnowledgeSession();
+//        ksession.setGlobal("log", RuleLog.getInstance());
+//        return ksession;
+//    }
+//
+//    public StatefulKnowledgeSession getScaleCheckStatefulSession() {
+//        StatefulKnowledgeSession ksession;
+//        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+//        ksession.setGlobal("log", RuleLog.getInstance());
+//        return ksession;
+//    }
+//
+//    public StatefulKnowledgeSession getTerminateAllStatefulSession() {
+//        StatefulKnowledgeSession ksession;
+//        ksession = scaleCheckKbase.newStatefulKnowledgeSession();
+//        ksession.setGlobal("log", RuleLog.getInstance());
+//        return ksession;
+//    }
 
 //    public static String getLbClusterId(ClusterLevelPartitionContext clusterMonitorPartitionContext, String nwpartitionId) {
 //        Properties props = clusterMonitorPartitionContext.getProperties();
