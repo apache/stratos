@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.Constants;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
+import java.util.HashMap;
 
 /**
  * This class contains utility methods for read Autoscaler configuration file.
@@ -37,20 +38,13 @@ public class ConfUtil {
 
     private XMLConfiguration config;
 
-    private static ConfUtil instance = null;
+    private static HashMap<String,ConfUtil> instanceMap=new HashMap<String, ConfUtil>();
 
     private ConfUtil(String configFilePath) {
-        log.info("Loading configuration.....");
+   //     log.info("Loading configuration.....");
         try {
 
-            File confFile;
-            if (configFilePath != null && !configFilePath.isEmpty()) {
-                confFile = new File(configFilePath);
-
-            } else {
-                confFile = new File(CarbonUtils.getCarbonConfigDirPath(),Constants.AUTOSCALER_CONFIG_FILE_NAME);
-            }
-
+            File confFile=new File(configFilePath);
             config = new XMLConfiguration(confFile);
         } catch (ConfigurationException e) {
             log.error("Unable to load autoscaler configuration file",e);
@@ -59,8 +53,14 @@ public class ConfUtil {
     }
 
     public static ConfUtil getInstance(String configFilePath) {
+
+	    if (configFilePath == null || configFilePath.isEmpty()) {
+		    configFilePath = Constants.AUTOSCALER_CONFIG_FILE_NAME;
+	    }
+		ConfUtil instance= instanceMap.get(configFilePath);
         if (instance == null) {
             instance = new ConfUtil (configFilePath);
+	        instanceMap.put(configFilePath,instance);
         }
         return instance;
     }
@@ -68,5 +68,5 @@ public class ConfUtil {
     public XMLConfiguration getConfiguration(){
         return config;
     }
-    
+
 }
