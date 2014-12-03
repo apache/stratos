@@ -87,10 +87,14 @@ public class MonitorFactory {
                 // FIXME: passing null as alias for cluster instance temporarily. should be removed.
                 for(String parentInstanceId : parentInstanceIds) {
                     Instance instance = parentMonitor.getInstance(parentInstanceId);
+                    String partitionId = null;
+                    if(instance instanceof GroupInstance) {
+                        partitionId = ((GroupInstance)instance).getPartitionId();
+                    }
                     if(instance != null) {
                         createClusterInstance(clusterChildCtxt.getServiceName(),
                                 clusterMonitor.getClusterId(), null,
-                                parentInstanceId, instance.getPartitionId(),
+                                parentInstanceId, partitionId,
                                 instance.getNetworkPartitionId());
                     } else {
 
