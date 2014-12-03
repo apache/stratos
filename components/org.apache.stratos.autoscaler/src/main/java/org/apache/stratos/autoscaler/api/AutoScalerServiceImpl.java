@@ -123,6 +123,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             Application application = ApplicationHolder.getApplications().
                     getApplication(deploymentPolicy.getApplicationId());
             if(application != null) {
+
                 allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
             }
         } finally {

@@ -181,14 +181,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             this.markMonitorAsInactive(instanceId);
             onChildInactiveEvent(id, instanceId);
 
-        } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.terminatingMonitorsList.contains(instanceId)) {
-                this.terminatingMonitorsList.remove(instanceId);
-                this.aliasToActiveMonitorsMap.remove(instanceId);
-                if (AutoscalerContext.getInstance().getClusterMonitors().containsKey(id)) {
-                    AutoscalerContext.getInstance().removeClusterMonitor(id);
-                }
-            }
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map
             this.markMonitorAsTerminating(instanceId);
@@ -201,23 +193,17 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            //If cluster monitor, need to terminate the existing one
-            ApplicationHolder.releaseReadLock();
-            GroupStatus instanceStatus;
-            try {
-                Group group = ApplicationHolder.getApplications().
-                        getApplication(appId).getGroupRecursively(this.id);
-                instanceStatus = group.getInstanceContexts(instanceId).getStatus();
-
-            } finally {
-                ApplicationHolder.releaseReadLock();
-            }
-
-            if (instanceStatus == GroupStatus.Terminating) {
-                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
-                        appId, instanceId);
+            GroupInstance instance = (GroupInstance)this.instanceIdToInstanceMap.get(instanceId);
+            if (instance != null) {
+                if(instance.getStatus() == GroupStatus.Terminating) {
+                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
+                            appId, instanceId);
+                } else {
+                    onChildTerminatedEvent(id, instanceId);
+                }
             } else {
-                onChildTerminatedEvent(id, instanceId);
+                log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                    this.id);
             }
         }
     }

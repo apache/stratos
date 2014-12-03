@@ -34,6 +34,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
 import org.apache.stratos.autoscaler.util.StatusChecker;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInActiveProcessor;
@@ -916,7 +917,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     + "[member] %s", memberId));
         }
         //Checking whether the cluster state can be changed either from in_active to created/terminating to terminated
-        StatusChecker.getInstance().onMemberTermination(clusterId, instanceId);
+        ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().process(
+                ClusterStatusTerminatedProcessor.class.getName(), clusterId, instanceId);
     }
 
     @Override

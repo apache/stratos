@@ -20,6 +20,7 @@
  */
 package org.apache.stratos.autoscaler.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,6 +45,7 @@ public class AutoscalerContext {
     private AutoscalerContext() {
         setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
         setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
+        pendingApplicationMonitors = new ArrayList<String>();
     }
 
     public static AutoscalerContext getInstance() {
