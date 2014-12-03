@@ -247,6 +247,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
+                                getMinCheckKnowledgeSession().setGlobal("algorithmName",
+                                        networkPartitionContext.getPartitionAlgorithm());
 
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running scale check for network partition %s ",
@@ -255,7 +257,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 }
 
                                 scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(getScaleCheckKnowledgeSession()
-                                        , scaleCheckFactHandle, networkPartitionContext);
+                                        , scaleCheckFactHandle, instanceContext);
 
                                 instanceContext.setRifReset(false);
                                 instanceContext.setMemoryConsumptionReset(false);
