@@ -55,8 +55,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     //network partition contexts
     private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
-    //application instance id map
-    private Map<String, ApplicationInstance> applicationInstanceIdMap;
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
@@ -67,7 +65,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         networkPartitionCtxts = new HashMap<String, ApplicationLevelNetworkPartitionContext>();
-        setApplicationInstanceIdMap(new HashMap<String, ApplicationInstance>());
     }
 
     /**
@@ -111,7 +108,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
-        this.applicationInstanceIdMap.get(instanceId).setStatus(status);
+        ((ApplicationInstance)this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         //notify the children about the state change
         try {
@@ -220,7 +217,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
                     instance.setStatus(ApplicationStatus.Created);
                     instance.setNetworkPartitionId(networkPartition.getId());
-                    this.applicationInstanceIdMap.put(instanceId, instance);
+                    this.instanceIdToInstanceMap.put(instanceId, instance);
 
                     this.networkPartitionCtxts.put(context.getId(), context);
 
@@ -266,7 +263,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                         ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
                         instance.setStatus(ApplicationStatus.Created);
-                        this.applicationInstanceIdMap.put(instanceId, instance);
+                        this.instanceIdToInstanceMap.put(instanceId, instance);
 
                         burstNPFound = true;
                     }
@@ -316,23 +313,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public void addApplicationLevelNetworkPartitionContext(ApplicationLevelNetworkPartitionContext applicationLevelNetworkPartitionContext) {
         this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
-    }
-
-    public Map<String, ApplicationInstance> getApplicationInstanceIdMap() {
-        return applicationInstanceIdMap;
-    }
-
-    public void setApplicationInstanceIdMap(Map<String, ApplicationInstance> applicationInstanceIdMap) {
-        this.applicationInstanceIdMap = applicationInstanceIdMap;
-    }
-
-    public void addApplicationInstance(ApplicationInstance instance) {
-        this.applicationInstanceIdMap.put(instance.getInstanceId(), instance);
-
-    }
-
-    public ApplicationInstance getApplicationInstance(String instanceId) {
-        return this.applicationInstanceIdMap.get(instanceId);
     }
 
     public boolean isTerminating() {

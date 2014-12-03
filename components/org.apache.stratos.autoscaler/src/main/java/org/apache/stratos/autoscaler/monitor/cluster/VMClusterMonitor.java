@@ -79,7 +79,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+        //autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
@@ -87,8 +87,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+        /*this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);*/
     }
 
     private static void terminateMember(String memberId) {
@@ -373,23 +373,21 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
         String instanceId = scalingEvent.getInstanceId();
 
-        ClusterInstanceContext clusterLevelNetworkPartitionContext =
+        ClusterInstanceContext clusterInstanceContext =
                 getClusterInstanceContext(scalingEvent.getNetworkPartitionId(), instanceId);
 
 
         //TODO get min instance count from instance context
-        float requiredInstanceCount = 0;/* = clusterLevelNetworkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;*/
+        float requiredInstanceCount = clusterInstanceContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
         int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
-        clusterLevelNetworkPartitionContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
+        clusterInstanceContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
 
         getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-        getDependentScaleCheckKnowledgeSession().setGlobal("scalingFactor", scalingFactorBasedOnDependencies);
-        getDependentScaleCheckKnowledgeSession().setGlobal("instanceRoundingFactor",
-                vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
+        getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
 
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
-                , scaleCheckFactHandle, clusterLevelNetworkPartitionContext);
+                , scaleCheckFactHandle, clusterInstanceContext);
 
     }
 

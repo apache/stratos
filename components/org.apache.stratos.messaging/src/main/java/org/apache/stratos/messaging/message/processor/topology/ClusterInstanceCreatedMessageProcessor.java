@@ -118,7 +118,8 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             ClusterInstance context = new ClusterInstance(event.getAlias(),
                                                                         event.getClusterId(),
                                                                         event.getInstanceId());
-            //context.setStatus(ClusterStatus.Created);
+            context.setNetworkPartitionId(event.getNetworkPartitionId());
+            context.setPartitionId(event.getPartitionId());
             cluster.addInstanceContext(event.getInstanceId(), context);
         }
         // Notify event listeners
