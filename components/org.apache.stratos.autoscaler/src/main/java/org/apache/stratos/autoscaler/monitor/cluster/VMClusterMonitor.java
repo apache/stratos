@@ -373,23 +373,21 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
         String instanceId = scalingEvent.getInstanceId();
 
-        ClusterInstanceContext clusterLevelNetworkPartitionContext =
+        ClusterInstanceContext clusterInstanceContext =
                 getClusterInstanceContext(scalingEvent.getNetworkPartitionId(), instanceId);
 
 
         //TODO get min instance count from instance context
-        float requiredInstanceCount = 0;/* = clusterLevelNetworkPartitionContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;*/
+        float requiredInstanceCount = clusterInstanceContext.getMinInstanceCount() * scalingFactorBasedOnDependencies;
         int roundedRequiredInstanceCount = getRoundedInstanceCount(requiredInstanceCount,
                 vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
-        clusterLevelNetworkPartitionContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
+        clusterInstanceContext.setRequiredInstanceCountBasedOnDependencies(roundedRequiredInstanceCount);
 
         getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-        getDependentScaleCheckKnowledgeSession().setGlobal("scalingFactor", scalingFactorBasedOnDependencies);
-        getDependentScaleCheckKnowledgeSession().setGlobal("instanceRoundingFactor",
-                vmClusterContext.getAutoscalePolicy().getInstanceRoundingFactor());
+        getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
 
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
-                , scaleCheckFactHandle, clusterLevelNetworkPartitionContext);
+                , scaleCheckFactHandle, clusterInstanceContext);
 
     }
 
