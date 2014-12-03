@@ -201,8 +201,8 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void unDeployApplication(String appId, ConfigurationContext ctxt,
-                                           String userName, String tenantDomain) throws RestAPIException {
+    public static void removeApplication(String appId, ConfigurationContext ctxt,
+                                         String userName, String tenantDomain) throws RestAPIException {
 
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
@@ -237,7 +237,7 @@ public class StratosApiV41Utils {
         return commonPolicies.toArray(new DeploymentPolicy[0]);
     }
 
-    public static void undeployDeploymentPolicy(String applicationId) throws RestAPIException {
+    public static void undeployApplication(String applicationId) throws RestAPIException {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
