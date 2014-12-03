@@ -58,7 +58,7 @@ public class StratosCommonServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
-            BundleContext bundleContext = context.getBundleContext();
+            final BundleContext bundleContext = context.getBundleContext();
             if (CommonUtil.getStratosConfig() == null) {
                 StratosConfiguration stratosConfig = CommonUtil.loadStratosConfiguration();
                 CommonUtil.setStratosConfig(stratosConfig);
@@ -72,21 +72,32 @@ public class StratosCommonServiceComponent {
 
             AxisConfiguration axisConfig = ServiceReferenceHolder.getInstance().getAxisConfiguration();
             if((axisConfig != null) && (axisConfig.getClusteringAgent() != null)) {
-                // Wait for the hazelcast instance to be available
-                long startTime = System.currentTimeMillis();
-                log.info("Waiting for the hazelcast instance to be initialized...");
-                while(ServiceReferenceHolder.getInstance().getHazelcastInstance() == null) {
-                    Thread.sleep(1000);
-                    if((System.currentTimeMillis() - startTime) >= StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT) {
-                        throw new RuntimeException("Hazelcast instance was not initialized within "
-                                + StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT /1000 + " seconds");
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            // Wait for the hazelcast instance to be available
+                            long startTime = System.currentTimeMillis();
+                            log.info("Waiting for the hazelcast instance to be initialized...");
+                            while (ServiceReferenceHolder.getInstance().getHazelcastInstance() == null) {
+                                Thread.sleep(1000);
+                                if ((System.currentTimeMillis() - startTime) >= StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT) {
+                                    throw new RuntimeException("Hazelcast instance was not initialized within "
+                                            + StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT / 1000 + " seconds");
+                                }
+                            }
+                            registerDistributedObjectProviderService(bundleContext);
+                        } catch (Exception e) {
+                            log.error(e);
+                        }
                     }
-                }
+                };
+                thread.setName("Distributed object provider registration thread");
+                thread.start();
+            } else {
+                // Register distributed object provider service
+                registerDistributedObjectProviderService(bundleContext);
             }
-
-            // Register distributed object provider service
-            DistributedObjectProvider distributedObjectProvider = new HazelcastDistributedObjectProvider();
-            bundleContext.registerService(DistributedObjectProvider.class, distributedObjectProvider, null);
 
             // Register manager configuration OSGI service
             try {
@@ -103,6 +114,11 @@ public class StratosCommonServiceComponent {
         } catch (Throwable e) {
             log.error("Error in activating stratos common service component", e);
         }
+    }
+
+    private void registerDistributedObjectProviderService(BundleContext bundleContext) {
+        DistributedObjectProvider distributedObjectProvider = new HazelcastDistributedObjectProvider();
+        bundleContext.registerService(DistributedObjectProvider.class, distributedObjectProvider, null);
     }
 
     protected void deactivate(ComponentContext context) {
