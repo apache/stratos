@@ -26,12 +26,13 @@ import com.hazelcast.core.ItemListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Hazelcast distributed list provider.
  */
-public class HazelcastDistributedListProvider {
+public class HazelcastDistributedListProvider implements Serializable {
     private static final Log log = LogFactory.getLog(HazelcastDistributedListProvider.class);
 
     private HazelcastInstance hazelcastInstance;
