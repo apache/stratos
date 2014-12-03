@@ -216,19 +216,24 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>ec2</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>aws-ec2</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.stratos.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jclouds.api</groupId>
+            <artifactId>openstack-nova</artifactId>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
-            <artifactId>openstack-nova</artifactId>
-            <version>1.8.0-stratos</version>
+            <artifactId>openstack-neutron</artifactId>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.jclouds.api</groupId>
@@ -243,12 +248,12 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>vcloud</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
           <groupId>org.apache.stratos</groupId>
           <artifactId>gce</artifactId>
-          <version>1.8.0-stratos</version>
+          <version>${jclouds.stratos.version}</version>
         </dependency>
 
         <dependency>
