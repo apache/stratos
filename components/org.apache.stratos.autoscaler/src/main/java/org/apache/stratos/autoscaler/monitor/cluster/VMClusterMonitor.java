@@ -44,14 +44,17 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.drools.runtime.StatefulKnowledgeSession;
 
 import java.util.*;
 
@@ -68,10 +71,24 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private float scalingFactorBasedOnDependencies = 1.0f;
 
     protected VMClusterMonitor(String serviceType, String clusterId) {
-        super(serviceType, clusterId, new AutoscalerRuleEvaluator());
+        super(serviceType, clusterId);
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         readConfigurations();
+        autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+
+        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
+        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
+        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
     }
 
     private static void terminateMember(String memberId) {

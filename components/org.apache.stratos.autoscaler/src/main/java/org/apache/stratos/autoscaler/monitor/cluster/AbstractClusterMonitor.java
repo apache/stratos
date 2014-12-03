@@ -64,18 +64,20 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected boolean stop = false;
     private AtomicBoolean monitoringStarted;
     protected AbstractClusterContext clusterContext;
+
+    protected StatefulKnowledgeSession minCheckKnowledgeSession;
+    protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
+    protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
+    protected StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
+
     private String clusterId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
-    private StatefulKnowledgeSession minCheckKnowledgeSession;
-    private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
-    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
-    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
     private boolean isDestroyed;
-    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected String serviceType;
 
-    protected AbstractClusterMonitor(String serviceType, String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+    protected AbstractClusterMonitor(String serviceType, String clusterId) {
 
         super();
         this.serviceType = serviceType;
@@ -84,19 +86,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.monitoringStarted = new AtomicBoolean(false);
         //this.clusterContext = abstractClusterContext;
         //this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
-
-        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
-        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
-        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
         this.status = ClusterStatus.Created;
     }
 

@@ -25,7 +25,9 @@ import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
@@ -51,6 +53,7 @@ import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
 import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.drools.runtime.StatefulKnowledgeSession;
 
 /*
  * Every kubernetes cluster monitor should extend this class
@@ -59,12 +62,30 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
     private static final Log log = LogFactory.getLog(KubernetesClusterMonitor.class);
 
+    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
+
     private KubernetesClusterContext kubernetesClusterCtxt;
 
     protected KubernetesClusterMonitor(String serviceType, String clusterId,
                                        AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
 
-        super(serviceType, clusterId, autoscalerRuleEvaluator);
+        super(serviceType, clusterId);
+
+        autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+
+        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
+        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
+        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+
         //this.kubernetesClusterCtxt = kubernetesClusterContext;
     }
 
