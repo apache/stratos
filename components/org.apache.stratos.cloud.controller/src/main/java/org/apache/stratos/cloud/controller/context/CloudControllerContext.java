@@ -548,7 +548,6 @@ public class CloudControllerContext implements Serializable {
                         copyMap(serializedObj.kubernetesGroupsMap, kubernetesGroupsMap);
                         copyMap(serializedObj.clusterIdToMemberContextListMap, clusterIdToMemberContextListMap);
                         copyMap(serializedObj.memberIdToMemberContextMap, memberIdToMemberContextMap);
-                        copyMap(serializedObj.memberIdToScheduledTaskMap, memberIdToScheduledTaskMap);
                         copyMap(serializedObj.kubClusterIdToKubClusterContextMap, kubClusterIdToKubClusterContextMap);
                         copyMap(serializedObj.clusterIdToContextMap, clusterIdToContextMap);
                         copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
