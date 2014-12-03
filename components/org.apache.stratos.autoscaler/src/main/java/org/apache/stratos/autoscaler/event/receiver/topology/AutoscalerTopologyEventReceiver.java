@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
@@ -441,10 +442,11 @@ public class AutoscalerTopologyEventReceiver {
                                        VMClusterContext clusterContext =
                                                (VMClusterContext) clusterMonitor.getClusterContext();
                                        if (clusterContext == null) {
-                                           clusterMonitor.setClusterContext(
-                                                   ClusterContextFactory.
-                                                           getVMClusterContext(instanceId,
-                                                                   cluster));
+                                           clusterContext = ClusterContextFactory.
+                                                   getVMClusterContext(instanceId,
+                                                           cluster);
+                                           clusterMonitor.setClusterContext(clusterContext);
+
                                        }
                                        clusterContext.addInstanceContext(instanceId, cluster);
                                        if(clusterMonitor.getInstance(instanceId) == null) {
