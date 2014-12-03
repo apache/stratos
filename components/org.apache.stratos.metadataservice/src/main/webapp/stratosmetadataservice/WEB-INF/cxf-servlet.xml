@@ -35,9 +35,10 @@
 			<ref bean="genericExceptionHandler"/>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
+	    <ref bean="OAuthFilter"/>
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
-            <ref bean="authorizationFilter"/>
+            <!--<ref bean="authorizationFilter"/>-->
         </jaxrs:providers>
     </jaxrs:server>
 

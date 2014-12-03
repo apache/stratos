@@ -333,6 +333,7 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.cassandra.common.feature:${carbon.platform.version}</featureArtifactDef>
 				<!-- Common features -->
 				<featureArtifactDef>org.apache.stratos:org.apache.stratos.metadata.client.feature:${project.version}</featureArtifactDef>
+				<featureArtifactDef>org.apache.stratos:org.apache.stratos.custom.handlers.feature:${project.version}</featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -560,6 +561,10 @@
 				<feature>
                                      <id>org.wso2.carbon.user.mgt.feature.group</id>
 				     <version>${carbon.platform.patch.version.4.2.1}</version>
+                                </feature>
+				<feature>
+                                     <id>org.apache.stratos.custom.handlers.feature.group</id>
+				     <version>${project.version}</version>
                                 </feature>
                             </features>
                         </configuration>
@@ -995,6 +1000,10 @@
 				<!-- Common features -->
 				<feature>
                                     <id>org.apache.stratos.metadata.client.feature.group</id>
+                                    <version>${project.version}</version>
+                                </feature>
+				<feature>
+                                    <id>org.apache.stratos.custom.handlers.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
 

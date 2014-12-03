@@ -27,11 +27,12 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>common.features</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Metadata Client Module</name>
+    <name>Apache Stratos - Common  Module</name>
     <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.metadata.client.feature</module>
+        <module>org.apache.stratos.custom.handlers.feature</module>
     </modules>
 </project>
 

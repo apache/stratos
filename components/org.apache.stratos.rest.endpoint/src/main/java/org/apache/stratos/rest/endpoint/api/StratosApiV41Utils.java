@@ -34,6 +34,8 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.manager.client.IdentityApplicationManagementServiceClient;
+import org.apache.stratos.manager.client.oAuthAdminServiceClient;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -79,6 +81,7 @@ import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payl
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -1963,5 +1966,24 @@ public class StratosApiV41Utils {
             }
         }
 
+    }
+
+    public static void createToken() throws RestAPIException {
+        String appName = "testudara" + Math.random();
+        String compositeAppId = "app1";
+        try {
+            oAuthAdminServiceClient.getServiceClient().registerOauthApplication(appName);
+        } catch (RemoteException e) {
+           throw new RestAPIException(e);
+        } catch (OAuthAdminServiceException e) {
+            throw new RestAPIException(e);
+        }
+        try {
+            IdentityApplicationManagementServiceClient.getServiceClient().createServiceProvider(appName, appName, compositeAppId);
+        } catch (RemoteException e) {
+            throw new RestAPIException(e);
+        } catch (OAuthAdminServiceException e) {
+            e.printStackTrace();
+        }
     }
 }
