@@ -24,13 +24,12 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
-import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 import java.util.HashMap;
 
 /**
- * This class contains utility methods for read Autoscaler configuration file.
+ * This class contains utility methods for read configuration file.
  */
 public class ConfUtil {
 
@@ -38,20 +37,25 @@ public class ConfUtil {
 
     private XMLConfiguration config;
 
+	//To maintain the map of config files
     private static HashMap<String,ConfUtil> instanceMap=new HashMap<String, ConfUtil>();
 
     private ConfUtil(String configFilePath) {
-   //     log.info("Loading configuration.....");
         try {
 
             File confFile=new File(configFilePath);
             config = new XMLConfiguration(confFile);
         } catch (ConfigurationException e) {
-            log.error("Unable to load autoscaler configuration file",e);
+            log.error("Unable to load configuration file",e);
             config = new XMLConfiguration();  // continue with default values
         }
     }
 
+	/**
+	 * Get the instance of the configuration file
+	 * @param configFilePath configuration file name
+	 * @return ConfUtil instance
+	 */
     public static ConfUtil getInstance(String configFilePath) {
 
 	    if (configFilePath == null || configFilePath.isEmpty()) {
@@ -65,6 +69,10 @@ public class ConfUtil {
         return instance;
     }
 
+	/**
+	 * Get configurations
+	 * @return XMLConfiguration
+	 */
     public XMLConfiguration getConfiguration(){
         return config;
     }
