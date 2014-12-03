@@ -19,10 +19,12 @@
 package org.apache.stratos.common.internal;
 
 import com.hazelcast.core.HazelcastInstance;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvider;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.common.util.StratosConfiguration;
 import org.osgi.framework.BundleContext;
@@ -68,6 +70,20 @@ public class StratosCommonServiceComponent {
                 CommonUtil.setEula(eula);
             }
 
+            AxisConfiguration axisConfig = ServiceReferenceHolder.getInstance().getAxisConfiguration();
+            if((axisConfig != null) && (axisConfig.getClusteringAgent() != null)) {
+                // Wait for the hazelcast instance to be available
+                long startTime = System.currentTimeMillis();
+                log.info("Waiting for the hazelcast instance to be initialized...");
+                while(ServiceReferenceHolder.getInstance().getHazelcastInstance() == null) {
+                    Thread.sleep(1000);
+                    if((System.currentTimeMillis() - startTime) >= StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT) {
+                        throw new RuntimeException("Hazelcast instance was not initialized within "
+                                + StratosConstants.HAZELCAST_INSTANCE_INIT_TIMEOUT /1000 + " seconds");
+                    }
+                }
+            }
+
             // Register distributed object provider service
             DistributedObjectProvider distributedObjectProvider = new HazelcastDistributedObjectProvider();
             bundleContext.registerService(DistributedObjectProvider.class, distributedObjectProvider, null);
@@ -85,7 +101,7 @@ public class StratosCommonServiceComponent {
                 log.info("Stratos common service bundle is activated");
             }
         } catch (Throwable e) {
-            log.error("Error in activating stratos common service component" + e.toString());
+            log.error("Error in activating stratos common service component", e);
         }
     }
 
