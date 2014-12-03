@@ -26,13 +26,48 @@ import java.util.concurrent.locks.Lock;
 
 /**
  * Distributed object provider service interface.
+ * Caution! When using distributed maps and lists, please note that changes done to an item in a map/list
+ * after adding them to the map/list will not be replicated in the cluster. If a modification of an item
+ * needs to be replicated, that item needs to be put() to the map or set() back in the list.
  */
 public interface DistributedObjectProvider extends Serializable {
-    Map getMap(String key);
+    /**
+     * Returns a distributed map if clustering is enabled, else returns a local hash map.
+     * @param name
+     * @return
+     */
+    Map getMap(String name);
 
+    /**
+     * Removes a map from the object provider.
+     * @param name
+     */
+    void removeMap(String name);
+
+    /**
+     * Returns a distributed list if clustering is enabled, else returns a local array list.
+     * @param name
+     * @return
+     */
     List getList(String name);
 
+    /**
+     * Remove a list from the object provider.
+     * @param name
+     */
+    void removeList(String name);
+
+    /**
+     * Acquires a distributed lock if clustering is enabled, else acquires a local reentrant lock and
+     * returns the lock object.
+     * @param object
+     * @return
+     */
     Lock acquireLock(Object object);
 
+    /**
+     * Releases a given distributed/local lock.
+     * @param lock
+     */
     void releaseLock(Lock lock);
 }

@@ -20,7 +20,9 @@
 package org.apache.stratos.common.clustering.impl;
 
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.core.IList;
 import com.hazelcast.core.ILock;
+import com.hazelcast.core.IMap;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -45,80 +46,140 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
 
     private HazelcastDistributedMapProvider mapProvider;
     private HazelcastDistributedListProvider listProvider;
+    private Map<String, Map> mapsMap;
+    private Map<String, List> listsMap;
     private Map<Object, Lock> locksMap;
 
     public HazelcastDistributedObjectProvider() {
         HazelcastInstance hazelcastInstance = ServiceReferenceHolder.getInstance().getHazelcastInstance();
         mapProvider = new HazelcastDistributedMapProvider(hazelcastInstance);
         listProvider = new HazelcastDistributedListProvider(hazelcastInstance);
+        mapsMap = new HashMap<String, Map>();
+        listsMap = new HashMap<String, List>();
         locksMap = new HashMap<Object, Lock>();
     }
 
     /**
-     * If clustering is enabled returns a distributed map object, otherwise returns a
-     * concurrent local map object.
-     * @param key
+     * Returns a distributed map if clustering is enabled, else returns a local hash map.
+     * @param name
      * @return
      */
     @Override
-    public Map getMap(String key) {
+    public Map getMap(final String name) {
+        if(mapsMap.containsKey(name)) {
+            return mapsMap.get(name);
+        }
+
+        Map map = null;
         if(isClustered()) {
-            return mapProvider.getMap(key, new MapEntryListener() {
+            map = mapProvider.getMap(name, new MapEntryListener() {
                 @Override
                 public <X> void entryAdded(X key) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Entry added to distributed map: [key] %s", key));
+                        log.debug(String.format("Entry added to distributed map: [name] %s [key] %s",
+                                name, key));
                     }
                 }
 
                 @Override
                 public <X> void entryRemoved(X key) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Entry removed from distributed map: [key] %s", key));
+                        log.debug(String.format("Entry removed from distributed map: [name] %s [key] %s",
+                                name, key));
                     }
                 }
 
                 @Override
                 public <X> void entryUpdated(X key) {
                     if(log.isDebugEnabled()) {
-                        log.debug(String.format("Entry updated in distributed map: [key] %s", key));
+                        log.debug(String.format("Entry updated in distributed map: [name] %s [key] %s",
+                                name, key));
                     }
                 }
             });
         } else {
-            return new ConcurrentHashMap<Object, Object>();
+            map = new HashMap<Object, Object>();
+        }
+        if(map != null) {
+            mapsMap.put(name, map);
+        }
+        return map;
+    }
+
+    /**
+     * Remove map from provider
+     * @param name
+     */
+    public void removeMap(String name) {
+        if(mapsMap.containsKey(name)) {
+            if(isClustered()) {
+                IMap map = (IMap) mapsMap.get(name);
+                mapProvider.removeMap(name);
+                map.destroy();
+            }
+            mapsMap.remove(name);
         }
     }
 
     /**
-     * If clustering is enabled returns a distributed list, otherwise returns
-     * a local array list.
+     * Returns a distributed list if clustering is enabled, else returns a local array list.
      * @param name
      * @return
      */
     @Override
-    public List getList(String name) {
+    public List getList(final String name) {
+        if(listsMap.containsKey(name)) {
+            return listsMap.get(name);
+        }
+
+        List list = null;
         if(isClustered()) {
-            return listProvider.getList(name, new ListEntryListener() {
+            list = listProvider.getList(name, new ListEntryListener() {
                 @Override
                 public void itemAdded(Object item) {
                     if(log.isDebugEnabled()) {
-                        log.debug("Item added to distributed list: " + item);
+                        log.debug(String.format("Item added to distributed list: [list] %s [item] %s", name, item));
                     }
                 }
 
                 @Override
                 public void itemRemoved(Object item) {
                     if(log.isDebugEnabled()) {
-                        log.debug("Item removed from distributed list: " + item);
+                        log.debug(String.format("Item removed from distributed list: [list] %s [item] %s", name, item));
                     }
                 }
             });
         } else {
-            return new ArrayList();
+            list = new ArrayList();
+        }
+        if(list != null) {
+            listsMap.put(name, list);
+        }
+        return list;
+    }
+
+    /**
+     * Remove a list from the object provider.
+     * @param name
+     */
+    @Override
+    public void removeList(String name) {
+        if(listsMap.containsKey(name)) {
+            if(isClustered()) {
+                IList list = (IList)listsMap.get(name);
+                listProvider.removeList(name);
+                list.destroy();
+            }
+            listsMap.remove(name);
         }
     }
 
+    /**
+     * Acquires a distributed lock if clustering is enabled, else acquires a local reentrant lock and
+     * returns the lock object.
+     * @param object
+     * @return
+     */
     @Override
     public Lock acquireLock(Object object) {
         if(isClustered()) {
@@ -138,6 +199,10 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
         }
     }
 
+    /**
+     * Releases a given distributed/local lock.
+     * @param lock
+     */
     @Override
     public void releaseLock(Lock lock) {
          if(isClustered()) {
