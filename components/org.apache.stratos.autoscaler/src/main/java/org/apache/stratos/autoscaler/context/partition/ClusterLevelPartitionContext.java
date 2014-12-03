@@ -84,6 +84,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         super(memberExpiryTime);
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
+        this.pendingMembers = new ArrayList<MemberContext>();
     }
     
     public ClusterLevelPartitionContext(ChildLevelPartition childLevelPartition, Partition partition, int max) {

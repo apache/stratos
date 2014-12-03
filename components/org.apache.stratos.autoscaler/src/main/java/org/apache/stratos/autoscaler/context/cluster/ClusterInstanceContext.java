@@ -70,7 +70,8 @@ public class ClusterInstanceContext extends InstanceContext {
 
     private String networkPartitionId;
 
-    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo, ChildLevelPartition[] partitions,
+    public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
+                                  ChildLevelPartition[] partitions,
                                   int min, String networkPartitionId) {
 
         super(clusterInstanceId);

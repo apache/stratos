@@ -124,9 +124,24 @@ public class VMClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
+        ChildPolicy policy = this.deploymentPolicy.
+                getChildPolicy(
+                        AutoscalerUtil.getAliasFromClusterId(clusterId));
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
                     clusterInstance.getNetworkPartitionId());
+        } else {
+            if(policy != null) {
+                ChildLevelNetworkPartition networkPartition = policy.
+                        getChildLevelNetworkPartition(clusterInstance.getNetworkPartitionId());
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
+                        networkPartition.getPartitionAlgo(), 0);
+            } else {
+                //Parent should have the partition specified
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId(),
+                        null, 0);
+            }
+
         }
 
         if (clusterInstance.getPartitionId() != null) {
@@ -134,9 +149,6 @@ public class VMClusterContext extends AbstractClusterContext {
             networkPartitionContext = addPartition(clusterInstance, cluster, networkPartitionContext);
 
         } else {
-            ChildPolicy policy = this.deploymentPolicy.
-                    getChildPolicy(
-                            AutoscalerUtil.getAliasFromClusterId(clusterId));
             networkPartitionContext = parseDeploymentPolicy(clusterInstance, cluster,
                     policy, networkPartitionContext);
         }
@@ -200,7 +212,18 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(instance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartitionId);
+                    networkPartition.getChildLevelPartitions(), 2,
+                    networkPartitionId);
+            try {
+                Application application = ApplicationHolder.getApplications().
+                        getApplication(cluster.getAppId());
+                ClusterDataHolder dataHolder = application.
+                        getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
+                clusterInstanceContext.setMinMembers(2); //dataHolder.getMinInstances());
+                clusterInstanceContext.setMaxMembers(2); //dataHolder.getMaxInstances());
+            } finally {
+                ApplicationHolder.releaseReadLock();
+            }
         }
 
         for (ChildLevelPartition partition : networkPartition.getChildLevelPartitions()) {
@@ -223,6 +246,8 @@ public class VMClusterContext extends AbstractClusterContext {
                         clusterLevelPartitionContext.getPartitionId()));
             }
         }
+
+        clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Network partition context has been added: " +
@@ -280,8 +305,8 @@ public class VMClusterContext extends AbstractClusterContext {
             Application application = ApplicationHolder.getApplications().
                     getApplication(cluster.getAppId());
             ClusterDataHolder dataHolder = application.getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
-            clusterInstanceContext.setMinMembers(dataHolder.getMinInstances());
-            clusterInstanceContext.setMaxMembers(dataHolder.getMaxInstances());
+            clusterInstanceContext.setMinMembers(2); //dataHolder.getMinInstances());
+            clusterInstanceContext.setMaxMembers(2); //dataHolder.getMaxInstances());
         } finally {
             ApplicationHolder.releaseReadLock();
         }
