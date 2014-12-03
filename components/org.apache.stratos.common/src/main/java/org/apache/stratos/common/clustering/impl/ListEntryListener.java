@@ -17,22 +17,21 @@
  * under the License.
  */
 
-package org.apache.stratos.common.clustering;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.locks.Lock;
+package org.apache.stratos.common.clustering.impl;
 
 /**
- * Distributed object provider service interface.
+ * List entry listener interface.
  */
-public interface DistributedObjectProvider extends Serializable {
-    Map getMap(String key);
+public interface ListEntryListener {
+    /**
+     * Invoked when an item is added to the distributed list.
+     * @param item
+     */
+    void itemAdded(Object item);
 
-    List getList(String name);
-
-    Lock acquireLock(Object object);
-
-    void releaseLock(Lock lock);
+    /**
+     * Invoked when an item is removed from the distributed list.
+     * @param item
+     */
+    void itemRemoved(Object item);
 }

@@ -73,6 +73,7 @@ import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Cloud Controller Service is responsible for starting up new server instances,
@@ -2087,20 +2088,24 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.info("Deploying new Kubernetes group: " + kubernetesGroup);
         }
         CloudControllerUtil.validateKubernetesGroup(kubernetesGroup);
+        Lock lock = null;
         try {
+            lock = cloudControllerContext.acquireKubernetesGroupWriteLock();
             // Add to information model
-            cloudControllerContext.addKubernetesGroupToInformationModel(kubernetesGroup);
-
+            cloudControllerContext.addKubernetesGroup(kubernetesGroup);
             persist();
             
             if (LOG.isInfoEnabled()) {
                 LOG.info(String.format("Kubernetes group deployed successfully: [id] %s, [description] %s",
                         kubernetesGroup.getGroupId(), kubernetesGroup.getDescription()));
             }
-            
             return true;
         } catch (Exception e) {
             throw new InvalidKubernetesGroupException(e.getMessage(), e);
+        } finally {
+            if(lock != null) {
+                cloudControllerContext.releaseKubernetesGroupWriteLock(lock);
+            }
         }
     }
     
@@ -2117,7 +2122,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             LOG.info("Deploying new Kubernetes Host: " + kubernetesHost + " for Kubernetes group id: " + kubernetesGroupId);
         }
         CloudControllerUtil.validateKubernetesHost(kubernetesHost);
+        Lock lock = null;
         try {
+            lock = CloudControllerContext.getInstance().acquireKubernetesGroupWriteLock();
             KubernetesGroup kubernetesGroupStored = getKubernetesGroup(kubernetesGroupId);
             ArrayList<KubernetesHost> kubernetesHostArrayList;
 
@@ -2134,7 +2141,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Update information model
             kubernetesGroupStored.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
-
+            CloudControllerContext.getInstance().updateKubernetesGroup(kubernetesGroupStored);
             persist();
             
             if (LOG.isInfoEnabled()) {
@@ -2144,6 +2151,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             return true;
         } catch (Exception e) {
             throw new InvalidKubernetesHostException(e.getMessage(), e);
+        } finally {
+            if(lock != null) {
+                cloudControllerContext.releaseKubernetesGroupWriteLock(lock);
+            }
         }
     }
 

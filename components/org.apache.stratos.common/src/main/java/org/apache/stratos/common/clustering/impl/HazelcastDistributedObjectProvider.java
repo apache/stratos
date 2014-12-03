@@ -20,19 +20,22 @@
 package org.apache.stratos.common.clustering.impl;
 
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IList;
 import com.hazelcast.core.ILock;
-import com.hazelcast.core.IMap;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.internal.ServiceReferenceHolder;
+import org.wso2.carbon.caching.impl.MapEntryListener;
+import org.wso2.carbon.core.clustering.hazelcast.HazelcastDistributedMapProvider;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Provides objects to be managed in distributed and non-distributed environments.
@@ -40,46 +43,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HazelcastDistributedObjectProvider implements DistributedObjectProvider {
     private static final Log log = LogFactory.getLog(HazelcastDistributedObjectProvider.class);
 
+    private HazelcastDistributedMapProvider mapProvider;
+    private HazelcastDistributedListProvider listProvider;
+    private Map<Object, Lock> locksMap;
+
     public HazelcastDistributedObjectProvider() {
-    }
-
-    private boolean isClustered() {
-        AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
-        return ((axisConfiguration != null) && (axisConfiguration.getClusteringAgent() != null)
-                && (getHazelcastInstance() != null));
-    }
-
-    private HazelcastInstance getHazelcastInstance() {
-        return ServiceReferenceHolder.getInstance().getHazelcastInstance();
-    }
-
-    private com.hazelcast.core.ILock acquireDistributedLock(Object object) {
-        if((!isClustered()) || (object == null)) {
-            return null;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Acquiring distributed lock for %s...", object.getClass().getSimpleName()));
-        }
-        ILock lock = getHazelcastInstance().getLock(object);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Distributed lock acquired for %s", object.getClass().getSimpleName()));
-        }
-        return lock;
-    }
-
-    private void releaseDistributedLock(ILock lock) {
-        if(lock == null) {
-            return;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Releasing distributed lock for %s...", lock.getKey()));
-        }
-        lock.forceUnlock();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Distributed lock released for %s", lock.getKey()));
-        }
+        HazelcastInstance hazelcastInstance = ServiceReferenceHolder.getInstance().getHazelcastInstance();
+        mapProvider = new HazelcastDistributedMapProvider(hazelcastInstance);
+        listProvider = new HazelcastDistributedListProvider(hazelcastInstance);
+        locksMap = new HashMap<Object, Lock>();
     }
 
     /**
@@ -91,7 +63,28 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
     @Override
     public Map getMap(String key) {
         if(isClustered()) {
-            return getHazelcastInstance().getMap(key);
+            return mapProvider.getMap(key, new MapEntryListener() {
+                @Override
+                public <X> void entryAdded(X key) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Entry added to distributed map: [key] %s", key));
+                    }
+                }
+
+                @Override
+                public <X> void entryRemoved(X key) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Entry removed from distributed map: [key] %s", key));
+                    }
+                }
+
+                @Override
+                public <X> void entryUpdated(X key) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Entry updated in distributed map: [key] %s", key));
+                    }
+                }
+            });
         } else {
             return new ConcurrentHashMap<Object, Object>();
         }
@@ -106,94 +99,96 @@ public class HazelcastDistributedObjectProvider implements DistributedObjectProv
     @Override
     public List getList(String name) {
         if(isClustered()) {
-            return getHazelcastInstance().getList(name);
+            return listProvider.getList(name, new ListEntryListener() {
+                @Override
+                public void itemAdded(Object item) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Item added to distributed list: " + item);
+                    }
+                }
+
+                @Override
+                public void itemRemoved(Object item) {
+                    if(log.isDebugEnabled()) {
+                        log.debug("Item removed from distributed list: " + item);
+                    }
+                }
+            });
         } else {
             return new ArrayList();
         }
     }
 
-    /**
-     * Put a key value pair to a map, if clustered use a distributed lock.
-     * @param map
-     * @param key
-     * @param value
-     */
     @Override
-    public void putToMap(Map map, Object key, Object value) {
+    public Lock acquireLock(Object object) {
+        if(isClustered()) {
+            return acquireDistributedLock(object);
+        } else {
+            Lock lock = locksMap.get(object);
+            if(lock == null) {
+                synchronized (object) {
+                    if(lock == null) {
+                        lock = new ReentrantLock();
+                        locksMap.put(object, lock);
+                    }
+                }
+            }
+            lock.lock();
+            return lock;
+        }
+    }
+
+    @Override
+    public void releaseLock(Lock lock) {
          if(isClustered()) {
-             ILock lock = null;
-             try {
-                 IMap imap = (IMap) map;
-                 lock = acquireDistributedLock(imap.getName());
-                 imap.set(key, value);
-             } finally {
-                 releaseDistributedLock(lock);
-             }
+             releaseDistributedLock((ILock)lock);
          } else {
-            map.put(key, value);
+             lock.unlock();
          }
     }
 
-    /**
-     * Remove an object from a map, if clustered use a distributed lock.
-     * @param map
-     * @param key
-     */
-    @Override
-    public void removeFromMap(Map map, Object key) {
-        if(isClustered()) {
-            ILock lock = null;
-            try {
-                IMap imap = (IMap) map;
-                lock = acquireDistributedLock(imap.getName());
-                imap.delete(key);
-            } finally {
-                releaseDistributedLock(lock);
-            }
-        } else {
-            map.remove(key);
-        }
+    private boolean isClustered() {
+        AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
+        return ((axisConfiguration != null) && (axisConfiguration.getClusteringAgent() != null)
+                && (getHazelcastInstance() != null));
     }
 
-    /**
-     * Add an object to a list, if clustered use a distributed lock.
-     * @param list
-     * @param value
-     */
-    @Override
-    public void addToList(List list, Object value) {
-        if(isClustered()) {
-            ILock lock = null;
-            try {
-                IList ilist = (IList) list;
-                lock = acquireDistributedLock(ilist.getName());
-                ilist.add(value);
-            } finally {
-                releaseDistributedLock(lock);
-            }
-        } else {
-            list.add(value);
-        }
+    private HazelcastInstance getHazelcastInstance() {
+        return ServiceReferenceHolder.getInstance().getHazelcastInstance();
     }
 
-    /**
-     * Remove an object from a list, if clustered use a distributed lock.
-     * @param list
-     * @param value
-     */
-    @Override
-    public void removeFromList(List list, Object value) {
-        if(isClustered()) {
-            ILock lock = null;
-            try {
-                IList ilist = (IList) list;
-                lock = acquireDistributedLock(ilist.getName());
-                ilist.remove(value);
-            } finally {
-                releaseDistributedLock(lock);
+    protected com.hazelcast.core.ILock acquireDistributedLock(Object object) {
+        if(object == null) {
+            if(log.isWarnEnabled()) {
+                log.warn("Could not acquire distributed lock, object is null");
             }
-        } else {
-            list.remove(value);
+            return null;
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Acquiring distributed lock for %s...", object.getClass().getSimpleName()));
+        }
+        ILock lock = getHazelcastInstance().getLock(object);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Distributed lock acquired for %s", object.getClass().getSimpleName()));
+        }
+        return lock;
+    }
+
+    protected void releaseDistributedLock(ILock lock) {
+        if(lock == null) {
+            if(log.isWarnEnabled()) {
+                log.warn("Could not release distributed lock, lock is null");
+            }
+            return;
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Releasing distributed lock for %s...", lock.getKey()));
+        }
+        lock.forceUnlock();
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Distributed lock released for %s", lock.getKey()));
         }
     }
 }

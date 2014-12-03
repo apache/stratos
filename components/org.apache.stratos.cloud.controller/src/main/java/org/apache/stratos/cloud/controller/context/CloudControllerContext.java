@@ -36,12 +36,8 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import com.google.common.net.InetAddresses;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.Lock;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -58,15 +55,23 @@ public class CloudControllerContext implements Serializable {
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
-    public static final String KUB_GROUP_ID_TO_GROUP_MAP = "KUB_GROUP_ID_TO_GROUP_MAP";
-    public static final String CC_CLUSTER_ID_TO_MEMBER_CTX = "CC_CLUSTER_ID_TO_MEMBER_CTX";
-    public static final String CC_MEMBER_ID_TO_MEMBER_CTX = "CC_MEMBER_ID_TO_MEMBER_CTX";
-    public static final String CC_MEMBER_ID_TO_SCH_TASK = "CC_MEMBER_ID_TO_SCH_TASK";
-    public static final String CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX";
-    public static final String CC_CLUSTER_ID_TO_CLUSTER_CTX = "CC_CLUSTER_ID_TO_CLUSTER_CTX";
-    public static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS";
-    public static final String CC_CARTRIDGES = "CC_CARTRIDGES";
-    public static final String CC_SERVICE_GROUPS = "CC_SERVICE_GROUPS";
+    private static final String CC_CLUSTER_ID_TO_MEMBER_CTX = "CC_CLUSTER_ID_TO_MEMBER_CTX";
+    private static final String CC_CLUSTER_ID_TO_CLUSTER_CTX = "CC_CLUSTER_ID_TO_CLUSTER_CTX";
+    private static final String CC_MEMBER_ID_TO_MEMBER_CTX = "CC_MEMBER_ID_TO_MEMBER_CTX";
+    private static final String CC_MEMBER_ID_TO_SCH_TASK = "CC_MEMBER_ID_TO_SCH_TASK";
+    private static final String CC_KUB_GROUP_ID_TO_GROUP_MAP = "CC_KUB_GROUP_ID_TO_GROUP_MAP";
+    private static final String CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX";
+    private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS";
+    private static final String CC_CARTRIDGES = "CC_CARTRIDGES";
+    private static final String CC_SERVICE_GROUPS = "CC_SERVICE_GROUPS";
+
+    private static final String CC_CLUSTER_CTX_LOCK = "CC_CLUSTER_ID_TO_MEMBER_CTX_LOCK";
+    private static final String CC_MEMBER_CTX_LOCK = "CC_MEMBER_ID_TO_MEMBER_CTX_LOCK";
+    private static final String CC_SCH_TASK_LOCK = "CC_MEMBER_ID_TO_SCH_TASK_LOCK";
+    private static final String CC_KUB_GROUP_LOCK = "CC_KUB_GROUP_ID_TO_GROUP_MAP_LOCK";
+    private static final String CC_KUB_CLUSTER_CTX_LOCK = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_LOCK";
+    private static final String CC_CARTRIDGES_LOCK = "CC_CARTRIDGES_LOCK";
+    private static final String CC_SERVICE_GROUPS_LOCK = "CC_SERVICE_GROUPS_LOCK";
 
     private static volatile CloudControllerContext instance;
 
@@ -151,7 +156,7 @@ public class CloudControllerContext implements Serializable {
         distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
 
         // Initialize objects
-        kubernetesGroupsMap = distributedObjectProvider.getMap(KUB_GROUP_ID_TO_GROUP_MAP);
+        kubernetesGroupsMap = distributedObjectProvider.getMap(CC_KUB_GROUP_ID_TO_GROUP_MAP);
         clusterIdToMemberContextListMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_MEMBER_CTX);
         memberIdToMemberContextMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_MEMBER_CTX);
         memberIdToScheduledTaskMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_SCH_TASK);
@@ -201,8 +206,72 @@ public class CloudControllerContext implements Serializable {
         return null;
     }
 
+    private Lock acquireWriteLock(String object) {
+        return distributedObjectProvider.acquireLock(object);
+    }
+
+    private void releaseWriteLock(Lock lock) {
+        distributedObjectProvider.releaseLock(lock);
+    }
+
+    public Lock acquireKubernetesWriteLock() {
+        return acquireWriteLock(CC_CLUSTER_CTX_LOCK);
+    }
+
+    public Lock acquireMemberContextWriteLock() {
+        return acquireWriteLock(CC_MEMBER_CTX_LOCK);
+    }
+
+    public Lock acquireScheduleTaskWriteLock() {
+        return acquireWriteLock(CC_SCH_TASK_LOCK);
+    }
+
+    public Lock acquireKubernetesGroupWriteLock() {
+        return acquireWriteLock(CC_KUB_GROUP_LOCK);
+    }
+
+    public Lock acquireKubernetesClusterContextWriteLock() {
+        return acquireWriteLock(CC_KUB_CLUSTER_CTX_LOCK);
+    }
+
+    public Lock acquireCartridgesWriteLock() {
+        return acquireWriteLock(CC_CARTRIDGES_LOCK);
+    }
+
+    public Lock acquireServiceGroupsWriteLock() {
+        return acquireWriteLock(CC_SERVICE_GROUPS_LOCK);
+    }
+
+    public void releaseKubernetesWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseMemberContextWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseScheduleTaskWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseKubernetesGroupWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseKubernetesClusterContextWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseCartridgesWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
+    public void releaseServiceGroupsWriteLock(Lock lock) {
+        releaseWriteLock(lock);
+    }
+
     public void addCartridge(Cartridge newCartridges) {
-        distributedObjectProvider.addToList(cartridges, newCartridges);
+        cartridges.add(newCartridges);
     }
 
     public ServiceGroup getServiceGroup(String name) {
@@ -215,7 +284,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addServiceGroup(ServiceGroup newServiceGroup) {
-        distributedObjectProvider.addToList(serviceGroups, newServiceGroup);
+        serviceGroups.add(newServiceGroup);
     }
 
     public void removeServiceGroup(List<ServiceGroup> serviceGroup) {
@@ -257,38 +326,37 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addMemberContext(MemberContext memberContext) {
-        distributedObjectProvider.putToMap(memberIdToMemberContextMap, memberContext.getMemberId(), memberContext);
+        memberIdToMemberContextMap.put(memberContext.getMemberId(), memberContext);
 
         List<MemberContext> memberContextList;
         if ((memberContextList = clusterIdToMemberContextListMap.get(memberContext.getClusterId())) == null) {
             memberContextList = new ArrayList<MemberContext>();
         }
         if (memberContextList.contains(memberContext)) {
-            distributedObjectProvider.removeFromList(memberContextList,memberContext);
+            memberContextList.remove(memberContext);
         }
-        distributedObjectProvider.addToList(memberContextList, memberContext);
-        distributedObjectProvider.putToMap(clusterIdToMemberContextListMap, memberContext.getClusterId(),
-                memberContextList);
+        memberContextList.add(memberContext);
+        clusterIdToMemberContextListMap.put(memberContext.getClusterId(), memberContextList);
         if (log.isDebugEnabled()) {
             log.debug("Added member context to the cloud controller context: " + memberContext);
         }
     }
 
     public void addScheduledFutureJob(String memberId, ScheduledFuture<?> job) {
-        distributedObjectProvider.putToMap(memberIdToScheduledTaskMap, memberId, job);
+        memberIdToScheduledTaskMap.put(memberId, job);
     }
 
     public List<MemberContext> removeMemberContextsOfCluster(String clusterId) {
         List<MemberContext> memberContextList = clusterIdToMemberContextListMap.get(clusterId);
-        distributedObjectProvider.removeFromMap(clusterIdToMemberContextListMap, clusterId);
+        clusterIdToMemberContextListMap.remove(clusterId);
         if (memberContextList == null) {
             return new ArrayList<MemberContext>();
         }
         for (MemberContext memberContext : memberContextList) {
             String memberId = memberContext.getMemberId();
-            distributedObjectProvider.removeFromMap(memberIdToMemberContextMap, memberId);
+            memberIdToMemberContextMap.remove(memberId);
             ScheduledFuture<?> task = memberIdToScheduledTaskMap.get(memberId);
-            distributedObjectProvider.removeFromMap(memberIdToScheduledTaskMap, memberId);
+            memberIdToScheduledTaskMap.remove(memberId);
             stopTask(task);
 
             if (log.isDebugEnabled()) {
@@ -301,7 +369,7 @@ public class CloudControllerContext implements Serializable {
 
     public MemberContext removeMemberContext(String memberId, String clusterId) {
         MemberContext removedMemberContext = memberIdToMemberContextMap.get(memberId);
-        distributedObjectProvider.removeFromMap(memberIdToMemberContextMap, memberId);
+        memberIdToMemberContextMap.remove(memberId);
 
         List<MemberContext> memberContextList = clusterIdToMemberContextListMap.get(clusterId);
         if (memberContextList != null) {
@@ -315,10 +383,10 @@ public class CloudControllerContext implements Serializable {
                     iterator.remove();
                 }
             }
-            distributedObjectProvider.putToMap(clusterIdToMemberContextListMap, clusterId, newCtxts);
+            clusterIdToMemberContextListMap.put(clusterId, newCtxts);
         }
         ScheduledFuture<?> task = memberIdToScheduledTaskMap.get(memberId);
-        distributedObjectProvider.removeFromMap(memberIdToScheduledTaskMap, memberId);
+        memberIdToScheduledTaskMap.remove(memberId);
         stopTask(task);
         return removedMemberContext;
     }
@@ -339,7 +407,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addClusterContext(ClusterContext ctxt) {
-        distributedObjectProvider.putToMap(clusterIdToContextMap, ctxt.getClusterId(), ctxt);
+        clusterIdToContextMap.put(ctxt.getClusterId(), ctxt);
     }
 
     public ClusterContext getClusterContext(String clusterId) {
@@ -348,7 +416,7 @@ public class CloudControllerContext implements Serializable {
 
     public ClusterContext removeClusterContext(String clusterId) {
         ClusterContext removed = clusterIdToContextMap.get(clusterId);
-        distributedObjectProvider.removeFromMap(clusterIdToContextMap, clusterId);
+        clusterIdToContextMap.remove(clusterId);
         return removed;
     }
 
@@ -366,11 +434,11 @@ public class CloudControllerContext implements Serializable {
             list = new ArrayList<String>();
         }
         list.add(partitionId);
-        distributedObjectProvider.putToMap(cartridgeTypeToPartitionIdsMap, cartridgeType, list);
+        cartridgeTypeToPartitionIdsMap.put(cartridgeType, list);
     }
 
     public void removeFromCartridgeTypeToPartitionIds(String cartridgeType) {
-        distributedObjectProvider.removeFromMap(cartridgeTypeToPartitionIdsMap, cartridgeType);
+        cartridgeTypeToPartitionIdsMap.remove(cartridgeType);
     }
 
     public KubernetesClusterContext getKubernetesClusterContext(String kubClusterId) {
@@ -378,7 +446,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
-        distributedObjectProvider.putToMap(kubClusterIdToKubClusterContextMap,
+        kubClusterIdToKubClusterContextMap.put(
                 kubernetesClusterContext.getKubernetesClusterId(),
                 kubernetesClusterContext);
     }
@@ -388,7 +456,7 @@ public class CloudControllerContext implements Serializable {
      */
     public synchronized void removeKubernetesGroup(String kubernetesGroupId) {
         // Remove entry from information model
-        distributedObjectProvider.removeFromMap(kubernetesGroupsMap, kubernetesGroupId);
+        kubernetesGroupsMap.remove(kubernetesGroupId);
     }
 
     /**
@@ -435,8 +503,12 @@ public class CloudControllerContext implements Serializable {
         }
     }
 
-    public void addKubernetesGroupToInformationModel(KubernetesGroup kubernetesGroup) {
-        distributedObjectProvider.putToMap(kubernetesGroupsMap, kubernetesGroup.getGroupId(), kubernetesGroup);
+    public void addKubernetesGroup(KubernetesGroup kubernetesGroup) {
+        kubernetesGroupsMap.put(kubernetesGroup.getGroupId(), kubernetesGroup);
+    }
+
+    public void updateKubernetesGroup(KubernetesGroup kubernetesGroup) {
+        kubernetesGroupsMap.put(kubernetesGroup.getGroupId(), kubernetesGroup);
     }
     
     public boolean kubernetesGroupExists(KubernetesGroup kubernetesGroup) {
@@ -574,13 +646,13 @@ public class CloudControllerContext implements Serializable {
 
     private void copyMap(Map sourceMap, Map destinationMap) {
         for(Object key : sourceMap.keySet()) {
-            distributedObjectProvider.putToMap(destinationMap, key, sourceMap.get(key));
+            destinationMap.put(key, sourceMap.get(key));
         }
     }
 
     private void copyList(List sourceList, List destinationList) {
         for(Object item : sourceList) {
-            distributedObjectProvider.addToList(destinationList, item);
+            destinationList.add(item);
         }
     }
 }

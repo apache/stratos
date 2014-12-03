@@ -25,6 +25,7 @@ import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.internal.ServiceReferenceHolder;
 
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Algorithm context map is a singleton class for managing load balancing algorithm context
@@ -34,6 +35,7 @@ public class AlgorithmContextMap {
     @SuppressWarnings("unused")
     private static final Log log = LogFactory.getLog(AlgorithmContextMap.class);
     private static final String LOAD_BALANCER_ALGORITHM_CONTEXT_MAP = "LOAD_BALANCER_ALGORITHM_CONTEXT_MAP";
+    private static final String CURRENT_MEMBER_INDEX_MAP_LOCK = "CURRENT_MEMBER_INDEX_MAP_LOCK";
     private static AlgorithmContextMap instance;
 
     private final Map<String, Integer> clusterMemberIndexMap;
@@ -61,14 +63,24 @@ public class AlgorithmContextMap {
         return String.format("%s-%s", serviceName, clusterId);
     }
 
+    public Lock acquireCurrentMemberIndexLock() {
+        return distributedObjectProvider.acquireLock(CURRENT_MEMBER_INDEX_MAP_LOCK);
+    }
+
+    public void releaseCurrentMemberIndexLock(Lock lock) {
+        if(lock != null) {
+            distributedObjectProvider.releaseLock(lock);
+        }
+    }
+
     public void putCurrentMemberIndex(String serviceName, String clusterId, int currentMemberIndex) {
         String key = constructKey(serviceName, clusterId);
-        distributedObjectProvider.putToMap(clusterMemberIndexMap, key, currentMemberIndex);
+        clusterMemberIndexMap.put(key, currentMemberIndex);
     }
 
     public void removeCluster(String serviceName, String clusterId) {
         String key = constructKey(serviceName, clusterId);
-        distributedObjectProvider.removeFromMap(clusterMemberIndexMap, key);
+        clusterMemberIndexMap.remove(key);
     }
 
     public int getCurrentMemberIndex(String serviceName, String clusterId) {
