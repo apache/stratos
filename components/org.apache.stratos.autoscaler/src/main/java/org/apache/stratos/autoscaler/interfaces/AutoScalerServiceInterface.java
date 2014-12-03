@@ -69,6 +69,7 @@ public interface AutoScalerServiceInterface {
     /**
      * Retrieves registered Kubernetes Groups.
      */
+    @Deprecated
     public KubernetesGroup[] getAllKubernetesGroups();
 
     /**
@@ -76,6 +77,7 @@ public interface AutoScalerServiceInterface {
      *
      * @param kubernetesGroupId
      */
+    @Deprecated
     public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
@@ -83,6 +85,7 @@ public interface AutoScalerServiceInterface {
      *
      * @param kubernetesGroupId
      */
+    @Deprecated
     public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
@@ -90,6 +93,7 @@ public interface AutoScalerServiceInterface {
      *
      * @param kubernetesGroupId
      */
+    @Deprecated
     public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
 
     /**
@@ -98,6 +102,7 @@ public interface AutoScalerServiceInterface {
      * @param kubernetesGroup
      * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesGroupException
      */
+    @Deprecated
     public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException;
 
     /**
@@ -107,6 +112,7 @@ public interface AutoScalerServiceInterface {
      * @param kubernetesHost
      * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesHostException
      */
+    @Deprecated
     public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesGroupException;
 
@@ -116,6 +122,7 @@ public interface AutoScalerServiceInterface {
      * @param kubernetesHost
      * @throws InvalidKubernetesHostException
      */
+    @Deprecated
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesHostException;
 
@@ -125,6 +132,7 @@ public interface AutoScalerServiceInterface {
      * @param groupId
      * @throws NonExistingKubernetesGroupException
      */
+    @Deprecated
     public boolean removeKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException;
 
     /**
@@ -141,6 +149,7 @@ public interface AutoScalerServiceInterface {
      * @param kubernetesMaster
      * @throws NonExistingKubernetesMasterException
      */
+    @Deprecated
     public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
             throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException;
 
