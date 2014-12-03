@@ -18,29 +18,31 @@
  */
 package org.apache.stratos.messaging.event.applications;
 
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
- * This event will be fired upon the application inactivated is detected.
+ * This event will be fired upon the application terminated is detected.
  */
-public class ApplicationInactivatedEvent extends Event implements Serializable {
+public class ApplicationInstanceTerminatedEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
-    private String instanceId;
+    private Set<ClusterDataHolder> clusterData;
 
-    public ApplicationInactivatedEvent(String appId, String instanceId) {
+    public ApplicationInstanceTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
         this.appId = appId;
-        this.instanceId = instanceId;
+        this.clusterData = clusterData;
     }
 
     public String getAppId() {
         return appId;
     }
 
-    public String getInstanceId() {
-        return instanceId;
+    public Set<ClusterDataHolder> getClusterData() {
+        return clusterData;
     }
 }

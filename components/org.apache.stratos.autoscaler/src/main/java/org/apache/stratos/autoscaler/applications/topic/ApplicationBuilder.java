@@ -24,10 +24,12 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -204,7 +206,72 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationTerminatedEvent(String appId) {
+    public static boolean handleApplicationPolicyUndeployed(String appId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminating event: [application-id] " + appId);
+        }
+        Set<ClusterDataHolder> clusterData;
+        ApplicationHolder.acquireWriteLock();
+        try {
+            Applications applications = ApplicationHolder.getApplications();
+            Application application = applications.getApplication(appId);
+            //update the status of the Group
+            if (application == null) {
+                log.warn(String.format("Application does not exist: [application-id] %s",
+                        appId));
+                return false;
+            }
+            clusterData = application.getClusterDataRecursively();
+            Collection<ApplicationInstance> context = application.
+                    getInstanceIdToInstanceContextMap().values();
+            ApplicationStatus status = ApplicationStatus.Terminating;
+            for (ApplicationInstance context1 : context) {
+                if (context1.isStateTransitionValid(status)) {
+                    //setting the status, persist and publish
+                    application.setStatus(status, context1.getInstanceId());
+                    updateApplicationMonitor(appId, status, context1.getInstanceId());
+                    ApplicationHolder.persistApplication(application);
+                    ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId, context1.getInstanceId());
+                } else {
+                    log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
+                                    " [instance-id] %s [current-status] %s [status-requested] %s", appId,
+                            context1.getInstanceId() + context1.getStatus(), status));
+                }
+            }
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
+        // if monitors is not found for any cluster, assume cluster is not there and send cluster terminating event.
+        // this assumes the cluster monitor will not fail after creating members, but will only fail before
+        for (ClusterDataHolder aClusterData : clusterData) {
+            if (AutoscalerContext.getInstance().getClusterMonitor(aClusterData.getClusterId()) == null) {
+                TopologyManager.acquireReadLockForCluster(aClusterData.getServiceType(),
+                        aClusterData.getClusterId());
+                try {
+                    Service service = TopologyManager.getTopology().getService(aClusterData.getServiceType());
+                    if (service != null) {
+                        Cluster cluster = service.getCluster(aClusterData.getClusterId());
+                        if (cluster != null) {
+                            for(ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId,
+                                                                    aClusterData.getServiceType(),
+                                                                    aClusterData.getClusterId(),
+                                                                    instance.getInstanceId());
+                            }
+                        }
+                    }
+                } finally {
+                    TopologyManager.releaseReadLockForCluster(aClusterData.getServiceType(),
+                            aClusterData.getClusterId());
+                }
+
+            }
+        }
+        return true;
+    }
+
+    public static void handleApplicationTerminatedEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminated event: [application-id] " + appId);
         }
@@ -218,10 +285,10 @@ public class ApplicationBuilder {
             Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
 
             ApplicationStatus status = ApplicationStatus.Terminated;
-            if (application.isStateTransitionValid(status, null)) {
+            if (application.isStateTransitionValid(status, instanceId)) {
                 //setting the status, persist and publish
-                application.setStatus(status, null);
-                updateApplicationMonitor(appId, status, null);
+                application.setStatus(status, instanceId);
+                updateApplicationMonitor(appId, status, instanceId);
                 //removing the monitor
                 AutoscalerContext.getInstance().removeAppMonitor(appId);
                 //Removing the application from memory and registry
@@ -231,7 +298,9 @@ public class ApplicationBuilder {
                 ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                        " [current-status] %s [status-requested] %s", appId, application.getStatus(null), status));
+                        " [current-status] %s [status-requested] %s", appId,
+                        application.getInstanceContexts(instanceId).getStatus(),
+                        status));
             }
         }
     }

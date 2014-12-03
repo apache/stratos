@@ -100,8 +100,8 @@ public class CloudControllerServiceClient {
     	stub.deployServiceGroup(serviceGroup);
     }
 
-    public void undeployDeploymentPOlicy (ServiceGroup serviceGroup) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
-        stub.deployServiceGroup(serviceGroup);
+    public void undeployDeploymentPOlicy (String applicationId) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
+        //stub.deployServiceGroup(serviceGroup);
     }
     
     public void undeployServiceGroup (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {

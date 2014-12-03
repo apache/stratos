@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.listener.applications.ApplicationTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
@@ -57,19 +57,6 @@ public class ApplicationTopicReceiver {
 
 	}
 
-	private void addEventListeners() {
-		applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
-			@Override
-			protected void onEvent(Event event) {
-				//Remove the application related data
-				ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent) event;
-				log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
-				String appId = terminatedEvent.getAppId();
-				TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
-			}
-		});
-	}
-
 	public void setTerminated(boolean terminated) {
 		this.terminated = terminated;
 	}
@@ -77,6 +64,19 @@ public class ApplicationTopicReceiver {
 	public ExecutorService getExecutorService() {
 		return executorService;
 	}
+
+    private void addEventListeners() {
+        applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                //Remove the application related data
+                ApplicationInstanceTerminatedEvent terminatedEvent = (ApplicationInstanceTerminatedEvent)event;
+                log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
+                String appId = terminatedEvent.getAppId();
+                TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
+            }
+        });
+    }
 
 	public void setExecutorService(ExecutorService executorService) {
 		this.executorService = executorService;

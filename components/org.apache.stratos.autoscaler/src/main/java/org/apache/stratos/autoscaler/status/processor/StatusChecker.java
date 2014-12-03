@@ -350,7 +350,7 @@ public class StatusChecker {
             //send the terminated event
             if (component instanceof Application) {
                 log.info("sending app terminated: " + appId);
-                ApplicationBuilder.handleApplicationTerminatedEvent(appId);
+                ApplicationBuilder.handleApplicationTerminatedEvent(appId, null);
             } else if (component instanceof Group) {
                 //send activation to the parent
                 if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
