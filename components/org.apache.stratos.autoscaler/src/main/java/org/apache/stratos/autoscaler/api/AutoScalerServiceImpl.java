@@ -114,31 +114,29 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
         String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
         //Need to start the application Monitor after validation of the deployment policies.
-
+        //FIXME add validation
         //Check whether all the clusters are there
         ApplicationHolder.acquireReadLock();
         boolean allClusterInitialized = false;
-
+        String appId = deploymentPolicy.getApplicationId();
         try {
             Application application = ApplicationHolder.getApplications().
                     getApplication(deploymentPolicy.getApplicationId());
             if(application != null) {
                 allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
             }
-
         } finally {
             ApplicationHolder.releaseReadLock();
         }
 
-        if(allClusterInitialized) {
+        if(allClusterInitialized && !AutoscalerContext.getInstance().containsPendingMonitor(appId)) {
             AutoscalerUtil.getInstance().
-                    startApplicationMonitor(deploymentPolicy.getApplicationId());
+                    startApplicationMonitor(appId);
 
         } else {
             log.info("The application clusters are not yet created. " +
                     "Waiting for them to be created");
         }
-
         return policyId;
     }
 

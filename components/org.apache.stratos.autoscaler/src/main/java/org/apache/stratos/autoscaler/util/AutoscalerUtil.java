@@ -351,7 +351,9 @@ public class AutoscalerUtil {
 
     public synchronized void startApplicationMonitor(String applicationId) {
         Thread th = null;
-        if (AutoscalerContext.getInstance().getAppMonitor(applicationId) == null) {
+        AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+        if (autoscalerContext.getAppMonitor(applicationId) == null) {
+            autoscalerContext.addPendingMonitor(applicationId);
             th = new Thread(new ApplicationMonitorAdder(applicationId));
         }
         if (th != null) {
@@ -383,10 +385,8 @@ public class AutoscalerUtil {
                 }
                 try {
                     long start = System.currentTimeMillis();
-                    if (log.isDebugEnabled()) {
-                        log.debug("application monitor is going to be started for [application] " +
+                    log.info("application monitor is going to be started for [application] " +
                                 appId);
-                    }
                     try {
                         applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
                     } catch (PolicyValidationException e) {
@@ -414,8 +414,10 @@ public class AutoscalerUtil {
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
+            AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
 
-            AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+            autoscalerContext.removeAppMonitor(appId);
+            autoscalerContext.addAppMonitor(applicationMonitor);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application monitor has been added successfully: " +
                         "[application] %s", applicationMonitor.getId()));
