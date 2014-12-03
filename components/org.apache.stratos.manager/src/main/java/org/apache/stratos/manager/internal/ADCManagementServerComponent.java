@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.manager.internal;
 
+import org.apache.axis2.util.threadpool.ThreadPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.manager.listener.InstanceStatusListener;
 import org.apache.stratos.manager.listener.TenantUserRoleCreator;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
@@ -38,6 +40,8 @@ import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserRealm;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * @scr.component name="org.wso2.carbon.hosting.mgt.internal.ADCManagementServerComponent"
@@ -63,13 +67,17 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 
 public class ADCManagementServerComponent {
 
-    private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
-    private StratosManagerTopologyEventReceiver stratosManagerTopologyEventReceiver;
+	private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
+	private static final String IDENTIFIER = "Stratos_manager";
+	private static final int THREAD_POOL_SIZE = 20;
+	private StratosManagerTopologyEventReceiver stratosManagerTopologyEventReceiver;
+	private ExecutorService executorService;
 
     protected void activate(ComponentContext componentContext) throws Exception {
 		try {
 			CartridgeConfigFileReader.readProperties();
-
+			executorService=StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
+			
             // Schedule complete tenant event synchronizer
             if(log.isDebugEnabled()) {
                 log.debug("Scheduling tenant synchronizer task...");
@@ -90,8 +98,8 @@ public class ADCManagementServerComponent {
                 log.debug("Starting instance status topic subscriber...");
             }
             Subscriber subscriber = new Subscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), new InstanceStatusListener());
-            Thread tsubscriber = new Thread(subscriber);
-			tsubscriber.start();
+       		executorService.execute(subscriber);
+
 
             RealmService realmService = DataHolder.getRealmService();
             UserRealm realm = realmService.getBootstrapRealm();
@@ -115,9 +123,11 @@ public class ADCManagementServerComponent {
             Thread topologyReceiverThread = new Thread(topologyReceiver);
             topologyReceiverThread.start();*/
 
+
             stratosManagerTopologyEventReceiver = new StratosManagerTopologyEventReceiver();
-            Thread topologyReceiverThread = new Thread(stratosManagerTopologyEventReceiver);
-            topologyReceiverThread.start();
+			stratosManagerTopologyEventReceiver.setExecutorService(executorService);
+			executorService.execute(stratosManagerTopologyEventReceiver);
+
             log.info("Topology receiver thread started");
 
             // retrieve persisted CartridgeSubscriptions
@@ -201,6 +211,7 @@ public class ADCManagementServerComponent {
         EventPublisherPool.close(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
         EventPublisherPool.close(Util.Topics.TENANT_TOPIC.getTopicName());
 
+	    executorService.shutdownNow();
         //terminate Stratos Manager Topology Receiver
         stratosManagerTopologyEventReceiver.terminate();
     }

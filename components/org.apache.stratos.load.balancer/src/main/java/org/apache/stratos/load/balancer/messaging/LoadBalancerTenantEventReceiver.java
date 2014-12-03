@@ -37,7 +37,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
  * Load balancer tenant receiver updates load balancer context according to
  * incoming tenant events.
  */
-public class LoadBalancerTenantEventReceiver implements Runnable {
+public class LoadBalancerTenantEventReceiver{
 
     private static final Log log = LogFactory.getLog(LoadBalancerTenantEventReceiver.class);
 
@@ -192,18 +192,10 @@ public class LoadBalancerTenantEventReceiver implements Runnable {
         }
     }
 
-    @Override
-    public void run() {
-        Thread tenantReceiverThread = new Thread(tenantEventReceiver);
-        tenantReceiverThread.start();
 
-        // Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
+    public void execute() {
+        tenantEventReceiver.execute();
+
         if (log.isInfoEnabled()) {
             log.info("Load balancer tenant receiver thread terminated");
         }

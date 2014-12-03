@@ -25,16 +25,19 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * A thread for receiving health stat information from message broker
  */
-public class HealthStatEventReceiver implements Runnable {
+public class HealthStatEventReceiver {
 	private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
 
 	private final HealthStatEventMessageDelegator messageDelegator;
 	private final HealthStatEventMessageListener messageListener;
 	private Subscriber subscriber;
 	private boolean terminated;
+	private ExecutorService executorService;
 
 	public HealthStatEventReceiver() {
 		HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
@@ -46,8 +49,8 @@ public class HealthStatEventReceiver implements Runnable {
 		messageDelegator.addEventListener(eventListener);
 	}
 
-	@Override
-	public void run() {
+
+	public void execute() {
 		try {
 			// Start topic subscriber thread
 			subscriber = new Subscriber(Util.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
@@ -83,5 +86,13 @@ public class HealthStatEventReceiver implements Runnable {
 		subscriber.terminate();
 		messageDelegator.terminate();
 		terminated = true;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

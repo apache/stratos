@@ -31,6 +31,8 @@ import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListe
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * CEP Topology Receiver for Fault Handling Window Processor.
  */
@@ -41,6 +43,7 @@ public class CEPTopologyEventReceiver implements Runnable {
     private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
     private FaultHandlingWindowProcessor faultHandler;
+	private ExecutorService executorService;
 
     public CEPTopologyEventReceiver(FaultHandlingWindowProcessor faultHandler) {
         this.topologyEventReceiver = new TopologyEventReceiver();
@@ -101,8 +104,9 @@ public class CEPTopologyEventReceiver implements Runnable {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
         }
-        Thread thread = new Thread(topologyEventReceiver);
-        thread.start();
+        topologyEventReceiver.setExecutorService(executorService);
+	    topologyEventReceiver.execute();
+	 //   executorService.execute(topologyEventReceiver);
         log.info("CEP topology receiver thread started");
 
         // Keep the thread live until terminated
@@ -122,4 +126,12 @@ public class CEPTopologyEventReceiver implements Runnable {
         topologyEventReceiver.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

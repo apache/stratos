@@ -60,6 +60,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import java.io.File;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @scr.component name="org.apache.stratos.load.balancer.internal.LoadBalancerServiceComponent" immediate="true"
@@ -88,6 +89,9 @@ public class LoadBalancerServiceComponent {
     private LoadBalancerTopologyEventReceiver topologyReceiver;
     private LoadBalancerTenantEventReceiver tenantReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
+	private static final String STRATOS_MANAGER = "Stratos_manager";
+	private static final int THREAD_POOL_SIZE = 20;
+	private ExecutorService executorService;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -123,6 +127,40 @@ public class LoadBalancerServiceComponent {
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
                 startTopologyEventReceiver();
+
+                if (log.isInfoEnabled()) {
+                    if (TopologyServiceFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(serviceName);
+                        }
+                        log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+                    }
+                    if (TopologyClusterFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(clusterId);
+                        }
+                        log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+                    }
+                    if (TopologyMemberFilter.getInstance().isActive()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
+                            if (sb.length() > 0) {
+                                sb.append(", ");
+                            }
+                            sb.append(clusterId);
+                        }
+                        log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
+                    }
+                }
+
             }
 
             if(configuration.isCepStatsPublisherEnabled()) {
@@ -142,18 +180,16 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startTenantEventReceiver() {
-        tenantReceiver = new LoadBalancerTenantEventReceiver();
-        Thread tenantReceiverThread = new Thread(tenantReceiver);
-        tenantReceiverThread.start();
+	    tenantReceiver = new LoadBalancerTenantEventReceiver();
+	    tenantReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Tenant receiver thread started");
         }
     }
 
     private void startTopologyEventReceiver() {
-        topologyReceiver = new LoadBalancerTopologyEventReceiver();
-        Thread topologyReceiverThread = new Thread(topologyReceiver);
-        topologyReceiverThread.start();
+	    topologyReceiver = new LoadBalancerTopologyEventReceiver();
+	    topologyReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
@@ -220,6 +256,8 @@ public class LoadBalancerServiceComponent {
         topologyReceiver.terminate();
         // Terminate statistics notifier
         statisticsNotifier.terminate();
+
+
     }
 
     /**

@@ -27,8 +27,11 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
+import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
@@ -50,46 +53,36 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Autoscaler topology receiver.
  */
-public class AutoscalerTopologyEventReceiver implements Runnable {
+public class AutoscalerTopologyEventReceiver {
 
-    private static final Log log = LogFactory.getLog(AutoscalerTopologyEventReceiver.class);
+	private static final Log log = LogFactory.getLog(AutoscalerTopologyEventReceiver.class);
 
-    private TopologyEventReceiver topologyEventReceiver;
-    private boolean terminated;
-    private boolean topologyInitialized;
+	private TopologyEventReceiver topologyEventReceiver;
+	private boolean terminated;
+	private boolean topologyInitialized;
+	private ExecutorService executorService;
 
-    public AutoscalerTopologyEventReceiver() {
-        this.topologyEventReceiver = new TopologyEventReceiver();
-        addEventListeners();
-    }
+	public AutoscalerTopologyEventReceiver() {
+		this.topologyEventReceiver = new TopologyEventReceiver();
+		addEventListeners();
+	}
 
-    @Override
-    public void run() {
-        //FIXME this activated before autoscaler deployer activated.
-        /*try {
-            Thread.sleep(15000);
-        } catch (InterruptedException ignore) {
-        }*/
-        Thread thread = new Thread(topologyEventReceiver);
-        thread.start();
-        if (log.isInfoEnabled()) {
-            log.info("Autoscaler topology receiver thread started");
-        }
+	public void execute() {
+		//FIXME this activated before autoscaler deployer activated.
 
-        // Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-        if (log.isInfoEnabled()) {
-            log.info("Autoscaler topology receiver thread terminated");
-        }
-    }
+		topologyEventReceiver.setExecutorService(getExecutorService());
+		topologyEventReceiver.execute();
+
+		if (log.isInfoEnabled()) {
+			log.info("Autoscaler topology receiver thread started");
+		}
+
+	}
 
     private boolean allClustersInitialized(Application application) {
         boolean allClustersInitialized = false;
@@ -514,7 +507,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
                                }
                            }
 
-                       } else {
+                        } else {
                            log.error("Service " + clusterInstanceCreatedEvent.getServiceName() +
                                    " not found, no cluster instance added to ClusterMonitor " +
                                    clusterInstanceCreatedEvent.getClusterId());
@@ -527,7 +520,7 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
 
                } else {
                    log.error("No Cluster Monitor found for cluster id " +
-                           clusterInstanceCreatedEvent.getClusterId());
+                             clusterInstanceCreatedEvent.getClusterId());
                }
            }
        }
@@ -544,5 +537,70 @@ public class AutoscalerTopologyEventReceiver implements Runnable {
         terminated = true;
     }
 
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
+	private class ApplicationMonitorAdder implements Runnable {
+		private String appId;
+
+		public ApplicationMonitorAdder(String appId) {
+			this.appId = appId;
+		}
+
+		public void run() {
+			ApplicationMonitor applicationMonitor = null;
+			int retries = 5;
+			boolean success = false;
+			do {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e1) {
+				}
+				try {
+					long start = System.currentTimeMillis();
+					if (log.isDebugEnabled()) {
+						log.debug("application monitor is going to be started for [application] " +
+						          appId);
+					}
+					try {
+						applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
+					} catch (PolicyValidationException e) {
+						String msg = "Application monitor creation failed for Application: ";
+						log.warn(msg, e);
+						retries--;
+					}
+					long end = System.currentTimeMillis();
+					log.info("Time taken to start app monitor: " + (end - start) / 1000);
+					success = true;
+				} catch (DependencyBuilderException e) {
+					String msg = "Application monitor creation failed for Application: ";
+					log.warn(msg, e);
+					retries--;
+				} catch (TopologyInConsistentException e) {
+					String msg = "Application monitor creation failed for Application: ";
+					log.warn(msg, e);
+					retries--;
+				}
+			} while (!success && retries != 0);
+
+			if (applicationMonitor == null) {
+				String msg = "Application monitor creation failed, even after retrying for 5 times, "
+				             + "for Application: " + appId;
+				log.error(msg);
+				throw new RuntimeException(msg);
+			}
+
+			AutoscalerContext.getInstance().addAppMonitor(applicationMonitor);
+			if (log.isInfoEnabled()) {
+				log.info(String.format("Application monitor has been added successfully: " +
+				                       "[application] %s", applicationMonitor.getId()));
+			}
+		}
+	}
 
 }

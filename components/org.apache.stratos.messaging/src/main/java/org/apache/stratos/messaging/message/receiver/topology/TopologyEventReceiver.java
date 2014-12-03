@@ -25,17 +25,18 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
-
+import java.util.concurrent.ExecutorService;
 
 /**
  * A thread for receiving topology information from message broker and
  * build topology in topology manager.
  */
-public class TopologyEventReceiver implements Runnable {
+public class TopologyEventReceiver {
     private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
     private TopologyEventMessageDelegator messageDelegator;
     private TopologyEventMessageListener messageListener;
     private Subscriber subscriber;
+	private ExecutorService executorService;
     private boolean terminated;
 
     public TopologyEventReceiver() {
@@ -48,34 +49,26 @@ public class TopologyEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-	@Override
-	public void run() {
+
+	public void execute() {
 		try {
 			// Start topic subscriber thread
 			subscriber = new Subscriber(Util.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
 			// subscriber.setMessageListener(messageListener);
+			executorService.execute(subscriber);
 
-			Thread subscriberThread = new Thread(subscriber);
-			subscriberThread.start();
 
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message receiver thread started");
             }
 
             // Start topology event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+            executorService.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Topology event message delegator thread started");
             }
 
-            // Keep the thread live until terminated
-            while (!terminated) {
-            	try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
-            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Topology receiver failed", e);
@@ -88,4 +81,12 @@ public class TopologyEventReceiver implements Runnable {
         messageDelegator.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

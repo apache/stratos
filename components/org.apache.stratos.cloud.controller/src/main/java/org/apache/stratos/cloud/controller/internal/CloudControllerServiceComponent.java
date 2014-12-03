@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.internal;
  *
 */
 
+import org.apache.commons.configuration.XMLConfiguration;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -34,6 +35,8 @@ import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceI
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.common.util.ConfUtil;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Util;
 import org.osgi.framework.BundleContext;
@@ -44,6 +47,8 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.ConfigurationContextService;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * Registering Cloud Controller Service.
@@ -60,57 +65,64 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  */
 public class CloudControllerServiceComponent {
 
-    private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
-    private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
-    private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
-    private ApplicationTopicReceiver applicationTopicReceiver;
+	private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
+	private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
+	private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
+	private ApplicationTopicReceiver applicationTopicReceiver;
+	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
+	private static final String DEFAULT_IDENTIFIER = "Cloud-Controller";
+	private static final String THREAD_POOL_SIZE_KEY = "threadPool.cloudcontroller.threadPoolSize";
+	private static final String COMPONENTS_CONFIG = "stratos-config";
+	private static final int THREAD_POOL_SIZE = 10;
 
-    protected void activate(ComponentContext context) {
-        try {
-            applicationTopicReceiver = new ApplicationTopicReceiver();
-            Thread tApplicationTopicReceiver = new Thread(applicationTopicReceiver);
-            tApplicationTopicReceiver.start();
+	protected void activate(ComponentContext context) {
+		try {
 
-            if (log.isInfoEnabled()) {
-                log.info("Application event receiver thread started");
-            }
+			XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
+			int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
+			String threadIdentifier = conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
+			ExecutorService executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
+			applicationTopicReceiver = new ApplicationTopicReceiver();
+			applicationTopicReceiver.setExecutorService(executorService);
+			applicationTopicReceiver.execute();
 
-            clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
-            Thread tClusterStatusTopicReceiver = new Thread(clusterStatusTopicReceiver);
-            tClusterStatusTopicReceiver.start();
+			if (log.isInfoEnabled()) {
+				log.info("Application Receiver thread started");
+			}
 
-            if (log.isInfoEnabled()) {
-                log.info("Cluster status receiver thread started");
-            }
+			clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
+			clusterStatusTopicReceiver.setExecutorService(executorService);
+			clusterStatusTopicReceiver.execute();
 
-            instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
-            Thread tInstanceStatusTopicReceiver = new Thread(instanceStatusTopicReceiver);
-            tInstanceStatusTopicReceiver.start();
-            if(log.isInfoEnabled()) {
-                log.info("Instance status message receiver thread started");
-            }
+			if (log.isInfoEnabled()) {
+				log.info("Cluster status Receiver thread started");
+			}
 
-        	// Register cloud controller service
-            BundleContext bundleContext = context.getBundleContext();
-            bundleContext.registerService(CloudControllerService.class.getName(),
-                    new CloudControllerServiceImpl(), null);
+			instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
+			instanceStatusTopicReceiver.execute();
 
-            if(log.isInfoEnabled()) {
-                log.info("Scheduling tasks");
-            }
+			if (log.isInfoEnabled()) {
+				log.info("Instance status message receiver thread started");
+			}
 
-            if ((!CloudControllerContext.getInstance().isClustered()) ||
-                    (CloudControllerContext.getInstance().isCoordinator())) {
-                TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
-                if(log.isInfoEnabled()) {
-                    log.info("Topology synchronizer task scheduled");
-                }
-            }
-        } catch (Throwable e) {
-            log.error("**** Cloud controller service bundle is failed to activate ****", e);
+			// Register cloud controller service
+			BundleContext bundleContext = context.getBundleContext();
+			bundleContext.registerService(CloudControllerService.class.getName(),
+			                              new CloudControllerServiceImpl(), null);
+
+			if (log.isInfoEnabled()) {
+				log.info("Scheduling tasks");
+			}
+
+			TopologySynchronizerTaskScheduler
+					.schedule(ServiceReferenceHolder.getInstance()
+					                                .getTaskService());
+
+		} catch (Throwable e) {
+			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
         }
     }
-    
+
     protected void setTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting the Task Service");
@@ -124,20 +136,20 @@ public class CloudControllerServiceComponent {
         }
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
-    
+
 	protected void setRegistryService(RegistryService registryService) {
 		if (log.isDebugEnabled()) {
 			log.debug("Setting the Registry Service");
 		}
-		
-		try {			
+
+		try {
 			UserRegistry registry = registryService.getGovernanceSystemRegistry();
 	        ServiceReferenceHolder.getInstance().setRegistry(registry);
         } catch (RegistryException e) {
         	String msg = "Failed when retrieving Governance System Registry.";
         	log.error(msg, e);
         	throw new CloudControllerException(msg, e);
-        } 
+        }
 	}
 
 	protected void unsetRegistryService(RegistryService registryService) {
@@ -146,7 +158,7 @@ public class CloudControllerServiceComponent {
         }
         ServiceReferenceHolder.getInstance().setRegistry(null);
 	}
-	
+
 	protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(
                 cfgCtxService.getServerConfigContext().getAxisConfiguration());
@@ -163,7 +175,7 @@ public class CloudControllerServiceComponent {
     protected void unsetDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
     }
-	
+
 	protected void deactivate(ComponentContext ctx) {
         // Close event publisher connections to message broker
         EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());

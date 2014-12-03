@@ -64,5 +64,9 @@
 		     <service>60000</service>
 		</kubernetes>
  	    </monitorInterval>
+        <threadpool>
+            <identifier>Autoscaler</identifier>
+            <threadPoolSize>10</threadPoolSize>
+        </threadpool>
 	</autoscaler>
 </configuration>
