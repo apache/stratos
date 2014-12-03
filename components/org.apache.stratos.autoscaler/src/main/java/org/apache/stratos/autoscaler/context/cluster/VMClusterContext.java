@@ -214,6 +214,7 @@ public class VMClusterContext extends AbstractClusterContext {
                     networkPartition.getPartitionAlgo(),
                     networkPartition.getChildLevelPartitions(), 2,
                     networkPartitionId);
+            ApplicationHolder.acquireReadLock();
             try {
                 Application application = ApplicationHolder.getApplications().
                         getApplication(cluster.getAppId());
