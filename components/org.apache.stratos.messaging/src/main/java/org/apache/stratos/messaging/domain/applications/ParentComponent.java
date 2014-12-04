@@ -34,9 +34,9 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     // Dependency Order
     private DependencyOrder dependencyOrder;
     // Group Map, key = Group.alias
-    private final Map<String, Group> aliasToGroupMap;
+    protected final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
-    private final Map<String, ClusterDataHolder> aliasToClusterDataMap;
+    protected final Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group/Cluster Instance Context map, key = instance id
     protected Map<String, T> instanceIdToInstanceContextMap;
     // flag for Group level scaling
@@ -117,6 +117,17 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
             }
         }
 
+        return null;
+    }
+
+    public ClusterDataHolder getClusterDataHolderRecursivelyByAlias(String alias) {
+        if(this.aliasToClusterDataMap.containsKey(alias)) {
+            return this.aliasToClusterDataMap.get(alias);
+        } else {
+            if(this.aliasToGroupMap != null && !this.aliasToGroupMap.isEmpty()) {
+                return getClusterDataByAlias(alias, this.aliasToGroupMap.values());
+            }
+        }
         return null;
     }
 
@@ -284,7 +295,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         return getInstanceIdToInstanceContextMap().keySet().size();
     }
 
-    private void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
+    protected void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
 
         for (Group group : groups) {
             if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
@@ -294,6 +305,21 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
                 }
             }
         }
+    }
+
+    private ClusterDataHolder getClusterDataByAlias (String alias, Collection<Group> groups) {
+
+        for (Group group : groups) {
+            if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
+                if(group.getClusterData(alias) != null) {
+                    return group.getClusterData(alias);
+                }
+                if (group.getGroups() != null) {
+                    return getClusterDataByAlias(alias, group.getGroups());
+                }
+            }
+        }
+        return null;
     }
 
     public Map<String, T> getInstanceIdToInstanceContextMap() {

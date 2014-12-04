@@ -41,8 +41,11 @@ import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -52,6 +55,8 @@ import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
@@ -59,7 +64,9 @@ import org.wso2.carbon.registry.api.RegistryException;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 //import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
@@ -90,9 +97,9 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         ArrayList<DeploymentPolicy> validPolicies = new ArrayList<DeploymentPolicy>();
 
         for (DeploymentPolicy deploymentPolicy : this.getAllDeploymentPolicies()) {
-            try {
+            /*try {
                 // call CC API
-                CloudControllerClient.getInstance().validateDeploymentPolicy(cartridgeType, deploymentPolicy);
+                //CloudControllerClient.getInstance().validateDeploymentPolicy(cartridgeType, deploymentPolicy);
                 // if this deployment policy is valid for this cartridge, add it.
                 validPolicies.add(deploymentPolicy);
             } catch (PartitionValidationException ignoredException) {
@@ -101,7 +108,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     log.debug("Deployment policy [id] " + deploymentPolicy.getId()
                             + " is not valid for Cartridge [type] " + cartridgeType, ignoredException);
                 }
-            }
+            }*/
         }
         return validPolicies.toArray(new DeploymentPolicy[0]);
     }
@@ -116,6 +123,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
         //Need to start the application Monitor after validation of the deployment policies.
         //FIXME add validation
+        validateDeploymentPolicy(deploymentPolicy);
         //Check whether all the clusters are there
         ApplicationHolder.acquireReadLock();
         boolean allClusterInitialized = false;
@@ -144,6 +152,49 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             log.info("The application Monitor has already been created for [Application] " + appId);
         }
         return policyId;
+    }
+
+    private boolean validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+
+        for(ChildPolicy childPolicy : deploymentPolicy.getChildPolicies()) {
+            String alias = childPolicy.getId();
+            ApplicationHolder.acquireReadLock();
+            List<Partition> partitionList = new ArrayList<Partition>();
+            for(ChildLevelNetworkPartition networkPartition : childPolicy.getChildLevelNetworkPartitions()) {
+                Partition[] partitions = deploymentPolicy.getApplicationLevelNetworkPartition(
+                                                    networkPartition.getId()).getPartitions();
+                for(Partition partition : partitions) {
+                    partitionList.add(partition);
+                }
+            }
+            try {
+                Application application = ApplicationHolder.getApplications().
+                                getApplication(deploymentPolicy.getApplicationId());
+                Partition[] partitions = new Partition[partitionList.size()];
+                Group group = application.getGroupRecursively(alias);
+                if(group != null) {
+                    Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
+                    for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+                        CloudControllerClient.getInstance().validateDeploymentPolicy(
+                                clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
+                    }
+                } else {
+                    ClusterDataHolder clusterDataHolder = application.
+                            getClusterDataHolderRecursivelyByAlias(alias);
+                    if(clusterDataHolder != null) {
+                        CloudControllerClient.getInstance().validateDeploymentPolicy(
+                                clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
+                    }
+                }
+            } catch (PartitionValidationException e) {
+                log.error("Error while validating the deployment policy", e);
+            } finally {
+                ApplicationHolder.releaseReadLock();
+            }
+
+        }
+
+        return true;
     }
 
     @Override

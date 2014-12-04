@@ -127,4 +127,21 @@ public class Group extends ParentComponent<GroupInstance> {
     public void setGroupMaxInstances(int groupMaxInstances) {
         this.groupMaxInstances = groupMaxInstances;
     }
+
+    public Set<ClusterDataHolder> getClusterDataHoldersOfGroup() {
+        Set<ClusterDataHolder> appClusterData = new HashSet<ClusterDataHolder>();
+
+        // get top level Cluster Data
+        if (this.aliasToClusterDataMap != null && !this.aliasToClusterDataMap.isEmpty()) {
+            appClusterData.addAll(this.aliasToClusterDataMap.values());
+        }
+
+        // find other nested Cluster Data (in the Groups)
+        if (getGroups() != null) {
+            getClusterData(appClusterData, getGroups());
+        }
+
+        return appClusterData;
+
+    }
 }
