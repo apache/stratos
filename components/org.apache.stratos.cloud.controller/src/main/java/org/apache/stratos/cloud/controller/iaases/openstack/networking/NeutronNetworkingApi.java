@@ -234,7 +234,7 @@ public class NeutronNetworkingApi implements OpenstackNetworkingApi {
 			while (unassginedFloatingIPsIterator.hasNext()) {
 				FloatingIP floatingIP = unassginedFloatingIPsIterator.next();
 				List<String> allPredefinedFloatingIPs = getAllPredefinedFloatingIPs(iaasProvider.getNetworkInterfaces());
-				if (allPredefinedFloatingIPs != null) {
+				if (allPredefinedFloatingIPs != null && !allPredefinedFloatingIPs.isEmpty()) {
 		        	if (log.isDebugEnabled()) {
 		        		String msg = String.format("Predefined  floating IPs - %s found in cartridge", 
 		        				allPredefinedFloatingIPs.toString());

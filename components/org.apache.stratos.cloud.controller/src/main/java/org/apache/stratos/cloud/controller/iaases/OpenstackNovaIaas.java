@@ -18,35 +18,33 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.NetworkInterface;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
-import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.NetworkInterface;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.iaases.openstack.networking.NeutronNetworkingApi;
+import org.apache.stratos.cloud.controller.iaases.openstack.networking.NovaNetworkingApi;
+import org.apache.stratos.cloud.controller.iaases.openstack.networking.OpenstackNetworkingApi;
 import org.apache.stratos.cloud.controller.iaases.validators.OpenstackNovaPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
-import org.jclouds.openstack.nova.v2_0.domain.FloatingIP;
 import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
 import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
 import org.jclouds.openstack.nova.v2_0.domain.Network;
@@ -54,28 +52,46 @@ import org.jclouds.openstack.nova.v2_0.domain.Volume;
 import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
 import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneApi;
-import org.jclouds.openstack.nova.v2_0.extensions.FloatingIPApi;
 import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
 import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
 import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
+import com.google.common.base.Optional;
 
 public class OpenstackNovaIaas extends Iaas {
 
 	private static final Log log = LogFactory.getLog(OpenstackNovaIaas.class);
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
+	
+	private OpenstackNetworkingApi openstackNetworkingApi;
 
 	public OpenstackNovaIaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
+		setOpenstackNetworkingApi(iaasProvider);
 	}
+	
+    private void setOpenstackNetworkingApi(IaasProvider iaasProvider) {
+        String openstackNetworkingProvider = iaasProvider.getProperty(CloudControllerConstants.OPENSTACK_NETWORKING_PROVIDER);
+        if (openstackNetworkingProvider != null && 
+                        openstackNetworkingProvider.equals(CloudControllerConstants.OPENSTACK_NEUTRON_NETWORKING)) {
+                if (log.isDebugEnabled()) {
+                        String msg = String.format("Openstack networking provider is %s. Trying to instanstiate %s", 
+                                        openstackNetworkingProvider, NeutronNetworkingApi.class.getName());
+                        log.debug(msg);
+                }
+                openstackNetworkingApi = new NeutronNetworkingApi(iaasProvider);
+        } else {
+                if (log.isDebugEnabled()) {
+                        String msg = String.format("Openstack networking provider is %s. Hence trying to instanstiate %s", 
+                                        openstackNetworkingProvider, NovaNetworkingApi.class.getName());
+                        log.debug(msg);
+                }
+                openstackNetworkingApi = new NovaNetworkingApi(iaasProvider);
+        }
+    }
 	
 	@Override
 	public void buildComputeServiceAndTemplate() {
@@ -216,207 +232,18 @@ public class OpenstackNovaIaas extends Iaas {
 
 	@Override
 	public synchronized String associateAddress(NodeMetadata node) {
-		
-		IaasProvider iaasInfo = getIaasProvider();
-
-		ComputeServiceContext context = iaasInfo.getComputeService()
-				.getContext();
-
-		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
-        NovaApi novaApi = context.unwrapApi(NovaApi.class);
-		FloatingIPApi floatingIp = novaApi.getFloatingIPExtensionForZone(
-				region).get();
-
-		String ip = null;
-		// first try to find an unassigned IP.
-		ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-				.filter(floatingIp.list(),
-						new Predicate<FloatingIP>() {
-
-							@Override
-							public boolean apply(FloatingIP arg0) {
-								return arg0.getInstanceId() == null;
-							}
-
-						}));
-
-		if (!unassignedIps.isEmpty()) {
-			// try to prevent multiple parallel launches from choosing the same
-			// ip.
-			Collections.shuffle(unassignedIps);
-			ip = Iterables.getLast(unassignedIps).getIp();
-		}
-
-		// if no unassigned IP is available, we'll try to allocate an IP.
-		if (ip == null || ip.isEmpty()) {
-			String defaultFloatingIpPool = iaasInfo.getProperty(CloudControllerConstants.DEFAULT_FLOATING_IP_POOL);
-			FloatingIP allocatedFloatingIP;
-			if ((defaultFloatingIpPool == null) || "".equals(defaultFloatingIpPool)) {
-				allocatedFloatingIP = floatingIp.create();
-			} else {
-				allocatedFloatingIP = floatingIp.allocateFromPool(defaultFloatingIpPool);
-			}
-			if (allocatedFloatingIP == null) {
-				String msg = "Failed to allocate an IP address.";
-				log.error(msg);
-				throw new CloudControllerException(msg);
-			}
-			ip = allocatedFloatingIP.getIp();
-		}
-
-		// wait till the fixed IP address gets assigned - this is needed before
-		// we associate a public IP
-		while (node.getPrivateAddresses() == null) {
-			CloudControllerUtil.sleep(1000);
-		}
-		
-		if (node.getPublicAddresses() != null
-				&& node.getPublicAddresses().iterator().hasNext()) {
-			log.info("A public IP ("
-					+ node.getPublicAddresses().iterator().next()
-					+ ") is already allocated to the instance [id] : "
-					+ node.getId());
-			return null;
-		}
-
-		int retries = 0;
-		//TODO make 5 configurable
-		while (retries < 5
-				&& !associateIp(floatingIp, ip, node.getProviderId())) {
-
-			// wait for 5s
-			CloudControllerUtil.sleep(5000);
-			retries++;
-		}
-
-		log.info("Successfully associated an IP address " + ip
-				+ " for node with id: " + node.getId());
-
-		return ip;
+		//TODO return the list of IP addresses once the topology changes is done
+		return openstackNetworkingApi.associateAddresses(node).iterator().next();
 	}
 	
 	@Override
 	public synchronized String associatePredefinedAddress (NodeMetadata node, String ip) {
-		if(log.isDebugEnabled()) {
-			log.debug("OpenstackNovaIaas:associatePredefinedAddress:ip:" + ip);
-		}
-		
-		IaasProvider iaasInfo = getIaasProvider();
-		
-		ComputeServiceContext context = iaasInfo.getComputeService()
-				.getContext();
-
-		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
-		FloatingIPApi floatingIp = context.unwrapApi(NovaApi.class).getFloatingIPExtensionForZone(
-                region).get();
-
-		if(log.isDebugEnabled()) {
-			log.debug("OpenstackNovaIaas:associatePredefinedAddress:floatingip:" + floatingIp);
-		}
-		
-		// get the list of all unassigned IP.
-		ArrayList<FloatingIP> unassignedIps = Lists.newArrayList(Iterables
-				.filter(floatingIp.list(),
-						new Predicate<FloatingIP>() {
-
-							@Override
-							public boolean apply(FloatingIP arg0) {
-								// FIXME is this the correct filter?
-								return arg0.getFixedIp() == null;
-							}
-
-						}));
-		
-		boolean isAvailable = false;
-		for (FloatingIP fip : unassignedIps) {
-			if(log.isDebugEnabled()) {
-				log.debug("OpenstackNovaIaas:associatePredefinedAddress:iterating over available floatingip:" + fip);
-			}
-			if (ip.equals(fip.getIp())) {
-				if(log.isDebugEnabled()) {
-					log.debug(String.format("OpenstackNovaIaas:associatePredefinedAddress:floating ip in use:%s /ip:%s", fip, ip));
-				}
-				isAvailable = true;
-				break;
-			}
-		}
-		
-		if (isAvailable) {
-			// assign ip
-			if(log.isDebugEnabled()) {
-				log.debug("OpenstackNovaIaas:associatePredefinedAddress:assign floating ip:" + ip);
-			}
-			// exercise same code as in associateAddress()
-			// wait till the fixed IP address gets assigned - this is needed before
-			// we associate a public IP
-
-			while (node.getPrivateAddresses() == null) {
-				CloudControllerUtil.sleep(1000);
-			}
-
-			int retries = 0;
-			while (retries < 5
-					&& !associateIp(floatingIp, ip, node.getProviderId())) {
-
-				// wait for 5s
-				CloudControllerUtil.sleep(5000);
-				retries++;
-			}
-
-			NodeMetadataBuilder.fromNodeMetadata(node)
-					.publicAddresses(ImmutableSet.of(ip)).build();
-
-			log.info("OpenstackNovaIaas:associatePredefinedAddress:Successfully associated an IP address " + ip
-					+ " for node with id: " + node.getId());
-		} else {
-			// unable to allocate predefined ip,
-			log.info("OpenstackNovaIaas:associatePredefinedAddress:Unable to allocate predefined ip:" 
-					+ " for node with id: " + node.getId());
-			return "";
-		}
-
-		
-		NodeMetadataBuilder.fromNodeMetadata(node)
-				.publicAddresses(ImmutableSet.of(ip)).build();
-
-		log.info("OpenstackNovaIaas:associatePredefinedAddress::Successfully associated an IP address " + ip
-				+ " for node with id: " + node.getId());
-
-		return ip;
-		
+		return openstackNetworkingApi.associatePredefinedAddress(node, ip);
 	}	
 
 	@Override
 	public synchronized void releaseAddress(String ip) {
-
-		IaasProvider iaasInfo = getIaasProvider();
-		
-		ComputeServiceContext context = iaasInfo.getComputeService()
-				.getContext();
-
-		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-
-        NovaApi novaApi = context.unwrapApi(NovaApi.class);
-		FloatingIPApi floatingIPApi = novaApi.getFloatingIPExtensionForZone(region).get();
-
-		for (FloatingIP floatingIP : floatingIPApi.list()) {
-			if (floatingIP.getIp().equals(ip)) {
-				floatingIPApi.delete(floatingIP.getId());
-				break;
-			}
-		}
-
-	}
-
-	private boolean associateIp(FloatingIPApi api, String ip, String id) {
-		try {
-			api.addToServer(ip, id);
-			return true;
-		} catch (RuntimeException ex) {
-			return false;
-		}
+		openstackNetworkingApi.releaseAddress(ip);
 	}
 
     @Override

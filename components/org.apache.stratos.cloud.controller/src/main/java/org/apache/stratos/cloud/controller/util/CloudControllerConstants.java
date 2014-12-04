@@ -142,6 +142,8 @@ public final class CloudControllerConstants {
 	// pre define a floating ip
 	public static final String FLOATING_IP_PROPERTY = "floatingIp";
 	public static final String DEFAULT_FLOATING_IP_POOL = "defaultFloatingIpPool";
+	public static final String OPENSTACK_NETWORKING_PROVIDER = "openstack.networking.provider";
+	public static final String OPENSTACK_NEUTRON_NETWORKING = "neutron";
 
 	/**
 	 * XPath expressions
