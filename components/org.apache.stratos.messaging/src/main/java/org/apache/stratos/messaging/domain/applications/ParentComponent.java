@@ -224,10 +224,10 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
      *
      * @param instanceId instance id of child
-     * @param instanceContext InstanceContext object
+     * @param instance InstanceContext object
      */
-    public void addInstanceContext (String instanceId, T instanceContext) {
-        instanceIdToInstanceContextMap.put(instanceId, instanceContext);
+    public void addInstance(String instanceId, T instance) {
+        instanceIdToInstanceContextMap.put(instanceId, instance);
     }
 
     /**

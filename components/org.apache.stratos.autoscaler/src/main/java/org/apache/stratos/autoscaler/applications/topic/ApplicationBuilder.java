@@ -28,7 +28,6 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.*;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -105,7 +104,7 @@ public class ApplicationBuilder {
             applicationInstance = new ApplicationInstance(appId, instanceId);
             applicationInstance.setStatus(status);
             applicationInstance.setNetworkPartitionId(networkPartitionId);
-            application.addInstanceContext(instanceId, applicationInstance);
+            application.addInstance(instanceId, applicationInstance);
             //updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
             //ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
@@ -426,7 +425,7 @@ public class ApplicationBuilder {
             GroupInstance context = new GroupInstance(groupId, instanceId);
             context.setParentId(parentId);
             context.setStatus(status);
-            group.addInstanceContext(instanceId, context);
+            group.addInstance(instanceId, context);
             //updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             //ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
