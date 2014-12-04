@@ -45,7 +45,6 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -391,7 +390,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
         Application application = applicationParser.parse(applicationContext);
-        publishMetadata(applicationParser, application.getUniqueIdentifier());
+        // publishMetadata(applicationParser, application.getUniqueIdentifier());
         ApplicationBuilder.handleApplicationCreated(application,
                 applicationParser.getApplicationClusterContexts());
     }
