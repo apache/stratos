@@ -946,7 +946,7 @@ public class TopologyBuilder {
                 TopologyManager.updateTopology(topology);
                 //publishing data
                 ClusterTerminatingEvent clusterTerminaingEvent = new ClusterTerminatingEvent(event.getAppId(),
-                        event.getServiceName(), event.getClusterId(), null);
+                        event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
             } else {
