@@ -228,7 +228,9 @@ public interface CloudControllerService {
      * @param instanceId instance id
      * @throws ClusterInstanceCreationException if an y error occurs in cluster instance creation
      */
-    public void createClusterInstance (String serviceType, String clusterId, String alias, String instanceId) throws
+    public void createClusterInstance (String serviceType, String clusterId, String alias,
+                                       String instanceId, String partitionId,
+                                       String networkPartitionId) throws
             ClusterInstanceCreationException;
     
     /**

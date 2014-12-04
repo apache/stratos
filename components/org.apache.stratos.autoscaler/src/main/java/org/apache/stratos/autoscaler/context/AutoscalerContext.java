@@ -20,7 +20,9 @@
  */
 package org.apache.stratos.autoscaler.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -37,10 +39,13 @@ public class AutoscalerContext {
     private Map<String, AbstractClusterMonitor> clusterMonitors;
     // Map<ApplicationId, ApplicationMonitor>
     private Map<String, ApplicationMonitor> applicationMonitors;
+    //pending application monitors
+    private List<String> pendingApplicationMonitors;
 
     private AutoscalerContext() {
         setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
         setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
+        pendingApplicationMonitors = new ArrayList<String>();
     }
 
     public static AutoscalerContext getInstance() {
@@ -85,5 +90,29 @@ public class AutoscalerContext {
 
     public void setApplicationMonitors(Map<String, ApplicationMonitor> applicationMonitors) {
         this.applicationMonitors = applicationMonitors;
+    }
+
+    public List<String> getPendingApplicationMonitors() {
+        return pendingApplicationMonitors;
+    }
+
+    public void setPendingApplicationMonitors(List<String> pendingApplicationMonitors) {
+        this.pendingApplicationMonitors = pendingApplicationMonitors;
+    }
+
+    public void addPendingMonitor(String appId) {
+        this.pendingApplicationMonitors.add(appId);
+    }
+
+    public void removeFromPendingMonitors(String appId) {
+        this.pendingApplicationMonitors.remove(appId);
+    }
+
+    public boolean containsPendingMonitor(String appId) {
+        return this.pendingApplicationMonitors.contains(appId);
+    }
+
+    public boolean monitorExists(String appId) {
+        return this.applicationMonitors.containsKey(appId);
     }
 }

@@ -24,10 +24,14 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.*;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -142,7 +146,7 @@ public class ApplicationBuilder {
 
     public static void handleApplicationUndeployed(String appId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application terminating event: [application-id] " + appId);
+            log.debug("Handling application unDeployment for [application-id] " + appId);
         }
         Set<ClusterDataHolder> clusterData;
         ApplicationHolder.acquireWriteLock();
@@ -154,6 +158,38 @@ public class ApplicationBuilder {
                 log.warn(String.format("Application does not exist: [application-id] %s",
                         appId));
                 return;
+            } else {
+                org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy policy =
+                        PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
+                if(policy != null) {
+                    log.warn(String.format("Application has been found in the ApplicationsTopology" +
+                                    ": [application-id] %s, Please unDeploy the Application Policy.",
+                            appId));
+                }
+            }
+            ApplicationHolder.removeApplication(appId);
+
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
+        log.info("[Application] " + appId + " has been successfully undeployed");
+    }
+
+    public static boolean handleApplicationPolicyUndeployed(String appId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminating event: [application-id] " + appId);
+        }
+        Set<ClusterDataHolder> clusterData;
+        ApplicationHolder.acquireWriteLock();
+        try {
+            Applications applications = ApplicationHolder.getApplications();
+            Application application = applications.getApplication(appId);
+            //update the status of the Group
+            if (application == null) {
+                log.warn(String.format("Application does not exist: [application-id] %s",
+                        appId));
+                return false;
             }
             clusterData = application.getClusterDataRecursively();
             Collection<ApplicationInstance> context = application.
@@ -167,12 +203,11 @@ public class ApplicationBuilder {
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId, context1.getInstanceId());
                 } else {
-                    log.warn(String.format("Application state transition is not valid: [application-id] %s " +
+                    log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
                                     " [instance-id] %s [current-status] %s [status-requested] %s", appId,
                             context1.getInstanceId() + context1.getStatus(), status));
                 }
             }
-
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
@@ -188,11 +223,12 @@ public class ApplicationBuilder {
                     if (service != null) {
                         Cluster cluster = service.getCluster(aClusterData.getClusterId());
                         if (cluster != null) {
-                            //TODO travese thr cluster context
-                            /*for() {
-                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, aClusterData.getServiceType(),
-                                        aClusterData.getClusterId(), null);
-                            }*/
+                            for(ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId,
+                                                                    aClusterData.getServiceType(),
+                                                                    aClusterData.getClusterId(),
+                                                                    instance.getInstanceId());
+                            }
                         }
                     }
                 } finally {
@@ -202,9 +238,10 @@ public class ApplicationBuilder {
 
             }
         }
+        return true;
     }
 
-    public static void handleApplicationTerminatedEvent(String appId) {
+    public static void handleApplicationTerminatedEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminated event: [application-id] " + appId);
         }
@@ -218,10 +255,10 @@ public class ApplicationBuilder {
             Set<ClusterDataHolder> clusterData = application.getClusterDataRecursively();
 
             ApplicationStatus status = ApplicationStatus.Terminated;
-            if (application.isStateTransitionValid(status, null)) {
+            if (application.isStateTransitionValid(status, instanceId)) {
                 //setting the status, persist and publish
-                application.setStatus(status, null);
-                updateApplicationMonitor(appId, status, null);
+                application.setStatus(status, instanceId);
+                updateApplicationMonitor(appId, status, instanceId);
                 //removing the monitor
                 AutoscalerContext.getInstance().removeAppMonitor(appId);
                 //Removing the application from memory and registry
@@ -231,7 +268,9 @@ public class ApplicationBuilder {
                 ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
-                        " [current-status] %s [status-requested] %s", appId, application.getStatus(null), status));
+                        " [current-status] %s [status-requested] %s", appId,
+                        application.getInstanceContexts(instanceId).getStatus(),
+                        status));
             }
         }
     }

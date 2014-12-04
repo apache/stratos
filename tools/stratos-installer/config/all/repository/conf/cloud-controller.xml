@@ -68,6 +68,7 @@
                         <property name="jclouds.endpoint" value="OPENSTACK_ENDPOINT" />
             		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
                         <property name="jclouds.api-version" value="2.0/" />
+			<property name="openstack.networking.provider" value="OPENSTACK_NETWORKING_PROVIDER" />
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
                         <property name="securityGroups" value="OPENSTACK_SECURITY_GROUPS"/>

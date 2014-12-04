@@ -42,7 +42,9 @@ public interface AutoScalerServiceInterface {
 
     public DeploymentPolicy[] getAllDeploymentPolicies();
 
-    public boolean addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
+    public String addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
+
+    public boolean undeployDeploymentPolicy(String deploymentPolicyName);
 
     public boolean updateDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
 

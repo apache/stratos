@@ -124,9 +124,24 @@ public class VMClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
+        ChildPolicy policy = this.deploymentPolicy.
+                getChildPolicy(
+                        AutoscalerUtil.getAliasFromClusterId(clusterId));
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             networkPartitionContext = this.networkPartitionCtxts.get(
                     clusterInstance.getNetworkPartitionId());
+        } else {
+            if(policy != null) {
+                ChildLevelNetworkPartition networkPartition = policy.
+                        getChildLevelNetworkPartition(clusterInstance.getNetworkPartitionId());
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartition.getId(),
+                        networkPartition.getPartitionAlgo(), 0);
+            } else {
+                //Parent should have the partition specified
+                networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId(),
+                        null, 0);
+            }
+
         }
 
         if (clusterInstance.getPartitionId() != null) {
@@ -134,9 +149,6 @@ public class VMClusterContext extends AbstractClusterContext {
             networkPartitionContext = addPartition(clusterInstance, cluster, networkPartitionContext);
 
         } else {
-            ChildPolicy policy = this.deploymentPolicy.
-                    getChildPolicy(
-                            AutoscalerUtil.getAliasFromClusterId(clusterId));
             networkPartitionContext = parseDeploymentPolicy(clusterInstance, cluster,
                     policy, networkPartitionContext);
         }
@@ -144,8 +156,9 @@ public class VMClusterContext extends AbstractClusterContext {
             this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
                     networkPartitionContext);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition context has been added: " +
-                        "[network partition] %s", clusterInstance.getNetworkPartitionId()));
+                log.info(String.format("Cluster instance context has been added to network partition, [cluster instance]" +
+                        " %s [network partition] %s", clusterInstance.getInstanceId(),
+                        clusterInstance.getNetworkPartitionId()));
             }
         }
 
@@ -154,27 +167,27 @@ public class VMClusterContext extends AbstractClusterContext {
     private ClusterLevelNetworkPartitionContext parseDeploymentPolicy(
             ClusterInstance instance,
             Cluster cluster,
-            ChildPolicy deploymentPolicy,
+            ChildPolicy childPolicy,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext)
             throws PolicyValidationException, PartitionValidationException {
         if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + deploymentPolicy.getId());
+            log.debug("Deployment policy name: " + childPolicy.getId());
         }
 
-        if (deploymentPolicy == null) {
-            String msg = "Deployment policy is null: [policy-name] " + deploymentPolicy.getId();
+        if (childPolicy == null) {
+            String msg = "Deployment policy is null: [policy-name] " + childPolicy.getId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
 
-        ChildLevelPartition[] childLevelPartitions = deploymentPolicy.
+        ChildLevelPartition[] childLevelPartitions = childPolicy.
                 getChildLevelNetworkPartition(
                         clusterLevelNetworkPartitionContext.getId()).
                 getChildLevelPartitions();
         if (childLevelPartitions == null) {
             String msg =
                     "Partitions are null in deployment policy: [policy-name]: " +
-                            deploymentPolicy.getId();
+                            childPolicy.getId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -188,7 +201,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
 
         ChildLevelNetworkPartition networkPartition;
-        networkPartition = deploymentPolicy.getChildLevelNetworkPartition(instance.getNetworkPartitionId());
+        networkPartition = childPolicy.getChildLevelNetworkPartition(instance.getNetworkPartitionId());
         String networkPartitionId = networkPartition.getId();
 
         if (clusterLevelNetworkPartitionContext == null) {
@@ -200,7 +213,19 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstanceContext == null) {
             clusterInstanceContext = new ClusterInstanceContext(instance.getInstanceId(),
                     networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartitionId);
+                    networkPartition.getChildLevelPartitions(), 2,
+                    networkPartitionId);
+            ApplicationHolder.acquireReadLock();
+            try {
+                Application application = ApplicationHolder.getApplications().
+                        getApplication(cluster.getAppId());
+                ClusterDataHolder dataHolder = application.
+                        getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
+                clusterInstanceContext.setMinMembers(2); //dataHolder.getMinInstances());
+                clusterInstanceContext.setMaxMembers(2); //dataHolder.getMaxInstances());
+            } finally {
+                ApplicationHolder.releaseReadLock();
+            }
         }
 
         for (ChildLevelPartition partition : networkPartition.getChildLevelPartitions()) {
@@ -223,6 +248,8 @@ public class VMClusterContext extends AbstractClusterContext {
                         clusterLevelPartitionContext.getPartitionId()));
             }
         }
+
+        clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Network partition context has been added: " +
@@ -280,8 +307,8 @@ public class VMClusterContext extends AbstractClusterContext {
             Application application = ApplicationHolder.getApplications().
                     getApplication(cluster.getAppId());
             ClusterDataHolder dataHolder = application.getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
-            clusterInstanceContext.setMinMembers(dataHolder.getMinInstances());
-            clusterInstanceContext.setMaxMembers(dataHolder.getMaxInstances());
+            clusterInstanceContext.setMinMembers(2); //dataHolder.getMinInstances());
+            clusterInstanceContext.setMaxMembers(2); //dataHolder.getMaxInstances());
         } finally {
             ApplicationHolder.releaseReadLock();
         }
@@ -290,6 +317,7 @@ public class VMClusterContext extends AbstractClusterContext {
                     networkPartition.getPartitionAlgo(),
                     networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartition.getId());
         }
+
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
         clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
 

@@ -25,15 +25,18 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class InstanceStatusEventReceiver implements Runnable {
+public class InstanceStatusEventReceiver {
     private static final Log log = LogFactory.getLog(InstanceStatusEventReceiver.class);
     private final InstanceStatusEventMessageDelegator messageDelegator;
     private final InstanceStatusEventMessageListener messageListener;
     private Subscriber subscriber;
     private boolean terminated;
+	private ExecutorService executorService;
 
     public InstanceStatusEventReceiver() {
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
@@ -45,32 +48,24 @@ public class InstanceStatusEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
+
+    public void execute() {
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), messageListener);
 //            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
-            subscriberThread.start();
+            executorService.submit(subscriber);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
             }
 
-            // Start instance notifier event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+            // Start instance notifier event message delegate thread
+            executorService.submit(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
 
-            // Keep the thread live until terminated
-            while (!terminated) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
-            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("InstanceNotifier receiver failed", e);
@@ -87,4 +82,12 @@ public class InstanceStatusEventReceiver implements Runnable {
         messageDelegator.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

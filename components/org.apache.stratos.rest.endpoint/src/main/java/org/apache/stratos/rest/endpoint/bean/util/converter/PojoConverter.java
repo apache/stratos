@@ -293,6 +293,10 @@ public class PojoConverter {
             networkInterface.setNetworkUuid(nib.networkUuid);
             networkInterface.setFixedIp(nib.fixedIp);
             networkInterface.setPortUuid(nib.portUuid);
+            if (nib.floatingNetworks != null && !nib.floatingNetworks.isEmpty()) {
+            	networkInterface.setFloatingNetworks(PojoConverter.getFloatingNetworks(nib.floatingNetworks));
+            }
+
             networkInterfacesArray[i++] = networkInterface;
         }
 
@@ -300,6 +304,24 @@ public class PojoConverter {
         networkInterfaces.setNetworkInterfaces(networkInterfacesArray);
         return networkInterfaces;
     }
+    
+    private static FloatingNetworks getFloatingNetworks(List<FloatingNetworkBean> floatingNetworkBeans) {
+    	
+    	FloatingNetwork[] floatingNetworksArray = new FloatingNetwork[floatingNetworkBeans.size()];
+    	
+    	int i =0;
+    	for (FloatingNetworkBean floatingNetworkBean : floatingNetworkBeans) {
+    	FloatingNetwork floatingNetwork = new FloatingNetwork();
+    	floatingNetwork.setName(floatingNetworkBean.name);
+    	floatingNetwork.setNetworkUuid(floatingNetworkBean.networkUuid);
+    	floatingNetwork.setFloatingIP(floatingNetworkBean.floatingIP);
+    	floatingNetworksArray[i++] = floatingNetwork;
+    	}
+    	
+    	FloatingNetworks floatingNetworks = new FloatingNetworks();
+    	floatingNetworks.setFloatingNetworks(floatingNetworksArray);
+    	return floatingNetworks;
+    	}
 
     public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertToCCPartitionPojo
             (Partition partitionBean) {
@@ -380,7 +402,6 @@ public class PojoConverter {
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                 new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
-        deploymentPolicy.setId(deploymentPolicyBean.id);
         deploymentPolicy.setDescription(deploymentPolicyBean.description);
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
         if (deploymentPolicyBean.applicationPolicy != null
@@ -463,7 +484,7 @@ public class PojoConverter {
         cluster1.property = getPropertyBeans(cluster.getProperties());
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
-        cluster1.status = cluster.getStatus(null).toString();
+        cluster1.status = cluster.getStatus(null).toString(); //TODO why null is passed?
 
         for (org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
             Member member = new Member();
@@ -726,7 +747,6 @@ public class PojoConverter {
             return deploymentPolicyBean;
         }
 
-        deploymentPolicyBean.id = deploymentPolicy.getId();
         deploymentPolicyBean.description = deploymentPolicy.getDescription();
         deploymentPolicyBean.isPublic = deploymentPolicy.getIsPublic();
 //TODO populate the Network partition based on new policy structure
@@ -1199,7 +1219,7 @@ public class PojoConverter {
         }
 
         GroupBean groupBean = new GroupBean();
-        groupBean.setStatus(group.getStatus(null).toString());
+        groupBean.setStatus(group.getStatus(null).toString()); // TODO -- why null is passed?
         groupBean.setAlias(group.getUniqueIdentifier());
         //TODO*******groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());

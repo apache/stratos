@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class InstanceNotifierEventReceiver implements Runnable {
+public class InstanceNotifierEventReceiver {
 	private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
 	private final InstanceNotifierEventMessageDelegator messageDelegator;
 	private final InstanceNotifierEventMessageListener messageListener;
@@ -46,8 +46,8 @@ public class InstanceNotifierEventReceiver implements Runnable {
 		messageDelegator.addEventListener(eventListener);
 	}
 
-	@Override
-	public void run() {
+
+	public void execute() {
 		try {
 			// Start topic subscriber thread
 			subscriber = new Subscriber(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);

@@ -20,6 +20,7 @@ package org.apache.stratos.cep.extension;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -46,6 +47,7 @@ import org.wso2.siddhi.query.api.extension.annotation.SiddhiExtension;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -56,50 +58,52 @@ import java.util.concurrent.TimeUnit;
 @SiddhiExtension(namespace = "stratos", function = "faultHandling")
 public class FaultHandlingWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
 
-    private static final int TIME_OUT = 60 * 1000;
-    static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
-    private ScheduledExecutorService faultHandleScheduler;
-    private ThreadBarrier threadBarrier;
-    private long timeToKeep;
-    private ISchedulerSiddhiQueue<StreamEvent> window;
-    private EventPublisher healthStatPublisher = EventPublisherPool.getPublisher(Util.Topics.HEALTH_STAT_TOPIC.getTopicName());
-    private Map<String, Object> MemberFaultEventMap = new HashMap<String, Object>();
-    private Map<String, Object> memberFaultEventMessageMap = new HashMap<String, Object>();
+	private static final int TIME_OUT = 60 * 1000;
+	static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
+	public static final String IDENTIFIER = "AutoScaler";
+	private ScheduledExecutorService faultHandleScheduler;
+	private ThreadBarrier threadBarrier;
+	private long timeToKeep;
+	private ISchedulerSiddhiQueue<StreamEvent> window;
+	private EventPublisher healthStatPublisher =
+			EventPublisherPool.getPublisher(Util.Topics.HEALTH_STAT_TOPIC.getTopicName());
+	private Map<String, Object> MemberFaultEventMap = new HashMap<String, Object>();
+	private Map<String, Object> memberFaultEventMessageMap = new HashMap<String, Object>();
 
-    // Map of member id's to their last received health event time stamp
-    private ConcurrentHashMap<String, Long> memberTimeStampMap = new ConcurrentHashMap<String, Long>();
+	// Map of member id's to their last received health event time stamp
+	private ConcurrentHashMap<String, Long> memberTimeStampMap = new ConcurrentHashMap<String, Long>();
 
-    // Event receiver to receive topology events published by cloud-controller
-    private CEPTopologyEventReceiver cepTopologyEventReceiver = new CEPTopologyEventReceiver(this);
+	// Event receiver to receive topology events published by cloud-controller
+	private CEPTopologyEventReceiver cepTopologyEventReceiver = new CEPTopologyEventReceiver(this);
 
-    // Stratos member id attribute index in stream execution plan
-    private int memberIdAttrIndex;
+	// Stratos member id attribute index in stream execution plan
+	private int memberIdAttrIndex;
 
-    @Override
-    protected void processEvent(InEvent event) {
-        addDataToMap(event);
-    }
+	@Override
+	protected void processEvent(InEvent event) {
+		addDataToMap(event);
+	}
 
-    @Override
-    protected void processEvent(InListEvent listEvent) {
-        for (int i = 0, size = listEvent.getActiveEvents(); i < size; i++) {
-            addDataToMap((InEvent) listEvent.getEvent(i));
-        }
-    }
+	@Override
+	protected void processEvent(InListEvent listEvent) {
+		for (int i = 0, size = listEvent.getActiveEvents(); i < size; i++) {
+			addDataToMap((InEvent) listEvent.getEvent(i));
+		}
+	}
 
-    /**
-     * Add new entry to time stamp map from the received event.
-     *
-     * @param event Event received by Siddhi.
-     */
-    protected void addDataToMap(InEvent event) {
-        String id = (String) event.getData()[memberIdAttrIndex];
-        //checking whether this member is the topology.
-        //sometimes there can be a delay between publishing member terminated events
-        //and actually terminating instances. Hence CEP might get events for already terminated members
-        //so we are checking the topology for the member existence
-        Member member = getMemberFromId(id);
-        if (null == member) {
+	/**
+	 * Add new entry to time stamp map from the received event.
+	 *
+	 * @param event Event received by Siddhi.
+	 */
+	protected void addDataToMap(InEvent event) {
+		String id = (String) event.getData()[memberIdAttrIndex];
+		//checking whether this member is the topology.
+		//sometimes there can be a delay between publishing member terminated events
+		//and actually terminating instances. Hence CEP might get events for already terminated members
+		//so we are checking the topology for the member existence
+		Member member = getMemberFromId(id);
+		if (null == member) {
 			log.debug("Member not found in the toplogy. Event rejected");
 			return;
 		}
@@ -255,6 +259,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
     @Override
     protected void init(Expression[] parameters, QueryPostProcessingElement nextProcessor,
                         AbstractDefinition streamDefinition, String elementId, boolean async, SiddhiContext siddhiContext) {
+
         if (parameters[0] instanceof IntConstant) {
             timeToKeep = ((IntConstant) parameters[0]).getValue();
         } else {
@@ -271,8 +276,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         }
         MemberFaultEventMap.put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-        Thread topologyTopicSubscriberThread = new Thread(cepTopologyEventReceiver);
-        topologyTopicSubscriberThread.start();
+	    ExecutorService executorService= StratosThreadPool.getExecutorService("AutoScaler",10);
+	    cepTopologyEventReceiver.setExecutorService(executorService);
+	    executorService.execute(cepTopologyEventReceiver);
 
         //Ordinary scheduling
         window.schedule();

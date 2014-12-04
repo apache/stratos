@@ -24,13 +24,16 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
-public class ApplicationsEventReceiver implements Runnable {
+import java.util.concurrent.ExecutorService;
+
+public class ApplicationsEventReceiver {
     private static final Log log = LogFactory.getLog(ApplicationsEventReceiver.class);
 
     private ApplicationsEventMessageDelegator messageDelegator;
     private ApplicationsEventMessageListener messageListener;
     private Subscriber subscriber;
     private boolean terminated;
+	private ExecutorService executorService;
 
     public ApplicationsEventReceiver() {
         ApplicationsEventMessageQueue messageQueue = new ApplicationsEventMessageQueue();
@@ -42,32 +45,25 @@ public class ApplicationsEventReceiver implements Runnable {
         messageDelegator.addEventListener(eventListener);
     }
 
-    @Override
-    public void run() {
+
+    public void execute() {
         try {
             // Start topic subscriber thread
             subscriber = new Subscriber(Util.Topics.APPLICATIONS_TOPIC.getTopicName(), messageListener);
-//            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
-            subscriberThread.start();
+			executorService.execute(subscriber);
+
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message receiver thread started");
             }
 
             // Start Application status event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+	        executorService.execute(messageDelegator);
+
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message delegator thread started");
             }
 
-            // Keep the thread live until terminated
-            while (!terminated) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException ignore) {
-                }
-            }
+
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Application status failed", e);
@@ -80,4 +76,12 @@ public class ApplicationsEventReceiver implements Runnable {
         messageDelegator.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

@@ -105,7 +105,7 @@
 //                                }
 //
 //                                minCheckFactHandle =
-//                                        AutoscalerRuleEvaluator.evaluateMinCheck(getMinCheckKnowledgeSession(),
+//                                        AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
 //                                                minCheckFactHandle,
 //                                                partitionContext);
 //                                obsoleteCheckFactHandle =

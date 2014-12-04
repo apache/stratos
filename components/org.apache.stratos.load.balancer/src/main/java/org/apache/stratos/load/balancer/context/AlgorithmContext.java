@@ -21,6 +21,8 @@ package org.apache.stratos.load.balancer.context;
 
 import org.apache.stratos.load.balancer.context.map.AlgorithmContextMap;
 
+import java.util.concurrent.locks.Lock;
+
 /**
  * Algorithm context is used for identifying the cluster and its current member for executing load balancing algorithms.
  * Key: service name, cluster id
@@ -32,7 +34,15 @@ public class AlgorithmContext {
     public AlgorithmContext(String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        AlgorithmContextMap.getInstance().putCurrentMemberIndex(serviceName, clusterId, 0);
+        Lock lock = null;
+        try {
+            lock = AlgorithmContextMap.getInstance().acquireCurrentMemberIndexLock();
+            AlgorithmContextMap.getInstance().putCurrentMemberIndex(serviceName, clusterId, 0);
+        } finally {
+            if(lock != null) {
+                AlgorithmContextMap.getInstance().releaseCurrentMemberIndexLock(lock);
+            }
+        }
     }
 
     public String getServiceName() {
@@ -48,6 +58,14 @@ public class AlgorithmContext {
     }
 
     public void setCurrentMemberIndex(int currentMemberIndex) {
-        AlgorithmContextMap.getInstance().putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
+        Lock lock = null;
+        try {
+            lock = AlgorithmContextMap.getInstance().acquireCurrentMemberIndexLock();
+            AlgorithmContextMap.getInstance().putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
+        } finally {
+            if(lock != null) {
+                AlgorithmContextMap.getInstance().releaseCurrentMemberIndexLock(lock);
+            }
+        }
     }
 }

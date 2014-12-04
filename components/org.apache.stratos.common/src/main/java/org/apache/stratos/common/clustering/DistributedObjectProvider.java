@@ -22,20 +22,52 @@ package org.apache.stratos.common.clustering;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 /**
  * Distributed object provider service interface.
+ * Caution! When using distributed maps and lists, please note that changes done to an item in a map/list
+ * after adding them to the map/list will not be replicated in the cluster. If a modification of an item
+ * needs to be replicated, that item needs to be put() to the map or set() back in the list.
  */
 public interface DistributedObjectProvider extends Serializable {
-    Map getMap(String key);
+    /**
+     * Returns a distributed map if clustering is enabled, else returns a local hash map.
+     * @param name
+     * @return
+     */
+    Map getMap(String name);
 
+    /**
+     * Removes a map from the object provider.
+     * @param name
+     */
+    void removeMap(String name);
+
+    /**
+     * Returns a distributed list if clustering is enabled, else returns a local array list.
+     * @param name
+     * @return
+     */
     List getList(String name);
 
-    void putToMap(Map map, Object key, Object value);
+    /**
+     * Remove a list from the object provider.
+     * @param name
+     */
+    void removeList(String name);
 
-    void removeFromMap(Map map, Object key);
+    /**
+     * Acquires a distributed lock if clustering is enabled, else acquires a local reentrant lock and
+     * returns the lock object.
+     * @param object
+     * @return
+     */
+    Lock acquireLock(Object object);
 
-    void addToList(List list, Object value);
-
-    void removeFromList(List list, Object value);
+    /**
+     * Releases a given distributed/local lock.
+     * @param lock
+     */
+    void releaseLock(Lock lock);
 }

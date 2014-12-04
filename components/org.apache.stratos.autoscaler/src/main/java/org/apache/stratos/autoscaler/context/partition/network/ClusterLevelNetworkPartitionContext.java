@@ -103,8 +103,13 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         return instanceIdToClusterInstanceContextMap;
     }
 
-    public void setInstanceIdToClusterInstanceContextMap(Map<String, ClusterInstanceContext> instanceIdToClusterInstanceContextMap) {
+    public void setInstanceIdToClusterInstanceContextMap(
+            Map<String, ClusterInstanceContext> instanceIdToClusterInstanceContextMap) {
         this.instanceIdToClusterInstanceContextMap = instanceIdToClusterInstanceContextMap;
+    }
+
+    public boolean containsClusterInstanceContext(String instanceId) {
+        return this.instanceIdToClusterInstanceContextMap.containsKey(instanceId);
     }
 
     public int getMin() {

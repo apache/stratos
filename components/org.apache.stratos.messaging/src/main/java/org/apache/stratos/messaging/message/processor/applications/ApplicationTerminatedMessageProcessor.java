@@ -21,14 +21,10 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
-
-import java.util.Set;
 
 /**
  * This processor responsible to process the application Inactivation even and update the Topology.
@@ -50,14 +46,14 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
-        if (ApplicationTerminatedEvent.class.getName().equals(type)) {
+        if (ApplicationInstanceTerminatedEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
             if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            ApplicationTerminatedEvent event = (ApplicationTerminatedEvent) Util.
-                    jsonToObject(message, ApplicationTerminatedEvent.class);
+            ApplicationInstanceTerminatedEvent event = (ApplicationInstanceTerminatedEvent) Util.
+                    jsonToObject(message, ApplicationInstanceTerminatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplications();
 
@@ -78,7 +74,7 @@ public class ApplicationTerminatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationTerminatedEvent event, Applications applications) {
+    private boolean doProcess(ApplicationInstanceTerminatedEvent event, Applications applications) {
 
         // check if required properties are available
         if (event.getAppId() == null) {

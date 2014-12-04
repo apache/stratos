@@ -71,7 +71,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
     private boolean doProcess(String clusterId, String instanceId) {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
-        boolean clusterMonitorHasMembers = clusterMonitorHasMembers(monitor);
+        boolean clusterMonitorHasMembers = clusterInstanceHasMembers(monitor, instanceId);
         boolean clusterTerminated = false;
         try {
             TopologyManager.acquireReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
@@ -83,10 +83,11 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                 if (cluster != null) {
                     try {
                         ApplicationHolder.acquireReadLock();
-                        Application application = ApplicationHolder.getApplications().getApplication(appId);
-                        //if all members removed from the cluster and cluster is in terminating,
-                        // either it has to be terminated or Reset
-                        if (!clusterMonitorHasMembers && cluster.getStatus(null) == ClusterStatus.Terminating) {
+                        /**
+                         * if all members removed from the cluster and cluster is in terminating,
+                         * either it has to be terminated or Reset
+                         */
+                        if (!clusterMonitorHasMembers) {
                             if (log.isInfoEnabled()) {
                                 log.info("Publishing Cluster terminated event for [application]: " + appId +
                                         " [cluster]: " + clusterId);
@@ -119,17 +120,19 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
      * @param monitor the cluster monitor
      * @return whether has members or not
      */
-    private boolean clusterMonitorHasMembers(VMClusterMonitor monitor) {
+    private boolean clusterInstanceHasMembers(VMClusterMonitor monitor, String instanceId) {
         boolean hasMember = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
                                                 monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            for(ClusterInstanceContext clusterInstanceContext :
-                    clusterLevelNetworkPartitionContext.getClusterInstanceContextMap().values()) {
+            if(clusterLevelNetworkPartitionContext.containsClusterInstanceContext(instanceId)) {
+            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
+                                                            getClusterInstanceContext(instanceId);
                 for (ClusterLevelPartitionContext partitionContext :
                         clusterInstanceContext.getPartitionCtxts()) {
                     if (partitionContext.getNonTerminatedMemberCount() > 0) {
                         hasMember = true;
+                        return hasMember;
                     } else {
                         hasMember = false;
                     }

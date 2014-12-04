@@ -96,8 +96,8 @@ public class ApplicationsEventPublisher {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application In-activated event for [application]: " + appId);
         }
-        ApplicationInactivatedEvent applicationInActivatedEvent =
-                new ApplicationInactivatedEvent(appId, instanceId);
+        ApplicationInstanceInactivatedEvent applicationInActivatedEvent =
+                new ApplicationInstanceInactivatedEvent(appId, instanceId);
         publishEvent(applicationInActivatedEvent);
 
     }
@@ -106,8 +106,8 @@ public class ApplicationsEventPublisher {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application terminating event for [application]: " + appId);
         }
-        ApplicationTerminatingEvent applicationTerminatingEvent =
-                new ApplicationTerminatingEvent(appId, instanceId);
+        ApplicationInstanceTerminatingEvent applicationTerminatingEvent =
+                new ApplicationInstanceTerminatingEvent(appId, instanceId);
         publishEvent(applicationTerminatingEvent);
     }
 
@@ -115,8 +115,8 @@ public class ApplicationsEventPublisher {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application terminated event for [application]: " + appId);
         }
-        ApplicationTerminatedEvent applicationTerminatedEvent =
-                new ApplicationTerminatedEvent(appId, clusterData);
+        ApplicationInstanceTerminatedEvent applicationTerminatedEvent =
+                new ApplicationInstanceTerminatedEvent(appId, clusterData);
         publishEvent(applicationTerminatedEvent);
     }
 

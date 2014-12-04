@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
@@ -35,17 +35,17 @@ rule "Terminate Dependency Rule"
 
 dialect "mvel"
         when
-            $ctxt : ClusterLevelPartitionContext ()
-            eval(log.debug("Running terminate dependency rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
-            eval(log.debug("[terminate dependency] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Member count: " + $ctxt.getMemberStatsContexts().size()))
-            eval(log.debug("Grouping ... in terminatedependency rule terminating all members " + $ctxt.getAllMemberForTerminationCount()))
-            eval(!$ctxt.checkKillDependencies(serviceId, clusterId))
-            eval(log.debug("[terminate dependency] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " successfully terminated members"))
+            ctxt : ClusterLevelPartitionContext ()
+            eval(log.debug("Running terminate dependency rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
+            eval(log.debug("[terminate dependency] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Member count: " + ctxt.getMemberStatsContexts().size()))
+            eval(log.debug("Grouping ... in terminatedependency rule terminating all members " + ctxt.getAllMemberForTerminationCount()))
+            eval(!ctxt.checkKillDependencies(serviceId, clusterId))
+            eval(log.debug("[terminate dependency] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " successfully terminated members"))
  
             eval(log.debug("Grouping:terminatedependency:terminating all"))
 
         then
-           $delegator.delegateTerminateAll(clusterId);
+           delegator.delegateTerminateAll(clusterId);
 end
 
 

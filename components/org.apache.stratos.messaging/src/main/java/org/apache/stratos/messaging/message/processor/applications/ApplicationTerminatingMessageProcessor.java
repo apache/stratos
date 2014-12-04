@@ -24,7 +24,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.event.applications.ApplicationTerminatingEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatingEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.util.Util;
@@ -49,14 +49,14 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Applications applications = (Applications) object;
 
-        if (ApplicationTerminatingEvent.class.getName().equals(type)) {
+        if (ApplicationInstanceTerminatingEvent.class.getName().equals(type)) {
             // Return if applications has not been initialized
             if (!applications.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            ApplicationTerminatingEvent event = (ApplicationTerminatingEvent) Util.
-                    jsonToObject(message, ApplicationTerminatingEvent.class);
+            ApplicationInstanceTerminatingEvent event = (ApplicationInstanceTerminatingEvent) Util.
+                    jsonToObject(message, ApplicationInstanceTerminatingEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
 
@@ -77,7 +77,7 @@ public class ApplicationTerminatingMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationTerminatingEvent event, Applications applications) {
+    private boolean doProcess(ApplicationInstanceTerminatingEvent event, Applications applications) {
 
         // Validate event against the existing applications
         Application application = applications.getApplication(event.getAppId());

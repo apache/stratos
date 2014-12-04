@@ -22,14 +22,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.context.AutoscalerContext;
-//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
-import org.apache.stratos.autoscaler.exception.*;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.kubernetes.*;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
@@ -37,13 +37,12 @@ import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
 import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -53,7 +52,6 @@ import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
@@ -63,13 +61,16 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
+//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
  */
 public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
-//    PartitionManager partitionManager = PartitionManager.getInstance();
+    //    PartitionManager partitionManager = PartitionManager.getInstance();
     KubernetesManager kubernetesManager = KubernetesManager.getInstance();
 //
 //    public Partition[] getAllAvailablePartitions() {
@@ -111,35 +112,43 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 //    }
 
     @Override
-    public boolean addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        boolean hasDeployed = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
+    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
         //Need to start the application Monitor after validation of the deployment policies.
-
+        //FIXME add validation
         //Check whether all the clusters are there
         ApplicationHolder.acquireReadLock();
         boolean allClusterInitialized = false;
-
+        String appId = deploymentPolicy.getApplicationId();
         try {
             Application application = ApplicationHolder.getApplications().
                     getApplication(deploymentPolicy.getApplicationId());
-            if(application != null) {
+            if (application != null) {
+
                 allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
             }
-
         } finally {
             ApplicationHolder.releaseReadLock();
         }
 
-        if(allClusterInitialized) {
-            AutoscalerUtil.getInstance().
-                    startApplicationMonitor(deploymentPolicy.getApplicationId());
-
+        if (!AutoscalerContext.getInstance().containsPendingMonitor(appId)
+                                    || !AutoscalerContext.getInstance().monitorExists(appId)) {
+            if(allClusterInitialized) {
+                AutoscalerUtil.getInstance().
+                        startApplicationMonitor(appId);
+            } else {
+                log.info("The application clusters are not yet created. " +
+                        "Waiting for them to be created");
+            }
         } else {
-            log.info("The application clusters are not yet created. " +
-                    "Waiting for them to be created");
+            log.info("The application Monitor has already been created for [Application] " + appId);
         }
+        return policyId;
+    }
 
-        return hasDeployed;
+    @Override
+    public boolean undeployDeploymentPolicy(String applicationId) {
+        return ApplicationBuilder.handleApplicationPolicyUndeployed(applicationId);
     }
 
     @Override
@@ -240,7 +249,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return kubernetesManager.updateKubernetesHost(kubernetesHost);
     }
 
-//    @Override
+    //    @Override
     public Partition[] getPartitionsOfGroup(String deploymentPolicyId, String groupId) {
         DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
         if (null == depPol) {

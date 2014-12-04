@@ -16,25 +16,33 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.messaging.event.applications;
 
-package org.apache.stratos.messaging.domain.applications;
+import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
-public class ScalingOrder implements Serializable {
+/**
+ * This event will be fired upon the application terminated is detected.
+ */
+public class ApplicationInstanceTerminatedEvent extends Event implements Serializable {
+    private static final long serialVersionUID = 2625412714611885089L;
 
-    private List<String> scalingOrderComponentsList;
+    private String appId;
+    private Set<ClusterDataHolder> clusterData;
 
-    public ScalingOrder(List<String> scalingOrderList) {
-        this.scalingOrderComponentsList = scalingOrderList;
+    public ApplicationInstanceTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+        this.appId = appId;
+        this.clusterData = clusterData;
     }
 
-    public List<String> getScalingOrderComponentsList() {
-        return scalingOrderComponentsList;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setScalingOrderComponentsList(List<String> scalingOrderComponentsList) {
-        this.scalingOrderComponentsList = scalingOrderComponentsList;
+    public Set<ClusterDataHolder> getClusterData() {
+        return clusterData;
     }
 }

@@ -30,6 +30,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -63,18 +64,20 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected boolean stop = false;
     private AtomicBoolean monitoringStarted;
     protected AbstractClusterContext clusterContext;
+
+    protected StatefulKnowledgeSession minCheckKnowledgeSession;
+    protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
+    protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
+    protected StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
+
     private String clusterId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
-    private StatefulKnowledgeSession minCheckKnowledgeSession;
-    private StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
-    private StatefulKnowledgeSession scaleCheckKnowledgeSession;
-    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
     private boolean isDestroyed;
-    private AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected String serviceType;
 
-    protected AbstractClusterMonitor(String serviceType, String clusterId, AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+    protected AbstractClusterMonitor(String serviceType, String clusterId) {
 
         super();
         this.serviceType = serviceType;
@@ -83,10 +86,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.monitoringStarted = new AtomicBoolean(false);
         //this.clusterContext = abstractClusterContext;
         //this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
-        this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getObsoleteCheckStatefulSession();
-        this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getScaleCheckStatefulSession();
-        this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
-        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getMinCheckStatefulSession();
         this.status = ClusterStatus.Created;
     }
 

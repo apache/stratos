@@ -47,10 +47,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     public KubernetesServiceClusterMonitor(String serviceType, String clusterId) {
         super(serviceType, clusterId,
-                new AutoscalerRuleEvaluator(
-                        StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE,
-                        StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE,
-                        StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE));
+                new AutoscalerRuleEvaluator());
         readConfigurations();
     }
 
@@ -114,7 +111,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
                 log.debug(String.format(
                         "Running scale check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
             }
-            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluateScaleCheck(
+            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
                     getScaleCheckKnowledgeSession(), scaleCheckFactHandle, getKubernetesClusterCtxt());
             getKubernetesClusterCtxt().setRifReset(false);
             getKubernetesClusterCtxt().setMemoryConsumptionReset(false);
@@ -137,19 +134,19 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
             log.debug(String.format(
                     "Running min check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
         }
-        minCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+        minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
                 getMinCheckKnowledgeSession(), minCheckFactHandle,
                 getKubernetesClusterCtxt());
     }
 
     private void obsoleteCheck() {
-        getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+        getObsoleteCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
                     "Running obsolete check for [kub-cluster] : %s [cluster] : %s ", kubernetesClusterID, getClusterId()));
         }
-        obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluateMinCheck(
+        obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
                 getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle,
                 getKubernetesClusterCtxt());
     }
@@ -178,9 +175,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     public String toString() {
-        return "KubernetesServiceClusterMonitor "
-                + "[ kubernetesHostClusterId=" + getKubernetesClusterCtxt().getKubernetesClusterID()
-                + ", clusterId=" + getClusterId() + "]";
+        return "KubernetesServiceClusterMonitor for " + "[ clusterId=" + getClusterId() + "]";
     }
 
     public String getLbReferenceType() {

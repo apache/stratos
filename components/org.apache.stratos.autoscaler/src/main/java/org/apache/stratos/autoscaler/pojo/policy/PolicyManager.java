@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.pojo.policy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -87,27 +89,14 @@ public class PolicyManager {
     }
 
     // Add the deployment policy to information model and persist.
-    public boolean deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        if(StringUtils.isEmpty(policy.getId())){
-            throw new AutoScalerException("Deploying policy id cannot be empty");
-        }
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Deploying deployment policy: [id] %s", policy.getId()));
-            }
-            fillPartitions(policy);
-        } catch (InvalidPartitionException e) {
-        	log.error(e);
-            throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
-        }
-
-        addDeploymentPolicyToInformationModel(policy);
+    public String deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
+        String policyId = addDeploymentPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is deployed successfully: [id] %s", policy.getId()));
+            log.info(String.format("Deployment policy is deployed successfully: [id] %s", policyId));
         }
-        return true;
+        return policyId;
     }
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
@@ -223,18 +212,24 @@ public class PolicyManager {
     }
 
     // Add the deployment policy to As in memmory information model. Does not persist.
-    public void addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
+    public String addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
+        if (StringUtils.isEmpty(policy.getId())) {
+            // id = application id + random string
+            String id = policy.getApplicationId() + UUID.randomUUID().getLeastSignificantBits();
+            policy.setId(id);
+        }
         if (!deploymentPolicyListMap.containsKey(policy.getId())) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding deployment policy: " + policy.getId());
             }
-//            PartitionManager.getInstance().deployNewNetworkPartitions(policy);
             deploymentPolicyListMap.put(policy.getId(), policy);
         } else {
         	String errMsg = "Specified deployment policy [" + policy.getId()+ "] already exists";
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
         }
+        
+        return policy.getId();
     }
 
     public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {

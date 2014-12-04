@@ -22,37 +22,43 @@ package org.apache.stratos.haproxy.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * HAProxy extension main class.
  */
 public class Main {
-    private static final Log log = LogFactory.getLog(Main.class);
+	private static final Log log = LogFactory.getLog(Main.class);
+	private static ExecutorService executorService;
 
-    public static void main(String[] args) {
+	public static void main(String[] args) {
 
-        LoadBalancerExtension extension = null;
-        try {
-            // Configure log4j properties
-            PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
+		LoadBalancerExtension extension = null;
+		try {
+			// Configure log4j properties
+			PropertyConfigurator.configure(System.getProperty("log4j.properties.file.path"));
 
-            if (log.isInfoEnabled()) {
-                log.info("HAProxy extension started");
-            }
-
-            // Validate runtime parameters
-            HAProxyContext.getInstance().validate();
-            extension = new LoadBalancerExtension(new HAProxy(), (HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ? new HAProxyStatisticsReader() : null));
-            Thread thread = new Thread(extension);
-            thread.start();
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error(e);
-            }
-            if (extension != null) {
-                extension.terminate();
-            }
-        }
-    }
+			if (log.isInfoEnabled()) {
+				log.info("HAProxy extension started");
+			}
+			executorService = StratosThreadPool.getExecutorService("Load_Balance_Extension", 10);
+			// Validate runtime parameters
+			HAProxyContext.getInstance().validate();
+			extension = new LoadBalancerExtension(new HAProxy(),
+			                                      (HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ?
+			                                       new HAProxyStatisticsReader() : null));
+			Thread thread = new Thread(extension);
+			thread.start();
+		} catch (Exception e) {
+			if (log.isErrorEnabled()) {
+				log.error(e);
+			}
+			if (extension != null) {
+				extension.terminate();
+			}
+		}
+	}
 }

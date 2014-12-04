@@ -223,8 +223,11 @@ public class Cluster implements Serializable {
     }
 
     public ClusterStatus getStatus(String applicationInstanceId) {
-        //return status;
-        return getInstanceIdToInstanceContextMap().get(applicationInstanceId).getStatus();
+    	ClusterInstance clusterInstance = getInstanceIdToInstanceContextMap().get(applicationInstanceId);
+    	if(clusterInstance != null) {
+    		return clusterInstance.getStatus();
+    	}
+    	return null;
     }
 
     public boolean setStatus(ClusterStatus newStatus, String applicationInstanceId) {

@@ -22,52 +22,56 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.applications.ApplicationTerminatedEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.listener.applications.ApplicationTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * This is to receive the application topic messages.
  */
-public class ApplicationTopicReceiver implements Runnable{
-    private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
-    private ApplicationsEventReceiver applicationsEventReceiver;
-    private boolean terminated;
+public class ApplicationTopicReceiver {
+	private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
+	private ApplicationsEventReceiver applicationsEventReceiver;
+	private boolean terminated;
+	private ExecutorService executorService;
 
-    public ApplicationTopicReceiver() {
-        this.applicationsEventReceiver = new ApplicationsEventReceiver();
-        addEventListeners();
+	public ApplicationTopicReceiver() {
+		this.applicationsEventReceiver = new ApplicationsEventReceiver();
+		addEventListeners();
 
-    }
+	}
 
-    
-    @Override
-    public void run() {
+	public void execute() {
 
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread started");
-        }
-        Thread thread = new Thread(applicationsEventReceiver);
-        thread.start();
+		if (log.isInfoEnabled()) {
+			log.info("Cloud controller application status thread started");
+		}
+		applicationsEventReceiver.setExecutorService(executorService);
+		applicationsEventReceiver.execute();
 
-        // Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-        if (log.isInfoEnabled()) {
-            log.info("Cloud controller application status thread terminated");
-        }
 
-    }
+		if (log.isInfoEnabled()) {
+			log.info("Cloud controller application status thread terminated");
+		}
+
+	}
+
+	public void setTerminated(boolean terminated) {
+		this.terminated = terminated;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
     private void addEventListeners() {
         applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 //Remove the application related data
-                ApplicationTerminatedEvent terminatedEvent = (ApplicationTerminatedEvent)event;
+                ApplicationInstanceTerminatedEvent terminatedEvent = (ApplicationInstanceTerminatedEvent)event;
                 log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
                 String appId = terminatedEvent.getAppId();
                 TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
@@ -75,7 +79,7 @@ public class ApplicationTopicReceiver implements Runnable{
         });
     }
 
-    public void setTerminated(boolean terminated) {
-        this.terminated = terminated;
-    }
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

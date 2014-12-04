@@ -36,10 +36,12 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -53,8 +55,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     //network partition contexts
     private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
-    //application instance id map
-    private Map<String, ApplicationInstance> applicationInstanceIdMap;
+    //Flag to set whether application is terminating
+    private boolean isTerminating;
 
 
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
@@ -63,7 +65,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
         networkPartitionCtxts = new HashMap<String, ApplicationLevelNetworkPartitionContext>();
-        setApplicationInstanceIdMap(new HashMap<String, ApplicationInstance>());
     }
 
     /**
@@ -107,7 +108,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
-        this.applicationInstanceIdMap.get(instanceId).setStatus(status);
+        ((ApplicationInstance)this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         //notify the children about the state change
         try {
@@ -135,18 +136,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             //mark the child monitor as inActive in the map
             this.markMonitorAsTerminating(id);
 
-        } else if (status1 == ClusterStatus.Created || status1 == GroupStatus.Created) {
-            if (this.terminatingMonitorsList.contains(id)) {
-                this.terminatingMonitorsList.remove(id);
-                this.aliasToActiveMonitorsMap.remove(id);
-            }
-            //TODO
-            /*if (this.status == ApplicationStatus.Terminating) {
-                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
-            } else {
-                onChildTerminatedEvent(id);
-            }*/
-
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
             if (this.terminatingMonitorsList.contains(id)) {
@@ -155,11 +144,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            //TODO
-            /*if (this.status == ApplicationStatus.Terminating || this.status == ApplicationStatus.Terminated) {
-                StatusChecker.getInstance().onChildStatusChange(id, this.id, this.appId);
-                log.info("Executing the un-subscription request for the [monitor] " + id);
-            }*/
+            ApplicationInstance instance = (ApplicationInstance)instanceIdToInstanceMap.get(instanceId);
+            if (instance != null) {
+                if(instance.getStatus() == ApplicationStatus.Terminating) {
+                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
+                            appId, instanceId);
+                } else {
+                    onChildTerminatedEvent(id, instanceId);
+                }
+            } else {
+                log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                        this.id);
+            }
         }
     }
 
@@ -220,7 +216,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                     ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
                     instance.setStatus(ApplicationStatus.Created);
-                    this.applicationInstanceIdMap.put(instanceId, instance);
+                    instance.setNetworkPartitionId(networkPartition.getId());
+                    this.instanceIdToInstanceMap.put(instanceId, instance);
 
                     this.networkPartitionCtxts.put(context.getId(), context);
 
@@ -266,7 +263,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                         ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
                         instance.setStatus(ApplicationStatus.Created);
-                        this.applicationInstanceIdMap.put(instanceId, instance);
+                        this.instanceIdToInstanceMap.put(instanceId, instance);
 
                         burstNPFound = true;
                     }
@@ -318,20 +315,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
     }
 
-    public Map<String, ApplicationInstance> getApplicationInstanceIdMap() {
-        return applicationInstanceIdMap;
+    public boolean isTerminating() {
+        return isTerminating;
     }
 
-    public void setApplicationInstanceIdMap(Map<String, ApplicationInstance> applicationInstanceIdMap) {
-        this.applicationInstanceIdMap = applicationInstanceIdMap;
-    }
-
-    public void addApplicationInstance(ApplicationInstance instance) {
-        this.applicationInstanceIdMap.put(instance.getInstanceId(), instance);
-
-    }
-
-    public ApplicationInstance getApplicationInstance(String instanceId) {
-        return this.applicationInstanceIdMap.get(instanceId);
+    public void setTerminating(boolean isTerminating) {
+        this.isTerminating = isTerminating;
     }
 }

@@ -25,16 +25,19 @@ import org.apache.stratos.messaging.broker.subscribe.Subscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * A thread for receiving health stat information from message broker
  */
-public class HealthStatEventReceiver implements Runnable {
+public class HealthStatEventReceiver {
 	private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
 
 	private final HealthStatEventMessageDelegator messageDelegator;
 	private final HealthStatEventMessageListener messageListener;
 	private Subscriber subscriber;
 	private boolean terminated;
+	private ExecutorService executorService;
 
 	public HealthStatEventReceiver() {
 		HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
@@ -46,32 +49,19 @@ public class HealthStatEventReceiver implements Runnable {
 		messageDelegator.addEventListener(eventListener);
 	}
 
-	@Override
-	public void run() {
+
+	public void execute() {
 		try {
 			// Start topic subscriber thread
 			subscriber = new Subscriber(Util.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
-//			subscriber.setMessageListener(messageListener);
-			Thread subscriberThread = new Thread(subscriber);
-			subscriberThread.start();
-			if (log.isDebugEnabled()) {
-				log.debug("Health stats event message receiver thread started");
-			}
 
-			// Start health stat event message delegator thread
-			Thread receiverThread = new Thread(messageDelegator);
-			receiverThread.start();
-			if (log.isDebugEnabled()) {
+            executorService.execute(subscriber);
+
+            if (log.isDebugEnabled()) {
 				log.debug("Health stats event message delegator thread started");
 			}
-
-			// Keep the thread live until terminated
-			while (!terminated) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ignore) {
-				}
-			}
+            // Start topology event message delegator thread
+            executorService.execute(messageDelegator);
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error("Topology receiver failed", e);
@@ -83,5 +73,13 @@ public class HealthStatEventReceiver implements Runnable {
 		subscriber.terminate();
 		messageDelegator.terminate();
 		terminated = true;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

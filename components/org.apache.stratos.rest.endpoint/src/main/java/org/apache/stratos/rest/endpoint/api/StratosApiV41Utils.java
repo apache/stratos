@@ -23,20 +23,14 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.Properties;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.exception.InvalidKubernetesGroupException;
+import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesHostExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidKubernetesMasterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesGroupExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesHostExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceNonExistingKubernetesMasterExceptionException;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -207,8 +201,8 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void unDeployApplication(String appId, ConfigurationContext ctxt,
-                                           String userName, String tenantDomain) throws RestAPIException {
+    public static void removeApplication(String appId, ConfigurationContext ctxt,
+                                         String userName, String tenantDomain) throws RestAPIException {
 
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(ctxt);
@@ -241,6 +235,20 @@ public class StratosApiV41Utils {
 
         }
         return commonPolicies.toArray(new DeploymentPolicy[0]);
+    }
+
+    public static void undeployApplication(String applicationId) throws RestAPIException {
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+                autoscalerServiceClient.unDeployDeploymentPolicy(applicationId);
+            } catch (RemoteException e) {
+                log.error("Error while unDeploying the Deployment Policy for  " + applicationId);
+                throw new RestAPIException(e);
+            }
+        }
+
+
     }
 
     public static void undeployCartridge(String cartridgeType) throws RestAPIException {
@@ -394,11 +402,16 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void deployDeploymentPolicy(
+    public static String deployDeploymentPolicy(
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        log.info(String.format("Deploying deployment policy: [id] %s", deploymentPolicyBean.id));
+        String policyId = null;
+
+        if (log.isDebugEnabled()) {
+            log.debug("Starting to deploy a deployment policy of application: "
+                    + deploymentPolicyBean.applicationPolicy.applicationId);
+        }
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
@@ -407,7 +420,7 @@ public class StratosApiV41Utils {
                     PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
+                policyId = autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -417,33 +430,37 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message, e);
             }
 
+            log.info(String.format("Deployed deployment policy: [id] %s", policyId));
         }
+        
+        return policyId;
     }
 
     public static void updateDeploymentPolicy(
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        log.info(String.format("Updating deployment policy: [id] %s", deploymentPolicyBean.id));
-
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
-
-
-            try {
-                autoscalerServiceClient.updateDeploymentPolicy(deploymentPolicy);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-        }
+        //FIXME we do not have any use-case now?? - Nirmal
+//        log.info(String.format("Updating deployment policy: [id] %s", deploymentPolicyBean.id));
+//
+//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+//        if (autoscalerServiceClient != null) {
+//
+//            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
+//                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
+//
+//
+//            try {
+//                autoscalerServiceClient.updateDeploymentPolicy(deploymentPolicy);
+//            } catch (RemoteException e) {
+//                log.error(e.getMessage(), e);
+//                throw new RestAPIException(e.getMessage(), e);
+//            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+//                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
+//                log.error(message, e);
+//                throw new RestAPIException(message, e);
+//            }
+//        }
     }
 
     private static CloudControllerServiceClient getCloudControllerServiceClient() throws RestAPIException {

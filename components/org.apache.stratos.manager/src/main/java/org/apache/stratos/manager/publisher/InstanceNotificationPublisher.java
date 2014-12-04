@@ -80,6 +80,6 @@ public class InstanceNotificationPublisher {
 
 	public void sendInstanceCleanupEventForCluster(String clusterId) {
 		log.info(String.format("Publishing Instance Cleanup Event: [cluster] %s", clusterId));
-		publish(new InstanceCleanupClusterEvent(clusterId));
+		publish(new InstanceCleanupClusterEvent(clusterId, null));
 	}
 }

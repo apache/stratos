@@ -45,10 +45,10 @@ public class TestRulesPackaged {
     }
 
 //FIXME add this when dependent scaling file is completed
-//    @Test
-//    public void testDependentScalingDroolsFile() {
-//        parseDroolsFile(dependentScalingDrlFilePath);
-//    }
+    @Test
+    public void testDependentScalingDroolsFile() {
+        parseDroolsFile(dependentScalingDrlFilePath);
+    }
 
     @Test
     public void testScalingDroolsFile() {

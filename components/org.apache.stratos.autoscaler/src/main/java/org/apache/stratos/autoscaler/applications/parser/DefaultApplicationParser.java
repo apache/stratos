@@ -58,6 +58,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     private Set<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
+ 	private Map<String, SubscribableInfoContext> subscribableInformation = new HashMap<String, SubscribableInfoContext>();
 
     public DefaultApplicationParser () {
         this.applicationClusterContexts = new HashSet<ApplicationClusterContext>();
@@ -176,8 +177,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
 	private Map<String, SubscribableInfoContext> getSubscribableInfo(GroupContext[] groupContexts) throws
     		ApplicationDefinitionException {
-		// map [cartridge alias -> Subscribable Information]
-		Map<String, SubscribableInfoContext> subscribableInformation = new HashMap<String, SubscribableInfoContext>();
+		if(groupContexts != null) {
 		for (GroupContext groupContext : groupContexts) {
 			if (groupContext.getGroupContexts() != null) {
 				getSubscribableInfo(groupContext.getGroupContexts());
@@ -204,6 +204,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 	                }
                 }
 			}
+		  }
 		}
 		return subscribableInformation;
 	}

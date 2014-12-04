@@ -42,6 +42,7 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
@@ -49,7 +50,6 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
-global org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext clusterInstanceContext;
 global java.lang.String clusterId;
 global java.lang.String instanceId;
 global java.lang.Boolean rifReset;
@@ -58,19 +58,19 @@ global java.lang.Boolean laReset;
 global java.lang.Boolean isPrimary;
 global java.util.List primaryMembers;
 global java.lang.Boolean arspiReset;
+global java.lang.String algorithmName;
 
 rule "Scaling Rule"
 dialect "mvel"
 	when
-        networkPartitionContext : ClusterLevelNetworkPartitionContext ()
+       clusterInstanceContext : ClusterInstanceContext ()
 
         loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
-	    algorithmName : String() from networkPartitionContext.getPartitionAlgorithm();
         autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
 
-        eval(log.debug("Running scale up rule: [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId))
-        eval(log.debug("[scaling] [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
-        eval(log.debug("[scaling] [network-partition] " + networkPartitionContext.getId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
+        eval(log.debug("Running scale up rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId))
+        eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
+        eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
 	
         rifUpperLimit : Float() from  loadThresholds.getRequestsInFlight().getUpperLimit()
@@ -133,7 +133,7 @@ dialect "mvel"
 
             //Calculating the factor scaling
             float factor = numberOfRequiredInstances / clusterInstanceContext.getMinMembers();
-            delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
+            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
 
             while(count != additionalInstances){
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
@@ -147,7 +147,7 @@ dialect "mvel"
         } else if(scaleDown){
 
             float factor = numberOfRequiredInstances / clusterInstanceContext.getMinMembers();
-            delegator.delegateScalingDependencyNotification(clusterId, networkPartitionContext.getId(), factor);
+            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), factor);
 
             log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
             if(clusterInstanceContext.getScaleDownRequestsCount() > 5 ){
@@ -159,7 +159,7 @@ dialect "mvel"
                 if(partitionContext != null){
                     log.info("[scale-down] Partition available to scale down ");
 //                    log.debug("[scale-down] " + " [partition] " + partition.getId() + " [cluster] " + clusterId);
-//                    partitionContext = networkPartitionContext.getPartitionCtxt(partition.getId());
+//                    partitionContext = clusterInstanceContext.getPartitionCtxt(partition.getId());
 //
 
 					// In partition context member stat context, all the primary members need to be

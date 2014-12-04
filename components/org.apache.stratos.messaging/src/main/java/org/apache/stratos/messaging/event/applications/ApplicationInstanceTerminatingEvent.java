@@ -23,17 +23,19 @@ import org.apache.stratos.messaging.event.Event;
 import java.io.Serializable;
 
 /**
- * This event will be fired upon the application inactivated is detected.
+ * This event will be fired upon the application terminating is detected.
  */
-public class ApplicationInactivatedEvent extends Event implements Serializable {
+public class ApplicationInstanceTerminatingEvent extends Event implements Serializable {
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
     private String instanceId;
 
-    public ApplicationInactivatedEvent(String appId, String instanceId) {
+
+    public ApplicationInstanceTerminatingEvent(String appId, String instanceId) {
         this.appId = appId;
         this.instanceId = instanceId;
+
     }
 
     public String getAppId() {

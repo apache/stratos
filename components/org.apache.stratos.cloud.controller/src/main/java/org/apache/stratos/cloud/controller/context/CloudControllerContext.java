@@ -36,19 +36,13 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import com.google.common.net.InetAddresses;
-
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.locks.Lock;
 
 /**
  * This object holds all runtime data and provides faster access. This is a Singleton class.
@@ -58,19 +52,27 @@ public class CloudControllerContext implements Serializable {
     private static final long serialVersionUID = -2662307358852779897L;
     private static final Log log = LogFactory.getLog(CloudControllerContext.class);
 
-    public static final String KUB_GROUP_ID_TO_GROUP_MAP = "KUB_GROUP_ID_TO_GROUP_MAP";
-    public static final String CC_CLUSTER_ID_TO_MEMBER_CTX = "CC_CLUSTER_ID_TO_MEMBER_CTX";
-    public static final String CC_MEMBER_ID_TO_MEMBER_CTX = "CC_MEMBER_ID_TO_MEMBER_CTX";
-    public static final String CC_MEMBER_ID_TO_SCH_TASK = "CC_MEMBER_ID_TO_SCH_TASK";
-    public static final String CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX";
-    public static final String CC_CLUSTER_ID_TO_CLUSTER_CTX = "CC_CLUSTER_ID_TO_CLUSTER_CTX";
-    public static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS";
-    public static final String CC_CARTRIDGES = "CC_CARTRIDGES";
-    public static final String CC_SERVICE_GROUPS = "CC_SERVICE_GROUPS";
+    private static final String CC_CLUSTER_ID_TO_MEMBER_CTX_MAP = "CC_CLUSTER_ID_TO_MEMBER_CTX_MAP";
+    private static final String CC_CLUSTER_ID_TO_CLUSTER_CTX = "CC_CLUSTER_ID_TO_CLUSTER_CTX";
+    private static final String CC_MEMBER_ID_TO_MEMBER_CTX_MAP = "CC_MEMBER_ID_TO_MEMBER_CTX_MAP";
+    private static final String CC_MEMBER_ID_TO_SCH_TASK_MAP = "CC_MEMBER_ID_TO_SCH_TASK_MAP";
+    private static final String CC_KUB_GROUP_ID_TO_GROUP_MAP = "CC_KUB_GROUP_ID_TO_GROUP_MAP";
+    private static final String CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_MAP = "CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_MAP";
+    private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP";
+    private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
+    private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
+
+    private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
+    private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
+    private static final String CC_SCH_TASK_WRITE_LOCK = "CC_SCH_TASK_WRITE_LOCK";
+    private static final String CC_KUB_GROUP_WRITE_LOCK = "CC_KUB_GROUP_WRITE_LOCK";
+    private static final String CC_KUB_CLUSTER_CTX_WRITE_LOCK = "CC_KUB_CLUSTER_CTX_WRITE_LOCK";
+    private static final String CC_CARTRIDGES_WRITE_LOCK = "CC_CARTRIDGES_WRITE_LOCK";
+    private static final String CC_SERVICE_GROUPS_WRITE_LOCK = "CC_SERVICE_GROUPS_WRITE_LOCK";
 
     private static volatile CloudControllerContext instance;
 
-    private final DistributedObjectProvider distributedObjectProvider;
+    private final transient DistributedObjectProvider distributedObjectProvider;
 
 	/* We keep following maps in order to make the look up time, small. */
     
@@ -124,14 +126,18 @@ public class CloudControllerContext implements Serializable {
     private transient ExecutorService executorService = Executors.newFixedThreadPool(20);
 
     /**
-     * List of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s
+     * Map of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s
+     * Key - cartridge type
+     * Value - cartridge
      */
-    private List<Cartridge> cartridges;
+    private Map<String, Cartridge> cartridgeTypeToCartridgeMap;
 
     /**
-     * List of deployed service groups
+     * Map of deployed service groups
+     * Key - service group name
+     * Value service group
      */
-    private List<ServiceGroup> serviceGroups;
+    private Map<String, ServiceGroup> serviceGroupNameToServiceGroupMap;
 
     private String streamId;
     private boolean isPublisherRunning;
@@ -139,6 +145,7 @@ public class CloudControllerContext implements Serializable {
     private boolean clustered;
 
     private transient AsyncDataPublisher dataPublisher;
+    private boolean coordinator;
 
     private CloudControllerContext() {
         // Check clustering status
@@ -151,15 +158,15 @@ public class CloudControllerContext implements Serializable {
         distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
 
         // Initialize objects
-        kubernetesGroupsMap = distributedObjectProvider.getMap(KUB_GROUP_ID_TO_GROUP_MAP);
-        clusterIdToMemberContextListMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_MEMBER_CTX);
-        memberIdToMemberContextMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_MEMBER_CTX);
-        memberIdToScheduledTaskMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_SCH_TASK);
-        kubClusterIdToKubClusterContextMap = distributedObjectProvider.getMap(CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX);
+        kubernetesGroupsMap = distributedObjectProvider.getMap(CC_KUB_GROUP_ID_TO_GROUP_MAP);
+        clusterIdToMemberContextListMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_MEMBER_CTX_MAP);
+        memberIdToMemberContextMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_MEMBER_CTX_MAP);
+        memberIdToScheduledTaskMap = distributedObjectProvider.getMap(CC_MEMBER_ID_TO_SCH_TASK_MAP);
+        kubClusterIdToKubClusterContextMap = distributedObjectProvider.getMap(CC_KUB_CLUSTER_ID_TO_KUB_CLUSTER_CTX_MAP);
         clusterIdToContextMap = distributedObjectProvider.getMap(CC_CLUSTER_ID_TO_CLUSTER_CTX);
-        cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS);
-        cartridges = distributedObjectProvider.getList(CC_CARTRIDGES);
-        serviceGroups = distributedObjectProvider.getList(CC_SERVICE_GROUPS);
+        cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP);
+        cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
+        serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
 
         // Update context from the registry
         updateContextFromRegistry();
@@ -176,51 +183,97 @@ public class CloudControllerContext implements Serializable {
         return instance;
     }
 
-    public List<Cartridge> getCartridges() {
-        return cartridges;
+    public java.util.Collection<Cartridge> getCartridges() {
+        return cartridgeTypeToCartridgeMap.values();
     }
 
-    public void setCartridges(List<Cartridge> cartridges) {
-        this.cartridges = cartridges;
+    public void addCartridges(List<Cartridge> cartridges) {
+        for(Cartridge cartridge : cartridges) {
+            addCartridge(cartridge);
+        }
     }
 
-    public void setServiceGroups(List<ServiceGroup> serviceGroups) {
-        this.serviceGroups = serviceGroups;
+    public void addServiceGroups(List<ServiceGroup> serviceGroups) {
+        for(ServiceGroup serviceGroup : serviceGroups) {
+            addServiceGroup(serviceGroup);
+        }
     }
 
-    public List<ServiceGroup> getServiceGroups() {
-        return this.serviceGroups;
+    public Collection<ServiceGroup> getServiceGroups() {
+        return serviceGroupNameToServiceGroupMap.values();
     }
 
     public Cartridge getCartridge(String cartridgeType) {
-        for (Cartridge cartridge : cartridges) {
-            if (cartridge.getType().equals(cartridgeType)) {
-                return cartridge;
-            }
-        }
-        return null;
+        return cartridgeTypeToCartridgeMap.get(cartridgeType);
     }
 
-    public void addCartridge(Cartridge newCartridges) {
-        distributedObjectProvider.addToList(cartridges, newCartridges);
+    private Lock acquireWriteLock(String object) {
+        return distributedObjectProvider.acquireLock(object);
+    }
+
+    public void releaseWriteLock(Lock lock) {
+        distributedObjectProvider.releaseLock(lock);
+    }
+
+    public Lock acquireClusterContextWriteLock() {
+        return acquireWriteLock(CC_CLUSTER_CTX_WRITE_LOCK);
+    }
+
+    public Lock acquireMemberContextWriteLock() {
+        return acquireWriteLock(CC_MEMBER_CTX_WRITE_LOCK);
+    }
+
+    public Lock acquireScheduleTaskWriteLock() {
+        return acquireWriteLock(CC_SCH_TASK_WRITE_LOCK);
+    }
+
+    public Lock acquireKubernetesGroupWriteLock() {
+        return acquireWriteLock(CC_KUB_GROUP_WRITE_LOCK);
+    }
+
+    public Lock acquireKubernetesClusterContextWriteLock() {
+        return acquireWriteLock(CC_KUB_CLUSTER_CTX_WRITE_LOCK);
+    }
+
+    public Lock acquireCartridgesWriteLock() {
+        return acquireWriteLock(CC_CARTRIDGES_WRITE_LOCK);
+    }
+
+    public Lock acquireServiceGroupsWriteLock() {
+        return acquireWriteLock(CC_SERVICE_GROUPS_WRITE_LOCK);
+    }
+
+    public void addCartridge(Cartridge cartridge) {
+        cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
+    }
+
+    public void removeCartridge(Cartridge cartridge) {
+        if(cartridgeTypeToCartridgeMap.containsKey(cartridge.getType())) {
+            cartridgeTypeToCartridgeMap.remove(cartridge.getType());
+        }
+    }
+
+    public void updateCartridge(Cartridge cartridge) {
+        cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
     }
 
     public ServiceGroup getServiceGroup(String name) {
-        for (ServiceGroup serviceGroup : serviceGroups) {
-            if (serviceGroup.getName().equals(name)) {
-                return serviceGroup;
-            }
+        return serviceGroupNameToServiceGroupMap.get(name);
+    }
+
+    public void addServiceGroup(ServiceGroup serviceGroup) {
+        serviceGroupNameToServiceGroupMap.put(serviceGroup.getName(), serviceGroup);
+    }
+
+    public void removeServiceGroups(List<ServiceGroup> serviceGroups) {
+        for(ServiceGroup serviceGroup : serviceGroups) {
+            removeServiceGroup(serviceGroup);
         }
-        return null;
     }
 
-    public void addServiceGroup(ServiceGroup newServiceGroup) {
-        distributedObjectProvider.addToList(serviceGroups, newServiceGroup);
-    }
-
-    public void removeServiceGroup(List<ServiceGroup> serviceGroup) {
-        if (this.serviceGroups != null) {
-            this.serviceGroups.removeAll(serviceGroup);
+    private void removeServiceGroup(ServiceGroup serviceGroup) {
+        if(serviceGroupNameToServiceGroupMap.containsKey(serviceGroup.getName())) {
+            serviceGroupNameToServiceGroupMap.remove(serviceGroup.getName());
         }
     }
 
@@ -257,38 +310,37 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addMemberContext(MemberContext memberContext) {
-        distributedObjectProvider.putToMap(memberIdToMemberContextMap, memberContext.getMemberId(), memberContext);
+        memberIdToMemberContextMap.put(memberContext.getMemberId(), memberContext);
 
         List<MemberContext> memberContextList;
         if ((memberContextList = clusterIdToMemberContextListMap.get(memberContext.getClusterId())) == null) {
             memberContextList = new ArrayList<MemberContext>();
         }
         if (memberContextList.contains(memberContext)) {
-            distributedObjectProvider.removeFromList(memberContextList,memberContext);
+            memberContextList.remove(memberContext);
         }
-        distributedObjectProvider.addToList(memberContextList, memberContext);
-        distributedObjectProvider.putToMap(clusterIdToMemberContextListMap, memberContext.getClusterId(),
-                memberContextList);
+        memberContextList.add(memberContext);
+        clusterIdToMemberContextListMap.put(memberContext.getClusterId(), memberContextList);
         if (log.isDebugEnabled()) {
             log.debug("Added member context to the cloud controller context: " + memberContext);
         }
     }
 
     public void addScheduledFutureJob(String memberId, ScheduledFuture<?> job) {
-        distributedObjectProvider.putToMap(memberIdToScheduledTaskMap, memberId, job);
+        memberIdToScheduledTaskMap.put(memberId, job);
     }
 
     public List<MemberContext> removeMemberContextsOfCluster(String clusterId) {
         List<MemberContext> memberContextList = clusterIdToMemberContextListMap.get(clusterId);
-        distributedObjectProvider.removeFromMap(clusterIdToMemberContextListMap, clusterId);
+        clusterIdToMemberContextListMap.remove(clusterId);
         if (memberContextList == null) {
             return new ArrayList<MemberContext>();
         }
         for (MemberContext memberContext : memberContextList) {
             String memberId = memberContext.getMemberId();
-            distributedObjectProvider.removeFromMap(memberIdToMemberContextMap, memberId);
+            memberIdToMemberContextMap.remove(memberId);
             ScheduledFuture<?> task = memberIdToScheduledTaskMap.get(memberId);
-            distributedObjectProvider.removeFromMap(memberIdToScheduledTaskMap, memberId);
+            memberIdToScheduledTaskMap.remove(memberId);
             stopTask(task);
 
             if (log.isDebugEnabled()) {
@@ -301,7 +353,7 @@ public class CloudControllerContext implements Serializable {
 
     public MemberContext removeMemberContext(String memberId, String clusterId) {
         MemberContext removedMemberContext = memberIdToMemberContextMap.get(memberId);
-        distributedObjectProvider.removeFromMap(memberIdToMemberContextMap, memberId);
+        memberIdToMemberContextMap.remove(memberId);
 
         List<MemberContext> memberContextList = clusterIdToMemberContextListMap.get(clusterId);
         if (memberContextList != null) {
@@ -315,10 +367,10 @@ public class CloudControllerContext implements Serializable {
                     iterator.remove();
                 }
             }
-            distributedObjectProvider.putToMap(clusterIdToMemberContextListMap, clusterId, newCtxts);
+            clusterIdToMemberContextListMap.put(clusterId, newCtxts);
         }
         ScheduledFuture<?> task = memberIdToScheduledTaskMap.get(memberId);
-        distributedObjectProvider.removeFromMap(memberIdToScheduledTaskMap, memberId);
+        memberIdToScheduledTaskMap.remove(memberId);
         stopTask(task);
         return removedMemberContext;
     }
@@ -339,7 +391,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addClusterContext(ClusterContext ctxt) {
-        distributedObjectProvider.putToMap(clusterIdToContextMap, ctxt.getClusterId(), ctxt);
+        clusterIdToContextMap.put(ctxt.getClusterId(), ctxt);
     }
 
     public ClusterContext getClusterContext(String clusterId) {
@@ -348,7 +400,7 @@ public class CloudControllerContext implements Serializable {
 
     public ClusterContext removeClusterContext(String clusterId) {
         ClusterContext removed = clusterIdToContextMap.get(clusterId);
-        distributedObjectProvider.removeFromMap(clusterIdToContextMap, clusterId);
+        clusterIdToContextMap.remove(clusterId);
         return removed;
     }
 
@@ -366,11 +418,11 @@ public class CloudControllerContext implements Serializable {
             list = new ArrayList<String>();
         }
         list.add(partitionId);
-        distributedObjectProvider.putToMap(cartridgeTypeToPartitionIdsMap, cartridgeType, list);
+        cartridgeTypeToPartitionIdsMap.put(cartridgeType, list);
     }
 
     public void removeFromCartridgeTypeToPartitionIds(String cartridgeType) {
-        distributedObjectProvider.removeFromMap(cartridgeTypeToPartitionIdsMap, cartridgeType);
+        cartridgeTypeToPartitionIdsMap.remove(cartridgeType);
     }
 
     public KubernetesClusterContext getKubernetesClusterContext(String kubClusterId) {
@@ -378,7 +430,7 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
-        distributedObjectProvider.putToMap(kubClusterIdToKubClusterContextMap,
+        kubClusterIdToKubClusterContextMap.put(
                 kubernetesClusterContext.getKubernetesClusterId(),
                 kubernetesClusterContext);
     }
@@ -388,7 +440,7 @@ public class CloudControllerContext implements Serializable {
      */
     public synchronized void removeKubernetesGroup(String kubernetesGroupId) {
         // Remove entry from information model
-        distributedObjectProvider.removeFromMap(kubernetesGroupsMap, kubernetesGroupId);
+        kubernetesGroupsMap.remove(kubernetesGroupId);
     }
 
     /**
@@ -435,8 +487,12 @@ public class CloudControllerContext implements Serializable {
         }
     }
 
-    public void addKubernetesGroupToInformationModel(KubernetesGroup kubernetesGroup) {
-        distributedObjectProvider.putToMap(kubernetesGroupsMap, kubernetesGroup.getGroupId(), kubernetesGroup);
+    public void addKubernetesGroup(KubernetesGroup kubernetesGroup) {
+        kubernetesGroupsMap.put(kubernetesGroup.getGroupId(), kubernetesGroup);
+    }
+
+    public void updateKubernetesGroup(KubernetesGroup kubernetesGroup) {
+        kubernetesGroupsMap.put(kubernetesGroup.getGroupId(), kubernetesGroup);
     }
     
     public boolean kubernetesGroupExists(KubernetesGroup kubernetesGroup) {
@@ -525,9 +581,11 @@ public class CloudControllerContext implements Serializable {
     }
 
     public boolean isCoordinator() {
-        AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
-        ClusteringAgent clusteringAgent = axisConfiguration.getClusteringAgent();
-        return ((axisConfiguration != null) && (clusteringAgent != null) && (clusteringAgent.isCoordinator()));
+        return coordinator;
+    }
+
+    public void setCoordinator(boolean coordinator) {
+        this.coordinator = coordinator;
     }
 
     public void persist() throws RegistryException {
@@ -548,13 +606,11 @@ public class CloudControllerContext implements Serializable {
                         copyMap(serializedObj.kubernetesGroupsMap, kubernetesGroupsMap);
                         copyMap(serializedObj.clusterIdToMemberContextListMap, clusterIdToMemberContextListMap);
                         copyMap(serializedObj.memberIdToMemberContextMap, memberIdToMemberContextMap);
-                        copyMap(serializedObj.memberIdToScheduledTaskMap, memberIdToScheduledTaskMap);
                         copyMap(serializedObj.kubClusterIdToKubClusterContextMap, kubClusterIdToKubClusterContextMap);
                         copyMap(serializedObj.clusterIdToContextMap, clusterIdToContextMap);
                         copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
-
-                        copyList(serializedObj.getCartridges(), cartridges);
-                        copyList(serializedObj.getServiceGroups(), serviceGroups);
+                        copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
+                        copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
 
                         if (log.isDebugEnabled()) {
                             log.debug("Cloud controller context is read from the registry");
@@ -575,13 +631,13 @@ public class CloudControllerContext implements Serializable {
 
     private void copyMap(Map sourceMap, Map destinationMap) {
         for(Object key : sourceMap.keySet()) {
-            distributedObjectProvider.putToMap(destinationMap, key, sourceMap.get(key));
+            destinationMap.put(key, sourceMap.get(key));
         }
     }
 
     private void copyList(List sourceList, List destinationList) {
         for(Object item : sourceList) {
-            distributedObjectProvider.addToList(destinationList, item);
+            destinationList.add(item);
         }
     }
 }

@@ -16,33 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.applications;
 
-import org.apache.stratos.messaging.event.Event;
+package org.apache.stratos.messaging.domain.applications;
 
 import java.io.Serializable;
+import java.util.List;
 
-/**
- * This event will be fired upon the application terminating is detected.
- */
-public class ApplicationTerminatingEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
+public class ScalingDependentList implements Serializable {
 
-    private String appId;
-    private String instanceId;
+    private List<String> scalingDependentListComponents;
 
-
-    public ApplicationTerminatingEvent(String appId, String instanceId) {
-        this.appId = appId;
-        this.instanceId = instanceId;
-
+    public ScalingDependentList(List<String> scalingOrderList) {
+        this.scalingDependentListComponents = scalingOrderList;
     }
 
-    public String getAppId() {
-        return appId;
+    public List<String> getScalingDependentListComponents() {
+        return scalingDependentListComponents;
     }
 
-    public String getInstanceId() {
-        return instanceId;
+    public void setScalingDependentListComponents(List<String> scalingDependentListComponents) {
+        this.scalingDependentListComponents = scalingDependentListComponents;
     }
 }

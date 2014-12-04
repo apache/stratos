@@ -42,7 +42,6 @@ import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
 import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
@@ -320,9 +319,19 @@ public class StratosApiV41 extends AbstractApi {
     public Response deployDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
 
-        StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
-        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicy.id).build();
+        String policyId = StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(policyId).build();
         return Response.created(url).build();
+    }
+
+    @DELETE
+    @Path("/deploymentPolicies/{applicationId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
+    public Response unDeployApplication(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        StratosApiV41Utils.undeployApplication(applicationId);
+        return Response.noContent().build();
     }
 
     @PUT
@@ -500,9 +509,9 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response unDeployApplicationDefinition(@PathParam("applicationId") String applicationId)
+    public Response removeApplicationDefinition(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-        StratosApiV41Utils.unDeployApplication(applicationId, getConfigContext(), getUsername(),
+        StratosApiV41Utils.removeApplication(applicationId, getConfigContext(), getUsername(),
                 getTenantDomain());
         return Response.noContent().build();
     }

@@ -45,7 +45,7 @@
         	stratos:divider(served_count , instances_count) as requests_per_instance
         	insert into served_requests_per_instance;
         from served_requests_per_instance[requests_per_instance>0]#window.timeBatch(10 min)
-		select cluster_id,network_partition_id, avg(requests_per_instance) as average_served_count
+		select cluster_id, instance_id, network_partition_id, avg(requests_per_instance) as average_served_count
 		insert into average_served_request_count;]]></queryExpressions>
   <exportedStreams>
     <stream name="average_in_flight_requests"

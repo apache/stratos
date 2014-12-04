@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.internal;
 
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 //import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
@@ -33,9 +34,12 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.drools.reteoo.PartitionManager;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
@@ -43,6 +47,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -59,28 +64,39 @@ import java.util.List;
 
 public class AutoscalerServerComponent {
 
-    private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
+	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
+	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
+	private static final String THREAD_POOL_SIZE_KEY = "threadPool.autoscaler.threadPoolSize";
+	private static final String COMPONENTS_CONFIG = "stratos-config";
+	private static final int THREAD_POOL_SIZE = 10;
+	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
-    private AutoscalerTopologyEventReceiver asTopologyReceiver;
-    private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+	private AutoscalerTopologyEventReceiver asTopologyReceiver;
+	private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 
-    protected void activate(ComponentContext componentContext) throws Exception {
-        try {
-            // Start topology receiver
-            asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-            Thread topologyTopicSubscriberThread = new Thread(asTopologyReceiver);
-            topologyTopicSubscriberThread.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Topology receiver thread started");
-            }
 
-            // Start health stat receiver
-            autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-            Thread healthDelegatorThread = new Thread(autoscalerHealthStatEventReceiver);
-            healthDelegatorThread.start();
-            if (log.isDebugEnabled()) {
-                log.debug("Health statistics receiver thread started");
-            }
+	protected void activate(ComponentContext componentContext) throws Exception {
+		try {
+			// Start topology receiver
+			XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
+			int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
+			String threadIdentifier = conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
+			ExecutorService executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
+			asTopologyReceiver = new AutoscalerTopologyEventReceiver();
+			asTopologyReceiver.setExecutorService(executorService);
+			asTopologyReceiver.execute();
+
+			if (log.isDebugEnabled()) {
+				log.debug("Topology receiver executor service started");
+			}
+
+			// Start health stat receiver
+			autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
+			autoscalerHealthStatEventReceiver.setExecutorService(executorService);
+			autoscalerHealthStatEventReceiver.execute();
+			if (log.isDebugEnabled()) {
+				log.debug("Health statistics receiver thread started");
+			}
 
             // Adding the registry stored partitions to the information model
             List<Partition> partitions = RegistryManager.getInstance().retrievePartitions();
@@ -89,7 +105,7 @@ public class AutoscalerServerComponent {
                 Partition partition = partitionIterator.next();
 //                PartitionManager.getInstance().addPartitionToInformationModel(partition);
             }
-            
+
             // Adding the network partitions stored in registry to the information model
 //            List<NetworkPartitionLbHolder> nwPartitionHolders = RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
 //            Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
@@ -97,7 +113,7 @@ public class AutoscalerServerComponent {
 //                NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
 //                PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
 //            }
-            
+
             List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
             Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
             while (asPolicyIterator.hasNext()) {
@@ -105,43 +121,43 @@ public class AutoscalerServerComponent {
                 PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
             }
 
-            List<DeploymentPolicy> depPolicies = RegistryManager.getInstance().retrieveDeploymentPolicies();
-            Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
-            while (depPolicyIterator.hasNext()) {
-                DeploymentPolicy depPolicy = depPolicyIterator.next();
-                PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
-            }
+			List<DeploymentPolicy> depPolicies = RegistryManager.getInstance().retrieveDeploymentPolicies();
+			Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
+			while (depPolicyIterator.hasNext()) {
+				DeploymentPolicy depPolicy = depPolicyIterator.next();
+				PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
+			}
 
-            // Adding KubernetesGroups stored in registry to the information model
-            List<KubernetesGroup> kubernetesGroupList = RegistryManager.getInstance().retrieveKubernetesGroups();
-            Iterator<KubernetesGroup> kubernetesGroupIterator = kubernetesGroupList.iterator();
-            while (kubernetesGroupIterator.hasNext()) {
-                KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
-                KubernetesManager.getInstance().addNewKubernetesGroup(kubernetesGroup);
-            }
+			// Adding KubernetesGroups stored in registry to the information model
+			List<KubernetesGroup> kubernetesGroupList = RegistryManager.getInstance().retrieveKubernetesGroups();
+			Iterator<KubernetesGroup> kubernetesGroupIterator = kubernetesGroupList.iterator();
+			while (kubernetesGroupIterator.hasNext()) {
+				KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
+				KubernetesManager.getInstance().addNewKubernetesGroup(kubernetesGroup);
+			}
 
-            //starting the processor chain
-            ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
-            ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
+			//starting the processor chain
+			ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
+			ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
 
-            GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
-            ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
+			GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
+			ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
 
-            if (log.isInfoEnabled()) {
-                log.info("Scheduling tasks to publish applications");
-            }
+			if (log.isInfoEnabled()) {
+				log.info("Scheduling tasks to publish applications");
+			}
 
-            ApplicationSynchronizerTaskScheduler
-                    .schedule(ServiceReferenceHolder.getInstance()
-                            .getTaskService());
+			ApplicationSynchronizerTaskScheduler
+					.schedule(ServiceReferenceHolder.getInstance()
+					                                .getTaskService());
 
-            if (log.isInfoEnabled()) {
-                log.info("Autoscaler server Component activated");
-            }
-        } catch (Throwable e) {
-            log.error("Error in activating the autoscaler component ", e);
-        }
-    }
+			if (log.isInfoEnabled()) {
+				log.info("Autoscaler server Component activated");
+			}
+		} catch (Throwable e) {
+			log.error("Error in activating the autoscaler component ", e);
+		}
+	}
 
     protected void deactivate(ComponentContext context) {
         asTopologyReceiver.terminate();
@@ -182,3 +198,4 @@ public class AutoscalerServerComponent {
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
 }
+

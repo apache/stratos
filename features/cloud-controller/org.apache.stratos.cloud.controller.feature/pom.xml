@@ -120,19 +120,19 @@
             <version>${jclouds.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>ec2</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>aws-ec2</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.jclouds.api</groupId>
             <artifactId>openstack-nova</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -163,7 +163,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>vcloud</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
@@ -301,15 +301,16 @@
                                 <bundleDef>org.apache.jclouds.driver:jclouds-enterprise:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-core:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds:jclouds-compute:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:ec2:1.8.0-stratos</bundleDef>
-                                <bundleDef>org.apache.stratos:openstack-nova:1.8.0-stratos</bundleDef>
-                                <bundleDef>org.apache.stratos:vcloud:1.8.0-stratos</bundleDef>
-                                <bundleDef>org.apache.stratos:gce:1.8.0-stratos</bundleDef>
+				<bundleDef>org.apache.jclouds.api:ec2:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.jclouds.api:openstack-nova:${jclouds.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:openstack-neutron:${jclouds.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:vcloud:${jclouds.stratos.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:gce:${jclouds.stratos.version}</bundleDef>
+				<bundleDef>org.apache.stratos:aws-ec2:${jclouds.stratos.version}</bundleDef>
                                 <bundleDef>org.apache.commons:commons-compress:1.5</bundleDef>
                                 <bundleDef>com.jamesmurty.utils.wso2:java-xmlbuilder:0.4.wso2v1</bundleDef>
                                 <bundleDef>org.apache.jclouds.common:openstack-common:${jclouds.version}</bundleDef>
                                 <bundleDef>org.apache.jclouds.api:openstack-keystone:${jclouds.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:aws-ec2:1.8.0-stratos</bundleDef>
                                 <bundleDef>com.google.guava:guava:17.0</bundleDef>
 				<bundleDef>org.apache.jclouds.api:cloudstack:${jclouds.version}</bundleDef>
 

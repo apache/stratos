@@ -37,6 +37,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 public class StratosManagerTopologyEventReceiver implements Runnable {
 
@@ -44,6 +45,7 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
     private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
+	private ExecutorService executorService;
 
     public StratosManagerTopologyEventReceiver() {
         this.terminated = false;
@@ -448,8 +450,11 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
 
     @Override
     public void run() {
-        Thread thread = new Thread(topologyEventReceiver);
-        thread.start();
+
+	    topologyEventReceiver.setExecutorService(executorService);
+	    topologyEventReceiver.execute();
+	   // executorService.execute(topologyEventReceiver);
+
         log.info("Stratos Manager topology receiver thread started");
 
         //Keep running till terminate is set from deactivate method of the component
@@ -468,4 +473,12 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
         topologyEventReceiver.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }

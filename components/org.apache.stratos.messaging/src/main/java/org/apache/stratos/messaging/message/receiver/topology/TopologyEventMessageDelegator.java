@@ -62,19 +62,17 @@ class TopologyEventMessageDelegator implements Runnable {
                     String json = message.getText();
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Topology event message [%s] received from queue: %s", type, messageQueue.getClass()));
+                        log.debug(String.format("Topology event message [%s] received from queue: %s", type,
+                                messageQueue.getClass()));
                     }
 
-//                    try {
-//                        TopologyManager.acquireWriteLock();
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Delegating topology event message: %s", type));
-                        }
-                        processorChain.process(type, json, TopologyManager.getTopology());
-//                    } finally {
-//                        TopologyManager.releaseWriteLock();
-//                    }
-
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Delegating topology event message: %s", type));
+                    }
+                    processorChain.process(type, json, TopologyManager.getTopology());
+                } catch (InterruptedException e) {
+                    log.info("TopologyEventMessageDelegator is shutting down ..");
+                    return;
                 } catch (Exception e) {
                     log.error("Failed to retrieve topology event message", e);
                 }

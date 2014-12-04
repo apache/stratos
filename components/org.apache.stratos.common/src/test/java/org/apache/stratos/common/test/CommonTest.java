@@ -46,4 +46,5 @@ public class CommonTest extends TestCase {
             assertEquals("Invalid email address is provided.", e.getMessage());
         }
     }
+
 }

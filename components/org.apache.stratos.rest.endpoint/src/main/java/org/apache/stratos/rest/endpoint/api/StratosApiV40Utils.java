@@ -230,17 +230,15 @@ public class StratosApiV40Utils {
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
+        String policyId = null;
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
 
-            DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
+            DeploymentPolicy deploymentPolicy = PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                autoscalerServiceClient
-                        .deployDeploymentPolicy(deploymentPolicy);
+                policyId = autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -253,8 +251,7 @@ public class StratosApiV40Utils {
         }
 
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully deployed deployment policy definition with type "
-                + deploymentPolicyBean.id);
+        stratosApiResponse.setMessage("Successfully deployed deployment policy definition with type " + policyId);
         return stratosApiResponse;
     }
 

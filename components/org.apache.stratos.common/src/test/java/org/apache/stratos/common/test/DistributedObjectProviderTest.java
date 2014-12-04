@@ -28,10 +28,9 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -39,6 +38,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class DistributedObjectProviderTest {
 
+    public static final String MAP_1 = "MAP1";
+    public static final String MAP_1_WRITE_LOCK = "MAP1_WRITE_LOCK";
+    public static final String LIST_1 = "LIST1";
+    public static final String LIST_1_WRITE_LOCK = "LIST1_WRITE_LOCK";
     private static HazelcastInstance hazelcastInstance;
 
     @BeforeClass
@@ -51,6 +54,7 @@ public class DistributedObjectProviderTest {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
         HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testPutToMap(provider);
+        testPutToMap(provider);
     }
 
     @Test
@@ -58,77 +62,49 @@ public class DistributedObjectProviderTest {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
         HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
         testPutToMap(provider);
+        testPutToMap(provider);
     }
 
     private void testPutToMap(HazelcastDistributedObjectProvider provider) {
-        Map<String, String> map = provider.getMap("MAP1");
-        provider.putToMap(map, "key1", "value1");
-        assertEquals(map.get("key1"), "value1");
+        Map<String, String> map = provider.getMap(MAP_1);
+        Lock lock = null;
+        try {
+            lock = provider.acquireLock(MAP_1_WRITE_LOCK);
+            map.put("key1", "value1");
+            assertEquals(map.get("key1"), "value1");
+        } finally {
+            provider.releaseLock(lock);
+            provider.removeMap(MAP_1);
+        }
     }
 
     @Test
-    public void testRemoveFromMapLocal() {
+    public void testGetListLocal() {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
         HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
-        testRemoveFromMap(provider);
-    }
-
-    @Test
-    public void testRemoveFromMapDistributed() {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
-        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
-        testRemoveFromMap(provider);
-    }
-
-    private void testRemoveFromMap(HazelcastDistributedObjectProvider provider) {
-        Map<String, String> map = provider.getMap("MAP1");
-        provider.putToMap(map, "key1", "value1");
-        assertEquals(map.get("key1"), "value1");
-        provider.removeFromMap(map, "key1");
-        assertNull(map.get("key1"));
-    }
-
-    @Test
-    public void testAddToListLocal() {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
-        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
+        testAddToList(provider);
         testAddToList(provider);
     }
 
     @Test
-    public void testAddToListDistributed() {
+    public void testGetListDistributed() {
         ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
         HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
+        testAddToList(provider);
         testAddToList(provider);
     }
 
     private void testAddToList(HazelcastDistributedObjectProvider provider) {
-        List list = provider.getList("LIST1");
-        String value1 = "value1";
-        provider.addToList(list, value1);
-        assertTrue(list.contains(value1));
-    }
-
-    @Test
-    public void testRemoveFromListLocal() {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(null);
-        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
-        testRemovalFromList(provider);
-    }
-
-    @Test
-    public void testRemoveFromListDistributed() {
-        ServiceReferenceHolder.getInstance().setHazelcastInstance(hazelcastInstance);
-        HazelcastDistributedObjectProvider provider = new HazelcastDistributedObjectProvider();
-        testRemovalFromList(provider);
-    }
-
-    private void testRemovalFromList(HazelcastDistributedObjectProvider provider) {
-        List list = provider.getList("LIST1");
-        String value1 = "value1";
-        provider.addToList(list, value1);
-        assertTrue(list.contains(value1));
-        provider.removeFromList(list, value1);
-        assertFalse(list.contains(value1));
+        List list = provider.getList(LIST_1);
+        Lock lock = null;
+        try {
+            lock = provider.acquireLock(LIST_1_WRITE_LOCK);
+            String value1 = "value1";
+            list.add(value1);
+            assertTrue(list.contains(value1));
+        } finally {
+            provider.releaseLock(lock);
+            provider.removeList(LIST_1);
+        }
     }
 }

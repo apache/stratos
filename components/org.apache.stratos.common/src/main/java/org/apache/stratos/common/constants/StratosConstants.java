@@ -158,6 +158,7 @@ public class StratosConstants {
     public static final String DROOLS_DIR_NAME = "drools";
     public static final String CONTAINER_SCALE_CHECK_DROOL_FILE = "container-scaling.drl";
     public static final String VM_SCALE_CHECK_DROOL_FILE = "scaling.drl";
+    public static final String DEPENDENT_SCALE_CHECK_DROOL_FILE = "dependent-scaling.drl";
     public static final String CONTAINER_MIN_CHECK_DROOL_FILE = "container-mincheck.drl";
     public static final String VM_MIN_CHECK_DROOL_FILE = "mincheck.drl";
     public static final String CONTAINER_OBSOLETE_CHECK_DROOL_FILE = "container-obsoletecheck.drl";
@@ -184,5 +185,7 @@ public class StratosConstants {
 	public static final String NO_LOAD_BALANCER = "no.load.balancer";
 	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
 	public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
+
+    public static final long HAZELCAST_INSTANCE_INIT_TIMEOUT = 300000; // 5 min
 }
 

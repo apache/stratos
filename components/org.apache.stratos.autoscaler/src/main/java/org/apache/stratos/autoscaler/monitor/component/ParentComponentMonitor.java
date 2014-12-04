@@ -41,7 +41,6 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
-import org.apache.stratos.autoscaler.status.processor.StatusChecker;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
@@ -261,8 +260,8 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
 
             boolean startDep;
-            if(!aliasToActiveMonitorsMap.containsKey(eventId) || !pendingMonitorsList.contains(eventId)) {
-               startDep = startDependency(eventId, instanceId);
+            if (!aliasToActiveMonitorsMap.containsKey(eventId) || !pendingMonitorsList.contains(eventId)) {
+                startDep = startDependency(eventId, instanceId);
             } else {
                 startDep = startDependencyByInstanceCreation(eventId, instanceId);
             }
@@ -289,7 +288,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
         //Need to notify the parent about the status  change from Active-->InActive
         if (this.parent != null) {
-            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
+            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                    process(this.id, this.appId, instanceId);
         }
         //TODO checking whether terminating them in reverse order,
         // TODO if so can handle it in the parent event.
@@ -387,7 +387,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.error("Error while starting the monitor upon termination" + e);
             }
         } else {
-            StatusChecker.getInstance().onChildStatusChange(eventId, this.id, this.appId, instanceId);
+            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                    process(this.id, this.appId, instanceId);
             log.info("Checking the status of group/application as no dependent found...");
         }
 
