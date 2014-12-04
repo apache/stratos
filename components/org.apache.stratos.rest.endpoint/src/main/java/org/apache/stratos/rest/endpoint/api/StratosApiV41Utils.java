@@ -859,7 +859,6 @@ public class StratosApiV41Utils {
                     Cartridge cartridge = new Cartridge();
                     cartridge.setCartridgeType(cartridgeType);
                     cartridge.setProvider(cartridgeInfo.getProvider());
-	                cartridge.setCategory(cartridgeInfo.getCategory());
 	                cartridge.setDisplayName(cartridgeInfo.getDisplayName());
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());
