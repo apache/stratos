@@ -506,7 +506,7 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void terminateAllMembers() {
+    public void terminateAllMembers(String instanceId, String networkPartitionId) {
         try {
             CloudControllerClient.getInstance().terminateAllContainers(getKubernetesClusterCtxt().getClusterId());
         } catch (TerminationException e) {

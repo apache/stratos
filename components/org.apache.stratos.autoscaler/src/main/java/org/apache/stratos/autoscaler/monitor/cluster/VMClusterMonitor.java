@@ -973,44 +973,42 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void terminateAllMembers() {
+    public void terminateAllMembers(final String instanceId, final String networkPartitionId) {
 
         Thread memberTerminator = new Thread(new Runnable() {
             public void run() {
 
-                for (ClusterLevelNetworkPartitionContext networkPartitionContext : getAllNetworkPartitionCtxts().values()) {
-                    for (ClusterInstanceContext instanceContext : networkPartitionContext.getClusterInstanceContextMap().values()) {
-                        for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
-                            //if (log.isDebugEnabled()) {
-                            log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
-                                    networkPartitionContext.getId() + " ], Partition [ " +
-                                    partitionContext.getPartitionId() + " ]");
-                            // }
-                            // need to terminate active, pending and obsolete members
+                ClusterInstanceContext instanceContext = getAllNetworkPartitionCtxts().get(networkPartitionId)
+                        .getClusterInstanceContext(instanceId);
 
-                            // active members
-                            for (MemberContext activeMemberCtxt : partitionContext.getActiveMembers()) {
-                                log.info("Terminating active member [member id] " + activeMemberCtxt.getMemberId());
-                                terminateMember(activeMemberCtxt.getMemberId());
-                            }
+                for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+                    //if (log.isDebugEnabled()) {
+                    log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
+                            instanceContext.getNetworkPartitionId() + " ], Partition [ " +
+                            partitionContext.getPartitionId() + " ]");
+                    // }
+                    // need to terminate active, pending and obsolete members
 
-                            // pending members
-                            for (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
-                                log.info("Terminating pending member [member id] " + pendingMemberCtxt.getMemberId());
-                                terminateMember(pendingMemberCtxt.getMemberId());
-                            }
+                    // active members
+                    for (MemberContext activeMemberCtxt : partitionContext.getActiveMembers()) {
+                        log.info("Terminating active member [member id] " + activeMemberCtxt.getMemberId());
+                        terminateMember(activeMemberCtxt.getMemberId());
+                    }
 
-                            // obsolete members
-                            for (String obsoleteMemberId : partitionContext.getObsoletedMembers().keySet()) {
-                                log.info("Terminating obsolete member [member id] " + obsoleteMemberId);
-                                terminateMember(obsoleteMemberId);
-                            }
+                    // pending members
+                    for (MemberContext pendingMemberCtxt : partitionContext.getPendingMembers()) {
+                        log.info("Terminating pending member [member id] " + pendingMemberCtxt.getMemberId());
+                        terminateMember(pendingMemberCtxt.getMemberId());
+                    }
+
+                    // obsolete members
+                    for (String obsoleteMemberId : partitionContext.getObsoletedMembers().keySet()) {
+                        log.info("Terminating obsolete member [member id] " + obsoleteMemberId);
+                        terminateMember(obsoleteMemberId);
+                    }
 
 //                terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
 //                        (terminateAllKnowledgeSession, terminateAllFactHandle, partitionContext);
-                        }
-                    }
-
                 }
             }
         }, "Member Terminator - [cluster id] " + getClusterId());

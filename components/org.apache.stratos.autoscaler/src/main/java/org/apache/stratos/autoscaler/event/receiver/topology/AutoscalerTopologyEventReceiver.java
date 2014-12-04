@@ -257,13 +257,14 @@ public class AutoscalerTopologyEventReceiver {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                if (monitor.getStatus() == ClusterStatus.Active) {
+                ClusterInstance clusterInstance = (ClusterInstance)monitor.getInstance(instanceId);
+                if (clusterInstance.getTransitionedStates().pop() == ClusterStatus.Active) {
                     // terminated gracefully
                     monitor.setStatus(ClusterStatus.Terminating, instanceId);
                     InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId, instanceId);
                 } else {
                     monitor.setStatus(ClusterStatus.Terminating, instanceId);
-                    monitor.terminateAllMembers();
+                    monitor.terminateAllMembers(instanceId, clusterInstance.getNetworkPartitionId());
                 }
                 ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
                         process("", clusterId, instanceId);

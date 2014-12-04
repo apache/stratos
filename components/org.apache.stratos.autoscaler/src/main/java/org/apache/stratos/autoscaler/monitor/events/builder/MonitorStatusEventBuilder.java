@@ -34,8 +34,9 @@ import org.apache.stratos.messaging.domain.applications.GroupStatus;
 public class MonitorStatusEventBuilder {
     private static final Log log = LogFactory.getLog(MonitorStatusEventBuilder.class);
 
-    public static void handleClusterStatusEvent(ParentComponentMonitor parent, ClusterStatus status, String clusterId) {
-        ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId, null);
+    public static void handleClusterStatusEvent(ParentComponentMonitor parent, ClusterStatus status, String clusterId,
+                                                String instanceId) {
+        ClusterStatusEvent clusterStatusEvent = new ClusterStatusEvent(status, clusterId, instanceId);
         notifyParent(parent, clusterStatusEvent);
     }
 

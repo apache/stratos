@@ -214,7 +214,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setStatus(ClusterStatus status, String instanceId) {
 
-        this.clusterContext.getClusterInstance(instanceId).setStatus(status);
+//        this.clusterContext.getClusterInstance(instanceId).setStatus(status);
         /**
          * notifying the parent monitor about the state change
          * If the cluster in_active and if it is a in_dependent cluster,
@@ -230,7 +230,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
                         "since it is in Terminating State");
 */
         } else {
-            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId);
+            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId, instanceId);
         }
 
 
@@ -374,7 +374,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         return instanceIdToClusterContextMap.get(instanceId);
     }*/
 
-    public abstract void terminateAllMembers();
+    public abstract void terminateAllMembers(String instanceId, String networkPartitionId);
 
     public boolean isStop() {
         return stop;

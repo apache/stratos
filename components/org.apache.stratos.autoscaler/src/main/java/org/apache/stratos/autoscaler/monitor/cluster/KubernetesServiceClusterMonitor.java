@@ -218,6 +218,11 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     }
 
     @Override
+    public void terminateAllMembers(String instanceId, String networkPartitionId) {
+
+    }
+
+    @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
     }
