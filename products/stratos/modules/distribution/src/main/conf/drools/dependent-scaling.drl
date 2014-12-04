@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global java.lang.String clusterId;
 global Integer roundedRequiredInstanceCount;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 
 rule "Dependent Scaling Rule"
 dialect "mvel"
