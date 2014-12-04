@@ -62,4 +62,25 @@ public class ClusterInstance extends Instance<ClusterStatus> implements LifeCycl
     public void setPartitionId(String partitionId) {
         this.partitionId = partitionId;
     }
+
+
+    /**
+     * Get the current state
+     *
+     * @return the current state
+     */
+    public ClusterStatus getCurrentState () {
+        return lifeCycleStateManager.getCurrentState();
+    }
+
+    /**
+     * Retrieves the previous state
+     *
+     * @return previous state
+     */
+    public ClusterStatus getPreviousState () {
+        return lifeCycleStateManager.getPreviousState();
+    }
+
+
 }

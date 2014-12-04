@@ -95,5 +95,6 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
     }
+
 }
 
