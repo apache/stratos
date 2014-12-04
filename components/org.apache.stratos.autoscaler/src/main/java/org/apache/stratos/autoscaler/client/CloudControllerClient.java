@@ -358,26 +358,26 @@ public class CloudControllerClient {
     public synchronized MemberContext[] startContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
         try {
 
-            KubernetesManager kubernetesManager = KubernetesManager.getInstance();
-            KubernetesMaster kubernetesMaster = kubernetesManager.getKubernetesMasterInGroup(kubernetesClusterId);
-            String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
-            KubernetesGroup kubernetesGroup = kubernetesManager.getKubernetesGroup(kubernetesClusterId);
-            int lower = kubernetesGroup.getPortRange().getLower();
-            int upper = kubernetesGroup.getPortRange().getUpper();
-            String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
+//            KubernetesManager kubernetesManager = KubernetesManager.getInstance();
+//            KubernetesMaster kubernetesMaster = kubernetesManager.getKubernetesMasterInGroup(kubernetesClusterId);
+//            String kubernetesMasterIP = kubernetesMaster.getHostIpAddress();
+//            KubernetesGroup kubernetesGroup = kubernetesManager.getKubernetesGroup(kubernetesClusterId);
+//            int lower = kubernetesGroup.getPortRange().getLower();
+//            int upper = kubernetesGroup.getPortRange().getUpper();
+//            String portRange = Integer.toString(lower) + "-" + Integer.toString(upper);
 
             ContainerClusterContext context = new ContainerClusterContext();
             context.setClusterId(clusterId);
-            Properties memberContextProps = new Properties();
-            Property kubernetesClusterMasterIPProps = new Property();
-            kubernetesClusterMasterIPProps.setName(StratosConstants.KUBERNETES_MASTER_IP);
-            kubernetesClusterMasterIPProps.setValue(kubernetesMasterIP);
-            memberContextProps.addProperty(kubernetesClusterMasterIPProps);
-            Property kubernetesClusterPortRangeProps = new Property();
-            kubernetesClusterPortRangeProps.setName(StratosConstants.KUBERNETES_PORT_RANGE);
-            kubernetesClusterPortRangeProps.setValue(portRange);
-            memberContextProps.addProperty(kubernetesClusterPortRangeProps);
-            context.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
+//            Properties memberContextProps = new Properties();
+//            Property kubernetesClusterMasterIPProps = new Property();
+//            kubernetesClusterMasterIPProps.setName(StratosConstants.KUBERNETES_MASTER_IP);
+//            kubernetesClusterMasterIPProps.setValue(kubernetesMasterIP);
+//            memberContextProps.addProperty(kubernetesClusterMasterIPProps);
+//            Property kubernetesClusterPortRangeProps = new Property();
+//            kubernetesClusterPortRangeProps.setName(StratosConstants.KUBERNETES_PORT_RANGE);
+//            kubernetesClusterPortRangeProps.setValue(portRange);
+//            memberContextProps.addProperty(kubernetesClusterPortRangeProps);
+//            context.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
             long startTime = System.currentTimeMillis();
             MemberContext[] memberContexts = stub.startContainers(context);
 
@@ -394,11 +394,12 @@ public class CloudControllerClient {
         	String msg = "Error while creating containers, couldn't communicate with cloud controller service";
         	log.error(msg, e);
         	throw new SpawningException(msg, e);
-        } catch (NonExistingKubernetesGroupException e) {
-        	String msg = String.format("Error while creating containers, invalid kubernetes group [%s] ", kubernetesClusterId);
-        	log.error(msg, e);
-        	throw new SpawningException(msg, e);
-        }
+        } 
+//        catch (NonExistingKubernetesGroupException e) {
+//        	String msg = String.format("Error while creating containers, invalid kubernetes group [%s] ", kubernetesClusterId);
+//        	log.error(msg, e);
+//        	throw new SpawningException(msg, e);
+//        }
     }
 
     public synchronized void terminateAllContainers(String clusterId) throws TerminationException {
