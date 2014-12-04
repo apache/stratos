@@ -173,7 +173,8 @@ public class CloudControllerClient {
                                                       int minMemberCount) throws SpawningException {
         try {
             if (log.isInfoEnabled()) {
-                log.info(String.format("Trying to spawn an instance via cloud controller: [cluster] %s [partition] %s [lb-cluster] %s [network-partition-id] %s",
+                log.info(String.format("Trying to spawn an instance via cloud controller: " +
+                                "[cluster] %s [partition] %s [network-partition-id] %s",
                         clusterId, partition.getId(), networkPartitionId));
             }
 
