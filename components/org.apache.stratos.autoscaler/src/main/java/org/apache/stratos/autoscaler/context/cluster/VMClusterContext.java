@@ -156,8 +156,9 @@ public class VMClusterContext extends AbstractClusterContext {
             this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
                     networkPartitionContext);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Network partition context has been added: " +
-                        "[network partition] %s", clusterInstance.getNetworkPartitionId()));
+                log.info(String.format("Cluster instance context has been added to network partition, [cluster instance]" +
+                        " %s [network partition] %s", clusterInstance.getInstanceId(),
+                        clusterInstance.getNetworkPartitionId()));
             }
         }
 
