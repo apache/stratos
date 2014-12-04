@@ -20,30 +20,26 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -62,20 +58,18 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected FactHandle dependentScaleCheckFactHandle;
     protected boolean hasFaultyMember = false;
     protected boolean stop = false;
-    private AtomicBoolean monitoringStarted;
     protected AbstractClusterContext clusterContext;
-
     protected StatefulKnowledgeSession minCheckKnowledgeSession;
     protected StatefulKnowledgeSession obsoleteCheckKnowledgeSession;
     protected StatefulKnowledgeSession scaleCheckKnowledgeSession;
     protected StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
-
+    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
+    protected String serviceType;
+    private AtomicBoolean monitoringStarted;
     private String clusterId;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
     private boolean isDestroyed;
-    protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
-    protected String serviceType;
 
     protected AbstractClusterMonitor(String serviceType, String clusterId) {
 

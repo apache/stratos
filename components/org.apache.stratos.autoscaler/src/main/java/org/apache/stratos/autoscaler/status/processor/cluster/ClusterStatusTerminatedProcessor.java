@@ -20,17 +20,15 @@ package org.apache.stratos.autoscaler.status.processor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -123,11 +121,11 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
     private boolean clusterInstanceHasMembers(VMClusterMonitor monitor, String instanceId) {
         boolean hasMember = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
-                                                monitor.getAllNetworkPartitionCtxts().values()) {
+                monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            if(clusterLevelNetworkPartitionContext.containsClusterInstanceContext(instanceId)) {
-            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
-                                                            getClusterInstanceContext(instanceId);
+            if (clusterLevelNetworkPartitionContext.containsClusterInstanceContext(instanceId)) {
+                ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
+                        getClusterInstanceContext(instanceId);
                 for (ClusterLevelPartitionContext partitionContext :
                         clusterInstanceContext.getPartitionCtxts()) {
                     if (partitionContext.getNonTerminatedMemberCount() > 0) {

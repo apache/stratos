@@ -22,8 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
-import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
@@ -57,21 +55,21 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
             } else {
                 throw new RuntimeException(String.format("Failed to process message using " +
                                 "available message processors: [type] %s [cluster] %s [instance]",
-                                type, clusterId, instanceId));
+                        type, clusterId, instanceId));
             }
         }
-       return false;
+        return false;
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
-                                    getClusterMonitor(clusterId);
+                getClusterMonitor(clusterId);
         boolean clusterActive = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts()) {
             //minimum check per partition
             ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
-            if(instanceContext != null) {
-                if(instanceContext.getActiveMembers() >= instanceContext.getMaxInstanceCount()) {
+            if (instanceContext != null) {
+                if (instanceContext.getActiveMembers() >= instanceContext.getMaxInstanceCount()) {
                     clusterActive = true;
                 } else {
                     clusterActive = false;
@@ -79,13 +77,13 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
             }
 
         }
-        if(clusterActive) {
+        if (clusterActive) {
             if (log.isInfoEnabled()) {
                 log.info("Publishing Cluster activated event for [application]: "
                         + monitor.getAppId() + " [cluster]: " + clusterId);
             }
             ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
-                    monitor.getServiceId(), monitor.getClusterId());
+                    monitor.getServiceId(), monitor.getClusterId(), instanceId);
         }
         return clusterActive;
     }
