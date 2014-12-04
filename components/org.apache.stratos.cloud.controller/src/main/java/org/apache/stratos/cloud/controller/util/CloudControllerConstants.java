@@ -133,6 +133,7 @@ public final class CloudControllerConstants {
 	public static final String TENANT_ID_PROPERTY = "tenant_id";
 	public static final String ALIAS_PROPERTY = "alias";
 	public static final String AUTO_ASSIGN_IP_PROPERTY = "autoAssignIp";
+	public static final String JCLOUDS_ENDPOINT = "jclouds.endpoint";
 	public static final String CRON_PROPERTY = "cron";
 	public static final String AMQP_CONNECTION_URL_PROPERTY = "amqpConnectionUrl";
 	public static final String AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY = "amqpInitialContextFactory";
