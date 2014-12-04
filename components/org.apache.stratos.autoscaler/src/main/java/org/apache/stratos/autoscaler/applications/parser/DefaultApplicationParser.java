@@ -412,7 +412,10 @@ public class DefaultApplicationParser implements ApplicationParser {
              this.applicationClusterContexts.add(appClusterCtxt);
 
              // add relevant information to the map
-             clusterDataMap.put(subscriptionAlias, new ClusterDataHolder(cartridgeType, clusterId));
+             ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+             clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+             clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+             clusterDataMap.put(subscriptionAlias, clusterDataHolder);
     		 
         }
     	 
