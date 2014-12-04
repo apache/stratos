@@ -175,9 +175,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     @Override
     public String toString() {
-        return "KubernetesServiceClusterMonitor "
-                + "[ kubernetesHostClusterId=" + getKubernetesClusterCtxt().getKubernetesClusterID()
-                + ", clusterId=" + getClusterId() + "]";
+        return "KubernetesServiceClusterMonitor for " + "[ clusterId=" + getClusterId() + "]";
     }
 
     public String getLbReferenceType() {

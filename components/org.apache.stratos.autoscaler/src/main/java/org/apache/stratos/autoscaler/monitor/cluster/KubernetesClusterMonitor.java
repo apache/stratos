@@ -64,8 +64,6 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
 
     private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
 
-    private KubernetesClusterContext kubernetesClusterCtxt;
-
     protected KubernetesClusterMonitor(String serviceType, String clusterId,
                                        AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
 
@@ -78,11 +76,11 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
+                StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE);
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
+                StratosConstants.CONTAINER_SCALE_CHECK_DROOL_FILE);
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+                StratosConstants.CONTAINER_MIN_CHECK_DROOL_FILE);
         this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
@@ -488,14 +486,8 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
     }
 
     public KubernetesClusterContext getKubernetesClusterCtxt() {
-        return kubernetesClusterCtxt;
+        return (KubernetesClusterContext) getClusterContext();
     }
-
-    public void setKubernetesClusterCtxt(
-            KubernetesClusterContext kubernetesClusterCtxt) {
-        this.kubernetesClusterCtxt = kubernetesClusterCtxt;
-    }
-
 
     private Member getMemberByMemberId(String memberId) {
         try {
