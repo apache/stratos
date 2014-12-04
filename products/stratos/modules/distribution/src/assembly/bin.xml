@@ -929,6 +929,17 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
+	<!--oauth2.war and authenticationendpoint.war is related to oAuth feature  -->
+        <file>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/oauth2.war</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+        <file>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/authenticationendpoint.war</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
         <!-- End of REST endpoint webapp -->
 
         <!-- Meta data service webapp -->
