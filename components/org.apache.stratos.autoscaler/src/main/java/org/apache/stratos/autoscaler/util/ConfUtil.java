@@ -24,6 +24,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.Constants;
+import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 import java.util.HashMap;
@@ -39,12 +40,21 @@ public class ConfUtil {
 
 	//To maintain the map of config files
 	private static HashMap<String, ConfUtil> instanceMap = new HashMap<String, ConfUtil>();
+	private static Object mutex = new Object();
 
 	private ConfUtil(String configFilePath) {
 		try {
 
-			File confFile = new File(configFilePath);
+            File confFile;
+            if (configFilePath != null && !configFilePath.isEmpty()) {
+                confFile = new File(configFilePath);
+
+            } else {
+                confFile = new File(CarbonUtils.getCarbonConfigDirPath(),Constants.AUTOSCALER_CONFIG_FILE_NAME);
+            }
+
 			config = new XMLConfiguration(confFile);
+
 		} catch (ConfigurationException e) {
 			log.error("Unable to load configuration file", e);
 			config = new XMLConfiguration();  // continue with default values
@@ -59,13 +69,14 @@ public class ConfUtil {
 	 */
 	public static ConfUtil getInstance(String configFilePath) {
 
-		if (configFilePath == null || configFilePath.isEmpty()) {
-			configFilePath = Constants.AUTOSCALER_CONFIG_FILE_NAME;
-		}
 		ConfUtil instance = instanceMap.get(configFilePath);
 		if (instance == null) {
-			instance = new ConfUtil(configFilePath);
-			instanceMap.put(configFilePath, instance);
+			synchronized (mutex) {
+				if (instance == null) {
+					instance = new ConfUtil(configFilePath);
+					instanceMap.put(configFilePath, instance);
+				}
+			}
 		}
 		return instance;
 	}
