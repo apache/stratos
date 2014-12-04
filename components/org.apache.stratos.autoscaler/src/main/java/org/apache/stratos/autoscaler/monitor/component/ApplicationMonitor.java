@@ -41,7 +41,6 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
@@ -108,7 +107,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
-        ((ApplicationInstance)this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
+        ((ApplicationInstance) this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         //notify the children about the state change
         try {
@@ -144,9 +143,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            ApplicationInstance instance = (ApplicationInstance)instanceIdToInstanceMap.get(instanceId);
+            ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
-                if(instance.getStatus() == ApplicationStatus.Terminating) {
+                if (instance.getStatus() == ApplicationStatus.Terminating) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
@@ -200,35 +199,63 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
 
-        if(deploymentPolicy == null) {
+        if (deploymentPolicy == null) {
             //FIXME for docker with deployment policy
-            instanceId = createApplicationInstance(application, null);
-            instanceIds.add(instanceId);
+            ApplicationInstance appInstance = createApplicationInstance(application, null);
+            instanceIds.add(appInstance.getInstanceId());
         } else {
             for (ApplicationLevelNetworkPartition networkPartition :
-                                        deploymentPolicy.getApplicationLevelNetworkPartitions()) {
+                    deploymentPolicy.getApplicationLevelNetworkPartitions()) {
                 if (networkPartition.isActiveByDefault()) {
                     ApplicationLevelNetworkPartitionContext context =
                             new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
-                    instanceId = createApplicationInstance(application, networkPartition.getId());
-                    ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
-                    context.addInstanceContext(instanceContext);
-
-                    ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
-                    instance.setStatus(ApplicationStatus.Created);
-                    instance.setNetworkPartitionId(networkPartition.getId());
-                    this.instanceIdToInstanceMap.put(instanceId, instance);
-
-                    this.networkPartitionCtxts.put(context.getId(), context);
-
+                    //If application instances found in the ApplicationsTopology,
+                    // then have to add them first before creating new one
+                    ApplicationInstance appInstance = (ApplicationInstance) application.
+                            getInstanceByNetworkPartitionId(context.getId());
+                    if (appInstance != null) {
+                        //use the existing instance in the Topology to create the data
+                        instanceId = handleApplicationInstanceCreation(application, context, appInstance);
+                    } else {
+                        //create new app instance as it doesn't exist in the Topology
+                        instanceId = handleApplicationInstanceCreation(application, context, null);
+                    }
                     instanceIds.add(instanceId);
                     log.info("Application instance has been added for the [network partition] " +
                             networkPartition.getId() + " [appInstanceId] " + instanceId);
-                }
 
+                }
             }
         }
         startDependency(application, instanceIds);
+    }
+
+    private String handleApplicationInstanceCreation(Application application,
+                                                     ApplicationLevelNetworkPartitionContext context,
+                                                     ApplicationInstance instanceExist) {
+        ApplicationInstance instance;
+        ApplicationInstanceContext instanceContext;
+        if (instanceExist != null) {
+            //using the existing instance
+            instance = instanceExist;
+        } else {
+            //creating a new applicationInstance
+            instance = createApplicationInstance(application, context.getId());
+
+        }
+        String instanceId = instance.getInstanceId();
+
+        //Creating appInstanceContext
+        instanceContext = new ApplicationInstanceContext(instanceId);
+        //adding the created App InstanceContext to ApplicationLevelNetworkPartitionContext
+        context.addInstanceContext(instanceContext);
+
+        //adding to instance map
+        this.instanceIdToInstanceMap.put(instanceId, instance);
+        //adding ApplicationLevelNetworkPartitionContext to networkPartitionContexts map
+        this.networkPartitionCtxts.put(context.getId(), context);
+
+        return instanceId;
     }
 
     public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
@@ -243,48 +270,52 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId = null;
         //Find out the inActive network partition
-        if(deploymentPolicy == null) {
+        if (deploymentPolicy == null) {
             //FIXME for docker with deployment policy
-            instanceId = createApplicationInstance(application, null);
+            ApplicationInstance appInstance = createApplicationInstance(application, null);
+            instanceId = appInstance.getInstanceId();
 
         } else {
             for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.
-                                                            getApplicationLevelNetworkPartitions()) {
+                    getApplicationLevelNetworkPartitions()) {
+                //Checking whether any not active NP found
                 if (!networkPartition.isActiveByDefault()) {
+
                     if (!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
+
                         ApplicationLevelNetworkPartitionContext context =
                                 new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+
+                        //Setting flags saying that it has been created by burst
                         context.setCreatedOnBurst(true);
-                        instanceId = createApplicationInstance(application, networkPartition.getId());
+                        ApplicationInstance appInstance = (ApplicationInstance) application.
+                                getInstanceByNetworkPartitionId(context.getId());
 
-                        ApplicationInstanceContext instanceContext = new ApplicationInstanceContext(instanceId);
-                        context.addInstanceContext(instanceContext);
-                        this.networkPartitionCtxts.put(context.getId(), context);
-
-                        ApplicationInstance instance = new ApplicationInstance(appId, instanceId);
-                        instance.setStatus(ApplicationStatus.Created);
-                        this.instanceIdToInstanceMap.put(instanceId, instance);
-
+                        if (appInstance == null) {
+                            instanceId = handleApplicationInstanceCreation(application, context, null);
+                        } else {
+                            log.warn("The Network partition is already associated with an " +
+                                    "[ApplicationInstance] " + appInstance.getInstanceId() +
+                                    "in the ApplicationsTopology. Hence not creating new AppInstance.");
+                            instanceId = handleApplicationInstanceCreation(application, context, appInstance);
+                        }
                         burstNPFound = true;
                     }
                 }
             }
         }
-
-
         if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
         } else {
             startDependency(application, instanceId);
         }
-
     }
 
     private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
         String deploymentPolicyName = application.getDeploymentPolicy();
         DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
                 getDeploymentPolicyByApplication(application.getUniqueIdentifier());
-        if(deploymentPolicyName != null) {
+        if (deploymentPolicyName != null) {
             deploymentPolicy = PolicyManager.getInstance()
                     .getDeploymentPolicy(deploymentPolicyName);
             if (deploymentPolicy == null) {
@@ -297,10 +328,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return deploymentPolicy;
     }
 
-    private String createApplicationInstance(Application application, String networkPartitionId) {
+    private ApplicationInstance createApplicationInstance(Application application, String networkPartitionId) {
         String instanceId = this.generateInstanceId(application);
-        ApplicationBuilder.handleApplicationInstanceCreatedEvent(appId, instanceId, networkPartitionId);
-        return instanceId;
+        ApplicationInstance instance = ApplicationBuilder.handleApplicationInstanceCreatedEvent(
+                appId, instanceId, networkPartitionId);
+        return instance;
     }
 
     public Map<String, ApplicationLevelNetworkPartitionContext> getApplicationLevelNetworkPartitionCtxts() {

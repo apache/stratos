@@ -82,7 +82,7 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
-    public static void handleApplicationInstanceCreatedEvent(String appId, String instanceId,
+    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId, String instanceId,
                                                              String networkPartitionId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application activation event: [application-id] " + appId);
@@ -94,18 +94,18 @@ public class ApplicationBuilder {
         if (application == null) {
             log.warn(String.format("Application does not exist: [application-id] %s",
                     appId));
-            return;
+            return null;
         }
 
         ApplicationStatus status = ApplicationStatus.Created;
-
+        ApplicationInstance applicationInstance = null;
 
         if (!application.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            ApplicationInstance context = new ApplicationInstance(appId, instanceId);
-            context.setStatus(status);
-            context.setNetworkPartitionId(networkPartitionId);
-            application.addInstanceContext(instanceId, context);
+            applicationInstance = new ApplicationInstance(appId, instanceId);
+            applicationInstance.setStatus(status);
+            applicationInstance.setNetworkPartitionId(networkPartitionId);
+            application.addInstanceContext(instanceId, applicationInstance);
             //updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
             //ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
@@ -113,6 +113,7 @@ public class ApplicationBuilder {
             log.warn(String.format("Application Instance Context already exists" +
                     " [appId] %s [ApplicationInstanceId] %s", appId, instanceId));
         }
+        return applicationInstance;
     }
 
     public static void handleApplicationActivatedEvent(String appId, String instanceId) {
