@@ -238,5 +238,5 @@ public class CartridgeInfo {
 
 	public void setCategory(String category) {
 		this.category = category;
-	}
+    }
 }

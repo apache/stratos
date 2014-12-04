@@ -19,8 +19,6 @@
 
 package org.apache.stratos.manager.dto;
 
-
-
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 
@@ -30,9 +28,9 @@ import java.util.Arrays;
 @XmlRootElement
 public class Cartridge implements Comparable<Cartridge> {
 
-    private String displayName;
-    private String description;
-    private boolean isPublic;
+	private String displayName;
+	private String description;
+	private boolean isPublic;
 	private String cartridgeAlias;
 	private String cartridgeType;
 	private int activeInstances;
@@ -42,35 +40,35 @@ public class Cartridge implements Comparable<Cartridge> {
 	private String category;
 	private String version;
 	private boolean multiTenant;
-    private boolean isLoadBalancer;
+	private boolean isLoadBalancer;
 	private String hostName;
 	//private String policy;
 	//private String policyDescription;
 	private String repoURL;
 	private String mappedDomain;
 
-    //DB specific
-    private String dbHost;
-    private String dbUserName;
-    private String password;
+	//DB specific
+	private String dbHost;
+	private String dbUserName;
+	private String password;
 
-    //LB cluster id
-    private String lbClusterId;
-    
-    private String clusterId;
+	//LB cluster id
+	private String lbClusterId;
+
+	private String clusterId;
 
 	private String[] accessURLs;
 	private PortMapping[] portMappings;
 
-    private String defaultAutoscalingPolicy;
+	private String defaultAutoscalingPolicy;
 
-    private String defaultDeploymentPolicy;
+	private String defaultDeploymentPolicy;
 
-    private boolean isPersistance;
+	private boolean isPersistance;
 
-    private Persistence persistence;
-    
-    private String serviceGroup;
+	private Persistence persistence;
+
+	private String serviceGroup;
 
 	public String getDisplayName() {
 		return displayName;
@@ -87,7 +85,7 @@ public class Cartridge implements Comparable<Cartridge> {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public boolean getIsPublic() {
 		return isPublic;
 	}
@@ -145,20 +143,20 @@ public class Cartridge implements Comparable<Cartridge> {
 	}
 
 	public String getProvider() {
-    	return provider;
-    }
+		return provider;
+	}
 
 	public void setProvider(String provider) {
-    	this.provider = provider;
-    }
+		this.provider = provider;
+	}
 
 	public String getVersion() {
-    	return version;
-    }
+		return version;
+	}
 
 	public void setVersion(String version) {
-    	this.version = version;
-    }
+		this.version = version;
+	}
 
 	public boolean isMultiTenant() {
 		return multiTenant;
@@ -169,12 +167,12 @@ public class Cartridge implements Comparable<Cartridge> {
 	}
 
 	public String getHostName() {
-    	return hostName;
-    }
+		return hostName;
+	}
 
 	public void setHostName(String hostName) {
-    	this.hostName = hostName;
-    }
+		this.hostName = hostName;
+	}
 
 	/*public String getPolicy() {
 		return policy;
@@ -193,32 +191,32 @@ public class Cartridge implements Comparable<Cartridge> {
 	}*/
 
 	public String getRepoURL() {
-    	return repoURL;
-    }
+		return repoURL;
+	}
 
 	public void setRepoURL(String repoURL) {
-    	this.repoURL = repoURL;
-    }
+		this.repoURL = repoURL;
+	}
 
 	public String getDbUserName() {
-    	return dbUserName;
-    }
+		return dbUserName;
+	}
 
 	public String[] getAccessURLs() {
 		return accessURLs;
 	}
 
 	public void setAccessURLs(String[] accessURLs) {
-        if(accessURLs == null) {
-            this.accessURLs = new String[0];
-        } else {
-            this.accessURLs = Arrays.copyOf(accessURLs, accessURLs.length);
-        }
+		if (accessURLs == null) {
+			this.accessURLs = new String[0];
+		} else {
+			this.accessURLs = Arrays.copyOf(accessURLs, accessURLs.length);
+		}
 	}
 
 	public void setDbUserName(String dbUserName) {
-    	this.dbUserName = dbUserName;
-    }
+		this.dbUserName = dbUserName;
+	}
 
 	public String getMappedDomain() {
 		return mappedDomain;
@@ -240,73 +238,73 @@ public class Cartridge implements Comparable<Cartridge> {
 		return compare;
 	}
 
-    public String getDbHost() {
-        return dbHost;
-    }
+	public String getDbHost() {
+		return dbHost;
+	}
 
-    public void setDbHost(String dbHost) {
-        this.dbHost = dbHost;
-    }
+	public void setDbHost(String dbHost) {
+		this.dbHost = dbHost;
+	}
 
 	public PortMapping[] getPortMappings() {
 		return portMappings;
 	}
 
 	public void setPortMappings(PortMapping[] portMappings) {
-        if(portMappings == null) {
-            this.portMappings = new PortMapping[0];
-        } else {
-            this.portMappings = Arrays.copyOf(portMappings, portMappings.length);
-        }
-    }
+		if (portMappings == null) {
+			this.portMappings = new PortMapping[0];
+		} else {
+			this.portMappings = Arrays.copyOf(portMappings, portMappings.length);
+		}
+	}
 
-    public String getLbClusterId() {
-        return lbClusterId;
-    }
+	public String getLbClusterId() {
+		return lbClusterId;
+	}
 
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
-    }
+	public void setLbClusterId(String lbClusterId) {
+		this.lbClusterId = lbClusterId;
+	}
 
-    public boolean isLoadBalancer() {
-        return isLoadBalancer;
-    }
+	public boolean isLoadBalancer() {
+		return isLoadBalancer;
+	}
 
-    public void setLoadBalancer(boolean loadBalancer) {
-        this.isLoadBalancer = loadBalancer ;
-    }
+	public void setLoadBalancer(boolean loadBalancer) {
+		this.isLoadBalancer = loadBalancer;
+	}
 
-    public String getDefaultAutoscalingPolicy() {
-        return defaultAutoscalingPolicy;
-    }
+	public String getDefaultAutoscalingPolicy() {
+		return defaultAutoscalingPolicy;
+	}
 
-    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
-        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
-    }
+	public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+		this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
+	}
 
-    public String getDefaultDeploymentPolicy() {
-        return defaultDeploymentPolicy;
-    }
+	public String getDefaultDeploymentPolicy() {
+		return defaultDeploymentPolicy;
+	}
 
-    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
-        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
-}
+	public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+		this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+	}
 
-    public boolean isPersistance() {
-        return isPersistance;
-    }
+	public boolean isPersistance() {
+		return isPersistance;
+	}
 
-    public void setPersistance(boolean persistance) {
-        isPersistance = persistance;
-    }
+	public void setPersistance(boolean persistance) {
+		isPersistance = persistance;
+	}
 
-    public Persistence getPersistence() {
-        return persistence;
-    }
+	public Persistence getPersistence() {
+		return persistence;
+	}
 
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
-    }
+	public void setPersistence(Persistence persistence) {
+		this.persistence = persistence;
+	}
 
 	public String getServiceGroup() {
 		return serviceGroup;
