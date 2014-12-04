@@ -20,19 +20,17 @@ package org.apache.stratos.autoscaler.context.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Properties;
+
 /**
  * This is an object that inserted to the rules engine.
  * Holds information about a partition.
- *
- *
  */
 
-public abstract class PartitionContext implements Serializable{
+public abstract class PartitionContext implements Serializable {
 
     private static final long serialVersionUID = -2920388667345980487L;
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
@@ -80,6 +78,7 @@ public abstract class PartitionContext implements Serializable{
     }
 
     public abstract int getActiveInstanceCount();
+
     public int getMax() {
         return max;
     }

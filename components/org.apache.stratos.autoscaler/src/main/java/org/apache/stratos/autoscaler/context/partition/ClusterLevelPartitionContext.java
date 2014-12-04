@@ -22,52 +22,46 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.constants.StratosConstants;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
-import org.apache.stratos.common.constants.StratosConstants;
-
 /**
  * This is an object that inserted to the rules engine.
  * Holds information about a partition.
- *
- *
  */
 
-public class ClusterLevelPartitionContext extends PartitionContext implements Serializable{
+public class ClusterLevelPartitionContext extends PartitionContext implements Serializable {
 
-	private static final long serialVersionUID = -2920388667345980487L;
-	private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
+    private static final long serialVersionUID = -2920388667345980487L;
+    private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
+    private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
     private String serviceName;
-    private String networkPartitionId;
     private int minimumMemberCount = 0;
     private int pendingMembersFailureCount = 0;
-    private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
-
     // properties
     private Properties properties;
-    
+
     // 15 mints as the default
     private long pendingMemberExpiryTime = 900000;
     // pending members
     private List<MemberContext> pendingMembers;
-    
+
     // 1 day as default
-    private long obsoltedMemberExpiryTime = 1*24*60*60*1000;
+    private long obsoltedMemberExpiryTime = 1 * 24 * 60 * 60 * 1000;
 
     // 30 mints as default
     private long terminationPendingMemberExpiryTime = 1800000;
 
     // members to be terminated
     private Map<String, MemberContext> obsoletedMembers;
-    
+
     // active members
     private List<MemberContext> activeMembers;
 
@@ -87,10 +81,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.terminationPendingMembers = new ArrayList<MemberContext>();
         this.pendingMembers = new ArrayList<MemberContext>();
     }
-    
+
     public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId) {
 
-        super(max,partition, networkPartitionId);
+        super(max, partition, networkPartitionId);
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
@@ -103,8 +97,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         pendingMemberExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
         obsoltedMemberExpiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
         if (log.isDebugEnabled()) {
-        	log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
-        	log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);
+            log.debug("Member expiry time is set to: " + pendingMemberExpiryTime);
+            log.debug("Member obsoleted expiry time is set to: " + obsoltedMemberExpiryTime);
         }
 
         Thread th = new Thread(new PendingMemberWatcher(this));
@@ -118,21 +112,17 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     public long getTerminationPendingStartedTimeOfMember(String memberId) {
         return terminationPendingStartedTime.get(memberId);
     }
-    
+
     public List<MemberContext> getPendingMembers() {
         return pendingMembers;
     }
-    
+
     public void setPendingMembers(List<MemberContext> pendingMembers) {
         this.pendingMembers = pendingMembers;
     }
-    
+
     public int getActiveMemberCount() {
         return activeMembers.size();
-    }
-    
-    public void setActiveMembers(List<MemberContext> activeMembers) {
-        this.activeMembers = activeMembers;
     }
 
     public int getMinimumMemberCount() {
@@ -146,9 +136,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     public void addPendingMember(MemberContext ctxt) {
         this.pendingMembers.add(ctxt);
     }
-    
+
     public boolean removePendingMember(String id) {
-    	if (id == null) {
+        if (id == null) {
             return false;
         }
         synchronized (pendingMembers) {
@@ -161,10 +151,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
             }
         }
-    	
-    	return false;
+
+        return false;
     }
-    
+
     public void movePendingMemberToActiveMembers(String memberId) {
         if (memberId == null) {
             return;
@@ -318,11 +308,11 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
         return null;
     }
-    
+
     public void addActiveMember(MemberContext ctxt) {
         this.activeMembers.add(ctxt);
     }
-    
+
     public void removeActiveMember(MemberContext ctxt) {
         this.activeMembers.remove(ctxt);
     }
@@ -340,24 +330,24 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         }
         return terminationPendingMemberAvailable;
     }
-    
+
     public long getObsoltedMemberExpiryTime() {
-    	return obsoltedMemberExpiryTime;
+        return obsoltedMemberExpiryTime;
     }
-    
+
     public void setObsoltedMemberExpiryTime(long obsoltedMemberExpiryTime) {
-    	this.obsoltedMemberExpiryTime = obsoltedMemberExpiryTime;
+        this.obsoltedMemberExpiryTime = obsoltedMemberExpiryTime;
     }
-    
+
     public void addObsoleteMember(MemberContext ctxt) {
         this.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
     }
-    
+
     public boolean removeObsoleteMember(String memberId) {
-    	if(this.obsoletedMembers.remove(memberId) == null) {
-    		return false;
-    	}
-    	return true;
+        if (this.obsoletedMembers.remove(memberId) == null) {
+            return false;
+        }
+        return true;
     }
 
     public long getPendingMemberExpiryTime() {
@@ -367,29 +357,20 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     public void setPendingMemberExpiryTime(long pendingMemberExpiryTime) {
         this.pendingMemberExpiryTime = pendingMemberExpiryTime;
     }
-    
+
     public Map<String, MemberContext> getObsoletedMembers() {
         return obsoletedMembers;
     }
-        
+
     public void setObsoletedMembers(Map<String, MemberContext> obsoletedMembers) {
         this.obsoletedMembers = obsoletedMembers;
     }
 
-    public String getNetworkPartitionId() {
-        return networkPartitionId;
-    }
-
-    public void setNetworkPartitionId(String networkPartitionId) {
-        this.networkPartitionId = networkPartitionId;
-    }
-
     @Override
     public int getActiveInstanceCount() {
-        
+
         return getNonTerminatedMemberCount();
     }
-
 
     public Map<String, MemberStatsContext> getMemberStatsContexts() {
         return memberStatsContexts;
@@ -411,14 +392,13 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         return this.memberStatsContexts.get(id);
     }
 
-//    public boolean memberExist(String memberId) {
-//        return memberStatsContexts.containsKey(memberId);
-//    }
-
-
     public Properties getProperties() {
         return properties;
     }
+
+//    public boolean memberExist(String memberId) {
+//        return memberStatsContexts.containsKey(memberId);
+//    }
 
     public void setProperties(Properties properties) {
         this.properties = properties;
@@ -448,18 +428,22 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     public int getNonTerminatedMemberCount() {
         return activeMembers.size() + pendingMembers.size();
     }
-    
-    public List<MemberContext> getActiveMembers() {
-		return activeMembers;
-	}
 
-	public boolean removeActiveMemberById(String memberId) {
+    public List<MemberContext> getActiveMembers() {
+        return activeMembers;
+    }
+
+    public void setActiveMembers(List<MemberContext> activeMembers) {
+        this.activeMembers = activeMembers;
+    }
+
+    public boolean removeActiveMemberById(String memberId) {
         boolean removeActiveMember = false;
         synchronized (activeMembers) {
             Iterator<MemberContext> iterator = activeMembers.listIterator();
             while (iterator.hasNext()) {
                 MemberContext memberContext = iterator.next();
-                if(memberId.equals(memberContext.getMemberId())){
+                if (memberId.equals(memberContext.getMemberId())) {
                     iterator.remove();
                     removeActiveMember = true;
 
@@ -472,47 +456,47 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     public boolean activeMemberExist(String memberId) {
 
-        for (MemberContext memberContext: activeMembers) {
-            if(memberId.equals(memberContext.getMemberId())){
+        for (MemberContext memberContext : activeMembers) {
+            if (memberId.equals(memberContext.getMemberId())) {
                 return true;
             }
         }
         return false;
     }
-    
-    public  int getAllMemberForTerminationCount () {
-    	int count = activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
-		if (log.isDebugEnabled()) {
-    		log.debug("PartitionContext:getAllMemberForTerminationCount:size:" + count);
-    	}
-    	return count;
+
+    public int getAllMemberForTerminationCount() {
+        int count = activeMembers.size() + pendingMembers.size() + terminationPendingMembers.size();
+        if (log.isDebugEnabled()) {
+            log.debug("PartitionContext:getAllMemberForTerminationCount:size:" + count);
+        }
+        return count;
     }
-    
+
     // Map<String, MemberStatsContext> getMemberStatsContexts().keySet()
-    public  Set<String> getAllMemberForTermination () {
+    public Set<String> getAllMemberForTermination() {
 
-    	List<MemberContext> merged =  new ArrayList<MemberContext>();
-    	
-    	
-    	merged.addAll(activeMembers);
-    	merged.addAll(pendingMembers);
-    	merged.addAll(terminationPendingMembers);
-    	
-    	Set<String> results = new HashSet<String>(merged.size());
-    	
-    	for (MemberContext ctx: merged) {
-    		results.add(ctx.getMemberId());
-    	}
-    	
+        List<MemberContext> merged = new ArrayList<MemberContext>();
 
-    	if (log.isDebugEnabled()) {
-    		log.debug("PartitionContext:getAllMemberForTermination:size:" + results.size());
-    	}
-    	
-    	//MemberContext x = new MemberContext();
-    	//x.getMemberId()
-    	
-    	return results;
+
+        merged.addAll(activeMembers);
+        merged.addAll(pendingMembers);
+        merged.addAll(terminationPendingMembers);
+
+        Set<String> results = new HashSet<String>(merged.size());
+
+        for (MemberContext ctx : merged) {
+            results.add(ctx.getMemberId());
+        }
+
+
+        if (log.isDebugEnabled()) {
+            log.debug("PartitionContext:getAllMemberForTermination:size:" + results.size());
+        }
+
+        //MemberContext x = new MemberContext();
+        //x.getMemberId()
+
+        return results;
     }
 
     public void movePendingTerminationMemberToObsoleteMembers(String memberId) {
@@ -607,10 +591,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
             while (true) {
                 long expiryTime = ctxt.getPendingMemberExpiryTime();
                 List<MemberContext> pendingMembers = ctxt.getPendingMembers();
-                
+
                 synchronized (pendingMembers) {
                     Iterator<MemberContext> iterator = pendingMembers.listIterator();
-                    while ( iterator.hasNext()) {
+                    while (iterator.hasNext()) {
                         MemberContext pendingMember = iterator.next();
 
                         if (pendingMember == null) {
@@ -622,11 +606,11 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
                             iterator.remove();
                             log.info("Pending state of member: " + pendingMember.getMemberId() +
-                                     " is expired. " + "Adding as an obsoleted member.");
+                                    " is expired. " + "Adding as an obsoleted member.");
                             // member should be terminated
                             ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
-                            if( pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD){
+                            if (pendingMembersFailureCount > PENDING_MEMBER_FAILURE_THRESHOLD) {
                                 setPendingMemberExpiryTime(expiryTime * 2);//Doubles the expiry time after the threshold of failure exceeded
                                 //TODO Implement an alerting system: STRATOS-369
                             }
@@ -642,8 +626,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
             }
         }
 
-    } 
-    
+    }
+
     private class ObsoletedMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
 
@@ -698,7 +682,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 while (iterator.hasNext()) {
 
                     MemberContext terminationPendingMember = iterator.next();
-                    if (terminationPendingMember == null){
+                    if (terminationPendingMember == null) {
                         continue;
                     }
                     long terminationPendingTime = System.currentTimeMillis()
@@ -712,7 +696,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 try {
                     // TODO find a constant
                     Thread.sleep(15000);
-                } catch (InterruptedException ignore) {}
+                } catch (InterruptedException ignore) {
+                }
             }
         }
     }

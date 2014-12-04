@@ -456,6 +456,8 @@ public class AutoscalerTopologyEventReceiver {
                                                    cluster.getClusterId(),
                                                    clusterInstance.getInstanceId());
                                            instance.setParentId(clusterInstance.getParentId());
+                                           instance.setNetworkPartitionId(clusterInstance.getNetworkPartitionId());
+                                           instance.setPartitionId(clusterInstance.getPartitionId());
                                            instance.setStatus(clusterInstance.getStatus());
                                            clusterMonitor.addInstance(instance);
                                        }
