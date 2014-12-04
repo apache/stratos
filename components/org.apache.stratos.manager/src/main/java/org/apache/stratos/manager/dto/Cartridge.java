@@ -39,6 +39,7 @@ public class Cartridge implements Comparable<Cartridge> {
 	private String status;
 	//private String ip;
 	private String provider;
+	private String category;
 	private String version;
 	private boolean multiTenant;
     private boolean isLoadBalancer;
@@ -323,4 +324,11 @@ public class Cartridge implements Comparable<Cartridge> {
 		this.clusterId = clusterId;
 	}
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

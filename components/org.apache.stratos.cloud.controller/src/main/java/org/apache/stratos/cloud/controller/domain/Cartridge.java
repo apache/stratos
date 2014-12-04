@@ -39,6 +39,8 @@ public class Cartridge implements Serializable{
     private String hostName;
     
     private String provider;
+
+	private String category;
     
     private String displayName;
     
@@ -401,4 +403,11 @@ public class Cartridge implements Serializable{
         this.exportingProperties = exportingProperties;
     }
 
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

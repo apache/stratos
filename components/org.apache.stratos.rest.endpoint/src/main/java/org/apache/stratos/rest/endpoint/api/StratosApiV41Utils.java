@@ -725,6 +725,91 @@ public class StratosApiV41Utils {
         return lbCartridges;
     }
 
+	static List<Cartridge> getAvailableCartridgesByProvider(String provider, ConfigurationContext configurationContext) throws RestAPIException {
+		List<Cartridge> cartridges = new ArrayList<Cartridge>();
+
+		if (log.isDebugEnabled()) {
+			log.debug("Getting available cartridges. Privider name : " + provider );
+		}
+
+		boolean allowMultipleSubscription = new Boolean(
+				System.getProperty(CartridgeConstants.FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED));
+
+		try {
+
+
+			String[] availableCartridges = CloudControllerServiceClient.getServiceClient().getRegisteredCartridges();
+
+			if (availableCartridges != null) {
+				for (String cartridgeType : availableCartridges) {
+					CartridgeInfo cartridgeInfo = null;
+					try {
+						cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+					} catch (Exception e) {
+						if (log.isWarnEnabled()) {
+							log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
+							         + e.getMessage());
+						}
+					}
+					if (cartridgeInfo == null) {
+						// This cannot happen. But continue
+						if (log.isDebugEnabled()) {
+							log.debug("Cartridge Info not found: " + cartridgeType);
+						}
+						continue;
+					}
+
+
+					if (!cartridgeInfo.getProvider().equals(provider)) {
+						continue;
+					}
+
+					Cartridge cartridge = new Cartridge();
+					cartridge.setCartridgeType(cartridgeType);
+					cartridge.setProvider(cartridgeInfo.getProvider());
+					cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+					cartridge.setDescription(cartridgeInfo.getDescription());
+					cartridge.setVersion(cartridgeInfo.getVersion());
+					cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+					cartridge.setHostName(cartridgeInfo.getHostName());
+					cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+					cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
+					//cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
+					cartridge.setCartridgeAlias("-");
+					cartridge.setPersistence(cartridgeInfo.getPersistence());
+					cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+
+					if (cartridgeInfo.getProperties() != null) {
+						for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo
+								.getProperties()) {
+							if (property.getName().equals("load.balancer")) {
+								cartridge.setLoadBalancer(true);
+							}
+						}
+					}
+					//cartridge.setActiveInstances(0);
+					cartridges.add(cartridge);
+				}
+			} else {
+				if (log.isDebugEnabled()) {
+					log.debug("There are no available cartridges");
+				}
+			}
+		} catch (Exception e) {
+			String msg = "Error while getting available cartridges. Cause: " + e.getMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg, e);
+		}
+
+		Collections.sort(cartridges);
+
+		if (log.isDebugEnabled()) {
+			log.debug("Returning available cartridges " + cartridges.size());
+		}
+
+		return cartridges;
+    }
+
     static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
         List<Cartridge> cartridges = new ArrayList<Cartridge>();
 
@@ -774,7 +859,8 @@ public class StratosApiV41Utils {
                     Cartridge cartridge = new Cartridge();
                     cartridge.setCartridgeType(cartridgeType);
                     cartridge.setProvider(cartridgeInfo.getProvider());
-                    cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+	                cartridge.setCategory(cartridgeInfo.getCategory());
+	                cartridge.setDisplayName(cartridgeInfo.getDisplayName());
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());

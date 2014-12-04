@@ -33,7 +33,7 @@
   <queryExpressions><![CDATA[ 
 	from avg_rif_stat
 		select cluster_id, instance_id, network_partition_id,active_instances_count, in_flight_request_count,served_request_count,
-		stratos:concat(cluster_id, '-' , network_partition_id) as avg_rif_cluster_network
+		stratos:concat(cluster_id, '-' ,instance_id) as avg_rif_cluster_network
 		insert into avg_rif_concat;
 	define partition avg_rif_cluster_partition by  avg_rif_concat.avg_rif_cluster_network;
 	from avg_rif_concat#window.timeBatch(1 min)
