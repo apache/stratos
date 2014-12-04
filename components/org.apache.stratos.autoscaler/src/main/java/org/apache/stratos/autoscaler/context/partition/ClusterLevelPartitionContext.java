@@ -24,13 +24,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.constants.StratosConstants;
 
 /**
@@ -87,10 +88,9 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.pendingMembers = new ArrayList<MemberContext>();
     }
     
-    public ClusterLevelPartitionContext(ChildLevelPartition childLevelPartition, Partition partition, int max) {
+    public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId) {
 
-        super(partition, childLevelPartition, max);
-        this.minimumMemberCount = partition.getPartitionMin();
+        super(max,partition, networkPartitionId);
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();

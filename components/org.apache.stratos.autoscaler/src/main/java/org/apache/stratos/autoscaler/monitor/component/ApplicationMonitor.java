@@ -180,21 +180,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     public boolean startMinimumDependencies(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
-        boolean initialStartup = false;
-        //There will be one application instance
-        //FIXME when having multiple network partitions
-        if (application.getInstanceContextCount() > 0) {
-            startDependency(application);
-        } else {
-            //No available instances in the Applications. Need to start them all
-            createInstanceAndStartDependency(application);
-            initialStartup = true;
-        }
-        return initialStartup;
+
+        return createInstanceAndStartDependency(application);
     }
 
-    private void createInstanceAndStartDependency(Application application)
+    private boolean createInstanceAndStartDependency(Application application)
             throws TopologyInConsistentException, PolicyValidationException {
+        boolean initialStartup = true;
         List<String> instanceIds = new ArrayList<String>();
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
@@ -216,9 +208,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     if (appInstance != null) {
                         //use the existing instance in the Topology to create the data
                         instanceId = handleApplicationInstanceCreation(application, context, appInstance);
+                        initialStartup = false;
                     } else {
                         //create new app instance as it doesn't exist in the Topology
                         instanceId = handleApplicationInstanceCreation(application, context, null);
+
                     }
                     instanceIds.add(instanceId);
                     log.info("Application instance has been added for the [network partition] " +
@@ -228,6 +222,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
         }
         startDependency(application, instanceIds);
+        return initialStartup;
     }
 
     private String handleApplicationInstanceCreation(Application application,

@@ -190,6 +190,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     getClusterInstanceContextMap().values();
 
             for (final ClusterInstanceContext instanceContext : clusterInstanceContexts ) {
+                /* TODO ***********if  (((getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
+                        (getStatus() == ClusterStatus.Inactive && !hasStartupDependents)) && !this.hasFaultyMember
+                        && !stop) {*/
 
                 Runnable monitoringRunnable = new Runnable() {
                     @Override
@@ -198,6 +201,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     if (log.isDebugEnabled()) {
                         log.debug("Monitor is running for [cluster] : " + getClusterId());
                     }
+
+
+                        // store primary members in the cluster instance context
 
                     // store primary members in the cluster instance context
                     List<String> primaryMemberListInClusterInstance = new ArrayList<String>();

@@ -63,12 +63,8 @@ public class ClusterContextFactory {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
         DeploymentPolicy deploymentPolicy;
-        ApplicationHolder.acquireReadLock();
-        try {
-            deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicyByApplication(cluster.getAppId());
-        } finally {
-            ApplicationHolder.releaseReadLock();
-        }
+        deploymentPolicy = PolicyManager.getInstance().
+                                getDeploymentPolicyByApplication(cluster.getAppId());
 
         return new VMClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
                 deploymentPolicy);

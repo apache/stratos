@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
+
 import java.io.Serializable;
 import java.util.*;
 /**
@@ -38,7 +39,6 @@ public abstract class PartitionContext implements Serializable{
     protected String partitionId;
     private Partition partition;
     private int max;
-    private ChildLevelPartition childLevelPartition;
     private String networkPartitionId;
     // properties
     private Properties properties;
@@ -48,11 +48,11 @@ public abstract class PartitionContext implements Serializable{
 
     }
 
-    public PartitionContext(Partition partition, ChildLevelPartition childLevelPartition, int max) {
-
+    public PartitionContext(int max, Partition partition, String networkPartitionId) {
         this.partition = partition;
-        this.childLevelPartition = childLevelPartition;
         this.max = max;
+        this.partitionId = partition.getId();
+        this.networkPartitionId = networkPartitionId;
     }
 
     public Partition getPartition() {
@@ -80,11 +80,6 @@ public abstract class PartitionContext implements Serializable{
     }
 
     public abstract int getActiveInstanceCount();
-
-    public ChildLevelPartition getChildLevelPartition() {
-        return childLevelPartition;
-    }
-
     public int getMax() {
         return max;
     }
