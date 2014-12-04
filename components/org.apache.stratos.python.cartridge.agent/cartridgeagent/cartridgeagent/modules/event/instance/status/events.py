@@ -19,7 +19,7 @@ import json
 
 
 class InstanceActivatedEvent:
-    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id):
+    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id, instance_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
@@ -29,6 +29,8 @@ class InstanceActivatedEvent:
         self.partitionId = parition_id
         """ :type : str  """
         self.memberId = member_id
+        """ :type : str  """
+        self.instanceId = instance_id
         """ :type : str  """
 
     def to_json(self):
@@ -36,7 +38,7 @@ class InstanceActivatedEvent:
 
 
 class InstanceStartedEvent:
-    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id):
+    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id,instance_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
@@ -47,6 +49,9 @@ class InstanceStartedEvent:
         """ :type : str  """
         self.memberId = member_id
         """ :type : str  """
+        self.instanceId = instance_id
+        """ :type : str  """
+
 
     def to_json(self):
         return to_json(self)
@@ -54,7 +59,7 @@ class InstanceStartedEvent:
 
 class InstanceMaintenanceModeEvent:
 
-    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id):
+    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id, instance_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
@@ -64,6 +69,8 @@ class InstanceMaintenanceModeEvent:
         self.partitionId = partition_id
         """ :type : str  """
         self.memberId = member_id
+        """ :type : str  """
+        self.instanceId = instance_id
         """ :type : str  """
 
     def to_json(self):
@@ -72,7 +79,7 @@ class InstanceMaintenanceModeEvent:
 
 class InstanceReadyToShutdownEvent:
 
-    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id):
+    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id, instance_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
@@ -82,6 +89,8 @@ class InstanceReadyToShutdownEvent:
         self.partitionId = partition_id
         """ :type : str  """
         self.memberId = member_id
+        """ :type : str  """
+        self.instanceId = instance_id
         """ :type : str  """
 
     def to_json(self):
