@@ -24,7 +24,7 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadThresholds;
 import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy autoscalePolicy;
 global java.lang.String clusterId;
 global java.lang.Boolean rifReset;
@@ -34,40 +34,40 @@ global java.lang.Boolean laReset;
 rule "Containers Scaling Rule"
 dialect "mvel"
 	when
-        $kubernetesClusterContext : KubernetesClusterContext ()
-	kubernetesClusterId : String() from $kubernetesClusterContext.getKubernetesClusterID()
-	minReplicas : Integer() from $kubernetesClusterContext.getMinReplicas()
-        maxReplicas : Integer() from $kubernetesClusterContext.getMaxReplicas()
-        nonTerminatedReplicas : Integer() from $kubernetesClusterContext.getNonTerminatedMemberCount()
-        activeReplicas : Integer() from $kubernetesClusterContext.getActiveMemberCount()
+        kubernetesClusterContext : KubernetesClusterContext ()
+	kubernetesClusterId : String() from kubernetesClusterContext.getKubernetesClusterID()
+	minReplicas : Integer() from kubernetesClusterContext.getMinReplicas()
+        maxReplicas : Integer() from kubernetesClusterContext.getMaxReplicas()
+        nonTerminatedReplicas : Integer() from kubernetesClusterContext.getNonTerminatedMemberCount()
+        activeReplicas : Integer() from kubernetesClusterContext.getActiveMemberCount()
 
         eval(log.info("Running scaling rule [kub-cluster] : " + kubernetesClusterId + " [cluster] : " + clusterId))
 	
-	$loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
+	loadThresholds : LoadThresholds() from  autoscalePolicy.getLoadThresholds()
 
-        rifUpperLimit : Float() from  $loadThresholds.getRequestsInFlight().getUpperLimit()
-        rifLowerLimit : Float() from  $loadThresholds.getRequestsInFlight().getLowerLimit()
+        rifUpperLimit : Float() from  loadThresholds.getRequestsInFlight().getUpperLimit()
+        rifLowerLimit : Float() from  loadThresholds.getRequestsInFlight().getLowerLimit()
 
-        rifAverage : Float() from  $kubernetesClusterContext.getAverageRequestsInFlight()
-        rifGradient : Float() from  $kubernetesClusterContext.getRequestsInFlightGradient()
-        rifSecondDerivative : Float() from  $kubernetesClusterContext.getRequestsInFlightSecondDerivative()
-	rifPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
+        rifAverage : Float() from  kubernetesClusterContext.getAverageRequestsInFlight()
+        rifGradient : Float() from  kubernetesClusterContext.getRequestsInFlightGradient()
+        rifSecondDerivative : Float() from  kubernetesClusterContext.getRequestsInFlightSecondDerivative()
+	rifPredictedValue : Double() from delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
-        mcUpperLimit : Float() from  $loadThresholds.getMemoryConsumption().getUpperLimit()
-        mcLowerLimit : Float() from  $loadThresholds.getMemoryConsumption().getLowerLimit()
+        mcUpperLimit : Float() from  loadThresholds.getMemoryConsumption().getUpperLimit()
+        mcLowerLimit : Float() from  loadThresholds.getMemoryConsumption().getLowerLimit()
 
-        memoryConsumptionAverage : Float() from  $kubernetesClusterContext.getAverageMemoryConsumption()
-        memoryConsumptionGradient : Float() from  $kubernetesClusterContext.getMemoryConsumptionGradient()
-        memoryConsumptionSecondDerivative : Float() from  $kubernetesClusterContext.getMemoryConsumptionSecondDerivative()
-	mcPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(memoryConsumptionAverage, memoryConsumptionGradient, memoryConsumptionSecondDerivative, 1)
+        memoryConsumptionAverage : Float() from  kubernetesClusterContext.getAverageMemoryConsumption()
+        memoryConsumptionGradient : Float() from  kubernetesClusterContext.getMemoryConsumptionGradient()
+        memoryConsumptionSecondDerivative : Float() from  kubernetesClusterContext.getMemoryConsumptionSecondDerivative()
+	mcPredictedValue : Double() from delegator.getPredictedValueForNextMinute(memoryConsumptionAverage, memoryConsumptionGradient, memoryConsumptionSecondDerivative, 1)
 
-        laUpperLimit : Float() from  $loadThresholds.getLoadAverage().getUpperLimit()
-        laLowerLimit : Float() from  $loadThresholds.getLoadAverage().getLowerLimit()
+        laUpperLimit : Float() from  loadThresholds.getLoadAverage().getUpperLimit()
+        laLowerLimit : Float() from  loadThresholds.getLoadAverage().getLowerLimit()
 
-        loadAverageAverage : Float() from  $kubernetesClusterContext.getAverageLoadAverage()
-        loadAverageGradient : Float() from  $kubernetesClusterContext.getLoadAverageGradient()
-        loadAverageSecondDerivative : Float() from  $kubernetesClusterContext.getLoadAverageSecondDerivative()
-	laPredictedValue : Double() from $delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
+        loadAverageAverage : Float() from  kubernetesClusterContext.getAverageLoadAverage()
+        loadAverageGradient : Float() from  kubernetesClusterContext.getLoadAverageGradient()
+        loadAverageSecondDerivative : Float() from  kubernetesClusterContext.getLoadAverageSecondDerivative()
+	laPredictedValue : Double() from delegator.getPredictedValueForNextMinute(loadAverageAverage, loadAverageGradient, loadAverageSecondDerivative, 1)
 
         scaleUpForRif : Boolean() from (rifReset && (rifPredictedValue > rifUpperLimit))
         scaleUpForMc : Boolean() from (mcReset && (mcPredictedValue > mcUpperLimit))
@@ -107,21 +107,21 @@ dialect "mvel"
         if (scaleUp) {
 	    int requiredReplicas = 0;
 	    if (scaleUpForRif) {
-              int predictedReplicasForRif = $delegator.getPredictedReplicasForStat(minReplicas, rifUpperLimit, rifPredictedValue);
+              int predictedReplicasForRif = delegator.getPredictedReplicasForStat(minReplicas, rifUpperLimit, rifPredictedValue);
 	      log.info("[scaling] " + " [cluster] : " + clusterId + " [RequestInFlight] predicted replicas : " + predictedReplicasForRif);
               if (predictedReplicasForRif > requiredReplicas ) {
                 requiredReplicas = predictedReplicasForRif;
               }
 	    } 
 	    if (scaleUpForMc) {
-              int predictedReplicasForMc = $delegator.getPredictedReplicasForStat(minReplicas, mcUpperLimit, mcPredictedValue);
+              int predictedReplicasForMc = delegator.getPredictedReplicasForStat(minReplicas, mcUpperLimit, mcPredictedValue);
               log.info("[scaling] " + " [cluster] : " + clusterId + " [MemoryConsumption] predicted replicas : " + predictedReplicasForMc);
               if (predictedReplicasForMc > requiredReplicas ) {
                 requiredReplicas = predictedReplicasForMc;
               }
             }
             if (scaleUpForLa) {
-              int predictedReplicasForLa = $delegator.getPredictedReplicasForStat(minReplicas, laUpperLimit, laPredictedValue);
+              int predictedReplicasForLa = delegator.getPredictedReplicasForStat(minReplicas, laUpperLimit, laPredictedValue);
               log.info("[scaling] " + " [cluster] : " + clusterId + " [LoadAverage] predicted replicas : " + predictedReplicasForLa);
               if (predictedReplicasForLa > requiredReplicas ) {
                 requiredReplicas = predictedReplicasForLa;
@@ -141,14 +141,14 @@ dialect "mvel"
             if (requiredReplicas > nonTerminatedReplicas) {
               log.info("[scaling] Decided to scale-up : [cluster] : " + clusterId);
  	      log.info("[scaling-up] " + " [cluster] : " + clusterId + " valid number of replicas to expand : " + requiredReplicas);
-	      $delegator.delegateScaleUpContainers($kubernetesClusterContext, requiredReplicas);
+	      delegator.delegateScaleUpContainers(kubernetesClusterContext, requiredReplicas);
             }
             //shrink the cluster
             if (requiredReplicas < nonTerminatedReplicas) {
               if (requiredReplicas < activeReplicas) {
                 log.info("[scaling] Decided to scale-down : [cluster] : " + clusterId);
  	        log.info("[scaling-down] " + " [cluster] : " + clusterId + " valid number of replicas to shrink : " + requiredReplicas);
-	        $delegator.delegateScaleDownContainers($kubernetesClusterContext, requiredReplicas);
+	        delegator.delegateScaleDownContainers(kubernetesClusterContext, requiredReplicas);
               } else {
 	        log.info("[scaling] " + " [cluster] : " + clusterId + " Even if requiredReplicas < nonTerminatedReplicas, still requiredReplicas >= activeReplicas ; hence not scaling down ");
               }
@@ -162,7 +162,7 @@ dialect "mvel"
               log.info("[scaling] Decided to scale-down [cluster] : " + clusterId);
               log.info("[scaling-down] " + " [cluster] : " + clusterId + " shrink the cluster to minReplicas : " + minReplicas);
               //shrink the cluster to minReplicas
-              $delegator.delegateScaleDownContainers($kubernetesClusterContext, minReplicas);
+              delegator.delegateScaleDownContainers(kubernetesClusterContext, minReplicas);
             } else {
 	      log.info("[scaling] " + " [cluster] : " + clusterId + " Even if all predicted stats < upperLimit, still activeReplicas <= minReplicas ; hence not scaling down ");
             }

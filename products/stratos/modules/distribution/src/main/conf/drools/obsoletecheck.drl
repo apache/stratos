@@ -41,10 +41,10 @@ import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.pojo.policy.PolicyManager $manager;
-global org.apache.stratos.autoscaler.context.AutoscalerContext $context;
-global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
-global org.apache.stratos.messaging.domain.topology.Topology $topology;
+global org.apache.stratos.autoscaler.pojo.policy.PolicyManager manager;
+global org.apache.stratos.autoscaler.context.AutoscalerContext context;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
+global org.apache.stratos.messaging.domain.topology.Topology topology;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
 global java.lang.String lbRef;
@@ -54,26 +54,26 @@ global Integer primaryMemberCount;
 rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
-            $ctxt : ClusterLevelPartitionContext ()
-            eval(log.debug("Running obsolete instances rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
-            eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Obsolete member count: " + $ctxt.getObsoletedMembers().size()))
-            eval($ctxt.getObsoletedMembers().keySet().size() > 0)
-            memberId : String() from $ctxt.getObsoletedMembers().keySet()
-            eval(log.debug("[obsolete-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
+            ctxt : ClusterLevelPartitionContext ()
+            eval(log.debug("Running obsolete instances rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
+            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Obsolete member count: " + ctxt.getObsoletedMembers().size()))
+            eval(ctxt.getObsoletedMembers().keySet().size() > 0)
+            memberId : String() from ctxt.getObsoletedMembers().keySet()
+            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " Member id: " + memberId))
         then
-           $delegator.terminateObsoleteInstance(memberId);
+           delegator.terminateObsoleteInstance(memberId);
 end
 
 rule "Cleanup Instances which are pending termination"
 dialect "mvel"
         when
-            $ctxt : ClusterLevelPartitionContext ()
-            eval(log.debug("Running instances cleanup event sender rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
-            eval(log.debug("[instance-cleanup-check] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Pending termination member count: " + $ctxt.getTerminationPendingMembers().size()))
-            eval($ctxt.getTerminationPendingMembers().size() > 0)
-            memberId : String() from $ctxt.getTerminationPendingMembers()
-            eval(log.debug("[instance-cleanup-check ] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
+            ctxt : ClusterLevelPartitionContext ()
+            eval(log.debug("Running instances cleanup event sender rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
+            eval(log.debug("[instance-cleanup-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Pending termination member count: " + ctxt.getTerminationPendingMembers().size()))
+            eval(ctxt.getTerminationPendingMembers().size() > 0)
+            memberId : String() from ctxt.getTerminationPendingMembers()
+            eval(log.debug("[instance-cleanup-check ] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " Member id: " + memberId))
         then
-           $delegator.delegateInstanceCleanup(memberId);
+           delegator.delegateInstanceCleanup(memberId);
 end
 

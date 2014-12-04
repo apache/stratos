@@ -23,21 +23,21 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.rule.RuleTasksDelegator $delegator;
+global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 
 rule "Terminate all Rule"
 
 dialect "mvel"
         when
-            $ctxt : ClusterLevelPartitionContext ()
-            eval(log.debug("Running terminate all rule: [partition] " + $ctxt.getPartitionId() + " [network-partition] " + $ctxt.getNetworkPartitionId()))
-            eval(log.debug("[terminate all] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() +" Member count: " + $ctxt.getMemberStatsContexts().size()))
-            eval($ctxt.getMemberStatsContexts().size() > 0)
-            memberId : String() from $ctxt.getMemberStatsContexts().keySet()
-            eval(log.debug("[terminate all] [network-partition] " + $ctxt.getNetworkPartitionId() + " [partition] " + $ctxt.getPartitionId() + " Member id: " + memberId))
+            ctxt : ClusterLevelPartitionContext ()
+            eval(log.debug("Running terminate all rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
+            eval(log.debug("[terminate all] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Member count: " + ctxt.getMemberStatsContexts().size()))
+            eval(ctxt.getMemberStatsContexts().size() > 0)
+            memberId : String() from ctxt.getMemberStatsContexts().keySet()
+            eval(log.debug("[terminate all] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " Member id: " + memberId))
 
         then
-           $delegator.delegateTerminate($ctxt, memberId);
+           delegator.delegateTerminate(ctxt, memberId);
 end
 
 

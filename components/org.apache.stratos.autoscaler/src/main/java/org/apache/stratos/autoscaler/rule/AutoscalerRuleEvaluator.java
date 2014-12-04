@@ -107,14 +107,14 @@ public class AutoscalerRuleEvaluator {
 
 
         if (handle == null) {
-            ksession.setGlobal("$delegator", new RuleTasksDelegator());
+            ksession.setGlobal("delegator", new RuleTasksDelegator());
             handle = ksession.insert(obj);
         } else {
             ksession.update(handle, obj);
         }
         ksession.fireAllRules();
         if(log.isDebugEnabled()){
-            log.debug(String.format("Minimum check executed for : %s ", obj));
+            log.debug(String.format("Rule executed for : %s ", obj));
         }
         return handle;
     }

@@ -42,8 +42,8 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
-global org.apache.stratos.autoscaler.pojo.policy.PolicyManager $manager;
-global org.apache.stratos.autoscaler.context.AutoscalerContext $context;
+global org.apache.stratos.autoscaler.pojo.policy.PolicyManager manager;
+global org.apache.stratos.autoscaler.context.AutoscalerContext context;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.util.Map partitionCtxts;
 global java.lang.String clusterId;
