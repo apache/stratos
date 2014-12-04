@@ -20,17 +20,24 @@
 package org.apache.stratos.autoscaler.rule;
 
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
+import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global java.lang.String clusterId;
 global Integer roundedRequiredInstanceCount;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
+global java.lang.String algorithmName;
 
 rule "Dependent Scaling Rule"
 dialect "mvel"
 	when
 
-       clusterInstanceContext : ClusterInstanceContext ()
+        clusterInstanceContext : ClusterInstanceContext ()
+        autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
+
+        eval(log.debug("Running dependent scaling rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId()))
+        scaleUp : Boolean() from (clusterInstanceContext.getNonTerminatedMemberCount() < roundedRequiredInstanceCount )
+        scaleDown : Boolean() from (clusterInstanceContext.getNonTerminatedMemberCount() > roundedRequiredInstanceCount )
 
 	then
 

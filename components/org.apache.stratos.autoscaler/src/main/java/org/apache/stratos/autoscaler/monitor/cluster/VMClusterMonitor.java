@@ -377,6 +377,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
         getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
+        getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
 
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
                 , scaleCheckFactHandle, clusterInstanceContext);
