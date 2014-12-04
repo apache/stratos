@@ -34,6 +34,8 @@ class ArtifactUpdatedEvent:
         """ :type : int  """
         self.commit_enabled = None
         """ :type : bool  """
+        self.instance_id=None
+        """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
