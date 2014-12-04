@@ -460,7 +460,7 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateTerminateContainer(KubernetesClusterContext kubernetesClusterContext, String memberId) {
+    public void delegateTerminateContainer(String memberId) {
         try {
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
             ccClient.terminateContainer(memberId);
