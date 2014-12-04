@@ -1445,7 +1445,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
             for (Partition partition : partitions) {
-                if (validatedPartitions.contains(partition.getId())) {
+                if (validatedPartitions != null && validatedPartitions.contains(partition.getId())) {
                     // partition cache hit
                     continue;
                 }

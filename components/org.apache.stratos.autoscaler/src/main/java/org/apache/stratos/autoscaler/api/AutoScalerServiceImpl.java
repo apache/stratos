@@ -174,11 +174,13 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 Group group = application.getGroupRecursively(alias);
                 if(group != null) {
                     Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
+                    //validating the group deployment policy against the leaf cartridges
                     for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
                         CloudControllerClient.getInstance().validateDeploymentPolicy(
                                 clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
                     }
                 } else {
+                    //Validating the cartridge level deployment policy
                     ClusterDataHolder clusterDataHolder = application.
                             getClusterDataHolderRecursivelyByAlias(alias);
                     if(clusterDataHolder != null) {
