@@ -26,11 +26,10 @@ public class ComponentContext implements Serializable {
     private static final long serialVersionUID = -3841830873207967496L;
 
     private GroupContext[] groupContexts;
-
-    private SubscribableContext[] subscribableContexts;
+    
+    private CartridgeContext[] cartridgeContexts;
 
     private DependencyContext dependencyContext;
-
 
     public GroupContext[] getGroupContexts() {
         return groupContexts;
@@ -39,16 +38,16 @@ public class ComponentContext implements Serializable {
     public void setGroupContexts(GroupContext[] groupContexts) {
         this.groupContexts = groupContexts;
     }
+        
+    public CartridgeContext[] getCartridgeContexts() {
+		return cartridgeContexts;
+	}
 
-    public SubscribableContext[] getSubscribableContexts() {
-        return subscribableContexts;
-    }
+	public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
+		this.cartridgeContexts = cartridgeContexts;
+	}
 
-    public void setSubscribableContexts(SubscribableContext[] subscribableContexts) {
-        this.subscribableContexts = subscribableContexts;
-    }
-
-    public DependencyContext getDependencyContext() {
+	public DependencyContext getDependencyContext() {
         return dependencyContext;
     }
 

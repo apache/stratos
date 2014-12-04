@@ -37,11 +37,7 @@ public class ApplicationContext implements Serializable {
 
     private String alias;
 
-    private String deploymentPolicy;
-
     private ComponentContext componentContext;
-
-    private SubscribableInfoContext[] subscribableInfoContexts;
 
     private Properties properties;
 
@@ -71,15 +67,7 @@ public class ApplicationContext implements Serializable {
     public void setComponents(ComponentContext componentContext) {
         this.componentContext = componentContext;
     }
-
-    public SubscribableInfoContext[] getSubscribableInfoContext() {
-        return subscribableInfoContexts;
-    }
-
-    public void setSubscribableInfoContext(SubscribableInfoContext[] subscribableInfoContexts) {
-        this.subscribableInfoContexts = subscribableInfoContexts;
-    }
-
+    
     public int getTenantId() {
         return tenantId;
     }
@@ -112,11 +100,4 @@ public class ApplicationContext implements Serializable {
         this.properties = properties;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
 }

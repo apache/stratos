@@ -25,7 +25,9 @@ import java.io.Serializable;
 @XmlRootElement (name = "subscribables")
 public class SubscribableDefinition implements Serializable {
 
-    private String type;
+    private static final long serialVersionUID = 963835780151323701L;
+
+	private String type;
 
     private String alias;
 

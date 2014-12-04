@@ -26,7 +26,9 @@ import java.util.List;
 @XmlRootElement(name = "groups")
 public class GroupDefinition implements Serializable {
 
-    private String name;
+    private static final long serialVersionUID = 7261380706841894892L;
+
+	private String name;
 
     private String alias;
 
@@ -35,16 +37,10 @@ public class GroupDefinition implements Serializable {
     private int groupMaxInstances;
 
     public boolean isGroupScalingEnabled;
+    
+    private List<CartridgeDefinition> cartridges;
 
-    public boolean isGroupInstanceMonitoringEnabled;
-
-    private String autoscalingPolicy;
-
-    private String deploymentPolicy;
-
-    private List<SubscribableDefinition> subscribables;
-
-    private List<GroupDefinition> subGroups;
+    private List<GroupDefinition> groups;
 
     public String getName() {
         return name;
@@ -60,30 +56,6 @@ public class GroupDefinition implements Serializable {
 
     public void setAlias(String alias) {
         this.alias = alias;
-    }
-
-    public String getAutoscalingPolicy() {
-        return autoscalingPolicy;
-    }
-
-    public void setAutoscalingPolicy(String autoscalingPolicy) {
-        this.autoscalingPolicy = autoscalingPolicy;
-    }
-
-    public List<SubscribableDefinition> getSubscribables() {
-        return subscribables;
-    }
-
-    public void setSubscribables(List<SubscribableDefinition> subscribableDefinitions) {
-        this.subscribables = subscribableDefinitions;
-    }
-
-    public List<GroupDefinition> getSubGroups() {
-        return subGroups;
-    }
-
-    public void setSubGroups(List<GroupDefinition> subGroups) {
-        this.subGroups = subGroups;
     }
 
     public int getGroupMinInstances() {
@@ -102,27 +74,28 @@ public class GroupDefinition implements Serializable {
         this.groupMaxInstances = groupMaxInstances;
     }
 
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
+	public boolean isGroupScalingEnabled() {
+		return isGroupScalingEnabled;
+	}
 
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
+	public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+		this.isGroupScalingEnabled = isGroupScalingEnabled;
+	}
 
-    /*public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
-    }
+	public List<CartridgeDefinition> getCartridges() {
+		return cartridges;
+	}
 
-    public void setIsGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.isGroupScalingEnabled = isGroupScalingEnabled;
-    }
+	public void setCartridges(List<CartridgeDefinition> cartridges) {
+		this.cartridges = cartridges;
+	}
 
-    public boolean isGroupInstanceMonitoringEnabled() {
-        return isGroupInstanceMonitoringEnabled;
-    }
+	public List<GroupDefinition> getGroups() {
+		return groups;
+	}
 
-    public void setIsGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
-        this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
-    }*/
+	public void setGroups(List<GroupDefinition> groups) {
+		this.groups = groups;
+	}
+	
 }

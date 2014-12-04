@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.applications.parser;
 
+import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
@@ -131,9 +132,9 @@ public class ParserUtils {
 
     private static String getAliasForServiceType (String serviceType, GroupContext groupContext) {
 
-        for (SubscribableContext subCtxt : groupContext.getSubscribableContexts()) {
+        for (CartridgeContext subCtxt : groupContext.getCartridgeContexts()) {
             if (serviceType.equals(subCtxt.getType())) {
-                return subCtxt.getAlias();
+                return subCtxt.getSubscribableInfoContext().getAlias();
             }
         }
 

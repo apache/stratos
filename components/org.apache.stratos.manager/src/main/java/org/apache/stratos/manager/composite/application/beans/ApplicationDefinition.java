@@ -19,25 +19,24 @@
 
 package org.apache.stratos.manager.composite.application.beans;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ApplicationDefinition implements Serializable {
 
-    private String applicationId;
+    private static final long serialVersionUID = -2829206180707597651L;
+
+	private String applicationId;
 
     private String alias;
 
     private ComponentDefinition components;
-
-    private List<SubscribableInfo> subscribableInfo;
-
+    
     private List<PropertyBean> property;
-
-    private String deploymentPolicy;
-
+    
     public String getApplicationId() {
         return applicationId;
     }
@@ -62,27 +61,12 @@ public class ApplicationDefinition implements Serializable {
         this.components = components;
     }
 
-    public List<SubscribableInfo> getSubscribableInfo() {
-        return subscribableInfo;
-    }
+	public List<PropertyBean> getProperty() {
+		return property;
+	}
 
-    public void setSubscribableInfo(List<SubscribableInfo> subscribableInfo) {
-        this.subscribableInfo = subscribableInfo;
-    }
-
-    public List<PropertyBean> getProperty() {
-        return property;
-    }
-
-    public void setProperty(List<PropertyBean> property) {
-        this.property = property;
-    }
-
-    public String getDeploymentPolicy() {
-        return deploymentPolicy;
-    }
-
-    public void setDeploymentPolicy(String deploymentPolicy) {
-        this.deploymentPolicy = deploymentPolicy;
-    }
+	public void setProperty(List<PropertyBean> property) {
+		this.property = property;
+	}   
+    
 }

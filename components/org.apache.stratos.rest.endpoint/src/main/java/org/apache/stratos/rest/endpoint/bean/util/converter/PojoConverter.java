@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartiti
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.stub.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.stub.pojo.DependencyContext;
 import org.apache.stratos.autoscaler.stub.pojo.GroupContext;
 import org.apache.stratos.autoscaler.stub.pojo.SubscribableInfoContext;
@@ -31,6 +32,7 @@ import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
+import org.apache.stratos.manager.composite.application.beans.CartridgeDefinition;
 import org.apache.stratos.manager.composite.application.beans.GroupDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableDefinition;
 import org.apache.stratos.manager.composite.application.beans.SubscribableInfo;
@@ -1008,17 +1010,13 @@ public class PojoConverter {
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
         applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
         applicationContext.setAlias(compositeAppDefinition.getAlias());
-        applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
+        //applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
 
         // convert and set components
         if (compositeAppDefinition.getComponents() != null) {
             org.apache.stratos.autoscaler.stub.pojo.ComponentContext componentContext =
                     new org.apache.stratos.autoscaler.stub.pojo.ComponentContext();
-            // top level subscribables
-            if (compositeAppDefinition.getComponents().getSubscribables() != null) {
-                componentContext.setSubscribableContexts(getSubscribableContextArrayFromSubscribableDefinitions(
-                        compositeAppDefinition.getComponents().getSubscribables()));
-            }
+                      
             // top level Groups
             if (compositeAppDefinition.getComponents().getGroups() != null) {
                 componentContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(compositeAppDefinition.getComponents().getGroups()));
@@ -1027,17 +1025,70 @@ public class PojoConverter {
             if (compositeAppDefinition.getComponents().getDependencies() != null) {
                 componentContext.setDependencyContext(getDependencyContextFromDependencyDefinition(compositeAppDefinition.getComponents().getDependencies()));
             }
+            // top level cartridge context information
+            if (compositeAppDefinition.getComponents().getCartridges() != null) {
+                componentContext.setCartridgeContexts(getCartridgeContextArrayFromCartridgeDefinition(compositeAppDefinition.getComponents().getCartridges()));
+            }
 
             applicationContext.setComponents(componentContext);
         }
 
         // subscribable information
-        applicationContext.setSubscribableInfoContext(getSubscribableInfoContextArrFromSubscribableInfoDefinition(compositeAppDefinition.getSubscribableInfo()));
+        // applicationContext.setSubscribableInfoContext(getSubscribableInfoContextArrFromSubscribableInfoDefinition(compositeAppDefinition.getSubscribableInfo()));
 
         return applicationContext;
     }
 
-    private static SubscribableInfoContext[] getSubscribableInfoContextArrFromSubscribableInfoDefinition(List<SubscribableInfo> subscribableInfos) {
+    private static CartridgeContext[] getCartridgeContextArrayFromCartridgeDefinition(
+            List<CartridgeDefinition> cartridges) {
+
+    	CartridgeContext[] cartridgeContextArray = new CartridgeContext[cartridges.size()];
+    	int i = 0;
+    	for (CartridgeDefinition cartridgeDefinition : cartridges) {
+    		CartridgeContext context = new CartridgeContext();
+    		context.setCartridgeMax(cartridgeDefinition.getCartridgeMax());
+    		context.setCartridgeMin(cartridgeDefinition.getCartridgeMin());
+    		context.setType(cartridgeDefinition.getType());
+    		context.setSubscribableInfoContext(convertSubscribableInfo(cartridgeDefinition.getSubscribableInfo()));  
+    		cartridgeContextArray[i++] = context;
+        }
+    	
+	    return cartridgeContextArray;
+    }
+
+	private static SubscribableInfoContext convertSubscribableInfo(
+            SubscribableInfo subscribableInfo) {
+		SubscribableInfoContext infoContext = new SubscribableInfoContext();
+		infoContext.setAlias(subscribableInfo.getAlias());
+		infoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
+		infoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
+		infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
+		infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
+		infoContext.setMinMembers(subscribableInfo.getMinMembers());
+		//infoContext.setPrivateRepo(subscribableInfo.getpr);
+		infoContext.setRepoPassword(subscribableInfo.getRepoPassword());
+		infoContext.setRepoUrl(subscribableInfo.getRepoUrl());
+		infoContext.setRepoUsername(subscribableInfo.getRepoUsername());
+		infoContext.setProperties(convertProperties(subscribableInfo.getProperty()));
+		
+	    return infoContext;
+    }
+
+	private static org.apache.stratos.autoscaler.stub.Properties convertProperties(
+            List<org.apache.stratos.manager.composite.application.beans.PropertyBean> property) {
+		org.apache.stratos.autoscaler.stub.Properties prop = new org.apache.stratos.autoscaler.stub.Properties();
+		if (property != null) {
+			for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : property) {
+				org.apache.stratos.autoscaler.stub.Property p = new org.apache.stratos.autoscaler.stub.Property();
+				p.setName(propertyBean.getName());
+				p.setValue(propertyBean.getValue());
+				prop.addProperties(p);
+			}
+		}
+	    return prop;
+    }
+
+	private static SubscribableInfoContext[] getSubscribableInfoContextArrFromSubscribableInfoDefinition(List<SubscribableInfo> subscribableInfos) {
 
         SubscribableInfoContext[] subscribableInfoContexts = new SubscribableInfoContext[subscribableInfos.size()];
         int i = 0;
@@ -1091,28 +1142,27 @@ public class PojoConverter {
             GroupContext groupContext = new GroupContext();
             groupContext.setName(groupDefinition.getName());
             groupContext.setAlias(groupDefinition.getAlias());
-            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
+            //groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled);
-            groupContext.setGroupInstanceMonitoringEnabled(groupDefinition.isGroupInstanceMonitoringEnabled);
-            groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
-            // nested Subscribables
-            if (groupDefinition.getSubscribables() != null) {
-                groupContext.setSubscribableContexts(
-                        getSubscribableContextArrayFromSubscribableDefinitions(groupDefinition.getSubscribables()));
+            //groupContext.setGroupInstanceMonitoringEnabled(groupDefinition.isGroupInstanceMonitoringEnabled);
+            //groupContext.setAutoscalingPolicy(groupDefinition.getAutoscalingPolicy());
+            
+            // Groups
+            if (groupDefinition.getGroups() != null) {
+                groupContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(groupDefinition.getGroups()));
             }
-            // nested Groups
-            if (groupDefinition.getSubGroups() != null) {
-                groupContext.setGroupContexts(getgroupContextArrayFromGroupDefinitions(groupDefinition.getSubGroups()));
-            }
+            
+            // new getCartridgeContextArrayFromCartridgeDefinition
+            groupContext.setCartridgeContexts(getCartridgeContextArrayFromCartridgeDefinition(groupDefinition.getCartridges()));
             groupContexts[i++] = groupContext;
         }
 
         return groupContexts;
     }
 
-    private static org.apache.stratos.autoscaler.stub.pojo.SubscribableContext[]
+	/*private static org.apache.stratos.autoscaler.stub.pojo.SubscribableContext[]
     getSubscribableContextArrayFromSubscribableDefinitions(List<SubscribableDefinition> subscribableDefinitions) {
 
         org.apache.stratos.autoscaler.stub.pojo.SubscribableContext[] subscribableContexts =
@@ -1127,7 +1177,7 @@ public class PojoConverter {
         }
 
         return subscribableContexts;
-    }
+    }*/
 
 
     public static ApplicationBean applicationToBean(Application application) {

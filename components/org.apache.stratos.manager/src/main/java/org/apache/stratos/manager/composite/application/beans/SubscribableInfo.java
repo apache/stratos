@@ -27,7 +27,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "subscribableInfo")
 public class SubscribableInfo implements Serializable {
 
-    private String alias;
+    private static final long serialVersionUID = 8097432440778125606L;
+
+	private String alias;
 
     private String deploymentPolicy;
 

@@ -33,15 +33,17 @@ public class GroupContext implements Serializable{
 
     private int groupMaxInstances;
 
-    private String deploymentPolicy;
+    //private String deploymentPolicy;
 
-    private boolean isGroupInstanceMonitoringEnabled;
+    //private boolean isGroupInstanceMonitoringEnabled;
 
     private boolean isGroupScalingEnabled;
 
-    private String autoscalingPolicy;
+    //private String autoscalingPolicy;
+    
+    private CartridgeContext[] cartridgeContexts;
 
-    private SubscribableContext[] subscribableContexts;
+    //private SubscribableContext[] subscribableContexts;
 
     private GroupContext[] groupContexts;
 
@@ -62,21 +64,21 @@ public class GroupContext implements Serializable{
         this.alias = alias;
     }
 
-    public String getAutoscalingPolicy() {
+    /*public String getAutoscalingPolicy() {
         return autoscalingPolicy;
     }
 
     public void setAutoscalingPolicy(String autoscalingPolicy) {
         this.autoscalingPolicy = autoscalingPolicy;
-    }
+    }*/
 
-    public SubscribableContext[] getSubscribableContexts() {
+    /*    public SubscribableContext[] getSubscribableContexts() {
         return subscribableContexts;
     }
 
     public void setSubscribableContexts(SubscribableContext[] subscribableContexts) {
         this.subscribableContexts = subscribableContexts;
-    }
+    }*/
 
     public GroupContext[] getGroupContexts() {
         return groupContexts;
@@ -102,13 +104,13 @@ public class GroupContext implements Serializable{
         this.groupMaxInstances = groupMaxInstances;
     }
 
-    public boolean isGroupInstanceMonitoringEnabled() {
+    /*public boolean isGroupInstanceMonitoringEnabled() {
         return isGroupInstanceMonitoringEnabled;
     }
 
     public void setGroupInstanceMonitoringEnabled(boolean isGroupInstanceMonitoringEnabled) {
         this.isGroupInstanceMonitoringEnabled = isGroupInstanceMonitoringEnabled;
-    }
+    }*/
 
     public boolean isGroupScalingEnabled() {
         return isGroupScalingEnabled;
@@ -118,11 +120,21 @@ public class GroupContext implements Serializable{
         this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 
-    public String getDeploymentPolicy() {
+	public CartridgeContext[] getCartridgeContexts() {
+		return cartridgeContexts;
+	}
+
+	public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
+		this.cartridgeContexts = cartridgeContexts;
+	}
+
+   /* public String getDeploymentPolicy() {
         return deploymentPolicy;
     }
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
-    }
+    }*/
+    
+    
 }

@@ -25,7 +25,9 @@ import java.io.Serializable;
 @XmlRootElement(name = "property")
 public class PropertyBean implements Serializable {
 
-    private String name;
+    private static final long serialVersionUID = 5756598782384376873L;
+
+	private String name;
 
     private String value;
 
