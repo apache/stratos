@@ -45,13 +45,13 @@ public class ConfUtil {
 	private ConfUtil(String configFilePath) {
 		try {
 
-            File confFile;
-            if (configFilePath != null && !configFilePath.isEmpty()) {
-                confFile = new File(configFilePath);
+			File confFile;
+			if (configFilePath != null && !configFilePath.isEmpty()) {
+				confFile = new File(configFilePath);
 
-            } else {
-                confFile = new File(CarbonUtils.getCarbonConfigDirPath(),Constants.AUTOSCALER_CONFIG_FILE_NAME);
-            }
+			} else {
+				confFile = new File(CarbonUtils.getCarbonConfigDirPath(), Constants.AUTOSCALER_CONFIG_FILE_NAME);
+			}
 
 			config = new XMLConfiguration(confFile);
 
