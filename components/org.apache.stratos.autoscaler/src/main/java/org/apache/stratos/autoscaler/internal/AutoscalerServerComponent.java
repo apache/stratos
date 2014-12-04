@@ -44,10 +44,13 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.utils.CarbonUtils;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.FileHandler;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -67,7 +70,7 @@ public class AutoscalerServerComponent {
 	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
 	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
 	private static final String THREAD_POOL_SIZE_KEY = "threadPool.autoscaler.threadPoolSize";
-	private static final String COMPONENTS_CONFIG = "stratos-config";
+	private static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath()+ File.separator+"stratos-config.xml";
 	private static final int THREAD_POOL_SIZE = 10;
 	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
 
