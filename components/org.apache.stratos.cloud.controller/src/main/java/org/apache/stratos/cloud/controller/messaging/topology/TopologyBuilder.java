@@ -928,8 +928,8 @@ public class TopologyBuilder {
             Cluster cluster = topology.getService(event.getServiceName()).
                     getCluster(event.getClusterId());
 
-            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating, null)) {
-                log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
+            if (!cluster.isStateTransitionValid(ClusterStatus.Terminating, event.getInstanceId())) {
+                log.error("Invalid state transfer from " + cluster.getStatus(event.getInstanceId()) + " to " +
                         ClusterStatus.Terminating);
             }
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
