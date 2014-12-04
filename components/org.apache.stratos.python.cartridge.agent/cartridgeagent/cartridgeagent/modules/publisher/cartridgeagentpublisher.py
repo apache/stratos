@@ -46,9 +46,10 @@ def publish_instance_started_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         parition_id = CartridgeAgentConfiguration().partition_id
         member_id = CartridgeAgentConfiguration().member_id
+        instance_id = CartridgeAgentConfiguration().instance_id
 
         instance_started_event = InstanceStartedEvent(service_name, cluster_id, network_partition_id, parition_id,
-                                                      member_id)
+                                                      member_id,instance_id)
         publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
         started = True
@@ -66,9 +67,10 @@ def publish_instance_activated_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         parition_id = CartridgeAgentConfiguration().partition_id
         member_id = CartridgeAgentConfiguration().member_id
+        instance_id= CartridgeAgentConfiguration().instance_id
 
         instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, network_partition_id, parition_id,
-                                                          member_id)
+                                                          member_id,instance_id)
         publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_ACTIVATED_EVENT)
         publisher.publish(instance_activated_event)
 
@@ -108,9 +110,10 @@ def publish_maintenance_mode_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         parition_id = CartridgeAgentConfiguration().partition_id
         member_id = CartridgeAgentConfiguration().member_id
+        instance_id = CartridgeAgentConfiguration().instance_id
 
         instance_maintenance_mode_event = InstanceMaintenanceModeEvent(service_name, cluster_id, network_partition_id, parition_id,
-                                                          member_id)
+                                                          member_id,instance_id)
 
         publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_MAINTENANCE_MODE_EVENT)
         publisher.publish(instance_maintenance_mode_event)
@@ -131,9 +134,10 @@ def publish_instance_ready_to_shutdown_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         parition_id = CartridgeAgentConfiguration().partition_id
         member_id = CartridgeAgentConfiguration().member_id
+        instance_id = CartridgeAgentConfiguration().instance_id
 
         instance_shutdown_event = InstanceReadyToShutdownEvent(service_name, cluster_id, network_partition_id, parition_id,
-                                                          member_id)
+                                                          member_id,instance_id)
 
         publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
         publisher.publish(instance_shutdown_event)
