@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.client;
+package org.apache.stratos.autoscaler.client;
 
 import org.apache.amber.oauth2.client.OAuthClient;
 import org.apache.amber.oauth2.client.URLConnectionClient;
@@ -26,12 +26,12 @@ import org.apache.amber.oauth2.common.exception.OAuthProblemException;
 import org.apache.amber.oauth2.common.exception.OAuthSystemException;
 import org.apache.amber.oauth2.common.message.types.GrantType;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.DataHolder;
-import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.application.common.model.xsd.InboundAuthenticationRequestConfig;
 import org.wso2.carbon.identity.application.common.model.xsd.OutboundProvisioningConfig;
@@ -57,13 +57,8 @@ public class IdentityApplicationManagementServiceClient {
 
     public IdentityApplicationManagementServiceClient(String epr) throws AxisFault {
 
-
-        String autosclaerSocketTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
-        String autosclaerConnectionTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT);
-
-        ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        int autosclaerSocketTimeout   = conf.getInt("autoscaler.identity.clientTimeout", 180000);
         try {
             ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
             String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
@@ -74,9 +69,9 @@ public class IdentityApplicationManagementServiceClient {
             System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
             System.setProperty("javax.net.ssl.trustStoreType", type);
 
-            stub = new IdentityApplicationManagementServiceStub(clientConfigContext, epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(autosclaerConnectionTimeout));
+            stub = new IdentityApplicationManagementServiceStub(epr);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, autosclaerSocketTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, autosclaerSocketTimeout);
             Utility.setAuthHeaders(stub._getServiceClient(), "admin");
 
         } catch (AxisFault axisFault) {
@@ -90,16 +85,20 @@ public class IdentityApplicationManagementServiceClient {
         if (serviceClient == null) {
             synchronized (IdentityApplicationManagementServiceClient.class) {
                 if (serviceClient == null) {
-                    serviceClient = new IdentityApplicationManagementServiceClient(System.getProperty(CartridgeConstants.IDENTITY_SERVICE_URL) + "/services/IdentityApplicationManagementService");
+                    XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+                    String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+                    int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
+                    String epr = "https://" + hostname + ":" + port + "/" + Constants.IDENTITY_APPLICATION_SERVICE_SFX;
+                    serviceClient = new IdentityApplicationManagementServiceClient(epr);
                 }
             }
         }
         return serviceClient;
     }
 
-    public String createServiceProvider(String appName, String spName, String compositeAppId) throws RemoteException, OAuthAdminServiceException {
+    public String createServiceProvider(String appName, String spName, String compositeAppId) throws RemoteException, OAuthAdminServiceException, OAuthProblemException, OAuthSystemException {
         OAuthConsumerAppDTO oAuthApplication = null;
-        String accessToken = null;
+        String accessToken;
 
         oAuthApplication = oAuthAdminServiceClient.getServiceClient().getOAuthApplication(appName);
 
@@ -116,12 +115,12 @@ public class IdentityApplicationManagementServiceClient {
         try {
             stub.createApplication(serviceProvider);
         } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         try {
             serviceProvider = stub.getApplication(spName);
         } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         serviceProvider.setOutboundProvisioningConfig(new OutboundProvisioningConfig());
@@ -170,16 +169,19 @@ public class IdentityApplicationManagementServiceClient {
         try {
             stub.updateApplication(serviceProvider);
         } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
-        accessToken = getIdToken(compositeAppId, accessToken, consumerKey, consumerSecret);
+        accessToken = getIdToken(compositeAppId, consumerKey, consumerSecret);
         return accessToken;
     }
 
-    private String getIdToken(String compositeAppId, String accessToken, String consumerKey, String consumerSecret) {
-        String tokenEndpoint = System.getProperty(CartridgeConstants.IDENTITY_SERVICE_URL) + "oauth2/token";
-        try {
+
+    private String getIdToken(String compositeAppId, String consumerKey, String consumerSecret) throws OAuthSystemException, OAuthProblemException {
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+        int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
+        String tokenEndpoint = "https://" + hostname + ":" + port + "/" + Constants.TOKEN_ENDPOINT_SFX;
             OAuthClientRequest accessRequest = OAuthClientRequest.tokenLocation(tokenEndpoint)
                     .setGrantType(GrantType.CLIENT_CREDENTIALS)
                     .setClientId(consumerKey)
@@ -189,14 +191,6 @@ public class IdentityApplicationManagementServiceClient {
             OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
             OAuthClientResponse oAuthResponse = oAuthClient.accessToken(accessRequest);
-            accessToken = oAuthResponse.getParam(ID_TOKEN);
-
-        } catch (OAuthSystemException e) {
-            e.printStackTrace();
-        } catch (OAuthProblemException e) {
-            e.printStackTrace();
-        }
-        return accessToken;
+        return oAuthResponse.getParam(ID_TOKEN);
     }
-
 }

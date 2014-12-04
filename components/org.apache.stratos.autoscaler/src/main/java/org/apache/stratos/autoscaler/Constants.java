@@ -84,4 +84,8 @@ public class Constants {
     public static final String CARTRIDGE = "cartridge";
 
 
+    public static final int IS_DEFAULT_PORT = 9443;
+    public static final String OAUTH_SERVICE_SFX = "services/OAuthAdminService";
+    public static final String IDENTITY_APPLICATION_SERVICE_SFX = "services/IdentityApplicationManagementService";
+    public static final String TOKEN_ENDPOINT_SFX = "oauth2/token";
 }

@@ -19,6 +19,9 @@
 
 package org.apache.stratos.autoscaler.applications.parser;
 
+import org.apache.amber.oauth2.common.exception.OAuthProblemException;
+import org.apache.amber.oauth2.common.exception.OAuthSystemException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,27 +29,30 @@ import org.apache.stratos.autoscaler.applications.ApplicationUtils;
 import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
+import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
+import org.apache.stratos.autoscaler.client.oAuthAdminServiceClient;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.common.Properties;
-
-import java.util.*;
+import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
+import java.rmi.RemoteException;
+import java.util.*;
 
 /**
  * Default implementation of the Application Parser. One Application should be processed by one
@@ -750,7 +756,6 @@ public class DefaultApplicationParser implements ApplicationParser {
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                     key, tenantId, subscribableInfoCtxt.getRepoUrl(), subscribableCtxt.getAlias(),
                     clusterId, hostname, subscribableInfoCtxt.getDeploymentPolicy(), false, subscribableInfoCtxt.getDependencyAliases(), subscribableInfoCtxt.getProperties());
-
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoCtxt.getAutoscalingPolicy());
            	appClusterCtxt.setProperties(subscribableInfoCtxt.getProperties());
             this.applicationClusterContexts.add(appClusterCtxt);
@@ -787,12 +792,40 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         // Create text payload
-        String textPayload = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties).toString();
+        PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
+                hostname, repoUrl, alias, null, dependencyAliases, properties);
+        payloadData.add("TOKEN", createToken(appId));
+        String textPayload = payloadData.toString();
 
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
+    public String  createToken(String appid) throws AutoScalerException {
+        String token = null;
+        String ouathAppName = appid + Math.random();
+        String serviceProviderName = ouathAppName;
+
+        try {
+            oAuthAdminServiceClient.getServiceClient().registerOauthApplication(ouathAppName);
+        } catch (RemoteException e) {
+            throw new AutoScalerException(e);
+        } catch (OAuthAdminServiceException e) {
+            throw new AutoScalerException(e);
+        }
+        try {
+            token = IdentityApplicationManagementServiceClient.getServiceClient().createServiceProvider(ouathAppName, serviceProviderName, appid);
+        } catch (RemoteException e) {
+            throw new AutoScalerException(e);
+        } catch (OAuthAdminServiceException e) {
+            e.printStackTrace();
+        } catch (OAuthProblemException e) {
+            throw new AutoScalerException(e);
+        } catch (OAuthSystemException e) {
+            throw new AutoScalerException(e);
+        }
+
+        return token;
+    }
     private CartridgeInfo getCartridge (String cartridgeType) throws ApplicationDefinitionException {
 
         try {

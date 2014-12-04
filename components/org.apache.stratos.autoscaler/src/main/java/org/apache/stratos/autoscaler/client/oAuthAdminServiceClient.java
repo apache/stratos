@@ -16,15 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.client;
+package org.apache.stratos.autoscaler.client;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.DataHolder;
-import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceStub;
@@ -43,12 +43,9 @@ public class oAuthAdminServiceClient {
 
     public oAuthAdminServiceClient(String epr) throws AxisFault {
 
-        String autosclaerSocketTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
-        String autosclaerConnectionTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT);
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        int autosclaerSocketTimeout   = conf.getInt("autoscaler.identity.clientTimeout", 180000);
 
-        ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
         try {
             ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
             String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
@@ -58,9 +55,9 @@ public class oAuthAdminServiceClient {
             System.setProperty("javax.net.ssl.trustStorePassword", trustStorePassword);
             System.setProperty("javax.net.ssl.trustStoreType", type);
 
-            stub = new OAuthAdminServiceStub(clientConfigContext, epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(autosclaerConnectionTimeout));
+            stub = new OAuthAdminServiceStub(epr);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, autosclaerSocketTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, autosclaerSocketTimeout);
             Utility.setAuthHeaders(stub._getServiceClient(), "admin");
 
         } catch (AxisFault axisFault) {
@@ -74,7 +71,11 @@ public class oAuthAdminServiceClient {
         if (serviceClient == null) {
             synchronized (oAuthAdminServiceClient.class) {
                 if (serviceClient == null) {
-                    serviceClient = new oAuthAdminServiceClient(System.getProperty(CartridgeConstants.IDENTITY_SERVICE_URL) + "/services/OAuthAdminService");
+                    XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+                    String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+                    int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
+                    String epr = "https://" + hostname + ":" + port + "/" + Constants.OAUTH_SERVICE_SFX;
+                    serviceClient = new oAuthAdminServiceClient(epr);
                 }
             }
         }
