@@ -72,7 +72,7 @@ public class CloudControllerContext implements Serializable {
 
     private static volatile CloudControllerContext instance;
 
-    private final DistributedObjectProvider distributedObjectProvider;
+    private final transient DistributedObjectProvider distributedObjectProvider;
 
 	/* We keep following maps in order to make the look up time, small. */
     
