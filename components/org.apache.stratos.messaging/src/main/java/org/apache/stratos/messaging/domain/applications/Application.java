@@ -20,9 +20,12 @@
 package org.apache.stratos.messaging.domain.applications;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Stack;
 
 /**
  * Represents an Application in the Topology
@@ -44,13 +47,13 @@ public class Application extends ParentComponent<ApplicationInstance> {
     // Life cycle state manager
     //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
 
-    public Application (String id) {
+    public Application(String id) {
         super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
         this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstance>();
         //this.applicationStateManager =
-                //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
+        //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
 
     public String getUniqueIdentifier() {
@@ -102,19 +105,35 @@ public class Application extends ParentComponent<ApplicationInstance> {
     }
 
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof Application)) {
+        if (other == null || !(other instanceof Application)) {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
-        Application that = (Application)other;
+        Application that = (Application) other;
         return this.id.equals(that.id);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return id.hashCode();
+    }
+
+    public Instance getInstanceByNetworkPartitionId(String networkPartitionId) {
+        // if map is empty, return null
+        if (getInstanceIdToInstanceContextMap().isEmpty()) {
+            return null;
+        }
+
+        for (Instance instance : instanceIdToInstanceContextMap.values()) {
+            if (instance.getNetworkPartitionId().equals(networkPartitionId)) {
+                return instance;
+            }
+        }
+
+        return null;
+
     }
 }

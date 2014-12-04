@@ -194,8 +194,8 @@ public class RuleTasksDelegator {
                     CloudControllerClient.getInstance()
                             .spawnAnInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
-                                    instanceId,
                                     clusterMonitorPartitionContext.getNetworkPartitionId(),
+                                    instanceId,
                                     isPrimary,
                                     minimumCountOfNetworkPartition);
             if (memberContext != null) {

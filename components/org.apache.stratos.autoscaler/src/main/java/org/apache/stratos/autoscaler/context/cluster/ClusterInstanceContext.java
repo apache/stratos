@@ -25,11 +25,9 @@ import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionCont
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadAverage;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.MemoryConsumption;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.messaging.domain.topology.Member;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /*
@@ -62,35 +60,24 @@ public class ClusterInstanceContext extends InstanceContext {
     private int minInstanceCount = 0, maxInstanceCount = 0;
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
-    private int minMembers;
-    private int maxMembers;
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-    private ChildLevelPartition[] partitions;
 
     private String networkPartitionId;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
-                                  ChildLevelPartition[] partitions,
-                                  int min, String networkPartitionId) {
+                                  int min, int max, String networkPartitionId) {
 
         super(clusterInstanceId);
         this.networkPartitionId = networkPartitionId;
-        this.setMinMembers(min);
-        if (partitions == null) {
-            this.partitions = new ChildLevelPartition[0];
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
+        this.minInstanceCount = min;
+        this.maxInstanceCount = max;
         partitionCtxts = new ArrayList<ClusterLevelPartitionContext>();
         this.partitionAlgorithm = partitionAlgo;
         //partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
-        for (ChildLevelPartition partition : partitions) {
-            maxInstanceCount += partition.getMax();
-        }
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
 
@@ -150,10 +137,11 @@ public class ClusterInstanceContext extends InstanceContext {
         }
         return null;
     }
-    public  int getNonTerminatedMemberCount(){
+
+    public int getNonTerminatedMemberCount() {
 
         int nonTerminatedMemberCount = 0;
-        for(ClusterLevelPartitionContext partitionContext : partitionCtxts){
+        for (ClusterLevelPartitionContext partitionContext : partitionCtxts) {
 
             nonTerminatedMemberCount += partitionContext.getNonTerminatedMemberCount();
         }
@@ -200,7 +188,7 @@ public class ClusterInstanceContext extends InstanceContext {
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Average Requesets Served Per Instance stats are reset, ready to do scale check " +
-                    "[network partition] %s" , this.id));
+                    "[network partition] %s", this.id));
 
         }
     }
@@ -444,23 +432,6 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public void setRequiredInstanceCountBasedOnDependencies(int requiredInstanceCountBasedOnDependencies) {
         this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
-    }
-
-
-    public int getMinMembers() {
-        return minMembers;
-    }
-
-    public int getMaxMembers() {
-        return maxMembers;
-    }
-
-    public void setMaxMembers(int maxMembers) {
-        this.maxMembers = maxMembers;
-    }
-
-    public void setMinMembers(int minMembers) {
-        this.minMembers = minMembers;
     }
 
     public String getNetworkPartitionId() {
