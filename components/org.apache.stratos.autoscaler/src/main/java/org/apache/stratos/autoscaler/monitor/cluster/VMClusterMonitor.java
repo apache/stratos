@@ -191,6 +191,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             @Override
             public void run() {
 
+                if (log.isDebugEnabled()) {
+                    log.debug("Monitor is running for [cluster] : " + getClusterId());
+                }
+
                 for (ClusterLevelNetworkPartitionContext networkPartitionContext :
                         clusterLevelNetworkPartitionContexts) {
 
@@ -242,9 +246,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             boolean loadAverageReset = instanceContext.isLoadAverageReset();
 
                             if (log.isDebugEnabled()) {
-                                log.debug("Is rif Reset: " + rifReset
-                                        + " Is memoryConsumption Reset: " + memoryConsumptionReset
-                                        + " Is loadAverage Reset: " + loadAverageReset);
+                                log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
+                                        + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
+                                        + " [Is loadAverage Reset] : " + loadAverageReset);
                             }
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
