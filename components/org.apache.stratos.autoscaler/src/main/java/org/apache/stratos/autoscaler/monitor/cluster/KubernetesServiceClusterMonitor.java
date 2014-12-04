@@ -140,7 +140,7 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
     }
 
     private void obsoleteCheck() {
-        getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+        getObsoleteCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
         if (log.isDebugEnabled()) {
             log.debug(String.format(
