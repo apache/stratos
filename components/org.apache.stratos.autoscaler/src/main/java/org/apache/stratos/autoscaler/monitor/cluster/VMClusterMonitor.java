@@ -184,115 +184,110 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     public void monitor() {
 
-        final Collection<ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContexts =
-                ((VMClusterContext) this.clusterContext).getNetworkPartitionCtxts().values();
+        for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
 
-        Runnable monitoringRunnable = new Runnable() {
-            @Override
-            public void run() {
+            final Collection<ClusterInstanceContext> clusterInstanceContexts = networkPartitionContext.
+                    getClusterInstanceContextMap().values();
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Monitor is running for [cluster] : " + getClusterId());
-                }
+            for (final ClusterInstanceContext instanceContext : clusterInstanceContexts ) {
 
-                for (ClusterLevelNetworkPartitionContext networkPartitionContext :
-                        clusterLevelNetworkPartitionContexts) {
+                Runnable monitoringRunnable = new Runnable() {
+                    @Override
+                    public void run() {
 
-                    for (ClusterInstanceContext instanceContext : networkPartitionContext.
-                            getClusterInstanceContextMap().values()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Monitor is running for [cluster] : " + getClusterId());
+                    }
 
-                        // store primary members in the cluster instance context
-                        List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
+                    // store primary members in the cluster instance context
+                    List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
 
-                        //FIXME to check the status of the instance
-                        if (true) {
+                    //FIXME to check the status of the instance
+                    if (true) {
 
-                            for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+                        for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
 
-                                // get active primary members in this cluster instance context
-                                for (MemberContext memberContext : partitionContext.getActiveMembers()) {
-                                    if (isPrimaryMember(memberContext)) {
-                                        primaryMemberListInClusterInstance.add(memberContext.getMemberId());
-                                    }
-                                }
-
-                                // get pending primary members in this cluster instance context
-                                for (MemberContext memberContext : partitionContext.getPendingMembers()) {
-                                    if (isPrimaryMember(memberContext)) {
-                                        primaryMemberListInClusterInstance.add(memberContext.getMemberId());
-                                    }
+                            // get active primary members in this cluster instance context
+                            for (MemberContext memberContext : partitionContext.getActiveMembers()) {
+                                if (isPrimaryMember(memberContext)) {
+                                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
                                 }
                             }
 
-                            getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                            getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                            // get pending primary members in this cluster instance context
+                            for (MemberContext memberContext : partitionContext.getPendingMembers()) {
+                                if (isPrimaryMember(memberContext)) {
+                                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                                }
+                            }
+                        }
+
+                        getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                        getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                        getMinCheckKnowledgeSession().setGlobal("algorithmName",
+                                instanceContext.getPartitionAlgorithm());
+
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Running minimum check for cluster instance %s ",
+                                    instanceContext.getId()));
+                        }
+
+                        minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
+                                minCheckFactHandle, instanceContext);
+
+                        obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
+                                getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, instanceContext);
+
+                        //checking the status of the cluster
+                        boolean rifReset = instanceContext.isRifReset();
+                        boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
+                        boolean loadAverageReset = instanceContext.isLoadAverageReset();
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
+                                    + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
+                                    + " [Is loadAverage Reset] : " + loadAverageReset);
+                        }
+                        if (rifReset || memoryConsumptionReset || loadAverageReset) {
+
+
+                            VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+
+                            getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
+                            getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
+                            getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
+                                    vmClusterContext.getAutoscalePolicy());
+                            getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                            getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
+                            getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
+                            getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+                            getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
                             getMinCheckKnowledgeSession().setGlobal("algorithmName",
-                                    networkPartitionContext.getPartitionAlgorithm());
+                                    instanceContext.getPartitionAlgorithm());
 
                             if (log.isDebugEnabled()) {
-                                log.debug(String.format("Running minimum check for cluster instance %s ",
+                                log.debug(String.format("Running scale check for [cluster instance context] %s ",
                                         instanceContext.getId()));
+                                log.debug(" Primary members : " + primaryMemberListInClusterInstance);
                             }
 
-                            minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
-                                    minCheckFactHandle, instanceContext);
+                            scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
+                                    , scaleCheckFactHandle, instanceContext);
 
-                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
-                                    getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, instanceContext);
-
-                            //checking the status of the cluster
-                            boolean rifReset = instanceContext.isRifReset();
-                            boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
-                            boolean loadAverageReset = instanceContext.isLoadAverageReset();
-
-                            if (log.isDebugEnabled()) {
-                                log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
-                                        + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
-                                        + " [Is loadAverage Reset] : " + loadAverageReset);
-                            }
-                            if (rifReset || memoryConsumptionReset || loadAverageReset) {
-
-
-                                VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
-
-                                getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
-                                getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
-                                        vmClusterContext.getAutoscalePolicy());
-                                getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
-                                getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
-                                getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-                                getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
-                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
-                                getMinCheckKnowledgeSession().setGlobal("algorithmName",
-                                        networkPartitionContext.getPartitionAlgorithm());
-
-                                if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Running scale check for network partition %s ",
-                                            networkPartitionContext.getId()));
-                                    log.debug(" Primary members : " + primaryMemberListInClusterInstance);
-                                }
-
-                                scaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
-                                        , scaleCheckFactHandle, instanceContext);
-
-                                instanceContext.setRifReset(false);
-                                instanceContext.setMemoryConsumptionReset(false);
-                                instanceContext.setLoadAverageReset(false);
-                            } else if (log.isDebugEnabled()) {
-                                log.debug(String.format("Scale rule will not run since the LB statistics have not " +
-                                                "received before this cycle for network partition %s",
-                                        networkPartitionContext.getId()));
-                            }
-
-
+                            instanceContext.setRifReset(false);
+                            instanceContext.setMemoryConsumptionReset(false);
+                            instanceContext.setLoadAverageReset(false);
+                        } else if (log.isDebugEnabled()) {
+                            log.debug(String.format("Scale rule will not run since the LB statistics have not " +
+                                            "received before this cycle for [cluster instance context] %s ",
+                                    instanceContext.getId()));
                         }
                     }
-                }
-
+                    }
+                };
+                monitoringRunnable.run();
             }
-        };
-        monitoringRunnable.run();
+        }
     }
 
     @Override
