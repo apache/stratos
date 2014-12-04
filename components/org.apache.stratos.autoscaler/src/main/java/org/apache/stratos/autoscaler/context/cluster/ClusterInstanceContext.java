@@ -66,31 +66,22 @@ public class ClusterInstanceContext extends InstanceContext {
     private int maxMembers;
     //details required for partition selection algorithms
     private int currentPartitionIndex;
-    private ChildLevelPartition[] partitions;
 
     private String networkPartitionId;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
-                                  ChildLevelPartition[] partitions,
-                                  int min, String networkPartitionId) {
+                                  int min, int max, String networkPartitionId) {
 
         super(clusterInstanceId);
         this.networkPartitionId = networkPartitionId;
         this.setMinMembers(min);
-        if (partitions == null) {
-            this.partitions = new ChildLevelPartition[0];
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
         partitionCtxts = new ArrayList<ClusterLevelPartitionContext>();
         this.partitionAlgorithm = partitionAlgo;
         //partitionCtxts = new HashMap<String, ClusterLevelPartitionContext>();
         requestsInFlight = new RequestsInFlight();
         loadAverage = new LoadAverage();
         memoryConsumption = new MemoryConsumption();
-        for (ChildLevelPartition partition : partitions) {
-            maxInstanceCount += partition.getMax();
-        }
+        maxInstanceCount = max;
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
 

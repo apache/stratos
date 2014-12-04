@@ -227,15 +227,17 @@ public class VMClusterContext extends AbstractClusterContext {
             ChildLevelPartition childLevelPartition)
             throws PolicyValidationException, PartitionValidationException {
         //Getting the associated network partition
-        ChildLevelNetworkPartition networkPartition = deploymentPolicy.
-                getChildLevelNetworkPartition(clusterInstance.getNetworkPartitionId());
-        if (networkPartition == null) {
+       /* ChildLevelNetworkPartition networkPartition = deploymentPolicy.
+                getChildLevelNetworkPartition(clusterInstance.getNetworkPartitionId());*/
+        if (clusterLevelNetworkPartitionContext == null) {
             String msg =
                     "Network Partition is null in deployment policy: [policy-name]: " +
                             deploymentPolicy.getId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
+
+        String nPartitionId = clusterLevelNetworkPartitionContext.getId();
 
         //Getting the associated  partition
         if (clusterInstance.getPartitionId() == null || childLevelPartition == null) {
@@ -247,12 +249,12 @@ public class VMClusterContext extends AbstractClusterContext {
             throw new PolicyValidationException(msg);
         }
 
-        //Creating cluster level network partitionContext, if not exist
+        /*//Creating cluster level network partitionContext, if not exist
         if (clusterLevelNetworkPartitionContext == null) {
             clusterLevelNetworkPartitionContext =
                     new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId()
                             , networkPartition.getPartitionAlgo(), networkPartition.getMin());
-        }
+        }*/
 
         ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
                                         getClusterInstanceContext(clusterInstance.getInstanceId());
@@ -270,8 +272,8 @@ public class VMClusterContext extends AbstractClusterContext {
                 ApplicationHolder.releaseReadLock();
             }
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
-                    networkPartition.getPartitionAlgo(),
-                    networkPartition.getChildLevelPartitions(), networkPartition.getMin(), networkPartition.getId());
+                    clusterLevelNetworkPartitionContext.getPartitionAlgorithm(),
+                    minInstances, maxInstances , nPartitionId);
         }
         String partitionId;
         if(childLevelPartition != null) {
@@ -283,8 +285,8 @@ public class VMClusterContext extends AbstractClusterContext {
             partitionId = clusterInstance.getPartitionId();
         }
         //Retrieving the actual partition from application
-        Partition appPartition = deploymentPolicy.getApplicationLevelNetworkPartition(networkPartition.getId()).
-                getPartition(partitionId);
+        Partition appPartition = deploymentPolicy.getApplicationLevelNetworkPartition(nPartitionId).
+                                                                        getPartition(partitionId);
         org.apache.stratos.cloud.controller.stub.domain.Partition partition =
                 convertTOCCPartition(appPartition);
 
