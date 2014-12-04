@@ -92,14 +92,16 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
 
     private boolean getClusterInactive(String instanceId, VMClusterMonitor monitor) {
         boolean clusterInActive = false;
-        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getAllNetworkPartitionCtxts().values()) {
-            ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
-            for (ClusterLevelPartitionContext partition : instanceContext.getPartitionCtxts()) {
-                if (partition.getActiveMemberCount() <= partition.getMinimumMemberCount()) {
+        for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
+                monitor.getAllNetworkPartitionCtxts().values()) {
+            ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.
+                    getClusterInstanceContext(instanceId);
+            if(instanceContext != null) {
+                if(instanceContext.getActiveMembers() < instanceContext.getMaxInstanceCount()) {
                     clusterInActive = true;
-                    return clusterInActive;
                 }
             }
+
 
         }
         return clusterInActive;

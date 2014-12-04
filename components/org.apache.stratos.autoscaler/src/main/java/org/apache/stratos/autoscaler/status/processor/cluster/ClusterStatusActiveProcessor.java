@@ -70,16 +70,14 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts()) {
             //minimum check per partition
             ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
-            for (ClusterLevelPartitionContext clusterMonitorPartitionContext : instanceContext.getPartitionCtxts()) {
-                if (clusterMonitorPartitionContext.getMinimumMemberCount() == clusterMonitorPartitionContext.getActiveMemberCount()) {
-                    clusterActive = true;
-                } else if (clusterMonitorPartitionContext.getActiveMemberCount() > clusterMonitorPartitionContext.getMinimumMemberCount()) {
-                    log.info("cluster already activated...");
+            if(instanceContext != null) {
+                if(instanceContext.getActiveMembers() >= instanceContext.getMaxInstanceCount()) {
                     clusterActive = true;
                 } else {
-                    return false;
+                    clusterActive = false;
                 }
             }
+
         }
         if(clusterActive) {
             if (log.isInfoEnabled()) {

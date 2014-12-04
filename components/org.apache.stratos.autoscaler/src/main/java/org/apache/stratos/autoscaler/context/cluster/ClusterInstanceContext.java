@@ -438,4 +438,12 @@ public class ClusterInstanceContext extends InstanceContext {
         return networkPartitionId;
     }
 
+    public int getActiveMembers() {
+        int activeMembers = 0;
+        for(ClusterLevelPartitionContext partitionContext : this.partitionCtxts) {
+           activeMembers += partitionContext.getActiveInstanceCount();
+        }
+        return activeMembers;
+    }
+
 }

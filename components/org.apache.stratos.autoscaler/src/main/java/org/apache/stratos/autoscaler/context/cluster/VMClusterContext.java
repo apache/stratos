@@ -240,16 +240,16 @@ public class VMClusterContext extends AbstractClusterContext {
 
         ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
                                         getClusterInstanceContext(clusterInstance.getInstanceId());
-        int maxInstances = 2;
+        int maxInstances = 1;
         if (clusterInstanceContext == null) {
-            int minInstances = 2;
+            int minInstances = 1;
             ApplicationHolder.acquireReadLock();
             try {
                 Application application = ApplicationHolder.getApplications().
                         getApplication(cluster.getAppId());
                 ClusterDataHolder dataHolder = application.getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
-                //TODO minInstances = dataHolder.getMinInstances();
-                //maxInstances = dataHolder.getMaxInstances();
+                minInstances = dataHolder.getMinInstances();
+                maxInstances = dataHolder.getMaxInstances();
             } finally {
                 ApplicationHolder.releaseReadLock();
             }
