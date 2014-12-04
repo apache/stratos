@@ -422,10 +422,10 @@ public class ApplicationBuilder {
 
         if (!group.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            GroupInstance context = new GroupInstance(groupId, instanceId);
-            context.setParentId(parentId);
-            context.setStatus(status);
-            group.addInstance(instanceId, context);
+            GroupInstance instance = new GroupInstance(groupId, instanceId);
+            instance.setParentId(parentId);
+            instance.setStatus(status);
+            group.addInstance(instanceId, instance);
             //updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
             //ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
