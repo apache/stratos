@@ -228,7 +228,7 @@ public class TopologyEventPublisher {
         publishEvent(memberMaintenanceModeEvent);
     }
 
-    public static void sendClusterActivatedEvent(ClusterActivatedEvent clusterActivatedEvent) {
+    public static void sendClusterActivatedEvent(ClusterInstanceActivatedEvent clusterActivatedEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster activated event: [service] %s [cluster] %s " +
                             " [instance-id] %s [appId] %s",
@@ -240,7 +240,7 @@ public class TopologyEventPublisher {
         publishEvent(clusterActivatedEvent);
     }
 
-    public static void sendClusterInactivateEvent(ClusterInactivateEvent clusterInactiveEvent) {
+    public static void sendClusterInactivateEvent(ClusterInstanceInactivateEvent clusterInactiveEvent) {
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing cluster in-active event: [service] %s [cluster] %s " +
                             "[instance-id] %s [appId] %s",
@@ -289,7 +289,7 @@ public class TopologyEventPublisher {
         publishEvent(completeTopologyEvent);
     }
 
-    public static void sendClusterTerminatingEvent(ClusterTerminatingEvent clusterTerminatingEvent) {
+    public static void sendClusterTerminatingEvent(ClusterInstanceTerminatingEvent clusterTerminatingEvent) {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing Cluster terminating event: [appId] %s [cluster id] %s" +
@@ -301,7 +301,7 @@ public class TopologyEventPublisher {
         publishEvent(clusterTerminatingEvent);
     }
 
-    public static void sendClusterTerminatedEvent(ClusterTerminatedEvent clusterTerminatedEvent) {
+    public static void sendClusterTerminatedEvent(ClusterInstanceTerminatedEvent clusterTerminatedEvent) {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Publishing Cluster terminated event: [appId] %s [cluster id] %s" +

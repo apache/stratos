@@ -173,7 +173,7 @@ public class AutoscalerUtil {
                                         new LbClusterMonitor(clusterId,
                                                            cluster.getServiceName(),
                                                            deploymentPolicy, policy);
-        clusterMonitor.setStatus(Status.Created);
+        clusterMonitor.notifyParentMonitor(Status.Created);
         // partition group = network partition context
         for (NetworkPartition partitionGroup : deploymentPolicy.gNetworkPartitionups()) {
 
@@ -386,7 +386,7 @@ public class AutoscalerUtil {
                 try {
                     long start = System.currentTimeMillis();
                     log.info("application monitor is going to be started for [application] " +
-                                appId);
+                            appId);
                     try {
                         applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
                     } catch (PolicyValidationException e) {

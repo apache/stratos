@@ -34,6 +34,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
@@ -206,28 +207,23 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         return status;
     }
 
-    public void setStatus(ClusterStatus status, String instanceId) {
-
-//        this.clusterContext.getClusterInstance(instanceId).setStatus(status);
+    public void notifyParentMonitor(ClusterStatus status, String instanceId) {
         /**
          * notifying the parent monitor about the state change
          * If the cluster in_active and if it is a in_dependent cluster,
          * then won't send the notification to parent.
          */
-        if (status == ClusterStatus.Inactive && !this.hasStartupDependents) {
-            log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
-                    "since it is identified as the independent unit");
-
-            /*} else if (status == ClusterStatus.Terminating) {
-                // notify parent
-                log.info("[Cluster] " + clusterId + " is not notifying the parent, " +
-                        "since it is in Terminating State");
-*/
+        ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.get(instanceId);
+        if(instance == null) {
+            log.warn("The required cluster [instance] " + instanceId + " not found in the ClusterMonitor");
         } else {
-            MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId, instanceId);
+            if (instance.getStatus() == ClusterStatus.Inactive && !this.hasStartupDependents) {
+                log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
+                        "since it is identified as the independent unit");
+            } else {
+                MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId, instanceId);
+            }
         }
-
-
     }
 
     public int getMonitorIntervalMilliseconds() {

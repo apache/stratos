@@ -97,7 +97,7 @@ public class ClusterMonitorFactory {
 //
 //        VMLbClusterMonitor clusterMonitor =
 //                new VMLbClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
-//        clusterMonitor.setStatus(ClusterStatus.Created);
+//        clusterMonitor.notifyParentMonitor(ClusterStatus.Created);
 //
 //        log.info("VMLbClusterMonitor created: " + clusterMonitor.toString());
 //        return clusterMonitor;

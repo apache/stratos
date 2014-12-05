@@ -23,7 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
-import org.apache.stratos.messaging.listener.applications.ApplicationTerminatedEventListener;
+import org.apache.stratos.messaging.listener.applications.ApplicationInstanceTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
@@ -67,7 +67,7 @@ public class ApplicationTopicReceiver {
 	}
 
     private void addEventListeners() {
-        applicationsEventReceiver.addEventListener(new ApplicationTerminatedEventListener() {
+        applicationsEventReceiver.addEventListener(new ApplicationInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 //Remove the application related data

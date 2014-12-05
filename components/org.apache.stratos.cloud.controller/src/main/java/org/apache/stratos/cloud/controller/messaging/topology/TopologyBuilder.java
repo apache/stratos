@@ -781,8 +781,8 @@ public class TopologyBuilder {
             return;
         }
 
-        org.apache.stratos.messaging.event.topology.ClusterActivatedEvent clusterActivatedEvent1 =
-                new org.apache.stratos.messaging.event.topology.ClusterActivatedEvent(
+        ClusterInstanceActivatedEvent clusterActivatedEvent1 =
+                new ClusterInstanceActivatedEvent(
                         clusterActivatedEvent.getAppId(),
                         clusterActivatedEvent.getServiceName(),
                         clusterActivatedEvent.getClusterId(),
@@ -833,8 +833,8 @@ public class TopologyBuilder {
             return;
         }
 
-        ClusterInactivateEvent clusterInActivatedEvent1 =
-                new ClusterInactivateEvent(
+        ClusterInstanceInactivateEvent clusterInActivatedEvent1 =
+                new ClusterInstanceInactivateEvent(
                         clusterInActivateEvent.getAppId(),
                         clusterInActivateEvent.getServiceName(),
                         clusterInActivateEvent.getClusterId(),
@@ -902,7 +902,7 @@ public class TopologyBuilder {
                 log.info("Cluster Terminated adding status started for" + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
-                ClusterTerminatedEvent clusterTerminatedEvent = new ClusterTerminatedEvent(event.getAppId(),
+                ClusterInstanceTerminatedEvent clusterTerminatedEvent = new ClusterInstanceTerminatedEvent(event.getAppId(),
                         event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
@@ -945,7 +945,7 @@ public class TopologyBuilder {
                 log.info("Cluster Terminating adding status started for" + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
-                ClusterTerminatingEvent clusterTerminaingEvent = new ClusterTerminatingEvent(event.getAppId(),
+                ClusterInstanceTerminatingEvent clusterTerminaingEvent = new ClusterInstanceTerminatingEvent(event.getAppId(),
                         event.getServiceName(), event.getClusterId(), event.getInstanceId());
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);

@@ -107,7 +107,7 @@ public class ApplicationBuilder {
             application.addInstance(instanceId, applicationInstance);
             //updateApplicationMonitor(appId, status);
             ApplicationHolder.persistApplication(application);
-            //ApplicationsEventPublisher.sendApplicationActivatedEvent(appId);
+            ApplicationsEventPublisher.sendApplicationInstanceCreatedEvent(appId, applicationInstance);
         } else {
             log.warn(String.format("Application Instance Context already exists" +
                     " [appId] %s [ApplicationInstanceId] %s", appId, instanceId));
@@ -115,7 +115,7 @@ public class ApplicationBuilder {
         return applicationInstance;
     }
 
-    public static void handleApplicationActivatedEvent(String appId, String instanceId) {
+    public static void handleApplicationInstanceActivatedEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application activation event: [application-id] " + appId);
         }
@@ -136,7 +136,7 @@ public class ApplicationBuilder {
             application.setStatus(status, instanceId);
             updateApplicationMonitor(appId, status, instanceId);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendApplicationActivatedEvent(appId, instanceId);
+            ApplicationsEventPublisher.sendApplicationInstanceActivatedEvent(appId, instanceId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                     " [instance-id] %s [current-status] %s [status-requested] %s",
@@ -201,7 +201,7 @@ public class ApplicationBuilder {
                     application.setStatus(status, context1.getInstanceId());
                     updateApplicationMonitor(appId, status, context1.getInstanceId());
                     ApplicationHolder.persistApplication(application);
-                    ApplicationsEventPublisher.sendApplicationTerminatingEvent(appId, context1.getInstanceId());
+                    ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, context1.getInstanceId());
                 } else {
                     log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
                                     " [instance-id] %s [current-status] %s [status-requested] %s", appId,
@@ -241,7 +241,7 @@ public class ApplicationBuilder {
         return true;
     }
 
-    public static void handleApplicationTerminatedEvent(String appId, String instanceId) {
+    public static void handleApplicationInstanceTerminatedEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminated event: [application-id] " + appId);
         }
@@ -265,7 +265,7 @@ public class ApplicationBuilder {
                 ApplicationHolder.removeApplication(appId);
                 log.info("Application is removed: [application-id] " + appId);
 
-                ApplicationsEventPublisher.sendApplicationTerminatedEvent(appId, clusterData);
+                ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, clusterData);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                         " [current-status] %s [status-requested] %s", appId,
@@ -275,7 +275,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupTerminatedEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInstanceTerminatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group terminated event: [group-id] " + groupId +
                     " [application-id] " + appId);
@@ -304,7 +304,7 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendGroupTerminatedEvent(appId, groupId, instanceId);
+                ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()
@@ -318,7 +318,7 @@ public class ApplicationBuilder {
 
     }
 
-    public static void handleGroupActivatedEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInstanceActivatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group activation for the [group-id]: " + groupId +
                     " in the [application-id] " + appId);
@@ -347,7 +347,7 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendGroupActivatedEvent(appId, groupId, instanceId);
+                ApplicationsEventPublisher.sendGroupInstanceActivatedEvent(appId, groupId, instanceId);
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()
@@ -360,7 +360,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupCreatedEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling Group creation for the [group]: " + groupId +
                     " in the [application] " + appId);
@@ -387,7 +387,7 @@ public class ApplicationBuilder {
             //setting the status, persist and publish
             updateGroupMonitor(appId, groupId, status, instanceId);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId, instanceId);
+            ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId, null);
         } else {
             log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus(null)
                     + "[requested-state] " + status);
@@ -429,7 +429,7 @@ public class ApplicationBuilder {
             group.addInstance(instanceId, instance);
             //updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
-            //ApplicationsEventPublisher.sendGroupCreatedEvent(appId, groupId);
+            //ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId);
         } else {
             log.warn("Group Instance Context already exists: [group-id] " + groupId +
                     " [Group-Instance-Id] " + instanceId);
@@ -468,7 +468,7 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendGroupInActivateEvent(appId, groupId, instanceId);
+                ApplicationsEventPublisher.sendGroupInstanceInActivateEvent(appId, groupId, instanceId);
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()
@@ -512,7 +512,7 @@ public class ApplicationBuilder {
                     //setting the status, persist and publish
                     updateGroupMonitor(appId, groupId, status, instanceId);
                     ApplicationHolder.persistApplication(application);
-                    ApplicationsEventPublisher.sendGroupTerminatingEvent(appId, groupId, instanceId);
+                    ApplicationsEventPublisher.sendGroupInstanceTerminatingEvent(appId, groupId, instanceId);
                 } else {
                     log.warn("Group state transition is not valid: [group-id] " + groupId +
                             " [instance-id] " + instanceId + " [current-state] " + context.getStatus()
@@ -535,7 +535,7 @@ public class ApplicationBuilder {
                 log.error("Invalid state transfer from " + group.getStatus(null) + " to " + groupStatus);
             }
             // force update for now
-            //group.setStatus(groupStatus, null);
+            //group.notifyParentMonitor(groupStatus, null);
 
             // go recursively and update
             if (group.getGroups() != null) {

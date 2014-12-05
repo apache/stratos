@@ -39,8 +39,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ApplicationClustersRemovedMessageProcessor appClustersRemovedMessageProcessor;
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterResetMessageProcessor clusterResetMessageProcessor;
-    private ClusterActivatedProcessor clusterActivatedProcessor;
-    private ClusterInActivateProcessor clusterInActivateProcessor;
+    private ClusterInstanceActivatedProcessor clusterActivatedProcessor;
+    private ClusterInstanceInActivateProcessor clusterInActivateProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
@@ -49,8 +49,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private MemberMaintenanceModeProcessor memberMaintenanceModeProcessor;
     private MemberSuspendedMessageProcessor memberSuspendedMessageProcessor;
     private MemberTerminatedMessageProcessor memberTerminatedMessageProcessor;
-    private ClusterTerminatingProcessor clusterTerminatingProcessor;
-    private ClusterTerminatedProcessor clusterTerminatedProcessor;
+    private ClusterInstanceTerminatingProcessor clusterTerminatingProcessor;
+    private ClusterInstanceTerminatedProcessor clusterTerminatedProcessor;
     private ClusterInstanceCreatedMessageProcessor clusterInstanceCreatedMessageProcessor;
 
     public void initialize() {
@@ -73,16 +73,16 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         clusterCreatedMessageProcessor = new ClusterCreatedMessageProcessor();
         add(clusterCreatedMessageProcessor);
 
-        clusterActivatedProcessor = new ClusterActivatedProcessor();
+        clusterActivatedProcessor = new ClusterInstanceActivatedProcessor();
         add(clusterActivatedProcessor);
 
-        clusterInActivateProcessor = new ClusterInActivateProcessor();
+        clusterInActivateProcessor = new ClusterInstanceInActivateProcessor();
         add(clusterInActivateProcessor);
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
 
-        clusterTerminatedProcessor = new ClusterTerminatedProcessor();
+        clusterTerminatedProcessor = new ClusterInstanceTerminatedProcessor();
         add(clusterTerminatedProcessor);
 
         clusterInstanceCreatedMessageProcessor = new ClusterInstanceCreatedMessageProcessor();
@@ -91,7 +91,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         clusterResetMessageProcessor = new ClusterResetMessageProcessor();
         add(clusterResetMessageProcessor);
 
-        clusterTerminatingProcessor = new ClusterTerminatingProcessor();
+        clusterTerminatingProcessor = new ClusterInstanceTerminatingProcessor();
         add(clusterTerminatingProcessor);
 
         instanceSpawnedMessageProcessor = new InstanceSpawnedMessageProcessor();
@@ -129,19 +129,19 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             appClustersCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationClustersRemovedEventListener) {
             appClustersRemovedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterActivatedEventListener) {
+        } else if (eventListener instanceof ClusterInstanceActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterInActivateEventListener) {
+        } else if (eventListener instanceof ClusterInstanceInActivateEventListener) {
             clusterInActivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterInstanceCreatedEventListener) {
             clusterInstanceCreatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ClusterTerminatedEventListener){
+        } else if(eventListener instanceof ClusterInstanceTerminatedEventListener){
             clusterTerminatedProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ClusterResetEventListener){
             clusterResetMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof  ClusterTerminatingEventListener){
+        } else if(eventListener instanceof ClusterInstanceTerminatingEventListener){
             clusterTerminatingProcessor.addEventListener(eventListener);
         }else if (eventListener instanceof InstanceSpawnedEventListener) {
             instanceSpawnedMessageProcessor.addEventListener(eventListener);

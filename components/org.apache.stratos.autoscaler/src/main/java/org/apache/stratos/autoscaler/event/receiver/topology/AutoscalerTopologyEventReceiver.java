@@ -159,12 +159,13 @@ public class AutoscalerTopologyEventReceiver {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterActivatedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterInstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterActivatedEvent] Received: " + event.getClass());
-                ClusterActivatedEvent clusterActivatedEvent = (ClusterActivatedEvent) event;
+                ClusterInstanceActivatedEvent clusterActivatedEvent = (ClusterInstanceActivatedEvent) event;
                 String clusterId = clusterActivatedEvent.getClusterId();
+                String instanceId = clusterActivatedEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
@@ -176,6 +177,7 @@ public class AutoscalerTopologyEventReceiver {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
+                monitor.notifyParentMonitor(ClusterStatus.Active, instanceId);
 
             }
         });
@@ -199,7 +201,7 @@ public class AutoscalerTopologyEventReceiver {
                 }
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.destroy();
-                monitor.setStatus(ClusterStatus.Created, instanceId);
+                monitor.notifyParentMonitor(ClusterStatus.Created, instanceId);
 
             }
         });
@@ -211,11 +213,11 @@ public class AutoscalerTopologyEventReceiver {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterInActivateEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterInstanceInActivateEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterInActivateEvent] Received: " + event.getClass());
-                ClusterInactivateEvent clusterInactivateEvent = (ClusterInactivateEvent) event;
+                ClusterInstanceInactivateEvent clusterInactivateEvent = (ClusterInstanceInactivateEvent) event;
                 String clusterId = clusterInactivateEvent.getClusterId();
                 String instanceId = clusterInactivateEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -229,15 +231,15 @@ public class AutoscalerTopologyEventReceiver {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                monitor.setStatus(ClusterStatus.Inactive, instanceId);
+                monitor.notifyParentMonitor(ClusterStatus.Inactive, instanceId);
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterTerminatingEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterInstanceTerminatingEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterTerminatingEvent] Received: " + event.getClass());
-                ClusterTerminatingEvent clusterTerminatingEvent = (ClusterTerminatingEvent) event;
+                ClusterInstanceTerminatingEvent clusterTerminatingEvent = (ClusterInstanceTerminatingEvent) event;
                 String clusterId = clusterTerminatingEvent.getClusterId();
                 String instanceId = clusterTerminatingEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -257,10 +259,10 @@ public class AutoscalerTopologyEventReceiver {
                 ClusterInstance clusterInstance = (ClusterInstance) monitor.getInstance(instanceId);
                 if (clusterInstance.getCurrentState() == ClusterStatus.Active) {
                     // terminated gracefully
-                    monitor.setStatus(ClusterStatus.Terminating, instanceId);
+                    monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
                     InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId, instanceId);
                 } else {
-                    monitor.setStatus(ClusterStatus.Terminating, instanceId);
+                    monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
                     monitor.terminateAllMembers(instanceId, clusterInstance.getNetworkPartitionId());
                 }
                 ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
@@ -268,11 +270,11 @@ public class AutoscalerTopologyEventReceiver {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterTerminatedEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterInstanceTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("[ClusterTerminatedEvent] Received: " + event.getClass());
-                ClusterTerminatedEvent clusterTerminatedEvent = (ClusterTerminatedEvent) event;
+                ClusterInstanceTerminatedEvent clusterTerminatedEvent = (ClusterInstanceTerminatedEvent) event;
                 String clusterId = clusterTerminatedEvent.getClusterId();
                 String instanceId = clusterTerminatedEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -294,7 +296,7 @@ public class AutoscalerTopologyEventReceiver {
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                monitor.setStatus(ClusterStatus.Terminated, instanceId);
+                monitor.notifyParentMonitor(ClusterStatus.Terminated, instanceId);
                 monitor.removeInstance(instanceId);
                 if (!monitor.hasInstance() && appMonitor.isTerminating()) {
                     //Destroying and Removing the Cluster monitor
