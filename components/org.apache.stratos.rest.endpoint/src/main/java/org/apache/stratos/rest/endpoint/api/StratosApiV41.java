@@ -162,6 +162,18 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
+	@GET
+	@Path("/cartridges/{provider}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/admin/manage/view/cartridge")
+	public Response getCartridgesByProvider(@PathParam("provider") String provider) throws RestAPIException {
+		List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridgesByProvider(provider, getConfigContext());
+		ResponseBuilder rb = Response.ok();
+		rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
+		return rb.build();
+	}
+
     @GET
     @Path("/cartridges/singleTenant")
     @Produces("application/json")

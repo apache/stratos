@@ -192,6 +192,7 @@ public class CloudControllerUtil {
 		carInfo.setHostName(cartridge.getHostName());
 		carInfo.setDeploymentDirs(cartridge.getDeploymentDirs());
 		carInfo.setProvider(cartridge.getProvider());
+	    carInfo.setCategory(cartridge.getCategory());
 		carInfo.setVersion(cartridge.getVersion());
 		carInfo.setMultiTenant(cartridge.isMultiTenant());
 		carInfo.setBaseDir(cartridge.getBaseDir());

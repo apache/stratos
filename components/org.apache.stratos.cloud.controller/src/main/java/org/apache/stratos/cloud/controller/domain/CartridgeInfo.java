@@ -44,6 +44,8 @@ public class CartridgeInfo {
     private AppType[] appTypes;
     
     private String provider;
+
+	private String category;
     
     private String version;
     
@@ -228,5 +230,13 @@ public class CartridgeInfo {
 
     public void setServiceGroup(String serviceGroup) {
         this.serviceGroup = serviceGroup;
+    }
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
     }
 }
