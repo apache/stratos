@@ -168,7 +168,7 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>gce</artifactId>
-            <version>1.8.0-stratos</version>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
