@@ -252,7 +252,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
-                                getScaleCheckKnowledgeSession().setGlobal("isPrimary", false);
+                                getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
                                 getMinCheckKnowledgeSession().setGlobal("algorithmName",
                                         instanceContext.getPartitionAlgorithm());
@@ -378,6 +378,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         getDependentScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
         getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
         getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
+        getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
 
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
                 , scaleCheckFactHandle, clusterInstanceContext);
