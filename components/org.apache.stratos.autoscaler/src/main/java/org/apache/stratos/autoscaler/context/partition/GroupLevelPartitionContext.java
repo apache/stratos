@@ -85,11 +85,8 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(int max, Partition partition, String networkPartitionIid ) {
-        super(max, partition, networkPartitionIid);
-        this.setPartition(partition);
-        this.minimumInstanceCount = partition.getPartitionMin();
-        this.partitionId = partition.getId();
+    public GroupLevelPartitionContext(int max, String partitionId, String networkPartitionIid ) {
+        super(max, partitionId, networkPartitionIid);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
         this.terminationPendingInstances = new ArrayList<Instance>();
@@ -107,7 +104,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
             log.debug("Instance obsoleted expiry time is set to: " + obsoltedInstanceExpiryTime);
         }
 
-        /*FIXME Thread th = new Thread(new PendingInstanceWatcher(this));
+        /*Thread th = new Thread(new PendingInstanceWatcher(this));
         th.start();
         Thread th2 = new Thread(new ObsoletedInstanceWatcher(this));
         th2.start();
