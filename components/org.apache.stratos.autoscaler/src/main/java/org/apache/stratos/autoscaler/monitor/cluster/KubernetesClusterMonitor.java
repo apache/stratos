@@ -58,16 +58,15 @@ import org.drools.runtime.StatefulKnowledgeSession;
 /*
  * Every kubernetes cluster monitor should extend this class
  */
-public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
+public class KubernetesClusterMonitor extends VMClusterMonitor {
 
     private static final Log log = LogFactory.getLog(KubernetesClusterMonitor.class);
 
-    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
+//    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
 
-    protected KubernetesClusterMonitor(String serviceType, String clusterId,
-                                       AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
+    protected KubernetesClusterMonitor(Cluster cluster) {
 
-        super(serviceType, clusterId);
+        super(cluster);
 
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE);
@@ -87,431 +86,431 @@ public abstract class KubernetesClusterMonitor extends AbstractClusterMonitor {
         //this.kubernetesClusterCtxt = kubernetesClusterContext;
     }
 
-    @Override
-    public void handleAverageLoadAverageEvent(
-            AverageLoadAverageEvent averageLoadAverageEvent) {
-
-        String clusterId = averageLoadAverageEvent.getClusterId();
-        float value = averageLoadAverageEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Avg load avg event: [cluster] %s [value] %s",
-                                    clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setAverageLoadAverage(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-
-    }
-
-    @Override
-    public void handleGradientOfLoadAverageEvent(
-            GradientOfLoadAverageEvent gradientOfLoadAverageEvent) {
-
-        String clusterId = gradientOfLoadAverageEvent.getClusterId();
-        float value = gradientOfLoadAverageEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Grad of load avg event: [cluster] %s [value] %s",
-                                    clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setLoadAverageGradient(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleSecondDerivativeOfLoadAverageEvent(
-            SecondDerivativeOfLoadAverageEvent secondDerivativeOfLoadAverageEvent) {
-
-        String clusterId = secondDerivativeOfLoadAverageEvent.getClusterId();
-        float value = secondDerivativeOfLoadAverageEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Second Derivation of load avg event: [cluster] %s "
-                                    + "[value] %s", clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setLoadAverageSecondDerivative(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleAverageMemoryConsumptionEvent(
-            AverageMemoryConsumptionEvent averageMemoryConsumptionEvent) {
-
-        String clusterId = averageMemoryConsumptionEvent.getClusterId();
-        float value = averageMemoryConsumptionEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Avg Memory Consumption event: [cluster] %s "
-                                    + "[value] %s", averageMemoryConsumptionEvent.getClusterId(), value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setAverageMemoryConsumption(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleGradientOfMemoryConsumptionEvent(
-            GradientOfMemoryConsumptionEvent gradientOfMemoryConsumptionEvent) {
-
-        String clusterId = gradientOfMemoryConsumptionEvent.getClusterId();
-        float value = gradientOfMemoryConsumptionEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Grad of Memory Consumption event: [cluster] %s "
-                                    + "[value] %s", clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setMemoryConsumptionGradient(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleSecondDerivativeOfMemoryConsumptionEvent(
-            SecondDerivativeOfMemoryConsumptionEvent secondDerivativeOfMemoryConsumptionEvent) {
-
-        String clusterId = secondDerivativeOfMemoryConsumptionEvent.getClusterId();
-        float value = secondDerivativeOfMemoryConsumptionEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s "
-                                    + "[value] %s", clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setMemoryConsumptionSecondDerivative(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleAverageRequestsInFlightEvent(
-            AverageRequestsInFlightEvent averageRequestsInFlightEvent) {
-
-        float value = averageRequestsInFlightEvent.getValue();
-        String clusterId = averageRequestsInFlightEvent.getClusterId();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Average Rif event: [cluster] %s [value] %s",
-                                    clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setAverageRequestsInFlight(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleGradientOfRequestsInFlightEvent(
-            GradientOfRequestsInFlightEvent gradientOfRequestsInFlightEvent) {
-
-        String clusterId = gradientOfRequestsInFlightEvent.getClusterId();
-        float value = gradientOfRequestsInFlightEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Gradient of Rif event: [cluster] %s [value] %s",
-                                    clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setRequestsInFlightGradient(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleSecondDerivativeOfRequestsInFlightEvent(
-            SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent) {
-
-        String clusterId = secondDerivativeOfRequestsInFlightEvent.getClusterId();
-        float value = secondDerivativeOfRequestsInFlightEvent.getValue();
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Second derivative of Rif event: [cluster] %s "
-                                    + "[value] %s", clusterId, value));
-        }
-        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
-        if (null != kubernetesClusterContext) {
-            kubernetesClusterContext.setRequestsInFlightSecondDerivative(value);
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Kubernetes cluster context is not available for :" +
-                                        " [cluster] %s", clusterId));
-            }
-        }
-    }
-
-    @Override
-    public void handleMemberAverageMemoryConsumptionEvent(
-            MemberAverageMemoryConsumptionEvent memberAverageMemoryConsumptionEvent) {
-
-        String memberId = memberAverageMemoryConsumptionEvent.getMemberId();
-        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
-        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-        if (null == memberStatsContext) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
-            return;
-        }
-        float value = memberAverageMemoryConsumptionEvent.getValue();
-        memberStatsContext.setAverageMemoryConsumption(value);
-    }
-
-    @Override
-    public void handleMemberGradientOfMemoryConsumptionEvent(
-            MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent) {
-
-        String memberId = memberGradientOfMemoryConsumptionEvent.getMemberId();
-        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
-        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-        if (null == memberStatsContext) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
-            return;
-        }
-        float value = memberGradientOfMemoryConsumptionEvent.getValue();
-        memberStatsContext.setGradientOfMemoryConsumption(value);
-    }
-
-    @Override
-    public void handleMemberSecondDerivativeOfMemoryConsumptionEvent(
-            MemberSecondDerivativeOfMemoryConsumptionEvent memberSecondDerivativeOfMemoryConsumptionEvent) {
-
-    }
-
-    @Override
-    public void handleMemberAverageLoadAverageEvent(
-            MemberAverageLoadAverageEvent memberAverageLoadAverageEvent) {
-
-        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
-        String memberId = memberAverageLoadAverageEvent.getMemberId();
-        float value = memberAverageLoadAverageEvent.getValue();
-        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-        if (null == memberStatsContext) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
-            return;
-        }
-        memberStatsContext.setAverageLoadAverage(value);
-    }
-
-    @Override
-    public void handleMemberGradientOfLoadAverageEvent(
-            MemberGradientOfLoadAverageEvent memberGradientOfLoadAverageEvent) {
-
-        String memberId = memberGradientOfLoadAverageEvent.getMemberId();
-        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
-        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-        if (null == memberStatsContext) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
-            return;
-        }
-        float value = memberGradientOfLoadAverageEvent.getValue();
-        memberStatsContext.setGradientOfLoadAverage(value);
-    }
-
-    @Override
-    public void handleMemberSecondDerivativeOfLoadAverageEvent(
-            MemberSecondDerivativeOfLoadAverageEvent memberSecondDerivativeOfLoadAverageEvent) {
-
-        String memberId = memberSecondDerivativeOfLoadAverageEvent.getMemberId();
-        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
-        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
-        if (null == memberStatsContext) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member context is not available for : [member] %s", memberId));
-            }
-            return;
-        }
-        float value = memberSecondDerivativeOfLoadAverageEvent.getValue();
-        memberStatsContext.setSecondDerivativeOfLoadAverage(value);
-    }
-
-    @Override
-    public void handleMemberFaultEvent(MemberFaultEvent memberFaultEvent) {
-    	// kill the container
-        String memberId = memberFaultEvent.getMemberId();
-        Member member = getMemberByMemberId(memberId);
-        if (null == member) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
-            }
-            return;
-        }
-        if (!member.isActive()) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member activated event has not received for the member %s. "
-                                        + "Therefore ignoring" + " the member fault health stat", memberId));
-            }
-            return;
-        }
-
-        if (!getKubernetesClusterCtxt().activeMemberExist(memberId)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Could not find the active member in kubernetes cluster context, "
-                                        + "[member] %s ", memberId));
-            }
-            return;
-        }
-
-        // move member to obsolete list
-        getKubernetesClusterCtxt().moveMemberToObsoleteList(memberId);
-        if (log.isInfoEnabled()) {
-            String clusterId = memberFaultEvent.getClusterId();
-            String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
-            log.info(String.format("Faulty member is moved to obsolete list and removed from the active members list: "
-                    + "[member] %s [kub-cluster] %s [cluster] %s ", memberId, kubernetesClusterID, clusterId));
-        }
-    }
-
-    @Override
-    public void handleMemberStartedEvent(
-            MemberStartedEvent memberStartedEvent) {
-
-    }
-
-    @Override
-    public void handleMemberActivatedEvent(
-            MemberActivatedEvent memberActivatedEvent) {
-
-        KubernetesClusterContext kubernetesClusterContext;
-        kubernetesClusterContext = getKubernetesClusterCtxt();
-        String memberId = memberActivatedEvent.getMemberId();
-        kubernetesClusterContext.addMemberStatsContext(new MemberStatsContext(memberId));
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Member stat context has been added successfully: "
-                                   + "[member] %s", memberId));
-        }
-        kubernetesClusterContext.movePendingMemberToActiveMembers(memberId);
-    }
-
-    @Override
-    public void handleMemberMaintenanceModeEvent(
-            MemberMaintenanceModeEvent maintenanceModeEvent) {
-
-        // no need to do anything here
-        // we will not be receiving this event for containers
-        // we will only receive member terminated event
-    }
-
-    @Override
-    public void handleMemberReadyToShutdownEvent(
-            MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
-
-        // no need to do anything here
-        // we will not be receiving this event for containers
-    	// we will only receive member terminated event
-    }
-
-    @Override
-    public void handleMemberTerminatedEvent(
-            MemberTerminatedEvent memberTerminatedEvent) {
-
-        String memberId = memberTerminatedEvent.getMemberId();
-        if (getKubernetesClusterCtxt().removeTerminationPendingMember(memberId)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member is removed from termination pending members list: "
-                                        + "[member] %s", memberId));
-            }
-        } else if (getKubernetesClusterCtxt().removePendingMember(memberId)) {
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Member is removed from pending members list: "
-                                        + "[member] %s", memberId));
-            }
-        } else if (getKubernetesClusterCtxt().removeActiveMemberById(memberId)) {
-            log.warn(String.format("Member is in the wrong list and it is removed from "
-                                   + "active members list: %s", memberId));
-        } else if (getKubernetesClusterCtxt().removeObsoleteMember(memberId)) {
-            log.warn(String.format("Obsolete member has either been terminated or its obsolete time out has expired and"
-                                   + " it is removed from obsolete members list: %s", memberId));
-        } else {
-            log.warn(String.format("Member is not available in any of the list active, "
-                                   + "pending and termination pending: %s", memberId));
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Member stat context has been removed successfully: "
-                                   + "[member] %s", memberId));
-        }
-    }
-
-    @Override
-    public void handleClusterRemovedEvent(
-            ClusterRemovedEvent clusterRemovedEvent) {
-    	getKubernetesClusterCtxt().getPendingMembers().clear();
-    	getKubernetesClusterCtxt().getActiveMembers().clear();
-    	getKubernetesClusterCtxt().getTerminationPendingMembers().clear();
-    	getKubernetesClusterCtxt().getObsoletedMembers().clear();
-    }
-
-    public KubernetesClusterContext getKubernetesClusterCtxt() {
-        return (KubernetesClusterContext) getClusterContext();
-    }
-
-    private Member getMemberByMemberId(String memberId) {
-        try {
-            TopologyManager.acquireReadLock();
-            for (Service service : TopologyManager.getTopology().getServices()) {
-                for (Cluster cluster : service.getClusters()) {
-                    if (cluster.memberExists(memberId)) {
-                        return cluster.getMember(memberId);
-                    }
-                }
-            }
-            return null;
-        } finally {
-            TopologyManager.releaseReadLock();
-        }
-    }
+//    @Override
+//    public void handleAverageLoadAverageEvent(
+//            AverageLoadAverageEvent averageLoadAverageEvent) {
+//
+//        String clusterId = averageLoadAverageEvent.getClusterId();
+//        float value = averageLoadAverageEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Avg load avg event: [cluster] %s [value] %s",
+//                                    clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setAverageLoadAverage(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//
+//    }
+//
+//    @Override
+//    public void handleGradientOfLoadAverageEvent(
+//            GradientOfLoadAverageEvent gradientOfLoadAverageEvent) {
+//
+//        String clusterId = gradientOfLoadAverageEvent.getClusterId();
+//        float value = gradientOfLoadAverageEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Grad of load avg event: [cluster] %s [value] %s",
+//                                    clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setLoadAverageGradient(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleSecondDerivativeOfLoadAverageEvent(
+//            SecondDerivativeOfLoadAverageEvent secondDerivativeOfLoadAverageEvent) {
+//
+//        String clusterId = secondDerivativeOfLoadAverageEvent.getClusterId();
+//        float value = secondDerivativeOfLoadAverageEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Second Derivation of load avg event: [cluster] %s "
+//                                    + "[value] %s", clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setLoadAverageSecondDerivative(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleAverageMemoryConsumptionEvent(
+//            AverageMemoryConsumptionEvent averageMemoryConsumptionEvent) {
+//
+//        String clusterId = averageMemoryConsumptionEvent.getClusterId();
+//        float value = averageMemoryConsumptionEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Avg Memory Consumption event: [cluster] %s "
+//                                    + "[value] %s", averageMemoryConsumptionEvent.getClusterId(), value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setAverageMemoryConsumption(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleGradientOfMemoryConsumptionEvent(
+//            GradientOfMemoryConsumptionEvent gradientOfMemoryConsumptionEvent) {
+//
+//        String clusterId = gradientOfMemoryConsumptionEvent.getClusterId();
+//        float value = gradientOfMemoryConsumptionEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Grad of Memory Consumption event: [cluster] %s "
+//                                    + "[value] %s", clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setMemoryConsumptionGradient(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleSecondDerivativeOfMemoryConsumptionEvent(
+//            SecondDerivativeOfMemoryConsumptionEvent secondDerivativeOfMemoryConsumptionEvent) {
+//
+//        String clusterId = secondDerivativeOfMemoryConsumptionEvent.getClusterId();
+//        float value = secondDerivativeOfMemoryConsumptionEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Second Derivation of Memory Consumption event: [cluster] %s "
+//                                    + "[value] %s", clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setMemoryConsumptionSecondDerivative(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleAverageRequestsInFlightEvent(
+//            AverageRequestsInFlightEvent averageRequestsInFlightEvent) {
+//
+//        float value = averageRequestsInFlightEvent.getValue();
+//        String clusterId = averageRequestsInFlightEvent.getClusterId();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Average Rif event: [cluster] %s [value] %s",
+//                                    clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setAverageRequestsInFlight(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleGradientOfRequestsInFlightEvent(
+//            GradientOfRequestsInFlightEvent gradientOfRequestsInFlightEvent) {
+//
+//        String clusterId = gradientOfRequestsInFlightEvent.getClusterId();
+//        float value = gradientOfRequestsInFlightEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Gradient of Rif event: [cluster] %s [value] %s",
+//                                    clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setRequestsInFlightGradient(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleSecondDerivativeOfRequestsInFlightEvent(
+//            SecondDerivativeOfRequestsInFlightEvent secondDerivativeOfRequestsInFlightEvent) {
+//
+//        String clusterId = secondDerivativeOfRequestsInFlightEvent.getClusterId();
+//        float value = secondDerivativeOfRequestsInFlightEvent.getValue();
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Second derivative of Rif event: [cluster] %s "
+//                                    + "[value] %s", clusterId, value));
+//        }
+//        KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterCtxt();
+//        if (null != kubernetesClusterContext) {
+//            kubernetesClusterContext.setRequestsInFlightSecondDerivative(value);
+//        } else {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Kubernetes cluster context is not available for :" +
+//                                        " [cluster] %s", clusterId));
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void handleMemberAverageMemoryConsumptionEvent(
+//            MemberAverageMemoryConsumptionEvent memberAverageMemoryConsumptionEvent) {
+//
+//        String memberId = memberAverageMemoryConsumptionEvent.getMemberId();
+//        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
+//        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
+//        if (null == memberStatsContext) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member context is not available for : [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        float value = memberAverageMemoryConsumptionEvent.getValue();
+//        memberStatsContext.setAverageMemoryConsumption(value);
+//    }
+//
+//    @Override
+//    public void handleMemberGradientOfMemoryConsumptionEvent(
+//            MemberGradientOfMemoryConsumptionEvent memberGradientOfMemoryConsumptionEvent) {
+//
+//        String memberId = memberGradientOfMemoryConsumptionEvent.getMemberId();
+//        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
+//        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
+//        if (null == memberStatsContext) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member context is not available for : [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        float value = memberGradientOfMemoryConsumptionEvent.getValue();
+//        memberStatsContext.setGradientOfMemoryConsumption(value);
+//    }
+//
+//    @Override
+//    public void handleMemberSecondDerivativeOfMemoryConsumptionEvent(
+//            MemberSecondDerivativeOfMemoryConsumptionEvent memberSecondDerivativeOfMemoryConsumptionEvent) {
+//
+//    }
+//
+//    @Override
+//    public void handleMemberAverageLoadAverageEvent(
+//            MemberAverageLoadAverageEvent memberAverageLoadAverageEvent) {
+//
+//        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
+//        String memberId = memberAverageLoadAverageEvent.getMemberId();
+//        float value = memberAverageLoadAverageEvent.getValue();
+//        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
+//        if (null == memberStatsContext) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member context is not available for : [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        memberStatsContext.setAverageLoadAverage(value);
+//    }
+//
+//    @Override
+//    public void handleMemberGradientOfLoadAverageEvent(
+//            MemberGradientOfLoadAverageEvent memberGradientOfLoadAverageEvent) {
+//
+//        String memberId = memberGradientOfLoadAverageEvent.getMemberId();
+//        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
+//        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
+//        if (null == memberStatsContext) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member context is not available for : [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        float value = memberGradientOfLoadAverageEvent.getValue();
+//        memberStatsContext.setGradientOfLoadAverage(value);
+//    }
+//
+//    @Override
+//    public void handleMemberSecondDerivativeOfLoadAverageEvent(
+//            MemberSecondDerivativeOfLoadAverageEvent memberSecondDerivativeOfLoadAverageEvent) {
+//
+//        String memberId = memberSecondDerivativeOfLoadAverageEvent.getMemberId();
+//        KubernetesClusterContext kubernetesClusterCtxt = getKubernetesClusterCtxt();
+//        MemberStatsContext memberStatsContext = kubernetesClusterCtxt.getMemberStatsContext(memberId);
+//        if (null == memberStatsContext) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member context is not available for : [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        float value = memberSecondDerivativeOfLoadAverageEvent.getValue();
+//        memberStatsContext.setSecondDerivativeOfLoadAverage(value);
+//    }
+//
+//    @Override
+//    public void handleMemberFaultEvent(MemberFaultEvent memberFaultEvent) {
+//    	// kill the container
+//        String memberId = memberFaultEvent.getMemberId();
+//        Member member = getMemberByMemberId(memberId);
+//        if (null == member) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member not found in the Topology: [member] %s", memberId));
+//            }
+//            return;
+//        }
+//        if (!member.isActive()) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member activated event has not received for the member %s. "
+//                                        + "Therefore ignoring" + " the member fault health stat", memberId));
+//            }
+//            return;
+//        }
+//
+//        if (!getKubernetesClusterCtxt().activeMemberExist(memberId)) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Could not find the active member in kubernetes cluster context, "
+//                                        + "[member] %s ", memberId));
+//            }
+//            return;
+//        }
+//
+//        // move member to obsolete list
+//        getKubernetesClusterCtxt().moveMemberToObsoleteList(memberId);
+//        if (log.isInfoEnabled()) {
+//            String clusterId = memberFaultEvent.getClusterId();
+//            String kubernetesClusterID = getKubernetesClusterCtxt().getKubernetesClusterID();
+//            log.info(String.format("Faulty member is moved to obsolete list and removed from the active members list: "
+//                    + "[member] %s [kub-cluster] %s [cluster] %s ", memberId, kubernetesClusterID, clusterId));
+//        }
+//    }
+//
+//    @Override
+//    public void handleMemberStartedEvent(
+//            MemberStartedEvent memberStartedEvent) {
+//
+//    }
+//
+//    @Override
+//    public void handleMemberActivatedEvent(
+//            MemberActivatedEvent memberActivatedEvent) {
+//
+//        KubernetesClusterContext kubernetesClusterContext;
+//        kubernetesClusterContext = getKubernetesClusterCtxt();
+//        String memberId = memberActivatedEvent.getMemberId();
+//        kubernetesClusterContext.addMemberStatsContext(new MemberStatsContext(memberId));
+//        if (log.isInfoEnabled()) {
+//            log.info(String.format("Member stat context has been added successfully: "
+//                                   + "[member] %s", memberId));
+//        }
+//        kubernetesClusterContext.movePendingMemberToActiveMembers(memberId);
+//    }
+//
+//    @Override
+//    public void handleMemberMaintenanceModeEvent(
+//            MemberMaintenanceModeEvent maintenanceModeEvent) {
+//
+//        // no need to do anything here
+//        // we will not be receiving this event for containers
+//        // we will only receive member terminated event
+//    }
+//
+//    @Override
+//    public void handleMemberReadyToShutdownEvent(
+//            MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
+//
+//        // no need to do anything here
+//        // we will not be receiving this event for containers
+//    	// we will only receive member terminated event
+//    }
+//
+//    @Override
+//    public void handleMemberTerminatedEvent(
+//            MemberTerminatedEvent memberTerminatedEvent) {
+//
+//        String memberId = memberTerminatedEvent.getMemberId();
+//        if (getKubernetesClusterCtxt().removeTerminationPendingMember(memberId)) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member is removed from termination pending members list: "
+//                                        + "[member] %s", memberId));
+//            }
+//        } else if (getKubernetesClusterCtxt().removePendingMember(memberId)) {
+//            if (log.isDebugEnabled()) {
+//                log.debug(String.format("Member is removed from pending members list: "
+//                                        + "[member] %s", memberId));
+//            }
+//        } else if (getKubernetesClusterCtxt().removeActiveMemberById(memberId)) {
+//            log.warn(String.format("Member is in the wrong list and it is removed from "
+//                                   + "active members list: %s", memberId));
+//        } else if (getKubernetesClusterCtxt().removeObsoleteMember(memberId)) {
+//            log.warn(String.format("Obsolete member has either been terminated or its obsolete time out has expired and"
+//                                   + " it is removed from obsolete members list: %s", memberId));
+//        } else {
+//            log.warn(String.format("Member is not available in any of the list active, "
+//                                   + "pending and termination pending: %s", memberId));
+//        }
+//
+//        if (log.isInfoEnabled()) {
+//            log.info(String.format("Member stat context has been removed successfully: "
+//                                   + "[member] %s", memberId));
+//        }
+//    }
+//
+//    @Override
+//    public void handleClusterRemovedEvent(
+//            ClusterRemovedEvent clusterRemovedEvent) {
+//    	getKubernetesClusterCtxt().getPendingMembers().clear();
+//    	getKubernetesClusterCtxt().getActiveMembers().clear();
+//    	getKubernetesClusterCtxt().getTerminationPendingMembers().clear();
+//    	getKubernetesClusterCtxt().getObsoletedMembers().clear();
+//    }
+//
+//    public KubernetesClusterContext getKubernetesClusterCtxt() {
+//        return (KubernetesClusterContext) getClusterContext();
+//    }
+//
+//    private Member getMemberByMemberId(String memberId) {
+//        try {
+//            TopologyManager.acquireReadLock();
+//            for (Service service : TopologyManager.getTopology().getServices()) {
+//                for (Cluster cluster : service.getClusters()) {
+//                    if (cluster.memberExists(memberId)) {
+//                        return cluster.getMember(memberId);
+//                    }
+//                }
+//            }
+//            return null;
+//        } finally {
+//            TopologyManager.releaseReadLock();
+//        }
+//    }
 
     @Override
     public void terminateAllMembers(String instanceId, String networkPartitionId) {
         try {
-            CloudControllerClient.getInstance().terminateAllContainers(getKubernetesClusterCtxt().getClusterId());
+            CloudControllerClient.getInstance().terminateAllContainers(getClusterId());
         } catch (TerminationException e) {
             log.error(String.format("Could not terminate containers: [cluster-id] %s",
-                    getKubernetesClusterCtxt().getClusterId()), e);
+                    getClusterId()), e);
         }
     }
 }

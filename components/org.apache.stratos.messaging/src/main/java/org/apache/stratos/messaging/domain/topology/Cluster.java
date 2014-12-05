@@ -63,6 +63,23 @@ public class Cluster implements Serializable {
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 
+    public Cluster(Cluster cluster) {
+        this.serviceName = cluster.getServiceName();
+        this.clusterId = cluster.getClusterId();
+        this.deploymentPolicyName = cluster.getDeploymentPolicyName();
+        this.autoscalePolicyName = cluster.getAutoscalePolicyName();
+        this.appId = cluster.getAppId();
+        this.setKubernetesCluster(cluster.isKubernetesCluster());
+        this.setHostNames(cluster.getHostNames());
+        this.memberMap = cluster.getMemberMap();
+        this.setInstanceIdToInstanceContextMap(cluster.getInstanceIdToInstanceContextMap());
+        this.properties = cluster.getProperties();
+        this.loadBalanceAlgorithmName = cluster.getLoadBalanceAlgorithmName();
+        this.parentId = cluster.getParentId();
+        this.tenantRange = cluster.getTenantRange();
+        this.setLbCluster(cluster.isLbCluster());
+    }
+    
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
         this.serviceName = serviceName;
@@ -256,6 +273,14 @@ public class Cluster implements Serializable {
     public int getInstanceContextCount () {
 
         return getInstanceIdToInstanceContextMap().keySet().size();
+    }
+
+    public Map<String, Member> getMemberMap() {
+        return memberMap;
+    }
+
+    public void setMemberMap(Map<String, Member> memberMap) {
+        this.memberMap = memberMap;
     }
 
     public boolean equals(Object other) {

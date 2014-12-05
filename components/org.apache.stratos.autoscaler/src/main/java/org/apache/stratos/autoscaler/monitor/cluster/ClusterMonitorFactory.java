@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
@@ -48,8 +49,8 @@ public class ClusterMonitorFactory {
         AbstractClusterMonitor clusterMonitor;
 //        if (cluster.isKubernetesCluster()) {
 //            clusterMonitor = getDockerServiceClusterMonitor(cluster);
-////        } else if (cluster.isLbCluster()) {
-////            clusterMonitor = getVMLbClusterMonitor(cluster);
+//////        } else if (cluster.isLbCluster()) {
+//////            clusterMonitor = getVMLbClusterMonitor(cluster);
 //        } else {
             clusterMonitor = getVMClusterMonitor(cluster);
 //        }
@@ -64,7 +65,7 @@ public class ClusterMonitorFactory {
             return null;
         }
 
-        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
+        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster);
 
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
@@ -107,7 +108,7 @@ public class ClusterMonitorFactory {
      * @param cluster - the cluster which needs to be monitored
      * @return - the cluster monitor
      */
-    private static KubernetesServiceClusterMonitor getDockerServiceClusterMonitor(Cluster cluster)
+    private static KubernetesClusterMonitor getDockerServiceClusterMonitor(Cluster cluster)
             throws PolicyValidationException {
 
         if (null == cluster) {
@@ -155,50 +156,50 @@ public class ClusterMonitorFactory {
 //                cluster.getClusterId(), cluster.getServiceName(),  autoscalePolicy, minReplicas, maxReplicas);
 
 
-        KubernetesServiceClusterMonitor dockerClusterMonitor = new KubernetesServiceClusterMonitor(cluster.getServiceName(), cluster.getClusterId());
+        KubernetesClusterMonitor dockerClusterMonitor = new KubernetesClusterMonitor(cluster);
 
         //populate the members after restarting
-        for (Member member : cluster.getMembers()) {
-            String memberId = member.getMemberId();
-            String clusterId = member.getClusterId();
-            MemberContext memberContext = new MemberContext();
-            memberContext.setMemberId(memberId);
-            memberContext.setClusterId(clusterId);
-            memberContext.setInitTime(member.getInitTime());
-
-            // if there is at least one member in the topology, that means service has been created already
-            // this is to avoid calling startContainer() method again
-            //kubernetesClusterCtxt.setServiceClusterCreated(true);
-
-            if (MemberStatus.Activated.equals(member.getStatus())) {
-                if (log.isDebugEnabled()) {
-                    String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
-                    log.debug(msg);
-                }
-                dockerClusterMonitor.getKubernetesClusterCtxt().addActiveMember(memberContext);
-            } else if (MemberStatus.Created.equals(member.getStatus())
-                    || MemberStatus.Starting.equals(member.getStatus())) {
-                if (log.isDebugEnabled()) {
-                    String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
-                    log.debug(msg);
-                }
-                dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
-            }
-
-            //kubernetesClusterCtxt.addMemberStatsContext(new MemberStatsContext(memberId));
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member stat context has been added: [member] %s", memberId));
-            }
-        }
-
-        // find lb reference type
-        if (properties.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
-            String value = properties.getProperty(StratosConstants.LOAD_BALANCER_REF);
-            dockerClusterMonitor.setLbReferenceType(value);
-            if (log.isDebugEnabled()) {
-                log.debug("Set the lb reference type: " + value);
-            }
-        }
+//        for (Member member : cluster.getMembers()) {
+//            String memberId = member.getMemberId();
+//            String clusterId = member.getClusterId();
+//            MemberContext memberContext = new MemberContext();
+//            memberContext.setMemberId(memberId);
+//            memberContext.setClusterId(clusterId);
+//            memberContext.setInitTime(member.getInitTime());
+//
+//            // if there is at least one member in the topology, that means service has been created already
+//            // this is to avoid calling startContainer() method again
+//            //kubernetesClusterCtxt.setServiceClusterCreated(true);
+//
+//            if (MemberStatus.Activated.equals(member.getStatus())) {
+//                if (log.isDebugEnabled()) {
+//                    String msg = String.format("Active member loaded from topology and added to active member list, %s", member.toString());
+//                    log.debug(msg);
+//                }
+//                ((VMClusterContext) dockerClusterMonitor.getClusterContext()).addActiveMember(memberContext);
+//            } else if (MemberStatus.Created.equals(member.getStatus())
+//                    || MemberStatus.Starting.equals(member.getStatus())) {
+//                if (log.isDebugEnabled()) {
+//                    String msg = String.format("Pending member loaded from topology and added to pending member list, %s", member.toString());
+//                    log.debug(msg);
+//                }
+//                dockerClusterMonitor.getKubernetesClusterCtxt().addPendingMember(memberContext);
+//            }
+//
+//            //kubernetesClusterCtxt.addMemberStatsContext(new MemberStatsContext(memberId));
+//            if (log.isInfoEnabled()) {
+//                log.info(String.format("Member stat context has been added: [member] %s", memberId));
+//            }
+//        }
+//
+//        // find lb reference type
+//        if (properties.containsKey(StratosConstants.LOAD_BALANCER_REF)) {
+//            String value = properties.getProperty(StratosConstants.LOAD_BALANCER_REF);
+//            dockerClusterMonitor.setLbReferenceType(value);
+//            if (log.isDebugEnabled()) {
+//                log.debug("Set the lb reference type: " + value);
+//            }
+//        }
 
         log.info("KubernetesServiceClusterMonitor created: " + dockerClusterMonitor.toString());
         return dockerClusterMonitor;

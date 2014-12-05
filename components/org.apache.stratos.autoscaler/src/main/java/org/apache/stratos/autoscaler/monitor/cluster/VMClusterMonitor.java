@@ -70,8 +70,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
-    protected VMClusterMonitor(String serviceType, String clusterId) {
-        super(serviceType, clusterId);
+    protected VMClusterMonitor(Cluster cluster) {
+        super(cluster);
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
         readConfigurations();

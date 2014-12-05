@@ -35,6 +35,7 @@ import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.event.health.stat.*;
 import org.apache.stratos.messaging.event.topology.*;
@@ -68,16 +69,17 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
     private String clusterId;
+    private Cluster cluster;
     private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
     private boolean isDestroyed;
 
-    protected AbstractClusterMonitor(String serviceType, String clusterId) {
+    protected AbstractClusterMonitor(Cluster cluster) {
 
         super();
-        this.serviceType = serviceType;
-        this.clusterId = clusterId;
-        this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
+        this.setCluster(new Cluster(cluster));
+        this.serviceType = cluster.getServiceName();
+        this.clusterId = cluster.getClusterId();
         this.monitoringStarted = new AtomicBoolean(false);
         //this.clusterContext = abstractClusterContext;
         //this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
@@ -406,6 +408,14 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setClusterContext(AbstractClusterContext clusterContext) {
         this.clusterContext = clusterContext;
+    }
+    
+    public Cluster getCluster() {
+        return cluster;
+    }
+
+    public void setCluster(Cluster cluster) {
+        this.cluster = cluster;
     }
 
 
