@@ -46,13 +46,13 @@ public class ClusterMonitorFactory {
             throws PolicyValidationException, PartitionValidationException {
 
         AbstractClusterMonitor clusterMonitor;
-        if (cluster.isKubernetesCluster()) {
-            clusterMonitor = getDockerServiceClusterMonitor(cluster);
-//        } else if (cluster.isLbCluster()) {
-//            clusterMonitor = getVMLbClusterMonitor(cluster);
-        } else {
+//        if (cluster.isKubernetesCluster()) {
+//            clusterMonitor = getDockerServiceClusterMonitor(cluster);
+////        } else if (cluster.isLbCluster()) {
+////            clusterMonitor = getVMLbClusterMonitor(cluster);
+//        } else {
             clusterMonitor = getVMClusterMonitor(cluster);
-        }
+//        }
 
         return clusterMonitor;
     }

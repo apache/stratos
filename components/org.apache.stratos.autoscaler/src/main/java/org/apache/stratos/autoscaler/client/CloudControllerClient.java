@@ -355,7 +355,10 @@ public class CloudControllerClient {
      * 				cartridge not found for the given cluster id, or if the given
      * 				kubernetes cluster id is not valid
      */
-    public synchronized MemberContext[] startContainers(String kubernetesClusterId, String clusterId) throws SpawningException {
+    public synchronized MemberContext[] startContainers(Partition partition,
+            String clusterId,
+            String networkPartitionId,String instanceID, boolean isPrimary,
+            int minMemberCount) throws SpawningException {
         try {
 
 //            KubernetesManager kubernetesManager = KubernetesManager.getInstance();
@@ -368,6 +371,23 @@ public class CloudControllerClient {
 
             ContainerClusterContext context = new ContainerClusterContext();
             context.setClusterId(clusterId);
+            context.setPartition(partition);
+            context.setNetworkPartitionId(networkPartitionId);
+            context.setInstanceId(instanceID);
+            
+            Properties memberContextProps = new Properties();
+            Property isPrimaryProp = new Property();
+            isPrimaryProp.setName("PRIMARY");
+            isPrimaryProp.setValue(String.valueOf(isPrimary));
+
+            Property minCountProp = new Property();
+            minCountProp.setName("MIN_COUNT");
+            minCountProp.setValue(String.valueOf(minMemberCount));
+
+            memberContextProps.addProperty(isPrimaryProp);
+            memberContextProps.addProperty(minCountProp);
+            context.setProperties(AutoscalerUtil.toStubProperties(memberContextProps));
+            
 //            Properties memberContextProps = new Properties();
 //            Property kubernetesClusterMasterIPProps = new Property();
 //            kubernetesClusterMasterIPProps.setName(StratosConstants.KUBERNETES_MASTER_IP);

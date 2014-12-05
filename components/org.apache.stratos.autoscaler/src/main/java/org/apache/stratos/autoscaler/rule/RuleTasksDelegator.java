@@ -174,6 +174,57 @@ public class RuleTasksDelegator {
         }
     }
 
+    public void delegateStartContainers(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, boolean isPrimary) {
+
+        try {
+
+            String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
+//            NetworkPartitionLbHolder lbHolder =
+//                    PartitionManager.getInstance()
+//                            .getNetworkPartitionLbHolder(nwPartitionId);
+//            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
+            //Calculate accumulation of minimum counts of all the partition of current network partition
+            int minimumCountOfNetworkPartition = 0;
+            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+            VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
+            ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
+            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+            minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
+            MemberContext[] memberContexts =
+                    CloudControllerClient.getInstance()
+                            .startContainers(clusterMonitorPartitionContext.getPartition(),
+                                    clusterId,
+                                    instanceId,
+                                    clusterMonitorPartitionContext.getNetworkPartitionId(),
+                                    isPrimary,
+                                    minimumCountOfNetworkPartition);
+            if (null != memberContexts) {
+                for (MemberContext memberContext : memberContexts) {
+                    if (null != memberContext) {
+                        clusterMonitorPartitionContext.addPendingMember(memberContext);
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
+                                    memberContext.getPartition().getId()));
+                        }
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Returned member context is null, did not add any pending members");
+                        }
+                    }
+                }
+            } else {
+                if (log.isDebugEnabled()) {
+                    log.debug("Returned member context is null, did not add to pending members");
+                }
+            }
+
+        } catch (Throwable e) {
+            String message = "Cannot spawn an instance";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+    
     public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, boolean isPrimary) {
 
         try {
@@ -377,28 +428,28 @@ public class RuleTasksDelegator {
             String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
             String clusterId = kubernetesClusterContext.getClusterId();
             CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            MemberContext[] memberContexts = ccClient.startContainers(kubernetesClusterId, clusterId);
-            if (null != memberContexts) {
-                for (MemberContext memberContext : memberContexts) {
-                    if (null != memberContext) {
-                        kubernetesClusterContext.addPendingMember(memberContext);
-                        kubernetesClusterContext.setServiceClusterCreated(true);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format(
-                                    "Pending member added, [member] %s [kub cluster] %s",
-                                    memberContext.getMemberId(), kubernetesClusterId));
-                        }
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Returned member context is null, did not add any pending members");
-                        }
-                    }
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Returned member context is null, did not add to pending members");
-                }
-            }
+//            MemberContext[] memberContexts = ccClient.startContainers(kubernetesClusterId, clusterId);
+//            if (null != memberContexts) {
+//                for (MemberContext memberContext : memberContexts) {
+//                    if (null != memberContext) {
+//                        kubernetesClusterContext.addPendingMember(memberContext);
+//                        kubernetesClusterContext.setServiceClusterCreated(true);
+//                        if (log.isDebugEnabled()) {
+//                            log.debug(String.format(
+//                                    "Pending member added, [member] %s [kub cluster] %s",
+//                                    memberContext.getMemberId(), kubernetesClusterId));
+//                        }
+//                    } else {
+//                        if (log.isDebugEnabled()) {
+//                            log.debug("Returned member context is null, did not add any pending members");
+//                        }
+//                    }
+//                }
+//            } else {
+//                if (log.isDebugEnabled()) {
+//                    log.debug("Returned member context is null, did not add to pending members");
+//                }
+//            }
         } catch (Exception e) {
             log.error("Cannot create containers ", e);
         }
