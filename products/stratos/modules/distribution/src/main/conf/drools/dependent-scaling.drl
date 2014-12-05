@@ -21,12 +21,14 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 
 global org.apache.stratos.autoscaler.rule.RuleLog log;
 global java.lang.String clusterId;
 global Integer roundedRequiredInstanceCount;
 global org.apache.stratos.autoscaler.rule.RuleTasksDelegator delegator;
 global java.lang.String algorithmName;
+global java.lang.Boolean isPrimary;
 
 rule "Dependent Scaling Rule"
 dialect "mvel"
@@ -41,6 +43,42 @@ dialect "mvel"
 
 	then
 
+        if(scaleUp) {
+
+            int additionalInstances = roundedRequiredInstanceCount - clusterInstanceContext.getNonTerminatedMemberCount();
+            int count = 0;
+
+            while(count != additionalInstances){
+            ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                if(partitionContext != null){
+                    log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                    log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                    delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                    count++;
+                }
+//                else {
+//                    break;
+//                }
+            }
+        } else if (scaleDown) {
+
+            int redundantInstances = clusterInstanceContext.getNonTerminatedMemberCount() - roundedRequiredInstanceCount;
+
+            int count = 0;
+
+            while(count != redundantInstances){
+                ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleDownPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                if(partitionContext != null){
+                    log.info("[scale-down] Partition available to scale down, hence trying to terminate an instance to scale down!" );
+                    log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                    delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                    count++;
+                }
+//                else {
+//                    break;
+//                }
+            }
+        }
 
 end
 
