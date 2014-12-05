@@ -436,10 +436,14 @@ function sm_setup() {
 
     pushd $resource_path
     ${SED} -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" mysql.sql
+    ${SED} -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" security-mysql.sql
+    ${SED} -i "s@USERSTORE_DB_SCHEMA@$userstore_db_schema@g" application-mysql.sql
 
     popd
 
     mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/mysql.sql
+    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/security-mysql.sql
+    mysql -u$userstore_db_user -p$userstore_db_pass < $resource_path/application-mysql.sql
     echo "End configuring the SM"
 }
 
@@ -628,6 +632,9 @@ mv -f ./hosts.tmp /etc/hosts
 # ------------------------------------------------
 echo 'Changing owner of '$stratos_path' to '$host_user:$host_user
 chown -R $host_user:$host_user $stratos_path
+
+cp -f ./config/all/repository/conf/identity.xml $stratos_extract_path/repository/conf/
+cp -f ./config/all/repository/conf/security/application-authentication.xml $stratos_extract_path/repository/conf/security/
 
 echo "Apache Stratos configuration completed successfully"
 

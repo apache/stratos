@@ -316,7 +316,6 @@
            <directory>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/conf/</directory>
            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/</outputDirectory>
 	   <includes>
-       		<include>**/identity.xml</include>
 		<include>**/rule-engine-config.xml</include>
            </includes>
         </fileSet>
@@ -660,6 +659,19 @@
         <file>
             <source>src/main/conf/autoscaler.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+	<!--iindentity.xml and application-authentication.xml for oAuth feature -->
+        <file>
+            <source>src/main/conf/identity.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>755</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/security/application-authentication.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>755</fileMode>
         </file>
