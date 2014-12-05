@@ -90,7 +90,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     public void startDependency(ParentComponent component, List<String> instanceIds) {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStarAbleDependencies();
+                getStarAbleDependencies(); //TODO t
         startDependency(applicationContexts, instanceIds);
 
     }
@@ -280,17 +280,17 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
-     * @param eventId
+     * @param childId
      */
-    protected void onChildInactiveEvent(String eventId, String instanceId) {
+    protected void onChildInactiveEvent(String childId, String instanceId) {
         List<ApplicationChildContext> terminationList;
         Monitor monitor;
-        terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
+        terminationList = this.startupDependencyTree.getTerminationDependencies(childId);
         //Need to notify the parent about the status  change from Active-->InActive
-        if (this.parent != null) {
+        // TODO to make app also inaction if (this.parent != null) {
             ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                     process(this.id, this.appId, instanceId);
-        }
+        //}
         //TODO checking whether terminating them in reverse order,
         // TODO if so can handle it in the parent event.
 
@@ -302,15 +302,15 @@ public abstract class ParentComponentMonitor extends Monitor {
             //handling the killall scenario
             if (this.parent != null) {
                 //send terminating to the parent. So that it will push terminating to its children
-                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, eventId, instanceId);
+                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, childId, instanceId);
             } else {
                 //if it is an application, send terminating event individually for children
-                sendTerminatingEventOnNotification(terminationList, eventId, true, instanceId);
+                sendTerminatingEventOnNotification(terminationList, childId, true, instanceId);
             }
-            log.info("The group" + eventId + " has been marked as terminating " +
+            log.info("The group" + childId + " has been marked as terminating " +
                     "due to all the children are to be terminated");
         } else {
-            sendTerminatingEventOnNotification(terminationList, eventId, false, instanceId);
+            sendTerminatingEventOnNotification(terminationList, childId, false, instanceId);
         }
     }
 
@@ -605,6 +605,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             int retries = 5;
             boolean success;
             do {
+                //TODO remove thread.sleep, exectutor service
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {

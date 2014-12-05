@@ -121,7 +121,7 @@ public class MonitorFactory {
                 groupMonitor.setParent(parentMonitor);
                 //Setting the dependent behaviour of the monitor
                 if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
-                                                            context.hasChild())) {
+                        context.hasChild())) {
                     groupMonitor.setHasStartupDependents(true);
                 } else {
                     groupMonitor.setHasStartupDependents(false);
@@ -146,7 +146,7 @@ public class MonitorFactory {
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
             //Starting the minimum dependencies
-            initialStartup = groupMonitor.startMinimumDependencies(group, instanceIds);
+            initialStartup = groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
@@ -222,7 +222,7 @@ public class MonitorFactory {
             try {
                 Application application = ApplicationHolder.getApplications().getApplication(appId);
                 for (ApplicationInstance instance :
-                                        application.getInstanceIdToInstanceContextMap().values()) {
+                        application.getInstanceIdToInstanceContextMap().values()) {
                     //Starting statusChecking to make it sync with the Topology in the restart of stratos.
                     ServiceReferenceHolder.getInstance().
                             getGroupStatusProcessorChain().
@@ -282,7 +282,7 @@ public class MonitorFactory {
 
             //setting the startup dependent behaviour of the cluster monitor
             if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
-                                                        context.hasChild())) {
+                    context.hasChild())) {
                 clusterMonitor.setHasStartupDependents(true);
             } else {
                 clusterMonitor.setHasStartupDependents(false);
@@ -295,16 +295,16 @@ public class MonitorFactory {
                 clusterMonitor.setHasGroupScalingDependent(false);
             }
 
-            for(String parentInstanceId : parentInstanceIds) {
+            for (String parentInstanceId : parentInstanceIds) {
                 Instance instance = parentMonitor.getInstance(parentInstanceId);
                 String partitionId = null;
-                if(instance instanceof GroupInstance) {
-                    partitionId = ((GroupInstance)instance).getPartitionId();
+                if (instance instanceof GroupInstance) {
+                    partitionId = ((GroupInstance) instance).getPartitionId();
                 }
-                if(instance != null) {
+                if (instance != null) {
                     ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
-                    if(clusterInstance != null) {
-                        if(cluster.isKubernetesCluster()) {
+                    if (clusterInstance != null) {
+                        if (cluster.isKubernetesCluster()) {
                             clusterMonitor.setClusterContext(
                                     ClusterContextFactory.getKubernetesClusterContext(
                                             clusterInstance.getInstanceId(),
@@ -318,7 +318,7 @@ public class MonitorFactory {
                             clusterMonitor.setClusterContext(clusterContext);
                             //create VMClusterContext and then add all the instanceContexts
                             clusterContext.addInstanceContext(parentInstanceId, cluster);
-                            if(clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
+                            if (clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
                                 clusterMonitor.addInstance(clusterInstance);
                             }
                         }

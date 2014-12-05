@@ -190,6 +190,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 }
             } catch (PartitionValidationException e) {
                 log.error("Error while validating the deployment policy", e);
+                //TODO throw exception
             } finally {
                 ApplicationHolder.releaseReadLock();
             }

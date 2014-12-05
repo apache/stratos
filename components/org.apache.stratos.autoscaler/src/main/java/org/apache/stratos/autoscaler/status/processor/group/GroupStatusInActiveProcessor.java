@@ -160,6 +160,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
             } else {
                 groupStat = false;
             }
+            //TODO get by parent
         }
         return groupStat;
     }

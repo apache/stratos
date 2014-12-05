@@ -68,8 +68,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     private boolean groupScalingEnabled;
     //Network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
-    //Group level partition contexts
-    private List<GroupLevelPartitionContext> partitionContexts;
+
     //Indicates whether the monitor is destroyed or not
     private boolean isDestroyed;
     //Monitoring interval of the monitor
@@ -125,7 +124,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param status status of the group
      */
     public void setStatus(GroupStatus status, String instanceId) {
-        ((GroupInstance)this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
+        ((GroupInstance) this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
@@ -191,9 +190,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             } else {
                 log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
             }
-            GroupInstance instance = (GroupInstance)this.instanceIdToInstanceMap.get(instanceId);
+            GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
-                if(instance.getStatus() == GroupStatus.Terminating) {
+                if (instance.getStatus() == GroupStatus.Terminating) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
@@ -201,7 +200,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 }
             } else {
                 log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                    this.id);
+                        this.id);
             }
         }
     }
@@ -215,13 +214,13 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 statusEvent.getStatus() == ApplicationStatus.Terminating) {
             //Get all the instances which related to this instanceId
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
-            if(instance != null) {
+            if (instance != null) {
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             } else {
                 //Using parentId need to get the children
                 List<String> instanceIds = this.getInstancesByParentInstanceId(instanceId);
-                if(!instanceIds.isEmpty()) {
-                    for(String instanceId1 : instanceIds) {
+                if (!instanceIds.isEmpty()) {
+                    for (String instanceId1 : instanceIds) {
                         ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
                     }
                 }
@@ -291,47 +290,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     }
 
     /**
-     * This will start the minimum required dependency instances
-     * based on the given parent instance ids
-     *
-     * @param group             blue print of the instance to be started
-     * @param parentInstanceIds parent instanceIds used to start the child instance
-     * @return whether first app startup or not
-     * @throws TopologyInConsistentException
-     */
-    public boolean startMinimumDependencies(Group group, List<String> parentInstanceIds)
-            throws TopologyInConsistentException {
-        boolean initialStartup = false;
-        int min = group.getGroupMinInstances();
-        if (group.getInstanceContextCount() >= min) {
-            startDependency(group);
-        } else {
-            if (group.getInstanceContextCount() > 0) {
-                List<String> instanceIds = new ArrayList<String>();
-                for (String parentInstanceId : parentInstanceIds) {
-                    List<Instance> contexts1 = group.getInstanceContextsWithParentId(parentInstanceId);
-                    //Finding the non startable instance ids
-                    if (group.getInstanceContexts(parentInstanceId) == null || contexts1.isEmpty() ||
-                            contexts1.size() == 0) {
-                        instanceIds.add(parentInstanceId);
-
-                    }
-                }
-                if (instanceIds.size() > 0) {
-                    //createInstanceAndStartDependency(group, instanceIds);
-                } else {
-                    startDependency(group);
-                }
-            } else {
-                //No available instances in the Applications. Need to start them all
-                createInstanceAndStartDependencyAtStartup(group, parentInstanceIds);
-                initialStartup = true;
-            }
-        }
-        return initialStartup;
-    }
-   
-    /**
      * Gets the parent instance context.
      *
      * @param parentInstanceId the parent instance id
@@ -339,7 +297,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      */
     private Instance getParentInstanceContext(String parentInstanceId) {
         Instance parentInstanceContext;
-        
+
         Application application = ApplicationHolder.getApplications().getApplication(this.appId);
         if (this.id.equals(appId)) {
             parentInstanceContext = application.getInstanceContexts(parentInstanceId);
@@ -347,146 +305,204 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             Group parentGroup = application.getGroupRecursively(this.parent.getId());
             parentInstanceContext = parentGroup.getInstanceContexts(parentInstanceId);
         }
-        
+
         return parentInstanceContext;
     }
-    
+
     /**
      * Gets the group level network partition context.
      *
      * @param parentInstanceContext the parent instance context
      * @return the group level network partition context
      */
-    private GroupLevelNetworkPartitionContext getGroupLevelNetworkPartitionContext(Instance parentInstanceContext) {
-    	GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext;
+    private GroupLevelNetworkPartitionContext getGroupLevelNetworkPartitionContext(String groupId,
+                                                                                   String appId,
+                                                                                   Instance parentInstanceContext) {
+        GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext;
+        ChildPolicy policy = PolicyManager.getInstance().
+                getDeploymentPolicyByApplication(appId).
+                getChildPolicy(groupId);
+
+
         if (this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
             groupLevelNetworkPartitionContext = this.networkPartitionCtxts.
                     get(parentInstanceContext.getNetworkPartitionId());
         } else {
-            groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
-                    parentInstanceContext.getNetworkPartitionId(),
-                    null, null);
+            if (policy != null) {
+                ChildLevelNetworkPartition networkPartition = policy.
+                        getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
+                groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
+                        parentInstanceContext.getNetworkPartitionId(),
+                        networkPartition.getPartitionAlgo());
+            } else {
+                groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
+                        parentInstanceContext.getNetworkPartitionId());
+            }
             this.addNetworkPartitionContext(groupLevelNetworkPartitionContext);
         }
         return groupLevelNetworkPartitionContext;
     }
-    
+
     /**
-     * Finds the correct partition context to which the instance should be added to and 
+     * Finds the correct partition context to which the instance should be added to and
      * created and adds required context objects.
      *
-     * @param parentInstanceContext the parent instance context
-     * @param group the group
+     * @param parentInstanceContext   the parent instance context
+     * @param networkPartitionContext the GroupLevelNetworkPartitionContext
      * @return the partition context
      */
-    private String FindAndAddPartitionContext(Instance parentInstanceContext, Group group, boolean startup) {
-    	PartitionContext partitionContext = null;
-    	
-    	String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
-        List<GroupLevelPartitionContext> childParitionContexts = null;
-    
-        ChildPolicy policy = PolicyManager.getInstance().
-                getDeploymentPolicyByApplication(group.getApplicationId()).
-                getChildPolicy(group.getUniqueIdentifier());
+    private void addPartitionContext(Instance parentInstanceContext,
+                                     GroupLevelNetworkPartitionContext networkPartitionContext) {
 
-        ChildLevelNetworkPartition networkPartition = policy.
-                getChildLevelNetworkPartition(networkPartitionId);
-        
-        if (startup) {  
-            // Create childPartitionContexts for all possibilities if startup
-            ChildLevelPartition[] childLevelPartitions = networkPartition.getChildLevelPartitions();
-            childParitionContexts = new ArrayList<GroupLevelPartitionContext>();
-            for (ChildLevelPartition childLevelPartition : childLevelPartitions) {
-            	partitionContext = new GroupLevelPartitionContext(childLevelPartition.getMax(), childLevelPartition.getPartitionId(), networkPartitionId); 
-            	childParitionContexts.add((GroupLevelPartitionContext) partitionContext);
-            	this.addPartitionContext((GroupLevelPartitionContext)partitionContext);
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
+        List<GroupLevelPartitionContext> childPartitionContexts;
+
+        ChildPolicy policy = PolicyManager.getInstance().
+                getDeploymentPolicyByApplication(this.appId).
+                getChildPolicy(this.id);
+
+
+        PartitionContext partitionContext;
+        String parentPartitionId = parentInstanceContext.getPartitionId();
+
+        if (policy == null) {
+            if (parentPartitionId != null &&
+                    networkPartitionContext.getPartitionCtxt(parentPartitionId) != null) {
+                partitionContext = new GroupLevelPartitionContext(0);
+                networkPartitionContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
             }
         } else {
-        	// Get partition contexts already created
-        	childParitionContexts = this.getPartitionCtxts();
+            ChildLevelNetworkPartition networkPartition = policy.
+                    getChildLevelNetworkPartition(networkPartitionId);
+            if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
+                // Create childPartitionContexts for all possibilities if startup
+                ChildLevelPartition[] childLevelPartitions = networkPartition.getChildLevelPartitions();
+                childPartitionContexts = new ArrayList<GroupLevelPartitionContext>();
+
+                for (ChildLevelPartition childLevelPartition : childLevelPartitions) {
+                    partitionContext = new GroupLevelPartitionContext(childLevelPartition.getMax(),
+                            childLevelPartition.getPartitionId(), networkPartitionId);
+                    childPartitionContexts.add((GroupLevelPartitionContext) partitionContext);
+                    networkPartitionContext.addPartitionContext(
+                            (GroupLevelPartitionContext) partitionContext);
+                }
+            }
         }
-        
-        // Get partitionContext to create instance in
-        AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(networkPartition.getPartitionAlgo());
-        partitionContext = algorithm.getNextScaleUpPartitionContext((PartitionContext[]) childParitionContexts.toArray());
-        
-    	return partitionContext.getPartitionId();
     }
 
     /**
      * Creates the group instance and adds the required context objects
      *
-     * @param group the group
-     * @param parentInstanceContext the parent instance context
-     * @param partitionContext the partition context
+     * @param group                             the group
+     * @param parentInstanceContext             the parent instance context
+     * @param partitionContext
      * @param groupLevelNetworkPartitionContext the group level network partition context
-     * @param instanceIdstoStart the container with instance ids to start
      */
-    private String createGroupInstance(Group group, Instance parentInstanceContext, String partitionId, 
-    		GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext, String deploymentPolicyName, boolean startup)
-    {
-    	GroupInstance groupInstance = createGroupInstance(group, parentInstanceContext.getInstanceId(), partitionId, parentInstanceContext.getNetworkPartitionId());
+    private String createGroupInstanceAndAddToMonitor(Group group, Instance parentInstanceContext,
+                                                      PartitionContext partitionContext,
+                                                      GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext,
+                                                      GroupInstance groupInstance) {
+
+        String partitionId;
+
+        if (groupInstance == null) {
+            partitionId = partitionContext.getPartitionId();
+
+            groupInstance = createGroupInstance(group, parentInstanceContext.getInstanceId(),
+                    partitionId, parentInstanceContext.getNetworkPartitionId());
+        }
+
         this.addInstance(groupInstance);
-        
+
         String instanceId = groupInstance.getInstanceId();
         GroupInstanceContext groupInstanceContext = new GroupInstanceContext(instanceId);
-        PartitionContext partitionContext = this.getPartitionCtxt(partitionId);
-        
-        if (deploymentPolicyName != null && partitionContext != null && startup) {
-        	groupInstanceContext.addPartitionContext((GroupLevelPartitionContext)partitionContext);
-        }
+
+        groupInstanceContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
         groupLevelNetworkPartitionContext.addInstanceContext(groupInstanceContext);
-        
+
         if (partitionContext != null) {
-        	((GroupLevelPartitionContext)partitionContext).addActiveInstance(groupInstance);
+            ((GroupLevelPartitionContext) partitionContext).addActiveInstance(groupInstance);
         }
-        
+
         return instanceId;
     }
-    
+
     /**
      * This will create the required instance and start the dependency
-     * This method will be called on initial startup 
+     * This method will be called on initial startup
      *
      * @param group             blue print of the instance to be started
      * @param parentInstanceIds parent instanceIds used to start the child instance
      * @throws TopologyInConsistentException
      */
-    public void createInstanceAndStartDependencyAtStartup(Group group, List<String> parentInstanceIds)
+    public boolean createInstanceAndStartDependencyAtStartup(Group group, List<String> parentInstanceIds)
             throws TopologyInConsistentException {
-        List<String> instanceIdstoStart = new ArrayList<String>();
-         
+        boolean initialStartup = true;
+        List<String> instanceIdsToStart = new ArrayList<String>();
+
         for (String parentInstanceId : parentInstanceIds) {
             // Get parent instance context
             Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
-            
-            // Get existing or create new GroupLevelNetwokPartitionContext
-            GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext = getGroupLevelNetworkPartitionContext(parentInstanceContext);
-            
-            // Determine partitionContext
-            String deploymentPolicyName = group.getDeploymentPolicy();
-            String partitionId = null;
-            if(deploymentPolicyName != null) {
-            	partitionId = FindAndAddPartitionContext(parentInstanceContext, group, true);
-            }
-            else { 
-            	GroupInstance instance = (GroupInstance) this.parent.getInstance(parentInstanceId);
-            	if (instance != null) {
-            		partitionId = instance.getPartitionId();
-            	}
-            }
-                        
+
+            // Get existing or create new GroupLevelNetworkPartitionContext
+            GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext =
+                    getGroupLevelNetworkPartitionContext(group.getUniqueIdentifier(),
+                            this.appId, parentInstanceContext);
+            //adding the partitionContext to the network partition context
+            addPartitionContext(parentInstanceContext, groupLevelNetworkPartitionContext);
+
             String groupInstanceId;
+            PartitionContext partitionContext;
+            String parentPartitionId = parentInstanceContext.getPartitionId();
+
             // Create GroupInstance for partition instance and add to required contexts for minimum instance count
-            for(int i=0; i<groupLevelNetworkPartitionContext.getMinInstanceCount(); i++) {
-	            
-            	groupInstanceId = createGroupInstance(group, parentInstanceContext, partitionId, groupLevelNetworkPartitionContext, deploymentPolicyName, true);
-            	instanceIdstoStart.add(groupInstanceId);
+            int groupMin = groupLevelNetworkPartitionContext.getMinInstanceCount();
+
+            //Have to check whether group has generated its own instances
+            List<Instance> existingGroupInstances = group.getInstanceContextsWithParentId(parentInstanceId);
+            for(Instance instance : existingGroupInstances) {
+                initialStartup = false;
+                partitionContext = groupLevelNetworkPartitionContext.
+                        getPartitionContextById(parentPartitionId);
+                groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                        partitionContext,
+                        groupLevelNetworkPartitionContext,
+                        null);
+                instanceIdsToStart.add(groupInstanceId);
             }
+
+            /**
+             * If the group instances have been partially created or not created,
+             * then create everything
+             */
+            if(existingGroupInstances.size() <= groupMin) {
+                for (int i = 0; i < groupMin - existingGroupInstances.size(); i++) {
+                    // Get partitionContext to create instance in
+                    if (parentPartitionId == null) {
+                        AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
+                                        groupLevelNetworkPartitionContext.getPartitionAlgorithm());
+                        partitionContext = algorithm.getNextScaleUpPartitionContext(
+                                (PartitionContext[]) groupLevelNetworkPartitionContext.
+                                        getPartitionCtxts().toArray());
+                    } else {
+                        partitionContext = groupLevelNetworkPartitionContext.
+                                getPartitionContextById(parentPartitionId);
+                    }
+                    groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                            partitionContext,
+                            groupLevelNetworkPartitionContext,
+                            null);
+                    instanceIdsToStart.add(groupInstanceId);
+                }
+            }
+
         }
-        startDependency(group, instanceIdstoStart);
+        startDependency(group, instanceIdsToStart);
+        return initialStartup;
     }
-    
+
+
+
     /**
      * This will start the group instance based on the given parent instanceId
      * A new monitor is not created in this case
@@ -497,34 +513,45 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      */
     public void createInstanceAndStartDependencyOnScaleup(Group group, String parentInstanceId)
             throws MonitorNotFoundException {
-    	// Get parent instance context
+        // Get parent instance context
         Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
-        
-        // Get existing or create new GroupLevelNetwokPartitionContext
-        GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext = getGroupLevelNetworkPartitionContext(parentInstanceContext);
-        
-        // Determine partitionContext
-        String deploymentPolicyName = group.getDeploymentPolicy();
-        String partitionId = null;
-        if(deploymentPolicyName != null) {
-        	partitionId = FindAndAddPartitionContext(parentInstanceContext, group, false);
-        }
-        else {
-        	GroupInstance instance = (GroupInstance) this.parent.getInstance(parentInstanceId);
-        	if (instance != null) {
-        		partitionId = instance.getPartitionId();
-        	} 
+
+        // Get existing or create new GroupLevelNetworkPartitionContext
+        GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext =
+                getGroupLevelNetworkPartitionContext(group.getUniqueIdentifier(),
+                        this.appId, parentInstanceContext);
+        //adding the partitionContext to the network partition context
+        addPartitionContext(parentInstanceContext, groupLevelNetworkPartitionContext);
+
+        String groupInstanceId;
+        PartitionContext partitionContext;
+        String parentPartitionId = parentInstanceContext.getPartitionId();
+        int groupMax = groupLevelNetworkPartitionContext.getMaxInstanceCount();
+        if(group.getInstanceContextCount() < groupMax) {
+            // Get partitionContext to create instance in
+            if (parentPartitionId == null) {
+                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
+                        groupLevelNetworkPartitionContext.getPartitionAlgorithm());
+                partitionContext = algorithm.getNextScaleUpPartitionContext(
+                        (PartitionContext[]) groupLevelNetworkPartitionContext.
+                                getPartitionCtxts().toArray());
+            } else {
+                partitionContext = groupLevelNetworkPartitionContext.
+                        getPartitionContextById(parentPartitionId);
+            }
+            groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                    partitionContext,
+                    groupLevelNetworkPartitionContext,
+                    null);
+            startDependency(group, groupInstanceId);
+        } else {
+            log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
+                    "[max] " + groupMax + ". Hence trying to notify the parent.");
         }
 
-        String groupInstanceId = createGroupInstance(group, parentInstanceContext, partitionId, groupLevelNetworkPartitionContext, deploymentPolicyName, false);
-        startDependency(group, groupInstanceId);
     }
-    
-    public void createInstanceAndStartDependencyOnRestart(Group group, List<String> parentInstanceIds) {
-    	// TODO: Need to add functionality when restart happens
-    	// Should only do required work from Monitor side and not from Topology since that is already existent
-    }
-    
+
+
     /**
      * This will create the group instance in the applications Topology
      *
@@ -535,7 +562,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @return
      */
     private GroupInstance createGroupInstance(Group group, String parentInstanceId, String partitionId,
-                                       String networkPartitionId) {
+                                              String networkPartitionId) {
         String instanceId = parentInstanceId;
         int minGroupInstances = group.getGroupMinInstances();
         int maxGroupInstances = group.getGroupMaxInstances();
@@ -567,42 +594,5 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.isDestroyed = isDestroyed;
     }
 
-    public List<GroupLevelPartitionContext> getPartitionCtxts() {
 
-        return partitionContexts;
-    }
-
-    public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
-        
-    	for(GroupLevelPartitionContext partitionContext : partitionContexts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
-                return partitionContext;
-            }
-        }
-        return null;
-    }
-
-    public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
-    	partitionContexts.add(partitionContext);
-    }
-
-    public int getNonTerminatedMemberCountOfPartition(String partitionId) {
-
-        for(GroupLevelPartitionContext partitionContext : partitionContexts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
-                return partitionContext.getNonTerminatedInstanceCount();
-            }
-        }
-        return 0;
-    }
-
-    public int getActiveMemberCount(String currentPartitionId) {
-
-        for(GroupLevelPartitionContext partitionContext : partitionContexts){
-            if(partitionContext.getPartitionId().equals(currentPartitionId)){
-                return partitionContext.getActiveInstanceCount();
-            }
-        }
-        return 0;
-    }
 }

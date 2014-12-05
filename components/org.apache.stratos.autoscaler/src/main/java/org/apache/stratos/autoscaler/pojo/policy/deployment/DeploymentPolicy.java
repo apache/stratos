@@ -40,7 +40,6 @@ public class DeploymentPolicy implements Serializable{
     private String description;
     private boolean isPublic;
     private ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions;
-    private ChildPolicyHolder childPolicyHolder;
     private ChildPolicy[] childPolicies;
     private int tenantId;
 
@@ -193,23 +192,10 @@ public class DeploymentPolicy implements Serializable{
         		+" [partitions] " + Arrays.toString(this.getAllPartitions());
     }
 
-    public ChildLevelNetworkPartition getChildLevelNetworkPartition(String networkPartitionId) {
-
-        childPolicyHolder.getChildLevelNetworkPartitionById(networkPartitionId);
-        return null;
-    }
 
     public ChildLevelNetworkPartition[] getChildLevelNetworkPartitions() {
         //TODO create a map of child level network partition context and return correct one
         return new ChildLevelNetworkPartition[0];
-    }
-
-    public ChildPolicyHolder getChildPolicyHolder() {
-        return childPolicyHolder;
-    }
-
-    public void setChildPolicyHolder(ChildPolicyHolder childPolicyHolder) {
-        this.childPolicyHolder = childPolicyHolder;
     }
 
     public ChildPolicy[] getChildPolicies() {

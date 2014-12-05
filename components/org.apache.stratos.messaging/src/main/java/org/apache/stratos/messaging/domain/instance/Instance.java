@@ -39,6 +39,9 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
     private String parentId;
     //Network partition id
     private String networkPartitionId;
+    //partition id
+    protected String partitionId;
+
 
     public Instance(String alias, String instanceId) {
         this.alias = alias;
@@ -94,6 +97,14 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
 
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
+    }
+
+    public String getPartitionId() {
+        return partitionId;
+    }
+
+    public void setPartitionId(String partitionId) {
+        this.partitionId = partitionId;
     }
 
 }

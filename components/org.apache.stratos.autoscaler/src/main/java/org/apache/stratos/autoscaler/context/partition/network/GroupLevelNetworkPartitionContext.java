@@ -21,16 +21,16 @@ package org.apache.stratos.autoscaler.context.partition.network;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Holds runtime data of a network partition.
- *
  */
 public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(GroupLevelNetworkPartitionContext.class);
@@ -42,9 +42,10 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     private int requiredInstanceCountBasedOnStats;
     private int requiredInstanceCountBasedOnDependencies;
 
-    private final String partitionAlgorithm;
+    private String partitionAlgorithm;
 
-    private final Partition[] partitions;
+    //Group level partition contexts
+    private List<GroupLevelPartitionContext> partitionContexts;
 
     //details required for partition selection algorithms
     private int currentPartitionIndex;
@@ -52,23 +53,23 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     //group instances kept inside a partition
     private Map<String, GroupInstanceContext> instanceIdToInstanceContextMap;
 
-    public GroupLevelNetworkPartitionContext(String id, String partitionAlgo, Partition[] partitions) {
+    public GroupLevelNetworkPartitionContext(String id, String partitionAlgo) {
         this.id = id;
         this.partitionAlgorithm = partitionAlgo;
-        if (partitions == null) {
-            this.partitions = new Partition[0];
-        } else {
-            this.partitions = Arrays.copyOf(partitions, partitions.length);
-        }
-        for (Partition partition : partitions) {
-            minInstanceCount += partition.getPartitionMin();
-            maxInstanceCount += partition.getPartitionMax();
-        }
+        partitionContexts = new ArrayList<GroupLevelPartitionContext>();
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
         instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
 
 
+    }
+
+    public GroupLevelNetworkPartitionContext(String id) {
+        this.id = id;
+        partitionContexts = new ArrayList<GroupLevelPartitionContext>();
+        requiredInstanceCountBasedOnStats = minInstanceCount;
+        requiredInstanceCountBasedOnDependencies = minInstanceCount;
+        instanceIdToInstanceContextMap = new HashMap<String, GroupInstanceContext>();
     }
 
     public Map<String, GroupInstanceContext> getInstanceIdToInstanceContextMap() {
@@ -150,13 +151,8 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     }
 
 
-
     public String getPartitionAlgorithm() {
         return partitionAlgorithm;
-    }
-
-    public Partition[] getPartitions() {
-        return partitions;
     }
 
     public int getScaleDownRequestsCount() {
@@ -187,6 +183,53 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         this.requiredInstanceCountBasedOnDependencies = requiredInstanceCountBasedOnDependencies;
     }
 
+    public List<GroupLevelPartitionContext> getPartitionCtxts() {
+
+        return partitionContexts;
+    }
+
+    public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
+
+        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
+                return partitionContext;
+            }
+        }
+        return null;
+    }
+
+    public void addPartitionContext(GroupLevelPartitionContext partitionContext) {
+        partitionContexts.add(partitionContext);
+    }
+
+    public int getNonTerminatedMemberCountOfPartition(String partitionId) {
+
+        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
+                return partitionContext.getNonTerminatedInstanceCount();
+            }
+        }
+        return 0;
+    }
+
+    public int getActiveMemberCount(String currentPartitionId) {
+
+        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+            if (partitionContext.getPartitionId().equals(currentPartitionId)) {
+                return partitionContext.getActiveInstanceCount();
+            }
+        }
+        return 0;
+    }
+
+    public GroupLevelPartitionContext getPartitionContextById(String partitionId) {
+        for (GroupLevelPartitionContext partitionContext : partitionContexts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
+                return partitionContext;
+            }
+        }
+        return null;
+    }
 
 
 }

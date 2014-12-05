@@ -36,6 +36,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private GroupInstanceInActivateProcessor groupInActivateMessageProcessor;
     private GroupInstanceTerminatedProcessor groupTerminatedProcessor;
     private GroupInstanceTerminatingProcessor groupTerminatingProcessor;
+    private ApplicationInstanceCreatedMessageProcessor applicationInstanceCreatedMessageProcessor;
     private ApplicationInstanceActivatedMessageProcessor applicationActivatedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
     private ApplicationInstanceInactivatedMessageProcessor applicationInactivatedMessageProcessor;
@@ -60,6 +61,9 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
         groupTerminatingProcessor = new GroupInstanceTerminatingProcessor();
         add(groupTerminatingProcessor);
+
+        applicationInstanceCreatedMessageProcessor = new ApplicationInstanceCreatedMessageProcessor();
+        add(applicationInstanceCreatedMessageProcessor);
 
         applicationActivatedMessageProcessor = new ApplicationInstanceActivatedMessageProcessor();
         add(applicationActivatedMessageProcessor);
@@ -96,6 +100,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             groupTerminatingProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInstanceTerminatedEventListener) {
             groupTerminatedProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationInstanceCreatedEventListener) {
+            applicationInstanceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationInstanceActivatedEventListener) {

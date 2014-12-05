@@ -82,6 +82,7 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
                 log.info("Publishing Cluster activated event for [application]: "
                         + monitor.getAppId() + " [cluster]: " + clusterId);
             }
+            //TODO service call
             ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
                     monitor.getServiceId(), monitor.getClusterId(), instanceId);
         }

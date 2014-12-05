@@ -26,8 +26,6 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateMana
 import java.util.Stack;
 
 public class GroupInstance extends Instance<GroupStatus> implements LifeCycleStateTransitionBehavior<GroupStatus> {
-    //partition id
-    private String partitionId;
 
     public GroupInstance(String alias, String instanceId) {
         super(alias, instanceId);
@@ -55,11 +53,5 @@ public class GroupInstance extends Instance<GroupStatus> implements LifeCycleSta
         return this.lifeCycleStateManager.changeState(newState);
     }
 
-    public String getPartitionId() {
-        return partitionId;
-    }
 
-    public void setPartitionId(String partitionId) {
-        this.partitionId = partitionId;
-    }
 }

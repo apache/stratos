@@ -37,7 +37,7 @@ public class GroupDefinition implements Serializable {
     private int groupMaxInstances;
 
     public boolean isGroupScalingEnabled;
-    
+
     private List<CartridgeDefinition> cartridges;
 
     private List<GroupDefinition> groups;

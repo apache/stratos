@@ -36,21 +36,23 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
     private static final long serialVersionUID = 572769304374110159L;
     private final String id;
 
-    private final String partitionAlgorithm;
+    private String partitionAlgorithm;
     private int min;
 
     private Map<String, ClusterInstanceContext> instanceIdToClusterInstanceContextMap;
 
 
     public ClusterLevelNetworkPartitionContext(String id, String partitionAlgorithm, int min) {
-
-        //super(id, partitionAlgo, partitions);
         this.id = id;
         this.partitionAlgorithm = partitionAlgorithm;
         this.min = min;
-
         setInstanceIdToClusterInstanceContextMap(new HashMap<String, ClusterInstanceContext>());
 
+    }
+
+    public ClusterLevelNetworkPartitionContext(String id) {
+        this.id = id;
+        setInstanceIdToClusterInstanceContextMap(new HashMap<String, ClusterInstanceContext>());
     }
 
 

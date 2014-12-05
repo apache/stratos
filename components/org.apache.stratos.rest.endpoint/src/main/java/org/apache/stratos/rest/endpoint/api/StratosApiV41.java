@@ -330,7 +330,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
     public Response deployDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
-
+        //TODO change the name to deployApplication
         String policyId = StratosApiV41Utils.deployDeploymentPolicy(deploymentPolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(policyId).build();
         return Response.created(url).build();
