@@ -172,14 +172,15 @@ public class VMClusterContext extends AbstractClusterContext {
             ChildPolicy childPolicy,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext)
             throws PolicyValidationException, PartitionValidationException {
-        if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + childPolicy.getId());
-        }
 
         if (childPolicy == null) {
-            String msg = "Deployment policy is null: [policy-name] " + childPolicy.getId();
+            String msg = "Deployment policy is null";
             log.error(msg);
             throw new PolicyValidationException(msg);
+        }
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Deployment policy name: " + childPolicy.getId());
         }
 
         ChildLevelPartition[] childLevelPartitions = childPolicy.
