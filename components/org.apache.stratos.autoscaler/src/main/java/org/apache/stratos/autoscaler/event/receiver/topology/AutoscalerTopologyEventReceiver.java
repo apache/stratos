@@ -255,7 +255,7 @@ public class AutoscalerTopologyEventReceiver {
                 }
                 //changing the status in the monitor, will notify its parent monitor
                 ClusterInstance clusterInstance = (ClusterInstance) monitor.getInstance(instanceId);
-                if (clusterInstance.getPreviousState() == ClusterStatus.Active) {
+                if (clusterInstance.getCurrentState() == ClusterStatus.Active) {
                     // terminated gracefully
                     monitor.setStatus(ClusterStatus.Terminating, instanceId);
                     InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId, instanceId);
