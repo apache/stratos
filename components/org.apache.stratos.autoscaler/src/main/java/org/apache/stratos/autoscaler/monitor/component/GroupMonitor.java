@@ -480,12 +480,15 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             if(existingGroupInstances.size() <= groupMin) {
                 for (int i = 0; i < groupMin - existingGroupInstances.size(); i++) {
                     // Get partitionContext to create instance in
+                    List<GroupLevelPartitionContext> partitionContexts = groupLevelNetworkPartitionContext.
+                            getPartitionCtxts();
+                    GroupLevelPartitionContext[] groupLevelPartitionContexts =
+                            new GroupLevelPartitionContext[partitionContexts.size()];
                     if (parentPartitionId == null) {
                         AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
                                         groupLevelNetworkPartitionContext.getPartitionAlgorithm());
                         partitionContext = algorithm.getNextScaleUpPartitionContext(
-                                (PartitionContext[]) groupLevelNetworkPartitionContext.
-                                        getPartitionCtxts().toArray());
+                                (partitionContexts.toArray(groupLevelPartitionContexts)));
                     } else {
                         partitionContext = groupLevelNetworkPartitionContext.
                                 getPartitionContextById(parentPartitionId);

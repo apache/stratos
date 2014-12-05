@@ -43,7 +43,6 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
     private static final long serialVersionUID = -2920388667345980487L;
     private static final Log log = LogFactory.getLog(GroupLevelPartitionContext.class);
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
-    private String partitionId;
     private String serviceName;
     private int minimumInstanceCount = 0;
     private int pendingInstancesFailureCount = 0;
