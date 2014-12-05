@@ -31,7 +31,7 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
  * The VCloud {@link PartitionValidator} implementation.
  *
  */
-public class GCEPartitionValidator implements PartitionValidator {
+public class GCEPartitionValidator extends IaasBasedPartitionValidator {
     
     private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
     private IaasProvider iaasProvider;

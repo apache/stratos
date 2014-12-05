@@ -29,6 +29,7 @@ import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
+import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 
 public class PartitionValidatorCallable implements Callable<IaasProvider> {
@@ -75,7 +76,7 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
             
         }
         
-        PartitionValidator validator = iaas.getPartitionValidator();
+        IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
         validator.setIaasProvider(iaasProvider);
         IaasProvider updatedIaasProvider =
                                            validator.validate(partition.getId(),

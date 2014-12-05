@@ -294,4 +294,6 @@ public final class CloudControllerConstants {
      */
     public static final int PORT_RANGE_MAX = 65535;
     public static final int PORT_RANGE_MIN = 1;
+    
+    public static final String DOCKER_PARTITION_PROVIDER = "docker";
 }

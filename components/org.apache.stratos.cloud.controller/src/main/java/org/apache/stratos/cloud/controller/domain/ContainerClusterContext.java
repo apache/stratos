@@ -31,6 +31,12 @@ public class ContainerClusterContext implements Serializable {
     private static final long serialVersionUID = -388327475844701869L;
     // cluster id this Pod belongs to
     private String clusterId;
+    // partition this member is in.
+    private Partition partition;
+ // instance id - derived from nodeId
+    private String instanceId;
+  //network partition id
+    private String networkPartitionId;
     // properties
     private Properties properties;
     
@@ -53,6 +59,30 @@ public class ContainerClusterContext implements Serializable {
 
     public void setProperties(Properties properties) {
         this.properties = properties;
+    }
+
+    public Partition getPartition() {
+        return partition;
+    }
+
+    public void setPartition(Partition partition) {
+        this.partition = partition;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public String getNetworkPartitionId() {
+        return networkPartitionId;
+    }
+
+    public void setNetworkPartitionId(String networkPartitionId) {
+        this.networkPartitionId = networkPartitionId;
     }
 
     @Override

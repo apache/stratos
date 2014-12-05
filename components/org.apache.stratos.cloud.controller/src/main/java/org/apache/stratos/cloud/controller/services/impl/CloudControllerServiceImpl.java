@@ -45,6 +45,8 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.KubernetesBasedPartitionValidator;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
@@ -1045,40 +1047,51 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public boolean validatePartition(Partition partition) throws InvalidPartitionException {
         handleNullObject(partition, "Partition validation failed. Partition is null.");
+
         String provider = partition.getProvider();
-        handleNullObject(provider, "Partition [" + partition.getId() + "] validation failed. Partition provider is null.");
+        String partitionId = partition.getId();
+        Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
+
+        handleNullObject(provider, "Partition [" + partitionId + "] validation failed. Partition provider is null.");
         IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
 
-        if (iaasProvider == null) {
+        if (iaasProvider != null) {
+            // if this is a IaaS based partition
+            Iaas iaas = iaasProvider.getIaas();
+
+            if (iaas == null) {
+
+                try {
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
+                } catch (InvalidIaasProviderException e) {
+                    String msg =
+                            "Invalid Partition - " + partition.toString()
+                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
+                                    + ". " + e.getMessage();
+                    log.error(msg, e);
+                    throw new InvalidPartitionException(msg, e);
+                }
+            }
+
+            IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
+            validator.setIaasProvider(iaasProvider);
+            validator.validate(partitionId, partitionProperties);
+            return true;
+
+        } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
+            // if this is a docker based Partition
+            KubernetesBasedPartitionValidator validator = new KubernetesBasedPartitionValidator();
+            validator.validate(partitionId, partitionProperties);
+            return true;
+
+        } else {
+
             String msg =
-                    "Invalid Partition - " + partition.toString() + ". Cause: Iaas Provider " +
-                            "is null for Partition Provider: " + provider;
+                    "Invalid Partition - " + partition.toString() + ". Cause: Cannot identify as a valid partition.";
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }
 
-        Iaas iaas = iaasProvider.getIaas();
-
-        if (iaas == null) {
-
-            try {
-                iaas = CloudControllerUtil.getIaas(iaasProvider);
-            } catch (InvalidIaasProviderException e) {
-                String msg =
-                        "Invalid Partition - " + partition.toString() +
-                                ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider + ". " + e.getMessage();
-                log.error(msg, e);
-                throw new InvalidPartitionException(msg, e);
-            }
-
-        }
-
-        PartitionValidator validator = iaas.getPartitionValidator();
-        validator.setIaasProvider(iaasProvider);
-        validator.validate(partition.getId(),
-                CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-
-        return true;
     }
 
     public ClusterContext getClusterContext(String clusterId) {
