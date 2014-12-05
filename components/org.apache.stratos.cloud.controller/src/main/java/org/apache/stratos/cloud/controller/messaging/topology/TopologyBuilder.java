@@ -201,7 +201,7 @@ public class TopologyBuilder {
                     log.info("Removed application [ " + appId + " ]'s Cluster [ " + aClusterData.getClusterId() + " ] from the topology");
                 }
                 // persist runtime data changes
-                persist(context);
+                CloudControllerContext.getInstance().persist();
             } else {
                 log.info("No cluster data found for application " + appId + " to remove");
             }
@@ -214,19 +214,6 @@ public class TopologyBuilder {
 
         TopologyEventPublisher.sendApplicationClustersRemoved(appId, clusterData);
 
-    }
-
-    /**
-     * Persist data in registry.
-     */
-    private static void persist(CloudControllerContext context) {
-        try {
-            context.persist();
-        } catch (RegistryException e) {
-            String msg = "Failed to persist the cloud controller context in registry.";
-            log.error(msg);
-            throw new CloudControllerException(msg, e);
-        }
     }
 
     public static void handleClusterReset(ClusterStatusClusterResetEvent event) {

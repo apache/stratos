@@ -81,7 +81,6 @@ public abstract class Iaas {
     
     /**
      * This will deallocate/release the given IP address back to pool.
-     * @param iaasInfo corresponding {@link IaasProvider}
      * @param ip public IP address to be released.
      */
     public abstract void releaseAddress(String ip);
