@@ -268,10 +268,11 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      */
     public List<Instance> getInstanceContextsWithParentId (String parentInstanceId) {
         // if map is empty, return null
-        if (getInstanceIdToInstanceContextMap().isEmpty()) {
-            return null;
-        }
         List<Instance> contexts = new ArrayList<Instance>();
+
+        if (getInstanceIdToInstanceContextMap().isEmpty()) {
+            return contexts;
+        }
 
         // if instanceId is null, just get the first InstanceContext
         if (parentInstanceId == null) {

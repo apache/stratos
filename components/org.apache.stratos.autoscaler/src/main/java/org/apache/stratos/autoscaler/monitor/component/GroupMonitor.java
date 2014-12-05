@@ -299,9 +299,11 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         Instance parentInstanceContext;
 
         Application application = ApplicationHolder.getApplications().getApplication(this.appId);
-        if (this.id.equals(appId)) {
+        //if parent is application
+        if (this.parent.getId().equals(appId)) {
             parentInstanceContext = application.getInstanceContexts(parentInstanceId);
         } else {
+            //if parent is group
             Group parentGroup = application.getGroupRecursively(this.parent.getId());
             parentInstanceContext = parentGroup.getInstanceContexts(parentInstanceId);
         }
@@ -456,7 +458,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             String parentPartitionId = parentInstanceContext.getPartitionId();
 
             // Create GroupInstance for partition instance and add to required contexts for minimum instance count
-            int groupMin = groupLevelNetworkPartitionContext.getMinInstanceCount();
+            int groupMin = group.getGroupMinInstances();
 
             //Have to check whether group has generated its own instances
             List<Instance> existingGroupInstances = group.getInstanceContextsWithParentId(parentInstanceId);
@@ -526,7 +528,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         String groupInstanceId;
         PartitionContext partitionContext;
         String parentPartitionId = parentInstanceContext.getPartitionId();
-        int groupMax = groupLevelNetworkPartitionContext.getMaxInstanceCount();
+        int groupMax = group.getGroupMaxInstances();
         if(group.getInstanceContextCount() < groupMax) {
             // Get partitionContext to create instance in
             if (parentPartitionId == null) {
@@ -539,11 +541,16 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 partitionContext = groupLevelNetworkPartitionContext.
                         getPartitionContextById(parentPartitionId);
             }
-            groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
-                    partitionContext,
-                    groupLevelNetworkPartitionContext,
-                    null);
-            startDependency(group, groupInstanceId);
+            if(partitionContext != null) {
+                groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                        partitionContext,
+                        groupLevelNetworkPartitionContext,
+                        null);
+                startDependency(group, groupInstanceId);
+            } else {
+                log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
+                        "[max] " + groupMax + ". Hence trying to notify the parent.");
+            }
         } else {
             log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
                     "[max] " + groupMax + ". Hence trying to notify the parent.");
