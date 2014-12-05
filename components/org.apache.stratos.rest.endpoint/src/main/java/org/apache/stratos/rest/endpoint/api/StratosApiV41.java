@@ -337,7 +337,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @DELETE
-    @Path("/deploymentPolicies/{applicationId}")
+    @Path("/applications/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
