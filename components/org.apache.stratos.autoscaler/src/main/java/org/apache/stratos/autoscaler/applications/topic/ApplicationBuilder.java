@@ -394,7 +394,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId,
+    public static GroupInstance handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId,
                                                        String parentId, String partitionId,
                                                        String networkPartitionId) {
         if (log.isDebugEnabled()) {
@@ -402,27 +402,28 @@ public class ApplicationBuilder {
                     " in the [application] " + appId);
         }
 
+        GroupInstance instance = null;
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
         //update the status of the Group
         if (application == null) {
             log.warn(String.format("Application %s does not exist",
                     appId));
-            return;
+            return instance;
         }
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
             log.warn(String.format("Group %s does not exist",
                     groupId));
-            return;
+            return instance;
         }
 
         GroupStatus status = GroupStatus.Created;
 
         if (!group.containsInstanceContext(instanceId)) {
             //setting the status, persist and publish
-            GroupInstance instance = new GroupInstance(groupId, instanceId);
+            instance = new GroupInstance(groupId, instanceId);
             instance.setParentId(parentId);
             instance.setStatus(status);
             group.addInstance(instanceId, instance);
@@ -433,6 +434,8 @@ public class ApplicationBuilder {
             log.warn("Group Instance Context already exists: [group-id] " + groupId +
                     " [Group-Instance-Id] " + instanceId);
         }
+        
+        return instance;
     }
 
 
