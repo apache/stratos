@@ -56,7 +56,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
         } else {
             if (nextProcessor != null) {
                 // ask the next processor to take care of the message.
-                return nextProcessor.process(null, clusterId, instanceId);
+                return nextProcessor.process(type, clusterId, instanceId);
             } else {
                 throw new RuntimeException(String.format("Failed to process message using " +
                                 "available message processors: [type] %s [cluster] %s [instance]",

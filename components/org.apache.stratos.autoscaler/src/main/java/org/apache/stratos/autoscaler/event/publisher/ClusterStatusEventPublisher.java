@@ -122,7 +122,8 @@ public class ClusterStatusEventPublisher {
                 if (clusterInstance.isStateTransitionValid(ClusterStatus.Active) &&
                         clusterInstance.getStatus() != ClusterStatus.Active) {
                     ClusterStatusClusterActivatedEvent clusterActivatedEvent =
-                            new ClusterStatusClusterActivatedEvent(appId, serviceName, clusterId, "test***");
+                            new ClusterStatusClusterActivatedEvent(appId, serviceName,
+                                            clusterId, instanceId);
 
                     publishEvent(clusterActivatedEvent);
                 } else {

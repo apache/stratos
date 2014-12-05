@@ -97,7 +97,7 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
             ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.
                     getClusterInstanceContext(instanceId);
             if(instanceContext != null) {
-                if(instanceContext.getActiveMembers() < instanceContext.getMaxInstanceCount()) {
+                if(instanceContext.getActiveMembers() < instanceContext.getMinInstanceCount()) {
                     clusterInActive = true;
                 }
             }
