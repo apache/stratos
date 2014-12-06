@@ -58,6 +58,9 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
             // ask the next processor to take care of the message.
             return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
+
+            log.warn(String.format("No possible state change found for [component] %s [instance]",
+                    idOfComponent, instanceId));
             throw new RuntimeException(String.format("Failed to process message using " +
                             "available message processors: [component] %s [instance]",
                     idOfComponent, instanceId));

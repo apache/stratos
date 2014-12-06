@@ -53,6 +53,10 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
                 // ask the next processor to take care of the message.
                 return nextProcessor.process(type, clusterId, instanceId);
             } else {
+
+                log.warn(String.format("No possible state change found for [type] %s [cluster] %s [instance]",
+                        type, clusterId, instanceId));
+
                 throw new RuntimeException(String.format("Failed to process message using " +
                                 "available message processors: [type] %s [cluster] %s [instance]",
                         type, clusterId, instanceId));
