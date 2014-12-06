@@ -394,9 +394,11 @@ public class ApplicationBuilder {
         }
     }
 
-    public static GroupInstance handleGroupInstanceCreatedEvent(String appId, String groupId, String instanceId,
-                                                       String parentId, String partitionId,
-                                                       String networkPartitionId) {
+    public static GroupInstance handleGroupInstanceCreatedEvent(String appId, String groupId,
+                                                                String parentId,
+                                                                String networkPartitionId,
+                                                                String instanceId,
+                                                                String partitionId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling Group creation for the [group]: " + groupId +
                     " in the [application] " + appId);
@@ -425,11 +427,13 @@ public class ApplicationBuilder {
             //setting the status, persist and publish
             instance = new GroupInstance(groupId, instanceId);
             instance.setParentId(parentId);
+            instance.setPartitionId(partitionId);
+            instance.setNetworkPartitionId(networkPartitionId);
             instance.setStatus(status);
             group.addInstance(instanceId, instance);
             //updateGroupMonitor(appId, groupId, status);
             ApplicationHolder.persistApplication(application);
-            //ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId);
+            ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId, instance);
         } else {
             log.warn("Group Instance Context already exists: [group-id] " + groupId +
                     " [Group-Instance-Id] " + instanceId);

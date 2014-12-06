@@ -246,7 +246,8 @@ public class VMClusterContext extends AbstractClusterContext {
                 Application application = ApplicationHolder.getApplications().
                         getApplication(cluster.getAppId());
                 ClusterDataHolder dataHolder = application.
-                        getClusterData(AutoscalerUtil.getAliasFromClusterId(clusterId));
+                        getClusterDataHolderRecursivelyByAlias(
+                                AutoscalerUtil.getAliasFromClusterId(clusterId));
                 minInstances = dataHolder.getMinInstances();
                 maxInstances = dataHolder.getMaxInstances();
             } finally {
