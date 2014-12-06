@@ -115,12 +115,15 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
-            ClusterInstance context = new ClusterInstance(event.getAlias(),
-                                                                        event.getClusterId(),
-                                                                        event.getInstanceId());
-            context.setNetworkPartitionId(event.getNetworkPartitionId());
-            context.setPartitionId(event.getPartitionId());
-            cluster.addInstanceContext(event.getInstanceId(), context);
+            ClusterInstance clusterInstance = event.getClusterInstance();
+            if(cluster.getInstanceContexts(clusterInstance.getInstanceId()) != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Cluster Instance already exists in service: " +
+                                    "[service] %s [cluster] %s [Instance] %s", event.getServiceName(),
+                            event.getClusterId(), clusterInstance.getInstanceId()));
+                }
+            }
+            cluster.addInstanceContext(clusterInstance.getInstanceId(), clusterInstance);
         }
         // Notify event listeners
         notifyEventListeners(event);

@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.event.Event;
 
 /**
@@ -27,20 +28,16 @@ public class ClusterInstanceCreatedEvent extends Event {
 
     private final String serviceName;
     private final String clusterId;
-    private String instanceId;
-    private String alias;
     private String partitionId;
     private String networkPartitionId;
+    private ClusterInstance clusterInstance;
 
 
-    public ClusterInstanceCreatedEvent(String alias, String serviceName, String clusterId,
-                                       String instanceId, String networkPartitionId) {
+    public ClusterInstanceCreatedEvent(String serviceName, String clusterId,
+                                       ClusterInstance clusterInstance) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.instanceId = instanceId;
-        this.alias = alias;
-        this.setNetworkPartitionId(networkPartitionId);
-
+        this.clusterInstance = clusterInstance;
     }
 
     public String getServiceName() {
@@ -57,14 +54,6 @@ public class ClusterInstanceCreatedEvent extends Event {
         return clusterId;
     }
 
-    public String getInstanceId() {
-        return instanceId;
-    }
-
-    public String getAlias() {
-        return alias;
-    }
-
     public String getPartitionId() {
         return partitionId;
     }
@@ -79,5 +68,9 @@ public class ClusterInstanceCreatedEvent extends Event {
 
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
+    }
+
+    public ClusterInstance getClusterInstance() {
+        return clusterInstance;
     }
 }

@@ -292,13 +292,15 @@ public class TopologyBuilder {
                 return;
             }
 
-            //context.setStatus(ClusterStatus.Created);
-            cluster.addInstanceContext(instanceId, new ClusterInstance(alias, clusterId, instanceId));
+            ClusterInstance clusterInstance = new ClusterInstance(alias, clusterId, instanceId);
+            clusterInstance.setNetworkPartitionId(networkPartitionId);
+            clusterInstance.setPartitionId(partitionId);
+            cluster.addInstanceContext(instanceId, clusterInstance);
             TopologyManager.updateTopology(topology);
 
             ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
-                    new ClusterInstanceCreatedEvent(alias, serviceType, clusterId,
-                            instanceId, networkPartitionId);
+                    new ClusterInstanceCreatedEvent(serviceType, clusterId,
+                            clusterInstance);
             clusterInstanceCreatedEvent.setPartitionId(partitionId);
             TopologyEventPublisher.sendClusterInstanceCreatedEvent(clusterInstanceCreatedEvent);
 

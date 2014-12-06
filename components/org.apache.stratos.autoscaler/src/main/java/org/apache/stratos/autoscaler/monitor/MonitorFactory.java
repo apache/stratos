@@ -296,12 +296,12 @@ public class MonitorFactory {
             }
 
             for (String parentInstanceId : parentInstanceIds) {
-                Instance instance = parentMonitor.getInstance(parentInstanceId);
+                Instance parentMonitorInstance = parentMonitor.getInstance(parentInstanceId);
                 String partitionId = null;
-                if (instance instanceof GroupInstance) {
-                    partitionId = ((GroupInstance) instance).getPartitionId();
+                if (parentMonitorInstance instanceof GroupInstance) {
+                    partitionId = parentMonitorInstance.getPartitionId();
                 }
-                if (instance != null) {
+                if (parentMonitorInstance != null) {
                     ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
                     if (clusterInstance != null) {
                         if (cluster.isKubernetesCluster()) {
@@ -326,7 +326,7 @@ public class MonitorFactory {
                         createClusterInstance(cluster.getServiceName(),
                                 clusterId, null,
                                 parentInstanceId, partitionId,
-                                instance.getNetworkPartitionId());
+                                parentMonitorInstance.getNetworkPartitionId());
                     }
 
                 } else {
