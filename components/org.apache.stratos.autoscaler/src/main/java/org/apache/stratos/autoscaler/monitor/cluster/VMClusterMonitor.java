@@ -216,8 +216,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
+                            //FIXME when parent chosen the partition
+                            String paritionAlgo = instanceContext.getPartitionAlgorithm();
+                            if(paritionAlgo == null) {
+                                paritionAlgo = "one-after-another";
+                            }
                             getMinCheckKnowledgeSession().setGlobal("algorithmName",
-                                    instanceContext.getPartitionAlgorithm());
+                                    paritionAlgo);
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",
