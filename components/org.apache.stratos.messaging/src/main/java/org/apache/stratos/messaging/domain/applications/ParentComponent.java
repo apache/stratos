@@ -31,14 +31,14 @@ import java.util.*;
 
 public abstract class ParentComponent<T extends Instance> implements Serializable {
 
-    // Dependency Order
-    private DependencyOrder dependencyOrder;
     // Group Map, key = Group.alias
     protected final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
     protected final Map<String, ClusterDataHolder> aliasToClusterDataMap;
     // Group/Cluster Instance Context map, key = instance id
     protected Map<String, T> instanceIdToInstanceContextMap;
+    // Dependency Order
+    private DependencyOrder dependencyOrder;
     // flag for Group level scaling
     private boolean isGroupScalingEnabled;
     //flag for group instance level monitoring
@@ -46,7 +46,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     //deployment policy
     private String deploymentPolicy;
 
-    public ParentComponent () {
+    public ParentComponent() {
         this.isGroupScalingEnabled = false;
         this.isGroupInstanceMonitoringEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
@@ -60,7 +60,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      *
      * @return unique identifier String
      */
-    public abstract String getUniqueIdentifier ();
+    public abstract String getUniqueIdentifier();
 
     /**
      * Adds a group
@@ -69,15 +69,6 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      */
     public void addGroup(Group group) {
         aliasToGroupMap.put(group.getUniqueIdentifier(), group);
-    }
-
-    /**
-     * Setter for Group alias to Group map
-     *
-     * @param groupAliasToGroup Map, key = alias given to the Group, value = Group
-     */
-    public void setGroups(Map<String, Group> groupAliasToGroup) {
-        aliasToGroupMap.putAll(groupAliasToGroup);
     }
 
     /**
@@ -103,7 +94,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         return travereAndCheckRecursively(aliasToGroupMap, groupAlias);
     }
 
-    private Group travereAndCheckRecursively (Map<String,Group> aliasToGroupMap, String groupAlias) {
+    private Group travereAndCheckRecursively(Map<String, Group> aliasToGroupMap, String groupAlias) {
 
         if (aliasToGroupMap.containsKey(groupAlias)) {
             synchronized (aliasToGroupMap) {
@@ -121,10 +112,10 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     }
 
     public ClusterDataHolder getClusterDataHolderRecursivelyByAlias(String alias) {
-        if(this.aliasToClusterDataMap.containsKey(alias)) {
+        if (this.aliasToClusterDataMap.containsKey(alias)) {
             return this.aliasToClusterDataMap.get(alias);
         } else {
-            if(this.aliasToGroupMap != null && !this.aliasToGroupMap.isEmpty()) {
+            if (this.aliasToGroupMap != null && !this.aliasToGroupMap.isEmpty()) {
                 return getClusterDataByAlias(alias, this.aliasToGroupMap.values());
             }
         }
@@ -160,12 +151,12 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     }
 
     /**
-     * Setter for Dependency Order
+     * Setter for Group alias to Group map
      *
-     * @param dependencyOrder Dependency Order object
+     * @param groupAliasToGroup Map, key = alias given to the Group, value = Group
      */
-    public void setDependencyOrder(DependencyOrder dependencyOrder) {
-        this.dependencyOrder = dependencyOrder;
+    public void setGroups(Map<String, Group> groupAliasToGroup) {
+        aliasToGroupMap.putAll(groupAliasToGroup);
     }
 
     /**
@@ -175,6 +166,15 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      */
     public DependencyOrder getDependencyOrder() {
         return dependencyOrder;
+    }
+
+    /**
+     * Setter for Dependency Order
+     *
+     * @param dependencyOrder Dependency Order object
+     */
+    public void setDependencyOrder(DependencyOrder dependencyOrder) {
+        this.dependencyOrder = dependencyOrder;
     }
 
     /**
@@ -203,7 +203,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      *
      * @return Set of ClusterDataHolder objects if available, else null
      */
-    public Set<ClusterDataHolder> getClusterDataRecursively () {
+    public Set<ClusterDataHolder> getClusterDataRecursively() {
 
         Set<ClusterDataHolder> appClusterData = new HashSet<ClusterDataHolder>();
 
@@ -224,10 +224,19 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * Adds InstanceContext of a child to the instanceIdToInstanceContextMap.
      *
      * @param instanceId instance id of child
-     * @param instance InstanceContext object
+     * @param instance   InstanceContext object
      */
     public void addInstance(String instanceId, T instance) {
         instanceIdToInstanceContextMap.put(instanceId, instance);
+    }
+
+    /**
+     * This will remove the instance from instanceIdToInstanceContextMap
+     *
+     * @param instanceId instance id of child
+     */
+    public void removeInstance(String instanceId) {
+        instanceIdToInstanceContextMap.remove(instanceId);
     }
 
     /**
@@ -235,7 +244,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      *
      * @param instanceId instance id of child
      */
-    public boolean containsInstanceContext (String instanceId) {
+    public boolean containsInstanceContext(String instanceId) {
         return getInstanceIdToInstanceContextMap().containsKey(instanceId);
     }
 
@@ -246,7 +255,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * @param instanceId instance id
      * @return InstanceContext obj. if exists, else null
      */
-    public T getInstanceContexts (String instanceId) {
+    public T getInstanceContexts(String instanceId) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
@@ -266,7 +275,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * @param parentInstanceId parent instance id
      * @return InstanceContext obj. if exists, else null
      */
-    public List<Instance> getInstanceContextsWithParentId (String parentInstanceId) {
+    public List<Instance> getInstanceContextsWithParentId(String parentInstanceId) {
         // if map is empty, return null
         List<Instance> contexts = new ArrayList<Instance>();
 
@@ -275,9 +284,9 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         }
 
         // if instanceId is null, just get the first InstanceContext
-        if (parentInstanceId == null) {
-            for(Instance context : instanceIdToInstanceContextMap.values()) {
-                if(parentInstanceId.equals(context.getParentId())) {
+        if (parentInstanceId != null) {
+            for (Instance context : instanceIdToInstanceContextMap.values()) {
+                if (parentInstanceId.equals(context.getParentId())) {
                     contexts.add(context);
                 }
             }
@@ -291,12 +300,16 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      *
      * @return number of instance contexts
      */
-    public int getInstanceContextCount () {
+    public int getInstanceContextCount() {
 
         return getInstanceIdToInstanceContextMap().keySet().size();
     }
 
-    protected void getClusterData (Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
+    public int getComponentsCount() {
+        return getClusterDataMap().keySet().size() + getAliasToGroupMap().keySet().size();
+    }
+
+    protected void getClusterData(Set<ClusterDataHolder> clusterData, Collection<Group> groups) {
 
         for (Group group : groups) {
             if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
@@ -308,11 +321,11 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         }
     }
 
-    private ClusterDataHolder getClusterDataByAlias (String alias, Collection<Group> groups) {
+    private ClusterDataHolder getClusterDataByAlias(String alias, Collection<Group> groups) {
 
         for (Group group : groups) {
             if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
-                if(group.getClusterData(alias) != null) {
+                if (group.getClusterData(alias) != null) {
                     return group.getClusterData(alias);
                 }
             } else {

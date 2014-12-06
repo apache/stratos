@@ -46,6 +46,7 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -124,7 +125,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param status status of the group
      */
     public void setStatus(GroupStatus status, String instanceId) {
-        ((GroupInstance) this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
 
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
@@ -171,6 +171,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         String instanceId = statusEvent.getInstanceId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
             onChildActivatedEvent(id, instanceId);
 
@@ -325,20 +326,24 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 getDeploymentPolicyByApplication(appId).
                 getChildPolicy(groupId);
 
-
+        String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
         if (this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
             groupLevelNetworkPartitionContext = this.networkPartitionCtxts.
-                    get(parentInstanceContext.getNetworkPartitionId());
+                    get(networkPartitionId);
         } else {
             if (policy != null) {
                 ChildLevelNetworkPartition networkPartition = policy.
                         getChildLevelNetworkPartition(parentInstanceContext.getNetworkPartitionId());
                 groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
-                        parentInstanceContext.getNetworkPartitionId(),
+                        networkPartitionId,
                         networkPartition.getPartitionAlgo());
             } else {
                 groupLevelNetworkPartitionContext = new GroupLevelNetworkPartitionContext(
-                        parentInstanceContext.getNetworkPartitionId());
+                        networkPartitionId);
+            }
+            if(log.isInfoEnabled()) {
+                log.info("[Network partition] " + networkPartitionId + "has been added for the " +
+                        "[Group] " + this.id);
             }
             this.addNetworkPartitionContext(groupLevelNetworkPartitionContext);
         }
@@ -372,6 +377,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     networkPartitionContext.getPartitionCtxt(parentPartitionId) != null) {
                 partitionContext = new GroupLevelPartitionContext(0);
                 networkPartitionContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
+                if(log.isInfoEnabled()) {
+                    log.info("[Partition] " + parentPartitionId + "has been added for the " +
+                            "[Group] " + this.id);
+                }
             }
         } else {
             ChildLevelNetworkPartition networkPartition = policy.
@@ -387,6 +396,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     childPartitionContexts.add((GroupLevelPartitionContext) partitionContext);
                     networkPartitionContext.addPartitionContext(
                             (GroupLevelPartitionContext) partitionContext);
+                    if(log.isInfoEnabled()) {
+                        log.info("[Partition] " + childLevelPartition.getPartitionId() +
+                                "has been added for the [Group] " + this.id);
+                    }
                 }
             }
         }
@@ -421,6 +434,11 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
         groupInstanceContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
         groupLevelNetworkPartitionContext.addInstanceContext(groupInstanceContext);
+
+        if(log.isInfoEnabled()) {
+            log.info("Group [Instance context] " + instanceId +
+                    " has been added to [Group] " + this.id);
+        }
 
         if (partitionContext != null) {
             ((GroupLevelPartitionContext) partitionContext).addActiveInstance(groupInstance);
@@ -465,11 +483,11 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             for(Instance instance : existingGroupInstances) {
                 initialStartup = false;
                 partitionContext = groupLevelNetworkPartitionContext.
-                        getPartitionContextById(parentPartitionId);
+                        getPartitionContextById(instance.getPartitionId());
                 groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
                         partitionContext,
                         groupLevelNetworkPartitionContext,
-                        null);
+                        (GroupInstance) instance);
                 instanceIdsToStart.add(groupInstanceId);
             }
 
@@ -501,6 +519,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 }
             }
 
+        }
+        if(log.isInfoEnabled()) {
+            log.info("Starting the dependencies for the [Group] " + group.getUniqueIdentifier());
         }
         startDependency(group, instanceIdsToStart);
         return initialStartup;

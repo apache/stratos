@@ -378,11 +378,11 @@ public class AutoscalerUtil {
             ApplicationMonitor applicationMonitor = null;
             int retries = 5;
             boolean success = false;
-            do {
-                try {
+            while (!success && retries != 0) {
+                /*try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                }
+                }*/
                 try {
                     long start = System.currentTimeMillis();
                     log.info("application monitor is going to be started for [application] " +
@@ -406,7 +406,7 @@ public class AutoscalerUtil {
                     log.warn(msg, e);
                     retries--;
                 }
-            } while (!success && retries != 0);
+            }
 
             if (applicationMonitor == null) {
                 String msg = "Application monitor creation failed, even after retrying for 5 times, "

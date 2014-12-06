@@ -45,6 +45,7 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -140,36 +141,24 @@ public class MonitorFactory {
 
         }
 
-        //acquiring write lock to add the group instances
-        ApplicationHolder.acquireWriteLock();
-        try {
-            Group group = ApplicationHolder.getApplications().
-                    getApplication(appId).getGroupRecursively(context.getId());
-            //Starting the minimum dependencies
-            initialStartup = groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
+        Group group = ApplicationHolder.getApplications().
+                getApplication(appId).getGroupRecursively(context.getId());
+        //Starting the minimum dependencies
+        initialStartup = groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
 
         /**
          * If not first app deployment, acquiring read lock to check current the status of the group,
          * when the stratos got to restarted
          */
-        if (!initialStartup) {
-            ApplicationHolder.acquireReadLock();
-            try {
-                Group group = ApplicationHolder.getApplications().
-                        getApplication(appId).getGroupRecursively(context.getId());
-                //Starting statusChecking to make it sync with the Topology in the restart of stratos.
-                for (GroupInstance instance : group.getInstanceIdToInstanceContextMap().values()) {
-                    ServiceReferenceHolder.getInstance().
-                            getGroupStatusProcessorChain().
-                            process(group.getUniqueIdentifier(), appId, instance.getInstanceId());
-                }
-            } finally {
-                ApplicationHolder.releaseReadLock();
+        /*if (!initialStartup) {
+            //Starting statusChecking to make it sync with the Topology in the restart of stratos.
+            for (GroupInstance instance : group.getInstanceIdToInstanceContextMap().values()) {
+                ServiceReferenceHolder.getInstance().
+                        getGroupStatusProcessorChain().
+                        process(group.getUniqueIdentifier(), appId, instance.getInstanceId());
             }
-        }
+
+        }*/
 
         return groupMonitor;
 
@@ -189,10 +178,11 @@ public class MonitorFactory {
             TopologyInConsistentException, PolicyValidationException {
         ApplicationMonitor applicationMonitor;
         boolean initialStartup = false;
+        Application application;
         //acquiring read lock to start the monitor
         ApplicationHolder.acquireReadLock();
         try {
-            Application application = ApplicationHolder.getApplications().getApplication(appId);
+            application = ApplicationHolder.getApplications().getApplication(appId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasStartupDependents(false);
@@ -207,32 +197,19 @@ public class MonitorFactory {
 
         }
 
-        //acquiring write lock to add the required instances
-        ApplicationHolder.acquireWriteLock();
-        try {
-            Application application = ApplicationHolder.getApplications().getApplication(appId);
-            initialStartup = applicationMonitor.startMinimumDependencies(application);
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
+        initialStartup = applicationMonitor.startMinimumDependencies(application);
 
-        //If not first app deployment, then calculate the current status of the app instance.
+        /*//If not first app deployment, then calculate the current status of the app instance.
         if (!initialStartup) {
-            ApplicationHolder.acquireReadLock();
-            try {
-                Application application = ApplicationHolder.getApplications().getApplication(appId);
-                for (ApplicationInstance instance :
-                        application.getInstanceIdToInstanceContextMap().values()) {
-                    //Starting statusChecking to make it sync with the Topology in the restart of stratos.
-                    ServiceReferenceHolder.getInstance().
-                            getGroupStatusProcessorChain().
-                            process(appId, appId, instance.getInstanceId());
+            for (ApplicationInstance instance :
+                    application.getInstanceIdToInstanceContextMap().values()) {
+                //Starting statusChecking to make it sync with the Topology in the restart of stratos.
+                ServiceReferenceHolder.getInstance().
+                        getGroupStatusProcessorChain().
+                        process(appId, appId, instance.getInstanceId());
 
-                }
-            } finally {
-                ApplicationHolder.releaseReadLock();
             }
-        }
+        }*/
 
         return applicationMonitor;
 
@@ -320,6 +297,13 @@ public class MonitorFactory {
                             clusterContext.addInstanceContext(parentInstanceId, cluster);
                             if (clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
                                 clusterMonitor.addInstance(clusterInstance);
+                            }
+                            //Checking the current status of the cluster instance
+                            boolean stateChanged = ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
+                                    process("", clusterId, clusterInstance.getInstanceId());
+                            if(!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
+                                clusterMonitor.notifyParentMonitor(clusterInstance.getStatus(),
+                                        clusterInstance.getInstanceId());
                             }
                         }
                     } else {

@@ -42,8 +42,10 @@ import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -266,6 +268,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 startDep = startDependencyByInstanceCreation(eventId, instanceId);
             }
 
+            //Checking whether all the monitors got created
             if (!startDep) {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                         process(this.id, this.appId, instanceId);
@@ -276,7 +279,6 @@ public abstract class ParentComponentMonitor extends Monitor {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
             log.error(e);
         }
-
     }
 
     /**
@@ -603,16 +605,16 @@ public abstract class ParentComponentMonitor extends Monitor {
         public void run() {
             Monitor monitor = null;
             int retries = 5;
-            boolean success;
-            do {
-                //TODO remove thread.sleep, exectutor service
+            boolean success = false;
+            while (!success && retries != 0) {
+                /*//TODO remove thread.sleep, exectutor service
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
-                }
+                }*/
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Monitor is going to be started for [group/cluster] "
+                if (log.isInfoEnabled()) {
+                    log.info("Monitor is going to be started for [group/cluster] "
                             + context.getId());
                 }
                 try {
@@ -633,12 +635,9 @@ public abstract class ParentComponentMonitor extends Monitor {
                     String msg = "Monitor creation failed for: " + context.getId();
                     log.warn(msg, e);
                     retries--;
-
                 }
                 success = true;
-
-            } while (!success && retries != 0);
-
+            }
 
             if (monitor == null) {
                 String msg = "Monitor creation failed, even after retrying for 5 times, "
