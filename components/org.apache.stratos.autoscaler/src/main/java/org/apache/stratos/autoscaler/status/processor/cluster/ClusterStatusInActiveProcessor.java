@@ -56,10 +56,6 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
 
                 log.warn(String.format("No possible state change found for [type] %s [cluster] %s [instance]",
                         type, clusterId, instanceId));
-
-                throw new RuntimeException(String.format("Failed to process message using " +
-                                "available message processors: [type] %s [cluster] %s [instance]",
-                        type, clusterId, instanceId));
             }
         }
         return false;
