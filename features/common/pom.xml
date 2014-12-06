@@ -32,7 +32,7 @@
 
     <modules>
         <module>org.apache.stratos.metadata.client.feature</module>
-        <!--module>org.apache.stratos.custom.handlers.feature</module-->
+        <module>org.apache.stratos.custom.handlers.feature</module>
     </modules>
 </project>
 
