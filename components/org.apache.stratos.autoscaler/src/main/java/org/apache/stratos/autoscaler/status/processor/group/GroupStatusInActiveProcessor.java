@@ -62,6 +62,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
             log.warn(String.format("No possible state change found for [component] %s [instance]",
                     idOfComponent, instanceId));
         }
+        return false;
     }
 
 
