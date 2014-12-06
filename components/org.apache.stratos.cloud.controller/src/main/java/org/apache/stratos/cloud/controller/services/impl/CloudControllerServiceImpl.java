@@ -1003,8 +1003,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String partitionId = entry.getKey();
                 Future<IaasProvider> job = entry.getValue();
                 try {
+                    
                     // add to a temporary Map
-                    partitionToIaasProviders.put(partitionId, job.get());
+                    IaasProvider iaasProvider = job.get();
+                    
+                    if(iaasProvider != null) {
+                        partitionToIaasProviders.put(partitionId, iaasProvider);
+                    }
 
                     // add to cache
                     CloudControllerContext.getInstance().addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
@@ -1050,47 +1055,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         String provider = partition.getProvider();
         String partitionId = partition.getId();
-        Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
 
         handleNullObject(provider, "Partition [" + partitionId + "] validation failed. Partition provider is null.");
         IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
 
-        if (iaasProvider != null) {
-            // if this is a IaaS based partition
-            Iaas iaas = iaasProvider.getIaas();
-
-            if (iaas == null) {
-
-                try {
-                    iaas = CloudControllerUtil.getIaas(iaasProvider);
-                } catch (InvalidIaasProviderException e) {
-                    String msg =
-                            "Invalid Partition - " + partition.toString()
-                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
-                                    + ". " + e.getMessage();
-                    log.error(msg, e);
-                    throw new InvalidPartitionException(msg, e);
-                }
-            }
-
-            IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
-            validator.setIaasProvider(iaasProvider);
-            validator.validate(partitionId, partitionProperties);
-            return true;
-
-        } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
-            // if this is a docker based Partition
-            KubernetesBasedPartitionValidator validator = new KubernetesBasedPartitionValidator();
-            validator.validate(partitionId, partitionProperties);
-            return true;
-
-        } else {
-
-            String msg =
-                    "Invalid Partition - " + partition.toString() + ". Cause: Cannot identify as a valid partition.";
-            log.error(msg);
-            throw new InvalidPartitionException(msg);
-        }
+        return CloudControllerServiceUtil.validatePartition(partition, iaasProvider);
 
     }
 

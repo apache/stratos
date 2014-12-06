@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
@@ -46,47 +47,20 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
 	@Override
 	public IaasProvider call() throws Exception {
 		
-		if (log.isDebugEnabled()) {
-			log.debug("Partition validation started for "+partition+" of "+cartridge);
-		}
-		String provider = partition.getProvider();
+        if (log.isDebugEnabled()) {
+            log.debug("Partition validation started for " + partition + " of " + cartridge);
+        }
+        String provider = partition.getProvider();
         IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
 
-        if (iaasProvider == null) {
-            String msg =
-                         "Invalid Partition - " + partition.toString() +
-                                 ". Cause: Iaas Provider is null for Provider: " + provider;
-            log.error(msg);
-            throw new InvalidPartitionException(msg);
+        IaasProvider updatedIaasProvider =
+                CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(partition, iaasProvider);
+
+        if (log.isDebugEnabled()) {
+            log.debug("Partition " + partition.toString() + " is validated successfully " + "against the Cartridge: "
+                    + cartridge.getType());
         }
 
-        Iaas iaas = iaasProvider.getIaas();
-        
-        if (iaas == null) {
-            
-            try {
-                iaas = CloudControllerUtil.getIaas(iaasProvider);
-            } catch (InvalidIaasProviderException e) {
-                String msg =
-                        "Invalid Partition - " + partition.toString() +
-                        ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider+". "+e.getMessage();
-                log.error(msg, e);
-                throw new InvalidPartitionException(msg, e);
-            }
-            
-        }
-        
-        IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
-        validator.setIaasProvider(iaasProvider);
-        IaasProvider updatedIaasProvider =
-                                           validator.validate(partition.getId(),
-                                                              CloudControllerUtil.toJavaUtilProperties(partition.getProperties()));
-        
-        if (log.isDebugEnabled()) {
-        	log.debug("Partition "+partition.toString()+ " is validated successfully "
-        			+ "against the Cartridge: "+cartridge.getType());
-        }
-        
         return updatedIaasProvider;
 	}
 

@@ -19,19 +19,27 @@
 
 package org.apache.stratos.cloud.controller.services.impl;
 
+import java.util.Properties;
+
 import com.google.common.net.InetAddresses;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.domain.Volume;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
+import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
+import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.KubernetesBasedPartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.jclouds.rest.ResourceNotFoundException;
@@ -140,5 +148,53 @@ public class CloudControllerServiceUtil {
     public static boolean isValidIpAddress(String ip) {
         boolean isValid = InetAddresses.isInetAddress(ip);
         return isValid;
+    }
+    
+    public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+        String provider = partition.getProvider();
+        String partitionId = partition.getId();
+        Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
+
+        if (iaasProvider != null) {
+            // if this is a IaaS based partition
+            Iaas iaas = iaasProvider.getIaas();
+
+            if (iaas == null) {
+
+                try {
+                    iaas = CloudControllerUtil.getIaas(iaasProvider);
+                } catch (InvalidIaasProviderException e) {
+                    String msg =
+                            "Invalid Partition - " + partition.toString()
+                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
+                                    + ". " + e.getMessage();
+                    log.error(msg, e);
+                    throw new InvalidPartitionException(msg, e);
+                }
+            }
+
+            IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
+            validator.setIaasProvider(iaasProvider);
+            iaasProvider = validator.validate(partitionId, partitionProperties);
+            return iaasProvider;
+
+        } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
+            // if this is a docker based Partition
+            KubernetesBasedPartitionValidator validator = new KubernetesBasedPartitionValidator();
+            validator.validate(partitionId, partitionProperties);
+            return null;
+
+        } else {
+
+            String msg =
+                    "Invalid Partition - " + partition.toString() + ". Cause: Cannot identify as a valid partition.";
+            log.error(msg);
+            throw new InvalidPartitionException(msg);
+        }
+    }
+    
+    public static boolean validatePartition(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
+        validatePartitionAndGetIaasProvider(partition, iaasProvider);
+        return true;
     }
 }
