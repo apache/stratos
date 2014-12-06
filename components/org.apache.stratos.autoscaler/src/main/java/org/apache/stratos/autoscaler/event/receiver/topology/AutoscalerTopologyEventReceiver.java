@@ -419,7 +419,9 @@ public class AutoscalerTopologyEventReceiver {
                        (ClusterInstanceCreatedEvent) event;
                AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
                        getClusterMonitor(clusterInstanceCreatedEvent.getClusterId());
-               String instanceId = ((ClusterInstanceCreatedEvent) event).getInstanceId();
+               ClusterInstance clusterInstance = ((ClusterInstanceCreatedEvent) event).
+                                                    getClusterInstance();
+               String instanceId = clusterInstance.getInstanceId();
                //FIXME to take lock when clusterMonitor is running
                if (clusterMonitor != null) {
                    TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
@@ -450,16 +452,10 @@ public class AutoscalerTopologyEventReceiver {
                                        }
                                        clusterContext.addInstanceContext(instanceId, cluster);
                                        if (clusterMonitor.getInstance(instanceId) == null) {
-                                           ClusterInstance clusterInstance = cluster.
+                                           //adding the same instance in topology to monitor as a reference
+                                           ClusterInstance clusterInstance1 = cluster.
                                                    getInstanceContexts(instanceId);
-                                           ClusterInstance instance = new ClusterInstance(clusterInstance.getAlias(),
-                                                   cluster.getClusterId(),
-                                                   clusterInstance.getInstanceId());
-                                           instance.setParentId(clusterInstance.getParentId());
-                                           instance.setNetworkPartitionId(clusterInstance.getNetworkPartitionId());
-                                           instance.setPartitionId(clusterInstance.getPartitionId());
-                                           instance.setStatus(clusterInstance.getStatus());
-                                           clusterMonitor.addInstance(instance);
+                                           clusterMonitor.addInstance(clusterInstance1);
                                        }
 
 

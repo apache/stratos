@@ -256,7 +256,7 @@ public class TopologyEventPublisher {
                             " in [network partition] %s [instance-id] %s",
                     clusterInstanceCreatedEvent.getServiceName(), clusterInstanceCreatedEvent.getClusterId(),
                     clusterInstanceCreatedEvent.getNetworkPartitionId(),
-                    clusterInstanceCreatedEvent.getInstanceId()));
+                    clusterInstanceCreatedEvent.getClusterInstance().getInstanceId()));
         }
         publishEvent(clusterInstanceCreatedEvent);
     }
