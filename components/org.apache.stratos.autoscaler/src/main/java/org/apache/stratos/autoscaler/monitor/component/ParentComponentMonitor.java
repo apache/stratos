@@ -455,11 +455,10 @@ public abstract class ParentComponentMonitor extends Monitor {
                     GroupMonitor monitor1 = (GroupMonitor) monitor;
                     ApplicationHolder.acquireReadLock();
                     try {
-                        //TODO***********
-                        /*if (monitor1.getStatus() == GroupStatus.Active) {
+                        if (monitor1.verifyGroupStatus(instanceId, GroupStatus.Active)) {
                             parentsActive = true;
 
-                        }*/
+                        }
                     } finally {
                         ApplicationHolder.releaseReadLock();
                     }
@@ -468,7 +467,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                     TopologyManager.acquireReadLockForCluster(monitor1.getServiceId(),
                             monitor1.getClusterId());
                     try {
-                        if (monitor1.getStatus() == ClusterStatus.Active) {
+                        if (((ClusterInstance)monitor1.getInstance(instanceId)).getStatus()
+                                                    == ClusterStatus.Active) {
                             parentsActive = true;
                         }
                     } finally {

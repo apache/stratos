@@ -630,5 +630,39 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.isDestroyed = isDestroyed;
     }
 
+    public boolean verifyGroupStatus(String instanceId, GroupStatus requiredStatus) {
+        if(this.instanceIdToInstanceMap.containsKey(instanceId)) {
+            if(((GroupInstance)this.instanceIdToInstanceMap.get(instanceId)).getStatus() == requiredStatus) {
+                return true;
+            }
+        } else {
+            List<GroupInstance> instances = new ArrayList<GroupInstance>();
+            String networkPartitionId = null;
+            int noOfInstancesOfRequiredStatus = 0;
+            for(Instance instance : this.instanceIdToInstanceMap.values()) {
+                GroupInstance groupInstance = (GroupInstance)instance;
+                if(groupInstance.getParentId().equals(instanceId)) {
+                    instances.add(groupInstance);
+                    networkPartitionId = groupInstance.getNetworkPartitionId();
+                    if(groupInstance.getStatus() == requiredStatus) {
+                        noOfInstancesOfRequiredStatus ++;
+                    }
+                }
+            }
+            if(!instances.isEmpty()) {
+                int minInstances = this.networkPartitionCtxts.get(networkPartitionId).
+                                                getMinInstanceCount();
+                if(noOfInstancesOfRequiredStatus >= minInstances) {
+                    return true;
+                } else {
+                    if(requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
 }

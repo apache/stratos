@@ -59,14 +59,14 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
         }
         try {
 
-            if (!ClusterStatus.Active.getNextStates().contains(getStatus())) {
+            //TODO to get status from correct instance if (!ClusterStatus.Active.getNextStates().contains(getStatus())) {
                 monitor();
-            } else {
+            /*} else {
                 if (log.isDebugEnabled()) {
                     log.debug("KubernetesServiceClusterMonitor is suspended as the cluster is in "
                             + getStatus() + "state");
                 }
-            }
+            }*/
         } catch (Exception e) {
             log.error("KubernetesServiceClusterMonitor: Monitor failed." + this.toString(),
                     e);

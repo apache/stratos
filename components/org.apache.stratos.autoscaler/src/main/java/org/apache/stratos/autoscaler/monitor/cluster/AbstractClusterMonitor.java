@@ -70,7 +70,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private AtomicBoolean monitoringStarted;
     private String clusterId;
     private Cluster cluster;
-    private ClusterStatus status;
     private int monitoringIntervalMilliseconds;
     private boolean isDestroyed;
 
@@ -81,9 +80,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.serviceType = cluster.getServiceName();
         this.clusterId = cluster.getClusterId();
         this.monitoringStarted = new AtomicBoolean(false);
-        //this.clusterContext = abstractClusterContext;
-        //this.instanceIdToClusterContextMap = new HashMap<String, AbstractClusterContext>();
-        this.status = ClusterStatus.Created;
     }
 
     protected abstract void readConfigurations();
@@ -203,10 +199,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
-    }
-
-    public ClusterStatus getStatus() {
-        return status;
     }
 
     public void notifyParentMonitor(ClusterStatus status, String instanceId) {
