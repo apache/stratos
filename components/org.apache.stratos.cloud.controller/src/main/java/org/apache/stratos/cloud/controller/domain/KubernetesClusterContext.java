@@ -48,7 +48,7 @@ public class KubernetesClusterContext implements Serializable {
     // kubernetes client API instance
     private transient KubernetesApiClient kubApi;
     
-    public KubernetesClusterContext(String id, String masterIp, String masterPort, int upperPort, int lowerPort) {
+    public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
     	availableHostPorts = new ArrayList<Integer>();
     	this.upperPort = upperPort;
     	this.lowerPort = lowerPort;
