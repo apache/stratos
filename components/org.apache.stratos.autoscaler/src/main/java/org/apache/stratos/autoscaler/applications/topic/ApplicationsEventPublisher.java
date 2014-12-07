@@ -92,7 +92,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceActivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application Inactivate event for [application]: " + appId);
+            log.info("Publishing Application Active event for [application]: " + appId);
         }
         ApplicationInstanceActivatedEvent applicationActivatedEvent =
                 new ApplicationInstanceActivatedEvent(appId, instanceId);

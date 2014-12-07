@@ -168,7 +168,7 @@ public class ApplicationBuilder {
             application.setStatus(status, instanceId);
             updateApplicationMonitor(appId, status, instanceId);
             ApplicationHolder.persistApplication(application);
-            ApplicationsEventPublisher.sendApplicationInstanceActivatedEvent(appId, instanceId);
+            ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
         } else {
             log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                             " [instance-id] %s [current-status] %s [status-requested] %s",
