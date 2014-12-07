@@ -212,6 +212,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                         primaryMemberListInClusterInstance.add(memberContext.getMemberId());
                                     }
                                 }
+
+                                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
+                                        getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
+
                             }
 
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
@@ -232,8 +236,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
                                     minCheckFactHandle, instanceContext);
 
-                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
-                                    getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, instanceContext);
 
                             //checking the status of the cluster
                             boolean rifReset = instanceContext.isRifReset();
