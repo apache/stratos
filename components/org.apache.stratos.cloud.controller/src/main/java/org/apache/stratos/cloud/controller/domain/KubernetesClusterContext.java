@@ -38,26 +38,31 @@ public class KubernetesClusterContext implements Serializable {
 	
 	// id of the Kubernetes cluster
     private String kubernetesClusterId;
-    // available host port range, delimited by a hyphen
-    private String hostPortRange;
+    private int upperPort;
+    private int lowerPort;
     // kubernetes master ip
     private String masterIp;
+    private String masterPort;
     // available list of ports
     private List<Integer> availableHostPorts;
     // kubernetes client API instance
     private transient KubernetesApiClient kubApi;
     
-    public KubernetesClusterContext(String id, String portRange, String masterIp) {
+    public KubernetesClusterContext(String id, String masterIp, String masterPort, int upperPort, int lowerPort) {
     	availableHostPorts = new ArrayList<Integer>();
+    	this.upperPort = upperPort;
+    	this.lowerPort = lowerPort;
+    	// populate the ports
+        populatePorts(lowerPort, upperPort);
     	this.kubernetesClusterId = id;
-    	this.hostPortRange = portRange;
     	this.masterIp = masterIp;
-    	this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp)));
+    	this.masterPort = masterPort;
+    	this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
     	
 	}
     
-	private String getEndpoint(String ip) {
-		return "http://"+ip+":8080/api/v1beta1/";
+	private String getEndpoint(String ip, String port) {
+		return "http://"+ip+":"+port+"/api/v1beta1/";
 	}
 
 	public String getKubernetesClusterId() {
@@ -65,14 +70,6 @@ public class KubernetesClusterContext implements Serializable {
 	}
 	public void setKubernetesClusterId(String kubernetesClusterId) {
 		this.kubernetesClusterId = kubernetesClusterId;
-	}
-
-	public String getHostPortRange() {
-		return hostPortRange;
-	}
-
-	public void setHostPortRange(String hostPortRange) {
-		this.hostPortRange = hostPortRange;
 	}
 
 	public List<Integer> getAvailableHostPorts() {
@@ -83,30 +80,10 @@ public class KubernetesClusterContext implements Serializable {
 		this.availableHostPorts = availableHostPorts;
 	}
 	
-	private int[] portBoundaries() {
-		String[] portStrings = hostPortRange.split("-");
-		int[] portInts = new int[2];
-		portInts[0] = Integer.parseInt(portStrings[0]);
-		portInts[1] = Integer.parseInt(portStrings[1]);
-		return portInts;
-	}
-	
 	public int getAnAvailableHostPort() {
-		int[] ports = {4000, 5000};
-		if (availableHostPorts.isEmpty()) {
-			try {
-
-				ports = portBoundaries();
-			} catch (Exception ignore) {
-				// on an exception, we use the default range
-				log.warn("Unable to find a port range, hence using the default. [4000-5000]"
-						+ " Exception");
-			}
-
-			// populate the ports
-			populatePorts(ports[0], ports[1]);
-		}
-		
+	    if (availableHostPorts.isEmpty()) {
+	        return -1;
+	    }
 		return availableHostPorts.remove(0);
 	}
 	
@@ -133,7 +110,7 @@ public class KubernetesClusterContext implements Serializable {
 
 	public KubernetesApiClient getKubApi() {
 		if (kubApi == null) {
-			kubApi = new KubernetesApiClient(getEndpoint(masterIp));
+			kubApi = new KubernetesApiClient(getEndpoint(masterIp, masterPort));
 		}
 		return kubApi;
 	}
@@ -142,46 +119,69 @@ public class KubernetesClusterContext implements Serializable {
 		this.kubApi = kubApi;
 	}
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((hostPortRange == null) ? 0 : hostPortRange.hashCode());
-		result = prime
-				* result
-				+ ((kubernetesClusterId == null) ? 0 : kubernetesClusterId
-						.hashCode());
-		result = prime * result
-				+ ((masterIp == null) ? 0 : masterIp.hashCode());
-		return result;
-	}
+	public int getUpperPort() {
+        return upperPort;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		KubernetesClusterContext other = (KubernetesClusterContext) obj;
-		if (hostPortRange == null) {
-			if (other.hostPortRange != null)
-				return false;
-		} else if (!hostPortRange.equals(other.hostPortRange))
-			return false;
-		if (kubernetesClusterId == null) {
-			if (other.kubernetesClusterId != null)
-				return false;
-		} else if (!kubernetesClusterId.equals(other.kubernetesClusterId))
-			return false;
-		if (masterIp == null) {
-			if (other.masterIp != null)
-				return false;
-		} else if (!masterIp.equals(other.masterIp))
-			return false;
-		return true;
-	}
+    public void setUpperPort(int upperPort) {
+        this.upperPort = upperPort;
+    }
+
+    public int getLowerPort() {
+        return lowerPort;
+    }
+
+    public void setLowerPort(int lowerPort) {
+        this.lowerPort = lowerPort;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((availableHostPorts == null) ? 0 : availableHostPorts.hashCode());
+        result = prime * result + ((kubernetesClusterId == null) ? 0 : kubernetesClusterId.hashCode());
+        result = prime * result + lowerPort;
+        result = prime * result + ((masterIp == null) ? 0 : masterIp.hashCode());
+        result = prime * result + ((masterPort == null) ? 0 : masterPort.hashCode());
+        result = prime * result + upperPort;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        KubernetesClusterContext other = (KubernetesClusterContext) obj;
+        if (availableHostPorts == null) {
+            if (other.availableHostPorts != null)
+                return false;
+        } else if (!availableHostPorts.equals(other.availableHostPorts))
+            return false;
+        if (kubernetesClusterId == null) {
+            if (other.kubernetesClusterId != null)
+                return false;
+        } else if (!kubernetesClusterId.equals(other.kubernetesClusterId))
+            return false;
+        if (lowerPort != other.lowerPort)
+            return false;
+        if (masterIp == null) {
+            if (other.masterIp != null)
+                return false;
+        } else if (!masterIp.equals(other.masterIp))
+            return false;
+        if (masterPort == null) {
+            if (other.masterPort != null)
+                return false;
+        } else if (!masterPort.equals(other.masterPort))
+            return false;
+        if (upperPort != other.upperPort)
+            return false;
+        return true;
+    }
 
 }

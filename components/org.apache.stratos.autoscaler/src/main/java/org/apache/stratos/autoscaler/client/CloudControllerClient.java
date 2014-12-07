@@ -197,7 +197,7 @@ public class CloudControllerClient {
             isPrimaryProp.setValue(String.valueOf(isPrimary));
 
             Property minCountProp = new Property();
-            minCountProp.setName("MIN_COUNT");
+            minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
             memberContextProps.addProperty(isPrimaryProp);
@@ -381,7 +381,7 @@ public class CloudControllerClient {
             isPrimaryProp.setValue(String.valueOf(isPrimary));
 
             Property minCountProp = new Property();
-            minCountProp.setName("MIN_COUNT");
+            minCountProp.setName(StratosConstants.MIN_COUNT);
             minCountProp.setValue(String.valueOf(minMemberCount));
 
             memberContextProps.addProperty(isPrimaryProp);

@@ -51,6 +51,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
 import org.apache.stratos.common.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.kubernetes.PortRange;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.Label;
@@ -1082,6 +1083,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = containerClusterContext.getClusterId();
             handleNullObject(clusterId, "Container start-up failed. Cluster id is null.");
+            
+            Partition partition = containerClusterContext.getPartition();
+            handleNullObject(partition, "Container start-up failed. Null partition found in ContainerClusterContext.");
 
             if (log.isDebugEnabled()) {
                 log.debug("Received a container spawn request : " + containerClusterContext.toString());
@@ -1102,13 +1106,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             try {
-                String minReplicas = validateProperty(StratosConstants.KUBERNETES_MIN_REPLICAS, ctxt);
-                String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
-                String kubernetesMasterIp = validateProperty(StratosConstants.KUBERNETES_MASTER_IP, containerClusterContext);
-                String kubernetesPortRange = validateProperty(StratosConstants.KUBERNETES_PORT_RANGE, containerClusterContext);
+                String minReplicas =
+                        validateProperty(StratosConstants.MIN_COUNT, containerClusterContext.getProperties(),
+                                containerClusterContext.toString());
+                String kubernetesClusterId =
+                        validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, partition.getProperties(),
+                                partition.toString());
+
+                KubernetesGroup kubernetesGroup =
+                        CloudControllerContext.getInstance().getKubernetesGroup(kubernetesClusterId);
+                handleNullObject(kubernetesGroup, "Container start-up failed. Kubernetes group not found for id: "
+                        + kubernetesClusterId);
+
+                String kubernetesMasterIp = kubernetesGroup.getKubernetesMaster().getHostIpAddress();
+                PortRange kubernetesPortRange = kubernetesGroup.getPortRange();
+                // optional
+                String kubernetesMasterPort =
+                        CloudControllerUtil.getProperty(kubernetesGroup.getKubernetesMaster().getProperties(),
+                                StratosConstants.KUBERNETES_MASTER_PORT,
+                                StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
 
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
-                        kubernetesMasterIp, kubernetesPortRange);
+                        kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getLower(), kubernetesPortRange.getUpper());
                 KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 
                 // first let's create a replication controller.
@@ -1227,27 +1246,45 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    private String validateProperty(String property, ClusterContext ctxt) {
+//    private String validateProperty(String property, ClusterContext ctxt) {
+//
+//        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+//        handleNullObject(propVal, "Property validation failed. Cannot find '" + property + "' in " + ctxt);
+//        return propVal;
+//    }
+//
+//    private String validateProperty(String property, ContainerClusterContext ctxt) {
+//
+//        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
+//        handleNullObject(propVal, "Property validation failed. Cannot find '" + property + "' in " + ctxt);
+//        return propVal;
+//
+//    }
+//    
+//    private String validateProperty(String property, Partition partition) {
+//
+//        String propVal = CloudControllerUtil.getProperty(partition.getProperties(), property);
+//        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property);
+//        return propVal;
+//
+//    }
+    
+    private String validateProperty(String property, org.apache.stratos.common.Properties properties, String object) {
 
-        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-        handleNullObject(propVal, "Property validation failed. Cannot find '" + property + "' in " + ctxt);
+        String propVal = CloudControllerUtil.getProperty(properties, property);
+        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property+ " in "+object);
         return propVal;
+
     }
 
-    private String validateProperty(String property, ContainerClusterContext ctxt) {
+    private KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId, String kubernetesMasterIp,
+            String kubernetesMasterPort, int upperPort, int lowerPort) {
 
-        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-        handleNullObject(propVal, "Property validation failed. '" + property + "' in " + ctxt);
-        return propVal;
-
-    }
-
-    private KubernetesClusterContext getKubernetesClusterContext(
-            String kubernetesClusterId, String kubernetesMasterIp,
-            String kubernetesPortRange) {
-
-        KubernetesClusterContext origCtxt = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-        KubernetesClusterContext newCtxt = new KubernetesClusterContext(kubernetesClusterId, kubernetesPortRange, kubernetesMasterIp);
+        KubernetesClusterContext origCtxt =
+                CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+        KubernetesClusterContext newCtxt =
+                new KubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp,
+                        kubernetesMasterPort, upperPort, lowerPort);
 
         if (origCtxt == null) {
             CloudControllerContext.getInstance().addKubernetesClusterContext(newCtxt);
@@ -1385,7 +1422,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             try {
-                String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt);
+                String kubernetesClusterId = validateProperty(StratosConstants.KUBERNETES_CLUSTER_ID, ctxt.getProperties(), ctxt.toString());
 
                 KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
 
@@ -1555,7 +1592,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
     }
-
+    
     private void handleNullObject(Object obj, String errorMsg) {
         if (obj == null) {
             log.error(errorMsg);

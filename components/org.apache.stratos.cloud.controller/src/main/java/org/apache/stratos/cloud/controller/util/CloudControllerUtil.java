@@ -295,9 +295,15 @@ public class CloudControllerUtil {
     	
     }
 	
-	public static String getProperty(Properties properties, String key) {
-    	if (key != null && properties != null) {
-    	    for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
+    public static String getProperty(org.apache.stratos.common.Properties properties, String key, String defaultValue) {
+        Properties props = toJavaUtilProperties(properties);
+
+        return getProperty(props, key, defaultValue);
+    }
+
+    public static String getProperty(Properties properties, String key, String defaultValue) {
+        if (key != null && properties != null) {
+            for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
                 Entry<Object, Object> type = (Entry<Object, Object>) iterator.next();
                 String propName = type.getKey().toString();
                 String propValue = type.getValue().toString();
@@ -305,25 +311,28 @@ public class CloudControllerUtil {
                     return propValue;
                 }
             }
-    	}
-    	
-    	return null;
+        }
+
+        return defaultValue;
     }
-	
-	public static String getProperty(org.apache.stratos.common.Properties properties, String key) {
-		Properties props = toJavaUtilProperties(properties);
-		
-		return getProperty(props, key);
-	}
-	
-    public static org.apache.stratos.common.Properties addProperty(
-            org.apache.stratos.common.Properties properties, String key, String value) {
+
+    public static String getProperty(Properties properties, String key) {
+        return getProperty(properties, key, null);
+    }
+
+    public static String getProperty(org.apache.stratos.common.Properties properties, String key) {
+        Properties props = toJavaUtilProperties(properties);
+
+        return getProperty(props, key);
+    }
+
+    public static org.apache.stratos.common.Properties addProperty(org.apache.stratos.common.Properties properties,
+            String key, String value) {
         Property property = new Property();
         property.setName(key);
         property.setValue(value);
 
-        org.apache.stratos.common.Properties newProperties =
-                new org.apache.stratos.common.Properties();
+        org.apache.stratos.common.Properties newProperties = new org.apache.stratos.common.Properties();
         newProperties.setProperties(ArrayUtils.add(properties.getProperties(), property));
         return newProperties;
     }

@@ -27,6 +27,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
+import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
@@ -197,4 +198,5 @@ public class CloudControllerServiceUtil {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;
     }
+    
 }
