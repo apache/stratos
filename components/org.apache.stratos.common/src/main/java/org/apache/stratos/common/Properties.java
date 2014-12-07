@@ -61,7 +61,7 @@ public class Properties implements Serializable {
 
     @Override
     public String toString() {
-        return "Properties [properties=" + this.getProperties() + "]";
+        return "Properties [properties=" + properties + "]";
     }
 
     @Override
@@ -88,21 +88,5 @@ public class Properties implements Serializable {
             return false;
         return true;
     }
-
-//    @Override
-//    public boolean equals(Object object) {
-//        if (object == null) {
-//            return false;
-//        }
-//
-//        if (!(object instanceof Properties)) {
-//            return false;
-//        }
-//
-//        Properties propertiesObject = (Properties) object;
-//        return Arrays.equals(propertiesObject.getProperties(), this.getProperties());
-//    }
-    
-    
 
 }
