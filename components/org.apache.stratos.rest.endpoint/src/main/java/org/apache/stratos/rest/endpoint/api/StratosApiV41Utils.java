@@ -109,7 +109,7 @@ public class StratosApiV41Utils {
         try {
             CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
         } catch (ADCException e) {
-            throw new RestAPIException(e.getMessage());
+            throw new RestAPIException(e);
         }
         log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
     }
