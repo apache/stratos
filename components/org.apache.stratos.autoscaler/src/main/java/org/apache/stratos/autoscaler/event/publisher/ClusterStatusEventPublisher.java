@@ -143,8 +143,8 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Active) &&
-                        clusterInstance.getStatus() != ClusterStatus.Active) {
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Inactive) &&
+                        clusterInstance.getStatus() != ClusterStatus.Inactive) {
                     ClusterStatusClusterInactivateEvent clusterInActivateEvent =
                             new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
 
@@ -168,8 +168,8 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Active) &&
-                        clusterInstance.getStatus() != ClusterStatus.Active) {
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminating) &&
+                        clusterInstance.getStatus() != ClusterStatus.Terminating) {
                     ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
                             new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId, instanceId);
 
@@ -193,8 +193,8 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Active) &&
-                        clusterInstance.getStatus() != ClusterStatus.Active) {
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated) &&
+                        clusterInstance.getStatus() != ClusterStatus.Terminated) {
                     ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
                             new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId, instanceId);
 
