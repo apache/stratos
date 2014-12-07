@@ -79,6 +79,7 @@ import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -1833,15 +1834,15 @@ public class StratosApiV41Utils {
 
     public static boolean undeployKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                return autoscalerServiceClient.undeployKubernetesGroup(kubernetesGroupId);
+                return cloudControllerServiceClient.undeployKubernetesGroup(kubernetesGroupId);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceNonExistingKubernetesGroupExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -1852,15 +1853,15 @@ public class StratosApiV41Utils {
 
     public static boolean undeployKubernetesHost(String kubernetesHostId) throws RestAPIException {
 
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
+        CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
+        if (cloudControllerServiceClient != null) {
             try {
-                return autoscalerServiceClient.undeployKubernetesHost(kubernetesHostId);
+                return cloudControllerServiceClient.undeployKubernetesHost(kubernetesHostId);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceNonExistingKubernetesHostExceptionException e) {
+            } catch (CloudControllerServiceNonExistingKubernetesHostExceptionException e) {
                 String message = e.getFaultMessage().getNonExistingKubernetesHostException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);

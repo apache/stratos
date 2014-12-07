@@ -25,9 +25,6 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesGroup;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesHost;
-import org.apache.stratos.autoscaler.stub.kubernetes.KubernetesMaster;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.*;
@@ -79,48 +76,10 @@ public class AutoscalerServiceClient {
         return serviceClient;
     }
 
-//    public Partition[] getAvailablePartitions() throws RemoteException {
-//
-//        Partition[] partitions;
-//        partitions = stub.getAllAvailablePartitions();
-//
-//        return partitions;
-//    }
-
     public void undeployServiceGroupDefinition(String serviceGroupName)
             throws RemoteException, AutoScalerServiceAutoScalerExceptionException {
         stub.undeployServiceGroup(serviceGroupName);
     }
-
-//    public Partition getPartition(
-//            String partitionId) throws RemoteException {
-//
-//        Partition partition;
-//        partition = stub.getPartition(partitionId);
-//
-//        return partition;
-//    }
-
-//    public Partition[] getPartitionsOfGroup(
-//            String deploymentPolicyId, String partitionGroupId)
-//            throws RemoteException {
-//
-//        Partition[] partitions;
-//        partitions = stub.getPartitionsOfGroup(deploymentPolicyId,
-//                partitionGroupId);
-//
-//        return partitions;
-//    }
-
-//    public Partition[]
-//    getPartitionsOfDeploymentPolicy(
-//            String deploymentPolicyId) throws RemoteException {
-//
-//        Partition[] partitions;
-//        partitions = stub.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
-//
-//        return partitions;
-//    }
 
     public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartition(
             String deploymentPolicyId) throws RemoteException {
@@ -174,20 +133,6 @@ public class AutoscalerServiceClient {
         stub.undeployDeploymentPolicy(applicationId);
     }
 
-//    public void checkLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) throws RemoteException,
-//            AutoScalerServiceNonExistingLBExceptionException {
-//        stub.checkLBExistenceAgainstPolicy(clusterId, deploymentPolicyId);
-//    }
-//
-//    public boolean checkDefaultLBExistenceAgainstPolicy(
-//            String deploymentPolicyId) throws RemoteException {
-//        return stub.checkDefaultLBExistenceAgainstPolicy(deploymentPolicyId);
-//    }
-//
-//    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) throws RemoteException {
-//        return stub.checkServiceLBExistenceAgainstPolicy(serviceName, deploymentPolicyId);
-//    }
-
     public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
 
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy;
@@ -222,18 +167,6 @@ public class AutoscalerServiceClient {
         return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
-//    public boolean deployPartition(Partition partition) throws RemoteException,
-//            AutoScalerServiceInvalidPartitionExceptionException {
-//
-//        return stub.addPartition(partition);
-//
-//    }
-
-//    public String getDefaultLBClusterId(String deploymentPolicy) throws RemoteException {
-//        return stub.getDefaultLBClusterId(deploymentPolicy);
-//    }
-
-
     public ServiceGroup getServiceGroup(String serviceGroupDefinitionName) throws RemoteException {
         return stub.getServiceGroup(serviceGroupDefinitionName);
     }
@@ -254,64 +187,6 @@ public class AutoscalerServiceClient {
     public void undeployApplication(String applicationId, int tenantId, String tenantDomain) throws
             AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
         stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
-    }
-
-
-//    public String getServiceLBClusterId(String serviceType, String deploymentPolicy) throws RemoteException {
-//        return stub.getServiceLBClusterId(serviceType, deploymentPolicy);
-//    }
-
-    public boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RemoteException,
-            AutoScalerServiceInvalidKubernetesGroupExceptionException {
-        return stub.addKubernetesGroup(kubernetesGroup);
-    }
-
-    public boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
-            throws RemoteException, AutoScalerServiceInvalidKubernetesHostExceptionException,
-            AutoScalerServiceNonExistingKubernetesGroupExceptionException {
-
-        return stub.addKubernetesHost(kubernetesGroupId, kubernetesHost);
-    }
-
-    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
-            throws RemoteException, AutoScalerServiceInvalidKubernetesMasterExceptionException,
-            AutoScalerServiceNonExistingKubernetesMasterExceptionException {
-        return stub.updateKubernetesMaster(kubernetesMaster);
-    }
-
-    public KubernetesGroup[] getAvailableKubernetesGroups() throws RemoteException {
-        return stub.getAllKubernetesGroups();
-    }
-
-    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId)
-            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getKubernetesGroup(kubernetesGroupId);
-    }
-
-    public boolean undeployKubernetesGroup(String kubernetesGroupId)
-            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.removeKubernetesGroup(kubernetesGroupId);
-    }
-
-    public boolean undeployKubernetesHost(String kubernetesHostId)
-            throws RemoteException, AutoScalerServiceNonExistingKubernetesHostExceptionException {
-        return stub.removeKubernetesHost(kubernetesHostId);
-    }
-
-    public KubernetesHost[] getKubernetesHosts(String kubernetesGroupId)
-            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getHostsForKubernetesGroup(kubernetesGroupId);
-    }
-
-    public KubernetesMaster getKubernetesMaster(String kubernetesGroupId)
-            throws RemoteException, AutoScalerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getMasterForKubernetesGroup(kubernetesGroupId);
-    }
-
-    public boolean updateKubernetesHost(KubernetesHost kubernetesHost)
-            throws RemoteException, AutoScalerServiceInvalidKubernetesHostExceptionException,
-            AutoScalerServiceNonExistingKubernetesHostExceptionException {
-        return stub.updateKubernetesHost(kubernetesHost);
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
