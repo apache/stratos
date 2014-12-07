@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.exception.kubernetes.*;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
-import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -50,9 +49,6 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.KubernetesHost;
-import org.apache.stratos.common.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -67,21 +63,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
-
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
  */
 public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
-    //    PartitionManager partitionManager = PartitionManager.getInstance();
-    KubernetesManager kubernetesManager = KubernetesManager.getInstance();
-//
-//    public Partition[] getAllAvailablePartitions() {
-//        return partitionManager.getAllPartitions();
-//    }
 
     public DeploymentPolicy[] getAllDeploymentPolicies() {
         return PolicyManager.getInstance().getDeploymentPolicyList();
@@ -111,11 +98,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         }
         return validPolicies.toArray(new DeploymentPolicy[0]);
     }
-
-//    @Override
-//    public boolean addPartition(Partition partition) throws InvalidPartitionException {
-//        return partitionManager.addNewPartition(partition);
-//    }
 
     @Override
     public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
@@ -219,11 +201,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return PolicyManager.getInstance().updateAutoscalePolicy(autoscalePolicy);
     }
 
-//    @Override
-//    public Partition getPartition(String partitionId) {
-//        return partitionManager.getPartitionById(partitionId);
-//    }
-
     @Override
     public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
         return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
@@ -237,69 +214,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     @Override
     public ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId) {
         return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions();
-    }
-
-    /*public Partition[] getPartitionsOfDeploymentPolicy(String deploymentPolicyId) {
-        DeploymentPolicy depPol = this.getDeploymentPolicy(deploymentPolicyId);
-        if (null == depPol) {
-            return null;
-        }
-
-        return depPol.getAllPartitions();
-    }*/
-
-    @Override
-    public KubernetesGroup[] getAllKubernetesGroups() {
-        return kubernetesManager.getKubernetesGroups();
-    }
-
-    @Override
-    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
-        return kubernetesManager.getKubernetesGroup(kubernetesGroupId);
-    }
-
-    @Override
-    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
-        return kubernetesManager.getKubernetesMasterInGroup(kubernetesGroupId);
-    }
-
-    @Override
-    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException {
-        return kubernetesManager.getKubernetesHostsInGroup(kubernetesGroupId);
-    }
-
-
-    @Override
-    public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException {
-        return kubernetesManager.addNewKubernetesGroup(kubernetesGroup);
-    }
-
-    @Override
-    public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
-            InvalidKubernetesHostException, NonExistingKubernetesGroupException {
-        return kubernetesManager.addNewKubernetesHost(groupId, kubernetesHost);
-    }
-
-    @Override
-    public boolean removeKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException {
-        return kubernetesManager.removeKubernetesGroup(groupId);
-    }
-
-    @Override
-    public boolean removeKubernetesHost(String hostId) throws NonExistingKubernetesHostException {
-        return kubernetesManager.removeKubernetesHost(hostId);
-    }
-
-    @Override
-    public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster)
-            throws InvalidKubernetesMasterException, NonExistingKubernetesMasterException {
-        return kubernetesManager.updateKubernetesMaster(kubernetesMaster);
-    }
-
-    @Override
-    public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
-            InvalidKubernetesHostException, NonExistingKubernetesHostException {
-        return kubernetesManager.updateKubernetesHost(kubernetesHost);
     }
 
     //    @Override
@@ -318,72 +232,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         return group.getPartitions();
     }
 
-//    public void checkLBExistenceAgainstPolicy(String lbClusterId, String deploymentPolicyId) throws NonExistingLBException {
-//
-//        boolean exist = false;
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (nwPartitionLbHolder.isLBExist(lbClusterId)) {
-//                exist = true;
-//                break;
-//            }
-//        }
-//
-//        if (!exist) {
-//            String msg = "LB with [cluster id] " + lbClusterId +
-//                    " does not exist in any network partition of [Deployment Policy] " + deploymentPolicyId;
-//            log.error(msg);
-//            throw new NonExistingLBException(msg);
-//        }
-//    }
-
-//    public boolean checkDefaultLBExistenceAgainstPolicy(String deploymentPolicyId) {
-//
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (!nwPartitionLbHolder.isDefaultLBExist()) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Default LB does not exist in [network partition] " +
-//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-//                            deploymentPolicyId);
-//
-//                }
-//                return false;
-//            }
-//
-//        }
-//
-//        return true;
-//
-//    }
-
-//    public String getDefaultLBClusterId(String deploymentPolicyName) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("Default LB Cluster Id for Deployment Policy [" + deploymentPolicyName + "] ");
-//        }
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (nwPartitionLbHolder.isDefaultLBExist()) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Default LB does not exist in [network partition] " +
-//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-//                            deploymentPolicyName);
-//
-//                }
-//                return nwPartitionLbHolder.getDefaultLbClusterId();
-//            }
-//
-//        }
-//
-//        return null;
-//    }
-
     @Override
     public void deployApplicationDefinition(ApplicationContext applicationContext)
             throws ApplicationDefinitionException {
@@ -401,71 +249,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
         ApplicationBuilder.handleApplicationUndeployed(applicationId);
     }
-
-//    public boolean checkServiceLBExistenceAgainstPolicy(String serviceName, String deploymentPolicyId) {
-//
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (!nwPartitionLbHolder.isServiceLBExist(serviceName)) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Service LB [service name] " + serviceName + " does not exist in [network partition] " +
-//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-//                            deploymentPolicyId);
-//
-//                }
-//                return false;
-//            }
-//
-//        }
-//
-//        return true;
-//
-//    }
-//
-//    public String getServiceLBClusterId(String serviceType, String deploymentPolicyName) {
-//
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyName).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (nwPartitionLbHolder.isServiceLBExist(serviceType)) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Service LB [service name] " + serviceType + " does not exist in [network partition] " +
-//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-//                            deploymentPolicyName);
-//
-//                }
-//                return nwPartitionLbHolder.getLBClusterIdOfService(serviceType);
-//            }
-//
-//        }
-//
-//        return null;
-//    }
-
-//    public boolean checkClusterLBExistenceAgainstPolicy(String clusterId, String deploymentPolicyId) {
-//
-//        for (NetworkPartition networkPartition : PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getChildLevelNetworkPartitions()) {
-//
-//            NetworkPartitionLbHolder nwPartitionLbHolder = partitionManager.getNetworkPartitionLbHolder(networkPartition.getId());
-//
-//            if (!nwPartitionLbHolder.isClusterLBExist(clusterId)) {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Cluster LB [cluster id] " + clusterId + " does not exist in [network partition] " +
-//                            nwPartitionLbHolder.getNetworkPartitionId() + " of [Deployment Policy] " +
-//                            deploymentPolicyId);
-//
-//                }
-//                return false;
-//            }
-//
-//        }
-//
-//        return true;
-//
-//    }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {
         if (log.isDebugEnabled()) {
