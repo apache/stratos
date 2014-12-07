@@ -281,35 +281,26 @@ public class MonitorFactory {
                 if (parentMonitorInstance != null) {
                     ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
                     if (clusterInstance != null) {
-                        if (cluster.isKubernetesCluster()) {
-                            clusterMonitor.setClusterContext(
-                                    ClusterContextFactory.getKubernetesClusterContext(
-                                            clusterInstance.getInstanceId(),
-                                            cluster));
-                        } else {
-                            //Cluster instance is already there. No need to create one.
-                            VMClusterContext clusterContext;
-                            clusterContext = ClusterContextFactory.
-                                    getVMClusterContext(clusterInstance.getInstanceId(),
-                                            cluster);
-                            clusterMonitor.setClusterContext(clusterContext);
-                            //create VMClusterContext and then add all the instanceContexts
-                            clusterContext.addInstanceContext(parentInstanceId, cluster);
-                            if (clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
-                                clusterMonitor.addInstance(clusterInstance);
-                            }
-                            //Checking the current status of the cluster instance
-                            boolean stateChanged = ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
-                                    process("", clusterId, clusterInstance.getInstanceId());
-                            if(!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
-                                clusterMonitor.notifyParentMonitor(clusterInstance.getStatus(),
-                                        clusterInstance.getInstanceId());
-                            }
+                        // Cluster instance is already there. No need to create one.
+                        VMClusterContext clusterContext;
+                        clusterContext =
+                                ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
+                        clusterMonitor.setClusterContext(clusterContext);
+                        // create VMClusterContext and then add all the instanceContexts
+                        clusterContext.addInstanceContext(parentInstanceId, cluster);
+                        if (clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
+                            clusterMonitor.addInstance(clusterInstance);
+                        }
+                        // Checking the current status of the cluster instance
+                        boolean stateChanged =
+                                ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain()
+                                        .process("", clusterId, clusterInstance.getInstanceId());
+                        if (!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
+                            clusterMonitor.notifyParentMonitor(clusterInstance.getStatus(),
+                                    clusterInstance.getInstanceId());
                         }
                     } else {
-                        createClusterInstance(cluster.getServiceName(),
-                                clusterId, null,
-                                parentInstanceId, partitionId,
+                        createClusterInstance(cluster.getServiceName(), clusterId, null, parentInstanceId, partitionId,
                                 parentMonitorInstance.getNetworkPartitionId());
                     }
 
