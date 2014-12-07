@@ -176,8 +176,14 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             onChildActivatedEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            this.markMonitorAsInactive(instanceId);
-            onChildInactiveEvent(id, instanceId);
+            //handling restart of stratos
+            if(!this.aliasToActiveMonitorsMap.get(id).hasStartupDependents()) {
+                onChildActivatedEvent(id, instanceId);
+            } else {
+                this.markMonitorAsInactive(instanceId);
+                onChildInactiveEvent(id, instanceId);
+            }
+
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inActive in the map

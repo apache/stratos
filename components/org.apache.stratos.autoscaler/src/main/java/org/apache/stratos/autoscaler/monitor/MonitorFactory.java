@@ -298,6 +298,12 @@ public class MonitorFactory {
                         if (!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
                             clusterMonitor.notifyParentMonitor(clusterInstance.getStatus(),
                                     clusterInstance.getInstanceId());
+
+                            if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {
+                                clusterMonitor.startScheduler();
+                                log.info("Monitoring task for Cluster Monitor with cluster id " +
+                                        clusterId + " started successfully");
+                            }
                         }
                     } else {
                         createClusterInstance(cluster.getServiceName(), clusterId, null, parentInstanceId, partitionId,
