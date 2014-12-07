@@ -34,19 +34,19 @@ import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionV
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 
 public class PartitionValidatorCallable implements Callable<IaasProvider> {
-	
-	private static final Log log = LogFactory.getLog(PartitionValidatorCallable.class);
-	private Partition partition;
-	private Cartridge cartridge;
-	
-	public PartitionValidatorCallable(Partition partition, Cartridge cartridge) {
-		this.partition = partition;
-		this.cartridge = cartridge;
-	}
 
-	@Override
-	public IaasProvider call() throws Exception {
-		
+    private static final Log log = LogFactory.getLog(PartitionValidatorCallable.class);
+    private Partition partition;
+    private Cartridge cartridge;
+
+    public PartitionValidatorCallable(Partition partition, Cartridge cartridge) {
+        this.partition = partition;
+        this.cartridge = cartridge;
+    }
+
+    @Override
+    public IaasProvider call() throws Exception {
+
         if (log.isDebugEnabled()) {
             log.debug("Partition validation started for " + partition + " of " + cartridge);
         }
@@ -62,6 +62,6 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
         }
 
         return updatedIaasProvider;
-	}
+    }
 
 }

@@ -38,6 +38,7 @@ import org.apache.stratos.cloud.controller.iaases.validators.OpenstackNovaPartit
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -60,15 +61,15 @@ import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 
 import com.google.common.base.Optional;
 
-public class OpenstackNovaIaas extends Iaas {
+public class JcloudsOpenstackIaas extends JcloudsIaas {
 
-	private static final Log log = LogFactory.getLog(OpenstackNovaIaas.class);
+	private static final Log log = LogFactory.getLog(JcloudsOpenstackIaas.class);
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 	
 	private OpenstackNetworkingApi openstackNetworkingApi;
 
-	public OpenstackNovaIaas(IaasProvider iaasProvider) {
+	public JcloudsOpenstackIaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
 		setOpenstackNetworkingApi(iaasProvider);
 	}
@@ -95,31 +96,28 @@ public class OpenstackNovaIaas extends Iaas {
 	
 	@Override
 	public void buildComputeServiceAndTemplate() {
-
-		IaasProvider iaasInfo = getIaasProvider();
-		
 		// builds and sets Compute Service
-		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
+        ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
 
 		// builds and sets Template
 		buildTemplate();
-
 	}
 
 	public void buildTemplate() {
-		IaasProvider iaasInfo = getIaasProvider();
+		IaasProvider iaasProvider = getIaasProvider();
 		
-		if (iaasInfo.getComputeService() == null) {
+		if (iaasProvider.getComputeService() == null) {
 			throw new CloudControllerException(
 					"Compute service is null for IaaS provider: "
-							+ iaasInfo.getName());
+							+ iaasProvider.getName());
 		}
 
-		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
+		TemplateBuilder templateBuilder = iaasProvider.getComputeService()
 				.templateBuilder();
-		templateBuilder.imageId(iaasInfo.getImage());
-        if(!(iaasInfo instanceof IaasProvider)) {
-           templateBuilder.locationId(iaasInfo.getType());
+		templateBuilder.imageId(iaasProvider.getImage());
+        if(!(iaasProvider instanceof IaasProvider)) {
+           templateBuilder.locationId(iaasProvider.getType());
         }
         
         // to avoid creation of template objects in each and every time, we
@@ -128,7 +126,7 @@ public class OpenstackNovaIaas extends Iaas {
 		String instanceType;
 
 		// set instance type
-		if (((instanceType = iaasInfo.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
+		if (((instanceType = iaasProvider.getProperty(CloudControllerConstants.INSTANCE_TYPE)) != null)) {
 
 			templateBuilder.hardwareId(instanceType);
 		}
@@ -138,8 +136,8 @@ public class OpenstackNovaIaas extends Iaas {
 		// In Openstack the call to IaaS should be blocking, in order to retrieve 
 		// IP addresses.
 		boolean blockUntilRunning = true;
-		if(iaasInfo.getProperty(CloudControllerConstants.BLOCK_UNTIL_RUNNING) != null) {
-			blockUntilRunning = Boolean.parseBoolean(iaasInfo.getProperty(
+		if(iaasProvider.getProperty(CloudControllerConstants.BLOCK_UNTIL_RUNNING) != null) {
+			blockUntilRunning = Boolean.parseBoolean(iaasProvider.getProperty(
 					CloudControllerConstants.BLOCK_UNTIL_RUNNING));
 		}
 		template.getOptions().as(TemplateOptions.class)
@@ -150,31 +148,31 @@ public class OpenstackNovaIaas extends Iaas {
 		template.getOptions().as(TemplateOptions.class)
 				.inboundPorts(new int[] {});
 
-		if (iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
+		if (iaasProvider.getProperty(CloudControllerConstants.SECURITY_GROUPS) != null) {
 			template.getOptions()
 					.as(NovaTemplateOptions.class)
 					.securityGroupNames(
-							iaasInfo.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
+							iaasProvider.getProperty(CloudControllerConstants.SECURITY_GROUPS).split(
 									CloudControllerConstants.ENTRY_SEPARATOR));
 		}
 
-		if (iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
+		if (iaasProvider.getProperty(CloudControllerConstants.KEY_PAIR) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.keyPairName(iaasInfo.getProperty(CloudControllerConstants.KEY_PAIR));
+					.keyPairName(iaasProvider.getProperty(CloudControllerConstants.KEY_PAIR));
 		}
 		
-        if (iaasInfo.getNetworkInterfaces() != null) {
-            Set<Network> novaNetworksSet = new LinkedHashSet<Network>(iaasInfo.getNetworkInterfaces().length);
-            for (NetworkInterface ni:iaasInfo.getNetworkInterfaces()) {
+        if (iaasProvider.getNetworkInterfaces() != null) {
+            Set<Network> novaNetworksSet = new LinkedHashSet<Network>(iaasProvider.getNetworkInterfaces().length);
+            for (NetworkInterface ni:iaasProvider.getNetworkInterfaces()) {
                 novaNetworksSet.add(Network.builder().networkUuid(ni.getNetworkUuid()).fixedIp(ni.getFixedIp())
                         .portUuid(ni.getPortUuid()).build());
             }
             template.getOptions().as(NovaTemplateOptions.class).novaNetworks(novaNetworksSet);
         }
 		
-		if (iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
+		if (iaasProvider.getProperty(CloudControllerConstants.AVAILABILITY_ZONE) != null) {
 			template.getOptions().as(NovaTemplateOptions.class)
-					.availabilityZone(iaasInfo.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
+					.availabilityZone(iaasProvider.getProperty(CloudControllerConstants.AVAILABILITY_ZONE));
 		}
 		
 		//TODO
@@ -184,20 +182,14 @@ public class OpenstackNovaIaas extends Iaas {
 //        }
 
 		// set Template
-		iaasInfo.setTemplate(template);
+		iaasProvider.setTemplate(template);
 	}
 
     @Override
-	public void setDynamicPayload() {
-
-    	IaasProvider iaasInfo = getIaasProvider();
-    	
-		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
-
-			iaasInfo.getTemplate().getOptions().as(NovaTemplateOptions.class)
-					.userData(iaasInfo.getPayload());
+	public void setDynamicPayload(byte[] payload) {
+		if (getIaasProvider().getTemplate() != null) {
+			getIaasProvider().getTemplate().getOptions().as(NovaTemplateOptions.class).userData(payload);
 		}
-
 	}
 
 	@Override

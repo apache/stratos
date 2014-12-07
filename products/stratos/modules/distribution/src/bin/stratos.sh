@@ -300,6 +300,8 @@ do
     -Dfile.encoding=UTF8 \
     -Ddisable.cassandra.server.startup=true \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
+    -Dthrift.receiver.ip=localhost \
+    -Dthrift.receiver.port=7611 \
     -DMETADATA_CLIENT_CONFIG_FILE="$CARBON_HOME/repository/conf/metadataservice.xml" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?

@@ -114,7 +114,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             for (IaasProvider iaasProvider : iaasProviders) {
-                CloudControllerUtil.getIaas(iaasProvider);
+                CloudControllerServiceUtil.buildIaas(iaasProvider);
             }
         }
 
@@ -416,7 +416,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Iaas is null of Iaas Provider: " + type + ". Trying to build IaaS...");
                 }
                 try {
-                    iaas = CloudControllerUtil.getIaas(iaasProvider);
+                    iaas = CloudControllerServiceUtil.buildIaas(iaasProvider);
                 } catch (InvalidIaasProviderException e) {
                     String msg = "Instance start up failed. " + memberContext.toString() +
                             "Unable to build Iaas of this IaasProvider [Provider] : " + type + ". Cause: " + e.getMessage();
@@ -442,16 +442,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 addToPayload(payload, "PERSISTENCE_MAPPING", getPersistencePayload(ctxt, iaas).toString());
             }
             iaasProvider.setPayload(payload.toString().getBytes());
-            iaas.setDynamicPayload();
-
-            if (iaasProvider.getTemplate() == null) {
-                String msg =
-                        "Failed to start an instance. " +
-                                memberContext.toString() +
-                                ". Reason : Jclouds Template is null for iaas provider [type]: " + iaasProvider.getType();
-                log.error(msg);
-                throw new InvalidIaasProviderException(msg);
-            }
+            iaas.setDynamicPayload(iaasProvider.getPayload());
 
             //Start instance start up in a new thread
             ThreadExecutor exec = ThreadExecutor.getInstance();
@@ -536,25 +527,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(memberId, "Termination failed. Null member id.");
 
-        MemberContext ctxt = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
+        MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
 
-        if (ctxt == null) {
+        if (memberContext == null) {
             String msg = "Termination failed. Invalid Member Id: " + memberId;
             log.error(msg);
             throw new InvalidMemberException(msg);
         }
 
-        if (ctxt.getNodeId() == null && ctxt.getInstanceId() == null) {
+        if (memberContext.getNodeId() == null && memberContext.getInstanceId() == null) {
             // sending member terminated since this instance isn't reachable.
             if (log.isInfoEnabled()){
                 log.info(String.format(
                         "Member cannot be terminated because it is not reachable. [member] %s [nodeId] %s [instanceId] %s. Removing member from topology.",
-                        ctxt.getMemberId(),
-                        ctxt.getNodeId(),
-                        ctxt.getInstanceId()));
+                        memberContext.getMemberId(),
+                        memberContext.getNodeId(),
+                        memberContext.getInstanceId()));
             }
 
-            CloudControllerServiceUtil.logTermination(ctxt);
+            CloudControllerServiceUtil.logTermination(memberContext);
         }
 
         // check if status == active, if true, then this is a termination on member faulty
@@ -566,10 +557,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             TopologyManager.releaseReadLock();
         }
 
-        org.apache.stratos.messaging.domain.topology.Service service = topology.getService(ctxt.getCartridgeType());
+        org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
 
         if (service != null) {
-            Cluster cluster = service.getCluster(ctxt.getClusterId());
+            Cluster cluster = service.getCluster(memberContext.getClusterId());
 
             if (cluster != null) {
                 Member member = cluster.getMember(memberId);
@@ -578,19 +569,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     // change member status if termination on a faulty member
                     if(fixMemberStatus(member, topology)){
                         // set the time this member was added to ReadyToShutdown status
-                        ctxt.setObsoleteInitTime(System.currentTimeMillis());
+                        memberContext.setObsoleteInitTime(System.currentTimeMillis());
                     }
 
                     // check if ready to shutdown member is expired and send
                     // member terminated if it is.
-                    if (isMemberExpired(member, ctxt.getObsoleteInitTime(), ctxt.getObsoleteExpiryTime())) {
+                    if (isMemberExpired(member, memberContext.getObsoleteInitTime(), memberContext.getObsoleteExpiryTime())) {
                         if (log.isInfoEnabled()) {
                             log.info(String.format(
                                     "Member pending termination in ReadyToShutdown state exceeded expiry time. This member has to be manually deleted: %s",
-                                    ctxt.getMemberId()));
+                                    memberContext.getMemberId()));
                         }
 
-                        CloudControllerServiceUtil.logTermination(ctxt);
+                        CloudControllerServiceUtil.logTermination(memberContext);
                         return;
                     }
                 }
@@ -598,7 +589,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         ThreadExecutor exec = ThreadExecutor.getInstance();
-        exec.execute(new InstanceTerminator(ctxt));
+        exec.execute(new InstanceTerminator(memberContext));
 
     }
 
@@ -893,7 +884,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 for (Volume volume : ctxt.getVolumes()) {
                                     if (volume.getId() != null) {
                                         String iaasType = volume.getIaasType();
-                                        //Iaas iaas = CloudControllerContext.getInstance().getIaasProvider(iaasType).getIaas();
+                                        //Iaas iaas = CloudControllerContext.getInstance().getIaasProvider(iaasType).buildComputeServiceAndTemplate();
                                         Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                         if (iaas != null) {
                                             try {

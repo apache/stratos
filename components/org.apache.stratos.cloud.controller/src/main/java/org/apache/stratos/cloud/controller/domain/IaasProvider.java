@@ -22,7 +22,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.iaases.JcloudsIaasUtil;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.Template;
 
@@ -34,7 +34,7 @@ import java.util.Map;
  * This is the basic data structure which holds an IaaS specific details.
  * NOTE: If you add a new attribute, please assign it in the constructor too.
  */
-public class IaasProvider implements Serializable{
+public class IaasProvider implements Serializable {
    
     private static final long serialVersionUID = -940288190885166118L;
 
@@ -217,7 +217,7 @@ public class IaasProvider implements Serializable{
     public Iaas getIaas() {
     	if (iaas == null) {
     		try {
-				iaas = CloudControllerUtil.getIaas(this);
+				iaas = JcloudsIaasUtil.createIaasInstance(this);
 			} catch (InvalidIaasProviderException e) {
 				return null;
 			}

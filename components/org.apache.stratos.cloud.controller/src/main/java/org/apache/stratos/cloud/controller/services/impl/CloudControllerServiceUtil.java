@@ -42,8 +42,12 @@ import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstance
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.rest.ResourceNotFoundException;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Cloud controller service utility methods.
@@ -51,6 +55,12 @@ import org.jclouds.rest.ResourceNotFoundException;
 public class CloudControllerServiceUtil {
 
     private static final Log log = LogFactory.getLog(CloudControllerServiceUtil.class);
+
+    public static Iaas buildIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
+        Iaas iaas = iaasProvider.getIaas();
+        iaas.initialize();
+        return iaas;
+    }
 
     /**
      * A helper method to terminate an instance.
@@ -66,7 +76,7 @@ public class CloudControllerServiceUtil {
         if (iaas == null) {
 
             try {
-                iaas = CloudControllerUtil.getIaas(iaasProvider);
+                iaas = buildIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Instance termination failed. " + ctxt.toString() +

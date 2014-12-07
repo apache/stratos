@@ -39,25 +39,26 @@ import java.util.Set;
 /**
  * Docker iaas provider definition.
  */
-public class DockerIaas extends Iaas {
+public class JcloudsDockerIaas extends JcloudsIaas {
 
-    private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
+    private static final Log log = LogFactory.getLog(JcloudsEC2Iaas.class);
 
-    public DockerIaas(IaasProvider iaasProvider) {
+    public JcloudsDockerIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
     }
 
     @Override
     public void buildComputeServiceAndTemplate() {
         // builds and sets Compute Service
-        ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
 
         // builds and sets Template
         buildTemplate();
     }
 
     @Override
-    public void setDynamicPayload() {
+    public void setDynamicPayload(byte[] payload) {
         log.warn("Not implemented: DockerIaas.setDynamicPayload()");
     }
 

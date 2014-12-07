@@ -19,6 +19,7 @@ import org.jclouds.cloudstack.domain.*;
 import org.jclouds.cloudstack.features.VolumeApi;
 import org.jclouds.cloudstack.options.ListPublicIPAddressesOptions;
 import org.jclouds.cloudstack.options.ListZonesOptions;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -32,18 +33,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
-public class CloudstackIaas extends Iaas {
+public class JcloudsCloudStackIaas extends JcloudsIaas {
 
-    private static final Log log = LogFactory.getLog(CloudstackIaas.class);
+    private static final Log log = LogFactory.getLog(JcloudsCloudStackIaas.class);
 
-    public CloudstackIaas(IaasProvider iaasProvider) {
+    public JcloudsCloudStackIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
     }
 
     @Override
     public void buildComputeServiceAndTemplate() {
         // builds and sets Compute Service
-        ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
+
         // builds and sets Template
         buildTemplate();
     }
@@ -183,11 +186,11 @@ public class CloudstackIaas extends Iaas {
     }
 
     @Override
-    public void setDynamicPayload() {
-        IaasProvider iaasInfo = getIaasProvider();
-        if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
-            iaasInfo.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
-                    .userMetadata(convertByteArrayToHashMap(iaasInfo.getPayload()));
+    public void setDynamicPayload(byte[] payload) {
+        IaasProvider iaasProvider = getIaasProvider();
+        if (iaasProvider.getTemplate() != null) {
+            iaasProvider.getTemplate().getOptions().as(CloudStackTemplateOptions.class)
+                    .userMetadata(convertByteArrayToHashMap(payload));
         }
     }
 

@@ -21,13 +21,12 @@ package org.apache.stratos.cloud.controller.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
-import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
+import org.apache.stratos.cloud.controller.iaases.Iaas;
 
 import java.util.concurrent.locks.Lock;
 
@@ -38,56 +37,24 @@ public class InstanceTerminator implements Runnable {
 
     private static final Log log = LogFactory.getLog(InstanceTerminator.class);
 
-    private MemberContext ctxt;
+    private Iaas iaas;
+    private MemberContext memberContext;
 
-    public InstanceTerminator(MemberContext ctxt) {
-        this.ctxt = ctxt;
+    public InstanceTerminator(MemberContext memberContext) {
+        String provider = memberContext.getPartition().getProvider();
+        IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
+        this.iaas = iaasProvider.getIaas();
+        this.memberContext = memberContext;
     }
 
     @Override
     public void run() {
-        String memberId = ctxt.getMemberId();
-        String clusterId = ctxt.getClusterId();
-        String partitionId = ctxt.getPartition().getId();
-        String cartridgeType = ctxt.getCartridgeType();
-        String nodeId = ctxt.getNodeId();
-
         Lock lock = null;
         try {
-            CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-
-            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
-            log.info("Starting to terminate an instance with member id : " + memberId +
-                    " in partition id: " + partitionId + " of cluster id: " + clusterId +
-                    " and of cartridge type: " + cartridgeType);
-
-            if (cartridge == null) {
-                String msg = "Termination of Member Id: " + memberId + " failed. " +
-                        "Cannot find a matching Cartridge for type: " +
-                        cartridgeType;
-                log.error(msg);
-                throw new InvalidCartridgeTypeException(msg);
-            }
-
-            // if no matching node id can be found.
-            if (nodeId == null) {
-                String msg = "Termination failed. Cannot find a node id for Member Id: " + memberId;
-
-                // log information
-                CloudControllerServiceUtil.logTermination(ctxt);
-                log.error(msg);
-                throw new InvalidMemberException(msg);
-            }
-
-            IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
-
-            // terminate it!
-            CloudControllerServiceUtil.terminate(iaasProvider, nodeId, ctxt);
-
-            // log information
-            CloudControllerServiceUtil.logTermination(ctxt);
+            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
+            iaas.terminateInstance(memberContext);
         } catch (Exception e) {
-            String msg = "Instance termination failed. " + ctxt.toString();
+            String msg = "Instance termination failed! " + memberContext.toString();
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         } finally {

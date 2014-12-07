@@ -34,7 +34,7 @@ import java.util.Properties;
  * Docker partition validator definition.
  */
 public class DockerPartitionValidator extends IaasBasedPartitionValidator {
-    private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
+    private static final Log log = LogFactory.getLog(DockerPartitionValidator.class);
 
     private IaasProvider iaasProvider;
 
@@ -56,7 +56,7 @@ public class DockerPartitionValidator extends IaasBasedPartitionValidator {
 			Properties properties) {
     	Iaas updatedIaas;
 		try {
-			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
 
 			for (Object property : properties.keySet()) {
 				if (property instanceof String) {
@@ -69,7 +69,7 @@ public class DockerPartitionValidator extends IaasBasedPartitionValidator {
 					}
 				}
 			}
-			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
 			updatedIaas.setIaasProvider(updatedIaasProvider);
 		} catch (InvalidIaasProviderException ignore) {
 		}

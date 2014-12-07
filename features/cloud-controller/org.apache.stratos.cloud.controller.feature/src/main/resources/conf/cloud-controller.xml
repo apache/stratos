@@ -49,8 +49,8 @@
 		is not necessary [0..1]. But you can use this section to avoid specifying 
 		same property over and over again. -->
 	<iaasProviders>
-		<iaasProvider type="openstack" name="openstack specific details">
-            		<className>org.apache.stratos.cloud.controller.iaases.OpenstackNovaIaas</className>
+		<!-- iaasProvider type="openstack" name="openstack specific details">
+            		<className>org.apache.stratos.cloud.controller.iaases.JcloudsOpenstackIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
@@ -60,6 +60,18 @@
 			<property name="openstack.networking.provider" value="nova" />
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
-		</iaasProvider>
+		</iaasProvider -->
+        <iaasProvider type="docker" name="Docker">
+            <className>org.apache.stratos.cloud.controller.iaases.JcloudsDockerIaas</className>
+            <provider>docker</provider>
+            <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
+            <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>
+        </iaasProvider>
+        <iaasProvider type="mock" name="Mock">
+            <className>org.apache.stratos.cloud.controller.iaases.mock.MockIaas</className>
+            <provider>mock</provider>
+            <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
+            <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>
+        </iaasProvider>
 	</iaasProviders>
 </cloudController>

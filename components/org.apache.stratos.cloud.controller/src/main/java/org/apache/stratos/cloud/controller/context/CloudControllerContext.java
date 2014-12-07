@@ -326,6 +326,23 @@ public class CloudControllerContext implements Serializable {
         }
     }
 
+    public void updateMemberContext(MemberContext memberContext) {
+        memberIdToMemberContextMap.put(memberContext.getMemberId(), memberContext);
+
+        List<MemberContext> memberContextList;
+        if ((memberContextList = clusterIdToMemberContextListMap.get(memberContext.getClusterId())) == null) {
+            memberContextList = new ArrayList<MemberContext>();
+        }
+        if (memberContextList.contains(memberContext)) {
+            memberContextList.remove(memberContext);
+        }
+        memberContextList.add(memberContext);
+        clusterIdToMemberContextListMap.put(memberContext.getClusterId(), memberContextList);
+        if (log.isDebugEnabled()) {
+            log.debug("Member context updated in the cloud controller context: " + memberContext);
+        }
+    }
+
     public void addScheduledFutureJob(String memberId, ScheduledFuture<?> job) {
         memberIdToScheduledTaskMap.put(memberId, job);
     }
