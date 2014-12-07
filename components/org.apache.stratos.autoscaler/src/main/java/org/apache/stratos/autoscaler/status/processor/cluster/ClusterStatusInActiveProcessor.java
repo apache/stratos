@@ -79,14 +79,7 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
             //send cluster In-Active event to cluster status topic
             ClusterStatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
                     monitor.getServiceId(), clusterId, instanceId);
-        } /*else {
-            if (log.isInfoEnabled()) {
-                log.info("Publishing Cluster active event for [application]: "
-                        + monitor.getAppId() + " [cluster]: " + clusterId);
-            }
-            //ClusterStatusEventPublisher.sendClusterActivatedEvent(monitor.getAppId(),
-              //                                          monitor.getServiceId(), clusterId, instanceId);
-        }*/
+        }
         return clusterInActive;
     }
 

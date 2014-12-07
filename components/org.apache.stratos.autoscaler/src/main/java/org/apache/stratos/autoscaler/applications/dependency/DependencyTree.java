@@ -199,8 +199,6 @@ public class DependencyTree {
     public List<ApplicationChildContext> getTerminationDependencies(String id) {
         List<ApplicationChildContext> allChildrenOfAppContext = new ArrayList<ApplicationChildContext>();
         ApplicationChildContext applicationContext = findApplicationContextWithIdInPrimaryTree(id);
-        //adding the terminated one to the list
-        allChildrenOfAppContext.add(applicationContext);
         if (getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context
@@ -212,6 +210,11 @@ public class DependencyTree {
             findAllChildrenOfAppContext(this.primaryApplicationContextList,
                     allChildrenOfAppContext);
 
+        }
+        //If only particular cluster, then no need to terminated it.
+        if(allChildrenOfAppContext.size() > 0) {
+            //adding the terminated one to the list
+            allChildrenOfAppContext.add(applicationContext);
         }
         //return empty for the kill-none case, what ever returns here will be killed in
         return allChildrenOfAppContext;

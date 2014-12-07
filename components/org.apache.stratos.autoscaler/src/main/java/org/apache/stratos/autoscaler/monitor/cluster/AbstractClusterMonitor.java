@@ -219,12 +219,12 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         if(instance == null) {
             log.warn("The required cluster [instance] " + instanceId + " not found in the ClusterMonitor");
         } else {
-            if (instance.getStatus() == ClusterStatus.Inactive && !this.hasStartupDependents) {
+            /*if (instance.getStatus() == ClusterStatus.Inactive && !this.hasStartupDependents) {
                 log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
                         "since it is identified as the independent unit");
-            } else {
+            } else {*/
                 MonitorStatusEventBuilder.handleClusterStatusEvent(this.parent, status, this.clusterId, instanceId);
-            }
+            //}
         }
     }
 

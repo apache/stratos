@@ -147,6 +147,35 @@ public class ApplicationBuilder {
         }
     }
 
+    public static void handleApplicationInstanceInactivateEvent(String appId, String instanceId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application Inactive event: [application-id] " + appId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        Application application = applications.getApplication(appId);
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application does not exist: [application-id] %s",
+                    appId));
+            return;
+        }
+
+        ApplicationStatus status = ApplicationStatus.Inactive;
+        ApplicationInstance context = application.getInstanceContexts(instanceId);
+        if (context.isStateTransitionValid(status)) {
+            //setting the status, persist and publish
+            application.setStatus(status, instanceId);
+            updateApplicationMonitor(appId, status, instanceId);
+            ApplicationHolder.persistApplication(application);
+            ApplicationsEventPublisher.sendApplicationInstanceActivatedEvent(appId, instanceId);
+        } else {
+            log.warn(String.format("Application state transition is not valid: [application-id] %s " +
+                            " [instance-id] %s [current-status] %s [status-requested] %s",
+                    appId, instanceId, context.getStatus(), status));
+        }
+    }
+
     public static void handleApplicationUndeployed(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application unDeployment for [application-id] " + appId);

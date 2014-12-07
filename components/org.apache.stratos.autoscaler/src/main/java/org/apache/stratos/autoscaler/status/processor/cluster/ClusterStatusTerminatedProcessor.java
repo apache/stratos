@@ -36,7 +36,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
  * Cluster terminated checking processor.
  */
 public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
-    private static final Log log = LogFactory.getLog(ClusterStatusInActiveProcessor.class);
+    private static final Log log = LogFactory.getLog(ClusterStatusTerminatedProcessor.class);
     private ClusterStatusProcessor nextProcessor;
 
     @Override

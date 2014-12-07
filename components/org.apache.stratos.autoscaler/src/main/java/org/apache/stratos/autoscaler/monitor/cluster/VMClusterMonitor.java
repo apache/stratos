@@ -286,6 +286,20 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     };
                     monitoringRunnable.run();
                 }
+
+                for (final ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+                    Runnable monitoringRunnable = new Runnable() {
+                        @Override
+                        public void run() {
+                            obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
+                                    getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
+                        }
+                    };
+
+                    monitoringRunnable.run();
+
+                }
+
             }
         }
     }

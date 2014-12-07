@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.status.processor.cluster;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 
 /**
- * Created by reka on 11/25/14.
+ * This will process the cluster status upon member state changes
  */
 public abstract class ClusterStatusProcessor extends StatusProcessor {
     /**

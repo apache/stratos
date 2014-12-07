@@ -200,7 +200,9 @@ public class ClusterStatusEventPublisher {
 
                     publishEvent(appStatusClusterTerminatedEvent);
                 } else {
-                    log.warn("Terminated is not in the possible state list of [cluster] " + clusterId);
+                    log.warn("Terminated is not in the possible state list for [ClusterInstance] " +
+                            clusterInstance.getInstanceId() + " of [cluster] " +
+                            clusterId + " as it is current state is " + clusterInstance.getStatus());
                 }
             }
         } finally {
