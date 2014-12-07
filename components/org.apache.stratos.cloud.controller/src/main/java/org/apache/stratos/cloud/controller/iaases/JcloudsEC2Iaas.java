@@ -39,6 +39,7 @@ import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.jclouds.aws.ec2.AWSEC2Api;
 import org.jclouds.aws.ec2.compute.AWSEC2TemplateOptions;
 import org.jclouds.aws.ec2.features.AWSKeyPairApi;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -58,24 +59,24 @@ import org.jclouds.ec2.options.DetachVolumeOptions;
 
 import java.util.*;
 
-public class AWSEC2Iaas extends Iaas {
+public class JcloudsEC2Iaas extends JcloudsIaas {
 
-	public AWSEC2Iaas(IaasProvider iaasProvider) {
+	public JcloudsEC2Iaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
 	}
 
-	private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
+	private static final Log log = LogFactory.getLog(JcloudsEC2Iaas.class);
 	private static final String SUCCESSFUL_LOG_LINE = "A key-pair is created successfully in ";
 	private static final String FAILED_LOG_LINE = "Key-pair is unable to create in ";
 
 	@Override
 	public void buildComputeServiceAndTemplate() {
-
 		// builds and sets Compute Service
-		ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+		ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
+
 		// builds and sets Template
 		buildTemplate();
-
 	}
 
 	public void buildTemplate() {
@@ -87,8 +88,7 @@ public class AWSEC2Iaas extends Iaas {
 			throw new CloudControllerException(msg);
 		}
 
-		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
-				.templateBuilder();
+		TemplateBuilder templateBuilder = iaasInfo.getComputeService().templateBuilder();
 
 		// set image id specified
 		templateBuilder.imageId(iaasInfo.getImage());
@@ -225,14 +225,11 @@ public class AWSEC2Iaas extends Iaas {
 	}
 
 	@Override
-	public void setDynamicPayload() {
-		IaasProvider iaasInfo = getIaasProvider();
-		if (iaasInfo.getTemplate() != null && iaasInfo.getPayload() != null) {
-
-			iaasInfo.getTemplate().getOptions().as(AWSEC2TemplateOptions.class)
-					.userData(iaasInfo.getPayload());
+	public void setDynamicPayload(byte[] payload) {
+		IaasProvider iaasProvider = getIaasProvider();
+		if (iaasProvider.getTemplate() != null) {
+			iaasProvider.getTemplate().getOptions().as(AWSEC2TemplateOptions.class).userData(payload);
 		}
-
 	}
 
 	@Override

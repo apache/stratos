@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.jclouds.ContextBuilder;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
@@ -67,29 +68,25 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.util.concurrent.Atomics;
 
-public class GCEIaas extends Iaas {
+public class JcloudsGCEIaas extends JcloudsIaas {
 
 
-	private static final Log log = LogFactory.getLog(GCEIaas.class);
+	private static final Log log = LogFactory.getLog(JcloudsGCEIaas.class);
 	
 	private static final String PROJECTNAME = "projectName";
 	
-	public GCEIaas(IaasProvider iaasProvider) {
+	public JcloudsGCEIaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
 	}
 
 	@Override
 	public void buildComputeServiceAndTemplate() {
-
-		IaasProvider iaasInfo = getIaasProvider();
-		
 		// builds and sets Compute Service
-		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
-
+        ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
 
 		// builds and sets Template
 		buildTemplate();
-
 	}
 
 	public void buildTemplate() {
@@ -188,7 +185,7 @@ public class GCEIaas extends Iaas {
 	}
 
 	@Override
-	public void setDynamicPayload() {
+	public void setDynamicPayload(byte[] payload) {
 		// in vCloud case we need to run a script
 		IaasProvider iaasInfo = getIaasProvider();
 
@@ -200,12 +197,12 @@ public class GCEIaas extends Iaas {
 		}
 
 		// Payload is a String value
-		String payload = new String(iaasInfo.getPayload());
+		String payloadStr = new String(payload);
 
-		log.info("setDynamicPayload " + payload);
+		log.info("setDynamicPayload " + payloadStr);
 
 		Map<String, String> keyValuePairTagsMap = new HashMap<String, String>();
-		keyValuePairTagsMap.put("stratos_usermetadata", payload);
+		keyValuePairTagsMap.put("stratos_usermetadata", payloadStr);
 		iaasInfo.getTemplate().getOptions().userMetadata(keyValuePairTagsMap);
 	}
 

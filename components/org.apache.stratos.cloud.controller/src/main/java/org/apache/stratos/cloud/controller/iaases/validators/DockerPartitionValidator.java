@@ -23,10 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaases.AWSEC2Iaas;
+import org.apache.stratos.cloud.controller.iaases.JcloudsEC2Iaas;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 
 import java.util.Properties;
 
@@ -34,7 +34,7 @@ import java.util.Properties;
  * Docker partition validator definition.
  */
 public class DockerPartitionValidator implements PartitionValidator {
-    private static final Log log = LogFactory.getLog(AWSEC2Iaas.class);
+    private static final Log log = LogFactory.getLog(JcloudsEC2Iaas.class);
 
     private IaasProvider iaasProvider;
 
@@ -56,7 +56,7 @@ public class DockerPartitionValidator implements PartitionValidator {
 			Properties properties) {
     	Iaas updatedIaas;
 		try {
-			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
 
 			for (Object property : properties.keySet()) {
 				if (property instanceof String) {
@@ -69,7 +69,7 @@ public class DockerPartitionValidator implements PartitionValidator {
 					}
 				}
 			}
-			updatedIaas = CloudControllerUtil.getIaas(updatedIaasProvider);
+			updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
 			updatedIaas.setIaasProvider(updatedIaasProvider);
 		} catch (InvalidIaasProviderException ignore) {
 		}

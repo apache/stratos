@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.jclouds.ContextBuilder;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.enterprise.config.EnterpriseConfigurationModule;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
@@ -64,12 +65,12 @@ public class ComputeServiceBuilderUtil {
     }
 
     
-    public static void buildDefaultComputeService(IaasProvider iaas) {
+    public static ComputeService buildDefaultComputeService(IaasProvider iaasProvider) {
 
         Properties properties = new Properties();
 
         // load properties
-        for (Map.Entry<String, String> entry : iaas.getProperties().entrySet()) {
+        for (Map.Entry<String, String> entry : iaasProvider.getProperties().entrySet()) {
             properties.put(entry.getKey(), entry.getValue());
         }
 
@@ -80,12 +81,11 @@ public class ComputeServiceBuilderUtil {
 
         // build context
         ContextBuilder builder =
-            ContextBuilder.newBuilder(iaas.getProvider())
-                          .credentials(iaas.getIdentity(), iaas.getCredential()).modules(modules)
+            ContextBuilder.newBuilder(iaasProvider.getProvider())
+                          .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
                           .overrides(properties);
 
-        // set the compute service object
-        iaas.setComputeService(builder.buildView(ComputeServiceContext.class).getComputeService());
+        return builder.buildView(ComputeServiceContext.class).getComputeService();
     }
     
     public static String extractRegion(IaasProvider iaas) {

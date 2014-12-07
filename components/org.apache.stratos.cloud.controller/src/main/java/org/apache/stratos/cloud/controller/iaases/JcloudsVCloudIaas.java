@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.validators.VCloudPartitionValidator;
+import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
@@ -38,27 +39,25 @@ import org.wso2.carbon.utils.CarbonUtils;
 import java.io.File;
 import java.io.IOException;
 
-public class VCloudIaas extends Iaas {
+public class JcloudsVCloudIaas extends JcloudsIaas {
 
 
-	private static final Log log = LogFactory.getLog(VCloudIaas.class);
+	private static final Log log = LogFactory.getLog(JcloudsVCloudIaas.class);
 	
 	private static final String SHELL_TYPE = "shellType";
 	private static final String SCRIPTS_PATH = "scripts";
 	private static final String CUSTOMIZATION_SCRIPT = "customization";
 	private static final String PAYLOAD = "PAYLOAD";
 	
-	public VCloudIaas(IaasProvider iaasProvider) {
+	public JcloudsVCloudIaas(IaasProvider iaasProvider) {
 		super(iaasProvider);
 	}
 
 	@Override
 	public void buildComputeServiceAndTemplate() {
-
-		IaasProvider iaasInfo = getIaasProvider();
-		
 		// builds and sets Compute Service
-		ComputeServiceBuilderUtil.buildDefaultComputeService(iaasInfo);
+        ComputeService computeService = ComputeServiceBuilderUtil.buildDefaultComputeService(getIaasProvider());
+        getIaasProvider().setComputeService(computeService);
 
 		// builds and sets Template
 		buildTemplate();
@@ -107,18 +106,18 @@ public class VCloudIaas extends Iaas {
 	}
 
 	@Override
-	public void setDynamicPayload() {
+	public void setDynamicPayload(byte[] payload) {
 		// in vCloud case we need to run a script
-		IaasProvider iaasInfo = getIaasProvider();
+		IaasProvider iaasProvider = getIaasProvider();
 
-		if (iaasInfo.getTemplate() == null || iaasInfo.getPayload() == null) {
+		if (iaasProvider.getTemplate() == null) {
 			if (log.isDebugEnabled()) {
 				log.debug("Payload for vCloud not found");
 			}
 			return;
 		}
 
-		String shellType = iaasInfo.getProperty(SHELL_TYPE);
+		String shellType = iaasProvider.getProperty(SHELL_TYPE);
 
 		if (shellType == null || shellType.isEmpty()) {
 			if (log.isDebugEnabled()) {
@@ -132,13 +131,13 @@ public class VCloudIaas extends Iaas {
 		}
 
 		// Payload is a String value
-		String payload = new String(iaasInfo.getPayload());
+		String payloadStr = new String(payload);
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Payload '%s' will be used for vCloud Customization script", payload));
 		}
 
-		Template template = iaasInfo.getTemplate();
+		Template template = iaasProvider.getTemplate();
 
 		File scriptPath = new File(CarbonUtils.getCarbonConfigDirPath(), SCRIPTS_PATH);
 
@@ -172,7 +171,7 @@ public class VCloudIaas extends Iaas {
 		}
 
 		// Set payload
-		customizationScript = customizationScript.replaceAll(PAYLOAD, payload);
+		customizationScript = customizationScript.replaceAll(PAYLOAD, payloadStr);
 
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("The vCloud Customization script\n%s", customizationScript));

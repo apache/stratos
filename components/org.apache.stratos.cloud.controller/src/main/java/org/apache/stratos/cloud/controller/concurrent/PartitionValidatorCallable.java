@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
@@ -62,9 +63,8 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
         Iaas iaas = iaasProvider.getIaas();
         
         if (iaas == null) {
-            
             try {
-                iaas = CloudControllerUtil.getIaas(iaasProvider);
+                iaas = CloudControllerServiceUtil.buildIaas(iaasProvider);
             } catch (InvalidIaasProviderException e) {
                 String msg =
                         "Invalid Partition - " + partition.toString() +
@@ -72,7 +72,6 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
                 log.error(msg, e);
                 throw new InvalidPartitionException(msg, e);
             }
-            
         }
         
         PartitionValidator validator = iaas.getPartitionValidator();
