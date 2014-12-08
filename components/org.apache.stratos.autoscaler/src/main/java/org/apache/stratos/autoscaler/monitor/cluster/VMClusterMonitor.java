@@ -222,9 +222,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                             //FIXME when parent chosen the partition
                             String paritionAlgo = instanceContext.getPartitionAlgorithm();
-                            if(paritionAlgo == null) {
-                                paritionAlgo = "one-after-another";
-                            }
+
                             getMinCheckKnowledgeSession().setGlobal("algorithmName",
                                     paritionAlgo);
 
@@ -241,7 +239,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             boolean rifReset = instanceContext.isRifReset();
                             boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
                             boolean loadAverageReset = instanceContext.isLoadAverageReset();
-
                             if (log.isDebugEnabled()) {
                                 log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
                                         + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
@@ -256,12 +253,14 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
                                         vmClusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
+                                //TODO to parse actual value
+                                getScaleCheckKnowledgeSession().setGlobal("arspiReset", true);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
                                 getMinCheckKnowledgeSession().setGlobal("algorithmName",
-                                        instanceContext.getPartitionAlgorithm());
+                                        paritionAlgo);
 
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running scale check for [cluster instance context] %s ",

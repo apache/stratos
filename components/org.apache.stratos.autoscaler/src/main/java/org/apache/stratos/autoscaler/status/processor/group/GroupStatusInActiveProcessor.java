@@ -104,7 +104,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
                     //ApplicationBuilder.handleApp(appId);
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    if (((Group) component).getStatus(null) != GroupStatus.Inactive) {
+                    if (((Group) component).getStatus(instanceId) != GroupStatus.Inactive) {
                         log.info("sending group in-active: " + component.getUniqueIdentifier());
                         ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
                         return true;

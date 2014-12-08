@@ -145,6 +145,10 @@ public class RuleTasksDelegator {
 
     public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
         AutoscaleAlgorithm autoscaleAlgorithm = null;
+        //FIXME to not parse for algo when partition is chosen by the parent
+        if(partitionAlgorithm == null) {
+            partitionAlgorithm = Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID;
+        }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
