@@ -247,7 +247,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
 
-                                VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
+                                /*VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
 
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                 getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
@@ -273,7 +273,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                                 instanceContext.setRifReset(false);
                                 instanceContext.setMemoryConsumptionReset(false);
-                                instanceContext.setLoadAverageReset(false);
+                                instanceContext.setLoadAverageReset(false);*/
                             } else if (log.isDebugEnabled()) {
                                 log.debug(String.format("Scale rule will not run since the LB statistics have not " +
                                                 "received before this cycle for [cluster instance context] %s ",

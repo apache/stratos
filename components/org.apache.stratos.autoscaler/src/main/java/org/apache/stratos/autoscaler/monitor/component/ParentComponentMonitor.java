@@ -165,12 +165,19 @@ public abstract class ParentComponentMonitor extends Monitor {
      * by traversing to find the terminated dependencies.
      * it will get invoked when start a child monitor on termination of a sub tree
      */
-    public void startDependencyOnTermination() throws TopologyInConsistentException {
+    public void startDependencyOnTermination(String parentInstanceId) throws TopologyInConsistentException {
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination();
-        //FIXME to create new instanceIds
-        //startDependency(applicationContexts, null);
+        for(ApplicationChildContext context : applicationContexts) {
+            if(context instanceof GroupChildContext) {
+                GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
+                                                        get(context.getId());
+                groupMonitor.
+            } else if(context instanceof ClusterChildContext) {
+
+            }
+        }
 
     }
 
@@ -383,7 +390,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 (parentContexts.isEmpty() || parentsTerminated || allParentsActive)) {
             //Find the non existent monitor by traversing dependency tree
             try {
-                this.startDependencyOnTermination();
+                this.startDependencyOnTermination(parentInstanceId);
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                 log.error("Error while starting the monitor upon termination" + e);
