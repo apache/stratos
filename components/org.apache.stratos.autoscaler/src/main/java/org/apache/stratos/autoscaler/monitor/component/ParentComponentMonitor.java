@@ -142,8 +142,10 @@ public abstract class ParentComponentMonitor extends Monitor {
      * by traversing to find the terminated dependencies.
      * it will get invoked when start a child monitor on termination of a sub tree
      */
+
     public void startDependencyOnTermination(String instanceId) throws TopologyInConsistentException,
             MonitorNotFoundException, PolicyValidationException, PartitionValidationException {
+
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination(this, instanceId);
