@@ -50,7 +50,9 @@ public class MockMember implements Runnable, Serializable {
             log.info(String.format("Mock member started: [member-id] %s", mockMemberContext.getMemberId()));
         }
 
+        sleep(5000);
         MockMemberEventPublisher.publishInstanceStartedEvent(mockMemberContext);
+
         sleep(5000);
         MockMemberEventPublisher.publishInstanceActivatedEvent(mockMemberContext);
 
