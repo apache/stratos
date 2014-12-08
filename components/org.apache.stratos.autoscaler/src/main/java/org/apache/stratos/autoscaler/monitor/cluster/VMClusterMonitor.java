@@ -22,6 +22,8 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
@@ -30,6 +32,8 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
+import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
@@ -48,6 +52,8 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -1048,6 +1054,74 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     public Collection<ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
         return ((VMClusterContext) this.clusterContext).getNetworkPartitionCtxts().values();
+    }
+
+
+    public void createClusterInstance(List<String> parentInstanceIds, Cluster cluster)
+            throws PolicyValidationException, PartitionValidationException {
+        for (String parentInstanceId : parentInstanceIds) {
+            createInstance(parentInstanceId, cluster);
+        }
+
+    }
+
+    public void createClusterInstanceOnScaleUp(String instanceId)
+            throws PolicyValidationException, PartitionValidationException {
+        Cluster cluster = TopologyManager.getTopology().getService(this.serviceType).
+                getCluster(this.clusterId);
+        createInstance(instanceId, cluster);
+
+    }
+
+    private static void createClusterInstance(String serviceType, String clusterId, String alias,
+                                              String instanceId, String partitionId, String networkPartitionId) {
+        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias,
+                instanceId, partitionId, networkPartitionId);
+    }
+
+    private void createInstance(String parentInstanceId, Cluster cluster)
+            throws PolicyValidationException, PartitionValidationException {
+        Instance parentMonitorInstance = this.parent.getInstance(parentInstanceId);
+        String partitionId = null;
+        if (parentMonitorInstance instanceof GroupInstance) {
+            partitionId = parentMonitorInstance.getPartitionId();
+        }
+        if (parentMonitorInstance != null) {
+            ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
+            if (clusterInstance != null) {
+                // Cluster instance is already there. No need to create one.
+                VMClusterContext clusterContext;
+                clusterContext =
+                        ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
+                this.setClusterContext(clusterContext);
+                // create VMClusterContext and then add all the instanceContexts
+                clusterContext.addInstanceContext(parentInstanceId, cluster);
+                if (this.getInstance(clusterInstance.getInstanceId()) == null) {
+                    this.addInstance(clusterInstance);
+                }
+                // Checking the current status of the cluster instance
+                boolean stateChanged =
+                        ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain()
+                                .process("", cluster.getClusterId(), clusterInstance.getInstanceId());
+                if (!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
+                    this.notifyParentMonitor(clusterInstance.getStatus(),
+                            clusterInstance.getInstanceId());
+
+                    if (this.hasMonitoringStarted().compareAndSet(false, true)) {
+                        this.startScheduler();
+                        log.info("Monitoring task for Cluster Monitor with cluster id " +
+                                cluster.getClusterId() + " started successfully");
+                    }
+                }
+            } else {
+                createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
+                        parentMonitorInstance.getNetworkPartitionId());
+            }
+
+        } else {
+
+        }
+
     }
 
 

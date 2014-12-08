@@ -34,6 +34,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
@@ -88,11 +89,7 @@ public class MonitorFactory {
         return monitor;
     }
 
-    private static void createClusterInstance(String serviceType, String clusterId, String alias,
-                                              String instanceId, String partitionId, String networkPartitionId) {
-        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias,
-                instanceId, partitionId, networkPartitionId);
-    }
+
 
     /**
      * This will create the GroupMonitor based on given groupId by going thr Topology
@@ -271,51 +268,11 @@ public class MonitorFactory {
             } else {
                 clusterMonitor.setHasGroupScalingDependent(false);
             }
+            //Creating the instance of the cluster
+            ((VMClusterMonitor)clusterMonitor).createClusterInstance(parentInstanceIds, cluster);
+            //add it to autoscaler context
+            AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
 
-            for (String parentInstanceId : parentInstanceIds) {
-                Instance parentMonitorInstance = parentMonitor.getInstance(parentInstanceId);
-                String partitionId = null;
-                if (parentMonitorInstance instanceof GroupInstance) {
-                    partitionId = parentMonitorInstance.getPartitionId();
-                }
-                if (parentMonitorInstance != null) {
-                    ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
-                    if (clusterInstance != null) {
-                        // Cluster instance is already there. No need to create one.
-                        VMClusterContext clusterContext;
-                        clusterContext =
-                                ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
-                        clusterMonitor.setClusterContext(clusterContext);
-                        // create VMClusterContext and then add all the instanceContexts
-                        clusterContext.addInstanceContext(parentInstanceId, cluster);
-                        if (clusterMonitor.getInstance(clusterInstance.getInstanceId()) == null) {
-                            clusterMonitor.addInstance(clusterInstance);
-                        }
-                        // Checking the current status of the cluster instance
-                        boolean stateChanged =
-                                ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain()
-                                        .process("", clusterId, clusterInstance.getInstanceId());
-                        if (!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
-                            clusterMonitor.notifyParentMonitor(clusterInstance.getStatus(),
-                                    clusterInstance.getInstanceId());
-
-                            if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {
-                                clusterMonitor.startScheduler();
-                                log.info("Monitoring task for Cluster Monitor with cluster id " +
-                                        clusterId + " started successfully");
-                            }
-                        }
-                    } else {
-                        createClusterInstance(cluster.getServiceName(), clusterId, null, parentInstanceId, partitionId,
-                                parentMonitorInstance.getNetworkPartitionId());
-                    }
-
-                } else {
-
-                }
-                AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
-
-            }
 
             return clusterMonitor;
 
