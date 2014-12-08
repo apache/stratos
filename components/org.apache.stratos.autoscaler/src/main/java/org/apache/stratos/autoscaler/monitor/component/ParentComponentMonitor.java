@@ -40,7 +40,6 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -105,7 +104,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             MonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStartAbleDependencies();
+                getStarAbleDependencies();
         startDependency(applicationContexts, instanceId);
 
     }
@@ -123,6 +122,23 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
+     * This will start the parallel dependencies at once from the top level.
+     * it will get invoked when the monitor starts up only.
+     */
+    public void startDependency(ParentComponent component) {
+        //start the first dependency
+        List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
+                getStarAbleDependencies();
+        Collection<Instance> contexts = component.getInstanceIdToInstanceContextMap().values();
+        //traversing through all the Instance context and start them
+        List<String> instanceIds = new ArrayList<String>();
+        for (Instance context : contexts) {
+            instanceIds.add(context.getInstanceId());
+        }
+        startDependency(applicationContexts, instanceIds);
+    }
+
+    /**
      * This will get invoked based on the activation event of its one of the child
      *
      * @param id alias/clusterId of which receive the activated event
@@ -136,27 +152,28 @@ public abstract class ParentComponentMonitor extends Monitor {
         return startup;
     }
 
+    public boolean startAllChildrenDependency(ParentComponent component, String instanceId)
+            throws TopologyInConsistentException {
+        /*List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
+                .findAllChildrenOfAppContext(id);*/
+        return false;//startDependency(applicationContexts, instanceId);
+    }
+
     /**
      * This will start the parallel dependencies at once from the top level
      * by traversing to find the terminated dependencies.
      * it will get invoked when start a child monitor on termination of a sub tree
      */
-
-    public void startDependencyOnTermination(String instanceId) throws TopologyInConsistentException,
-            MonitorNotFoundException, PolicyValidationException, PartitionValidationException {
-
+    public void startDependencyOnTermination() throws TopologyInConsistentException {
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStarAbleDependenciesByTermination(this, instanceId);
+                getStarAbleDependenciesByTermination();
         for(ApplicationChildContext context : applicationContexts) {
             if(context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
                                                         get(context.getId());
-                groupMonitor.createInstanceAndStartDependencyOnScaleup(instanceId);
             } else if(context instanceof ClusterChildContext) {
-                VMClusterMonitor clusterMonitor = (VMClusterMonitor) this.
-                                                    aliasToActiveMonitorsMap.get(context.getId());
-                clusterMonitor.createClusterInstanceOnScaleUp(instanceId);
+
             }
         }
 
@@ -185,7 +202,9 @@ public abstract class ParentComponentMonitor extends Monitor {
                 startMonitor(this, context, instanceIds);
             }
         }
+
         return true;
+
     }
 
     /**
@@ -284,7 +303,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //handling the killall scenario
             if (this.parent != null) {
                 //send terminating to the parent. So that it will push terminating to its children
-                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id, instanceId);
+                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, childId, instanceId);
             } else {
                 //if it is an application, send terminating event individually for children
                 sendTerminatingEventOnNotification(terminationList, childId, true, instanceId);
@@ -363,18 +382,10 @@ public abstract class ParentComponentMonitor extends Monitor {
                 (parentContexts.isEmpty() || parentsTerminated || allParentsActive)) {
             //Find the non existent monitor by traversing dependency tree
             try {
-                this.startDependencyOnTermination(instanceId);
+                this.startDependencyOnTermination();
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                 log.error("Error while starting the monitor upon termination" + e);
-            } catch (MonitorNotFoundException e) {
-                //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
-                log.error("Error while starting the monitor by relevant monitor not found" + e);
-            } catch (PartitionValidationException e) {
-                log.error("Error while starting the monitor upon termination by partition validation failed" + e);
-            } catch (PolicyValidationException e) {
-                log.error("Error while starting the monitor upon termination by policy validation failed" + e);
-
             }
         } else {
             ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
@@ -549,10 +560,6 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     public Map<String, Monitor> getAliasToActiveMonitorsMap() {
         return aliasToActiveMonitorsMap;
-    }
-
-    public Monitor getMonitor(String monitorId) {
-        return this.aliasToActiveMonitorsMap.get(monitorId);
     }
 
     public void setAliasToActiveMonitorsMap(Map<String, Monitor> aliasToActiveMonitorsMap) {
