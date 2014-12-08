@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by imesh on 12/6/14.
+ * Mock node metadata definition.
  */
 public class MockNodeMetadata implements NodeMetadata {
     private String id;

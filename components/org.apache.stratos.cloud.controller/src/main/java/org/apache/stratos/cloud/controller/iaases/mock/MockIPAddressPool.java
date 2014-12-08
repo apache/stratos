@@ -28,7 +28,7 @@ import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Mock IP address pool is a singleton class for managing private and public IP addresses.
+ * Mock IP address pool is a singleton class for managing mocked private and public IP addresses.
  */
 public class MockIPAddressPool {
     private static final Log log = LogFactory.getLog(MockIPAddressPool.class);

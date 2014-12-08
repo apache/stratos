@@ -39,7 +39,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Created by imesh on 12/6/14.
+ * Mock IaaS definition. This simulates an infrastructure as a service platform by creating mock members
+ * and publishing member lifecycle events. Each member will publish mock statistics values after publishing
+ * instance started, instance activated events.
  */
 public class MockIaas extends Iaas {
 
