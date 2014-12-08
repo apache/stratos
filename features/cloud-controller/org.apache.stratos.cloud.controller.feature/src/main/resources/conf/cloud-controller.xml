@@ -68,7 +68,7 @@
             <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>
         </iaasProvider>
         <iaasProvider type="mock" name="Mock">
-            <className>org.apache.stratos.cloud.controller.iaases.mock.MockIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.MockIaas</className>
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>

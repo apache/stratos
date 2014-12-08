@@ -1,4 +1,3 @@
-package org.apache.stratos.cloud.controller.registry;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,14 +19,13 @@ package org.apache.stratos.cloud.controller.registry;
  *
 */
 
+package org.apache.stratos.cloud.controller.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
-import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;

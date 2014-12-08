@@ -22,59 +22,77 @@ package org.apache.stratos.cloud.controller.iaases.mock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
-import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 /**
- * Mock IaaS definition. This simulates an infrastructure as a service platform by creating mock members
- * and publishing member lifecycle events. Each member will publish mock statistics values after publishing
- * instance started, instance activated events.
+ * Mock IaaS service implementation. This is a singleton class that simulates a standard Infrastructure as a Service
+ * platform by creating mock members and managing their lifecycle states.
+ *
+ * How does this work:
+ * - Mock IaaS starts a Mock Member thread or each instance created
+ * - A sample private IP and a public IP will be assigned to the instance
+ * - Mock Member will publish Instance Started and Instance Activated events once the thread is started
+ * - Afterwards it will start publishing sample health statistics values to CEP
+ * - If the Mock IaaS was asked to terminate an instance it will stop the relevant thread
  */
-public class MockIaas extends Iaas {
+public class MockIaasService {
 
-    private static final Log log = LogFactory.getLog(MockIaas.class);
+    private static final Log log = LogFactory.getLog(MockIaasService.class);
     private static final String MOCK_IAAS_MEMBERS = "/mock/iaas/members";
+    private static volatile MockIaasService instance;
 
     private ExecutorService executorService;
     private MockPartitionValidator partitionValidator;
     private ConcurrentHashMap<String, MockMember> membersMap;
 
-    public MockIaas(IaasProvider iaasProvider) {
-        super(iaasProvider);
+    private MockIaasService() {
+        super();
         executorService = StratosThreadPool.getExecutorService("MOCK_IAAS_THREAD_EXECUTOR", 100);
         partitionValidator = new MockPartitionValidator();
         membersMap = readFromRegistry();
-        if(membersMap != null) {
-            // Start existing members
-            for(MockMember mockMember : membersMap.values()) {
-                executorService.submit(mockMember);
-            }
-        } else {
-            // No members found in registry, create new map
+        if(membersMap == null) {
+            // No members found in registry, create a new map
             membersMap = new ConcurrentHashMap<String, MockMember>();
         }
     }
 
-    @Override
-    public void initialize() {
+    public static MockIaasService getInstance() {
+        if (instance == null) {
+            synchronized (MockIaasService.class) {
+                if (instance == null) {
+                    instance = new MockIaasService();
+                }
+            }
+        }
+        return instance;
     }
 
-    @Override
+    /**
+     * Start mock members if present in registry
+     */
+    public static void startMockMembersIfPresentInRegistry() {
+        ConcurrentHashMap<String, MockMember> membersMap = readFromRegistry();
+        if(membersMap != null) {
+            ExecutorService executorService = StratosThreadPool.getExecutorService("MOCK_IAAS_THREAD_EXECUTOR", 100);
+            for (MockMember mockMember : membersMap.values()) {
+                executorService.submit(mockMember);
+            }
+        }
+    }
+
     public NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext) {
-        synchronized (MockIaas.class) {
+        synchronized (MockIaasService.class) {
             // Create mock member instance
             MockMemberContext mockMemberContext = new MockMemberContext(clusterContext.getCartridgeType(),
                     clusterContext.getClusterId(), memberContext.getMemberId(), memberContext.getNetworkPartitionId(),
@@ -102,11 +120,10 @@ public class MockIaas extends Iaas {
         };
     }
 
-    private ConcurrentHashMap<String, MockMember> readFromRegistry() {
+    private static ConcurrentHashMap<String, MockMember> readFromRegistry() {
         return (ConcurrentHashMap<String, MockMember>) RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
     }
 
-    @Override
     public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
                                   String cartridgeType, NodeMetadata node) {
         // Allocate mock ip addresses
@@ -114,64 +131,52 @@ public class MockIaas extends Iaas {
         memberContext.setPublicIpAddress(MockIPAddressPool.getInstance().getNextPublicIpAddress());
     }
 
-    @Override
     public void releaseAddress(String ip) {
 
     }
 
-    @Override
     public boolean isValidRegion(String region) throws InvalidRegionException {
         return true;
     }
 
-    @Override
     public boolean isValidZone(String region, String zone) throws InvalidZoneException, InvalidRegionException {
         return true;
     }
 
-    @Override
     public boolean isValidHost(String zone, String host) throws InvalidHostException {
         return true;
     }
 
-    @Override
     public PartitionValidator getPartitionValidator() {
         return partitionValidator;
     }
 
-    @Override
     public String createVolume(int sizeGB, String snapshotId) {
         return null;
     }
 
-    @Override
     public String attachVolume(String instanceId, String volumeId, String deviceName) {
         return null;
     }
 
-    @Override
     public void detachVolume(String instanceId, String volumeId) {
 
     }
 
-    @Override
     public void deleteVolume(String volumeId) {
 
     }
 
-    @Override
     public String getIaasDevice(String device) {
         return null;
     }
 
-    @Override
     public void setDynamicPayload(byte[] payload) {
 
     }
 
-    @Override
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
-        synchronized (MockIaas.class) {
+        synchronized (MockIaasService.class) {
             MockMember mockMember = membersMap.get(memberContext.getMemberId());
             if (mockMember != null) {
                 mockMember.terminate();
