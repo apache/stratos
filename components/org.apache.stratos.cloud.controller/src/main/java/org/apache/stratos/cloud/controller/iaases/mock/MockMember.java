@@ -26,7 +26,6 @@ import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStat
 import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +35,7 @@ public class MockMember implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockMember.class);
     private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private static final int HEALTH_STAT_INTERVAL = 15;
 
     private MockMemberContext mockMemberContext;
     private boolean terminated;
@@ -54,15 +54,14 @@ public class MockMember implements Runnable, Serializable {
         sleep(5000);
         MockMemberEventPublisher.publishInstanceActivatedEvent(mockMemberContext);
 
-
         if (log.isInfoEnabled()) {
-            log.info("Starting health statistics notifier");
+            log.info(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
         }
-        final ScheduledFuture<?> scheduledFuture = scheduler.scheduleAtFixedRate(
-                new MockHealthStatisticsNotifier(mockMemberContext), 15, 15, TimeUnit.SECONDS);
+        scheduler.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
+                HEALTH_STAT_INTERVAL, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isInfoEnabled()) {
-            log.info("Health statistics notifier started");
+            log.info(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));
         }
 
         while(!terminated) {
