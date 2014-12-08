@@ -42,12 +42,8 @@ import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstance
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.jclouds.compute.ComputeService;
 import org.jclouds.rest.ResourceNotFoundException;
-
-import java.lang.reflect.Constructor;
 
 /**
  * Cloud controller service utility methods.
@@ -170,19 +166,18 @@ public class CloudControllerServiceUtil {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
 
-            if (iaas == null) {
-
-                try {
-                    iaas = CloudControllerUtil.getIaas(iaasProvider);
-                } catch (InvalidIaasProviderException e) {
-                    String msg =
-                            "Invalid Partition - " + partition.toString()
-                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
-                                    + ". " + e.getMessage();
-                    log.error(msg, e);
-                    throw new InvalidPartitionException(msg, e);
-                }
-            }
+//            if (iaas == null) {
+//                try {
+//                    iaas = CloudControllerUtil.getIaas(iaasProvider);
+//                } catch (InvalidIaasProviderException e) {
+//                    String msg =
+//                            "Invalid Partition - " + partition.toString()
+//                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
+//                                    + ". " + e.getMessage();
+//                    log.error(msg, e);
+//                    throw new InvalidPartitionException(msg, e);
+//                }
+//            }
 
             IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);

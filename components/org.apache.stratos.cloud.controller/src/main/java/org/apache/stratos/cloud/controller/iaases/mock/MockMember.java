@@ -46,6 +46,10 @@ public class MockMember implements Runnable, Serializable {
 
     @Override
     public void run() {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Mock member started: [member-id] %s", mockMemberContext.getMemberId()));
+        }
+
         MockMemberEventPublisher.publishInstanceStartedEvent(mockMemberContext);
         sleep(5000);
         MockMemberEventPublisher.publishInstanceActivatedEvent(mockMemberContext);
@@ -79,7 +83,12 @@ public class MockMember implements Runnable, Serializable {
     }
 
     public void terminate() {
+        String memberId = mockMemberContext.getMemberId();
         terminated = true;
         scheduler.shutdownNow();
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Mock member terminated: [member-id] %s", memberId));
+        }
     }
 }

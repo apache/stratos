@@ -72,22 +72,24 @@ public class MockIaas extends Iaas {
 
     @Override
     public NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext) {
-        // Create mock member instance
-        MockMemberContext mockMemberContext = new MockMemberContext(clusterContext.getCartridgeType(),
-                clusterContext.getClusterId(), memberContext.getMemberId(), memberContext.getNetworkPartitionId(),
-                memberContext.getPartition().getId(), memberContext.getInstanceId());
-        MockMember mockMember = new MockMember(mockMemberContext);
-        membersMap.put(mockMember.getMockMemberContext().getMemberId(), mockMember);
-        executorService.submit(mockMember);
+        synchronized (MockIaas.class) {
+            // Create mock member instance
+            MockMemberContext mockMemberContext = new MockMemberContext(clusterContext.getCartridgeType(),
+                    clusterContext.getClusterId(), memberContext.getMemberId(), memberContext.getNetworkPartitionId(),
+                    memberContext.getPartition().getId(), memberContext.getInstanceId());
+            MockMember mockMember = new MockMember(mockMemberContext);
+            membersMap.put(mockMember.getMockMemberContext().getMemberId(), mockMember);
+            executorService.submit(mockMember);
 
-        // Prepare node metadata
-        MockNodeMetadata nodeMetadata = new MockNodeMetadata();
-        nodeMetadata.setId(UUID.randomUUID().toString());
+            // Prepare node metadata
+            MockNodeMetadata nodeMetadata = new MockNodeMetadata();
+            nodeMetadata.setId(UUID.randomUUID().toString());
 
-        // Persist changes
-        persistInRegistry();
+            // Persist changes
+            persistInRegistry();
 
-        return nodeMetadata;
+            return nodeMetadata;
+        }
     }
 
     private void persistInRegistry() {
@@ -167,10 +169,12 @@ public class MockIaas extends Iaas {
 
     @Override
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
-        MockMember mockMember = membersMap.get(memberContext.getMemberId());
-        if(mockMember != null) {
-            mockMember.terminate();
-            membersMap.remove(memberContext.getMemberId());
+        synchronized (MockIaas.class) {
+            MockMember mockMember = membersMap.get(memberContext.getMemberId());
+            if (mockMember != null) {
+                mockMember.terminate();
+                membersMap.remove(memberContext.getMemberId());
+            }
         }
     }
 }

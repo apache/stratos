@@ -26,8 +26,6 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.compute.ComputeService;
 
-import java.lang.reflect.Constructor;
-
 /**
  * jclouds IaaS utility methods.
  */
@@ -60,29 +58,6 @@ public class JcloudsIaasUtil {
         } catch (Exception e) {
             String msg = "Unable to build the jclouds object for iaas "
                     + "of type: " + iaasProvider.getType();
-            log.error(msg, e);
-            throw new InvalidIaasProviderException(msg, e);
-        }
-    }
-
-    public static Iaas createIaasInstance(IaasProvider iaasProvider)
-            throws InvalidIaasProviderException {
-        try {
-
-            if(iaasProvider.getClassName() == null) {
-                String msg = "You have not specified a class which represents the iaas of type: ["
-                        + iaasProvider.getType() + "].";
-                log.error(msg);
-                throw new InvalidIaasProviderException(msg);
-            }
-
-            Constructor<?> c = Class.forName(iaasProvider.getClassName()).getConstructor(IaasProvider.class);
-            Iaas iaas = (Iaas) c.newInstance(iaasProvider);
-            return iaas;
-        } catch (Exception e) {
-            String msg = "Class [" + iaasProvider.getClassName()
-                    + "] which represents the iaas of type: ["
-                    + iaasProvider.getType() + "] has failed to instantiate.";
             log.error(msg, e);
             throw new InvalidIaasProviderException(msg, e);
         }

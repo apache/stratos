@@ -252,7 +252,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                                 VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
 
-                                getScaleCheckKnowledgeSession().setGlobal("instance", instanceContext);
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                 getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
                                         vmClusterContext.getAutoscalePolicy());
