@@ -204,17 +204,17 @@ public class DependencyTree {
             //finding all the children of the found application context
             findAllChildrenOfAppContext(applicationContext.getApplicationChildContextList(),
                     allChildrenOfAppContext);
+            //If only particular cluster, then no need to terminated it.
+            if(allChildrenOfAppContext.size() > 0) {
+                //adding the terminated one to the list
+                allChildrenOfAppContext.add(applicationContext);
+            }
             return allChildrenOfAppContext;
         } else if (getTerminationBehavior() == TerminationBehavior.TERMINATE_ALL) {
             //killall will be killed by the monitor from it's list.
             findAllChildrenOfAppContext(this.primaryApplicationContextList,
                     allChildrenOfAppContext);
 
-        }
-        //If only particular cluster, then no need to terminated it.
-        if(allChildrenOfAppContext.size() > 0) {
-            //adding the terminated one to the list
-            allChildrenOfAppContext.add(applicationContext);
         }
         //return empty for the kill-none case, what ever returns here will be killed in
         return allChildrenOfAppContext;
