@@ -104,7 +104,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             MonitorNotFoundException {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStarAbleDependencies();
+                getStartAbleDependencies();
         startDependency(applicationContexts, instanceId);
 
     }
@@ -128,7 +128,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     public void startDependency(ParentComponent component) {
         //start the first dependency
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStarAbleDependencies();
+                getStartAbleDependencies();
         Collection<Instance> contexts = component.getInstanceIdToInstanceContextMap().values();
         //traversing through all the Instance context and start them
         List<String> instanceIds = new ArrayList<String>();
@@ -164,10 +164,13 @@ public abstract class ParentComponentMonitor extends Monitor {
      * by traversing to find the terminated dependencies.
      * it will get invoked when start a child monitor on termination of a sub tree
      */
-    public void startDependencyOnTermination() throws TopologyInConsistentException {
+
+    public void startDependencyOnTermination(String instanceId) throws TopologyInConsistentException,
+            MonitorNotFoundException, PolicyValidationException, PartitionValidationException {
+
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStarAbleDependenciesByTermination();
+                getStarAbleDependenciesByTermination(this, instanceId);
         for(ApplicationChildContext context : applicationContexts) {
             if(context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
@@ -382,7 +385,15 @@ public abstract class ParentComponentMonitor extends Monitor {
                 (parentContexts.isEmpty() || parentsTerminated || allParentsActive)) {
             //Find the non existent monitor by traversing dependency tree
             try {
-                this.startDependencyOnTermination();
+                try {
+                    this.startDependencyOnTermination(instanceId);
+                } catch (MonitorNotFoundException e) {
+                    e.printStackTrace();
+                } catch (PolicyValidationException e) {
+                    e.printStackTrace();
+                } catch (PartitionValidationException e) {
+                    e.printStackTrace();
+                }
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
                 log.error("Error while starting the monitor upon termination" + e);
@@ -572,6 +583,10 @@ public abstract class ParentComponentMonitor extends Monitor {
             hasMonitor = true;
         }
         return hasMonitor;
+    }
+
+    public Monitor getMonitor(String childId) {
+        return this.aliasToActiveMonitorsMap.get(childId);
     }
 
     public boolean hasMonitors() {
