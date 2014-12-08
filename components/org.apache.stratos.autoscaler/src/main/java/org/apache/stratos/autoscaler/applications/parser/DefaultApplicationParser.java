@@ -460,9 +460,10 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
-
+        
         for (GroupContext groupCtxt : groupCtxts) {
-            Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, definedGroupCtxts);
+        	ServiceGroup serviceGroup  = getServiceGroup(groupCtxt.getName());        	
+            Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, definedGroupCtxts, serviceGroup);
             groupAliasToGroup.put(group.getAlias(), group);
         }
 
@@ -533,19 +534,20 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Group parseGroup (String appId, int tenantId, String key, GroupContext groupCtxt,
                              Map<String, SubscribableInfoContext> subscribableInfoCtxts,
-                             Map<String, GroupContext> definedGroupCtxts)
+                             Map<String, GroupContext> definedGroupCtxts,
+                             ServiceGroup serviceGroup)
             throws ApplicationDefinitionException {
 
         // check if are in the defined Group set
-        GroupContext definedGroupDef = definedGroupCtxts.get(groupCtxt.getAlias());
+       /* GroupContext definedGroupDef = definedGroupCtxts.get(groupCtxt.getAlias());
         if (definedGroupDef == null) {
             handleError("Group Definition with name: " + groupCtxt.getName() + ", alias: " +
                     groupCtxt.getAlias() + " is not found in the all Group Definitions collection");
-        }
+        }*/
 
         Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
 
-        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName()));
+        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName(),serviceGroup));
         group.setGroupMinInstances(groupCtxt.getGroupMinInstances());
         group.setGroupMaxInstances(groupCtxt.getGroupMaxInstances());
         group.setGroupScalingEnabled(groupCtxt.isGroupScalingEnabled());
@@ -553,11 +555,11 @@ public class DefaultApplicationParser implements ApplicationParser {
         //group.setAutoscalingPolicy(groupCtxt.getAutoscalingPolicy());
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
-        String []  startupOrders = getStartupOrderForGroup(groupCtxt);
+        String []  startupOrders = getStartupOrderForGroup(groupCtxt.getName(),serviceGroup);
         if (startupOrders != null) {
             dependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders, groupCtxt));
         }
-        dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName()));
+        dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(),serviceGroup));
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, ClusterDataHolder> clusterDataMap;
@@ -575,11 +577,11 @@ public class DefaultApplicationParser implements ApplicationParser {
             // check sub groups
             for (GroupContext subGroupCtxt : groupCtxt.getGroupContexts()) {
                 // get the complete Group Definition
-                subGroupCtxt = definedGroupCtxts.get(subGroupCtxt.getAlias());
+                //subGroupCtxt = definedGroupCtxts.get(subGroupCtxt.getAlias());
 				if (subGroupCtxt != null) {
 					Group nestedGroup = parseGroup(appId, tenantId, key,
 					        subGroupCtxt, subscribableInfoCtxts,
-					        definedGroupCtxts);
+					        definedGroupCtxts, serviceGroup);
 					nestedGroups.put(nestedGroup.getAlias(), nestedGroup);
 				}
             }
@@ -598,26 +600,26 @@ public class DefaultApplicationParser implements ApplicationParser {
      *
      * @throws ApplicationDefinitionException
      */
-    private String [] getStartupOrderForGroup(GroupContext groupContext) throws ApplicationDefinitionException {
+    private String [] getStartupOrderForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = getServiceGroup(groupContext.getName());
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
-        if (serviceGroup == null) {
-            handleError("Service Group Definition not found for name " + groupContext.getName());
+        if (nestedServiceGroup == null) {
+            handleError("Service Group Definition not found for name " + serviceGroupName);
         }
         
         if (log.isDebugEnabled()) {
-        	log.debug("parsing application ... getStartupOrderForGroup: " + groupContext.getName());
+        	log.debug("parsing application ... getStartupOrderForGroup: " + serviceGroupName);
         }
 
-        assert serviceGroup != null;
-        if (serviceGroup.getDependencies() != null) {
+        assert nestedServiceGroup != null;
+        if (nestedServiceGroup.getDependencies() != null) {
         	if (log.isDebugEnabled()) {
             	log.debug("parsing application ... getStartupOrderForGroup: dependencies != null " );
             }
-            if (serviceGroup.getDependencies().getStartupOrders() != null) {
+            if (nestedServiceGroup.getDependencies().getStartupOrders() != null) {
             	
-            	String [] startupOrders = serviceGroup.getDependencies().getStartupOrders();
+            	String [] startupOrders = nestedServiceGroup.getDependencies().getStartupOrders();
             	if (log.isDebugEnabled()) {
                 	log.debug("parsing application ... getStartupOrderForGroup: startupOrders != null # of: " +  startupOrders.length);
                 }
@@ -636,17 +638,17 @@ public class DefaultApplicationParser implements ApplicationParser {
      *
      * @throws ApplicationDefinitionException if an error occurs
      */
-    private String getKillbehaviour (String serviceGroupName) throws ApplicationDefinitionException {
+    private String getKillbehaviour(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = getServiceGroup(serviceGroupName);
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName,serviceGroup);
 
-        if (serviceGroup == null) {
+        if (nestedServiceGroup == null) {
             handleError("Service Group Definition not found for name " + serviceGroupName);
         }
 
-        assert serviceGroup != null;
-        if (serviceGroup.getDependencies() != null) {
-            return serviceGroup.getDependencies().getTerminationBehaviour();
+        assert nestedServiceGroup != null;
+        if (nestedServiceGroup.getDependencies() != null) {
+            return nestedServiceGroup.getDependencies().getTerminationBehaviour();
         }
 
         return null;
@@ -660,15 +662,28 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return true if group scaling is enabled, else false
      * @throws ApplicationDefinitionException if no Service Group found for the given serviceGroupName
      */
-    private boolean isGroupScalingEnabled (String serviceGroupName) throws ApplicationDefinitionException {
+    private boolean isGroupScalingEnabled (String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
-        ServiceGroup serviceGroup = getServiceGroup(serviceGroupName);
+        ServiceGroup nestedGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
-        if (serviceGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);
+        if (nestedGroup == null) {
+            handleError("Service Group Definition not found for name " + serviceGroupName);        	
         }
 
-        return serviceGroup.isGroupscalingEnabled();
+        return nestedGroup.isGroupscalingEnabled();
+    }
+    
+    private ServiceGroup getNestedServiceGroup (String serviceGroupName, ServiceGroup serviceGroup) {
+    	if(serviceGroup.getName().equals(serviceGroupName)) {
+    		return serviceGroup;
+    	} else if (serviceGroup.getGroups() != null) {
+    		ServiceGroup[] groups = serviceGroup.getGroups();
+    		for (ServiceGroup sg : groups) {
+    			return getNestedServiceGroup(serviceGroupName, sg);
+            }
+    	}
+    	return null;
+    	
     }
 
     /**
