@@ -327,11 +327,9 @@ public class CloudControllerUtil {
     }
     
     public static Topology retrieveTopology() {    	
-          Object obj = RegistryManager.getInstance().read(CloudControllerConstants.TOPOLOGY_RESOURCE);
-          if (obj != null) {
+          Object dataObj = RegistryManager.getInstance().read(CloudControllerConstants.TOPOLOGY_RESOURCE);
+          if (dataObj != null) {
               try {
-                  Object dataObj = Deserializer
-                          .deserializeFromByteArray((byte[]) obj);
                   if(dataObj instanceof Topology) {
                       return (Topology) dataObj;
                   } else {

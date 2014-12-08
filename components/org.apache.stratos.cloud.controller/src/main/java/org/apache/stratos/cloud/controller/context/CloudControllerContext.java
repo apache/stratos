@@ -618,9 +618,8 @@ public class CloudControllerContext implements Serializable {
     private void updateContextFromRegistry() {
         if ((!isClustered()) || (isCoordinator())) {
             try {
-                Object obj = RegistryManager.getInstance().read(CloudControllerConstants.DATA_RESOURCE);
-                if (obj != null) {
-                    Object dataObj = Deserializer.deserializeFromByteArray((byte[]) obj);
+                Object dataObj = RegistryManager.getInstance().read(CloudControllerConstants.DATA_RESOURCE);
+                if (dataObj != null) {
                     if (dataObj instanceof CloudControllerContext) {
                         CloudControllerContext serializedObj = (CloudControllerContext) dataObj;
 

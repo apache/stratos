@@ -113,7 +113,16 @@ public class RegistryManager {
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             Resource resource = registry.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath);
-            return resource.getContent();
+            Object content = resource.getContent();
+            if (content != null) {
+                try {
+                    return Deserializer.deserializeFromByteArray((byte[])content);
+                } catch (Exception e) {
+                    log.error("Could not de-serialize object stored in registry", e);
+                    throw new RuntimeException(e);
+                }
+            }
+            return null;
         } catch (ResourceNotFoundException ignore) {
             // this means, we've never persisted CC info in registry
             return null;
