@@ -21,6 +21,8 @@ package org.apache.stratos.autoscaler.applications.dependency;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -163,26 +165,33 @@ public class DependencyTree {
      *
      * @return list of dependencies
      */
-    public List<ApplicationChildContext> getStarAbleDependencies() {
+    public List<ApplicationChildContext> getStartAbleDependencies() {
         //returning the top level as the monitor is in initializing state
         return this.primaryApplicationContextList;
     }
 
-    public List<ApplicationChildContext> getStarAbleDependenciesByTermination() {
+    public List<ApplicationChildContext> getStarAbleDependenciesByTermination(
+                                                                    ParentComponentMonitor monitor,
+                                                                    String instanceId) {
         //Breadth First search over the graph to find out which level has the terminated contexts
-        return traverseGraphByLevel(this.primaryApplicationContextList);
+
+        return traverseGraphByLevel(this.primaryApplicationContextList, monitor, instanceId);
     }
 
 
-    private List<ApplicationChildContext> traverseGraphByLevel(List<ApplicationChildContext> contexts) {
+    private List<ApplicationChildContext> traverseGraphByLevel(List<ApplicationChildContext> contexts,
+                                                               ParentComponentMonitor parentMonitor,
+                                                               String instanceId) {
         for(ApplicationChildContext context : contexts) {
-            if(context.isTerminated()) {
+            Monitor monitor = parentMonitor.getMonitor(context.getId());
+            if(monitor.getInstance(instanceId) == null ||
+                    monitor.getInstancesByParentInstanceId(instanceId).isEmpty()) {
                 return contexts;
             }
         }
 
         for(ApplicationChildContext context : contexts) {
-            return traverseGraphByLevel(context.getApplicationChildContextList());
+            return traverseGraphByLevel(context.getApplicationChildContextList(), parentMonitor, instanceId);
         }
         return null;
     }

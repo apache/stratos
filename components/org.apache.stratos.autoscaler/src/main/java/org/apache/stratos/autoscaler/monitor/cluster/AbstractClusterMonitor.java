@@ -68,7 +68,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     protected AutoscalerRuleEvaluator autoscalerRuleEvaluator;
     protected String serviceType;
     private AtomicBoolean monitoringStarted;
-    private String clusterId;
+    protected String clusterId;
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
     private boolean isDestroyed;
