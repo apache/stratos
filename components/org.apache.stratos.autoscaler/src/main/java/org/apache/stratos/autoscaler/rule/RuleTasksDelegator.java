@@ -92,9 +92,10 @@ public class RuleTasksDelegator {
     }
 
     public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit, float lowerLimit, double predictedValue, int activeMemberCount) {
-
-        double numberOfInstances = (activeMemberCount * predictedValue) / upperLimit;
-
+        double numberOfInstances = 0;
+        if(upperLimit != 0) {
+            numberOfInstances = (activeMemberCount * predictedValue) / upperLimit;
+        }
         return (int) Math.ceil(numberOfInstances);
     }
 
@@ -108,10 +109,10 @@ public class RuleTasksDelegator {
             rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnRif;
         }
         if (mcReset) {
-            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnMemoryConsumption;
+            mcBasedRequiredInstances = numberOfInstancesReuquiredBasedOnMemoryConsumption;
         }
         if (laReset) {
-            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
+            laBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
         }
         numberOfInstances = Math.max(Math.max(numberOfInstancesReuquiredBasedOnMemoryConsumption, numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesReuquiredBasedOnRif);
         return numberOfInstances;
