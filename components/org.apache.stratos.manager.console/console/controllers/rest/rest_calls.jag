@@ -166,6 +166,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/application",{});
     };
 
+    this.getApplicationTopology = function(appId){
+        return this.sendReceive("GET","/application/" + appId,{});
+    };
+
     this.getClusterInfo = function(clusterId){
         return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
     };
