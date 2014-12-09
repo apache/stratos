@@ -1040,20 +1040,30 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             partitionContext.getPartitionId() + " ]");
                     // }
                     // need to terminate active, pending and obsolete members
-
+                    //FIXME to traverse concurrent
                     // active members
+                    List<String> activeMembers = new ArrayList<String>();
                     Iterator<MemberContext> iterator = partitionContext.getActiveMembers().listIterator();
-                    while(iterator.hasNext()) {
+                    while (iterator.hasNext()) {
                         MemberContext activeMemberCtxt = iterator.next();
-                        String memberId = activeMemberCtxt.getMemberId();
+                        activeMembers.add(activeMemberCtxt.getMemberId());
+
+                    }
+                    for (String memberId : activeMembers) {
                         log.info("Sending instance cleanup for the active member [member id] " + memberId);
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
                         InstanceNotificationPublisher.getInstance().
                                 sendInstanceCleanupEventForMember(memberId);
                     }
-
                     Iterator<MemberContext> pendingIterator = partitionContext.getPendingMembers().listIterator();
-                    while(pendingIterator.hasNext()) {
+
+                    List<String> pendingMembers = new ArrayList<String>();
+                    while (pendingIterator.hasNext()) {
+                        MemberContext activeMemberCtxt = pendingIterator.next();
+                        pendingMembers.add(activeMemberCtxt.getMemberId());
+
+                    }
+                    for (String memberId : pendingMembers) {
                         MemberContext pendingMemberCtxt = pendingIterator.next();
                         // pending members
                         String memeberId = pendingMemberCtxt.getMemberId();
@@ -1170,7 +1180,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         members.add(activeMember.getMemberId());
                     }
 
-                    for(String memberId: members) {
+                    for (String memberId : members) {
                         partitionContext.moveActiveMemberToTerminationPendingMembers(
                                 memberId);
                     }
@@ -1181,7 +1191,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         MemberContext activeMember = pendingIterator.next();
                         pendingMembers.add(activeMember.getMemberId());
                     }
-                    for(String memberId: members) {
+                    for (String memberId : members) {
                         // pending members
                         log.info("Moving pending member [member id] " + memberId +
                                 " obsolete list");

@@ -283,13 +283,16 @@ public class AutoscalerTopologyEventReceiver {
                 AbstractClusterMonitor monitor;
                 ApplicationMonitor appMonitor = null;
                 monitor = asCtx.getClusterMonitor(clusterId);
+                appMonitor = AutoscalerContext.getInstance().
+                        getAppMonitor(clusterTerminatedEvent.getAppId());
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
                                 + "[cluster] %s", clusterId));
                     }
                     // if the cluster monitor is null, assume that its termianted
-                    appMonitor = AutoscalerContext.getInstance().getAppMonitor(clusterTerminatedEvent.getAppId());
+                    appMonitor = AutoscalerContext.getInstance().
+                            getAppMonitor(clusterTerminatedEvent.getAppId());
                     if (appMonitor != null) {
                         appMonitor.onChildStatusEvent(
                                 new ClusterStatusEvent(ClusterStatus.Terminated,

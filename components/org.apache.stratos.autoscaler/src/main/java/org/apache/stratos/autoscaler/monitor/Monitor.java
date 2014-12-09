@@ -190,9 +190,9 @@ public abstract class Monitor implements EventHandler {
      */
     public boolean hasInstance() {
         if (this.instanceIdToInstanceMap.isEmpty()) {
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
 }
