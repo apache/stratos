@@ -225,6 +225,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             }
 
+                            getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
                             getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                             getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                             //FIXME when parent chosen the partition
@@ -393,6 +394,27 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
         ClusterInstanceContext clusterInstanceContext =
                 getClusterInstanceContext(scalingEvent.getNetworkPartitionId(), instanceId);
+
+
+        // store primary members in the cluster instance context
+        List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
+
+        for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts()) {
+
+            // get active primary members in this cluster instance context
+            for (MemberContext memberContext : partitionContext.getActiveMembers()) {
+                if (isPrimaryMember(memberContext)) {
+                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                }
+            }
+
+            // get pending primary members in this cluster instance context
+            for (MemberContext memberContext : partitionContext.getPendingMembers()) {
+                if (isPrimaryMember(memberContext)) {
+                    primaryMemberListInClusterInstance.add(memberContext.getMemberId());
+                }
+            }
+        }
 
 
         //TODO get min instance count from instance context
