@@ -124,6 +124,9 @@ dialect "mvel"
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-down action: " + scaleDown))
 
 	then
+
+	    log.debug("Number Of Required Instances " + numberOfRequiredInstances + " Instances Count " + instancesCount);
+
         if(scaleUp){
 
             int additionalInstances = numberOfRequiredInstances - instancesCount ;
@@ -132,24 +135,32 @@ dialect "mvel"
 
             //Calculating the factor scaling
             float factor = numberOfRequiredInstances / clusterInstanceContext.getMinInstanceCount();
-            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
+//            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
 
-            while(count != additionalInstances){
-            ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
-            if(partitionContext != null){
-                log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
-				count++;
+            boolean partitionsAvailable = true;
+
+            while(count != additionalInstances && partitionsAvailable){
+
+                ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                if(partitionContext != null){
+
+                    log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                    log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                    delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                    count++;
+                } else {
+
+                    partitionsAvailable = false;
+                }
             }
-          }    
         } else if(scaleDown){
 
             float factor = numberOfRequiredInstances / clusterInstanceContext.getMinInstanceCount();
-            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), factor);
+//            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), factor);
 
             log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
             if(clusterInstanceContext.getScaleDownRequestsCount() > 5 ){
+
                 log.debug("[scale-down] Reached scale down requests threshold [cluster] " + clusterId + " Count " + clusterInstanceContext.getScaleDownRequestsCount());
                 MemberStatsContext selectedMemberStatsContext = null;
                 double lowestOverallLoad = 0.0;
