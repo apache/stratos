@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.TenantInfoBean;
+import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -38,7 +38,7 @@ import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.util.Util;
-import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
+import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 

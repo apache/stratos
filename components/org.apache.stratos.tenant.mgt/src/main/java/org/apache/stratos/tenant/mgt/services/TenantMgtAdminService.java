@@ -21,7 +21,7 @@ package org.apache.stratos.tenant.mgt.services;
 import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.tenant.mgt.beans.PaginatedTenantInfoBean;
@@ -41,9 +41,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This is the admin Web service which is used for managing tenants
@@ -106,7 +104,7 @@ public class TenantMgtAdminService extends AbstractAdmin {
         //Notify tenant addition
         try {
             TenantMgtUtil.triggerAddTenant(tenantInfoBean);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant addition.";
             log.error(msg, e);
             throw new Exception(msg, e);
@@ -439,7 +437,7 @@ public class TenantMgtAdminService extends AbstractAdmin {
         //Notify tenant update to all listeners
         try {
             TenantMgtUtil.triggerUpdateTenant(tenantInfoBean);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant update.";
             log.error(msg, e);
             throw new Exception(msg, e);
@@ -481,7 +479,7 @@ public class TenantMgtAdminService extends AbstractAdmin {
         //Notify tenant activation all listeners
         try {
             TenantMgtUtil.triggerTenantActivation(tenantId);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant activate.";
             log.error(msg, e);
             throw new Exception(msg, e);
@@ -513,7 +511,7 @@ public class TenantMgtAdminService extends AbstractAdmin {
         //Notify tenant deactivation all listeners
         try {
             TenantMgtUtil.triggerTenantDeactivation(tenantId);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant deactivate.";
             log.error(msg, e);
             throw new Exception(msg, e);
@@ -545,7 +543,7 @@ public class TenantMgtAdminService extends AbstractAdmin {
         //Notify tenant delete to all listeners
         try {
             TenantMgtUtil.triggerDeleteTenant(tenantId);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant delete";
             log.error(msg, e);
             throw new Exception(msg, e);

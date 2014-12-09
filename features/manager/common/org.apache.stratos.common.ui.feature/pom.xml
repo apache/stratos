@@ -48,15 +48,15 @@
                 <artifactId>org.wso2.carbon.google.analytics.ui</artifactId>
             </dependency>
             <dependency>
-            	<groupId>org.apache.stratos</groupId>
-            	<artifactId>org.apache.stratos.tenant.mgt.stub</artifactId>
-            	<version>${project.version}</version>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
+            	<version>4.2.0</version>
             </dependency>
             <!--  Tenant Mgmt  -->
             <dependency>
-            	<groupId>org.apache.stratos</groupId>
-            	<artifactId>org.apache.stratos.tenant.mgt.ui</artifactId>
-            	<version>${project.version}</version>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.tenant.mgt.ui</artifactId>
+            	<version>2.2.0</version>
             </dependency>
             <dependency>
             	<groupId>org.apache.stratos</groupId>
@@ -104,9 +104,9 @@
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.google.analytics.ui</bundleDef>
                             	
                             	<!-- Tenant Mgmt-->
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.ui</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.common.stub</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.stub</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub</bundleDef>
                             	<!-- Tenant Mgmt End-->
                             	                            
                             </bundles>

@@ -25,7 +25,7 @@ import org.apache.stratos.tenant.mgt.exception.TenantManagementException;
 import org.apache.stratos.tenant.mgt.internal.TenantMgtServiceComponent;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.wso2.carbon.user.api.RealmConfiguration;
 import org.wso2.carbon.user.api.TenantMgtConfiguration;
 import org.wso2.carbon.user.api.UserStoreException;
@@ -108,7 +108,7 @@ public class GAppTenantRegistrationService {
             // Notify tenant addition
             try {
                 TenantMgtUtil.triggerAddTenant(tenantInfoBean);
-            } catch (StratosException e) {
+            } catch (ApacheStratosException e) {
                 String msg = "Error in notifying tenant addition.";
                 log.error(msg, e);
                 throw new Exception(msg, e);

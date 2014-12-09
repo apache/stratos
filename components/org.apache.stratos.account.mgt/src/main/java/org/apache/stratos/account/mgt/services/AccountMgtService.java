@@ -28,7 +28,7 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
+import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.user.core.UserCoreConstants;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.UserStoreManager;

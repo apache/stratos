@@ -109,11 +109,6 @@
         </dependency>
 
 
-        <dependency>
-        	<groupId>org.apache.stratos</groupId>
-        	<artifactId>org.apache.stratos.tenant.mgt</artifactId>
-        	<version>${project.version}</version>
-        </dependency>
 		
 		<dependency>
 			<groupId>kaptcha.wso2</groupId>
@@ -123,11 +118,6 @@
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.keystore.mgt</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
@@ -214,10 +204,8 @@
                                 
                                 <!-- Tenant Mgmt -->
                                 <bundleDef>org.json.wso2:json</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${project.version}</bundleDef>
 				<bundleDef>kaptcha.wso2:kaptcha</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.captcha.mgt</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt:${project.version}</bundleDef>
                                 <!-- End Tenant Mgmt -->
