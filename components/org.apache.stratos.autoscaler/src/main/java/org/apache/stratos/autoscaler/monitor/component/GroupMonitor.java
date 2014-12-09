@@ -379,8 +379,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
         if (policy == null) {
             if (parentPartitionId != null &&
-                    networkPartitionContext.getPartitionCtxt(parentPartitionId) != null) {
-                partitionContext = new GroupLevelPartitionContext(0);
+                    networkPartitionContext.getPartitionCtxt(parentPartitionId) == null) {
+                partitionContext = new GroupLevelPartitionContext(parentPartitionId,
+                                                networkPartitionId);
                 networkPartitionContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
                 if (log.isInfoEnabled()) {
                     log.info("[Partition] " + parentPartitionId + "has been added for the " +

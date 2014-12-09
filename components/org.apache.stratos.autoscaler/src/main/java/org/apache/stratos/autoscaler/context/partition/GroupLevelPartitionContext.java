@@ -111,6 +111,33 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         th3.start();*/
     }
 
+    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid ) {
+        super(partitionId, networkPartitionIid);
+        this.pendingInstances = new ArrayList<Instance>();
+        this.activeInstances = new ArrayList<Instance>();
+        this.terminationPendingInstances = new ArrayList<Instance>();
+        this.obsoletedInstances = new ConcurrentHashMap<String, Instance>();
+        instanceStatsContexts = new ConcurrentHashMap<String, MemberStatsContext>();
+
+
+        terminationPendingStartedTime = new HashMap<String, Long>();
+        // check if a different value has been set for expiryTime
+        XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
+        pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
+        obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        if (log.isDebugEnabled()) {
+            log.debug("Instance expiry time is set to: " + pendingInstanceExpiryTime);
+            log.debug("Instance obsoleted expiry time is set to: " + obsoltedInstanceExpiryTime);
+        }
+
+        /*Thread th = new Thread(new PendingInstanceWatcher(this));
+        th.start();
+        Thread th2 = new Thread(new ObsoletedInstanceWatcher(this));
+        th2.start();
+        Thread th3 = new Thread(new TerminationPendingInstanceWatcher(this));
+        th3.start();*/
+    }
+
     public long getTerminationPendingStartedTimeOfInstance(String instanceId) {
         return terminationPendingStartedTime.get(instanceId);
     }

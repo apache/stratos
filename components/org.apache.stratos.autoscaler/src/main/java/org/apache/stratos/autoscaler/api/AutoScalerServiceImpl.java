@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.kubernetes.*;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
@@ -152,24 +153,40 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 Application application = ApplicationHolder.getApplications().
                                 getApplication(deploymentPolicy.getApplicationId());
                 Partition[] partitions = new Partition[partitionList.size()];
-                Group group = application.getGroupRecursively(alias);
-                if(group != null) {
-                    Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
-                    //validating the group deployment policy against the leaf cartridges
-                    for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
-                        CloudControllerClient.getInstance().validateDeploymentPolicy(
-                                clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
+                if(application != null) {
+                    Group group = application.getGroupRecursively(alias);
+                    if(group != null) {
+                        Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
+                        //validating the group deployment policy against the leaf cartridges
+                        for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+                            CloudControllerClient.getInstance().validateDeploymentPolicy(
+                                    clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
+                        }
+                    } else {
+                        //Validating the cartridge level deployment policy
+                        ClusterDataHolder clusterDataHolder = application.
+                                getClusterDataHolderRecursivelyByAlias(alias);
+                        if(clusterDataHolder != null) {
+                            CloudControllerClient.getInstance().validateDeploymentPolicy(
+                                    clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
+                        } else {
+                            String msg = "Error while retrieving the group/cluster for the Deployment " +
+                                    "policy: " + alias;
+                            log.error(msg);
+                            throw new TopologyInConsistentException(msg);
+                        }
                     }
                 } else {
-                    //Validating the cartridge level deployment policy
-                    ClusterDataHolder clusterDataHolder = application.
-                            getClusterDataHolderRecursivelyByAlias(alias);
-                    if(clusterDataHolder != null) {
-                        CloudControllerClient.getInstance().validateDeploymentPolicy(
-                                clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
-                    }
+                    String msg = "Error while retrieving the application for the Deployment policy: " +
+                    deploymentPolicy.getApplicationId();
+                    log.error(msg);
+                    throw new TopologyInConsistentException(msg);
                 }
+
             } catch (PartitionValidationException e) {
+                log.error("Error while validating the deployment policy", e);
+                //TODO throw exception
+            } catch (TopologyInConsistentException e) {
                 log.error("Error while validating the deployment policy", e);
                 //TODO throw exception
             } finally {

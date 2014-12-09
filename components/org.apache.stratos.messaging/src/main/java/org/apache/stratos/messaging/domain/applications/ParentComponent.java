@@ -328,10 +328,12 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
                 if (group.getClusterData(alias) != null) {
                     return group.getClusterData(alias);
                 }
-            } else {
-                if (group.getGroups() != null) {
-                    return getClusterDataByAlias(alias, group.getGroups());
-                }
+            }
+        }
+
+        for(Group group : groups) {
+            if (group.getGroups() != null) {
+                return getClusterDataByAlias(alias, group.getGroups());
             }
         }
         return null;
