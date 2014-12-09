@@ -73,7 +73,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
      */
     public void publish(String clusterId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [ins] %s [health] %s [value] %f",
+            log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
         }
         List<Object> payload = new ArrayList<Object>();
