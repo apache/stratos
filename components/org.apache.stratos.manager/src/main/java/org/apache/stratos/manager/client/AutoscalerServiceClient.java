@@ -141,10 +141,17 @@ public class AutoscalerServiceClient {
         return deploymentPolicy;
     }
 
-    public String deployDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
+    AutoScalerServiceInvalidPolicyExceptionException {
+
+    	return stub.addDeploymentPolicy(deploymentPolicy);
+
+    }
+    
+    public boolean deployDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
             AutoScalerServiceInvalidPolicyExceptionException {
 
-        return stub.addDeploymentPolicy(deploymentPolicy);
+        return stub.deployDeploymentPolicy(deploymentPolicy);
 
     }
 
