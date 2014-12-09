@@ -260,7 +260,7 @@ public class AutoscalerTopologyEventReceiver {
                 if (clusterInstance.getCurrentState() == ClusterStatus.Active) {
                     // terminated gracefully
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
-                    InstanceNotificationPublisher.sendInstanceCleanupEventForCluster(clusterId, instanceId);
+                    InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForCluster(clusterId, instanceId);
                 } else {
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
                     monitor.terminateAllMembers(instanceId, clusterInstance.getNetworkPartitionId());

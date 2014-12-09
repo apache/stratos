@@ -34,6 +34,7 @@ import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
+import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
@@ -170,9 +171,10 @@ public class RuleTasksDelegator {
 
         try {
 
-            //calling SM to send the instance notification event.
-            InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
+            // send the instance notification event.
+            InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForMember(memberId);
             log.info("Instance clean up event sent for [member] " + memberId);
+
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
         }
