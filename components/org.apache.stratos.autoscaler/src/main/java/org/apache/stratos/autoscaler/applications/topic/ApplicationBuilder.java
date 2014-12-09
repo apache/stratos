@@ -426,7 +426,8 @@ public class ApplicationBuilder {
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId, null);
         } else {
-            log.warn("Group state transition is not valid: [group-id] " + groupId + " [current-state] " + group.getStatus(null)
+            log.warn("Group state transition is not valid: [group-id] " + groupId +
+                    " [current-state] " + group.getStatus(null)
                     + "[requested-state] " + status);
         }
     }

@@ -94,17 +94,18 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
                                 getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId)) {
                     //send the terminated event
                     if (component instanceof Application) {
-                        log.info("sending app terminated: " + appId);
+                        log.info("sending app terminating for [application] " + appId + " and for " +
+                                " [instance] " + instanceId);
                         ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
                         return true;
                     } else if (component instanceof Group) {
                         //send activation to the parent
-                        if (((Group) component).getStatus(null) != GroupStatus.Terminated) {
-                            log.info("sending group terminated : " + component.getUniqueIdentifier());
+                            log.info("sending group terminating for [group] " +
+                                    component.getUniqueIdentifier() + " and for [instance] "
+                                    + instanceId);
                             ApplicationBuilder.handleGroupTerminatingEvent(appId,
                                     component.getUniqueIdentifier(), instanceId);
                             return true;
-                        }
                     }
                 }
             }
