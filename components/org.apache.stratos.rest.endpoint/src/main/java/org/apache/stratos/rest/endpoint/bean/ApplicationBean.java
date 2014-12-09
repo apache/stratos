@@ -1,8 +1,10 @@
 package org.apache.stratos.rest.endpoint.bean;
 
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.rest.endpoint.bean.topology.Instance;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +15,7 @@ public class ApplicationBean {
     private String tenantAdminUsername;
     public List<GroupBean> groups = null;
     public List<Cluster> clusters = null;
+    public List<Instance> instances;
 
 
     public ApplicationBean(){
@@ -46,4 +49,12 @@ public class ApplicationBean {
     public String getTenantAdminUsername() {
         return tenantAdminUsername;
     }
+	public List<Instance> getInstances() {
+		return instances;
+	}
+	public void setInstances(List<Instance> instances) {
+		this.instances = instances;
+	}
+    
+    
 }

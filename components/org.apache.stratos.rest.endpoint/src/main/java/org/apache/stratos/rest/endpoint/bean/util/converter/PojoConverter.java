@@ -42,7 +42,9 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
@@ -56,6 +58,7 @@ import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.PortRange;
 import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.rest.endpoint.bean.topology.Instance;
 import org.apache.stratos.rest.endpoint.bean.topology.Member;
 
 import java.util.ArrayList;
@@ -488,11 +491,11 @@ public class PojoConverter {
         Collection<ClusterInstance> clusterInstances = cluster.getClusterInstances();
 		if (clusterInstances != null) {
 			for (ClusterInstance clusterInstance : clusterInstances) {
-				org.apache.stratos.rest.endpoint.bean.topology.ClusterInstance instance = 
-						new org.apache.stratos.rest.endpoint.bean.topology.ClusterInstance();
+				org.apache.stratos.rest.endpoint.bean.topology.Instance instance = 
+						new org.apache.stratos.rest.endpoint.bean.topology.Instance();
 				instance.instanceId = clusterInstance.getInstanceId();
 				instance.status = clusterInstance.getStatus().toString();
-				cluster1.clusterInstance.add(instance);
+				cluster1.instances.add(instance);
 			}
 		}
 
@@ -1220,20 +1223,54 @@ public class PojoConverter {
         applicationBean.setId(application.getUniqueIdentifier());
         applicationBean.setTenantDomain(application.getTenantDomain());
         applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        applicationBean.setInstances(setApplicationInstances(application));
         return applicationBean;
     }
 
-    public static GroupBean toGroupBean(Group group) {
+    private static List<Instance> setApplicationInstances(
+            Application application) {
+    	List<Instance> applicationInstanceList = new ArrayList<Instance>();
+    	Collection<ApplicationInstance> applicationInstancesInTopology = 
+    			application.getInstanceIdToInstanceContextMap().values();
+    	
+    	if(applicationInstancesInTopology != null) {
+    		for (ApplicationInstance applicationInstance : applicationInstancesInTopology) {
+    			Instance instance = new Instance();
+    			instance.instanceId = applicationInstance.getInstanceId();
+    			instance.status = applicationInstance.getStatus().toString();
+    			applicationInstanceList.add(instance);
+            }
+    	}
+    	
+	    return applicationInstanceList;
+    }
+
+	public static GroupBean toGroupBean(Group group) {
         if (group == null) {
             return null;
         }
 
         GroupBean groupBean = new GroupBean();
-        groupBean.setStatus(group.getStatus(null).toString()); // TODO -- why null is passed?
+        groupBean.setInstances(setGroupInstances(group));
         groupBean.setAlias(group.getUniqueIdentifier());
         //TODO*******groupBean.setDeploymentPolicy(group.getDeploymentPolicy());
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
         return groupBean;
+    }
+
+	private static List<Instance> setGroupInstances(Group group) {
+	    List<Instance> instanceList = new ArrayList<Instance>();
+	    Collection<GroupInstance> instancesInTopology = group.getInstanceIdToInstanceContextMap().values();
+	    if(instancesInTopology != null) {
+	    	for (GroupInstance groupInstance : instancesInTopology) {
+	            Instance instance = new Instance();
+	            instance.status = groupInstance.getStatus().toString();
+	            instance.instanceId = groupInstance.getInstanceId();
+	            instanceList.add(instance);
+            }
+	    }
+	    
+	    return instanceList;
     }
 
 }

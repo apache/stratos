@@ -40,7 +40,7 @@ public class Cluster {
 
     public boolean isLbCluster;
 
-    public List<ClusterInstance> clusterInstance;
+    public List<Instance> instances;
     
     public List<PropertyBean> property;
 

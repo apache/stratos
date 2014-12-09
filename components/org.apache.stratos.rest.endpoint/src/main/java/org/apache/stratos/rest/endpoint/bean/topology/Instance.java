@@ -21,7 +21,7 @@ package org.apache.stratos.rest.endpoint.bean.topology;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class ClusterInstance {
+public class Instance {
 
 	public String status;
 	

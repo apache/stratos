@@ -19,8 +19,10 @@
 package org.apache.stratos.rest.endpoint.bean;
 
 import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.rest.endpoint.bean.topology.Instance;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,9 +31,9 @@ public class GroupBean {
     private List<GroupBean> subGroups = null;
     private List<Cluster> clusters = null;
     private String alias;
-    private String status;
     private String deploymentPolicy;
     private String autoScalingPolicy;
+    private List<Instance> instances; 
 
     public GroupBean(){
         this.setClusters(new ArrayList<Cluster>());
@@ -85,11 +87,13 @@ public class GroupBean {
         return autoScalingPolicy;
     }
 
-    public String getStatus() {
-        return status;
-    }
+	public List<Instance> getInstances() {
+		return instances;
+	}
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+	public void setInstances(List<Instance> instances) {
+		this.instances = instances;
+	}
+    
+    
 }
