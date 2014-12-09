@@ -1048,7 +1048,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         String memberId = activeMemberCtxt.getMemberId();
                         log.info("Sending instance cleanup for the active member [member id] " + memberId);
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-                        InstanceNotificationPublisher.
+                        InstanceNotificationPublisher.getInstance().
                                 sendInstanceCleanupEventForMember(memberId);
                     }
 
