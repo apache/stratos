@@ -48,7 +48,8 @@ public class MockHealthStatisticsNotifier implements Runnable {
         try {
             if (statsPublisher.isEnabled()) {
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Publishing memory consumption: %f", memoryConsumption));
+                    log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
+                            mockMemberContext.getMemberId(), memoryConsumption));
                 }
                 statsPublisher.publish(
                         mockMemberContext.getClusterId(),
@@ -61,7 +62,8 @@ public class MockHealthStatisticsNotifier implements Runnable {
                 );
 
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Publishing load average: %f", loadAvereage));
+                    log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
+                            mockMemberContext.getMemberId(), loadAvereage));
                 }
                 statsPublisher.publish(
                         mockMemberContext.getClusterId(),

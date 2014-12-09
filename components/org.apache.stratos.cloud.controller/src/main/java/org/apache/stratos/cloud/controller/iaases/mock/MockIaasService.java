@@ -49,16 +49,17 @@ import java.util.concurrent.ExecutorService;
 public class MockIaasService {
 
     private static final Log log = LogFactory.getLog(MockIaasService.class);
+
+    private static final ExecutorService executorService = StratosThreadPool.getExecutorService("MOCK_MEMBER_THREAD_EXECUTOR",
+            MockConstants.MAX_MOCK_MEMBER_COUNT);
     private static final String MOCK_IAAS_MEMBERS = "/mock/iaas/members";
     private static volatile MockIaasService instance;
 
-    private ExecutorService executorService;
     private MockPartitionValidator partitionValidator;
     private ConcurrentHashMap<String, MockMember> membersMap;
 
     private MockIaasService() {
         super();
-        executorService = StratosThreadPool.getExecutorService("MOCK_IAAS_THREAD_EXECUTOR", 100);
         partitionValidator = new MockPartitionValidator();
         membersMap = readFromRegistry();
         if(membersMap == null) {

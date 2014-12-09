@@ -209,8 +209,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         }
         log.info("Publishing member fault event for [member-id] " + memberId);
 
-        MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getInstanceId(), member.getMemberId(),
-                member.getPartitionId(), member.getNetworkPartitionId(), 0);
+        MemberFaultEvent memberFaultEvent = new MemberFaultEvent(member.getClusterId(), member.getMemberId(),
+                member.getPartitionId(), member.getInstanceId(),
+                member.getNetworkPartitionId(), 0);
 
         memberFaultEventMessageMap.put("message", memberFaultEvent);
         healthStatPublisher.publish(MemberFaultEventMap, true);
