@@ -135,6 +135,7 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             member.setMemberPublicIp(event.getMemberPublicIp());
             member.setMemberIp(event.getMemberIp());
             member.setLbClusterId(event.getLbClusterId());
+            member.setInstanceId(event.getInstanceId());
             member.setProperties(event.getProperties());
             cluster.addMember(member);
 
