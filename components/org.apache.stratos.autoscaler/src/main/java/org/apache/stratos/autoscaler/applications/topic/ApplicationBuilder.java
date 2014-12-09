@@ -296,9 +296,8 @@ public class ApplicationBuilder {
                 if(application.getInstanceContextCount() == 0) {
                     AutoscalerContext.getInstance().removeAppMonitor(appId);
                     //Removing the application from memory and registry
-                    ApplicationHolder.removeApplication(appId);
-                    log.info("Application is removed: [application-id] " + appId);
-
+                    //ApplicationHolder.removeApplication(appId);
+                    log.info("Application run time is removed: [application-id] " + appId);
                 }
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, clusterData);
             } else {
@@ -597,6 +596,9 @@ public class ApplicationBuilder {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
+            if(status == ApplicationStatus.Terminating) {
+                applicationMonitor.setTerminating(true);
+            }
             applicationMonitor.setStatus(status, instanceId);
         } else {
             log.warn("Application monitor cannot be found: [application-id] " + appId);
