@@ -50,8 +50,8 @@ public class Main {
 			extension = new LoadBalancerExtension(new HAProxy(),
 			                                      (HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ?
 			                                       new HAProxyStatisticsReader() : null));
-			Thread thread = new Thread(extension);
-			thread.start();
+			extension.setExecutorService(executorService);
+			extension.execute();
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
 				log.error(e);

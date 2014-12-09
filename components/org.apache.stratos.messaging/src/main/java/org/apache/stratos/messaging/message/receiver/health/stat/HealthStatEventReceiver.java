@@ -60,11 +60,11 @@ public class HealthStatEventReceiver {
             if (log.isDebugEnabled()) {
 				log.debug("Health stats event message delegator thread started");
 			}
-            // Start topology event message delegator thread
+            // Start health stat event message delegator thread
             executorService.execute(messageDelegator);
 		} catch (Exception e) {
 			if (log.isErrorEnabled()) {
-				log.error("Topology receiver failed", e);
+				log.error("Health stats receiver failed", e);
 			}
 		}
 	}

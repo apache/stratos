@@ -111,7 +111,7 @@
          <correlationData>
          </correlationData>
          <payloadData>
-	     <property name="cluster_id" type="String" />
+	         <property name="cluster_id" type="String" />
              <property name="instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String" />
