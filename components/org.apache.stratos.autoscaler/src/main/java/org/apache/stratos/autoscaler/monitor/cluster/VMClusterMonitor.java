@@ -190,7 +190,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.
                         get(instanceContext.getId());
                 if ((instance.getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
-                        (instance.getStatus() == ClusterStatus.Inactive && !hasStartupDependents) && !this.hasFaultyMember
+                        (instance.getStatus() == ClusterStatus.Inactive && !hasStartupDependents)
+                                && !this.hasFaultyMember
                                 && !stop) {
 
                     Runnable monitoringRunnable = new Runnable() {

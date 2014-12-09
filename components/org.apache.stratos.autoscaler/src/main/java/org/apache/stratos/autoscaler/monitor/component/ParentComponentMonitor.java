@@ -289,7 +289,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //handling the killall scenario
             if (this.parent != null) {
                 //send terminating to the parent. So that it will push terminating to its children
-                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, childId, instanceId);
+                ApplicationBuilder.handleGroupTerminatingEvent(this.appId, this.id, instanceId);
             } else {
                 //if it is an application, send terminating event individually for children
                 sendTerminatingEventOnNotification(terminationList, childId, true, instanceId);
