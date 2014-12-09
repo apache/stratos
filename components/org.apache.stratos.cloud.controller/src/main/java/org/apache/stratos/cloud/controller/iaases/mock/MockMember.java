@@ -22,6 +22,7 @@ package org.apache.stratos.cloud.controller.iaases.mock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStatisticsNotifier;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
@@ -31,7 +32,6 @@ import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceN
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -41,10 +41,12 @@ import java.util.concurrent.TimeUnit;
 public class MockMember implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockMember.class);
-    private static final ExecutorService executorService =
-            Executors.newFixedThreadPool(MockConstants.MAX_MOCK_MEMBER_COUNT);
-    private static final ScheduledExecutorService scheduler =
-            Executors.newScheduledThreadPool(MockConstants.MAX_MOCK_MEMBER_COUNT);
+    private static final ExecutorService instanceNotifierExecutorService =
+            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER",
+                    MockConstants.MAX_MOCK_MEMBER_COUNT);
+    private static final ScheduledExecutorService healthStatPublisherExecutorService =
+            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_PUBLISHER",
+                    MockConstants.MAX_MOCK_MEMBER_COUNT);
     private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
 
     private final MockMemberContext mockMemberContext;
@@ -105,7 +107,7 @@ public class MockMember implements Runnable, Serializable {
             }
         });
 
-        executorService.submit(new Runnable() {
+        instanceNotifierExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 instanceNotifierEventReceiver.execute();
@@ -128,7 +130,7 @@ public class MockMember implements Runnable, Serializable {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
         }
-        scheduler.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
+        healthStatPublisherExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
                 HEALTH_STAT_INTERVAL, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isDebugEnabled()) {

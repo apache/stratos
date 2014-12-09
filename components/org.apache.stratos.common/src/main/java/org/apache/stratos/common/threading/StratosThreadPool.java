@@ -20,38 +20,60 @@
  */
 package org.apache.stratos.common.threading;
 
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * Utility class for Stratos thread pool
  */
 public class StratosThreadPool {
 
-	private static HashMap<String, ExecutorService> mapExecutorService = new HashMap<String, ExecutorService>();
-	private static Object mutex = new Object();
+	private static Map<String, ExecutorService> executorServiceMap = new ConcurrentHashMap<String, ExecutorService>();
+    private static Map<String, ScheduledExecutorService> scheduledServiceMap = new ConcurrentHashMap<String, ScheduledExecutorService>();
+	private static Object executorServiceMapLock = new Object();
+    private static Object scheduledServiceMapLock = new Object();
 
 	/**
 	 * Return the executor service based on the identifier and thread pool size
 	 *
-	 * @param identifier     Component identifier name
+	 * @param identifier     Thread pool identifier name
 	 * @param threadPoolSize Thread pool size
 	 * @return ExecutorService
 	 */
 	public static ExecutorService getExecutorService(String identifier, int threadPoolSize) {
-		ExecutorService executorService = mapExecutorService.get(identifier);
+		ExecutorService executorService = executorServiceMap.get(identifier);
 		if (executorService == null) {
-			synchronized (mutex) {
+			synchronized (executorServiceMapLock) {
 				if (executorService == null) {
 					executorService = Executors.newFixedThreadPool(threadPoolSize);
-					mapExecutorService.put(identifier, executorService);
+					executorServiceMap.put(identifier, executorService);
 				}
 			}
 
 		}
 		return executorService;
-
 	}
 
+    /**
+     * Returns a scheduled executor for given thread pool size.
+     * @param identifier     Thread pool identifier name
+     * @param threadPoolSize Thread pool size
+     * @return
+     */
+    public static ScheduledExecutorService getScheduledExecutorService(String identifier, int threadPoolSize) {
+        ScheduledExecutorService scheduledExecutorService = scheduledServiceMap.get(identifier);
+        if (scheduledExecutorService == null) {
+            synchronized (scheduledServiceMapLock) {
+                if (scheduledExecutorService == null) {
+                    scheduledExecutorService = Executors.newScheduledThreadPool(threadPoolSize);
+                    scheduledServiceMap.put(identifier, scheduledExecutorService);
+                }
+            }
+
+        }
+        return scheduledExecutorService;
+    }
 }
