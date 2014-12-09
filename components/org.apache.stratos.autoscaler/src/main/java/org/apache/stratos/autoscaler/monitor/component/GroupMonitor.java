@@ -124,7 +124,14 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param status status of the group
      */
     public void setStatus(GroupStatus status, String instanceId) {
-
+        GroupInstance groupInstance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
+        if(groupInstance == null) {
+            log.warn("The required group [instance] " + instanceId + " not found in the GroupMonitor");
+        } else {
+            if(groupInstance.getStatus() != status) {
+                groupInstance.setStatus(status);
+            }
+        }
         if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
             log.info("[Group] " + this.id + "is not notifying the parent, " +
                     "since it is identified as the independent unit");

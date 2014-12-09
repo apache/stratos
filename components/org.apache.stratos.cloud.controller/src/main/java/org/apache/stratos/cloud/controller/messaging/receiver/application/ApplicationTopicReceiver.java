@@ -24,6 +24,7 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.listener.applications.ApplicationInstanceTerminatedEventListener;
+import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
@@ -67,7 +68,7 @@ public class ApplicationTopicReceiver {
 	}
 
     private void addEventListeners() {
-        applicationsEventReceiver.addEventListener(new ApplicationInstanceTerminatedEventListener() {
+        /*applicationsEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 //Remove the application related data
@@ -76,7 +77,7 @@ public class ApplicationTopicReceiver {
                 String appId = terminatedEvent.getAppId();
                 TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
             }
-        });
+        });*/
     }
 
 	public void setExecutorService(ExecutorService executorService) {

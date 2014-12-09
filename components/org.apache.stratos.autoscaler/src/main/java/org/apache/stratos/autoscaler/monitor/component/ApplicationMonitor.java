@@ -107,7 +107,16 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param status the status
      */
     public void setStatus(ApplicationStatus status, String instanceId) {
-        ((ApplicationInstance) this.instanceIdToInstanceMap.get(instanceId)).setStatus(status);
+        ApplicationInstance applicationInstance = (ApplicationInstance) this.instanceIdToInstanceMap.
+                get(instanceId);
+
+        if(applicationInstance == null) {
+            log.warn("The required application [instance] " + instanceId + " not found in the AppMonitor");
+        } else {
+            if(applicationInstance.getStatus() != status) {
+                applicationInstance.setStatus(status);
+            }
+        }
 
         //notify the children about the state change
         try {

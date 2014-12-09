@@ -43,6 +43,7 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * It holds the runtime data of a VM cluster
@@ -62,7 +63,7 @@ public class VMClusterContext extends AbstractClusterContext {
 
         super(clusterId, serviceId);
         this.deploymentPolicy = deploymentPolicy;
-        this.networkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
+        this.networkPartitionCtxts = new ConcurrentHashMap<String, ClusterLevelNetworkPartitionContext>();
         this.autoscalePolicy = autoscalePolicy;
 
     }

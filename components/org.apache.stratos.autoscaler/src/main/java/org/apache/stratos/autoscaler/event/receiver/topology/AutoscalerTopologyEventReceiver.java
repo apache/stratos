@@ -33,6 +33,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -260,7 +261,8 @@ public class AutoscalerTopologyEventReceiver {
                 if (clusterInstance.getCurrentState() == ClusterStatus.Active) {
                     // terminated gracefully
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
-                    InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForCluster(clusterId, instanceId);
+                    InstanceNotificationPublisher.getInstance().
+                            sendInstanceCleanupEventForCluster(clusterId, instanceId);
                 } else {
                     monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
                     monitor.terminateAllMembers(instanceId, clusterInstance.getNetworkPartitionId());

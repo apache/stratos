@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -180,6 +181,11 @@ public class MockIaasService {
         synchronized (MockIaasService.class) {
             MockMember mockMember = membersMap.get(memberContext.getMemberId());
             if (mockMember != null) {
+                //updating the topology
+                TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
+                        memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
+                        memberContext.getPartition().getId(), memberContext.getMemberId());
+
                 mockMember.terminate();
                 membersMap.remove(memberContext.getMemberId());
             }

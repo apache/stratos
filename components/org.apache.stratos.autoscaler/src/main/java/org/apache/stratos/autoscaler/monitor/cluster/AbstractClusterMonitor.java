@@ -202,6 +202,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     public void notifyParentMonitor(ClusterStatus status, String instanceId) {
+
         /**
          * notifying the parent monitor about the state change
          * If the cluster in_active and if it is a in_dependent cluster,
@@ -211,6 +212,9 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         if(instance == null) {
             log.warn("The required cluster [instance] " + instanceId + " not found in the ClusterMonitor");
         } else {
+            if(instance.getStatus() != status) {
+                instance.setStatus(status);
+            }
             /*if (instance.getStatus() == ClusterStatus.Inactive && !this.hasStartupDependents) {
                 log.info("[Cluster] " + clusterId + "is not notifying the parent, " +
                         "since it is identified as the independent unit");

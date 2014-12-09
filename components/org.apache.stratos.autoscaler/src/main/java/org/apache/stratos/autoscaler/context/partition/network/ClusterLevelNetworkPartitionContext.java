@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds runtime data of a network partition.
@@ -46,7 +47,7 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         this.id = id;
         this.partitionAlgorithm = partitionAlgorithm;
         this.min = min;
-        setInstanceIdToClusterInstanceContextMap(new HashMap<String, ClusterInstanceContext>());
+        setInstanceIdToClusterInstanceContextMap(new ConcurrentHashMap<String, ClusterInstanceContext>());
 
     }
 

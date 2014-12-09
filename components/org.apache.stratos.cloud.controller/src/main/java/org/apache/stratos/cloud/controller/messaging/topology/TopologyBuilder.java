@@ -871,13 +871,22 @@ public class TopologyBuilder {
 
         try {
             Topology topology = TopologyManager.getTopology();
-            Cluster cluster = topology.getService(event.getServiceName()).
-                    getCluster(event.getClusterId());
+            Service service = topology.getService(event.getServiceName());
 
-            if (!cluster.isStateTransitionValid(ClusterStatus.Terminated, null)) {
-                log.error("Invalid state transfer from " + cluster.getStatus(null) + " to " +
-                        ClusterStatus.Terminated);
+            //update the status of the cluster
+            if (service == null) {
+                log.warn(String.format("Service %s does not exist",
+                        event.getServiceName()));
+                return;
             }
+
+            Cluster cluster = service.getCluster(event.getClusterId());
+            if (cluster == null) {
+                log.warn(String.format("Cluster %s does not exist",
+                        event.getClusterId()));
+                return;
+            }
+
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
@@ -888,7 +897,9 @@ public class TopologyBuilder {
             ClusterStatus status = ClusterStatus.Terminated;
             if(context.isStateTransitionValid(status)) {
                 context.setStatus(status);
-                log.info("Cluster Terminated adding status started for" + cluster.getClusterId());
+                log.info("Cluster Terminated adding status started for and removing the cluster instance"
+                                        + cluster.getClusterId());
+                cluster.removeInstanceContext(event.getInstanceId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
                 ClusterInstanceTerminatedEvent clusterTerminatedEvent = new ClusterInstanceTerminatedEvent(event.getAppId(),

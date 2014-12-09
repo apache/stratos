@@ -338,6 +338,7 @@ public class ApplicationBuilder {
             if (context.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 context.setStatus(status);
+                group.removeInstance(instanceId);
                 updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);

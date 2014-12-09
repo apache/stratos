@@ -256,6 +256,10 @@ public class Cluster implements Serializable {
         getInstanceIdToInstanceContextMap().put(instanceId, instanceContext);
     }
 
+    public void removeInstanceContext (String instanceId) {
+        this.instanceIdToInstanceContextMap.remove(instanceId);
+    }
+
     public ClusterInstance getInstanceContexts (String instanceId) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
