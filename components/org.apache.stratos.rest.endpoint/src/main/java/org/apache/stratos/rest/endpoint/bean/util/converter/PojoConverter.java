@@ -42,6 +42,7 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
@@ -484,7 +485,16 @@ public class PojoConverter {
         cluster1.property = getPropertyBeans(cluster.getProperties());
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
-        cluster1.status = cluster.getStatus(null).toString(); //TODO why null is passed?
+        Collection<ClusterInstance> clusterInstances = cluster.getClusterInstances();
+		if (clusterInstances != null) {
+			for (ClusterInstance clusterInstance : clusterInstances) {
+				org.apache.stratos.rest.endpoint.bean.topology.ClusterInstance instance = 
+						new org.apache.stratos.rest.endpoint.bean.topology.ClusterInstance();
+				instance.instanceId = clusterInstance.getInstanceId();
+				instance.status = clusterInstance.getStatus().toString();
+				cluster1.clusterInstance.add(instance);
+			}
+		}
 
         for (org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
             Member member = new Member();
