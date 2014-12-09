@@ -327,7 +327,7 @@ public class ApplicationBuilder {
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
-            log.warn(String.format("Group does not exist: [group-id] %s",
+            log.warn(String.format("Group does not exist: [group-id] %s when terminated group",
                     groupId));
             return;
         }
@@ -371,7 +371,7 @@ public class ApplicationBuilder {
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
-            log.warn(String.format("Group does not exist: [group-id] %s",
+            log.warn(String.format("Group does not exist: [group-id] %s when activating group",
                     groupId));
             return;
         }
@@ -414,7 +414,7 @@ public class ApplicationBuilder {
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
-            log.warn(String.format("Group %s does not exist",
+            log.warn(String.format("Group %s does not exist when instance creating group ",
                     groupId));
             return;
         }
@@ -454,7 +454,7 @@ public class ApplicationBuilder {
 
             Group group = application.getGroupRecursively(groupId);
             if (group == null) {
-                log.warn(String.format("Group %s does not exist",
+                log.warn(String.format("Group %s does not exist when creating group",
                         groupId));
                 return instance;
             }
@@ -502,7 +502,7 @@ public class ApplicationBuilder {
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
-            log.warn(String.format("Group does not exist: [group-id] %s",
+            log.warn(String.format("Group does not exist: [group-id] %s when inactive group",
                     groupId));
             return;
         }
@@ -545,7 +545,7 @@ public class ApplicationBuilder {
 
         Group group = application.getGroupRecursively(groupId);
         if (group == null) {
-            log.warn(String.format("Group does not exist: [group-id] %s",
+            log.warn(String.format("Group does not exist: [group-id] %s when terminating group",
                     groupId));
             return;
         }
