@@ -72,6 +72,10 @@ public class MockMember implements Runnable, Serializable {
         while (!terminated) {
             sleep(1000);
         }
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Mock member terminated: [member-id] %s", mockMemberContext.getMemberId()));
+        }
     }
 
     private void startInstanceNotifierReceiver() {
@@ -145,12 +149,6 @@ public class MockMember implements Runnable, Serializable {
     }
 
     public void terminate() {
-        String memberId = mockMemberContext.getMemberId();
         terminated = true;
-        scheduler.shutdownNow();
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Mock member terminated: [member-id] %s", memberId));
-        }
     }
 }
