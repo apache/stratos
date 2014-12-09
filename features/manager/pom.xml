@@ -37,7 +37,9 @@
     <modules>
 	<module>stratos-mgt</module>
         <module>common</module>
+<!--
         <module>tenant-mgt</module>
+-->
         <module>gapp</module>
         <!--module>throttling</module-->
         <!--module>usage</module-->

@@ -19,7 +19,7 @@
 package org.apache.stratos.keystore.mgt;
 
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 
 import org.apache.commons.logging.Log;
@@ -37,7 +37,7 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
      * Generate the keystore when a new tenant is registered.
      * @param tenantInfo Information about the newly created tenant
      */
-    public void onTenantCreate(TenantInfoBean tenantInfo) throws StratosException {
+    public void onTenantCreate(TenantInfoBean tenantInfo) throws ApacheStratosException {
         try {
             KeyStoreGenerator ksGenerator = new KeyStoreGenerator(tenantInfo.getTenantId());
             if (!ksGenerator.isKeyStoreExists()){
@@ -46,11 +46,11 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
         } catch (KeyStoreMgtException e) {
             String message = "Error when generating the keystore";
             log.error(message, e);
-            throw new StratosException(message, e);
+            throw new ApacheStratosException(message, e);
         }
     }
 
-    public void onTenantUpdate(TenantInfoBean tenantInfo) throws StratosException {
+    public void onTenantUpdate(TenantInfoBean tenantInfo) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt. 
     }
 
@@ -59,7 +59,7 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
     }
 
     public void onTenantRename(int tenantId, String oldDomainName,
-                             String newDomainName) throws StratosException {
+                             String newDomainName) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt.
     }
 
@@ -67,20 +67,20 @@ public class KeystoreTenantMgtListener implements TenantMgtListener {
         return EXEC_ORDER;
     }
 
-    public void onTenantInitialActivation(int tenantId) throws StratosException {
+    public void onTenantInitialActivation(int tenantId) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt. 
     }
 
-    public void onTenantActivation(int tenantId) throws StratosException {
+    public void onTenantActivation(int tenantId) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt. 
     }
 
-    public void onTenantDeactivation(int tenantId) throws StratosException {
+    public void onTenantDeactivation(int tenantId) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt. 
     }
 
     public void onSubscriptionPlanChange(int tenentId, String oldPlan, 
-                                         String newPlan) throws StratosException {
+                                         String newPlan) throws ApacheStratosException {
         // It is not required to implement this method for keystore mgt. 
     }
 }

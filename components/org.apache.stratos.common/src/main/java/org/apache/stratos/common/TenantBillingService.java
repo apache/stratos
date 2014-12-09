@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.common;
 
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.wso2.carbon.user.api.Tenant;
 
 /**
@@ -26,17 +26,17 @@ import org.wso2.carbon.user.api.Tenant;
  */
 public interface TenantBillingService {
     
-    public void addUsagePlan(Tenant tenant, String usagePlan) throws StratosException;
+    public void addUsagePlan(Tenant tenant, String usagePlan) throws ApacheStratosException;
     
-    public String getActiveUsagePlan(String tenantDomain) throws StratosException;
+    public String getActiveUsagePlan(String tenantDomain) throws ApacheStratosException;
     
-    public void updateUsagePlan(String tenantDomain, String usagePlan) throws StratosException;
+    public void updateUsagePlan(String tenantDomain, String usagePlan) throws ApacheStratosException;
     
-    public void activateUsagePlan(String tenantDomain) throws StratosException;
+    public void activateUsagePlan(String tenantDomain) throws ApacheStratosException;
     
-    public void deactivateActiveUsagePlan(String tenantDomain) throws StratosException;
+    public void deactivateActiveUsagePlan(String tenantDomain) throws ApacheStratosException;
 
-    public void deleteBillingData(int tenantId) throws StratosException;
+    public void deleteBillingData(int tenantId) throws ApacheStratosException;
 
     
 }
