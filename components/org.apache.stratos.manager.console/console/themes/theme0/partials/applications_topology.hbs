@@ -1,0 +1,272 @@
+<div id="centered">
+    <div class="row title">
+        <div class="title-main text-center">
+            <h1>Application Topology - {{appName}}</h1>
+        </div>
+    </div>
+
+        <div class='container' id='content'>
+            <div class='row'>
+                <div class='container text-center form-toolbar'>
+                    <div class='col-md-2'>
+                       <button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button>
+                    </div>
+                    <div class='col-md-10'>
+                        <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''>Refresh </button>
+                    </div>
+                </div>
+            </div>
+            <div class="application-topology">
+
+            </div>
+        </div>
+
+</div>
+<script type="text/javascript">
+$(document).ready(function () {
+    var topologydata = {{{topology_data}}};
+//create JSON from topology
+    function genTree(data) {
+
+        var rawout = [];
+
+        var rootnode = {};
+        rootnode.name = data.applications.id;
+        rootnode.parent = null;
+        //create initial root node
+        rawout.push(rootnode);
+
+        //use to get cluster nodes
+        function secondorylevelclusters(item, collector, parent) {
+            for (var prop in item) {
+                if (item.hasOwnProperty(prop)) {
+                    var cur_name = item[prop].serviceName,
+                            clusterId = item[prop].clusterId,
+                            type = 'cluster',
+                            isLbCluster = item[prop].isLbCluster;
+                    rawout.push({"name": clusterId, "parent": parent, "clusterId": clusterId, "type": type,
+                        "isLbCluster": isLbCluster
+                    });
+                    clustermembers(item[prop].member, rawout, clusterId)
+                }
+            }
+        }
+
+        //use to get member nodes on cluster
+        function clustermembers(item, collector, parent) {
+            for (var prop in item) {
+                if (item.hasOwnProperty(prop)) {
+                    var cur_name = item[prop].memberIp,
+                            clusterId = item[prop].clusterId,
+                            type = 'member',
+                            memberId = item[prop].memberId,
+                            status = item[prop].status,
+                            memberPublicIp = item[prop].memberPublicIp,
+                            partitionId = item[prop].partitionId;
+                    rawout.push({"name": cur_name, "parent": parent, "clusterId": clusterId, "type": type,
+                        "memberId": memberId, "status": status, "memberPublicIp": memberPublicIp,
+                        "partitionId": partitionId
+                    });
+                }
+
+            }
+
+        }
+
+        function secondarylevelgroups(item, collector, parent) {
+            for (var prop in item) {
+                if (item.hasOwnProperty(prop)) {
+                    var cur_name = item[prop].alias;
+                    var type = 'groups';
+                    rawout.push({"name": cur_name, "parent": parent, "type": type});
+                    if (item[prop].hasOwnProperty('subGroups')) {
+                        secondarylevelgroups(item[prop].subGroups, rawout, cur_name);
+                    }
+                    secondorylevelclusters(item[prop].clusters, rawout, cur_name);
+
+                }
+            }
+        }
+
+        secondorylevelclusters(data.applications.clusters, rawout, data.applications.id);
+        secondarylevelgroups(data.applications.groups, rawout, data.applications.id);
+        return rawout;
+
+    }
+
+
+//generate tree from raw data
+    var data = genTree(topologydata);
+    //data mapping with d3js tree
+    var dataMap = data.reduce(function (map, node) {
+        map[node.name] = node;
+        return map;
+    }, {});
+    var treeData = [];
+    data.forEach(function (node) {
+        // add to parent
+        var parent = dataMap[node.parent];
+        if (parent) {
+            // create child array if it doesn't exist
+            (parent.children || (parent.children = []))
+                // add node to child array
+                    .push(node);
+        } else {
+            // parent is null or missing
+            treeData.push(node);
+        }
+    });
+
+// ************** Generate the tree diagram	 *****************
+    var margin = {top: 40, right: 120, bottom: 20, left: 120},
+            width = 960 - margin.right - margin.left,
+            height = 500 - margin.top - margin.bottom;
+
+    var i = 0;
+
+    var tree = d3.layout.tree()
+            .size([height, width]);
+
+    var diagonal = d3.svg.diagonal()
+            .projection(function (d) {
+                return [d.x, d.y];
+            });
+
+    var svg = d3.select(".application-topology").append("svg")
+            .attr("width", width + margin.right + margin.left)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var i = 0;
+    duration = 750;
+
+    root = treeData[0];
+
+    update(root);
+
+    function update(source) {
+
+        // Compute the new tree layout.
+        var nodes = tree.nodes(root).reverse(),
+                links = tree.links(nodes);
+
+        // Normalize for fixed-depth.
+        nodes.forEach(function (d) {
+            d.y = d.depth * 80;
+        });
+
+        // Declare the nodes…
+        var node = svg.selectAll("g.node")
+                .data(nodes, function (d) {
+                    return d.id || (d.id = ++i);
+                });
+
+        // Enter the nodes.
+        var nodeEnter = node.enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
+            // add tool tip for ps -eo pid,ppid,pcpu,size,comm,ruser,s
+                .on("mouseover", function (d) {
+                    div.transition()
+                            .duration(200)
+                            .style("opacity", .9);
+
+                    if (d.type == 'cluster') {
+                        div.html(
+                                        "<strong>Cluster ID: </strong>" + d.clusterId + "<br/>" +
+                                        "<strong>Is Lb Cluster: </strong>" + d.isLbCluster
+                        ).style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                    } else if (d.type == 'member') {
+                        div.html(
+                                        "<strong>Cluster Id: </strong>" + d.clusterId + "<br/>" +
+                                        "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
+                                        "<strong>Member Id: </strong>" + d.memberId + "<br/>" +
+                                        "<strong>Member Public Ip: </strong>" + d.memberPublicIp
+                        ).style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                    } else {
+                        div.html(
+                                        "<strong>Alias: </strong>" + d.name + "<br/>"
+                        ).style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                    }
+
+                })
+                .on("mouseout", function (d) {
+                    div.transition()
+                            .duration(500)
+                            .style("opacity", 0);
+                });
+
+        nodeEnter.append("rect")
+                .attr("x", -15)
+                .attr("y", -15)
+                .attr("width", 30)
+                .attr("height", 30)
+                .style("fill", function (d) {
+                    if (d.type == 'cluster') {
+                        return "#e74c3c";
+                    } else if (d.type == 'groups') {
+                        return "#2ecc71";
+                    } else if (d.type == 'member') {
+                        return "#9b59b6";
+                    } else {
+                        return "#1abc9c";
+                    }
+                });
+
+        nodeEnter.append("image")
+                .attr("xlink:href",
+                function (d) {
+                    if (d.type == 'cluster') {
+                        return "../../../themes/theme0/images/topology/cluster.png";
+                    } else if (d.type == 'groups') {
+                        return "../../../themes/theme0/images/topology/group.png";
+                    } else if (d.type == 'member') {
+                        return "../../../themes/theme0/images/topology/member.png";
+                    } else {
+                        return "../../../themes/theme0/images/topology/application.png";
+                    }
+                })
+                .attr("class", "created")
+                .attr("x", -16)
+                .attr("y", -16)
+                .attr("width", 32)
+                .attr("height", 32);
+
+
+        nodeEnter.append("text")
+                .attr("y", function (d) {
+                    return d.children || d._children ? -20 : 20;
+                })
+                .attr("dy", ".35em")
+                .attr("text-anchor", "middle")
+                .text(function (d) {
+                    return d.name;
+                })
+                .style("fill-opacity", 1);
+
+        // add the tool tip
+        var div = d3.select("body").append("div")
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+
+        // Declare the links…
+        var link = svg.selectAll("path.link")
+                .data(links, function (d) {
+                    return d.target.id;
+                });
+
+        // Enter the links.
+        link.enter().insert("path", "g")
+                .attr("class", "link")
+                .attr("d", diagonal);
+
+    }
+
+});
+</script>
