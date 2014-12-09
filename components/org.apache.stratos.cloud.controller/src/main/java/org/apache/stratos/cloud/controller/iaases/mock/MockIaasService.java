@@ -118,7 +118,7 @@ public class MockIaasService {
             RegistryManager.getInstance().persist(MOCK_IAAS_MEMBERS, membersMap);
         } catch (RegistryException e) {
             log.error("Could not persist mock iaas members in registry", e);
-        };
+        }
     }
 
     private static ConcurrentHashMap<String, MockMember> readFromRegistry() {
