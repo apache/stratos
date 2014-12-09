@@ -40,11 +40,19 @@ public class Cluster {
 
     public boolean isLbCluster;
 
-    public List<Instance> instances;
-    
     public List<PropertyBean> property;
 
-    @Override
+    private List<Instance> instances;    
+    
+    public List<Instance> getInstances() {
+		return instances;
+	}
+
+	public void setInstances(List<Instance> instances) {
+		this.instances = instances;
+	}
+
+	@Override
     public String toString() {
         return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId + ", member=" + member
                 + ", tenantRange=" + tenantRange + ", hostNames=" + hostNames + ", isLbCluster=" + isLbCluster

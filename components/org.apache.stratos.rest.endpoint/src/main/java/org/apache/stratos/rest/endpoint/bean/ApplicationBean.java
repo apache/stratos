@@ -15,7 +15,7 @@ public class ApplicationBean {
     private String tenantAdminUsername;
     public List<GroupBean> groups = null;
     public List<Cluster> clusters = null;
-    public List<Instance> instances;
+    private List<Instance> instances;
 
 
     public ApplicationBean(){

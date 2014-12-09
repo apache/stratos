@@ -489,14 +489,17 @@ public class PojoConverter {
         cluster1.member = new ArrayList<Member>();
         cluster1.hostNames = new ArrayList<String>();
         Collection<ClusterInstance> clusterInstances = cluster.getClusterInstances();
+        List<org.apache.stratos.rest.endpoint.bean.topology.Instance> instancesList = 
+        		new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Instance>();
 		if (clusterInstances != null) {
 			for (ClusterInstance clusterInstance : clusterInstances) {
 				org.apache.stratos.rest.endpoint.bean.topology.Instance instance = 
 						new org.apache.stratos.rest.endpoint.bean.topology.Instance();
 				instance.instanceId = clusterInstance.getInstanceId();
 				instance.status = clusterInstance.getStatus().toString();
-				cluster1.instances.add(instance);
+				instancesList.add(instance);
 			}
+			cluster1.setInstances(instancesList);
 		}
 
         for (org.apache.stratos.messaging.domain.topology.Member tmp : cluster.getMembers()) {
