@@ -42,10 +42,10 @@ public class MockMember implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockMember.class);
     private static final ExecutorService instanceNotifierExecutorService =
-            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER",
+            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER_EXECUTOR_SERVICE",
                     MockConstants.MAX_MOCK_MEMBER_COUNT);
-    private static final ScheduledExecutorService healthStatPublisherExecutorService =
-            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_PUBLISHER",
+    private static final ScheduledExecutorService healthStatNotifierExecutorService =
+            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_NOTIFIER_EXECUTOR_SERVICE",
                     MockConstants.MAX_MOCK_MEMBER_COUNT);
     private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
 
@@ -121,7 +121,6 @@ public class MockMember implements Runnable, Serializable {
 
     private void handleMemberTermination() {
         MockMemberEventPublisher.publishMaintenanceModeEvent(mockMemberContext);
-
         sleep(2000);
         MockMemberEventPublisher.publishInstanceReadyToShutdownEvent(mockMemberContext);
     }
@@ -130,7 +129,8 @@ public class MockMember implements Runnable, Serializable {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
         }
-        healthStatPublisherExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
+
+        healthStatNotifierExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
                 HEALTH_STAT_INTERVAL, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isDebugEnabled()) {

@@ -50,8 +50,8 @@ public class MockIaasService {
 
     private static final Log log = LogFactory.getLog(MockIaasService.class);
 
-    private static final ExecutorService executorService = StratosThreadPool.getExecutorService("MOCK_MEMBER_THREAD_EXECUTOR",
-            MockConstants.MAX_MOCK_MEMBER_COUNT);
+    private static final ExecutorService mockMemberExecutorService =
+            StratosThreadPool.getExecutorService("MOCK_MEMBER_EXECUTOR_SERVICE", MockConstants.MAX_MOCK_MEMBER_COUNT);
     private static final String MOCK_IAAS_MEMBERS = "/mock/iaas/members";
     private static volatile MockIaasService instance;
 
@@ -100,7 +100,7 @@ public class MockIaasService {
                     memberContext.getPartition().getId(), memberContext.getInstanceId());
             MockMember mockMember = new MockMember(mockMemberContext);
             membersMap.put(mockMember.getMockMemberContext().getMemberId(), mockMember);
-            executorService.submit(mockMember);
+            mockMemberExecutorService.submit(mockMember);
 
             // Prepare node metadata
             MockNodeMetadata nodeMetadata = new MockNodeMetadata();
