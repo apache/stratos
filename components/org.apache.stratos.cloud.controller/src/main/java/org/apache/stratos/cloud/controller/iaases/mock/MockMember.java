@@ -22,8 +22,15 @@ package org.apache.stratos.cloud.controller.iaases.mock;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStatisticsNotifier;
+import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
+import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
+import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
+import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 
 import java.io.Serializable;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -34,10 +41,13 @@ import java.util.concurrent.TimeUnit;
 public class MockMember implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockMember.class);
-    private static final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private static final int HEALTH_STAT_INTERVAL = 15;
+    private static final ExecutorService executorService =
+            Executors.newFixedThreadPool(MockConstants.MAX_MOCK_MEMBER_COUNT);
+    private static final ScheduledExecutorService scheduler =
+            Executors.newScheduledThreadPool(MockConstants.MAX_MOCK_MEMBER_COUNT);
+    private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
 
-    private MockMemberContext mockMemberContext;
+    private final MockMemberContext mockMemberContext;
     private boolean terminated;
 
     public MockMember(MockMemberContext mockMemberContext) {
@@ -46,7 +56,7 @@ public class MockMember implements Runnable, Serializable {
 
     @Override
     public void run() {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Mock member started: [member-id] %s", mockMemberContext.getMemberId()));
         }
 
@@ -56,18 +66,69 @@ public class MockMember implements Runnable, Serializable {
         sleep(5000);
         MockMemberEventPublisher.publishInstanceActivatedEvent(mockMemberContext);
 
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
+        startInstanceNotifierReceiver();
+        startHealthStatisticsPublisher();
+
+        while (!terminated) {
+            sleep(1000);
+        }
+    }
+
+    private void startInstanceNotifierReceiver() {
+        if (log.isDebugEnabled()) {
+            log.debug("Starting instance notifier event message receiver");
+        }
+
+        final InstanceNotifierEventReceiver instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
+        instanceNotifierEventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent) event;
+                if (mockMemberContext.getClusterId().equals(instanceCleanupClusterEvent.getClusterId()) &&
+                        mockMemberContext.getInstanceId().equals(instanceCleanupClusterEvent.getInstanceId())) {
+                    handleMemberTermination();
+                }
+            }
+        });
+
+        instanceNotifierEventReceiver.addEventListener(new InstanceCleanupMemberEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                InstanceCleanupMemberEvent instanceCleanupClusterEvent = (InstanceCleanupMemberEvent) event;
+                if (mockMemberContext.getMemberId().equals(instanceCleanupClusterEvent.getMemberId())) {
+                    handleMemberTermination();
+                }
+            }
+        });
+
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                instanceNotifierEventReceiver.execute();
+            }
+        });
+
+        if (log.isDebugEnabled()) {
+            log.debug("Instance notifier event message receiver started");
+        }
+    }
+
+    private void handleMemberTermination() {
+        MockMemberEventPublisher.publishMaintenanceModeEvent(mockMemberContext);
+
+        sleep(2000);
+        MockMemberEventPublisher.publishInstanceReadyToShutdownEvent(mockMemberContext);
+    }
+
+    private void startHealthStatisticsPublisher() {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
         }
         scheduler.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
                 HEALTH_STAT_INTERVAL, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));
-        }
-
-        while(!terminated) {
-            sleep(1000);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));
         }
     }
 
@@ -88,7 +149,7 @@ public class MockMember implements Runnable, Serializable {
         terminated = true;
         scheduler.shutdownNow();
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Mock member terminated: [member-id] %s", memberId));
         }
     }
