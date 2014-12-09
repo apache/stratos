@@ -32,7 +32,7 @@ var log = new Log("apachestratos.applications_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
-        formDataEdit = '',
+        formDataEdit = topology_data = '',
         isEdit = applicationView = isForm = false,
         userPermissions = session.get('PERMISSIONS');
 
@@ -44,10 +44,11 @@ if (!elements) {
     isForm = true;
 
 
-    if (elements.action != 'new') {
-        isEdit = true;
-    }else  if(elements.formtype == 'applications' && elements.action != 'new'){
+    if (elements.formtype == 'applications' && elements.action != 'new') {
         applicationView = true;
+        topology_data = util.RESTCalls.getApplicationTopology(elements.action);
+    }else  if(elements.action != 'new'){
+        isEdit = true;
     }
 }
 
@@ -87,13 +88,15 @@ switch (formtype) {
     default:
         error.push({"errorMessage":"Incorrect resource path found"});
 }
-
 var caramelData = {
     breadcrumbPathLevelOne: breadcrumbPathLevelOne,
     breadcrumbPathLevelTwo: elements.formtype,
     left_menu: leftMenu,
     isForm: isForm,
     isEdit: isEdit,
+    appName: elements.action,
+    topology_data: JSON.stringify(topology_data),
+    applicationView: applicationView,
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
