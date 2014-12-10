@@ -446,4 +446,7 @@ public class ClusterInstanceContext extends InstanceContext {
         return activeMembers;
     }
 
+    public boolean isAverageRequestServedPerInstanceReset() {
+        return averageRequestServedPerInstanceReset;
+    }
 }

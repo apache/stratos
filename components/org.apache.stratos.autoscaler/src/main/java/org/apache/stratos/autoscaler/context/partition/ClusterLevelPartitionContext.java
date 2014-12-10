@@ -151,7 +151,6 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
             }
         }
-
         return false;
     }
 

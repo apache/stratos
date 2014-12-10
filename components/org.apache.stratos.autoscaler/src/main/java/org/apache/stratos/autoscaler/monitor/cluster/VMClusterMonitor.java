@@ -252,6 +252,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             boolean rifReset = instanceContext.isRifReset();
                             boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
                             boolean loadAverageReset = instanceContext.isLoadAverageReset();
+                            boolean averageRequestServedPerInstanceReset = instanceContext.isAverageRequestServedPerInstanceReset();
+
                             if (log.isDebugEnabled()) {
                                 log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
                                         + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
@@ -267,7 +269,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                         vmClusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
                                 //TODO to parse actual value
-                                getScaleCheckKnowledgeSession().setGlobal("arspiReset", true);
+                                getScaleCheckKnowledgeSession().setGlobal("arspiReset", averageRequestServedPerInstanceReset);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
