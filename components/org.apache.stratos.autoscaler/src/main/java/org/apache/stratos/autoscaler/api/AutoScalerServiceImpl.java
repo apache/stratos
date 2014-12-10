@@ -102,22 +102,21 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     
     @Override
     public boolean deployDeploymentPolicy(DeploymentPolicy policy) {
-    	// Get the deployment policy
-    	DeploymentPolicy deploymentPolicy = this.getDeploymentPolicy(policy.getApplicationId());
-    	if (deploymentPolicy == null) {
-    		return false;
-    	}
-    	
-    	//Need to start the application Monitor after validation of the deployment policies.
+        try {
+            String policyId = PolicyManager.getInstance().deployDeploymentPolicy(policy);
+        } catch (InvalidPolicyException e) {
+            log.error("Error while deploying the deployment policy " + policy.getApplicationId(), e);
+        }
+        //Need to start the application Monitor after validation of the deployment policies.
         //FIXME add validation
-        validateDeploymentPolicy(deploymentPolicy);
+        validateDeploymentPolicy(policy);
         //Check whether all the clusters are there
         ApplicationHolder.acquireReadLock();
         boolean allClusterInitialized = false;
-        String appId = deploymentPolicy.getApplicationId();
+        String appId = policy.getApplicationId();
         try {
             Application application = ApplicationHolder.getApplications().
-                    getApplication(deploymentPolicy.getApplicationId());
+                    getApplication(policy.getApplicationId());
             if (application != null) {
 
                 allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
