@@ -177,12 +177,12 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/cartridges/{category}")
+    @Path("/cartridges/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgesByCategory(@DefaultValue("") @PathParam("category") String category, @QueryParam("criteria") String criteria) throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByCategory(category, criteria, getConfigContext());
+    public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria) throws RestAPIException {
+        List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByFilter(filter, criteria, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
         return rb.build();
@@ -197,12 +197,12 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/cartridges/{category}/{cartridgeType}")
+    @Path("/cartridges/{filter}/{cartridgeType}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgeByCategory(@DefaultValue("") @PathParam("category") String category, @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        Cartridge cartridge = StratosApiV41Utils.getCartridgeByCategory(category, cartridgeType, getConfigContext());
+    public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter, @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+        Cartridge cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridge);
         return rb.build();

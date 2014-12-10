@@ -194,26 +194,26 @@ public class StratosApiV41Utils {
         }
     }
     
-    public static List<Cartridge> getCartridgesByCategory(String category, String criteria, ConfigurationContext configurationContext) 
+    public static List<Cartridge> getCartridgesByFilter(String filter, String criteria, ConfigurationContext configurationContext) 
 			throws RestAPIException {
 		List<Cartridge> cartridges = null;
 		
-		if (category.equals("singleTenant")) {
+		if (filter.equals("singleTenant")) {
 			cartridges = getAvailableCartridges(null, false, configurationContext);
-		} else if (category.equals("multiTenant")) {
+		} else if (filter.equals("multiTenant")) {
 			cartridges = getAvailableCartridges(null, true, configurationContext);
-		} else if (category.equals("loadBalancer")) {
+		} else if (filter.equals("loadBalancer")) {
 			cartridges = getAvailableLbCartridges(false, configurationContext);
-		} else if (category.equals("provider")) {
+		} else if (filter.equals("provider")) {
 			cartridges = getAvailableCartridgesByProvider(criteria, configurationContext);
 		}
 		
 		return cartridges;
 	}
 	
-	public static Cartridge getCartridgeByCategory(String category, String cartridgeType, ConfigurationContext configurationContext) 
+	public static Cartridge getCartridgeByFilter(String filter, String cartridgeType, ConfigurationContext configurationContext) 
 	throws RestAPIException {
-		List<Cartridge> cartridges = getCartridgesByCategory(category, null, configurationContext);
+		List<Cartridge> cartridges = getCartridgesByFilter(filter, null, configurationContext);
 		
 		for (Cartridge cartridge : cartridges) {
 			if (cartridge.getCartridgeType().equals(cartridgeType)) {
