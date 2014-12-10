@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.util;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -306,7 +307,6 @@ public class AutoscalerUtil {
         org.apache.stratos.cloud.controller.stub.Properties stubProps = new org.apache.stratos.cloud.controller.stub.Properties();
 
         if (properties != null && properties.getProperties() != null) {
-
             for (Property property : properties.getProperties()) {
                 if ((property != null) && (property.getValue() != null)) {
                     org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
@@ -317,8 +317,21 @@ public class AutoscalerUtil {
             }
 
         }
-
         return stubProps;
+    }
+
+    public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
+            java.util.Properties properties) {
+        org.apache.stratos.cloud.controller.stub.Properties stubProperties = new org.apache.stratos.cloud.controller.stub.Properties();
+        if(properties != null) {
+            for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+                org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
+                newProperty.setName(entry.getKey().toString());
+                newProperty.setValue(entry.getValue().toString());
+                stubProperties.addProperties(newProperty);
+            }
+        }
+        return stubProperties;
     }
 
     public static org.apache.stratos.common.Properties toCommonProperties(
