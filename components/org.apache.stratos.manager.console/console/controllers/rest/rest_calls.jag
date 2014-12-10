@@ -23,18 +23,6 @@
 RESTCalls = new function(){
     var log = new Log('RESTCalls');
 
-    this.getAvailableSingleTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list",{});
-    };
-
-    this.getAvailableMultiTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/tenanted/list",{});
-    };
-
-    this.getSubscribedCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list/subscribed",{});
-    }
-
     this.getTenants = function(){
         return this.sendReceive("GET","/tenant/list",{});
     };
@@ -44,7 +32,7 @@ RESTCalls = new function(){
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
-        return this.send("POST","/cartridge/definition",cartridgeDefinition);
+        return this.send("POST","/cartridges", cartridgeDefinition);
     };
 
     this.deployServiceDefinition = function(serviceDefinition){
@@ -139,7 +127,7 @@ RESTCalls = new function(){
         return this.send("POST","/cartridge/unsubscribe",alias);
     };
     this.getCartridges = function(){
-        return this.sendReceive("GET","/cartridge/available/list",{});
+        return this.sendReceive("GET","/cartridges",{});
     };
 
     this.getGroups = function(){
@@ -163,9 +151,6 @@ RESTCalls = new function(){
     };
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{});
-    };
-    this.getCartridgeServiceGroup = function(serviceGroup){
-        return this.sendReceive("GET","/cartridge/list/subscribed/group/"+serviceGroup,{});
     };
     this.validateCaptcha = function(captchaText){
         return this.sendReceive("POST","/captcha",captchaText);
