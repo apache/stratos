@@ -34,6 +34,7 @@ import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.NodeMetadataBuilder;
 import org.jclouds.compute.domain.Template;
+import org.jclouds.rest.ResourceNotFoundException;
 
 import java.util.Set;
 
@@ -173,8 +174,7 @@ public abstract class JcloudsIaas extends Iaas {
                                     " - terminating node:" + memberContext.toString();
                             log.error(msg);
                             // terminate instance
-                            CloudControllerServiceUtil.terminate(getIaasProvider(),
-                                    node.getId(), memberContext);
+                            destroyNode(node.getId(), memberContext);
                             throw new CloudControllerException(msg);
                         }
                     } else {
@@ -182,7 +182,7 @@ public abstract class JcloudsIaas extends Iaas {
                                 " - terminating node:" + memberContext.toString();
                         log.error(msg);
                         // terminate instance
-                        CloudControllerServiceUtil.terminate(getIaasProvider(), node.getId(), memberContext);
+                        destroyNode(node.getId(), memberContext);
                         throw new CloudControllerException(msg);
                     }
 
@@ -262,42 +262,81 @@ public abstract class JcloudsIaas extends Iaas {
     }
 
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
-
         String memberId = memberContext.getMemberId();
-        String clusterId = memberContext.getClusterId();
-        String partitionId = memberContext.getPartition().getId();
         String cartridgeType = memberContext.getCartridgeType();
         String nodeId = memberContext.getNodeId();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
 
-        log.info("Starting to terminate an instance with member id : " + memberId +
-                " in partition id: " + partitionId + " of cluster id: " + clusterId +
-                " and of cartridge type: " + cartridgeType);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Starting to terminate member: [cartridge-type] %s [member-id] %s",
+                    cartridgeType, memberId));
+        }
 
         if (cartridge == null) {
-            String msg = "Termination of Member Id: " + memberId + " failed. " +
-                    "Cannot find a matching Cartridge for type: " +
-                    cartridgeType;
+            String msg = String.format("Member termination failed, could not find cartridge in cloud controller " +
+                            "context: [cartridge-type] %s [member-id] %s",
+                    cartridgeType, memberId);
             log.error(msg);
             throw new InvalidCartridgeTypeException(msg);
         }
 
         // if no matching node id can be found.
         if (nodeId == null) {
-            String msg = "Termination failed. Cannot find a node id for Member Id: " + memberId;
+            String msg = String.format("Member termination failed, could not find node id in member context: " +
+                            "[cartridge-type] %s [member-id] %s",
+                    cartridgeType, memberId);
 
-            // log information
-            CloudControllerServiceUtil.logTermination(memberContext);
+            // Execute member termination post process
+            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
             log.error(msg);
             throw new InvalidMemberException(msg);
         }
 
-        IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
+        // Terminate the actual member instance
+        destroyNode(nodeId, memberContext);
+    }
 
-        // terminate it!
-        CloudControllerServiceUtil.terminate(iaasProvider, nodeId, memberContext);
+    /**
+     * Terminate member instance via jclouds API
+     *
+     * @param memberContext
+     * @param nodeId
+     * @return will return the IaaSProvider
+     */
+    private void destroyNode(String nodeId, MemberContext memberContext) {
+        // Detach volumes if any
+        detachVolume(memberContext);
 
-        // log information
-        CloudControllerServiceUtil.logTermination(memberContext);
+        // Destroy the node via jclouds
+        getIaasProvider().getComputeService().destroyNode(nodeId);
+
+        // release allocated IP address
+        if (memberContext.getAllocatedIpAddress() != null) {
+            releaseAddress(memberContext.getAllocatedIpAddress());
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Member terminated: [member-id] " + memberContext.getMemberId());
+        }
+    }
+
+    private void detachVolume(MemberContext ctxt) {
+        String clusterId = ctxt.getClusterId();
+        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+        if (clusterContext.getVolumes() != null) {
+            for (Volume volume : clusterContext.getVolumes()) {
+                try {
+                    String volumeId = volume.getId();
+                    if (volumeId == null) {
+                        return;
+                    }
+                    detachVolume(ctxt.getInstanceId(), volumeId);
+                } catch (ResourceNotFoundException ignore) {
+                    if (log.isDebugEnabled()) {
+                        log.debug(ignore);
+                    }
+                }
+            }
+        }
     }
 }
