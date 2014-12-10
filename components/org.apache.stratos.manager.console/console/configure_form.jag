@@ -107,8 +107,8 @@ switch (formtype) {
 
     case "docker":
         list_data = util.RESTCalls.getKubernetesGroups();
-        if(list_data.kubernetesGroup && list_data.kubernetesGroup.length === 0){
-            list_data = null;
+        if(list_data == null){
+            list_data = null; //TODO endpoint doesn't return correct info
         }else{
             formDataEdit = list_data.kubernetesGroup;
             for (specNumber in list_data.kubernetesGroup) {

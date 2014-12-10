@@ -34,7 +34,7 @@
                     "title": "Docker Clusters",
                     "icon": "fa-sitemap",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define and manage multitenant services."
+                    "description": "Define and manage docker clusters."
                 }
             ]
         },

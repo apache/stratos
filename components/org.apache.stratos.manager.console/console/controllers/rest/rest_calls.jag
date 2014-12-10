@@ -56,7 +56,7 @@ RESTCalls = new function(){
     };
 
     this.deployKubernetesGroupDefinition = function(groupDefinition){
-        return this.send("POST","/kubernetes/deploy/group",groupDefinition);
+        return this.send("POST","/kubernetesClusters",groupDefinition);
     };
 
     this.deployGroupDefinition = function(groupDefinition){
@@ -93,7 +93,7 @@ RESTCalls = new function(){
     };
 
     this.getKubernetesGroups = function(){
-        return this.sendReceive("GET","/kubernetes/group",{});
+        return this.sendReceive("GET","/kubernetesClusters",{});
     };
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
