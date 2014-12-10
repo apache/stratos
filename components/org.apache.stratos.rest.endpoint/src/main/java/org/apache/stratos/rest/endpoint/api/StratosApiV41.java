@@ -613,11 +613,11 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/subscriptions/cartridges/groups/{serviceGroup}")
+    @Path("/subscriptions/cartridges/groups/{serviceGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
+    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroupId") String serviceGroup) throws RestAPIException {
         List<Cartridge> cartridgeList = StratosApiV41Utils.getSubscriptions(null, serviceGroup, getConfigContext());
         // Following is very important when working with axis2
         ResponseBuilder rb = Response.ok();
