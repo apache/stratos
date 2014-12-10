@@ -26,24 +26,24 @@ import java.util.List;
 @XmlRootElement(name = "cartridgeDefinitionBean")
 public class CartridgeDefinitionBean {
 
-    public String type;
+	public String type;
 
-    public String host;
+	public String host;
 
-    public String provider;
+	public String provider;
 
 	//Four types - Application,Framework,Data,LB
 	public String category;
 
-    public String displayName;
+	public String displayName;
 
-    public String description;
+	public String description;
 
-    public String version;
+	public String version;
 
-    public boolean multiTenant;
-    
-    public boolean isPublic;
+	public boolean multiTenant;
+
+	public boolean isPublic;
 
     public DeploymentBean deployment;
 
