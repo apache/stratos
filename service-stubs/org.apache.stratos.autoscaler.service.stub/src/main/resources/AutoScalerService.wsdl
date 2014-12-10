@@ -455,6 +455,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="deployDeploymentPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax28:DeploymentPolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployDeploymentPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="deployApplicationDefinition">
                 <xs:complexType>
                     <xs:sequence>
@@ -591,6 +605,12 @@
     <wsdl:message name="getAutoscalingPolicyResponse">
         <wsdl:part name="parameters" element="ns:getAutoscalingPolicyResponse"/>
     </wsdl:message>
+    <wsdl:message name="deployDeploymentPolicyRequest">
+        <wsdl:part name="parameters" element="ns:deployDeploymentPolicy"/>
+    </wsdl:message>
+    <wsdl:message name="deployDeploymentPolicyResponse">
+        <wsdl:part name="parameters" element="ns:deployDeploymentPolicyResponse"/>
+    </wsdl:message>
     <wsdl:message name="updateAutoScalingPolicyRequest">
         <wsdl:part name="parameters" element="ns:updateAutoScalingPolicy"/>
     </wsdl:message>
@@ -687,6 +707,10 @@
         <wsdl:operation name="getAutoscalingPolicy">
             <wsdl:input message="ns:getAutoscalingPolicyRequest" wsaw:Action="urn:getAutoscalingPolicy"/>
             <wsdl:output message="ns:getAutoscalingPolicyResponse" wsaw:Action="urn:getAutoscalingPolicyResponse"/>
+        </wsdl:operation>
+        <wsdl:operation name="deployDeploymentPolicy">
+            <wsdl:input message="ns:deployDeploymentPolicyRequest" wsaw:Action="urn:deployDeploymentPolicy"/>
+            <wsdl:output message="ns:deployDeploymentPolicyResponse" wsaw:Action="urn:deployDeploymentPolicyResponse"/>
         </wsdl:operation>
         <wsdl:operation name="updateAutoScalingPolicy">
             <wsdl:input message="ns:updateAutoScalingPolicyRequest" wsaw:Action="urn:updateAutoScalingPolicy"/>
@@ -856,6 +880,15 @@
             <wsdl:fault name="AutoScalerServiceInvalidPolicyException">
                 <soap:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="deployDeploymentPolicy">
+            <soap:operation soapAction="urn:deployDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
             <soap:operation soapAction="urn:addDeploymentPolicy" style="document"/>
@@ -1055,6 +1088,15 @@
                 <soap12:fault use="literal" name="AutoScalerServiceInvalidPolicyException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="deployDeploymentPolicy">
+            <soap12:operation soapAction="urn:deployDeploymentPolicy" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addDeploymentPolicy">
             <soap12:operation soapAction="urn:addDeploymentPolicy" style="document"/>
             <wsdl:input>
@@ -1228,6 +1270,15 @@
         </wsdl:operation>
         <wsdl:operation name="updateAutoScalingPolicy">
             <http:operation location="updateAutoScalingPolicy"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="deployDeploymentPolicy">
+            <http:operation location="deployDeploymentPolicy"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

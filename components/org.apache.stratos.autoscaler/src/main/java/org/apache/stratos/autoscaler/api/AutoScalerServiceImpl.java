@@ -99,11 +99,16 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         }
         return validPolicies.toArray(new DeploymentPolicy[0]);
     }
-
+    
     @Override
-    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
-        //Need to start the application Monitor after validation of the deployment policies.
+    public boolean deployDeploymentPolicy(DeploymentPolicy policy) {
+    	// Get the deployment policy
+    	DeploymentPolicy deploymentPolicy = this.getDeploymentPolicy(policy.getId());
+    	if (deploymentPolicy == null) {
+    		return false;
+    	}
+    	
+    	//Need to start the application Monitor after validation of the deployment policies.
         //FIXME add validation
         validateDeploymentPolicy(deploymentPolicy);
         //Check whether all the clusters are there
@@ -133,6 +138,14 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         } else {
             log.info("The application Monitor has already been created for [Application] " + appId);
         }
+        //FIXME add proper return value when validation is done properly
+        return true;
+    }
+
+    @Override
+    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        String policyId = PolicyManager.getInstance().deployDeploymentPolicy(deploymentPolicy);
+        
         return policyId;
     }
 

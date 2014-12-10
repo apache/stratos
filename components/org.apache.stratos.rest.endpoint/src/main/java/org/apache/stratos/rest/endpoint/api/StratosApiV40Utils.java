@@ -238,7 +238,7 @@ public class StratosApiV40Utils {
             DeploymentPolicy deploymentPolicy = PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
 
             try {
-                policyId = autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
+                policyId = autoscalerServiceClient.addDeploymentPolicy(deploymentPolicy);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
