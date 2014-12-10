@@ -51,10 +51,6 @@ RESTCalls = new function(){
         return this.send("POST","/service/definition",serviceDefinition);
     };
 
-    this.deployLbDefinition = function(lbDefinition){
-        return this.send("POST","/cartridge/definition",lbDefinition);
-    };
-
     this.activateTenant = function(tenantDomain){
         return this.send("POST","/tenant/activate/" + tenantDomain,{});
     };
@@ -146,10 +142,6 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/cartridge/available/list",{});
     };
 
-    this.getLbCartridges = function(){
-        return this.sendReceive("GET","/cartridge/lb",{});
-    };
-
     this.getGroups = function(){
         return this.sendReceive("GET","/groups",{});
     };
@@ -164,10 +156,6 @@ RESTCalls = new function(){
 
     this.getClusterInfo = function(clusterId){
         return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
-    };
-
-    this.getLBClusterInfo = function(){
-        return this.sendReceive("GET","/cluster/lb",{});
     };
 
     this.getClusterInfoWithAlias = function(cartridgeType, alias){

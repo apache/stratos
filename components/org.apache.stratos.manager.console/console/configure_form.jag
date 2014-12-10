@@ -85,21 +85,6 @@ switch (formtype) {
         }
         break;
 
-    case "loadbalancer":
-        list_data = util.RESTCalls.getLbCartridges();
-        if (list_data.cartridge && list_data.cartridge.length === 0) {
-            list_data = null;
-        }else{
-            formDataEdit = list_data.cartridge;
-            for (specNumber in list_data.cartridge) {
-                if (list_data.cartridge[specNumber].cartridgeType == elements.action) {
-                    formDataEdit = list_data.cartridge[specNumber];
-                }
-
-            }
-        }
-        break;
-
     case "cartridges":
         list_data = util.RESTCalls.getCartridges();
 

@@ -33,9 +33,6 @@ try {
         case "autoscalingpolicies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
-        case "loadbalancer":
-            formSubmit = util.RESTCalls.deployLbDefinition(formPayload);
-            break;
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
