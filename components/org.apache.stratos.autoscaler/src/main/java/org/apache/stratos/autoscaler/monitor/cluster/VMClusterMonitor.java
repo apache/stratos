@@ -195,6 +195,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             for (final ClusterInstanceContext instanceContext : clusterInstanceContexts) {
                 ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.
                         get(instanceContext.getId());
+
                 if ((instance.getStatus().getCode() <= ClusterStatus.Active.getCode()) ||
                         (instance.getStatus() == ClusterStatus.Inactive && !hasStartupDependents)
                                 && !this.hasFaultyMember) {
@@ -259,23 +260,24 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                         + " [Is memoryConsumption Reset] : " + memoryConsumptionReset
                                         + " [Is loadAverage Reset] : " + loadAverageReset);
                             }
+
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
-
+                                log.info("Executing scaling rule as stats has been reset");
                                 VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
 
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
-                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
-                                        vmClusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
-                                //TODO to parse actual value
-                                getScaleCheckKnowledgeSession().setGlobal("arspiReset", averageRequestServedPerInstanceReset);
                                 getScaleCheckKnowledgeSession().setGlobal("mcReset", memoryConsumptionReset);
                                 getScaleCheckKnowledgeSession().setGlobal("laReset", loadAverageReset);
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
-                                getMinCheckKnowledgeSession().setGlobal("algorithmName",
-                                        paritionAlgo);
+                                getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
+                                getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
+                                        vmClusterContext.getAutoscalePolicy());
+                                getScaleCheckKnowledgeSession().setGlobal("arspiReset",
+                                        averageRequestServedPerInstanceReset);
+                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers",
+                                        primaryMemberListInClusterInstance);
 
                                 if (log.isDebugEnabled()) {
                                     log.debug(String.format("Running scale check for [cluster instance context] %s ",
