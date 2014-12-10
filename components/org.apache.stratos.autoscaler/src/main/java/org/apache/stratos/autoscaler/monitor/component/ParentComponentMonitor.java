@@ -45,6 +45,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
+import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
@@ -497,8 +498,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsInactive(String childId, String instanceId) {
-
-        if (this.inactiveInstancesMap.containsKey(childId)) {
+        if (!this.inactiveInstancesMap.containsKey(childId)) {
             this.inactiveInstancesMap.get(childId).add(instanceId);
         } else {
             List<String> instanceIds = new ArrayList<String>();
@@ -531,7 +531,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsTerminating(String childId, String instanceId) {
-        if (this.terminatingInstancesMap.containsKey(childId)) {
+        if (!this.terminatingInstancesMap.containsKey(childId)) {
             if (this.inactiveInstancesMap.containsKey(childId) &&
                     this.inactiveInstancesMap.get(childId).contains(instanceId)) {
                 this.inactiveInstancesMap.get(childId).remove(instanceId);
