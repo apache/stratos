@@ -77,7 +77,7 @@ RESTCalls = new function(){
 
 
     this.addUser = function(userInfoBean){
-        return this.sendReceive("POST","/user", userInfoBean);
+        return this.sendReceive("POST","/users", userInfoBean);
     };
 
     this.syncRepo = function(alias){
@@ -154,7 +154,7 @@ RESTCalls = new function(){
         return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{});
     };
     this.getUserList = function(){
-        return this.sendReceive("GET", "/user/list", {});
+        return this.sendReceive("GET", "/users", {});
     }
     this.getConfigStatus = function(){
         var configStatus = {};
