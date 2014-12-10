@@ -32,6 +32,9 @@ public class CartridgeDefinitionBean {
 
     public String provider;
 
+	//Four types - Application,Framework,Data,LB
+	public String category;
+
     public String displayName;
 
     public String description;
@@ -68,7 +71,7 @@ public class CartridgeDefinitionBean {
 
     public String toString () {
 
-        return "Type: " + type + ", Provider: " + provider + ", Host: " + host + ", Display Name: " + displayName +
+        return "Type: " + type + ", Provider: " + provider + ", Category: " + category+ ", Host: " + host + ", Display Name: " + displayName +
                 ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant +", Public " + isPublic + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
                 "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString()
@@ -131,4 +134,6 @@ public class CartridgeDefinitionBean {
     public void setExportingProperties(String[] exportingProperties) {
         this.exportingProperties = exportingProperties;
     }
+
+
 }

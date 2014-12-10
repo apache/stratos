@@ -93,6 +93,7 @@ public class CloudControllerUtil {
             cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
         }
         cartridge.setProvider(config.getProvider());
+	    cartridge.setCategory(config.getCategory());
         cartridge.setVersion(config.getVersion());
         cartridge.setBaseDir(config.getBaseDir());
         

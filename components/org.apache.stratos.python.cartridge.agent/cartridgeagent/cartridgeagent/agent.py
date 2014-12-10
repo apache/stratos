@@ -189,7 +189,7 @@ class CartridgeAgent(threading.Thread):
         instance_in_payload = self.cartridge_agent_config.instance_id
         instance_in_event = event_obj.instance_id
         
-        if cluster_in_event == cluster_in_payload and instance_in_payload== instance_in_event:
+        if cluster_in_event == cluster_in_payload and instance_in_payload == instance_in_event:
             CartridgeAgent.extension_handler.on_instance_cleanup_cluster_event(event_obj)
 
     def register_topology_event_listeners(self):

@@ -39,6 +39,8 @@ public class CartridgeConfig implements Serializable {
 
     private String provider;
 
+	private String category;
+
     private String displayName;
 
     private String description;
@@ -311,7 +313,13 @@ public class CartridgeConfig implements Serializable {
 
 	public void setDeployerType(String deployerType) {
 		this.deployerType = deployerType;
-	}	
-	
-    
+	}
+
+	public String getCategory() {
+		return category;
+	}
+
+	public void setCategory(String category) {
+		this.category = category;
+	}
 }

@@ -95,6 +95,9 @@ public class StratosApiV41Utils {
         if (cartridgeConfig == null) {
             throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
         }
+	    if (cartridgeConfig.getCategory().equals("")|| cartridgeConfig.getCategory().isEmpty()) {
+		    throw new RestAPIException("Category is not specified, cartridge deployment aborted");
+	    }
         try {
             CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
         } catch (ADCException e) {
@@ -270,6 +273,7 @@ public class StratosApiV41Utils {
 					Cartridge cartridge = new Cartridge();
 					cartridge.setCartridgeType(cartridgeType);
 					cartridge.setProvider(cartridgeInfo.getProvider());
+					cartridge.setCategory(cartridgeInfo.getCategory());
 					cartridge.setDisplayName(cartridgeInfo.getDisplayName());
 					cartridge.setDescription(cartridgeInfo.getDescription());
 					cartridge.setVersion(cartridgeInfo.getVersion());
@@ -362,6 +366,7 @@ public class StratosApiV41Utils {
                     Cartridge cartridge = new Cartridge();
                     cartridge.setCartridgeType(cartridgeType);
                     cartridge.setProvider(cartridgeInfo.getProvider());
+	                cartridge.setCategory(cartridgeInfo.getCategory());
                     cartridge.setDisplayName(cartridgeInfo.getDisplayName());
                     cartridge.setDescription(cartridgeInfo.getDescription());
                     cartridge.setVersion(cartridgeInfo.getVersion());

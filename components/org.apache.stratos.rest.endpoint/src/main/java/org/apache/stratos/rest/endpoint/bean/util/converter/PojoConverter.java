@@ -99,6 +99,7 @@ public class PojoConverter {
         cartridgeConfig.setType(cartridgeDefinitionBean.type);
         cartridgeConfig.setHostName(cartridgeDefinitionBean.host);
         cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
+		cartridgeConfig.setCategory(cartridgeDefinitionBean.category);
         cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
         cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
         cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic);
