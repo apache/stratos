@@ -302,6 +302,11 @@ public class AutoscalerTopologyEventReceiver {
                 }
                 //changing the status in the monitor, will notify its parent monitor
                 monitor.notifyParentMonitor(ClusterStatus.Terminated, instanceId);
+                //Removing the instance and instanceContext
+                ClusterInstance instance = (ClusterInstance) monitor.getInstance(instanceId);
+                ((VMClusterContext)monitor.getClusterContext()).
+                        getNetworkPartitionCtxt(instance.getNetworkPartitionId()).
+                        removeClusterInstanceContext(instanceId);
                 monitor.removeInstance(instanceId);
                 if (!monitor.hasInstance() && appMonitor.isTerminating()) {
                     //Destroying and Removing the Cluster monitor

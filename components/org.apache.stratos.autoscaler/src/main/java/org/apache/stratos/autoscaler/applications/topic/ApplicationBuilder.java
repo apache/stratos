@@ -290,10 +290,15 @@ public class ApplicationBuilder {
             if (instance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 instance.setStatus(status);
-                application.removeInstance(instanceId);
                 updateApplicationMonitor(appId, status, instanceId);
+                ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                        getAppMonitor(appId);
+                applicationMonitor.getNetworkPartitionContext(instance.getNetworkPartitionId()).
+                        removeClusterApplicationContext(instanceId);
+                applicationMonitor.removeInstance(instanceId);
+                application.removeInstance(instanceId);
                 //removing the monitor
-                if(application.getInstanceContextCount() == 0) {
+                if (application.getInstanceContextCount() == 0) {
                     AutoscalerContext.getInstance().removeAppMonitor(appId);
                     //Removing the application from memory and registry
                     //ApplicationHolder.removeApplication(appId);
@@ -337,10 +342,18 @@ public class ApplicationBuilder {
             if (context.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 context.setStatus(status);
+                //removing the group instance and context
+                GroupMonitor monitor = getGroupMonitor(appId, groupId);
+                if(monitor != null) {
+                    monitor.getNetworkPartitionContext(context.getNetworkPartitionId()).
+                            removeClusterGroupContext(instanceId);
+                    monitor.removeInstance(instanceId);
+                    monitor.setStatus(status, instanceId);
+                }
                 group.removeInstance(instanceId);
-                updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
+
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()
@@ -597,7 +610,7 @@ public class ApplicationBuilder {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
-            if(status == ApplicationStatus.Terminating) {
+            if (status == ApplicationStatus.Terminating) {
                 applicationMonitor.setTerminating(true);
             }
             applicationMonitor.setStatus(status, instanceId);
@@ -608,16 +621,22 @@ public class ApplicationBuilder {
     }
 
     private static void updateGroupMonitor(String appId, String groupId, GroupStatus status, String instanceId) {
+        GroupMonitor monitor = getGroupMonitor(appId, groupId);
+        if (monitor != null) {
+            monitor.setStatus(status, instanceId);
+        } else {
+            log.warn("Group monitor cannot be found: [group-id] " + groupId +
+                    " [application-id] " + appId);
+        }
+    }
+
+    private static GroupMonitor getGroupMonitor(String appId, String groupId) {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
             GroupMonitor monitor = (GroupMonitor) applicationMonitor.findGroupMonitorWithId(groupId);
-            if (monitor != null) {
-                monitor.setStatus(status, instanceId);
-            } else {
-                log.warn("Group monitor cannot be found: [group-id] " + groupId +
-                        " [application-id] " + appId);
-            }
+            return monitor;
         }
+        return null;
     }
 }

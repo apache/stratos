@@ -110,9 +110,14 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
-                if (context != null && context.getStatus() == status) {
-                    clusterStat = true;
+                if (context != null) {
+                    if(context.getStatus() == status) {
+                        clusterStat = true;
+                    } else {
+                        clusterStat = false;
+                    }
                 } else {
+                    //Checking whether non-existent context is for a terminated state change
                     if(status == ClusterStatus.Terminated) {
                         clusterStat = true;
                     } else {

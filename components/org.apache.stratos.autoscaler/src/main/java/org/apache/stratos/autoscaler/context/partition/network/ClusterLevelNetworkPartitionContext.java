@@ -115,6 +115,10 @@ public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext
         return this.instanceIdToClusterInstanceContextMap.containsKey(instanceId);
     }
 
+    public void removeClusterInstanceContext(String instanceId) {
+        this.instanceIdToClusterInstanceContextMap.remove(instanceId);
+    }
+
     public int getMin() {
         return min;
     }

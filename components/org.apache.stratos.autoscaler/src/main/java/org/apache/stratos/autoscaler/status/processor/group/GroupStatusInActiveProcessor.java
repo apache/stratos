@@ -97,7 +97,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
                 if (component instanceof Application) {
                     //send application activated event
                     log.warn("Sending application instance in-active for [Application] " + appId +
-                    " [ApplicationInstance] " + instanceId);
+                            " [ApplicationInstance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceInactivateEvent(appId, instanceId);
 
                     return true;
@@ -136,13 +136,18 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
             Service service = TopologyManager.getTopology().getService(clusterDataHolderEntry.getValue().getServiceType());
             Cluster cluster = service.getCluster(clusterDataHolderEntry.getValue().getClusterId());
             ClusterInstance context = cluster.getInstanceContexts(instanceId);
-            if (context.getStatus() == ClusterStatus.Inactive) {
-                clusterStat = true;
-                return clusterStat;
+            if (context != null) {
+                if (context.getStatus() == ClusterStatus.Inactive) {
+                    clusterStat = true;
+                    return clusterStat;
+                } else {
+                    clusterStat = false;
+
+                }
             } else {
                 clusterStat = false;
-
             }
+
         }
         return clusterStat;
     }
@@ -158,16 +163,18 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
         boolean groupStat = false;
         for (Group group : groups.values()) {
             GroupInstance context = group.getInstanceContexts(instanceId);
-            if (context != null && context.getStatus() == GroupStatus.Inactive) {
-                groupStat = true;
-                return groupStat;
+            if (context != null) {
+                if (context.getStatus() == GroupStatus.Inactive) {
+                    groupStat = true;
+                    return groupStat;
+                } else {
+                    groupStat = false;
+                }
+                //TODO get by parent
             } else {
                 groupStat = false;
             }
-            //TODO get by parent
         }
         return groupStat;
     }
-
-
 }

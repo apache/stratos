@@ -231,5 +231,9 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         return null;
     }
 
+    public void removeClusterGroupContext(String instanceId) {
+        this.instanceIdToInstanceContextMap.remove(instanceId);
+    }
+
 
 }

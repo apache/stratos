@@ -105,4 +105,8 @@ public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionCon
     public void setCreatedOnBurst(boolean createdOnBurst) {
         this.createdOnBurst = createdOnBurst;
     }
+
+    public void removeClusterApplicationContext(String instanceId) {
+        this.instanceIdToInstanceContextMap.remove(instanceId);
+    }
 }

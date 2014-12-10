@@ -627,6 +627,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         return networkPartitionCtxts;
     }
 
+    public GroupLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
+        return this.networkPartitionCtxts.get(networkPartitionId);
+    }
+
     public void setNetworkPartitionCtxts(Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts) {
         this.networkPartitionCtxts = networkPartitionCtxts;
     }

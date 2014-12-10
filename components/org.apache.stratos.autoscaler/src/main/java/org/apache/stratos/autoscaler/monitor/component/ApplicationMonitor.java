@@ -351,6 +351,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
     }
 
+    public ApplicationLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
+        return this.networkPartitionCtxts.get(networkPartitionId);
+    }
+
     public boolean isTerminating() {
         return isTerminating;
     }

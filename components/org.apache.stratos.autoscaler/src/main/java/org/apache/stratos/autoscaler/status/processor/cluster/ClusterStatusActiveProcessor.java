@@ -70,9 +70,14 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
             if (instanceContext != null) {
                 if (instanceContext.getActiveMembers() >= instanceContext.getMinInstanceCount()) {
                     clusterActive = true;
+                    break;
                 } else {
                     clusterActive = false;
+                    break;
                 }
+            } else {
+                clusterActive = false;
+                break;
             }
 
         }
