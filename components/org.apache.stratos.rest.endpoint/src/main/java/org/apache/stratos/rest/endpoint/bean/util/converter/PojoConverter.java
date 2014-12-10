@@ -94,35 +94,36 @@ public class PojoConverter {
 
     public static CartridgeConfig populateCartridgeConfigPojo(CartridgeDefinitionBean cartridgeDefinitionBean) {
 
-        CartridgeConfig cartridgeConfig = new CartridgeConfig();
+	    CartridgeConfig cartridgeConfig = new CartridgeConfig();
 
-        cartridgeConfig.setType(cartridgeDefinitionBean.type);
-        cartridgeConfig.setHostName(cartridgeDefinitionBean.host);
-        cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
-		cartridgeConfig.setCategory(cartridgeDefinitionBean.category);
-        cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
-        cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
-        cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic);
-        cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
-        cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
-        cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
-        cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
-        cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
-        cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
+	    cartridgeConfig.setType(cartridgeDefinitionBean.type);
+	    cartridgeConfig.setHostName(cartridgeDefinitionBean.host);
+	    cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
+	    cartridgeConfig.setCategory(cartridgeDefinitionBean.category);
+	    cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
+	    cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
+	    cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic);
+	    cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
+	    cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
+	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
+	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
+	    cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
+	    cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
 
-
-        //deployment information
-        if (cartridgeDefinitionBean.deployment != null) {
-            cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
-            if (cartridgeDefinitionBean.deployment.dir != null && !cartridgeDefinitionBean.deployment.dir.isEmpty()) {
-                cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.deployment.dir.
-                        toArray(new String[cartridgeDefinitionBean.deployment.dir.size()]));
-            }
-        }
-        //port mapping
-        if (cartridgeDefinitionBean.portMapping != null && !cartridgeDefinitionBean.portMapping.isEmpty()) {
-            cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.portMapping));
-        }
+	    //deployment information
+	    if (cartridgeDefinitionBean.deployment != null) {
+		    cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
+		    if (cartridgeDefinitionBean.deployment.dir != null && !cartridgeDefinitionBean.deployment.dir.isEmpty()) {
+			    cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.deployment.dir.
+					                                                                            toArray(new
+							                                                                                    String[cartridgeDefinitionBean.deployment.dir
+							                                                                            .size()]));
+		    }
+	    }
+	    //port mapping
+	    if (cartridgeDefinitionBean.portMapping != null && !cartridgeDefinitionBean.portMapping.isEmpty()) {
+		    cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.portMapping));
+	    }
 
         //persistance mapping
         if (cartridgeDefinitionBean.persistence != null) {
