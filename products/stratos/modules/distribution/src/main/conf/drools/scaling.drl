@@ -73,7 +73,6 @@ dialect "mvel"
 
 	
         rifUpperLimit : Float() from  loadThresholds.getRequestsInFlight().getUpperLimit()
-        rifLowerLimit : Float() from  loadThresholds.getRequestsInFlight().getLowerLimit()
 
         rifAverage : Float() from  clusterInstanceContext.getAverageRequestsInFlight()
         rifGradient : Float() from  clusterInstanceContext.getRequestsInFlightGradient()
@@ -81,12 +80,10 @@ dialect "mvel"
 	    rifPredictedValue : Double() from delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
         mcUpperLimit : Float() from  loadThresholds.getMemoryConsumption().getUpperLimit()
-        mcLowerLimit : Float() from  loadThresholds.getMemoryConsumption().getLowerLimit()
 
         mcPredictedValue : Double() from delegator.getMemoryConsumptionPredictedValue(clusterInstanceContext)
 
         laUpperLimit : Float() from  loadThresholds.getLoadAverage().getUpperLimit()
-        laLowerLimit : Float() from  loadThresholds.getLoadAverage().getLowerLimit()
 
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
@@ -95,8 +92,8 @@ dialect "mvel"
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
         numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
-        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(mcUpperLimit ,  mcLowerLimit, mcPredictedValue ,activeInstancesCount )
-        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(laUpperLimit , laLowerLimit, laPredictedValue ,activeInstancesCount )
+        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(mcUpperLimit ,  mcUpperLimit, mcPredictedValue ,activeInstancesCount )
+        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(laUpperLimit , laUpperLimit, laPredictedValue ,activeInstancesCount )
 
         numberOfRequiredInstances : Integer() from delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
 
@@ -108,15 +105,12 @@ dialect "mvel"
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF Resetted?: " + rifReset))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF upper limit: " + rifUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF lower limit: " + rifLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC upper limit: " + mcUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC lower limit: " + mcLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA upper limit: " + laUpperLimit))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA lower limit: " + laLowerLimit))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-up action: " + scaleUp))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-down action: " + scaleDown))
