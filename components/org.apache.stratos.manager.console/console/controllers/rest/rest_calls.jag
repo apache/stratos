@@ -71,10 +71,6 @@ RESTCalls = new function(){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployPartitionDefinition = function(partitionDefinition){
-        return this.send("POST","/policy/deployment/partition",partitionDefinition);
-    };
-
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
         return this.send("POST","/policy/deployment",policyDefinition);
     };
@@ -126,10 +122,6 @@ RESTCalls = new function(){
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
         return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{});
-    };
-
-    this.getPartitions = function(){
-        return this.sendReceive("GET","/partition",{});
     };
 
     this.getSingleTenantCartridgeInfo = function(cartridgeType){
