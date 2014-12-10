@@ -36,9 +36,6 @@ try {
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
-        case "multitenant":
-            formSubmit = util.RESTCalls.deployServiceDefinition(formPayload);
-            break;
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesGroupDefinition(formPayload);
             break;

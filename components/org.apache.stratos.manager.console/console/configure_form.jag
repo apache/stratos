@@ -105,13 +105,6 @@ switch (formtype) {
         }
         break;
 
-    case "multitenant":
-        list_data = util.RESTCalls.getServices();
-        if (list_data.serviceDefinitionBean && list_data.serviceDefinitionBean.length === 0) {
-            list_data = null;
-        }
-        break;
-
     case "docker":
         list_data = util.RESTCalls.getKubernetesGroups();
         if(list_data.kubernetesGroup && list_data.kubernetesGroup.length === 0){

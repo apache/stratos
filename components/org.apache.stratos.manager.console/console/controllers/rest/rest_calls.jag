@@ -27,16 +27,8 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/tenant/list",{});
     };
 
-    this.getServices = function(){
-        return this.sendReceive("GET","/service",{});
-    };
-
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridges", cartridgeDefinition);
-    };
-
-    this.deployServiceDefinition = function(serviceDefinition){
-        return this.send("POST","/service/definition",serviceDefinition);
     };
 
     this.activateTenant = function(tenantDomain){
