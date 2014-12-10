@@ -76,7 +76,7 @@ RESTCalls = new function(){
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/autoscale",policyDefinition);
+        return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
     this.deployKubernetesGroupDefinition = function(groupDefinition){
@@ -133,7 +133,7 @@ RESTCalls = new function(){
     };
 
     this.getPolicyAutoScale = function(){
-        return this.sendReceive("GET","/policy/autoscale",{});
+        return this.sendReceive("GET","/autoscalingPolicies",{});
     };
 
     this.getPolicyDeployment = function(){
