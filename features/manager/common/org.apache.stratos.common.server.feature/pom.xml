@@ -57,11 +57,13 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tenant.activity</artifactId>
         </dependency>-->       
+<!--
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.dispatcher</artifactId>
 	    <version>${project.version}</version>
         </dependency>
+-->
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.redirector.servlet</artifactId>
@@ -191,7 +193,9 @@
                                 <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.activation:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.sample.installer:${stratos.version}</bundleDef>-->
+<!--
                                 <bundleDef>org.apache.stratos:org.apache.stratos.tenant.dispatcher</bundleDef>
+-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent</bundleDef>-->
 				<!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent.stub</bundleDef>-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.usage.agent</bundleDef>-->
