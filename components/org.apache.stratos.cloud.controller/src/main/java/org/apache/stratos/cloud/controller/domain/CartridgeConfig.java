@@ -31,37 +31,37 @@ import org.apache.stratos.common.Property;
  */
 public class CartridgeConfig implements Serializable {
 
-    private static final long serialVersionUID = 3455721779991902731L;
+	private static final long serialVersionUID = 3455721779991902731L;
 
-    private String type;
+	private String type;
 
-    private String hostName;
+	private String hostName;
 
-    private String provider;
+	private String provider;
 
 	private String category;
 
-    private String displayName;
+	private String displayName;
 
-    private String description;
+	private String description;
 
-    private String version;
+	private String version;
 
-    private boolean multiTenant;
-    
-    private boolean isPublic;
+	private boolean multiTenant;
 
-    private String baseDir;
+	private boolean isPublic;
 
-    private String[] deploymentDirs;
+	private String baseDir;
 
-    private PortMapping[] portMappings;
-    
-    private Persistence persistence;
-    
-    private String defaultAutoscalingPolicy;
+	private String[] deploymentDirs;
 
-    private String defaultDeploymentPolicy;
+	private PortMapping[] portMappings;
+
+	private Persistence persistence;
+
+	private String defaultAutoscalingPolicy;
+
+	private String defaultDeploymentPolicy;
 
     private Properties properties;
 

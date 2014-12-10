@@ -82,20 +82,20 @@ public class CloudControllerUtil {
             return null;
         }
         Cartridge cartridge = new Cartridge();
-        
-        // populate cartridge
-        cartridge.setType(config.getType());
-        cartridge.setDisplayName(config.getDisplayName());
-        cartridge.setDescription(config.getDescription());
-        cartridge.setHostName(config.getHostName());
-        String[] deploymentDirs = config.getDeploymentDirs();
-        if((deploymentDirs != null) && (deploymentDirs.length > 0)) {
-            cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
-        }
-        cartridge.setProvider(config.getProvider());
+
+	    // populate cartridge
+	    cartridge.setType(config.getType());
+	    cartridge.setDisplayName(config.getDisplayName());
+	    cartridge.setDescription(config.getDescription());
+	    cartridge.setHostName(config.getHostName());
+	    String[] deploymentDirs = config.getDeploymentDirs();
+	    if ((deploymentDirs != null) && (deploymentDirs.length > 0)) {
+		    cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
+	    }
+	    cartridge.setProvider(config.getProvider());
 	    cartridge.setCategory(config.getCategory());
-        cartridge.setVersion(config.getVersion());
-        cartridge.setBaseDir(config.getBaseDir());
+	    cartridge.setVersion(config.getVersion());
+	    cartridge.setBaseDir(config.getBaseDir());
         
         if (config.getPortMappings() != null) {
 			cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));

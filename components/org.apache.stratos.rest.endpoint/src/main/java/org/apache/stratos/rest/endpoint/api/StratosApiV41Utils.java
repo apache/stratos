@@ -363,31 +363,32 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    Cartridge cartridge = new Cartridge();
-                    cartridge.setCartridgeType(cartridgeType);
-                    cartridge.setProvider(cartridgeInfo.getProvider());
+	                Cartridge cartridge = new Cartridge();
+	                cartridge.setCartridgeType(cartridgeType);
+	                cartridge.setProvider(cartridgeInfo.getProvider());
 	                cartridge.setCategory(cartridgeInfo.getCategory());
-                    cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-                    cartridge.setDescription(cartridgeInfo.getDescription());
-                    cartridge.setVersion(cartridgeInfo.getVersion());
-                    cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-                    cartridge.setHostName(cartridgeInfo.getHostName());
-                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-                    cartridge.setCartridgeAlias("-");
-                    cartridge.setPersistence(cartridgeInfo.getPersistence());
-                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+	                cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+	                cartridge.setDescription(cartridgeInfo.getDescription());
+	                cartridge.setVersion(cartridgeInfo.getVersion());
+	                cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+	                cartridge.setHostName(cartridgeInfo.getHostName());
+	                cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+	                cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
+	                //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
+	                cartridge.setCartridgeAlias("-");
+	                cartridge.setPersistence(cartridgeInfo.getPersistence());
+	                cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
-                    if (cartridgeInfo.getProperties() != null) {
-                        for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo.getProperties()) {
-                            if (property.getName().equals("load.balancer")) {
-                                cartridge.setLoadBalancer(true);
-                            }
-                        }
-                    }
-                    //cartridge.setActiveInstances(0);
-                    cartridges.add(cartridge);
+	                if (cartridgeInfo.getProperties() != null) {
+		                for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo
+				                .getProperties()) {
+			                if (property.getName().equals("load.balancer")) {
+				                cartridge.setLoadBalancer(true);
+			                }
+		                }
+	                }
+	                //cartridge.setActiveInstances(0);
+	                cartridges.add(cartridge);
 
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
