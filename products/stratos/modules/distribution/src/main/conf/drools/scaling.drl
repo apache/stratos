@@ -90,9 +90,7 @@ dialect "mvel"
 
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
-        activeInstancesCount : Integer() from delegator.getMemberCount(clusterId , 0)
-        instancesCount : Integer() from delegator.getMemberCount(clusterId , 1)
-
+        activeInstancesCount : Integer() from clusterInstanceContext.getNonTerminatedMemberCount()
         requestsServedPerInstance : Float() from  clusterInstanceContext.getRequestsServedPerInstance()
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
@@ -104,7 +102,7 @@ dialect "mvel"
 
 
 
-        scaleUp : Boolean() from (instancesCount < numberOfRequiredInstances )
+        scaleUp : Boolean() from (activeInstancesCount < numberOfRequiredInstances )
         scaleDown : Boolean() from (activeInstancesCount > numberOfRequiredInstances )
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF Resetted?: " + rifReset))
@@ -125,11 +123,11 @@ dialect "mvel"
 
 	then
 
-	    log.debug("Number Of Required Instances " + numberOfRequiredInstances + " Instances Count " + instancesCount);
+	    log.debug("Number Of Required Instances " + numberOfRequiredInstances + " Instances Count " + activeInstancesCount);
 
         if(scaleUp){
 
-            int additionalInstances = numberOfRequiredInstances - instancesCount ;
+            int additionalInstances = numberOfRequiredInstances - activeInstancesCount ;
             clusterInstanceContext.resetScaleDownRequestsCount();
             int count = 0;
 
