@@ -43,15 +43,14 @@ import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Monitor is to monitor it's child monitors and
@@ -68,15 +67,15 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //Pending monitors list
     protected List<String> pendingMonitorsList;
-    //instanceIds map, stopped monitors
-    protected List<String> inactiveMonitorsList;
-    //terminating instances list
-    protected List<String> terminatingMonitorsList;
+    //instanceIds map, key=alias, value instanceIds stopped monitors
+    protected Map<String, List<String>> inactiveInstancesMap;
+    //terminating map, key=alias, value instanceIds
+    protected Map<String, List<String>> terminatingInstancesMap;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
-        aliasToActiveMonitorsMap = new HashMap<String, Monitor>();
-        inactiveMonitorsList = new ArrayList<String>();
-        terminatingMonitorsList = new ArrayList<String>();
+        aliasToActiveMonitorsMap = new ConcurrentHashMap<String, Monitor>();
+        inactiveInstancesMap = new ConcurrentHashMap<String, List<String>>();
+        terminatingInstancesMap = new ConcurrentHashMap<String, List<String>>();
         pendingMonitorsList = new ArrayList<String>();
         //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
         this.id = component.getUniqueIdentifier();
@@ -235,24 +234,18 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * This will start the child monitors based on the active of siblings according to start up order
      *
-     * @param eventId parent id of the event which received
+     * @param childId parent id of the event which received
      */
-    protected void onChildActivatedEvent(String eventId, String instanceId) {
+    protected void onChildActivatedEvent(String childId, String instanceId) {
         try {
-            //if the activated monitor is in in_active map move it to active map
-            if (this.inactiveMonitorsList.contains(eventId)) {
-                this.inactiveMonitorsList.remove(eventId);
-            }
-
-            if (this.terminatingMonitorsList.contains(eventId)) {
-                this.terminatingMonitorsList.remove(eventId);
-            }
+            removeInstanceFromFromInactiveMap(childId, instanceId);
+            removeInstanceFromFromTerminatingMap(childId, instanceId);
 
             boolean startDep;
-            if (!aliasToActiveMonitorsMap.containsKey(eventId) || !pendingMonitorsList.contains(eventId)) {
-                startDep = startDependency(eventId, instanceId);
+            if (!aliasToActiveMonitorsMap.containsKey(childId) || !pendingMonitorsList.contains(childId)) {
+                startDep = startDependency(childId, instanceId);
             } else {
-                startDep = startDependencyByInstanceCreation(eventId, instanceId);
+                startDep = startDependencyByInstanceCreation(childId, instanceId);
             }
 
             //Checking whether all the monitors got created
@@ -260,7 +253,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                         process(this.id, this.appId, instanceId);
             } else {
-                log.info("started a child: " + startDep + " by the group/cluster: " + eventId);
+                log.info("started a child: " + startDep + " by the group/cluster: " + childId);
             }
         } catch (MonitorNotFoundException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription
@@ -399,7 +392,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
                 allDependentTerminated = false;
                 return allDependentTerminated;
-            } else if (this.inactiveMonitorsList.contains(context1.getId())) {
+            } else if (this.inactiveInstancesMap.containsKey(context1.getId())) {
                 log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
                 allDependentTerminated = false;
                 return allDependentTerminated;
@@ -415,7 +408,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                                         String instanceId) {
         boolean parentsTerminated = false;
         for (ApplicationChildContext context1 : parentContexts) {
-            if (this.inactiveMonitorsList.contains(context1.getId())) {
+            if (this.inactiveInstancesMap.containsKey(context1.getId()) &&
+                    this.inactiveInstancesMap.get(context1.getId()).contains(instanceId)) {
                 log.info("Waiting for the [Parent Monitor] " + context1.getId()
                         + " to be terminated");
                 parentsTerminated = false;
@@ -437,8 +431,10 @@ public abstract class ParentComponentMonitor extends Monitor {
     private boolean allParentActive(List<ApplicationChildContext> parentContexts, String instanceId) {
         boolean parentsActive = false;
         for (ApplicationChildContext context1 : parentContexts) {
-            if (this.inactiveMonitorsList.contains(instanceId) ||
-                    this.terminatingMonitorsList.contains(instanceId)) {
+            if (this.inactiveInstancesMap.containsKey(context1.getId()) &&
+                    this.inactiveInstancesMap.get(context1.getId()).contains(instanceId) ||
+                    this.terminatingInstancesMap.containsKey(context1.getId()) &&
+                            this.terminatingInstancesMap.get(context1.getId()).contains(instanceId)) {
                 parentsActive = false;
                 log.info("Dependent [Monitor] " + context1.getId()
                         + " is not yet active");
@@ -478,20 +474,55 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     // move to inactive monitors list to use in the Terminated event
-    protected synchronized void markMonitorAsInactive(String monitorKey) {
+    protected synchronized void markInstanceAsInactive(String childId, String instanceId) {
 
-        if (!this.inactiveMonitorsList.contains(monitorKey)) {
-            this.inactiveMonitorsList.add(monitorKey);
+        if (!this.inactiveInstancesMap.containsKey(childId)) {
+            this.inactiveInstancesMap.get(childId).add(instanceId);
+        } else {
+            List<String> instanceIds = new ArrayList<String>();
+            instanceIds.add(instanceId);
+            this.inactiveInstancesMap.put(childId, instanceIds);
         }
     }
 
     // move to inactive monitors list to use in the Terminated event
-    protected synchronized void markMonitorAsTerminating(String monitorKey) {
-        if (!this.terminatingMonitorsList.contains(monitorKey)) {
-            if (this.inactiveMonitorsList.contains(monitorKey)) {
-                this.inactiveMonitorsList.remove(monitorKey);
+    protected synchronized void removeInstanceFromFromInactiveMap(String childId, String instanceId) {
+        if (this.inactiveInstancesMap.containsKey(childId) &&
+                this.inactiveInstancesMap.get(childId).contains(instanceId)) {
+            this.inactiveInstancesMap.get(childId).remove(instanceId);
+            if(this.inactiveInstancesMap.get(childId).isEmpty()) {
+                this.inactiveInstancesMap.remove(childId);
             }
-            this.terminatingMonitorsList.add(monitorKey);
+        }
+    }
+
+    // move to inactive monitors list to use in the Terminated event
+    protected synchronized void removeInstanceFromFromTerminatingMap(String childId, String instanceId) {
+        if (this.terminatingInstancesMap.containsKey(childId) &&
+                this.terminatingInstancesMap.get(childId).contains(instanceId)) {
+            this.terminatingInstancesMap.get(childId).remove(instanceId);
+            if(this.terminatingInstancesMap.get(childId).isEmpty()) {
+                this.terminatingInstancesMap.remove(childId);
+            }
+        }
+    }
+
+    // move to inactive monitors list to use in the Terminated event
+    protected synchronized void markInstanceAsTerminating(String childId, String instanceId) {
+        if (!this.terminatingInstancesMap.containsKey(childId)) {
+            if (this.inactiveInstancesMap.containsKey(childId) &&
+                    this.inactiveInstancesMap.get(childId).contains(instanceId)) {
+                this.inactiveInstancesMap.get(childId).remove(instanceId);
+                this.terminatingInstancesMap.get(childId).add(instanceId);
+            } else {
+                if (this.inactiveInstancesMap.containsKey(childId) &&
+                        this.inactiveInstancesMap.get(childId).contains(instanceId)) {
+                    this.inactiveInstancesMap.get(childId).remove(instanceId);
+                }
+                List<String> instanceIds = new ArrayList<String>();
+                instanceIds.add(instanceId);
+                this.terminatingInstancesMap.put(childId, instanceIds);
+            }
         }
     }
 
@@ -552,20 +583,20 @@ public abstract class ParentComponentMonitor extends Monitor {
         return hasInDepChild;
     }
 
-    public List<String> getAliasToInActiveMonitorsMap() {
-        return this.inactiveMonitorsList;
+    public Map<String, List<String>> getAliasToInActiveMonitorsMap() {
+        return this.inactiveInstancesMap;
     }
 
-    public void setAliasToInActiveMonitorsMap(List<String> inactiveMonitorsList) {
-        this.inactiveMonitorsList = inactiveMonitorsList;
+    public void setAliasToInActiveMonitorsMap(Map<String, List<String>> inactiveMonitorsList) {
+        this.inactiveInstancesMap = inactiveMonitorsList;
     }
 
-    public List<String> getTerminatingMonitorsList() {
-        return terminatingMonitorsList;
+    public Map<String, List<String>> getTerminatingInstancesMap() {
+        return terminatingInstancesMap;
     }
 
-    public void setTerminatingMonitorsList(List<String> terminatingMonitorsList) {
-        this.terminatingMonitorsList = terminatingMonitorsList;
+    public void setTerminatingInstancesMap(Map<String, List<String>> terminatingInstancesMap) {
+        this.terminatingInstancesMap = terminatingInstancesMap;
     }
 
     public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {

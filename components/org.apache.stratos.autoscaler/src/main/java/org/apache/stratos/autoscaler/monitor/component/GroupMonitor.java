@@ -125,10 +125,10 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      */
     public void setStatus(GroupStatus status, String instanceId) {
         GroupInstance groupInstance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
-        if(groupInstance == null) {
+        if (groupInstance == null) {
             log.warn("The required group [instance] " + instanceId + " not found in the GroupMonitor");
         } else {
-            if(groupInstance.getStatus() != status) {
+            if (groupInstance.getStatus() != status) {
                 groupInstance.setStatus(status);
             }
         }
@@ -173,49 +173,45 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
-        String id = statusEvent.getId();
+        String childId = statusEvent.getId();
         String instanceId = statusEvent.getInstanceId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
 
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(id, instanceId);
+            onChildActivatedEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
             //handling restart of stratos
-            if (!this.aliasToActiveMonitorsMap.get(id).hasStartupDependents()) {
-                onChildActivatedEvent(id, instanceId);
+            if (!this.aliasToActiveMonitorsMap.get(childId).hasStartupDependents()) {
+                onChildActivatedEvent(childId, instanceId);
             } else {
-                this.markMonitorAsInactive(instanceId);
-                onChildInactiveEvent(id, instanceId);
+                this.markInstanceAsInactive(childId, instanceId);
+                onChildInactiveEvent(childId, instanceId);
             }
 
-
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inactive in the map
-            this.markMonitorAsTerminating(instanceId);
+            //mark the child monitor as inActive in the map
+            markInstanceAsTerminating(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if (this.terminatingMonitorsList.contains(id)) {
-                this.terminatingMonitorsList.remove(id);
-                this.aliasToActiveMonitorsMap.remove(id);
-            } else {
-                log.warn("[monitor] " + id + " cannot be found in the inactive monitors list");
-            }
+            removeInstanceFromFromInactiveMap(childId, instanceId);
+            removeInstanceFromFromTerminatingMap(childId, instanceId);
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
                 if (instance.getStatus() == GroupStatus.Terminating || instance.getStatus() == GroupStatus.Terminated) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
-                    onChildTerminatedEvent(id, instanceId);
+                    onChildTerminatedEvent(childId, instanceId);
                 }
             } else {
                 log.warn("The required instance cannot be found in the the [GroupMonitor] " +
                         this.id);
             }
         }
+
     }
 
     @Override
@@ -388,7 +384,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             if (parentPartitionId != null &&
                     networkPartitionContext.getPartitionCtxt(parentPartitionId) == null) {
                 partitionContext = new GroupLevelPartitionContext(parentPartitionId,
-                                                networkPartitionId);
+                        networkPartitionId);
                 networkPartitionContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
                 if (log.isInfoEnabled()) {
                     log.info("[Partition] " + parentPartitionId + "has been added for the " +
@@ -627,12 +623,12 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         return networkPartitionCtxts;
     }
 
-    public GroupLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
-        return this.networkPartitionCtxts.get(networkPartitionId);
-    }
-
     public void setNetworkPartitionCtxts(Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts) {
         this.networkPartitionCtxts = networkPartitionCtxts;
+    }
+
+    public GroupLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
+        return this.networkPartitionCtxts.get(networkPartitionId);
     }
 
     public void addNetworkPartitionContext(GroupLevelNetworkPartitionContext clusterLevelNetworkPartitionContext) {

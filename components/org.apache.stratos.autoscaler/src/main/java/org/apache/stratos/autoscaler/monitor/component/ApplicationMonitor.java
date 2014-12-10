@@ -129,36 +129,33 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
-        String id = statusEvent.getId();
+        String childId = statusEvent.getId();
         String instanceId = statusEvent.getInstanceId();
         LifeCycleState status1 = statusEvent.getStatus();
         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
-            onChildActivatedEvent(id, instanceId);
+            onChildActivatedEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            this.markMonitorAsInactive(id);
-            onChildInactiveEvent(id, instanceId);
+            this.markInstanceAsInactive(childId, instanceId);
+            onChildInactiveEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inactive in the map
-            this.markMonitorAsTerminating(id);
+            //mark the child monitor as inActive in the map
+            markInstanceAsTerminating(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
             //Check whether all dependent goes Terminated and then start them in parallel.
-            if (this.terminatingMonitorsList.contains(id)) {
-                this.terminatingMonitorsList.remove(id);
-                this.aliasToActiveMonitorsMap.remove(id);
-            } else {
-                log.warn("[monitor] " + id + " cannot be found in the inactive monitors list");
-            }
+            removeInstanceFromFromInactiveMap(childId, instanceId);
+            removeInstanceFromFromTerminatingMap(childId, instanceId);
+
             ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
                 if (instance.getStatus() == ApplicationStatus.Terminating) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
-                    onChildTerminatedEvent(id, instanceId);
+                    onChildTerminatedEvent(childId, instanceId);
                 }
             } else {
                 log.warn("The required instance cannot be found in the the [GroupMonitor] " +
