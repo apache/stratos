@@ -30,6 +30,11 @@ public class ApplicationsEventPublisher {
 
         publishEvent(new ApplicationCreatedEvent(application));
     }
+    
+    public static void sendApplicationDeletedEvent (Application application) {
+    	
+    	publishEvent(new ApplicationDeletedEvent(application));
+    }
 
     public static void sendApplicationInstanceCreatedEvent(String appId,
                                                            ApplicationInstance applicationInstance) {

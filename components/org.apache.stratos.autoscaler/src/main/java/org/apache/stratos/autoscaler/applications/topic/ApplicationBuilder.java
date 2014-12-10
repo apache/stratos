@@ -181,10 +181,11 @@ public class ApplicationBuilder {
             log.debug("Handling application unDeployment for [application-id] " + appId);
         }
         Set<ClusterDataHolder> clusterData;
+        Application application;
         ApplicationHolder.acquireWriteLock();
         try {
             Applications applications = ApplicationHolder.getApplications();
-            Application application = applications.getApplication(appId);
+            application = applications.getApplication(appId);
             //update the status of the Group
             if (application == null) {
                 log.warn(String.format("Application does not exist: [application-id] %s",
@@ -206,6 +207,7 @@ public class ApplicationBuilder {
         }
 
         log.info("[Application] " + appId + " has been successfully undeployed");
+        ApplicationsEventPublisher.sendApplicationDeletedEvent(application);
     }
 
     public static boolean handleApplicationPolicyUndeployed(String appId) {
