@@ -52,7 +52,11 @@ public class InstanceTerminator implements Runnable {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
+            // Terminate the instance
             iaas.terminateInstance(memberContext);
+
+            // Execute member termination post process
+            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         } catch (Exception e) {
             String msg = "Instance termination failed! " + memberContext.toString();
             log.error(msg, e);

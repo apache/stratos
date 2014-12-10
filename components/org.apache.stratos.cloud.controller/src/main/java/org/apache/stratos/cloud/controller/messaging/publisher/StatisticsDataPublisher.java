@@ -41,11 +41,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *  This will publish the state changes of a node in the topology to a data receiver
+ *  Statistics data publisher for publishing instance statistics to BAM.
  */
-public class CartridgeInstanceDataPublisher {
+public class StatisticsDataPublisher {
     
-    private static final Log log = LogFactory.getLog(CartridgeInstanceDataPublisher.class);
+    private static final Log log = LogFactory.getLog(StatisticsDataPublisher.class);
     private static AsyncDataPublisher dataPublisher;
     private static StreamDefinition streamDefinition;
     private static final String cloudControllerEventStreamVersion = "1.0.0";
@@ -209,6 +209,4 @@ public class CartridgeInstanceDataPublisher {
         }
         return val;
     }
-
-    
 }

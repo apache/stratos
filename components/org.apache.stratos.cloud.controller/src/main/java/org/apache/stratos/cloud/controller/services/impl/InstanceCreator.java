@@ -19,24 +19,16 @@
 
 package org.apache.stratos.cloud.controller.services.impl;
 
-import com.google.common.collect.ImmutableSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
-import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.domain.NodeMetadata;
-import org.jclouds.compute.domain.NodeMetadataBuilder;
-import org.jclouds.compute.domain.Template;
 
-import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -84,7 +76,7 @@ public class InstanceCreator implements Runnable {
                     memberContext);
 
             // Publish instance creation statistics to BAM
-            CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
+            StatisticsDataPublisher.publish(memberContext.getMemberId(),
                     memberContext.getPartition().getId(),
                     memberContext.getNetworkPartitionId(),
                     memberContext.getClusterId(),

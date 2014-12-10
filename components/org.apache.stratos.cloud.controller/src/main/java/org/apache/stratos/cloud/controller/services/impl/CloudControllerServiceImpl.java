@@ -35,8 +35,7 @@ import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKu
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
 import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
-import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
@@ -45,8 +44,6 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
-import org.apache.stratos.cloud.controller.iaases.validators.KubernetesBasedPartitionValidator;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.KubernetesHost;
@@ -525,27 +522,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     @Override
     public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException {
 
-        handleNullObject(memberId, "Termination failed. Null member id.");
+        handleNullObject(memberId, "Member termination failed, member id is null.");
 
         MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-
         if (memberContext == null) {
-            String msg = "Termination failed. Invalid Member Id: " + memberId;
+            String msg = "Member termination failed, member context not found: [member-id] " + memberId;
             log.error(msg);
             throw new InvalidMemberException(msg);
         }
 
-        if (memberContext.getNodeId() == null && memberContext.getInstanceId() == null) {
-            // sending member terminated since this instance isn't reachable.
-            if (log.isInfoEnabled()){
-                log.info(String.format(
-                        "Member cannot be terminated because it is not reachable. [member] %s [nodeId] %s [instanceId] %s. Removing member from topology.",
-                        memberContext.getMemberId(),
-                        memberContext.getNodeId(),
-                        memberContext.getInstanceId()));
+        if ((memberContext.getNodeId() == null) && (memberContext.getInstanceId() == null)) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format(
+                        "Member termination failed, node id and instance id are null: [member-id] %s " +
+                                "Removing member from topology.",
+                        memberContext.getMemberId()));
             }
-
-            CloudControllerServiceUtil.logTermination(memberContext);
+            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
         }
 
         // check if status == active, if true, then this is a termination on member faulty
@@ -553,44 +546,40 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             TopologyManager.acquireReadLock();
             topology = TopologyManager.getTopology();
-        } finally {
-            TopologyManager.releaseReadLock();
-        }
+            org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
 
-        org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
-
-        if (service != null) {
-            Cluster cluster = service.getCluster(memberContext.getClusterId());
-
-            if (cluster != null) {
-                Member member = cluster.getMember(memberId);
-
-                if (member != null) {
-                    // change member status if termination on a faulty member
-                    if(fixMemberStatus(member, topology)){
-                        // set the time this member was added to ReadyToShutdown status
-                        memberContext.setObsoleteInitTime(System.currentTimeMillis());
-                    }
-
-                    // check if ready to shutdown member is expired and send
-                    // member terminated if it is.
-                    if (isMemberExpired(member, memberContext.getObsoleteInitTime(), memberContext.getObsoleteExpiryTime())) {
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format(
-                                    "Member pending termination in ReadyToShutdown state exceeded expiry time. This member has to be manually deleted: %s",
-                                    memberContext.getMemberId()));
+            if (service != null) {
+                Cluster cluster = service.getCluster(memberContext.getClusterId());
+                if (cluster != null) {
+                    Member member = cluster.getMember(memberId);
+                    if (member != null) {
+                        // change member status if termination on a faulty member
+                        if (fixMemberStatus(member, topology)) {
+                            // set the time this member was added to ReadyToShutdown status
+                            memberContext.setObsoleteInitTime(System.currentTimeMillis());
                         }
 
-                        CloudControllerServiceUtil.logTermination(memberContext);
-                        return;
+                        // check if ready to shutdown member is expired and send
+                        // member terminated if it is.
+                        if (isMemberExpired(member, memberContext.getObsoleteInitTime(), memberContext.getObsoleteExpiryTime())) {
+                            if (log.isInfoEnabled()) {
+                                log.info(String.format(
+                                        "Member pending termination in ReadyToShutdown state exceeded expiry time. This member has to be manually deleted: %s",
+                                        memberContext.getMemberId()));
+                            }
+
+                            CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
+                            return;
+                        }
                     }
                 }
             }
+
+            ThreadExecutor exec = ThreadExecutor.getInstance();
+            exec.execute(new InstanceTerminator(memberContext));
+        } finally {
+            TopologyManager.releaseReadLock();
         }
-
-        ThreadExecutor exec = ThreadExecutor.getInstance();
-        exec.execute(new InstanceTerminator(memberContext));
-
     }
 
     /**
@@ -649,7 +638,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
             //publishing data
-            CartridgeInstanceDataPublisher.publish(member.getMemberId(),
+            StatisticsDataPublisher.publish(member.getMemberId(),
                     member.getPartitionId(),
                     member.getNetworkPartitionId(),
                     member.getClusterId(),
@@ -1263,7 +1252,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private String validateProperty(String property, org.apache.stratos.common.Properties properties, String object) {
 
         String propVal = CloudControllerUtil.getProperty(properties, property);
-        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property+ " in "+object);
+        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property + " in " + object);
         return propVal;
 
     }
@@ -1373,7 +1362,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             List<MemberContext> membersToBeRemoved = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
 
             for (MemberContext memberContext : membersToBeRemoved) {
-                CloudControllerServiceUtil.logTermination(memberContext);
+                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
             }
 
             // persist
@@ -1509,7 +1498,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     for (Pod pod : difference) {
                         if (pod != null) {
                             MemberContext context = CloudControllerContext.getInstance().getMemberContextOfMemberId(pod.getId());
-                            CloudControllerServiceUtil.logTermination(context);
+                            CloudControllerServiceUtil.executeMemberTerminationPostProcess(context);
                             memberContexts.add(context);
                         }
                     }
@@ -1568,7 +1557,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 // member id = pod id
                 kubApi.deletePod(memberId);
                 MemberContext memberToBeRemoved = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-                CloudControllerServiceUtil.logTermination(memberToBeRemoved);
+                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberToBeRemoved);
 
                 return memberToBeRemoved;
 

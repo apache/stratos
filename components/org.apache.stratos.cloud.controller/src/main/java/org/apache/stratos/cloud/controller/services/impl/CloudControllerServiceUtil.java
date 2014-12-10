@@ -26,24 +26,19 @@ import com.google.common.net.InetAddresses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.domain.Volume;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.validators.KubernetesBasedPartitionValidator;
-import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.jclouds.rest.ResourceNotFoundException;
 
 /**
  * Cloud controller service utility methods.
@@ -59,85 +54,24 @@ public class CloudControllerServiceUtil {
     }
 
     /**
-     * A helper method to terminate an instance.
-     *
-     * @param iaasProvider
-     * @param ctxt
-     * @param nodeId
-     * @return will return the IaaSProvider
+     * Update the topology, publish statistics to BAM, remove member context
+     * and persist cloud controller context.
+     * @param memberContext
      */
-    public static IaasProvider terminate(IaasProvider iaasProvider,
-                                   String nodeId, MemberContext ctxt) {
-        Iaas iaas = iaasProvider.getIaas();
-        if (iaas == null) {
-
-            try {
-                iaas = buildIaas(iaasProvider);
-            } catch (InvalidIaasProviderException e) {
-                String msg =
-                        "Instance termination failed. " + ctxt.toString() +
-                                ". Cause: Unable to build Iaas of this " + iaasProvider.toString();
-                log.error(msg, e);
-                throw new CloudControllerException(msg, e);
-            }
-
-        }
-
-        //detach volumes if any
-        detachVolume(iaasProvider, ctxt);
-
-        // destroy the node
-        iaasProvider.getComputeService().destroyNode(nodeId);
-
-        // release allocated IP address
-        if (ctxt.getAllocatedIpAddress() != null) {
-            iaas.releaseAddress(ctxt.getAllocatedIpAddress());
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("Member is terminated: " + ctxt.toString());
-        } else if (log.isInfoEnabled()) {
-            log.info("Member with id " + ctxt.getMemberId() + " is terminated");
-        }
-        return iaasProvider;
-    }
-
-    private static void detachVolume(IaasProvider iaasProvider, MemberContext ctxt) {
-        String clusterId = ctxt.getClusterId();
-        ClusterContext clusterCtxt = CloudControllerContext.getInstance().getClusterContext(clusterId);
-        if (clusterCtxt.getVolumes() != null) {
-            for (Volume volume : clusterCtxt.getVolumes()) {
-                try {
-                    String volumeId = volume.getId();
-                    if (volumeId == null) {
-                        return;
-                    }
-                    Iaas iaas = iaasProvider.getIaas();
-                    iaas.detachVolume(ctxt.getInstanceId(), volumeId);
-                } catch (ResourceNotFoundException ignore) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(ignore);
-                    }
-                }
-            }
-        }
-    }
-
-    public static void logTermination(MemberContext memberContext) {
-
+    public static void executeMemberTerminationPostProcess(MemberContext memberContext) {
         if (memberContext == null) {
             return;
         }
 
         String partitionId = memberContext.getPartition() == null ? null : memberContext.getPartition().getId();
 
-        //updating the topology
+        // Update the topology
         TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
                 memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
                 partitionId, memberContext.getMemberId());
 
-        //publishing data
-        CartridgeInstanceDataPublisher.publish(memberContext.getMemberId(),
+        // Publish statistics to BAM
+        StatisticsDataPublisher.publish(memberContext.getMemberId(),
                 partitionId,
                 memberContext.getNetworkPartitionId(),
                 memberContext.getClusterId(),
@@ -145,10 +79,10 @@ public class CloudControllerServiceUtil {
                 MemberStatus.Terminated.toString(),
                 null);
 
-        // update data holders
+        // Remove member context
         CloudControllerContext.getInstance().removeMemberContext(memberContext.getMemberId(), memberContext.getClusterId());
 
-        // persist
+        // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
     }
 
@@ -165,19 +99,6 @@ public class CloudControllerServiceUtil {
         if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
-
-//            if (iaas == null) {
-//                try {
-//                    iaas = CloudControllerUtil.getIaas(iaasProvider);
-//                } catch (InvalidIaasProviderException e) {
-//                    String msg =
-//                            "Invalid Partition - " + partition.toString()
-//                                    + ". Cause: Unable to build Iaas of this IaasProvider [Provider] : " + provider
-//                                    + ". " + e.getMessage();
-//                    log.error(msg, e);
-//                    throw new InvalidPartitionException(msg, e);
-//                }
-//            }
 
             IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);

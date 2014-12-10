@@ -181,11 +181,6 @@ public class MockIaasService {
         synchronized (MockIaasService.class) {
             MockMember mockMember = membersMap.get(memberContext.getMemberId());
             if (mockMember != null) {
-                //updating the topology
-                TopologyBuilder.handleMemberTerminated(memberContext.getCartridgeType(),
-                        memberContext.getClusterId(), memberContext.getNetworkPartitionId(),
-                        memberContext.getPartition().getId(), memberContext.getMemberId());
-
                 mockMember.terminate();
                 membersMap.remove(memberContext.getMemberId());
             }

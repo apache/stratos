@@ -24,10 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.messaging.publisher.CartridgeInstanceDataPublisher;
+import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -42,7 +41,6 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.util.*;
 
@@ -510,13 +508,13 @@ public class TopologyBuilder {
         //memberStartedEvent.
         TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
         //publishing data
-        CartridgeInstanceDataPublisher.publish(instanceStartedEvent.getMemberId(),
-                                            instanceStartedEvent.getPartitionId(),
-                                            instanceStartedEvent.getNetworkPartitionId(),
-                                            instanceStartedEvent.getClusterId(),
-                                            instanceStartedEvent.getServiceName(),
-                                            MemberStatus.Starting.toString(),
-                                            null);
+        StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
+                instanceStartedEvent.getPartitionId(),
+                instanceStartedEvent.getNetworkPartitionId(),
+                instanceStartedEvent.getClusterId(),
+                instanceStartedEvent.getServiceName(),
+                MemberStatus.Starting.toString(),
+                null);
     }
 
     public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
@@ -585,13 +583,13 @@ public class TopologyBuilder {
         }
         TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
         //publishing data
-        CartridgeInstanceDataPublisher.publish(memberActivatedEvent.getMemberId(),
-                                            memberActivatedEvent.getPartitionId(),
-                                            memberActivatedEvent.getNetworkPartitionId(),
-                                            memberActivatedEvent.getClusterId(),
-                                            memberActivatedEvent.getServiceName(),
-                                            MemberStatus.Activated.toString(),
-                                            null);
+        StatisticsDataPublisher.publish(memberActivatedEvent.getMemberId(),
+                memberActivatedEvent.getPartitionId(),
+                memberActivatedEvent.getNetworkPartitionId(),
+                memberActivatedEvent.getClusterId(),
+                memberActivatedEvent.getServiceName(),
+                MemberStatus.Activated.toString(),
+                null);
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
@@ -641,13 +639,13 @@ public class TopologyBuilder {
         }
         TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
         //publishing data
-        CartridgeInstanceDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
-                                            instanceReadyToShutdownEvent.getPartitionId(),
-                                            instanceReadyToShutdownEvent.getNetworkPartitionId(),
-                                            instanceReadyToShutdownEvent.getClusterId(),
-                                            instanceReadyToShutdownEvent.getServiceName(),
-                                            MemberStatus.ReadyToShutDown.toString(),
-                                            null);
+        StatisticsDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
+                instanceReadyToShutdownEvent.getPartitionId(),
+                instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                instanceReadyToShutdownEvent.getClusterId(),
+                instanceReadyToShutdownEvent.getServiceName(),
+                MemberStatus.ReadyToShutDown.toString(),
+                null);
         //termination of particular instance will be handled by autoscaler
     }
 
@@ -702,6 +700,14 @@ public class TopologyBuilder {
 
     }
 
+    /***
+     * Remove member from topology and send member terminated event.
+     * @param serviceName
+     * @param clusterId
+     * @param networkPartitionId
+     * @param partitionId
+     * @param memberId
+     */
     public static void handleMemberTerminated(String serviceName, String clusterId,
                                               String networkPartitionId, String partitionId,
                                               String memberId) {
