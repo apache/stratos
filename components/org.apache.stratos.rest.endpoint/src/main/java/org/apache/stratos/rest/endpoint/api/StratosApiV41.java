@@ -355,44 +355,6 @@ public class StratosApiV41 extends AbstractApi {
     }
     
     // API methods for deployment policies
-    
-    /**
-     * Creates the deployment policy.
-     *
-     * @param deploymentPolicy the deployment policy
-     * @return the response
-     * @throws RestAPIException the rest api exception
-     */
-    @POST
-    @Path("/deploymentPolicies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
-    public Response createDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
-            throws RestAPIException {
-        String policyId = StratosApiV41Utils.createDeploymentPolicy(deploymentPolicy);
-        //URI url = uriInfo.getAbsolutePathBuilder().path(policyId).build();
-        return Response.accepted().build();
-    }
-    
-    /**
-     * Update deployment policy definition.
-     *
-     * @param deploymentPolicy the deployment policy
-     * @return the response
-     * @throws RestAPIException the rest api exception
-     */
-    @PUT
-    @Path("/deploymentPolicies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
-    public Response updateDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
-            throws RestAPIException {
-
-        StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicy);
-        return Response.ok().build();
-    }
 
     /**
      * Gets the deployment policies.
