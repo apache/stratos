@@ -66,19 +66,26 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
             } else {
                 //Checking the minimum of the group instances to be satisfied
                 List<Instance> contexts = group.getInstanceContextsWithParentId(instanceId);
-                int minGroupInstances = group.getGroupMinInstances();
-                int sameStateInstances = 0;
-                for(Instance context1 : contexts) {
-                   if(((GroupInstance)context1).getStatus().equals(status)) {
-                       sameStateInstances++;
-                   }
-                }
-                if(sameStateInstances >= minGroupInstances) {
+                //if no instances found and requested status is terminated,
+                // then considering this group as terminated
+                if(context == null && contexts.isEmpty() && status == GroupStatus.Terminated) {
                     groupStat = true;
                 } else {
-                    groupStat = false;
-                    return groupStat;
+                    int minGroupInstances = group.getGroupMinInstances();
+                    int sameStateInstances = 0;
+                    for(Instance context1 : contexts) {
+                        if(((GroupInstance)context1).getStatus().equals(status)) {
+                            sameStateInstances++;
+                        }
+                    }
+                    if(sameStateInstances >= minGroupInstances) {
+                        groupStat = true;
+                    } else {
+                        groupStat = false;
+                        return groupStat;
+                    }
                 }
+
 
             }
         }
@@ -103,11 +110,15 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 Service service = TopologyManager.getTopology().getService(serviceName);
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
-                if (context.getStatus() == status) {
+                if (context != null && context.getStatus() == status) {
                     clusterStat = true;
                 } else {
-                    clusterStat = false;
-                    return clusterStat;
+                    if(status == ClusterStatus.Terminated) {
+                        clusterStat = true;
+                    } else {
+                        clusterStat = false;
+                        return clusterStat;
+                    }
                 }
             } finally {
                 TopologyManager.releaseReadLockForCluster(serviceName, clusterId);

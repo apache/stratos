@@ -158,7 +158,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
         boolean groupStat = false;
         for (Group group : groups.values()) {
             GroupInstance context = group.getInstanceContexts(instanceId);
-            if (context.getStatus() == GroupStatus.Inactive) {
+            if (context != null && context.getStatus() == GroupStatus.Inactive) {
                 groupStat = true;
                 return groupStat;
             } else {

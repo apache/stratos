@@ -205,7 +205,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             }
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
-                if (instance.getStatus() == GroupStatus.Terminating) {
+                if (instance.getStatus() == GroupStatus.Terminating || instance.getStatus() == GroupStatus.Terminated) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {
