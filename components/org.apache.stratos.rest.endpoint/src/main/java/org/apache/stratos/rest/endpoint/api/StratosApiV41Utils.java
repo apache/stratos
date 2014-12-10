@@ -36,18 +36,14 @@ import org.apache.stratos.manager.deploy.cartridge.CartridgeDeploymentManager;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.deploy.service.ServiceDeploymentManager;
 import org.apache.stratos.manager.dto.Cartridge;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.exception.*;
 import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.grouping.manager.ServiceGroupingManager;
 import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.persistence.PersistenceManager;
-import org.apache.stratos.manager.persistence.RegistryBasedPersistenceManager;
 import org.apache.stratos.manager.repository.RepositoryNotification;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.subscription.DataCartridgeSubscription;
-import org.apache.stratos.manager.subscription.SubscriptionData;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -56,29 +52,20 @@ import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
-import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
 import org.apache.stratos.rest.endpoint.bean.GroupBean;
-import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
 import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -194,26 +181,26 @@ public class StratosApiV41Utils {
         }
     }
     
-    public static List<Cartridge> getCartridgesByCategory(String category, String criteria, ConfigurationContext configurationContext) 
+    public static List<Cartridge> getCartridgesByFilter(String filter, String criteria, ConfigurationContext configurationContext) 
 			throws RestAPIException {
 		List<Cartridge> cartridges = null;
 		
-		if (category.equals("singleTenant")) {
+		if (filter.equals("singleTenant")) {
 			cartridges = getAvailableCartridges(null, false, configurationContext);
-		} else if (category.equals("multiTenant")) {
+		} else if (filter.equals("multiTenant")) {
 			cartridges = getAvailableCartridges(null, true, configurationContext);
-		} else if (category.equals("loadBalancer")) {
+		} else if (filter.equals("loadBalancer")) {
 			cartridges = getAvailableLbCartridges(false, configurationContext);
-		} else if (category.equals("provider")) {
+		} else if (filter.equals("provider")) {
 			cartridges = getAvailableCartridgesByProvider(criteria, configurationContext);
 		}
 		
 		return cartridges;
 	}
 	
-	public static Cartridge getCartridgeByCategory(String category, String cartridgeType, ConfigurationContext configurationContext) 
+	public static Cartridge getCartridgeByFilter(String filter, String cartridgeType, ConfigurationContext configurationContext) 
 	throws RestAPIException {
-		List<Cartridge> cartridges = getCartridgesByCategory(category, null, configurationContext);
+		List<Cartridge> cartridges = getCartridgesByFilter(filter, null, configurationContext);
 		
 		for (Cartridge cartridge : cartridges) {
 			if (cartridge.getCartridgeType().equals(cartridgeType)) {
@@ -610,66 +597,6 @@ public class StratosApiV41Utils {
     
     // Util methods for Deployment policies
     
-    public static String createDeploymentPolicy(
-    		org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
-    	            throws RestAPIException {
-    	String policyId = null;
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting to create a deployment policy of application: "
-                    + deploymentPolicyBean.applicationPolicy.applicationId);
-        }
-        
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
-
-            try {
-                policyId = autoscalerServiceClient.addDeploymentPolicy(deploymentPolicy);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-            log.info(String.format("Created deployment policy: [id] %s", policyId));
-        }
-        
-        return policyId;
-    }
-    
-    public static void updateDeploymentPolicy(
-            org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
-            throws RestAPIException {
-
-        //FIXME we do not have any use-case now?? - Nirmal
-//        log.info(String.format("Updating deployment policy: [id] %s", deploymentPolicyBean.id));
-//
-//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-//        if (autoscalerServiceClient != null) {
-//
-//            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
-//                    PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
-//
-//
-//            try {
-//                autoscalerServiceClient.updateDeploymentPolicy(deploymentPolicy);
-//            } catch (RemoteException e) {
-//                log.error(e.getMessage(), e);
-//                throw new RestAPIException(e.getMessage(), e);
-//            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
-//                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-//                log.error(message, e);
-//                throw new RestAPIException(message, e);
-//            }
-//        }
-    }
-
     public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy[]
     getDeploymentPolicies() throws RestAPIException {
 

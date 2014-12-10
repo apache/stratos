@@ -177,12 +177,12 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/cartridges/{category}")
+    @Path("/cartridges/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgesByCategory(@DefaultValue("") @PathParam("category") String category, @QueryParam("criteria") String criteria) throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByCategory(category, criteria, getConfigContext());
+    public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria) throws RestAPIException {
+        List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByFilter(filter, criteria, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
         return rb.build();
@@ -197,12 +197,12 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/cartridges/{category}/{cartridgeType}")
+    @Path("/cartridges/{filter}/{cartridgeType}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgeByCategory(@DefaultValue("") @PathParam("category") String category, @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        Cartridge cartridge = StratosApiV41Utils.getCartridgeByCategory(category, cartridgeType, getConfigContext());
+    public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter, @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+        Cartridge cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridge);
         return rb.build();
@@ -355,44 +355,6 @@ public class StratosApiV41 extends AbstractApi {
     }
     
     // API methods for deployment policies
-    
-    /**
-     * Creates the deployment policy.
-     *
-     * @param deploymentPolicy the deployment policy
-     * @return the response
-     * @throws RestAPIException the rest api exception
-     */
-    @POST
-    @Path("/deploymentPolicies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
-    public Response createDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
-            throws RestAPIException {
-        String policyId = StratosApiV41Utils.createDeploymentPolicy(deploymentPolicy);
-        //URI url = uriInfo.getAbsolutePathBuilder().path(policyId).build();
-        return Response.accepted().build();
-    }
-    
-    /**
-     * Update deployment policy definition.
-     *
-     * @param deploymentPolicy the deployment policy
-     * @return the response
-     * @throws RestAPIException the rest api exception
-     */
-    @PUT
-    @Path("/deploymentPolicies")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
-    public Response updateDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
-            throws RestAPIException {
-
-        StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicy);
-        return Response.ok().build();
-    }
 
     /**
      * Gets the deployment policies.
@@ -651,11 +613,11 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/subscriptions/cartridges/groups/{serviceGroup}")
+    @Path("/subscriptions/cartridges/groups/{serviceGroupId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
+    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroupId") String serviceGroup) throws RestAPIException {
         List<Cartridge> cartridgeList = StratosApiV41Utils.getSubscriptions(null, serviceGroup, getConfigContext());
         // Following is very important when working with axis2
         ResponseBuilder rb = Response.ok();
