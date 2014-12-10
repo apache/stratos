@@ -103,7 +103,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     @Override
     public boolean deployDeploymentPolicy(DeploymentPolicy policy) {
     	// Get the deployment policy
-    	DeploymentPolicy deploymentPolicy = this.getDeploymentPolicy(policy.getId());
+    	DeploymentPolicy deploymentPolicy = this.getDeploymentPolicy(policy.getApplicationId());
     	if (deploymentPolicy == null) {
     		return false;
     	}
