@@ -288,7 +288,7 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.oauth.feature:${carbon.platform.patch.version.4.2.3}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.provider.server.feature:${carbon.platform.patch.version.4.2.3}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.idp.mgt.feature:${carbon.platform.patch.version.4.2.3}</featureArtifactDef>
-                                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.stratos.common.server.feature:2.2.0</featureArtifactDef>
+                                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.stratos.common.server.feature:2.2.2</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.as.runtimes.cxf.feature:4.2.2</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.relying.party.server.feature:4.2.2</featureArtifactDef>
 				<featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.application.mgt.feature:4.2.0</featureArtifactDef>
@@ -535,7 +535,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.stratos.common.server.feature.group</id>
-                                    <version>2.2.0</version>
+                                    <version>2.2.2</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>
@@ -883,7 +883,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.stratos.common.server.feature.group</id>
-                                    <version>2.2.0</version>
+                                    <version>2.2.2</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.as.runtimes.cxf.feature.group</id>
