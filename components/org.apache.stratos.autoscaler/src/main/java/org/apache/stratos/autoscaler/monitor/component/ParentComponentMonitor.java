@@ -49,7 +49,10 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -172,11 +175,11 @@ public abstract class ParentComponentMonitor extends Monitor {
         //start the first dependency which went to terminated
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination(this, instanceId);
-        for(ApplicationChildContext context : applicationContexts) {
-            if(context instanceof GroupChildContext) {
+        for (ApplicationChildContext context : applicationContexts) {
+            if (context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
-                                                        get(context.getId());
-            } else if(context instanceof ClusterChildContext) {
+                        get(context.getId());
+            } else if (context instanceof ClusterChildContext) {
 
             }
         }
@@ -487,8 +490,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                     TopologyManager.acquireReadLockForCluster(monitor1.getServiceId(),
                             monitor1.getClusterId());
                     try {
-                        if (((ClusterInstance)monitor1.getInstance(instanceId)).getStatus()
-                                                    == ClusterStatus.Active) {
+                        if (((ClusterInstance) monitor1.getInstance(instanceId)).getStatus()
+                                == ClusterStatus.Active) {
                             parentsActive = true;
                         }
                     } finally {
@@ -518,7 +521,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (this.inactiveInstancesMap.containsKey(childId) &&
                 this.inactiveInstancesMap.get(childId).contains(instanceId)) {
             this.inactiveInstancesMap.get(childId).remove(instanceId);
-            if(this.inactiveInstancesMap.get(childId).isEmpty()) {
+            if (this.inactiveInstancesMap.get(childId).isEmpty()) {
                 this.inactiveInstancesMap.remove(childId);
             }
         }
@@ -529,7 +532,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (this.terminatingInstancesMap.containsKey(childId) &&
                 this.terminatingInstancesMap.get(childId).contains(instanceId)) {
             this.terminatingInstancesMap.get(childId).remove(instanceId);
-            if(this.terminatingInstancesMap.get(childId).isEmpty()) {
+            if (this.terminatingInstancesMap.get(childId).isEmpty()) {
                 this.terminatingInstancesMap.remove(childId);
             }
         }
@@ -537,20 +540,16 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsTerminating(String childId, String instanceId) {
-        if (!this.terminatingInstancesMap.containsKey(childId)) {
-            if (this.inactiveInstancesMap.containsKey(childId) &&
-                    this.inactiveInstancesMap.get(childId).contains(instanceId)) {
-                this.inactiveInstancesMap.get(childId).remove(instanceId);
-                this.terminatingInstancesMap.get(childId).add(instanceId);
-            } else {
-                if (this.inactiveInstancesMap.containsKey(childId) &&
-                        this.inactiveInstancesMap.get(childId).contains(instanceId)) {
-                    this.inactiveInstancesMap.get(childId).remove(instanceId);
-                }
-                List<String> instanceIds = new ArrayList<String>();
-                instanceIds.add(instanceId);
-                this.terminatingInstancesMap.put(childId, instanceIds);
-            }
+        if (this.inactiveInstancesMap.containsKey(childId) &&
+                this.inactiveInstancesMap.get(childId).contains(instanceId)) {
+            this.inactiveInstancesMap.get(childId).remove(instanceId);
+        }
+        if (this.terminatingInstancesMap.containsKey(childId)) {
+            this.terminatingInstancesMap.get(childId).add(instanceId);
+        } else {
+            List<String> instanceIds = new ArrayList<String>();
+            instanceIds.add(instanceId);
+            this.terminatingInstancesMap.put(childId, instanceIds);
         }
     }
 
@@ -646,74 +645,74 @@ public abstract class ParentComponentMonitor extends Monitor {
         return autoscaleAlgorithm;
     }
 
-    private class MonitorAdder implements Runnable {
-        private ApplicationChildContext context;
-        private ParentComponentMonitor parent;
-        private String appId;
-        private List<String> instanceId;
+private class MonitorAdder implements Runnable {
+    private ApplicationChildContext context;
+    private ParentComponentMonitor parent;
+    private String appId;
+    private List<String> instanceId;
 
-        public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
-                            String appId, List<String> instanceId) {
-            this.parent = parent;
-            this.context = context;
-            this.appId = appId;
-            this.instanceId = instanceId;
-        }
+    public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
+                        String appId, List<String> instanceId) {
+        this.parent = parent;
+        this.context = context;
+        this.appId = appId;
+        this.instanceId = instanceId;
+    }
 
-        public void run() {
-            Monitor monitor = null;
-            int retries = 5;
-            boolean success = false;
-            while (!success && retries != 0) {
+    public void run() {
+        Monitor monitor = null;
+        int retries = 5;
+        boolean success = false;
+        while (!success && retries != 0) {
                 /*//TODO remove thread.sleep, exectutor service
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                 }*/
 
-                if (log.isInfoEnabled()) {
-                    log.info("Monitor is going to be started for [group/cluster] "
-                            + context.getId());
-                }
-                try {
-                    monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
-                } catch (DependencyBuilderException e) {
-                    String msg = "Monitor creation failed for: " + context.getId();
-                    log.warn(msg, e);
-                    retries--;
-                } catch (TopologyInConsistentException e) {
-                    String msg = "Monitor creation failed for: " + context.getId();
-                    log.warn(msg, e);
-                    retries--;
-                } catch (PolicyValidationException e) {
-                    String msg = "Monitor creation failed for: " + context.getId();
-                    log.warn(msg, e);
-                    retries--;
-                } catch (PartitionValidationException e) {
-                    String msg = "Monitor creation failed for: " + context.getId();
-                    log.warn(msg, e);
-                    retries--;
-                }
-                success = true;
-            }
-
-            if (monitor == null) {
-                String msg = "Monitor creation failed, even after retrying for 5 times, "
-                        + "for : " + context.getId();
-                log.error(msg);
-                //TODO parent.notify();
-                throw new RuntimeException(msg);
-            }
-
-            aliasToActiveMonitorsMap.put(context.getId(), monitor);
-            pendingMonitorsList.remove(context.getId());
-            // ApplicationBuilder.
             if (log.isInfoEnabled()) {
-                log.info(String.format("Monitor has been added successfully for: %s",
-                        context.getId()));
+                log.info("Monitor is going to be started for [group/cluster] "
+                        + context.getId());
             }
+            try {
+                monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
+            } catch (DependencyBuilderException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (TopologyInConsistentException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (PolicyValidationException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (PartitionValidationException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            }
+            success = true;
+        }
+
+        if (monitor == null) {
+            String msg = "Monitor creation failed, even after retrying for 5 times, "
+                    + "for : " + context.getId();
+            log.error(msg);
+            //TODO parent.notify();
+            throw new RuntimeException(msg);
+        }
+
+        aliasToActiveMonitorsMap.put(context.getId(), monitor);
+        pendingMonitorsList.remove(context.getId());
+        // ApplicationBuilder.
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Monitor has been added successfully for: %s",
+                    context.getId()));
         }
     }
+}
 
 
 }
