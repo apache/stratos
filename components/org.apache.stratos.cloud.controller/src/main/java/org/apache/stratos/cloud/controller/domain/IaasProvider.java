@@ -221,6 +221,7 @@ public class IaasProvider implements Serializable {
                 if(iaas == null) {
                     try {
                         iaas = CloudControllerUtil.createIaasInstance(this);
+                        iaas.initialize();
                     } catch (InvalidIaasProviderException e) {
                         throw new RuntimeException("Could not create IaaS instance", e);
                     }
@@ -228,10 +229,6 @@ public class IaasProvider implements Serializable {
             }
     	}
         return iaas;
-    }
-
-    public void setIaas(Iaas iaas) {
-        this.iaas = iaas;
     }
     
     public void reset(){

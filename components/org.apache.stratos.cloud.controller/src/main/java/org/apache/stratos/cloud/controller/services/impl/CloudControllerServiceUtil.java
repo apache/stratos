@@ -48,9 +48,7 @@ public class CloudControllerServiceUtil {
     private static final Log log = LogFactory.getLog(CloudControllerServiceUtil.class);
 
     public static Iaas buildIaas(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        Iaas iaas = iaasProvider.getIaas();
-        iaas.initialize();
-        return iaas;
+        return iaasProvider.getIaas();
     }
 
     /**
