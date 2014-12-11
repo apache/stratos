@@ -64,7 +64,7 @@ RESTCalls = new function(){
     };
 
     this.deployGroupDefinition = function(groupDefinition){
-        return this.send("POST","/group/definition", groupDefinition);
+        return this.send("POST","/groups", groupDefinition);
     };
 
     this.deployApplicationDefinition = function(applicationDefinition){
