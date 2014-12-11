@@ -7,26 +7,8 @@
             "title": "Configurations",
             "icon": "fa-gears",
             "permissionPaths": ["/permission", "/permission/admin"],
-            "description": "Configure partitions, deployment and scaling policies, cartridges and manage docker groups",
+            "description": "Configure Auto-scaling policies, cartridges and manage docker groups",
             "sub-menu": [
-                {
-                    "link": "configure/partitions/",
-                    "linkexternal": false,
-                    "context": "/configure",
-                    "title": "Partitions",
-                    "icon": "fa-th-large",
-                    "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define partitions/partition groups to be used in autoscaling and deployment policies."
-                },
-                {
-                    "link": "configure/deployments/",
-                    "linkexternal": false,
-                    "context": "/configure",
-                    "title": "Deployment Policies",
-                    "icon": "fa-road",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/deploymentpolicy"],
-                    "description": "Define specific policies for cartridge deployment."
-                },
                 {
                     "link": "configure/autoscalingpolicies/",
                     "linkexternal": false,
@@ -35,15 +17,6 @@
                     "icon": "fa-expand",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
                     "description": "Define policies which specify inbound requests, memory usage and CPU usage etc."
-                },
-                {
-                    "link": "configure/loadbalancer/",
-                    "linkexternal": false,
-                    "context": "/configure",
-                    "title": "Load Balancers",
-                    "icon": "fa-tasks",
-                    "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define load balancer for cartridges."
                 },
                 {
                     "link": "configure/cartridges/",
@@ -61,19 +34,8 @@
                     "title": "Docker Clusters",
                     "icon": "fa-sitemap",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define and manage multitenant services."
+                    "description": "Define and manage docker clusters."
                 }
-                /*     ,
-                 {
-                 "link": "configure/application/",
-                 "linkexternal":false,
-                 "context":"/configure",
-                 "title": "Application Deployment",
-                 "icon": "fa-archive ",
-                 "permissionPaths": ["/permission","/permission/admin"],
-                 "description": "Define and manage multitenant services."
-                 }
-                 */
             ]
         },
         {
@@ -118,10 +80,10 @@
                     "link": "applications/groups/",
                     "linkexternal": false,
                     "context": "/applications",
-                    "title": "Application Groups",
+                    "title": "Groups",
                     "icon": "fa-briefcase",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Add application groups."
+                    "description": "Add cartridge groups."
                 },
                 {
                     "link": "applications/applications/",
@@ -131,18 +93,18 @@
                     "icon": "fa-archive",
                     "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
                     "description": "Add applications"
+                },
+                {
+                    "link": "applications/deployments/",
+                    "linkexternal": false,
+                    "context": "/applications",
+                    "title": "Deployment Policies",
+                    "icon": "fa-road",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/deploymentpolicy"],
+                    "description": "Define specific policies for application deployment."
                 }
             ]
         },
-//        {
-//            "link": "mycartridges/",
-//            "linkexternal": false,
-//            "context": "/",
-//            "title": "Instances",
-//            "icon": "fa-inbox",
-//            "permissionPaths": ["/permission", "/permission/admin/manage/view/subscription"],
-//            "description": "Your Instances"
-//        },
         {
             "link": "https://issues.apache.org/jira/",
             "linkexternal": true,

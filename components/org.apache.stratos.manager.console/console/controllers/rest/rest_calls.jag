@@ -23,36 +23,12 @@
 RESTCalls = new function(){
     var log = new Log('RESTCalls');
 
-    this.getAvailableSingleTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list",{});
-    };
-
-    this.getAvailableMultiTenantCartridges = function(){
-        return this.sendReceive("GET","/cartridge/tenanted/list",{});
-    };
-
-    this.getSubscribedCartridges = function(){
-        return this.sendReceive("GET","/cartridge/list/subscribed",{});
-    }
-
     this.getTenants = function(){
-        return this.sendReceive("GET","/tenant/list",{});
-    };
-
-    this.getServices = function(){
-        return this.sendReceive("GET","/service",{});
+        return this.sendReceive("GET","/tenants",{});
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
-        return this.send("POST","/cartridge/definition",cartridgeDefinition);
-    };
-
-    this.deployServiceDefinition = function(serviceDefinition){
-        return this.send("POST","/service/definition",serviceDefinition);
-    };
-
-    this.deployLbDefinition = function(lbDefinition){
-        return this.send("POST","/cartridge/definition",lbDefinition);
+        return this.send("POST","/cartridges", cartridgeDefinition);
     };
 
     this.activateTenant = function(tenantDomain){
@@ -67,32 +43,32 @@ RESTCalls = new function(){
         return this.send("DELETE","/tenant/" + tenantDomain,{});
     };
 
+    this.deleteUser = function(userName){
+        return this.send("DELETE","/users/" + userName,{});
+    };
+
     this.checkAvailability = function(tenantDomain){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployPartitionDefinition = function(partitionDefinition){
-        return this.send("POST","/policy/deployment/partition",partitionDefinition);
-    };
-
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/deployment",policyDefinition);
+        return this.send("POST","/deploymentPolicies",policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/autoscale",policyDefinition);
+        return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
     this.deployKubernetesGroupDefinition = function(groupDefinition){
-        return this.send("POST","/kubernetes/deploy/group",groupDefinition);
+        return this.send("POST","/kubernetesClusters",groupDefinition);
     };
 
     this.deployGroupDefinition = function(groupDefinition){
-        return this.send("POST","/group/definition", groupDefinition);
+        return this.send("POST","/groups", groupDefinition);
     };
 
     this.deployApplicationDefinition = function(applicationDefinition){
-        return this.send("POST","/application/definition", applicationDefinition);
+        return this.send("POST","/applications", applicationDefinition);
     };
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
@@ -100,12 +76,12 @@ RESTCalls = new function(){
     };
 
     this.addTenant = function(tenantInfoBean){
-        return this.sendReceive("POST","/tenant",tenantInfoBean);
+        return this.sendReceive("POST","/tenants",tenantInfoBean);
     };
 
 
     this.addUser = function(userInfoBean){
-        return this.sendReceive("POST","/user", userInfoBean);
+        return this.sendReceive("POST","/users", userInfoBean);
     };
 
     this.syncRepo = function(alias){
@@ -121,15 +97,11 @@ RESTCalls = new function(){
     };
 
     this.getKubernetesGroups = function(){
-        return this.sendReceive("GET","/kubernetes/group",{});
+        return this.sendReceive("GET","/kubernetesClusters",{});
     };
 
     this.getApplicableDeploymentPolicies = function(cartridgeType){
         return this.sendReceive("GET","/" + cartridgeType + "/policy/deployment/",{});
-    };
-
-    this.getPartitions = function(){
-        return this.sendReceive("GET","/partition",{});
     };
 
     this.getSingleTenantCartridgeInfo = function(cartridgeType){
@@ -141,21 +113,17 @@ RESTCalls = new function(){
     };
 
     this.getPolicyAutoScale = function(){
-        return this.sendReceive("GET","/policy/autoscale",{});
+        return this.sendReceive("GET","/autoscalingPolicies",{});
     };
 
     this.getPolicyDeployment = function(){
-        return this.sendReceive("GET","/policy/deployment",{});
+        return this.sendReceive("GET","/deploymentPolicies",{});
     };
     this.unsubscribeCartridge = function(alias){
         return this.send("POST","/cartridge/unsubscribe",alias);
     };
     this.getCartridges = function(){
-        return this.sendReceive("GET","/cartridge/available/list",{});
-    };
-
-    this.getLbCartridges = function(){
-        return this.sendReceive("GET","/cartridge/lb",{});
+        return this.sendReceive("GET","/cartridges",{});
     };
 
     this.getGroups = function(){
@@ -163,19 +131,15 @@ RESTCalls = new function(){
     };
 
     this.getApplications = function(){
-        return this.sendReceive("GET","/application",{});
+        return this.sendReceive("GET","/applications",{});
     };
 
     this.getApplicationTopology = function(appId){
-        return this.sendReceive("GET","/application/" + appId,{});
+        return this.sendReceive("GET","/applications/" + appId,{});
     };
 
     this.getClusterInfo = function(clusterId){
         return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
-    };
-
-    this.getLBClusterInfo = function(){
-        return this.sendReceive("GET","/cluster/lb",{});
     };
 
     this.getClusterInfoWithAlias = function(cartridgeType, alias){
@@ -183,9 +147,6 @@ RESTCalls = new function(){
     };
     this.getCartridgeInfo = function(alias){
         return this.sendReceive("GET","/cartridge/info/"+alias,{});
-    };
-    this.getCartridgeServiceGroup = function(serviceGroup){
-        return this.sendReceive("GET","/cartridge/list/subscribed/group/"+serviceGroup,{});
     };
     this.validateCaptcha = function(captchaText){
         return this.sendReceive("POST","/captcha",captchaText);
@@ -197,7 +158,7 @@ RESTCalls = new function(){
         return this.sendReceive("DELETE","/cartridge/definition/"+cartridgeType,{});
     };
     this.getUserList = function(){
-        return this.sendReceive("GET", "/user/list", {});
+        return this.sendReceive("GET", "/users", {});
     }
     this.getConfigStatus = function(){
         var configStatus = {};

@@ -36,6 +36,9 @@ try {
         case "applications":
             formSubmit = util.RESTCalls.deployApplicationDefinition(formPayload);
             break;
+        case "deployments":
+            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 

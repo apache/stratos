@@ -30,23 +30,11 @@ include('/controllers/login/validator.jag');
 
 try {
     switch (formtype) {
-        case "partitions":
-            formSubmit = util.RESTCalls.deployPartitionDefinition(formPayload);
-            break;
         case "autoscalingpolicies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
-        case "deployments":
-            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
-            break;
-        case "loadbalancer":
-            formSubmit = util.RESTCalls.deployLbDefinition(formPayload);
-            break;
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
-            break;
-        case "multitenant":
-            formSubmit = util.RESTCalls.deployServiceDefinition(formPayload);
             break;
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesGroupDefinition(formPayload);

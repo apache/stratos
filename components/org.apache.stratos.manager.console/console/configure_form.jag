@@ -69,21 +69,6 @@ if (elements.action != 'new' && isEdit) {
 var formtype = elements.formtype;
 
 switch (formtype) {
-    case "partitions":
-        list_data = util.RESTCalls.getPartitions();
-        if (list_data.partition && list_data.partition.length === 0) {
-            list_data = null;
-        } else {
-            formDataEdit = list_data.partition;
-            for (specNumber in list_data.partition) {
-                if (list_data.partition[specNumber].id == elements.action) {
-                    formDataEdit = list_data.partition[specNumber];
-                }
-
-            }
-
-        }
-        break;
 
     case "autoscalingpolicies":
         list_data = util.RESTCalls.getPolicyAutoScale();
@@ -94,43 +79,6 @@ switch (formtype) {
             for (specNumber in list_data.autoscalePolicy) {
                 if (list_data.autoscalePolicy[specNumber].id == elements.action) {
                     formDataEdit = list_data.autoscalePolicy[specNumber];
-                }
-
-            }
-        }
-        break;
-
-    case "deployments":
-        list_data = util.RESTCalls.getPolicyDeployment();
-        if(list_data == null) {
-            list_data = util.RESTCalls.getPartitions()
-            if(list_data.partition && list_data.partition.length === 0){
-                list_data = null;
-                dependancy = 'partitions';
-            }else{
-                list_data = null;
-            }
-        }else{
-            formDataEdit = list_data.deploymentPolicy;
-            for (specNumber in list_data.deploymentPolicy) {
-                if (list_data.deploymentPolicy[specNumber].id == elements.action) {
-                    formDataEdit = list_data.deploymentPolicy[specNumber];
-                }
-
-            }
-            //TODO need to add listing with corrected JSON
-        }
-        break;
-
-    case "loadbalancer":
-        list_data = util.RESTCalls.getLbCartridges();
-        if (list_data.cartridge && list_data.cartridge.length === 0) {
-            list_data = null;
-        }else{
-            formDataEdit = list_data.cartridge;
-            for (specNumber in list_data.cartridge) {
-                if (list_data.cartridge[specNumber].cartridgeType == elements.action) {
-                    formDataEdit = list_data.cartridge[specNumber];
                 }
 
             }
@@ -157,17 +105,10 @@ switch (formtype) {
         }
         break;
 
-    case "multitenant":
-        list_data = util.RESTCalls.getServices();
-        if (list_data.serviceDefinitionBean && list_data.serviceDefinitionBean.length === 0) {
-            list_data = null;
-        }
-        break;
-
     case "docker":
         list_data = util.RESTCalls.getKubernetesGroups();
-        if(list_data.kubernetesGroup && list_data.kubernetesGroup.length === 0){
-            list_data = null;
+        if(list_data == null){
+            list_data = null; //TODO endpoint doesn't return correct info
         }else{
             formDataEdit = list_data.kubernetesGroup;
             for (specNumber in list_data.kubernetesGroup) {
