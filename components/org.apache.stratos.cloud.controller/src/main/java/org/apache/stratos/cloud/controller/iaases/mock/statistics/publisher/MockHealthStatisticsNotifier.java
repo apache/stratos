@@ -47,44 +47,38 @@ public class MockHealthStatisticsNotifier implements Runnable {
     public void run() {
         try {
             if (statsPublisher.isEnabled()) {
-                try {
-                    MockHealthStatistics.getInstance().acquireReadLock(mockMemberContext.getServiceName());
+                double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
+                        mockMemberContext.getServiceName(), MockAutoscalingFactor.MemoryConsumption);
+                double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
+                        mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
 
-                    double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
-                            mockMemberContext.getServiceName(), MockAutoscalingFactor.MemoryConsumption);
-                    double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
-                            mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
-
-                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
-                                mockMemberContext.getMemberId(), memoryConsumption));
-                    }
-                    statsPublisher.publish(
-                            mockMemberContext.getClusterId(),
-                            mockMemberContext.getInstanceId(),
-                            mockMemberContext.getNetworkPartitionId(),
-                            mockMemberContext.getMemberId(),
-                            mockMemberContext.getPartitionId(),
-                            MEMORY_CONSUMPTION,
-                            memoryConsumption
-                    );
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
-                                mockMemberContext.getMemberId(), loadAvereage));
-                    }
-                    statsPublisher.publish(
-                            mockMemberContext.getClusterId(),
-                            mockMemberContext.getInstanceId(),
-                            mockMemberContext.getNetworkPartitionId(),
-                            mockMemberContext.getMemberId(),
-                            mockMemberContext.getPartitionId(),
-                            LOAD_AVERAGE,
-                            loadAvereage
-                    );
-                } finally {
-                    MockHealthStatistics.getInstance().releaseReadLock(mockMemberContext.getServiceName());
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
+                            mockMemberContext.getMemberId(), memoryConsumption));
                 }
+                statsPublisher.publish(
+                        mockMemberContext.getClusterId(),
+                        mockMemberContext.getInstanceId(),
+                        mockMemberContext.getNetworkPartitionId(),
+                        mockMemberContext.getMemberId(),
+                        mockMemberContext.getPartitionId(),
+                        MEMORY_CONSUMPTION,
+                        memoryConsumption
+                );
+
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
+                            mockMemberContext.getMemberId(), loadAvereage));
+                }
+                statsPublisher.publish(
+                        mockMemberContext.getClusterId(),
+                        mockMemberContext.getInstanceId(),
+                        mockMemberContext.getNetworkPartitionId(),
+                        mockMemberContext.getMemberId(),
+                        mockMemberContext.getPartitionId(),
+                        LOAD_AVERAGE,
+                        loadAvereage
+                );
             } else if (log.isWarnEnabled()) {
                 log.warn("Statistics publisher is disabled");
             }

@@ -35,11 +35,9 @@ public class MockHealthStatistics {
 
     private static volatile MockHealthStatistics instance;
 
-    private Map<String, ReentrantReadWriteLock> lockMap;
     private Map<String, Map<String, Integer>> statisticsMap;
 
     private MockHealthStatistics() {
-        lockMap = new ConcurrentHashMap<String, ReentrantReadWriteLock>();
         statisticsMap = new ConcurrentHashMap<String, Map<String, Integer>>();
     }
 
@@ -54,44 +52,15 @@ public class MockHealthStatistics {
         return instance;
     }
 
-    public void acquireReadLock(String cartridgeType) {
-        ReentrantReadWriteLock lock = getLock(cartridgeType);
-        lock.readLock().lock();
-    }
-
-    public void acquireWriteLock(String cartridgeType) {
-        ReentrantReadWriteLock lock = getLock(cartridgeType);
-        lock.writeLock().lock();
-    }
-
-    public void releaseReadLock(String cartridgeType) {
-        ReentrantReadWriteLock lock = getLock(cartridgeType);
-        lock.readLock().unlock();
-    }
-
-    public void releaseWriteLock(String cartridgeType) {
-        ReentrantReadWriteLock lock = getLock(cartridgeType);
-        lock.writeLock().unlock();
-    }
-
-    private ReentrantReadWriteLock getLock(String cartridgeType) {
-        ReentrantReadWriteLock lock = lockMap.get(cartridgeType);
-        if(lock == null) {
-            synchronized (MockHealthStatistics.class) {
-                if(lock == null) {
-                    lock = new ReentrantReadWriteLock();
-                    lockMap.put(cartridgeType, lock);
-                }
-            }
-        }
-        return lock;
-    }
-
     public void addStatistics(String cartridgeType, MockAutoscalingFactor autoscalingFactor, Integer value) {
         Map<String, Integer> factorValueMap = statisticsMap.get(cartridgeType);
         if(factorValueMap == null) {
-            factorValueMap = new ConcurrentHashMap<String, Integer>();
-            statisticsMap.put(cartridgeType, factorValueMap);
+            synchronized (MockHealthStatistics.class) {
+                if(factorValueMap == null) {
+                    factorValueMap = new ConcurrentHashMap<String, Integer>();
+                    statisticsMap.put(cartridgeType, factorValueMap);
+                }
+            }
         }
         factorValueMap.put(autoscalingFactor.toString(), value);
     }

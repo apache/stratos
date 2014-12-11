@@ -40,8 +40,6 @@ public class MockHealthStatisticsUpdater implements Runnable {
     @Override
     public void run() {
         try {
-            MockHealthStatistics.getInstance().acquireWriteLock(statisticsPattern.getCartridgeType());
-
             int nextSample = statisticsPattern.getNextSample();
             MockHealthStatistics.getInstance().addStatistics(statisticsPattern.getCartridgeType(),
                     statisticsPattern.getFactor(), nextSample);
@@ -52,8 +50,6 @@ public class MockHealthStatisticsUpdater implements Runnable {
             }
         } catch (Exception e) {
             log.error("Could not update mock statistics", e);
-        } finally {
-            MockHealthStatistics.getInstance().releaseWriteLock(statisticsPattern.getCartridgeType());
         }
     }
 }
