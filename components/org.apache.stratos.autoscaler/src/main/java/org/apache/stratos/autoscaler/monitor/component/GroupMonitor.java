@@ -185,13 +185,13 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             onChildActivatedEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
-            //handling restart of stratos
-            if (!aliasToActiveMonitorsMap.get(childId).hasStartupDependents()) {
+            //TODO handling restart of stratos
+            /*if (!aliasToActiveMonitorsMap.get(childId).hasStartupDependents()) {
                 onChildActivatedEvent(childId, instanceId);
-            } else {
+            } else {*/
                 markInstanceAsInactive(childId, instanceId);
                 onChildInactiveEvent(childId, instanceId);
-            }
+            //}
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
             //mark the child monitor as inactive in the map
