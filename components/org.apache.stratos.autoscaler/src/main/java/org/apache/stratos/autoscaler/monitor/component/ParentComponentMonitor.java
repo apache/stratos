@@ -504,7 +504,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsInactive(String childId, String instanceId) {
-        if (!this.inactiveInstancesMap.containsKey(childId)) {
+        if (this.inactiveInstancesMap.containsKey(childId)) {
             this.inactiveInstancesMap.get(childId).add(instanceId);
         } else {
             List<String> instanceIds = new ArrayList<String>();
