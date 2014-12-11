@@ -290,4 +290,13 @@ public class PolicyManager {
         return null;
     }
 
+    public String getDeploymentPolicyIdByApplication(String appId) {
+        for(Map.Entry<String, DeploymentPolicy> entry : deploymentPolicyListMap.entrySet()) {
+            if(entry.getValue().getApplicationId().equals(appId)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
 }

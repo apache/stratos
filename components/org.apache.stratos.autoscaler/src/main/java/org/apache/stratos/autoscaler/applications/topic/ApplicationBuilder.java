@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
@@ -317,6 +318,16 @@ public class ApplicationBuilder {
                     //Removing the application from memory and registry
                     //ApplicationHolder.removeApplication(appId);
                     log.info("Application run time is removed: [application-id] " + appId);
+                    // Check whether given application is deployed
+                    String policyId = PolicyManager.getInstance().getDeploymentPolicyIdByApplication(appId);
+                    if(policyId != null) {
+                        try {
+                            PolicyManager.getInstance().undeployDeploymentPolicy(policyId);
+                        } catch (InvalidPolicyException e) {
+                            log.error("Error while unDeploying the policy for [application] " + appId);
+                        }
+                    }
+
                 }
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, instanceId);
             } else {
