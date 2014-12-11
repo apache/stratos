@@ -26,7 +26,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -143,28 +143,28 @@ public class Util {
     }
     
     public static void alertTenantRenames(int tenantId, String oldName, 
-                                          String newName) throws StratosException {
+                                          String newName) throws ApacheStratosException {
 
         for (TenantMgtListener tenantMgtLister : tenantMgtListeners) {
             tenantMgtLister.onTenantRename(tenantId, oldName, newName);
         }
     }
     
-    public static void alertTenantDeactivation(int tenantId) throws StratosException {
+    public static void alertTenantDeactivation(int tenantId) throws ApacheStratosException {
 
         for (TenantMgtListener tenantMgtLister : tenantMgtListeners) {
             tenantMgtLister.onTenantDeactivation(tenantId);
         }
     }
     
-    public static void alertTenantInitialActivation(int tenantId) throws StratosException {
+    public static void alertTenantInitialActivation(int tenantId) throws ApacheStratosException {
 
         for (TenantMgtListener tenantMgtLister : tenantMgtListeners) {
             tenantMgtLister.onTenantInitialActivation(tenantId);
         }
     }
     
-    public static void alertTenantUpdate(TenantInfoBean tenantInfoBean) throws StratosException {
+    public static void alertTenantUpdate(TenantInfoBean tenantInfoBean) throws ApacheStratosException {
 
         for (TenantMgtListener tenantMgtLister : tenantMgtListeners) {
             tenantMgtLister.onTenantUpdate(tenantInfoBean);

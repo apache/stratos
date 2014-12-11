@@ -19,15 +19,8 @@
 
 package org.apache.stratos.manager.publisher;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.retriever.DataInsertionAndRetrievalManager;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
@@ -38,9 +31,11 @@ import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.util.Util;
-import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.ntask.core.Task;
+import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.user.core.tenant.TenantManager;
+
+import java.util.*;
 
 /**
  * Tenant synchronizer task for publishing complete tenant event periodically
@@ -79,7 +74,7 @@ public class TenantSynzhronizerTask implements Task {
 					TenantInfoBean tenantBean = new TenantInfoBean();
 					tenantBean.setTenantId(carbonTenant.getId());
 					tenantBean.setTenantDomain(carbonTenant.getDomain());
-					TenantMgtUtil.triggerAddTenant(tenantBean);
+					//TenantMgtUtil.triggerAddTenant(tenantBean);
 					// add tenant to Tenant Manager
 					org.apache.stratos.messaging.message.receiver.tenant.TenantManager.getInstance()
 					                                                                  .addTenant(tenant);

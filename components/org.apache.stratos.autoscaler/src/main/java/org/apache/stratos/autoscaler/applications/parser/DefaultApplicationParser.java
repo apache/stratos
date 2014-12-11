@@ -19,6 +19,8 @@
 
 package org.apache.stratos.autoscaler.applications.parser;
 
+import org.apache.amber.oauth2.common.exception.OAuthProblemException;
+import org.apache.amber.oauth2.common.exception.OAuthSystemException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -30,6 +32,9 @@ import org.apache.stratos.autoscaler.applications.STClusterInformation;
 import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
+import org.apache.stratos.autoscaler.client.oAuthAdminServiceClient;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -41,10 +46,12 @@ import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.DependencyOrder;
 import org.apache.stratos.messaging.domain.applications.Group;
+import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import java.rmi.RemoteException;
 import java.util.*;
 
 /**
@@ -787,13 +794,12 @@ public class DefaultApplicationParser implements ApplicationParser {
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases, properties);
-        //TOD payloadData.add("TOKEN", createToken(appId));
+        payloadData.add("TOKEN", createToken(appId));
         String textPayload = payloadData.toString();
 
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
-    /*
     public String  createToken(String appid) throws AutoScalerException {
         String token = null;
         String ouathAppName = appid + Math.random();
@@ -820,7 +826,6 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         return token;
     }
-    */
     private CartridgeInfo getCartridge (String cartridgeType) throws ApplicationDefinitionException {
 
         try {

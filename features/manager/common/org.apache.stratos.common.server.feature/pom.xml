@@ -57,15 +57,17 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tenant.activity</artifactId>
         </dependency>-->       
+<!--
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.tenant.dispatcher</artifactId>
 	    <version>${project.version}</version>
         </dependency>
+-->
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.redirector.servlet</artifactId>
-	    <version>${project.version}</version>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.redirector.servlet</artifactId>
+	    <version>2.2.1</version>
         </dependency>
         <!--<dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -109,11 +111,6 @@
         </dependency>
 
 
-        <dependency>
-        	<groupId>org.apache.stratos</groupId>
-        	<artifactId>org.apache.stratos.tenant.mgt</artifactId>
-        	<version>${project.version}</version>
-        </dependency>
 		
 		<dependency>
 			<groupId>kaptcha.wso2</groupId>
@@ -126,19 +123,14 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.tenant.mgt.core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.captcha.mgt</artifactId>
 			<version>${wso2carbon.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.theme.mgt</artifactId>
-			<version>${project.version}</version>
+			<groupId>org.wso2.carbon</groupId>
+			<artifactId>org.wso2.carbon.theme.mgt</artifactId>
+			<version>2.2.0</version>
 		</dependency>
     </dependencies>
 
@@ -198,10 +190,12 @@
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.common:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet:2.2.1</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.activation:${project.version}</bundleDef>
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.sample.installer:${stratos.version}</bundleDef>-->
+<!--
                                 <bundleDef>org.apache.stratos:org.apache.stratos.tenant.dispatcher</bundleDef>
+-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent</bundleDef>-->
 				<!--<bundleDef>org.wso2.carbon:org.wso2.carbon.throttling.agent.stub</bundleDef>-->
                                 <!--<bundleDef>org.wso2.carbon:org.wso2.carbon.usage.agent</bundleDef>-->
@@ -214,12 +208,10 @@
                                 
                                 <!-- Tenant Mgmt -->
                                 <bundleDef>org.json.wso2:json</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt:${project.version}</bundleDef>
 				<bundleDef>kaptcha.wso2:kaptcha</bundleDef>
 				<bundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core:${project.version}</bundleDef>
 				<bundleDef>org.wso2.carbon:org.wso2.carbon.captcha.mgt</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.theme.mgt:${project.version}</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt:2.2.0</bundleDef>
                                 <!-- End Tenant Mgmt -->
                                 
                             </bundles>

@@ -59,10 +59,12 @@
         <module>org.apache.stratos.load.balancer.extension.api</module>
         <!-- Tenant Mgt -->
         <module>org.apache.stratos.register.ui</module>
+<!--
         <module>org.apache.stratos.tenant.mgt.core</module>
         <module>org.apache.stratos.tenant.mgt</module>
         <module>org.apache.stratos.tenant.mgt.ui</module>
         <module>org.apache.stratos.tenant.mgt.email.sender</module>
+-->
         <!-- Tenant Activity -->
         <module>org.apache.stratos.tenant.activity</module>
         <module>org.apache.stratos.tenant.activity.ui</module>
@@ -79,8 +81,10 @@
         <module>org.apache.stratos.throttling.ui</module-->
         <!-- Redirector -->
         <module>org.apache.stratos.sso.redirector.ui</module>
+<!--
         <module>org.apache.stratos.redirector.servlet</module>
         <module>org.apache.stratos.redirector.servlet.ui</module>
+-->
         <!-- Status Monitor -->
         <module>org.apache.stratos.status.monitor.core</module>
         <module>org.apache.stratos.status.monitor</module>
@@ -92,12 +96,14 @@
         <module>org.apache.stratos.usage.summary.helper</module>
         <module>org.apache.stratos.usage.ui</module-->
 
-        <module>org.apache.stratos.tenant.dispatcher</module>
+        <!--<module>org.apache.stratos.tenant.dispatcher</module>-->
         <module>org.apache.stratos.keystore.mgt</module>
         <module>org.apache.stratos.activation</module>
         <!-- Theme mgt -->
+<!--
         <module>org.apache.stratos.theme.mgt.ui</module>
         <module>org.apache.stratos.theme.mgt</module>
+-->
         <!--Logging mgt-->
         <module>org.apache.stratos.logging.view.ui</module>
         <!-- RESTful admin services -->
