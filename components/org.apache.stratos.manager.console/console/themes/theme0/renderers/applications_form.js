@@ -22,7 +22,7 @@ var render = function (theme, data, meta, require) {
 
     if(data.error.length === 0 ){
 
-        if(data.applicationView == true){
+        if(data.applicationView == true) {
             theme('index', {
                 page_meta: [
                     {
@@ -33,42 +33,42 @@ var render = function (theme, data, meta, require) {
                         }
                     }
                 ],
-                header:[
+                header: [
                     {
                         partial: 'index_header',
-                        context:{
+                        context: {
                         }
                     }
                 ],
-                sub_header:[
+                sub_header: [
                     {
-                        partial:'index_sub_header',
-                        context:{
-                            breadcrumbPathLevelOne:data.breadcrumbPathLevelOne,
-                            breadcrumbPathLevelTwo:data.breadcrumbPathLevelTwo
+                        partial: 'index_sub_header',
+                        context: {
+                            breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                            breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
                         }
                     }
                 ],
-                left_menu:[
+                left_menu: [
                     {
-                        partial:'index_left_menu',
-                        context:{
-                            left_menu:data.left_menu
+                        partial: 'index_left_menu',
+                        context: {
+                            left_menu: data.left_menu
                         }
                     }
                 ],
-                right_menu_help:[
+                right_menu_help: [
                     {
-                        partial:'index_right_menu_help',
-                        context:{
+                        partial: 'index_right_menu_help',
+                        context: {
 
                         }
                     }
                 ],
                 content: [
                     {
-                        partial:'applications_topology',
-                        context:{
+                        partial: 'applications_topology',
+                        context: {
                             formContext: data.breadcrumbPathLevelTwo,
                             appName: data.appName,
                             topology_data: data.topology_data,
@@ -78,10 +78,74 @@ var render = function (theme, data, meta, require) {
                             formDataRaw: data.formDataRaw,
                             formDataEdit: data.formDataEdit,
                             isForm: data.isForm,
-                            isEdit:data.isEdit,
+                            isEdit: data.isEdit,
                             formTitle: data.formTitle,
-                            content_body: {sections:
-                                data.list_data
+                            content_body: {sections: data.list_data
+                            }
+                        }
+                    }
+
+                ]
+            });
+        }else if(data.applicationEditor == true){
+            theme('index', {
+                page_meta: [
+                    {
+                        partial: 'index_title',
+                        context: {
+                            page_title: 'Apache Stratos - Application Managment',
+                            page_description: 'Apache Stratos - Application Managment'
+                        }
+                    }
+                ],
+                header: [
+                    {
+                        partial: 'index_header',
+                        context: {
+                        }
+                    }
+                ],
+                sub_header: [
+                    {
+                        partial: 'index_sub_header',
+                        context: {
+                            breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                            breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
+                        }
+                    }
+                ],
+                left_menu: [
+                    {
+                        partial: 'index_left_menu',
+                        context: {
+                            left_menu: data.left_menu
+                        }
+                    }
+                ],
+                right_menu_help: [
+                    {
+                        partial: 'index_right_menu_help',
+                        context: {
+
+                        }
+                    }
+                ],
+                content: [
+                    {
+                        partial: 'applications_editor',
+                        context: {
+                            formContext: data.breadcrumbPathLevelTwo,
+                            appName: data.appName,
+                            topology_data: data.topology_data,
+                            form_action: data.form_action,
+                            formHtml: data.formHtml,
+                            formData: data.formData,
+                            formDataRaw: data.formDataRaw,
+                            formDataEdit: data.formDataEdit,
+                            isForm: data.isForm,
+                            isEdit: data.isEdit,
+                            formTitle: data.formTitle,
+                            content_body: {sections: data.list_data
                             }
                         }
                     }
