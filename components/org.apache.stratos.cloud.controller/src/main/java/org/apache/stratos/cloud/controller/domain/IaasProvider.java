@@ -88,6 +88,7 @@ public class IaasProvider implements Serializable {
     	this.type = anIaasProvider.getType();
     	this.name = anIaasProvider.getName();
     	this.className = anIaasProvider.getClassName();
+    	this.computeService = anIaasProvider.getComputeService();
     	this.properties = new HashMap<String,String>(anIaasProvider.getProperties());
     	this.networkInterfaces = anIaasProvider.getNetworkInterfaces();
     	this.image = anIaasProvider.getImage();
