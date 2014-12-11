@@ -87,12 +87,12 @@
                 success: function(msg) {
                     var resp = msg;
                     var active = 'Active';
-                    var inActive = 'Inactive';
+                    var inactive = 'Inactive';
                     if (resp.isActive === true) {
                         document.getElementById('activeStateTable').innerHTML += '<tr><td>' + resp.service + '</td><td>' + active + '</td></tr>';
                     }
                     else {
-                        document.getElementById('activeStateTable').innerHTML += '<tr><td>' + resp.service + '</td><td>' + inActive + '</td></tr>';
+                        document.getElementById('activeStateTable').innerHTML += '<tr><td>' + resp.service + '</td><td>' + inactive + '</td></tr>';
                     }
                 },
                 error:function () {

@@ -192,7 +192,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inActive in the map
+            //mark the child monitor as inactive in the map
             this.markMonitorAsTerminating(instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
@@ -201,7 +201,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 this.terminatingMonitorsList.remove(id);
                 this.aliasToActiveMonitorsMap.remove(id);
             } else {
-                log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
+                log.warn("[monitor] " + id + " cannot be found in the inactive monitors list");
             }
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {

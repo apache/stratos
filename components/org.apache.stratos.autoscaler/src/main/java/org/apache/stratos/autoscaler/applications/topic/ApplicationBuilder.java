@@ -501,7 +501,7 @@ public class ApplicationBuilder {
 
     public static void handleGroupInActivateEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling group in-active event: [group]: " + groupId +
+            log.debug("Handling group inactive event: [group]: " + groupId +
                     " [application-id] " + appId);
         }
 

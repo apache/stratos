@@ -61,7 +61,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendGroupInstanceInActivateEvent(String appId, String groupId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing Group in-activate event for [application]: " + appId +
+            log.info("Publishing Group inactivate event for [application]: " + appId +
                     " [group]: " + groupId);
         }
         GroupInstanceInactivatedEvent groupInactivateEvent = new GroupInstanceInactivatedEvent(appId, groupId, instanceId);
@@ -102,7 +102,7 @@ public class ApplicationsEventPublisher {
 
     public static void sendApplicationInstanceInactivatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application In-activated event for [application]: " + appId);
+            log.info("Publishing Application Inactivated event for [application]: " + appId);
         }
         ApplicationInstanceInactivatedEvent applicationInActivatedEvent =
                 new ApplicationInstanceInactivatedEvent(appId, instanceId);

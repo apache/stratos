@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 
 /**
- * Cluster inActive checking processor
+ * Cluster inactive checking processor
  */
 public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
     private static final Log log = LogFactory.getLog(ClusterStatusInActiveProcessor.class);
@@ -73,7 +73,7 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
                 monitor.setHasFaultyMember(true);
             }
             if (log.isInfoEnabled()) {
-                log.info("Publishing Cluster in-activate event for [application]: "
+                log.info("Publishing Cluster inactivate event for [application]: "
                         + monitor.getAppId() + " [cluster]: " + clusterId);
             }
             //send cluster In-Active event to cluster status topic

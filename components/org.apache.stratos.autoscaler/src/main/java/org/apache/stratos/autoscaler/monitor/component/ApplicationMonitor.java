@@ -141,7 +141,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             onChildInactiveEvent(id, instanceId);
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-            //mark the child monitor as inActive in the map
+            //mark the child monitor as inactive in the map
             this.markMonitorAsTerminating(id);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
@@ -150,7 +150,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 this.terminatingMonitorsList.remove(id);
                 this.aliasToActiveMonitorsMap.remove(id);
             } else {
-                log.warn("[monitor] " + id + " cannot be found in the inActive monitors list");
+                log.warn("[monitor] " + id + " cannot be found in the inactive monitors list");
             }
             ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
@@ -273,7 +273,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         boolean burstNPFound = false;
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId = null;
-        //Find out the inActive network partition
+        //Find out the inactive network partition
         if (deploymentPolicy == null) {
             //FIXME for docker with deployment policy
             ApplicationInstance appInstance = createApplicationInstance(application, null);

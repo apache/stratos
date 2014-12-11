@@ -314,7 +314,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             //start to kill it
             if (monitor != null) {
                 if (monitor instanceof GroupMonitor) {
-                    //it is a group, so not sending terminating as it can be in inActive. If group needs terminating,
+                    //it is a group, so not sending terminating as it can be in inactive. If group needs terminating,
                     //it will be handled by the terminating case of its children
                     if (terminateAll || !notifier.equals(monitor.getId())) {
                         ApplicationBuilder.handleGroupTerminatingEvent(this.appId,
