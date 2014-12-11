@@ -69,13 +69,14 @@ var formtype = elements.formtype;
 switch (formtype) {
     case "groups":
         list_data = util.RESTCalls.getGroups();
-        if (list_data.serviceGroup && list_data.serviceGroup.length === 0) {
+            log.info(list_data)
+        if (list_data.groups && list_data.groups.length === 0) {
             list_data = null;
         }else{
-            formDataEdit = list_data.serviceGroup;
-            for (specNumber in list_data.serviceGroup) {
-                if (list_data.serviceGroup[specNumber].name == elements.action) {
-                    formDataEdit = list_data.serviceGroup[specNumber];
+            formDataEdit = list_data.groups;
+            for (specNumber in list_data.groups) {
+                if (list_data.groups[specNumber].name == elements.action) {
+                    formDataEdit = list_data.groups[specNumber];
                 }
 
             }
