@@ -22,7 +22,6 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent;
 import org.apache.stratos.messaging.event.applications.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -30,7 +29,7 @@ import org.apache.stratos.messaging.util.Util;
 
 public class ApplicationDeletedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(ApplicationCreatedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(ApplicationDeletedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -72,27 +71,24 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {
-
-        // check if required properties are available
-        if (event.getApplication() == null) {
-            String errorMsg = "Application object of application deleted event is invalid";
-            log.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
-
-        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier().isEmpty()) {
-            String errorMsg = "App id of application deleted event is invalid: [ " + event.getApplication().getUniqueIdentifier() + " ]";
-            log.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
-
-        //TODO Check before removing whether there are any deloyments alive
+    private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {    	
         
+    	// check if required properties are available
+        if (event.getAppId() == null || event.getAppId().isEmpty()) {
+            String errorMsg = "App id of application deleted event is invalid: [ " + event.getAppId() + " ]";
+            log.error(errorMsg);
+            throw new RuntimeException(errorMsg);
+        }
+      
     	// Remove application and clusters from topology
         applications.removeApplication(event.getAppId());
 
         notifyEventListeners(event);
+        
+        if (log.isInfoEnabled()) {
+        	log.info("[Application] " + event.getAppId() + " has been successfully removed");
+        }
+        
         return true;
     }
 }

@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.messaging.event.applications;
 
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.event.Event;
 
@@ -29,25 +28,22 @@ import java.util.Set;
  * This event will be fired upon the application deletion is detected.
  */
 public class ApplicationDeletedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L; //FIXME - correct UID
 
-    private Application application;
-    //private String appId;
+	private static final long serialVersionUID = 7541596367530563340L;	
+	private String applicationId;
     private Set<ClusterDataHolder> clusterData;
 
-    public ApplicationDeletedEvent(Application application) {
-        this.application = application;
+    public ApplicationDeletedEvent(String applicationId, Set<ClusterDataHolder> clusterData) {
+        this.applicationId = applicationId;
+        this.clusterData = clusterData;
     }
 
     public String getAppId() {
-        return application.getKey();
+        return applicationId;
     }
 
     public Set<ClusterDataHolder> getClusterData() {
-        return application.getClusterDataRecursively();
+        return clusterData;
     }
     
-    public Application getApplication() {
-        return application;
-    }
 }
