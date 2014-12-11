@@ -794,7 +794,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases, properties);
-        //TOD payloadData.add("TOKEN", createToken(appId));
+        payloadData.add("TOKEN", createToken(appId));
         String textPayload = payloadData.toString();
 
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
