@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class MockIPAddressPool {
     private static final Log log = LogFactory.getLog(MockIPAddressPool.class);
+
     private static final String MOCK_IAAS_PRIVATE_IP_SEQUENCE = "/mock/iaas/private-ip-sequence";
     private static final String MOCK_IAAS_PUBLIC_IP_SEQUENCE = "/mock/iaas/public-ip-sequence";
     private static final String PRIVATE_IP_PREFIX = "10.0.0.";
