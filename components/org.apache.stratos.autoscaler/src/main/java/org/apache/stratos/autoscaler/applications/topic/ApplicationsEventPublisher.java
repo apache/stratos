@@ -119,12 +119,12 @@ public class ApplicationsEventPublisher {
         publishEvent(applicationTerminatingEvent);
     }
 
-    public static void sendApplicationInstanceTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+    public static void sendApplicationInstanceTerminatedEvent(String appId, String instanceId) {
         if (log.isInfoEnabled()) {
             log.info("Publishing Application terminated event for [application]: " + appId);
         }
         ApplicationInstanceTerminatedEvent applicationTerminatedEvent =
-                new ApplicationInstanceTerminatedEvent(appId, clusterData);
+                new ApplicationInstanceTerminatedEvent(appId, instanceId);
         publishEvent(applicationTerminatedEvent);
     }
 

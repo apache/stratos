@@ -81,27 +81,23 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (component.isGroupScalingEnabled()) {
-
-            } else {
-                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
-                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
-                        getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) &&
-                                getAllGroupInSameState(groups, GroupStatus.Active, instanceId)) {
-                    //send activation event
-                    if (component instanceof Application) {
-                        //send application activated event
-                        log.info("sending app activate: " + appId);
-                        ApplicationBuilder.handleApplicationInstanceActivatedEvent(appId, instanceId);
-                        return true;
-                    } else if (component instanceof Group) {
-                        //send activation to the parent
-                        log.info("sending group activate: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInstanceActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
-                        return true;
-                    }
-
+            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) ||
+                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Active, instanceId) ||
+                    getAllClusterInSameState(clusterData, ClusterStatus.Active, instanceId) &&
+                            getAllGroupInSameState(groups, GroupStatus.Active, instanceId)) {
+                //send activation event
+                if (component instanceof Application) {
+                    //send application activated event
+                    log.info("sending app activate: " + appId);
+                    ApplicationBuilder.handleApplicationInstanceActivatedEvent(appId, instanceId);
+                    return true;
+                } else if (component instanceof Group) {
+                    //send activation to the parent
+                    log.info("sending group activate: " + component.getUniqueIdentifier());
+                    ApplicationBuilder.handleGroupInstanceActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
+                    return true;
                 }
+
             }
         } finally {
             ApplicationHolder.releaseWriteLock();

@@ -31,18 +31,17 @@ public class ApplicationInstanceTerminatedEvent extends Event implements Seriali
     private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
-    private Set<ClusterDataHolder> clusterData;
-
-    public ApplicationInstanceTerminatedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+    private String instanceId;
+    public ApplicationInstanceTerminatedEvent(String appId, String instanceId) {
         this.appId = appId;
-        this.clusterData = clusterData;
+        this.instanceId = instanceId;
     }
 
     public String getAppId() {
         return appId;
     }
 
-    public Set<ClusterDataHolder> getClusterData() {
-        return clusterData;
+    public String getInstanceId() {
+        return instanceId;
     }
 }

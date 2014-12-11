@@ -151,7 +151,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
             ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
-                if (instance.getStatus() == ApplicationStatus.Terminating) {
+                if (this.isTerminating()) {
                     ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(this.id,
                             appId, instanceId);
                 } else {

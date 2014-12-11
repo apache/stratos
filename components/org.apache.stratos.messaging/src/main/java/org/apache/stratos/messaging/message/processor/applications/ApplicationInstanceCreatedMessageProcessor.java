@@ -95,7 +95,8 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
         }
 
         // check if an Application instance with same name exists in applications instance
-        if (null != applications.getApplication(event.getApplicationId()).getInstanceByNetworkPartitionId(applicationInstance.getNetworkPartitionId())) {
+        if (null != applications.getApplication(event.getApplicationId()).
+                    getInstanceByNetworkPartitionId(applicationInstance.getNetworkPartitionId())) {
 
             log.warn("Application instance with id [ " + applicationInstance.getInstanceId() + " ] already exists");
 

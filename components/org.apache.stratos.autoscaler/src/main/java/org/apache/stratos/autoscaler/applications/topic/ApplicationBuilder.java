@@ -304,7 +304,7 @@ public class ApplicationBuilder {
                     //ApplicationHolder.removeApplication(appId);
                     log.info("Application run time is removed: [application-id] " + appId);
                 }
-                ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, clusterData);
+                ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, instanceId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                                 " [current-status] %s [status-requested] %s", appId,

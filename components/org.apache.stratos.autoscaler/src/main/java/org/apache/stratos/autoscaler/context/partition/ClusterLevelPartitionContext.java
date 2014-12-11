@@ -539,6 +539,15 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         return null;
     }
 
+    public MemberContext getObsoleteMember(String memberId) {
+        for (MemberContext memberContext : obsoletedMembers.values()) {
+            if (memberId.equals(memberContext.getMemberId())) {
+                return memberContext;
+            }
+        }
+        return null;
+    }
+
     public long getTerminationPendingMemberExpiryTime() {
         return terminationPendingMemberExpiryTime;
     }

@@ -919,15 +919,19 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             //move member to pending termination list
             if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
                 partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
-            } else if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
-                // add member to obsolete list since the member is shutdown ready member
-                partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
-            }
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Member is removed from the pending termination members " +
+                            "and moved to obsolete list: [member] %s " +
+                            "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
+                }
+            } else if(partitionCtxt.getObsoleteMember(memberId) != null) {
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Member is  in obsolete list: [member] %s " +
+                            "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
+                }
+            } //TODO else part
 
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Member is terminated and removed from the active members list: [member] %s " +
-                        "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
-            }
+
         } catch (Exception e) {
             String msg = "Error processing event " + e.getLocalizedMessage();
             log.error(msg, e);

@@ -20,7 +20,9 @@ package org.apache.stratos.messaging.message.processor.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
@@ -85,9 +87,16 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
 
         // check if an Application with same name exists in applications
         String appId = event.getAppId();
+        String instanceId = event.getInstanceId();
         if (applications.applicationExists(appId)) {
             log.warn("Application with id [ " + appId + " ] still exists in Applications, removing it");
-            applications.removeApplication(appId);
+            ApplicationInstance instance = applications.getApplication(appId).
+                                                getInstanceContexts(instanceId);
+            if(instance == null) {
+                log.info("Application [Instance] " + instanceId + " has already been removed");
+            }
+            instance.setStatus(ApplicationStatus.Terminated);
+            applications.getApplication(appId).removeInstance(instanceId);
         }
 
         notifyEventListeners(event);

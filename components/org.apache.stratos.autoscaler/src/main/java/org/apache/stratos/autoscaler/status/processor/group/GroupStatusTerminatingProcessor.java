@@ -85,28 +85,24 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
             groups = component.getAliasToGroupMap();
             clusterData = component.getClusterDataMap();
 
-            if (component.isGroupScalingEnabled()) {
-
-            } else {
-                if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) ||
-                        clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId) ||
-                        getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) &&
-                                getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId)) {
-                    //send the terminated event
-                    if (component instanceof Application) {
-                        log.info("sending app terminating for [application] " + appId + " and for " +
-                                " [instance] " + instanceId);
-                        ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
-                        return true;
-                    } else if (component instanceof Group) {
-                        //send activation to the parent
-                            log.info("sending group terminating for [group] " +
-                                    component.getUniqueIdentifier() + " and for [instance] "
-                                    + instanceId);
-                            ApplicationBuilder.handleGroupTerminatingEvent(appId,
-                                    component.getUniqueIdentifier(), instanceId);
-                            return true;
-                    }
+            if (groups.isEmpty() && getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) ||
+                    clusterData.isEmpty() && getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId) ||
+                    getAllClusterInSameState(clusterData, ClusterStatus.Terminating, instanceId) &&
+                            getAllGroupInSameState(groups, GroupStatus.Terminating, instanceId)) {
+                //send the terminated event
+                if (component instanceof Application) {
+                    log.info("sending app terminating for [application] " + appId + " and for " +
+                            " [instance] " + instanceId);
+                    ApplicationBuilder.handleApplicationInstanceTerminatedEvent(appId, instanceId);
+                    return true;
+                } else if (component instanceof Group) {
+                    //send activation to the parent
+                    log.info("sending group terminating for [group] " +
+                            component.getUniqueIdentifier() + " and for [instance] "
+                            + instanceId);
+                    ApplicationBuilder.handleGroupTerminatingEvent(appId,
+                            component.getUniqueIdentifier(), instanceId);
+                    return true;
                 }
             }
         } finally {
