@@ -307,7 +307,6 @@
                                 <featureArtifactDef>org.wso2.carbon:org.apache.synapse.transport.nhttp.feature:${synapse.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.datasource.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.mediation.initializer.feature:${carbon.version}</featureArtifactDef>
-                                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.service.mgt.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.endpoint.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.sequences.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.mediators.server.feature:${carbon.version}</featureArtifactDef>
@@ -333,7 +332,7 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.cassandra.common.feature:${carbon.platform.version}</featureArtifactDef>
 				<!-- Common features -->
 				<featureArtifactDef>org.apache.stratos:org.apache.stratos.metadata.client.feature:${project.version}</featureArtifactDef>
-				<!--featureArtifactDef>org.apache.stratos:org.apache.stratos.custom.handlers.feature:${project.version}</featureArtifactDef-->
+				<featureArtifactDef>org.apache.stratos:org.apache.stratos.custom.handlers.feature:${project.version}</featureArtifactDef>
                             </featureArtifacts>
                         </configuration>
                     </execution>
@@ -562,10 +561,10 @@
                                      <id>org.wso2.carbon.user.mgt.feature.group</id>
 				     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
-				<!--feature>
+				<feature>
                                      <id>org.apache.stratos.custom.handlers.feature.group</id>
 				     <version>${project.version}</version>
-                                </feature-->
+                                </feature>
                             </features>
                         </configuration>
                     </execution>
@@ -679,7 +678,7 @@
                         </feature>
                         <feature>
                             <id>org.wso2.carbon.service.mgt.server.feature.group</id>
-                            <version>${carbon.version}</version>
+                            <version>${carbon.platform.patch.version.4.2.1}</version>
                         </feature>
                         <feature>
                             <id>org.wso2.carbon.transport.mgt.server.feature.group</id>
@@ -922,7 +921,7 @@
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.service.mgt.server.feature.group</id>
-                                    <version>${carbon.version}</version>
+                                    <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
 
                                 <feature>
@@ -1002,10 +1001,10 @@
                                     <id>org.apache.stratos.metadata.client.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
-				<!--feature>
+				<feature>
                                     <id>org.apache.stratos.custom.handlers.feature.group</id>
                                     <version>${project.version}</version>
-                                </feature-->
+                                </feature>
 
                             </features>
                         </configuration>

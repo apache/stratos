@@ -34,14 +34,14 @@
 
         <dependencies>
             <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.redirector.servlet.ui</artifactId>
-    		<version>${project.version}</version>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.redirector.servlet.ui</artifactId>
+    		<version>2.2.0</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.sso.redirector.ui</artifactId>
-            	<version>${project.version}</version>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.sso.redirector.ui</artifactId>
+            	<version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
@@ -64,16 +64,15 @@
             	<version>${project.version}</version>
             </dependency>
             <dependency>
-            	<groupId>org.apache.stratos</groupId>
-            	<artifactId>org.apache.stratos.theme.mgt.ui</artifactId>
-            	<version>${project.version}</version>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.theme.mgt.ui</artifactId>
+            	<version>2.2.0</version>
             </dependency>
             <dependency>
-            	<groupId>org.apache.stratos</groupId>
-            	<artifactId>org.apache.stratos.theme.mgt.stub</artifactId>
-            	<version>${project.version}</version>
+            	<groupId>org.wso2.carbon</groupId>
+            	<artifactId>org.wso2.carbon.theme.mgt.stub</artifactId>
+            	<version>4.2.0</version>
             </dependency>
-             
         </dependencies>
     <build>
         <plugins>
@@ -98,9 +97,9 @@
                                 </properties>
                             </adviceFile>
                             <bundles>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet.ui</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.redirector.servlet.stub:${project.version}</bundleDef>
-                                <bundleDef>org.apache.stratos:org.apache.stratos.sso.redirector.ui</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet.ui</bundleDef>
+				<bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet.stub:4.2.0</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.sso.redirector.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.google.analytics.ui</bundleDef>
                             	
                             	<!-- Tenant Mgmt-->

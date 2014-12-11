@@ -44,9 +44,9 @@
                 <version>${project.version}</version>
             </dependency>
 	    <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.theme.mgt</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.theme.mgt</artifactId>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
@@ -106,7 +106,7 @@
                             <importBundles>
                                  <importBundleDef>org.apache.stratos:org.apache.stratos.common</importBundleDef>
                                  <importBundleDef>org.apache.stratos:org.apache.stratos.tenant.mgt.core</importBundleDef>
-                                 <importBundleDef>org.apache.stratos:org.apache.stratos.theme.mgt</importBundleDef>
+                                 <importBundleDef>org.wso2.carbon:org.wso2.carbon.theme.mgt</importBundleDef>
                                  <importBundleDef>org.apache.stratos:org.apache.stratos.keystore.mgt</importBundleDef>
                             </importBundles>
                             <importFeatures>
