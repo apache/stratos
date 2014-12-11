@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.iaases.mock.config;
 
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cloud.controller.iaases.mock.MockAutoscalingFactor;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.generator.MockHealthStatisticsPattern;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
@@ -34,7 +35,8 @@ import java.util.List;
 /**
  * Mock health statistics configuration parser.
  */
-public class MockHealthStatisticsConfigParser {
+public class MockIaasConfigParser {
+    private static final QName ENABLED_ATTRIBUTE = new QName("enabled");
     private static final QName TYPE_ATTRIBUTE = new QName("type");
     private static final QName FACTOR_ATTRIBUTE = new QName("factor");
     private static final String HEALTH_STATISTICS_ELEMENT = "health-statistics";
@@ -42,14 +44,23 @@ public class MockHealthStatisticsConfigParser {
     private static final String SAMPLE_DURATION_ELEMENT = "sampleDuration";
 
     /**
-     * Parse mock iaas health statistics configuration and return configuration object.
+     * Parse mock iaas configuration and return configuration object.
      * @param filePath
      * @return
      */
-    public static MockHealthStatisticsConfig parse(String filePath) {
+    public static MockIaasConfig parse(String filePath) {
         try {
+            MockIaasConfig mockIaasConfig = new MockIaasConfig();
             MockHealthStatisticsConfig mockHealthStatisticsConfig = new MockHealthStatisticsConfig();
+            mockIaasConfig.setMockHealthStatisticsConfig(mockHealthStatisticsConfig);
+
             OMElement document = AxiomXpathParserUtil.parse(new File(filePath));
+            String enabledStr = document.getAttributeValue(ENABLED_ATTRIBUTE);
+            if(StringUtils.isEmpty(enabledStr)) {
+                throw new RuntimeException("Enabled attribute not found in mock-iaas element");
+            }
+            mockIaasConfig.setEnabled(Boolean.parseBoolean(enabledStr));
+
             Iterator statisticsIterator = document.getChildElements();
 
             while (statisticsIterator.hasNext()) {
@@ -107,7 +118,7 @@ public class MockHealthStatisticsConfigParser {
                     }
                 }
             }
-            return mockHealthStatisticsConfig;
+            return mockIaasConfig;
         } catch (Exception e) {
             throw new RuntimeException("Could not parse mock health statistics configuration", e);
         }

@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.iaases.mock.config;
 
-import org.wso2.carbon.context.CarbonContext;
-
 /**
  * Mock iaas configuration.
  */
@@ -31,25 +29,37 @@ public class MockIaasConfig {
 
     private static volatile MockIaasConfig instance;
 
+    private boolean enabled;
     private MockHealthStatisticsConfig mockHealthStatisticsConfig;
     
     public static MockIaasConfig getInstance() {
         if (instance == null) {
             synchronized (MockIaasConfig.class) {
                 if (instance == null) {
-                    instance = new MockIaasConfig();
+                    String confPath = System.getProperty(CARBON_HOME) + REPOSITORY_CONF;
+                    instance = MockIaasConfigParser.parse(confPath + MOCK_IAAS_CONFIG_FILE_NAME);
                 }
             }
         }
         return instance;
     }
 
-    private MockIaasConfig() {
-        String confPath = System.getProperty(CARBON_HOME) + REPOSITORY_CONF;
-        mockHealthStatisticsConfig = MockHealthStatisticsConfigParser.parse(confPath + MOCK_IAAS_CONFIG_FILE_NAME);
+    MockIaasConfig() {
+    }
+
+    void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    void setMockHealthStatisticsConfig(MockHealthStatisticsConfig mockHealthStatisticsConfig) {
+        this.mockHealthStatisticsConfig = mockHealthStatisticsConfig;
     }
 
     public MockHealthStatisticsConfig getMockHealthStatisticsConfig() {
         return mockHealthStatisticsConfig;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 }

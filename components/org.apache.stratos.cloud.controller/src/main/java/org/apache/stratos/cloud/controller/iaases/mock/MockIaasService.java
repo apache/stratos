@@ -25,6 +25,7 @@ import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.generator.MockHealthStatisticsGenerator;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
@@ -73,6 +74,9 @@ public class MockIaasService {
         if (instance == null) {
             synchronized (MockIaasService.class) {
                 if (instance == null) {
+                    if(!MockIaasConfig.getInstance().isEnabled()) {
+                        throw new RuntimeException("Mock IaaS is not enabled");
+                    }
                     instance = new MockIaasService();
                 }
             }

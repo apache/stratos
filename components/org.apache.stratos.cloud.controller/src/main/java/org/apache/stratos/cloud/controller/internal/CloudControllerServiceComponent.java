@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.iaases.mock.MockIaasService;
+import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
@@ -107,8 +108,10 @@ public class CloudControllerServiceComponent {
                 executeCoordinatorTasks();
             }
 
-            // Start mock members if present in registry
-            MockIaasService.startMockMembersIfPresentInRegistry();
+            if(MockIaasConfig.getInstance().isEnabled()) {
+                // Start mock members if present in registry
+                MockIaasService.startMockMembersIfPresentInRegistry();
+            }
 		} catch (Throwable e) {
 			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
         }
