@@ -359,4 +359,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void setTerminating(boolean isTerminating) {
         this.isTerminating = isTerminating;
     }
+
+    @Override
+    public void destroy() {
+        //TODO to wipe out the drools
+    }
 }

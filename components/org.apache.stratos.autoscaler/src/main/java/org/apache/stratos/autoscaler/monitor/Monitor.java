@@ -43,6 +43,8 @@ public abstract class Monitor implements EventHandler {
     //monitors map, key=InstanceId and value=ClusterInstance/GroupInstance/ApplicationInstance
     protected Map<String, Instance> instanceIdToInstanceMap;
 
+    public abstract void destroy();
+
     public Monitor() {
         this.instanceIdToInstanceMap = new HashMap<String, Instance>();
     }

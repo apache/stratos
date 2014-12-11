@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -345,6 +346,12 @@ public class ApplicationBuilder {
                 //removing the group instance and context
                 GroupMonitor monitor = getGroupMonitor(appId, groupId);
                 if(monitor != null) {
+                    if(monitor.hasMonitors()) {
+                       for(Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                           //destroying the drools
+                           monitor1.destroy();
+                       }
+                    }
                     monitor.getNetworkPartitionContext(context.getNetworkPartitionId()).
                             removeClusterGroupContext(instanceId);
                     monitor.removeInstance(instanceId);

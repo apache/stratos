@@ -26,7 +26,6 @@ import java.io.Serializable;
  * This event will be fired upon the application activated is detected.
  */
 public class ApplicationInstanceActivatedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = 2625412714611885089L;
 
     private String appId;
     private String instanceId;

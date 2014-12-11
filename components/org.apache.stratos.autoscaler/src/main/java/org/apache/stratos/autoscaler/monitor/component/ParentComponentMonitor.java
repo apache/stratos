@@ -287,14 +287,20 @@ public abstract class ParentComponentMonitor extends Monitor {
     /**
      * @param childId
      */
-    protected void onChildInactiveEvent(String childId, String instanceId) {
+    protected void onChildInactiveEvent(String childId, final String instanceId) {
         List<ApplicationChildContext> terminationList;
         Monitor monitor;
         terminationList = this.startupDependencyTree.getTerminationDependencies(childId);
         //Need to notify the parent about the status  change from Active-->InActive
         // TODO to make app also inaction if (this.parent != null) {
-            ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
-                    process(this.id, this.appId, instanceId);
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                        process(id, appId, instanceId);
+            }
+        };
+        monitoringRunnable.run();
         //}
         //TODO checking whether terminating them in reverse order,
         // TODO if so can handle it in the parent event.

@@ -94,8 +94,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     protected abstract void monitor();
 
-    public abstract void destroy();
-
     //handle health events
     public abstract void handleAverageLoadAverageEvent(
             AverageLoadAverageEvent averageLoadAverageEvent);

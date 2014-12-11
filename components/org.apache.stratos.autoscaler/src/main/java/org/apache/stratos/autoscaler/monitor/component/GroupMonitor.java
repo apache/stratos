@@ -680,4 +680,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     }
 
 
+    @Override
+    public void destroy() {
+        //TODO to stop all the drools
+    }
 }
