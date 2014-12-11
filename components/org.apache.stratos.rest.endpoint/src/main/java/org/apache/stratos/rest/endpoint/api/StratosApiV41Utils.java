@@ -85,25 +85,24 @@ public class StratosApiV41Utils {
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
     // Util methods for cartridges
-    
     public static void createCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a Cartridge [type] " + cartridgeDefinitionBean.type);
+        log.info("Starting to deploy a cartridge [type] " + cartridgeDefinitionBean.type);
 
         CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
-            throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
+            throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
         }
-	    if (cartridgeConfig.getCategory().equals("")|| cartridgeConfig.getCategory().isEmpty()) {
-		    throw new RestAPIException("Category is not specified, cartridge deployment aborted");
+	    if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
+		    throw new RestAPIException("Category is not specified, cartridge deployment failed");
 	    }
         try {
             CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info("Successfully deployed Cartridge [type] " + cartridgeDefinitionBean.type);
+        log.info("Successfully deployed cartridge [type] " + cartridgeDefinitionBean.type);
     }
     
     public static void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
