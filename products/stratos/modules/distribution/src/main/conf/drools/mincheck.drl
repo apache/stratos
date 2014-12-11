@@ -84,14 +84,10 @@ dialect "mvel"
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
              if(partitionContext != null){
 
-                if (isPrimary){
-                } else{
-                }
-                delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
-
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" );
                 log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
                 delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+
                 count++;
             } else {
 
