@@ -49,18 +49,25 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
 
     }
 
-    public boolean process(String idOfComponent, String appId,
-                           String instanceId) {
-        GroupStatusProcessor root = (GroupStatusProcessor) list.getFirst();
-        if (root == null) {
-            throw new RuntimeException("Message processor chain is not initialized");
-        }
-        if (log.isInfoEnabled()) {
-            log.info("GroupProcessor chain calculating the status for the group " +
-                    "[ " + idOfComponent + " ]");
-        }
+    public void process(final String idOfComponent, final String appId,
+                           final String instanceId) {
 
-        return root.process(idOfComponent, appId, instanceId);
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                GroupStatusProcessor root = (GroupStatusProcessor) list.getFirst();
+                if (root == null) {
+                    throw new RuntimeException("Message processor chain is not initialized");
+                }
+                if (log.isInfoEnabled()) {
+                    log.info("GroupProcessor chain calculating the status for the group " +
+                            "[ " + idOfComponent + " ]");
+                }
+
+                root.process(idOfComponent, appId, instanceId);
+            }
+        };
+        monitoringRunnable.run();
     }
 
 }

@@ -41,12 +41,13 @@ public class ClusterStatusProcessorChain extends StatusProcessorChain {
 
     }
 
-    public boolean process(String type, String clusterId, String instanceId) {
+    public boolean process(final String type, final String clusterId, final String instanceId) {
         ClusterStatusProcessor root = (ClusterStatusProcessor) list.getFirst();
         if (root == null) {
             throw new RuntimeException("Message processor chain is not initialized");
         }
         return root.process(type, clusterId, instanceId);
+
     }
 
 
