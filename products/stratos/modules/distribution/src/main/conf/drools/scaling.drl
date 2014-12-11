@@ -87,7 +87,7 @@ dialect "mvel"
 
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
-        activeInstancesCount : Integer() from clusterInstanceContext.getNonTerminatedMemberCount()
+        activeInstancesCount : Integer() from clusterInstanceContext.getActiveMemberCount()
         requestsServedPerInstance : Float() from  clusterInstanceContext.getRequestsServedPerInstance()
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 

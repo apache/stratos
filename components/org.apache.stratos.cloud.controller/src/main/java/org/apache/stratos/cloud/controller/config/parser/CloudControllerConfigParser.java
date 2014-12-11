@@ -46,22 +46,22 @@ public class CloudControllerConfigParser {
 
     /**
      * Parse the cloud-controller.xml file.
-     * @param elt document element.
+     * @param documentElement document element.
      * @throws MalformedConfigurationFileException
      */
-    public static void parse(OMElement elt) throws MalformedConfigurationFileException {
+    public static void parse(OMElement documentElement) throws MalformedConfigurationFileException {
 
-        extractIaasProviders(elt, AxiomXpathParserUtil.getMatchingNodes(elt, CloudControllerConstants.IAAS_PROVIDER_XPATH));
-        extractDataPublisherConfig(elt, AxiomXpathParserUtil.getElement(FILE_NAME, elt, CloudControllerConstants.DATA_PUBLISHER_ELEMENT,
+        extractIaasProviders(documentElement, AxiomXpathParserUtil.getMatchingNodes(documentElement, CloudControllerConstants.IAAS_PROVIDER_XPATH));
+        extractDataPublisherConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.DATA_PUBLISHER_ELEMENT,
                                         CloudControllerConstants.DATA_PUBLISHER_XPATH));
-        extractTopologySyncConfig(elt, AxiomXpathParserUtil.getElement(FILE_NAME, elt, CloudControllerConstants.TOPOLOGY_SYNC_ELEMENT,
+        extractTopologySyncConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.TOPOLOGY_SYNC_ELEMENT,
                         CloudControllerConstants.TOPOLOGY_SYNC_XPATH));
     }
 
 
 
 
-    private static void extractIaasProviders(OMElement elt, List<OMNode> nodeList) {
+    private static void extractIaasProviders(OMElement documentElement, List<OMNode> nodeList) {
         List<IaasProvider> iaasProviders = CloudControllerConfig.getInstance().getIaasProviders();
 
         if (iaasProviders == null) {
@@ -77,11 +77,11 @@ public class CloudControllerConfigParser {
         }
         
         for (OMNode node : nodeList) {
-            iaasProviders.add(IaasProviderConfigParser.getIaasProvider(FILE_NAME, elt, node, null));
+            iaasProviders.add(IaasProviderConfigParser.getIaasProvider(FILE_NAME, documentElement, node, null));
         }
     }
     
-    private static void extractDataPublisherConfig(OMElement rootElt, OMElement element) {
+    private static void extractDataPublisherConfig(OMElement documentElement, OMElement element) {
         if (element == null) {
             log.debug("No data publisher config found in "+FILE_NAME);
             return;
@@ -117,7 +117,7 @@ public class CloudControllerConfigParser {
                         AxiomXpathParserUtil.getFirstChildElement(childElement,
                                 CloudControllerConstants.BAM_SERVER_ADMIN_PASSWORD_ELEMENT);
                 if (elt != null) {
-                    String password = AxiomXpathParserUtil.resolveSecret(rootElt, elt);
+                    String password = AxiomXpathParserUtil.resolveSecret(documentElement, elt);
                     if (password == null) {
                         AxiomXpathParserUtil.plainTextWarn(CloudControllerConstants.BAM_SERVER_ADMIN_PASSWORD_ELEMENT);
                         password = elt.getText();
@@ -153,7 +153,7 @@ public class CloudControllerConfigParser {
                 // set password
                 elt = AxiomXpathParserUtil.getFirstChildElement(childElement, CloudControllerConstants.PASSWORD_ELEMENT);
                 if (elt != null) {
-                    String password = AxiomXpathParserUtil.resolveSecret(rootElt, elt);
+                    String password = AxiomXpathParserUtil.resolveSecret(documentElement, elt);
                     if (password == null) {
                         AxiomXpathParserUtil.plainTextWarn(CloudControllerConstants.PASSWORD_ELEMENT);
                         password = elt.getText();
@@ -197,5 +197,4 @@ public class CloudControllerConfigParser {
             config.setTopologyConfig(topologyConfig);
         }
     }
-    
 }

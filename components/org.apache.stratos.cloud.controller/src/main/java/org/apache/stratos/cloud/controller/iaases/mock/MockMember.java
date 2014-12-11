@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.iaases.mock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStatisticsNotifier;
+import org.apache.stratos.cloud.controller.iaases.mock.statistics.publisher.MockHealthStatisticsNotifier;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
@@ -131,7 +131,7 @@ public class MockMember implements Runnable, Serializable {
         }
 
         healthStatNotifierExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
-                HEALTH_STAT_INTERVAL, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
+                0, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));

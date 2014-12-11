@@ -25,8 +25,9 @@ import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
+import org.apache.stratos.cloud.controller.iaases.mock.statistics.generator.MockHealthStatisticsGenerator;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
-import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -73,6 +74,9 @@ public class MockIaasService {
         if (instance == null) {
             synchronized (MockIaasService.class) {
                 if (instance == null) {
+                    if(!MockIaasConfig.getInstance().isEnabled()) {
+                        throw new RuntimeException("Mock IaaS is not enabled");
+                    }
                     instance = new MockIaasService();
                 }
             }
@@ -85,11 +89,14 @@ public class MockIaasService {
      */
     public static void startMockMembersIfPresentInRegistry() {
         ConcurrentHashMap<String, MockMember> membersMap = readFromRegistry();
-        if(membersMap != null) {
+        if((membersMap != null) && (membersMap.size() > 0)) {
+            // Start existing mock members
             ExecutorService executorService = StratosThreadPool.getExecutorService("MOCK_IAAS_THREAD_EXECUTOR", 100);
             for (MockMember mockMember : membersMap.values()) {
                 executorService.submit(mockMember);
             }
+            // Schedule health statistics updaters
+            MockHealthStatisticsGenerator.scheduleStatisticsUpdaters();
         }
     }
 
@@ -109,6 +116,10 @@ public class MockIaasService {
 
             // Persist changes
             persistInRegistry();
+
+            if(!MockHealthStatisticsGenerator.isScheduled()) {
+                MockHealthStatisticsGenerator.scheduleStatisticsUpdaters();
+            }
 
             return nodeMetadata;
         }
@@ -183,6 +194,10 @@ public class MockIaasService {
             if (mockMember != null) {
                 mockMember.terminate();
                 membersMap.remove(memberContext.getMemberId());
+            }
+
+            if(membersMap.size() == 0) {
+                MockHealthStatisticsGenerator.stopStatisticsUpdaters();
             }
         }
     }
