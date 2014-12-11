@@ -44,12 +44,11 @@ class tomcat(
     "/${target}/packs/apache-tomcat-${tomcat_version}.tar.gz":
       ensure => present,
       source => "puppet:///modules/tomcat/apache-tomcat-${tomcat_version}.tar.gz",
-      require => File["${target}/packs"];
   }
 
   file { '/mnt/tomcat':
     content => template('tomcat/tomcat.erb'),
-    require => File["${target}/packs"];
+    require => File["${target}/packs/apache-tomcat-${tomcat_version}.tar.gz"];
   }
 
   exec {
