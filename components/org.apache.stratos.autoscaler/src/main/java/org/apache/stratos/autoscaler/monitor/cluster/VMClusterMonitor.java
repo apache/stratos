@@ -263,7 +263,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
-                                log.info("Executing scaling rule as stats has been reset");
+                                log.info("Executing scaling rule as statistics have been reset");
                                 VMClusterContext vmClusterContext = (VMClusterContext) clusterContext;
 
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
