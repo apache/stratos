@@ -93,10 +93,14 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
             ApplicationInstance instance = applications.getApplication(appId).
                                                 getInstanceContexts(instanceId);
             if(instance == null) {
-                log.info("Application [Instance] " + instanceId + " has already been removed");
+                if(log.isDebugEnabled()) {
+                    log.debug("Application [Instance] " + instanceId + " has already been removed");
+                }
+            } else {
+                instance.setStatus(ApplicationStatus.Terminated);
+                applications.getApplication(appId).removeInstance(instanceId);
             }
-            instance.setStatus(ApplicationStatus.Terminated);
-            applications.getApplication(appId).removeInstance(instanceId);
+
         }
 
         notifyEventListeners(event);

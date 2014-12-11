@@ -96,22 +96,21 @@ public class GroupInstanceTerminatedProcessor extends MessageProcessor {
         } else {
             GroupInstance context = group.getInstanceContexts(event.getInstanceId());
             if(context == null) {
-                if (log.isWarnEnabled()) {
-                    log.warn(String.format("Group Instance not exists in Group: [AppId] %s [groupId] %s " +
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Group Instance alread removed in Group: [AppId] %s [groupId] %s " +
                                     "[instanceId] %s", event.getAppId(), event.getGroupId(),
                             event.getInstanceId()));
+                }
+            } else {
+                // Apply changes to the topology
+                GroupStatus status = GroupStatus.Terminated;
+                if (!context.isStateTransitionValid(status)) {
+                    log.error("Invalid State Transition from " + context.getStatus() + " to " +
+                            status);
                     return false;
                 }
+                context.setStatus(status);
             }
-            // Apply changes to the topology
-            GroupStatus status = GroupStatus.Terminated;
-            if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid State Transition from " + context.getStatus() + " to " +
-                        status);
-                return false;
-            }
-            context.setStatus(status);
-
         }
 
         // Notify event listeners

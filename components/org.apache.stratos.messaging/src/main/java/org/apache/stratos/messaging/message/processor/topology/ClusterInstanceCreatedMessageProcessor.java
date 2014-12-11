@@ -113,6 +113,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
                 log.debug(String.format("Cluster not exists in service: [service] %s [cluster] %s", event.getServiceName(),
                         event.getClusterId()));
             }
+            return false;
         } else {
             // Apply changes to the topology
             ClusterInstance clusterInstance = event.getClusterInstance();
@@ -122,8 +123,9 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
                                     "[service] %s [cluster] %s [Instance] %s", event.getServiceName(),
                             event.getClusterId(), clusterInstance.getInstanceId()));
                 }
+            } else {
+                cluster.addInstanceContext(clusterInstance.getInstanceId(), clusterInstance);
             }
-            cluster.addInstanceContext(clusterInstance.getInstanceId(), clusterInstance);
         }
         // Notify event listeners
         notifyEventListeners(event);
