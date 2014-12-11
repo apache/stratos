@@ -24,7 +24,7 @@ RESTCalls = new function(){
     var log = new Log('RESTCalls');
 
     this.getTenants = function(){
-        return this.sendReceive("GET","/tenant/list",{});
+        return this.sendReceive("GET","/tenants",{});
     };
 
     this.deployCartridgeDefinition = function(cartridgeDefinition){
@@ -76,7 +76,7 @@ RESTCalls = new function(){
     };
 
     this.addTenant = function(tenantInfoBean){
-        return this.sendReceive("POST","/tenant",tenantInfoBean);
+        return this.sendReceive("POST","/tenants",tenantInfoBean);
     };
 
 
