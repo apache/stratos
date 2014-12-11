@@ -1003,7 +1003,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message, e);
             }
 
-            log.info(String.format("Deployed deployment policy: [id] %s", deploymentPolicy.getId()));
+            log.info(String.format("Deployed application deployment policy: [Application id] %s", deploymentPolicy.getApplicationId()));
         }
     }
 
