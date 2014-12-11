@@ -17,7 +17,7 @@
   ~ under the License.
   -->
 
-<mock-iaas>
+<mock-iaas enabled="true">
     <health-statistics>
         <cartridge type="tomcat">
             <pattern factor="memory-consumption">
