@@ -496,25 +496,30 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Starting)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Starting);
-            }
-            member.setStatus(MemberStatus.Starting);
-            log.info("member started event adding status started");
+                log.error("Invalid State Transition from " + member.getStatus() + " to " +
+                        MemberStatus.Starting);
+                return;
+            } else {
+                member.setStatus(MemberStatus.Starting);
+                log.info("member started event adding status started");
 
-            TopologyManager.updateTopology(topology);
+                TopologyManager.updateTopology(topology);
+                //memberStartedEvent.
+                TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
+                //publishing data
+                StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
+                        instanceStartedEvent.getPartitionId(),
+                        instanceStartedEvent.getNetworkPartitionId(),
+                        instanceStartedEvent.getClusterId(),
+                        instanceStartedEvent.getServiceName(),
+                        MemberStatus.Starting.toString(),
+                        null);
+            }
+
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        //memberStartedEvent.
-        TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
-        //publishing data
-        StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
-                instanceStartedEvent.getPartitionId(),
-                instanceStartedEvent.getNetworkPartitionId(),
-                instanceStartedEvent.getClusterId(),
-                instanceStartedEvent.getServiceName(),
-                MemberStatus.Starting.toString(),
-                null);
+
     }
 
     public static void handleMemberActivated(InstanceActivatedEvent instanceActivatedEvent) {
@@ -556,40 +561,44 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Activated)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
+                log.error("Invalid State Transition from " + member.getStatus() + " to " +
+                        MemberStatus.Activated);
+                return;
+            } else {
+                member.setStatus(MemberStatus.Activated);
+                log.info("member started event adding status activated");
+                Cartridge cartridge = CloudControllerContext.getInstance().
+                        getCartridge(instanceActivatedEvent.getServiceName());
+
+                List<PortMapping> portMappings = cartridge.getPortMappings();
+                Port port;
+                //adding ports to the event
+                for (PortMapping portMapping : portMappings) {
+                    port = new Port(portMapping.getProtocol(),
+                            Integer.parseInt(portMapping.getPort()),
+                            Integer.parseInt(portMapping.getProxyPort()));
+                    member.addPort(port);
+                    memberActivatedEvent.addPort(port);
+                }
+
+                memberActivatedEvent.setMemberIp(member.getMemberIp());
+                memberActivatedEvent.setMemberPublicIp(member.getMemberPublicIp());
+                TopologyManager.updateTopology(topology);
+
+                TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
+                //publishing data
+                StatisticsDataPublisher.publish(memberActivatedEvent.getMemberId(),
+                        memberActivatedEvent.getPartitionId(),
+                        memberActivatedEvent.getNetworkPartitionId(),
+                        memberActivatedEvent.getClusterId(),
+                        memberActivatedEvent.getServiceName(),
+                        MemberStatus.Activated.toString(),
+                        null);
             }
-            member.setStatus(MemberStatus.Activated);
-            log.info("member started event adding status activated");
-            Cartridge cartridge = CloudControllerContext.getInstance().
-                    getCartridge(instanceActivatedEvent.getServiceName());
-
-            List<PortMapping> portMappings = cartridge.getPortMappings();
-            Port port;
-            //adding ports to the event
-            for (PortMapping portMapping : portMappings) {
-                port = new Port(portMapping.getProtocol(),
-                        Integer.parseInt(portMapping.getPort()),
-                        Integer.parseInt(portMapping.getProxyPort()));
-                member.addPort(port);
-                memberActivatedEvent.addPort(port);
-            }
-
-            memberActivatedEvent.setMemberIp(member.getMemberIp());
-            memberActivatedEvent.setMemberPublicIp(member.getMemberPublicIp());
-            TopologyManager.updateTopology(topology);
-
         } finally {
             TopologyManager.releaseWriteLock();
         }
-        TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
-        //publishing data
-        StatisticsDataPublisher.publish(memberActivatedEvent.getMemberId(),
-                memberActivatedEvent.getPartitionId(),
-                memberActivatedEvent.getNetworkPartitionId(),
-                memberActivatedEvent.getClusterId(),
-                memberActivatedEvent.getServiceName(),
-                MemberStatus.Activated.toString(),
-                null);
+
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
@@ -628,7 +637,9 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
 
             if (!member.isStateTransitionValid(MemberStatus.ReadyToShutDown)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.ReadyToShutDown);
+                log.error("Invalid State Transition from " + member.getStatus() + " to " +
+                        MemberStatus.ReadyToShutDown);
+                return;
             }
             member.setStatus(MemberStatus.ReadyToShutDown);
             log.info("Member Ready to shut down event adding status started");
@@ -686,7 +697,9 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.In_Maintenance)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.In_Maintenance);
+                log.error("Invalid State Transition from " + member.getStatus() + " to "
+                        + MemberStatus.In_Maintenance);
+                return;
             }
             member.setStatus(MemberStatus.In_Maintenance);
             log.info("member maintenance mode event adding status started");
@@ -799,10 +812,11 @@ public class TopologyBuilder {
                 //publishing data
                 TopologyEventPublisher.sendClusterActivatedEvent(clusterActivatedEvent1);
             } else {
-                log.warn(String.format("Cluster state transition is not valid: [cluster-id] %s " +
+                log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
                         clusterActivatedEvent.getClusterId(), clusterActivatedEvent.getInstanceId(),
                         context.getStatus(), status));
+                return;
             }
         } finally {
             TopologyManager.releaseWriteLock();
@@ -851,10 +865,11 @@ public class TopologyBuilder {
                 //publishing data
                 TopologyEventPublisher.sendClusterInactivateEvent(clusterInActivatedEvent1);
             } else {
-                log.warn(String.format("Cluster state transition is not valid: [cluster-id] %s " +
+                log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
                         clusterInActivateEvent.getClusterId(), clusterInActivateEvent.getInstanceId(),
                         context.getStatus(), status));
+                return;
             }
         } finally {
             TopologyManager.releaseWriteLock();
@@ -913,10 +928,11 @@ public class TopologyBuilder {
 
                 TopologyEventPublisher.sendClusterTerminatedEvent(clusterTerminatedEvent);
             } else {
-                log.warn(String.format("Cluster state transition is not valid: [cluster-id] %s " +
+                log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
                         event.getClusterId(), event.getInstanceId(),
                         context.getStatus(), status));
+                return;
             }
         } finally {
             TopologyManager.releaseWriteLock();
@@ -956,10 +972,11 @@ public class TopologyBuilder {
 
                 TopologyEventPublisher.sendClusterTerminatingEvent(clusterTerminaingEvent);
             } else {
-                log.warn(String.format("Cluster state transition is not valid: [cluster-id] %s " +
+                log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
                         event.getClusterId(), event.getInstanceId(),
                         context.getStatus(), status));
+                return;
             }
         } finally {
             TopologyManager.releaseWriteLock();

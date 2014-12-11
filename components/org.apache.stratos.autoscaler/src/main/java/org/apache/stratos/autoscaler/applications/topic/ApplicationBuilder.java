@@ -37,6 +37,11 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.wso2.carbon.CarbonConstants;
+import org.wso2.carbon.base.CarbonBaseConstants;
+import org.wso2.carbon.base.MultitenantConstants;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.utils.CarbonUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -315,18 +320,29 @@ public class ApplicationBuilder {
                 //removing the monitor
                 if (application.getInstanceContextCount() == 0) {
                     AutoscalerContext.getInstance().removeAppMonitor(appId);
-                    //Removing the application from memory and registry
-                    //ApplicationHolder.removeApplication(appId);
                     log.info("Application run time is removed: [application-id] " + appId);
-                    // Check whether given application is deployed
-                    String policyId = PolicyManager.getInstance().getDeploymentPolicyIdByApplication(appId);
-                    if(policyId != null) {
-                        try {
-                            PolicyManager.getInstance().undeployDeploymentPolicy(policyId);
-                        } catch (InvalidPolicyException e) {
-                            log.error("Error while unDeploying the policy for [application] " + appId);
+                    //Removing the application from memory and registry
+                    PrivilegedCarbonContext.startTenantFlow();
+                    try {
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().
+                                setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+                        PrivilegedCarbonContext.getThreadLocalCarbonContext().
+                                setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+                        String policyId = PolicyManager.getInstance().
+                                getDeploymentPolicyIdByApplication(appId);
+                        if(policyId != null) {
+                            try {
+                                PolicyManager.getInstance().undeployDeploymentPolicy(policyId);
+                                log.info("Deployment policy for the [Application] " + appId +
+                                        "has been removed." );
+                            } catch (InvalidPolicyException e) {
+                                log.error("Error while unDeploying the policy for [application] " + appId);
+                            }
                         }
+                    } finally {
+                        PrivilegedCarbonContext.endTenantFlow();
                     }
+
 
                 }
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, instanceId);
