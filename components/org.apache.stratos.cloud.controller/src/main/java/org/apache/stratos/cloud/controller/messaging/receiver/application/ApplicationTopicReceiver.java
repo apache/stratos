@@ -22,7 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.applications.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
+import org.apache.stratos.messaging.listener.applications.ApplicationDeletedEventListener;
 import org.apache.stratos.messaging.listener.applications.ApplicationInstanceTerminatedEventListener;
 import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
@@ -68,16 +70,16 @@ public class ApplicationTopicReceiver {
 	}
 
     private void addEventListeners() {
-        /*applicationsEventReceiver.addEventListener(new ApplicationUndeployedEventListener() {
+        applicationsEventReceiver.addEventListener(new ApplicationDeletedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 //Remove the application related data
-                ApplicationInstanceTerminatedEvent terminatedEvent = (ApplicationInstanceTerminatedEvent)event;
-                log.info("ApplicationTerminatedEvent received for [application] " + terminatedEvent.getAppId());
-                String appId = terminatedEvent.getAppId();
-                TopologyBuilder.handleApplicationClustersRemoved(appId, terminatedEvent.getClusterData());
+                ApplicationDeletedEvent deletedEvent = (ApplicationDeletedEvent)event;
+                log.info("ApplicationDeletedEvent received for [application] " + deletedEvent.getAppId());
+                String appId = deletedEvent.getAppId();
+                TopologyBuilder.handleApplicationClustersRemoved(appId, deletedEvent.getClusterData());
             }
-        });*/
+        });
     }
 
 	public void setExecutorService(ExecutorService executorService) {

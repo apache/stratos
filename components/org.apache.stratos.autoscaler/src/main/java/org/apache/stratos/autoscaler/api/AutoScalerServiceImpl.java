@@ -275,8 +275,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     @Override
     public void unDeployApplicationDefinition(String applicationId, int tenantId, String tenantDomain)
             throws ApplicationDefinitionException {
-
-        ApplicationBuilder.handleApplicationUndeployed(applicationId);
+        ApplicationBuilder.handleApplicationDeleted(applicationId);
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {

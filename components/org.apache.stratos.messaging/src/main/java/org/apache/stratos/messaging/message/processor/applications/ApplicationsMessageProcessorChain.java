@@ -39,6 +39,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
     private ApplicationInstanceCreatedMessageProcessor applicationInstanceCreatedMessageProcessor;
     private ApplicationInstanceActivatedMessageProcessor applicationActivatedMessageProcessor;
     private ApplicationCreatedMessageProcessor applicationCreatedMessageProcessor;
+    private ApplicationDeletedMessageProcessor applicationDeletedMessageProcessor;
     private ApplicationInstanceInactivatedMessageProcessor applicationInactivatedMessageProcessor;
     private ApplicationInstanceTerminatedMessageProcessor applicationTerminatedMessageProcessor;
     private ApplicationInstanceTerminatingMessageProcessor applicationTerminatingMessageProcessor;
@@ -70,6 +71,9 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
+        
+        applicationDeletedMessageProcessor = new ApplicationDeletedMessageProcessor();
+        add(applicationDeletedMessageProcessor);
 
         applicationInactivatedMessageProcessor = new ApplicationInstanceInactivatedMessageProcessor();
         add(applicationInactivatedMessageProcessor);
@@ -104,6 +108,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
             applicationInstanceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationDeletedEventListener) {
+            applicationDeletedMessageProcessor.addEventListener(eventListener); 
         } else if (eventListener instanceof ApplicationInstanceActivatedEventListener) {
             applicationActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationInstanceInactivatedEventListener) {

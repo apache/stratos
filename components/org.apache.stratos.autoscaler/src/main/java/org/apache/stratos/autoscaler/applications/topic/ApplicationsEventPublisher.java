@@ -30,6 +30,11 @@ public class ApplicationsEventPublisher {
 
         publishEvent(new ApplicationCreatedEvent(application));
     }
+    
+    public static void sendApplicationDeletedEvent (String appId, Set<ClusterDataHolder> clusterData) {
+    	
+    	publishEvent(new ApplicationDeletedEvent(appId, clusterData));
+    }
 
     public static void sendApplicationInstanceCreatedEvent(String appId,
                                                            ApplicationInstance applicationInstance) {

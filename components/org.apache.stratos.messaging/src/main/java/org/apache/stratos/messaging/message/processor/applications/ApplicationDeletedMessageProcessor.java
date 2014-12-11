@@ -22,14 +22,14 @@ package org.apache.stratos.messaging.message.processor.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.event.applications.ApplicationCreatedEvent;
+import org.apache.stratos.messaging.event.applications.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.applications.updater.ApplicationsUpdater;
 import org.apache.stratos.messaging.util.Util;
 
-public class ApplicationCreatedMessageProcessor extends MessageProcessor {
+public class ApplicationDeletedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(ApplicationCreatedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(ApplicationDeletedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -42,14 +42,14 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
         Applications applications = (Applications) object;
 
-        if (ApplicationCreatedEvent.class.getName().equals(type)) {
+        if (ApplicationDeletedEvent.class.getName().equals(type)) {
             if (!applications.isInitialized()) {
                 return false;
             }
 
-            ApplicationCreatedEvent event = (ApplicationCreatedEvent) Util.jsonToObject(message, ApplicationCreatedEvent.class);
+            ApplicationDeletedEvent event = (ApplicationDeletedEvent) Util.jsonToObject(message, ApplicationDeletedEvent.class);
             if (event == null) {
-                log.error("Unable to convert the JSON message to ApplicationCreatedEvent");
+                log.error("Unable to convert the JSON message to ApplicationDeletedEvent");
                 return false;
             }
 
@@ -71,35 +71,24 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationCreatedEvent event, Applications applications) {
-
-        // check if required properties are available
-        if (event.getApplication() == null) {
-            String errorMsg = "Application object of application created event is invalid";
+    private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {    	
+        
+    	// check if required properties are available
+        if (event.getAppId() == null || event.getAppId().isEmpty()) {
+            String errorMsg = "App id of application deleted event is invalid: [ " + event.getAppId() + " ]";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
-
-        if (event.getApplication().getUniqueIdentifier() == null || event.getApplication().getUniqueIdentifier().isEmpty()) {
-            String errorMsg = "App id of application created event is invalid: [ " + event.getApplication().getUniqueIdentifier() + " ]";
-            log.error(errorMsg);
-            throw new RuntimeException(errorMsg);
-        }
-
-        // check if an Application with same name exists in applications
-        if (applications.applicationExists(event.getApplication().getUniqueIdentifier())) {
-            if(log.isDebugEnabled()) {
-            	log.debug("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists");	
-            }
-        } else {
-            // add application and the clusters to Topology
-            applications.addApplication(event.getApplication());
-            if(log.isInfoEnabled()) {
-            	log.info("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] created");	
-            }
-        }
+      
+    	// Remove application and clusters from topology
+        applications.removeApplication(event.getAppId());
 
         notifyEventListeners(event);
+        
+        if (log.isInfoEnabled()) {
+        	log.info("[Application] " + event.getAppId() + " has been successfully removed");
+        }
+        
         return true;
     }
 }

@@ -38,6 +38,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -177,36 +178,48 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(String appId) {
+    public static void handleApplicationDeleted(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application unDeployment for [application-id] " + appId);
         }
-        Set<ClusterDataHolder> clusterData;
+        Set<ClusterDataHolder> appClusterDataToSend;
+        Application application;
         ApplicationHolder.acquireWriteLock();
         try {
             Applications applications = ApplicationHolder.getApplications();
-            Application application = applications.getApplication(appId);
+            application = applications.getApplication(appId);
             //update the status of the Group
             if (application == null) {
                 log.warn(String.format("Application does not exist: [application-id] %s",
                         appId));
                 return;
             } else {
+            	// Check whether given application is deployed
                 org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy policy =
                         PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
                 if (policy != null) {
                     log.warn(String.format("Application has been found in the ApplicationsTopology" +
-                                    ": [application-id] %s, Please unDeploy the Application Policy.",
+                                    ": [application-id] %s, Please unDeploy the Application Policy before deleting the Application definition.",
                             appId));
+                    return;
                 }
             }
+            
+            //get cluster data to send in event before deleting the application
+            appClusterDataToSend = new HashSet<ClusterDataHolder>();
+            Set<ClusterDataHolder> appClusterData = application.getClusterDataRecursively();
+            for (ClusterDataHolder currClusterData : appClusterData) {
+            	ClusterDataHolder newClusterData = new ClusterDataHolder(currClusterData.getServiceType(), currClusterData.getClusterId());
+            	appClusterDataToSend.add(newClusterData);
+            }
+            
             ApplicationHolder.removeApplication(appId);
 
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-
-        log.info("[Application] " + appId + " has been successfully undeployed");
+        
+        ApplicationsEventPublisher.sendApplicationDeletedEvent(appId, appClusterDataToSend);
     }
 
     public static boolean handleApplicationPolicyUndeployed(String appId) {

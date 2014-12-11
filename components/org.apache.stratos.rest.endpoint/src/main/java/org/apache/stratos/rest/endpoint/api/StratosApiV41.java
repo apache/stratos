@@ -578,7 +578,7 @@ public class StratosApiV41 extends AbstractApi {
     @SuperTenantService(true)
     public Response deleteApplicationDefinition(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-        StratosApiV41Utils.removeApplicationDefinition(applicationId, getConfigContext(), getUsername(),
+		StratosApiV41Utils.removeApplicationDefinition(applicationId, getConfigContext(), getUsername(),
                 getTenantDomain());
         return Response.noContent().build();
     }
