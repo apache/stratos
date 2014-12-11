@@ -43,6 +43,10 @@ RESTCalls = new function(){
         return this.send("DELETE","/tenant/" + tenantDomain,{});
     };
 
+    this.deleteUser = function(userName){
+        return this.send("DELETE","/users/" + userName,{});
+    };
+
     this.checkAvailability = function(tenantDomain){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
