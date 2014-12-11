@@ -29,7 +29,7 @@ import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStat
  */
 public class MockHealthStatisticsUpdater implements Runnable {
 
-    private static final Log log = LogFactory.getLog(MockHealthStatisticsGenerator.class);
+    private static final Log log = LogFactory.getLog(MockHealthStatisticsUpdater.class);
 
     private MockHealthStatisticsPattern statisticsPattern;
 
@@ -47,9 +47,11 @@ public class MockHealthStatisticsUpdater implements Runnable {
                     statisticsPattern.getFactor(), nextSample);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] % [value] %d",
+                log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] %s [value] %d",
                         statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString(), nextSample));
             }
+        } catch (Exception e) {
+            log.error("Could not update mock statistics", e);
         } finally {
             MockHealthStatistics.getInstance().releaseWriteLock(statisticsPattern.getCartridgeType());
         }

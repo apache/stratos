@@ -109,8 +109,8 @@ public class CloudControllerServiceComponent {
             }
 
             if(MockIaasConfig.getInstance().isEnabled()) {
-                // Start mock members if present in registry
-                MockIaasService.startMockMembersIfPresentInRegistry();
+                // Start mock members if they were in running state earlier
+                MockIaasService.getInstance().startMockMembers();
             }
 		} catch (Throwable e) {
 			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);

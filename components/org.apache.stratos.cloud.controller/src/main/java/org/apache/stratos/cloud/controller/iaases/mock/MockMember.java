@@ -42,11 +42,9 @@ public class MockMember implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockMember.class);
     private static final ExecutorService instanceNotifierExecutorService =
-            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER_EXECUTOR_SERVICE",
-                    MockConstants.MAX_MOCK_MEMBER_COUNT);
+            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER_EXECUTOR_SERVICE", 20);
     private static final ScheduledExecutorService healthStatNotifierExecutorService =
-            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_NOTIFIER_EXECUTOR_SERVICE",
-                    MockConstants.MAX_MOCK_MEMBER_COUNT);
+            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_NOTIFIER_EXECUTOR_SERVICE", 20);
     private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
 
     private final MockMemberContext mockMemberContext;

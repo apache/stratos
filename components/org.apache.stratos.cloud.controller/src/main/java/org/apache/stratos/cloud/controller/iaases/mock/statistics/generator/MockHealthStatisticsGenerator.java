@@ -35,11 +35,27 @@ public class MockHealthStatisticsGenerator {
 
     private static final Log log = LogFactory.getLog(MockHealthStatisticsGenerator.class);
 
-    private static ScheduledExecutorService scheduledExecutorService =
-            StratosThreadPool.getScheduledExecutorService("MOCK_STATISTICS_GENERATOR_EXECUTOR_SERVICE", 100);
-    private static boolean scheduled;
+    private static volatile MockHealthStatisticsGenerator instance;
+    private static final ScheduledExecutorService scheduledExecutorService =
+            StratosThreadPool.getScheduledExecutorService("MOCK_STATISTICS_GENERATOR_EXECUTOR_SERVICE", 10);
 
-    public static void scheduleStatisticsUpdaters() {
+    private boolean scheduled;
+
+    public static MockHealthStatisticsGenerator getInstance() {
+        if (instance == null) {
+            synchronized (MockHealthStatisticsGenerator.class) {
+                if (instance == null) {
+                    instance = new MockHealthStatisticsGenerator();
+                }
+            }
+        }
+        return instance;
+    }
+
+    private MockHealthStatisticsGenerator() {
+    }
+
+    public void scheduleStatisticsUpdaters() {
         if(!scheduled) {
             synchronized (MockHealthStatisticsGenerator.class) {
                 if(!scheduled) {
@@ -60,13 +76,13 @@ public class MockHealthStatisticsGenerator {
         }
     }
 
-    public static void stopStatisticsUpdaters() {
+    public void stopStatisticsUpdaters() {
         synchronized (MockHealthStatisticsGenerator.class) {
             scheduledExecutorService.shutdownNow();
         }
     }
 
-    public static boolean isScheduled() {
+    public boolean isScheduled() {
         return scheduled;
     }
 }

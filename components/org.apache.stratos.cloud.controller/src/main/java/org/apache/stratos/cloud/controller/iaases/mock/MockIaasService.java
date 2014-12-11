@@ -85,18 +85,16 @@ public class MockIaasService {
     }
 
     /**
-     * Start mock members if present in registry
+     * Start mock members
      */
-    public static void startMockMembersIfPresentInRegistry() {
-        ConcurrentHashMap<String, MockMember> membersMap = readFromRegistry();
+    public void startMockMembers() {
         if((membersMap != null) && (membersMap.size() > 0)) {
             // Start existing mock members
-            ExecutorService executorService = StratosThreadPool.getExecutorService("MOCK_IAAS_THREAD_EXECUTOR", 100);
             for (MockMember mockMember : membersMap.values()) {
-                executorService.submit(mockMember);
+                mockMemberExecutorService.submit(mockMember);
             }
             // Schedule health statistics updaters
-            MockHealthStatisticsGenerator.scheduleStatisticsUpdaters();
+            MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaters();
         }
     }
 
@@ -117,8 +115,8 @@ public class MockIaasService {
             // Persist changes
             persistInRegistry();
 
-            if(!MockHealthStatisticsGenerator.isScheduled()) {
-                MockHealthStatisticsGenerator.scheduleStatisticsUpdaters();
+            if(!MockHealthStatisticsGenerator.getInstance().isScheduled()) {
+                MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaters();
             }
 
             return nodeMetadata;
@@ -197,7 +195,7 @@ public class MockIaasService {
             }
 
             if(membersMap.size() == 0) {
-                MockHealthStatisticsGenerator.stopStatisticsUpdaters();
+                MockHealthStatisticsGenerator.getInstance().stopStatisticsUpdaters();
             }
         }
     }

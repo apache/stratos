@@ -55,7 +55,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
                     double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
                             mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
 
-                    if (log.isDebugEnabled()) {
+                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
                                 mockMemberContext.getMemberId(), memoryConsumption));
                     }
