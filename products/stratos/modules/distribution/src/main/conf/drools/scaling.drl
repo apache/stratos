@@ -123,14 +123,13 @@ dialect "mvel"
             if (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMaxInstanceCount()) {
                 int additionalInstances = numberOfRequiredInstances - activeInstancesCount ;
                 clusterInstanceContext.resetScaleDownRequestsCount();
-                int count = 0;
 
                 //Calculating the factor scaling
                 float factor = numberOfRequiredInstances / clusterInstanceContext.getMinInstanceCount();
     //            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
 
                 boolean partitionsAvailable = true;
-
+                int count = 0;
                 while(count != additionalInstances && partitionsAvailable){
 
                     ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
@@ -146,7 +145,7 @@ dialect "mvel"
                     }
                 }
             } else{
-                log.info("[scale-up] Max is reached, hence not scaling up [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId());
+                log.info("[scale-up] Max is reached, hence not scaling up [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() + " [max] " + clusterInstanceContext.getMaxInstanceCount());
             }
         } else if(scaleDown){
 
