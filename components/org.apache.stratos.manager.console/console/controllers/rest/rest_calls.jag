@@ -52,7 +52,7 @@ RESTCalls = new function(){
     };
 
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
-        return this.send("POST","/policy/deployment",policyDefinition);
+        return this.send("POST","/deploymentPolicies",policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
@@ -117,7 +117,7 @@ RESTCalls = new function(){
     };
 
     this.getPolicyDeployment = function(){
-        return this.sendReceive("GET","/policy/deployment",{});
+        return this.sendReceive("GET","/deploymentPolicies",{});
     };
     this.unsubscribeCartridge = function(alias){
         return this.send("POST","/cartridge/unsubscribe",alias);
