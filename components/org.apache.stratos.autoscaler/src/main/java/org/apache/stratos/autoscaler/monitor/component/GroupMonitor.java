@@ -196,7 +196,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     }
 
                 } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
-                    //mark the child monitor as inActive in the map
+                    //mark the child monitor as inactive in the map
                     markInstanceAsTerminating(childId, instanceId);
 
                 } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
