@@ -68,7 +68,7 @@ RESTCalls = new function(){
     };
 
     this.deployApplicationDefinition = function(applicationDefinition){
-        return this.send("POST","/application/definition", applicationDefinition);
+        return this.send("POST","/applications", applicationDefinition);
     };
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
@@ -131,11 +131,11 @@ RESTCalls = new function(){
     };
 
     this.getApplications = function(){
-        return this.sendReceive("GET","/application",{});
+        return this.sendReceive("GET","/applications",{});
     };
 
     this.getApplicationTopology = function(appId){
-        return this.sendReceive("GET","/application/" + appId,{});
+        return this.sendReceive("GET","/applications/" + appId,{});
     };
 
     this.getClusterInfo = function(clusterId){

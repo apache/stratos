@@ -86,7 +86,7 @@ switch (formtype) {
         }
         break;
     case "deployments":
-        list_data = util.RESTCalls.getPolicyDeployment();
+        list_data = util.RESTCalls.getPolicyDeployment(); //TODO fix with correct JSON
         if(list_data == null) {
             list_data = null;
         }else{
