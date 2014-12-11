@@ -74,8 +74,21 @@
                         </div>
                         <h2>{{userName}} </h2>
 
-                        <div class="toggle-menu-description">{{role}}
+                        <div class="toggle-menu-description">{{role}}</div>
+                        {{#ifCond userName "!=" "admin"}}
+                        <div class="list-button" style="display: none;">
+                            <button class="btn btn-danger btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                    data-user="{{userName}}" > Delete
+                            </button>
                         </div>
+                        <div class="bottom-bar-wrapper">
+                            <div class="bottom-bar">
+                                <button class="btn btn-danger btn-lg hover-details" type="button" id="details_{{id}}"
+                                        data-user="{{userName}}" > Delete
+                                </button>
+                            </div>
+                        </div>
+                        {{/ifCond}}
                     </div>
                 {{/each}}
                 {{#each content_body.sections.tenantInfoBean}}
@@ -126,17 +139,59 @@
                 // Get an array of errors from the validator
                 var errors = editor.validate();
                 //       var indicator = document.getElementById('valid_indicator');
+            });
 
-//        // Not valid
-//        if(errors.length) {
-//            indicator.className = 'label alert';
-//            indicator.textContent = 'not valid';
-//        }
-//        // Valid
-//        else {
-//            indicator.className = 'label success';
-//            indicator.textContent = 'valid';
-//        }
+        {{else}}
+            $('.general-table .grid-group-item').hover(function () {
+                if($(this).hasClass('grid-group-item')) {
+                    $(this).find('.bottom-bar').stop().animate({bottom: '37px'}, 'slow');
+                }
+            }, function () {
+                if($(this).hasClass('grid-group-item')) {
+                    $(this).find('.bottom-bar').stop().animate({bottom: '-32px'}, 'slow');
+                }
+            });
+
+            $('.general-table').on('click', '.hover-details', function (event) {
+                var payload =$(this).attr("data-user");
+                noty({
+                    layout: 'bottomRight',
+                    type: 'warning',
+                    text: 'Are you sure you want to delete user '+$(this).attr("data-user"),
+                    buttons: [
+                        {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                            var formtype = 'deleteusers';
+                            $noty.close();
+
+                            $.ajax({
+                                type: "POST",
+                                url: caramel.context + "/controllers/users/users_requests.jag",
+                                dataType: 'json',
+                                data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
+                                success: function (data) {
+                                    if (data.status == 'error') {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                                    } else if (data.status == 'warning') {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                                    } else {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                                    }
+                                    window.setTimeout(function(){
+                                        location.reload();
+                                    }, 1000);
+                                }
+                                }).always(function () {
+
+                             });
+
+                        }
+                        },
+                        {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                            $noty.close();
+                        }
+                        }
+                    ]
+                });
             });
         {{/if}}
 

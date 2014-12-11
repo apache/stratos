@@ -31,9 +31,10 @@ include('/controllers/login/validator.jag');
 try {
     if(formtype == 'users'){
         formSubmit = util.RESTCalls.addUser(JSON.parse(formPayload));
-
     }else if(formtype == 'tenants'){
         formSubmit = util.RESTCalls.addTenant(JSON.parse(formPayload));
+    }else if(formtype == 'deleteusers'){
+        formSubmit = util.RESTCalls.deleteUser(JSON.parse(formPayload));
     }
 
 }catch(e){
