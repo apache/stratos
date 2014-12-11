@@ -7,7 +7,7 @@
             "title": "Configurations",
             "icon": "fa-gears",
             "permissionPaths": ["/permission", "/permission/admin"],
-            "description": "Configure partitions, deployment and scaling policies, cartridges and manage docker groups",
+            "description": "Configure Auto-scaling policies, cartridges and manage docker groups",
             "sub-menu": [
                 {
                     "link": "configure/autoscalingpolicies/",
@@ -80,10 +80,10 @@
                     "link": "applications/groups/",
                     "linkexternal": false,
                     "context": "/applications",
-                    "title": "Application Groups",
+                    "title": "Groups",
                     "icon": "fa-briefcase",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Add application groups."
+                    "description": "Add cartridge groups."
                 },
                 {
                     "link": "applications/applications/",
