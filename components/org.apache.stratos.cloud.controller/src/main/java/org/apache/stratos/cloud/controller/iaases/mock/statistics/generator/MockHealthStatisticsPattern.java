@@ -20,6 +20,9 @@
 package org.apache.stratos.cloud.controller.iaases.mock.statistics.generator;
 
 import org.apache.stratos.cloud.controller.iaases.mock.MockAutoscalingFactor;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.NoSampleValuesFoundException;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.StopStatisticsPublishingException;
+import org.apache.stratos.cloud.controller.iaases.mock.statistics.StatisticsPatternMode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -28,18 +31,19 @@ import java.util.List;
  * Mock health statistics pattern definition.
  */
 public class MockHealthStatisticsPattern {
+
     private String cartridgeType;
     private MockAutoscalingFactor factor;
-    private boolean loop;
+    private StatisticsPatternMode mode;
     private List<Integer> sampleValues;
     private int sampleDuration;
     private Iterator sampleValuesIterator;
 
-    public MockHealthStatisticsPattern(String cartridgeType, MockAutoscalingFactor factor, boolean loop, List<Integer> sampleValues,
+    public MockHealthStatisticsPattern(String cartridgeType, MockAutoscalingFactor factor, StatisticsPatternMode mode, List<Integer> sampleValues,
                                        int sampleDuration) {
         this.cartridgeType = cartridgeType;
         this.factor = factor;
-        this.loop = loop;
+        this.mode = mode;
         this.sampleValues = sampleValues;
         this.sampleValuesIterator = this.sampleValues.iterator();
         this.sampleDuration = sampleDuration;
@@ -58,31 +62,35 @@ public class MockHealthStatisticsPattern {
     }
 
     /**
-     * Returns looping is enabled or not.
+     * Returns statistics pattern mode
      * @return
      */
-    public boolean isLoop() {
-        return loop;
+    public StatisticsPatternMode getMode() {
+        return mode;
     }
 
     /**
      * Returns next sample value
      * @return
      */
-    public int getNextSample() {
+    public int getNextSample() throws NoSampleValuesFoundException, StopStatisticsPublishingException {
         if((sampleValues == null) || (sampleValues.size() < 1)) {
-            return -1;
+            throw new NoSampleValuesFoundException();
         }
 
         if(!sampleValuesIterator.hasNext()) {
             // Iterator has come to the end of the list
-            if(isLoop()) {
-                // Looping is enabled, reset the iterator
+            if(getMode() == StatisticsPatternMode.Loop) {
+                // Looping: reset the iterator
                 sampleValuesIterator = sampleValues.iterator();
                 return Integer.parseInt(sampleValuesIterator.next().toString());
-            } else {
-                // Looping is disabled, return the last value
+            } else if(getMode() == StatisticsPatternMode.Continue) {
+                // Continue: return the last value
                 return Integer.parseInt(sampleValues.get(sampleValues.size() - 1).toString());
+            } else if(getMode() == StatisticsPatternMode.Stop) {
+                throw new StopStatisticsPublishingException();
+            } else {
+                throw new RuntimeException("An unknown statistics pattern mode found");
             }
         } else {
             return Integer.parseInt(sampleValuesIterator.next().toString());

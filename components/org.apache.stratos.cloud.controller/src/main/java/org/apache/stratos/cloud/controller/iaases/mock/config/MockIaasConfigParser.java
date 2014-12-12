@@ -23,6 +23,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cloud.controller.iaases.mock.MockAutoscalingFactor;
+import org.apache.stratos.cloud.controller.iaases.mock.statistics.StatisticsPatternMode;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.generator.MockHealthStatisticsPattern;
 import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
 
@@ -39,7 +40,7 @@ public class MockIaasConfigParser {
     private static final QName ENABLED_ATTRIBUTE = new QName("enabled");
     private static final QName TYPE_ATTRIBUTE = new QName("type");
     private static final QName FACTOR_ATTRIBUTE = new QName("factor");
-    private static final QName LOOP_ATTRIBUTE = new QName("loop");
+    private static final QName MODE_ATTRIBUTE = new QName("mode");
     private static final String HEALTH_STATISTICS_ELEMENT = "health-statistics";
     private static final String SAMPLE_VALUES_ELEMENT = "sampleValues";
     private static final String SAMPLE_DURATION_ELEMENT = "sampleDuration";
@@ -90,13 +91,13 @@ public class MockIaasConfigParser {
                             String factorStr = factorAttribute.getAttributeValue();
                             MockAutoscalingFactor autoscalingFactor = convertAutoscalingFactor(factorStr);
 
-                            OMAttribute loopAttribute = patternElement.getAttribute(LOOP_ATTRIBUTE);
-                            if(loopAttribute == null) {
-                                throw new RuntimeException("Loop attribute not found in pattern element: " +
+                            OMAttribute modeAttribute = patternElement.getAttribute(MODE_ATTRIBUTE);
+                            if(modeAttribute == null) {
+                                throw new RuntimeException("Mode attribute not found in pattern element: " +
                                         "[cartridge-type] " + cartridgeType);
                             }
-                            String loopStr = loopAttribute.getAttributeValue();
-                            boolean loop = Boolean.parseBoolean(loopStr);
+                            String modeStr = modeAttribute.getAttributeValue();
+                            StatisticsPatternMode mode = convertMode(modeStr);
 
                             String sampleValuesStr = null;
                             String sampleDurationStr = null;
@@ -111,16 +112,19 @@ public class MockIaasConfigParser {
                                 }
                             }
 
-                            List<Integer> sampleValues = null;
-                            int sampleDuration = -1;
-                            if((StringUtils.isNotEmpty(sampleValuesStr)) && (StringUtils.isNotEmpty(sampleDurationStr))) {
-                                String[] sampleValuesArray = sampleValuesStr.split(",");
-                                sampleValues = convertStringArrayToIntegerList(sampleValuesArray);
-                                sampleDuration = Integer.parseInt(sampleDurationStr);
+                            if (sampleValuesStr == null) {
+                                throw new RuntimeException("Sample values not found in pattern [factor] " + factorStr);
+                            }
+                            if (sampleDurationStr == null) {
+                                throw new RuntimeException("Sample duration not found in pattern [factor] " + factorStr);
                             }
 
+                            String[] sampleValuesArray = sampleValuesStr.split(",");
+                            List<Integer> sampleValues = convertStringArrayToIntegerList(sampleValuesArray);
+                            int sampleDuration = Integer.parseInt(sampleDurationStr);
+
                             MockHealthStatisticsPattern mockHealthStatisticsPattern = new MockHealthStatisticsPattern
-                                    (cartridgeType, autoscalingFactor, loop, sampleValues, sampleDuration);
+                                    (cartridgeType, autoscalingFactor, mode, sampleValues, sampleDuration);
                             mockHealthStatisticsConfig.addStatisticsPattern(mockHealthStatisticsPattern);
                         }
                     }
@@ -130,6 +134,19 @@ public class MockIaasConfigParser {
         } catch (Exception e) {
             throw new RuntimeException("Could not parse mock health statistics configuration", e);
         }
+    }
+
+    private static StatisticsPatternMode convertMode(String modeStr) {
+        if("loop".equals(modeStr)) {
+            return StatisticsPatternMode.Loop;
+        }
+        else if("continue".equals(modeStr)) {
+            return StatisticsPatternMode.Continue;
+        }
+        else if("stop".equals(modeStr)) {
+            return StatisticsPatternMode.Stop;
+        }
+        throw new RuntimeException("An unknown statistics pattern mode found: " + modeStr);
     }
 
     private static MockAutoscalingFactor convertAutoscalingFactor(String factorStr) {

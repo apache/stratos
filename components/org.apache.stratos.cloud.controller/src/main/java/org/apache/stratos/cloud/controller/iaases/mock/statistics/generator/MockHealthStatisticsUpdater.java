@@ -21,6 +21,9 @@ package org.apache.stratos.cloud.controller.iaases.mock.statistics.generator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.NoSampleValuesFoundException;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.NoStatisticsFoundException;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.StopStatisticsPublishingException;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStatistics;
 
 /**
@@ -41,14 +44,24 @@ public class MockHealthStatisticsUpdater implements Runnable {
     public void run() {
         try {
             int nextSample = statisticsPattern.getNextSample();
-            if(nextSample != -1) {
-                MockHealthStatistics.getInstance().addStatistics(statisticsPattern.getCartridgeType(),
-                        statisticsPattern.getFactor(), nextSample);
+            MockHealthStatistics.getInstance().addStatistics(statisticsPattern.getCartridgeType(),
+                    statisticsPattern.getFactor(), nextSample);
 
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] %s [value] %d",
-                            statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString(), nextSample));
-                }
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] %s [value] %d",
+                        statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString(), nextSample));
+            }
+        } catch (NoSampleValuesFoundException ignore) {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("No sample values found for: [cartridge-type] %s [factor] %s",
+                        statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString()));
+            }
+        } catch (StopStatisticsPublishingException action) {
+            MockHealthStatistics.getInstance().removeStatistics(statisticsPattern.getCartridgeType(),
+                    statisticsPattern.getFactor());
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Statistics removed: [cartridge-type] %s [factor] %s",
+                        statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString()));
             }
         } catch (Exception e) {
             log.error("Could not update mock statistics", e);
