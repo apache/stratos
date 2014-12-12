@@ -77,9 +77,9 @@
 	    <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.tenant.mgt</artifactId>
-	    <version>${project.version}</version>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
+	    <version>2.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>

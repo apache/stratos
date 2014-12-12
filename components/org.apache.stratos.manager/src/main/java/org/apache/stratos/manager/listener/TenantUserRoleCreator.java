@@ -22,7 +22,7 @@ package org.apache.stratos.manager.listener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.user.mgt.exception.UserManagerException;
@@ -42,10 +42,10 @@ public class TenantUserRoleCreator implements TenantMgtListener {
     /**
      * Create an 'user' role at tenant creation time
      * @param tenantInfo TenantInfoBean
-     * @throws StratosException
+     * @throws org.apache.stratos.common.exception.ApacheStratosException
      */
     @Override
-    public void onTenantCreate(TenantInfoBean tenantInfo) throws StratosException {
+    public void onTenantCreate(TenantInfoBean tenantInfo) throws ApacheStratosException {
 
             try {
 
@@ -63,11 +63,11 @@ public class TenantUserRoleCreator implements TenantMgtListener {
             } catch (UserStoreException e) {
                 String msg = "Error while retrieving the user store for tenant: "+ tenantInfo.getTenantDomain();
                 log.error(msg, e);
-                throw new StratosException(e.getMessage(), e);
+                throw new ApacheStratosException(e.getMessage(), e);
             } catch (UserManagerException e) {
                 String msg = "Error while creating the user role in tenant: "+ tenantInfo.getTenantDomain();
                 log.error(msg, e);
-                throw new StratosException(e.getMessage(), e);
+                throw new ApacheStratosException(e.getMessage(), e);
             } finally {
                 PrivilegedCarbonContext.endTenantFlow();
             }
@@ -76,7 +76,7 @@ public class TenantUserRoleCreator implements TenantMgtListener {
 
 
     @Override
-    public void onTenantUpdate(TenantInfoBean tenantInfo) throws StratosException {
+    public void onTenantUpdate(TenantInfoBean tenantInfo) throws ApacheStratosException {
 
     }
 
@@ -87,28 +87,28 @@ public class TenantUserRoleCreator implements TenantMgtListener {
 
     @Override
     public void onTenantRename(int tenantId, String oldDomainName, String newDomainName)
-            throws StratosException {
+            throws ApacheStratosException {
 
     }
 
     @Override
-    public void onTenantInitialActivation(int tenantId) throws StratosException {
+    public void onTenantInitialActivation(int tenantId) throws ApacheStratosException {
 
     }
 
     @Override
-    public void onTenantActivation(int tenantId) throws StratosException {
+    public void onTenantActivation(int tenantId) throws ApacheStratosException {
 
     }
 
     @Override
-    public void onTenantDeactivation(int tenantId) throws StratosException {
+    public void onTenantDeactivation(int tenantId) throws ApacheStratosException {
 
     }
 
     @Override
     public void onSubscriptionPlanChange(int tenentId, String oldPlan, String newPlan)
-            throws StratosException {
+            throws ApacheStratosException {
 
     }
 

@@ -37,7 +37,9 @@
     <modules>
 	<module>stratos-mgt</module>
         <module>common</module>
+<!--
         <module>tenant-mgt</module>
+-->
         <module>gapp</module>
         <!--module>throttling</module-->
         <!--module>usage</module-->
@@ -71,14 +73,14 @@
                 <version>${stratos.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.apache.stratos</groupId>
-                <artifactId>org.apache.stratos.redirector.servlet</artifactId>
-                <version>${project.version}</version>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.redirector.servlet</artifactId>
+                <version>2.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.redirector.servlet.ui</artifactId>
-                <version>${project.version}</version>
+                <version>2.2.0</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.stratos</groupId>

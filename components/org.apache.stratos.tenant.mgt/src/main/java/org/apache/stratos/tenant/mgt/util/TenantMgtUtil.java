@@ -30,7 +30,7 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.registry.core.utils.UUIDGenerator;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
@@ -88,9 +88,9 @@ public class TenantMgtUtil {
      * Triggers adding the tenant for TenantMgtListener
      *
      * @param tenantInfo tenant
-     * @throws StratosException, trigger failed
+     * @throws org.apache.stratos.common.exception.ApacheStratosException, trigger failed
      */
-    public static void triggerAddTenant(TenantInfoBean tenantInfo) throws StratosException {
+    public static void triggerAddTenant(TenantInfoBean tenantInfo) throws ApacheStratosException {
         // initializeRegistry(tenantInfoBean.getTenantId());
         for (TenantMgtListener tenantMgtListener :
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
@@ -102,17 +102,17 @@ public class TenantMgtUtil {
      * Triggers an update for the tenant for TenantMgtListener
      *
      * @param tenantInfoBean tenantInfoBean
-     * @throws org.apache.stratos.common.exception.StratosException, if update failed
+     * @throws org.apache.stratos.common.exception.ApacheStratosException, if update failed
      */
     public static void triggerUpdateTenant(
-            TenantInfoBean tenantInfoBean) throws StratosException {
+            TenantInfoBean tenantInfoBean) throws ApacheStratosException {
         for (TenantMgtListener tenantMgtListener :
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantUpdate(tenantInfoBean);
         }
     }
 
-    public static void triggerDeleteTenant(int tenantId) throws StratosException {
+    public static void triggerDeleteTenant(int tenantId) throws ApacheStratosException {
         for (TenantMgtListener tenantMgtListener :
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantDelete(tenantId);
@@ -120,21 +120,21 @@ public class TenantMgtUtil {
     }
     
     public static void triggerTenantInitialActivation(
-                                  TenantInfoBean tenantInfoBean) throws StratosException {
+                                  TenantInfoBean tenantInfoBean) throws ApacheStratosException {
         for (TenantMgtListener tenantMgtListener :
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantInitialActivation(tenantInfoBean.getTenantId());
         }
     }
     
-    public static void triggerTenantActivation(int tenantId) throws StratosException {
+    public static void triggerTenantActivation(int tenantId) throws ApacheStratosException {
         for (TenantMgtListener tenantMgtListener : 
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantActivation(tenantId);
         }
     }
     
-    public static void triggerTenantDeactivation(int tenantId) throws StratosException {
+    public static void triggerTenantDeactivation(int tenantId) throws ApacheStratosException {
         for (TenantMgtListener tenantMgtListener : 
                 TenantMgtServiceComponent.getTenantMgtListeners()) {
             tenantMgtListener.onTenantDeactivation(tenantId);
@@ -360,7 +360,7 @@ public class TenantMgtUtil {
         //Notify tenant activation
         try {
             TenantMgtUtil.triggerTenantInitialActivation(tenantInfoBean);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant initial activation.";
             log.error(msg, e);
             throw new Exception(msg, e);

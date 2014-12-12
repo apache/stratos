@@ -21,7 +21,7 @@ package org.apache.stratos.metadataservice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.TenantBillingService;
-import org.apache.stratos.tenant.mgt.core.TenantPersistor;
+import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;

@@ -23,7 +23,7 @@ import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.util.CommonUtil;
 import org.jaxen.JaxenException;
 import org.wso2.carbon.utils.CarbonUtils;
@@ -43,7 +43,7 @@ public class PackageInfoHolder {
     
     List<PackageInfo> multitenancyPackages = new ArrayList<PackageInfo>();
 
-    public PackageInfoHolder() throws StratosException {
+    public PackageInfoHolder() throws ApacheStratosException {
         multitenancyPackages = deserializePackageDescriptionConfig();
     }
 
@@ -73,7 +73,7 @@ public class PackageInfoHolder {
         </package>
     </packages>
      */
-    private List<PackageInfo> deserializePackageDescriptionConfig() throws StratosException {
+    private List<PackageInfo> deserializePackageDescriptionConfig() throws ApacheStratosException {
         String configFilePath = CarbonUtils.getCarbonConfigDirPath() + File.separator +
                 StratosConstants.MULTITENANCY_CONFIG_FOLDER + File.separator +
                 PACKAGE_DESCRIPTION_CONFIG;
@@ -84,7 +84,7 @@ public class PackageInfoHolder {
         } catch (Exception e) {
             String msg = "Error in deserializing the packageConfigs file: " + configFilePath + ".";
             log.error(msg, e);
-            throw new StratosException(msg, e);
+            throw new ApacheStratosException(msg, e);
         }
 
         @SuppressWarnings("unchecked")
@@ -138,7 +138,7 @@ public class PackageInfoHolder {
         return multitenancyPackages;
     }
 
-    private String getPackageConfigValue(String key, OMElement packageNode) throws StratosException {
+    private String getPackageConfigValue(String key, OMElement packageNode) throws ApacheStratosException {
         String qualifiedKey = "ns:" + key.replaceAll("\\.", "/ns:");
         AXIOMXPath xpathExpression;
         try {
@@ -158,7 +158,7 @@ public class PackageInfoHolder {
         } catch (JaxenException e) {
             String msg = "Error in retrieving the key: " + qualifiedKey + ".";
             log.error(msg, e);
-            throw new StratosException(msg, e);
+            throw new ApacheStratosException(msg, e);
         }
     }
 }

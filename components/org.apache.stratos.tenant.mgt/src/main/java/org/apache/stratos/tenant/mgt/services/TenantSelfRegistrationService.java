@@ -22,7 +22,7 @@ import org.wso2.carbon.captcha.mgt.beans.CaptchaInfoBean;
 import org.wso2.carbon.captcha.mgt.constants.CaptchaMgtConstants;
 import org.wso2.carbon.captcha.mgt.util.CaptchaUtil;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.common.exception.StratosException;
+import org.apache.stratos.common.exception.ApacheStratosException;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.tenant.mgt.internal.TenantMgtServiceComponent;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
@@ -110,7 +110,7 @@ public class TenantSelfRegistrationService {
         //Notify tenant addition
         try {
             TenantMgtUtil.triggerAddTenant(tenantInfoBean);
-        } catch (StratosException e) {
+        } catch (ApacheStratosException e) {
             String msg = "Error in notifying tenant addition.";
             log.error(msg, e);
             throw new Exception(msg, e);
