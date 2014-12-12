@@ -242,7 +242,7 @@ public class TopologyEventPublisher {
 
     public static void sendClusterInactivateEvent(ClusterInstanceInactivateEvent clusterInactiveEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster in-active event: [service] %s [cluster] %s " +
+            log.info(String.format("Publishing cluster inactive event: [service] %s [cluster] %s " +
                             "[instance-id] %s [appId] %s",
                     clusterInactiveEvent.getServiceName(), clusterInactiveEvent.getClusterId(),
                     clusterInactiveEvent.getInstanceId(), clusterInactiveEvent.getAppId()));
