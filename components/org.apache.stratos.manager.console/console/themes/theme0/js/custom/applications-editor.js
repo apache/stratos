@@ -350,7 +350,7 @@ function deleteNode(endPoint){
 
 //genrate context menu for nodes
 $(function(){
-    $.contextMenu({
+    /*$.contextMenu({
         selector: '.stepnode',
         callback: function(key, options) {
             var m = "clicked: " + key + $(this);
@@ -359,8 +359,6 @@ $(function(){
             }else if(key == 'edit'){
 
             }
-
-            window.console && console.log($(this));
         },
         items: {
             "edit": {name: "Edit", icon: "edit"},
@@ -368,7 +366,7 @@ $(function(){
             "sep1": "---------",
             "quit": {name: "Quit", icon: "quit"}
         }
-    });
+    });*/
 
 });
 
@@ -469,9 +467,8 @@ function generateJsplumbTree(collector, connections){
     }
 
     traverse(collector);
-    console.log(collector)
-    console.log(JSON.stringify(collector));
-    $('#messages').html(JSON.stringify(collector, null, 4))
+
+    return collector;
 }
 
 //setting up schema and defaults
@@ -639,9 +636,34 @@ function generateGroups(data){
 // Document ready events
 $(document).ready(function(){
 
-    $('#app-generate').on('click', function(){
-        generateJsplumbTree(applicationJson, jsPlumb.getConnections());
+    $('#deploy').attr('disabled','disabled');
+
+    $('#deploy').on('click', function(){
+        var appJSON = generateJsplumbTree(applicationJson, jsPlumb.getConnections());
+        var btn = $(this);
+        var formtype = 'applications';
+        btn.html("<i class='fa fa-spinner fa-spin'></i> Deploying...");
+        $.ajax({
+            type: "POST",
+            url: caramel.context + "/controllers/applications/application_requests.jag",
+            dataType: 'json',
+            data: { "formPayload": JSON.stringify(appJSON), "formtype": formtype },
+            success: function (data) {
+                if (data.status == 'error') {
+                    var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                } else if (data.status == 'warning') {
+                    var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                } else {
+                    var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                }
+            }
+        })
+            .always(function () {
+                btn.html('Deploy Application Definition');
+            });
+
     });
+
     //*******************Adding JSON editor *************//
     JSONEditor.defaults.theme = 'bootstrap3';
     JSONEditor.defaults.iconlib = 'fontawesome4';
@@ -658,6 +680,7 @@ $(document).ready(function(){
             activateTab('general');
         }else{
             activateTab('components');
+            $('#component-info-update').prop("disabled", false);
         }
 
         blockId = $(this).attr('id');
@@ -714,7 +737,7 @@ $(document).ready(function(){
     $('#component-info-update').on('click', function(){
         $('#'+blockId).attr('data-generated', encodeURIComponent(JSON.stringify(editor.getValue())));
         $('#'+blockId).removeClass('input-false');
-
+        $('#deploy').prop("disabled", false);
     });
 
     //get create cartridge list

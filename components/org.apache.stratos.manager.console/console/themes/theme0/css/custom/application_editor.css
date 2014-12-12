@@ -14,7 +14,7 @@
 }
 
 .stepnode {
-    border: 1px solid black;
+    border: 1px solid silver;
     position: absolute !important;
     width: 5em;
     height: 5em;
@@ -29,24 +29,30 @@
 }
 
 .block-cartridge {
+    border: 1px solid silver;
+    border-radius: 0.5em;
     width: 80px;
     height: 80px;
-    background-color: rgb(109, 123, 112);
+    background-color:#CCC;
     float: left;
     margin: 5px;
     padding: 5px;
     word-wrap: break-word;
+    padding-top: 24px;
     cursor: pointer;
 }
 
 .block-group {
+    border: 1px solid silver;
+    border-radius: 0.5em;
     width: 80px;
     height: 80px;
-    background-color: rgb(109, 123, 112);
+    background-color: #CCC;
     float: left;
     margin: 5px;
     padding: 5px;
     word-wrap: break-word;
+    padding-top: 24px;
     cursor: pointer;
 }
 
@@ -57,7 +63,6 @@
     border-radius: 4px;
     margin-left: 10px;
     position: relative;
-    background-image: url("../images/grid.png");
 }
 
 #whiteboard{
@@ -123,3 +128,14 @@
     border-color: #ddd;
     border-width: 1px;
 }
+
+#component-data>div>h3{
+    display: none;
+}
+
+#component-info-update{
+    margin-top:-5px;margin-bottom: 20px;
+    float: right;
+}
+
+#component-data{margin-top: 20px}
