@@ -244,7 +244,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             Application application = ApplicationHolder.getApplications().getApplication(this.appId);
             Group group = application.getGroupRecursively(statusEvent.getId());
             //starting a new instance of this monitor
-            createInstanceAndStartDependencyOnScaleup(statusEvent.getInstanceId());
+            createInstanceOnDemand(statusEvent.getInstanceId());
         }
     }
 
@@ -515,19 +515,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             if (existingGroupInstances.size() <= groupMin) {
                 for (int i = 0; i < groupMin - existingGroupInstances.size(); i++) {
                     // Get partitionContext to create instance in
-                    List<GroupLevelPartitionContext> partitionContexts = groupLevelNetworkPartitionContext.
-                            getPartitionCtxts();
-                    GroupLevelPartitionContext[] groupLevelPartitionContexts =
-                            new GroupLevelPartitionContext[partitionContexts.size()];
-                    if (parentPartitionId == null) {
-                        AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
-                                groupLevelNetworkPartitionContext.getPartitionAlgorithm());
-                        partitionContext = algorithm.getNextScaleUpPartitionContext(
-                                (partitionContexts.toArray(groupLevelPartitionContexts)));
-                    } else {
-                        partitionContext = groupLevelNetworkPartitionContext.
-                                getPartitionContextById(parentPartitionId);
-                    }
+                    partitionContext = getPartitionContext(groupLevelNetworkPartitionContext,
+                                                            parentPartitionId);
                     groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
                             partitionContext,
                             groupLevelNetworkPartitionContext,
@@ -544,6 +533,27 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         return initialStartup;
     }
 
+    private PartitionContext getPartitionContext(
+                                GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext,
+                                String parentPartitionId) {
+        PartitionContext partitionContext;
+        // Get partitionContext to create instance in
+        List<GroupLevelPartitionContext> partitionContexts = groupLevelNetworkPartitionContext.
+                getPartitionCtxts();
+        GroupLevelPartitionContext[] groupLevelPartitionContexts =
+                new GroupLevelPartitionContext[partitionContexts.size()];
+        if (parentPartitionId == null) {
+            AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
+                    groupLevelNetworkPartitionContext.getPartitionAlgorithm());
+            partitionContext = algorithm.getNextScaleUpPartitionContext(
+                    (partitionContexts.toArray(groupLevelPartitionContexts)));
+        } else {
+            partitionContext = groupLevelNetworkPartitionContext.
+                    getPartitionContextById(parentPartitionId);
+        }
+        return partitionContext;
+    }
+
 
     /**
      * This will start the group instance based on the given parent instanceId
@@ -552,10 +562,11 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @param parentInstanceId
      * @throws org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException
      */
-    public void createInstanceAndStartDependencyOnScaleup(String parentInstanceId)
-            throws MonitorNotFoundException {
+    public void createInstanceOnDemand(String parentInstanceId) {
         // Get parent instance context
         Instance parentInstanceContext = getParentInstanceContext(parentInstanceId);
+        List<String> instanceIdsToStart = new ArrayList<String>();
+
 
         //TODO to get lock
         Group group = ApplicationHolder.getApplications().
@@ -572,33 +583,50 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         PartitionContext partitionContext;
         String parentPartitionId = parentInstanceContext.getPartitionId();
         int groupMax = group.getGroupMaxInstances();
-        if (group.getInstanceContextCount() < groupMax) {
-            // Get partitionContext to create instance in
-            if (parentPartitionId == null) {
-                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
-                        groupLevelNetworkPartitionContext.getPartitionAlgorithm());
-                partitionContext = algorithm.getNextScaleUpPartitionContext(
-                        (PartitionContext[]) groupLevelNetworkPartitionContext.
-                                getPartitionCtxts().toArray());
-            } else {
-                partitionContext = groupLevelNetworkPartitionContext.
-                        getPartitionContextById(parentPartitionId);
-            }
-            if (partitionContext != null) {
+        int groupMin = group.getGroupMinInstances();
+        List<Instance> instances = group.getInstanceContextsWithParentId(parentInstanceId);
+        if(instances.isEmpty()) {
+            //Need to create totally new group instance
+            for (int i = 0; i < groupMin ; i++) {
+                // Get partitionContext to create instance in
+                partitionContext = getPartitionContext(groupLevelNetworkPartitionContext,
+                        parentPartitionId);
                 groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
                         partitionContext,
                         groupLevelNetworkPartitionContext,
                         null);
-                startDependency(group, groupInstanceId);
+                instanceIdsToStart.add(groupInstanceId);
+            }
+        } else {
+            //have to create one more instance
+            if (group.getInstanceContextCount() < groupMax) {
+                // Get partitionContext to create instance in
+                partitionContext = getPartitionContext(groupLevelNetworkPartitionContext,
+                        parentPartitionId);
+                if (partitionContext != null) {
+                    groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
+                            partitionContext,
+                            groupLevelNetworkPartitionContext,
+                            null);
+                    instanceIdsToStart.add(groupInstanceId);
+                } else {
+                    log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
+                            "[max] " + groupMax + ". Hence trying to notify the parent.");
+                }
             } else {
                 log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
                         "[max] " + groupMax + ". Hence trying to notify the parent.");
             }
-        } else {
-            log.warn("[Group] " + group.getUniqueIdentifier() + " has reached the maximum limit as " +
-                    "[max] " + groupMax + ". Hence trying to notify the parent.");
         }
-
+        //TODO Starting all the instances, can do in parallel
+        for(String instanceId : instanceIdsToStart) {
+            try {
+                startDependency(group, instanceId);
+            } catch (MonitorNotFoundException e) {
+                //TODO exception handling
+                log.error("Error while creating the group/cluster instance", e);
+            }
+        }
     }
 
 
@@ -686,4 +714,5 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     public void destroy() {
         //TODO to stop all the drools
     }
+
 }

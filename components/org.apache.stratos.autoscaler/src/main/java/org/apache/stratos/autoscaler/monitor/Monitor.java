@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
+import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
@@ -44,6 +45,8 @@ public abstract class Monitor implements EventHandler {
     protected Map<String, Instance> instanceIdToInstanceMap;
 
     public abstract void destroy();
+
+    public abstract void createInstanceOnDemand(String instanceId);
 
     public Monitor() {
         this.instanceIdToInstanceMap = new HashMap<String, Instance>();
