@@ -29,5 +29,7 @@ if [ -z $STRATOS_CLI_HOME ] ; then
 STRATOS_CLI_HOME="$PWD"
 fi
 
-java -jar $STRATOS_CLI_HOME/org.apache.stratos.cli-4.1.0-SNAPSHOT.jar $*
+#debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
+
+java -jar ${debug} $STRATOS_CLI_HOME/org.apache.stratos.cli-4.1.0-SNAPSHOT.jar $*
 
