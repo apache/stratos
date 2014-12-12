@@ -30,8 +30,6 @@ public class LoadAverage implements Serializable{
 	private float average = 0.0f;
     private float secondDerivative =  0.0f;
     private float gradient =  0.0f;
-    private float scaleDownMarginOfGradient  =  0.0f;
-    private float scaleDownMarginOfSecondDerivative =  0.0f;
 
     /**
      * Gets the value of the average property.   
@@ -76,39 +74,9 @@ public class LoadAverage implements Serializable{
         this.gradient = value;
     }
 
-    /**
-     * Gets the value of the scaleDownSlowerMarginOfGradient property.
-     */
-    public float getScaleDownMarginOfGradient() {
-        return scaleDownMarginOfGradient;
-    }
-
-    /**
-     * Sets the value of the scaleDownSlowerMarginOfGradient property.
-     *
-     */
-    public void setScaleDownMarginOfGradient(float scaleDownMarginOfGradient) {
-        this.scaleDownMarginOfGradient = scaleDownMarginOfGradient;
-    }
-
-    /**
-     * Gets the value of the scaleDownSlowerMarginOfSecondDerivative property.
-     */
-    public float getScaleDownMarginOfSecondDerivative() {
-        return scaleDownMarginOfSecondDerivative;
-    }
-
-    /**
-     * Sets the value of the scaleDownSlowerMarginOfSecondDerivative property.
-     *
-     */
-    public void setScaleDownMarginOfSecondDerivative(float scaleDownMarginOfSecondDerivative) {
-        this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;
-    }
-
     @Override
     public String toString() {
-        return String.format("[average] %f [second-derivative] %f [gradient] %f [scale-down-margin-of-gradient] %f [scale-down-margin-of-second-derivative] %f",
-                getAverage(), getSecondDerivative(), getGradient(), getScaleDownMarginOfGradient(), getScaleDownMarginOfSecondDerivative());
+        return String.format("[average] %f [second-derivative] %f [gradient] %f",
+                getAverage(), getSecondDerivative(), getGradient());
     }
 }
