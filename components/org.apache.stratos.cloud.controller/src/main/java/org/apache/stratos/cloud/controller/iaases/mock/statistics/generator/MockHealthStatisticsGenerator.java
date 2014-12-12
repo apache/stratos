@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
 import org.apache.stratos.common.threading.StratosThreadPool;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public class MockHealthStatisticsGenerator {
 
     private boolean scheduled;
     // Map<ServiceName, List<ScheduledFuture>>
-    private Map<String, List<ScheduledFuture>> serviceNameToTaskListMap;
+    private Map<String, Map<String, ScheduledFuture>> serviceNameToTaskListMap;
 
     public static MockHealthStatisticsGenerator getInstance() {
         if (instance == null) {
@@ -60,7 +59,7 @@ public class MockHealthStatisticsGenerator {
     }
 
     private MockHealthStatisticsGenerator() {
-        serviceNameToTaskListMap = new ConcurrentHashMap<String, List<ScheduledFuture>>();
+        serviceNameToTaskListMap = new ConcurrentHashMap<String, Map<String, ScheduledFuture>>();
     }
 
     /**
@@ -74,9 +73,9 @@ public class MockHealthStatisticsGenerator {
                 List<MockHealthStatisticsPattern> statisticsPatterns = MockIaasConfig.getInstance().
                         getMockHealthStatisticsConfig().getStatisticsPatterns();
 
-                List taskList = serviceNameToTaskListMap.get(serviceName);
+                Map<String, ScheduledFuture> taskList = serviceNameToTaskListMap.get(serviceName);
                 if (taskList == null) {
-                    taskList = new ArrayList<ScheduledFuture>();
+                    taskList = new ConcurrentHashMap<String, ScheduledFuture>();
                     serviceNameToTaskListMap.put(serviceName, taskList);
                 }
 
@@ -86,7 +85,7 @@ public class MockHealthStatisticsGenerator {
                         MockHealthStatisticsUpdater runnable = new MockHealthStatisticsUpdater(statisticsPattern);
                         ScheduledFuture<?> task = scheduledExecutorService.scheduleAtFixedRate(runnable, 0,
                                 statisticsPattern.getSampleDuration(), TimeUnit.SECONDS);
-                        taskList.add(task);
+                        taskList.put(statisticsPattern.getFactor().toString(), task);
                     }
                 }
 
@@ -104,20 +103,33 @@ public class MockHealthStatisticsGenerator {
      */
     public void stopStatisticsUpdaterTasks(String serviceName) {
         synchronized (MockHealthStatisticsGenerator.class) {
-            List<ScheduledFuture> taskList = serviceNameToTaskListMap.get(serviceName);
-            if ((taskList != null) && (taskList.size() > 0)) {
-                Iterator<ScheduledFuture> iterator = taskList.iterator();
-                while(iterator.hasNext()) {
-                    // Cancel task
-                    ScheduledFuture task = iterator.next();
-                    task.cancel(true);
-
-                    // Remove from task list
-                    iterator.remove();
+            Map<String, ScheduledFuture> taskMap = serviceNameToTaskListMap.get(serviceName);
+            if ((taskMap != null) && (taskMap.size() > 0)) {
+                Iterator<String> factorIterator = taskMap.keySet().iterator();
+                while(factorIterator.hasNext()) {
+                    String factor = factorIterator.next();
+                    stopStatisticsUpdaterTask(serviceName, factor);
                 }
+            }
+        }
+    }
+
+    /**
+     * Stop statistics updater task of a service/cartridge type, factor.
+     * @param serviceName
+     * @param factor
+     */
+    public void stopStatisticsUpdaterTask(String serviceName, String factor) {
+        Map<String, ScheduledFuture> factorToTaskMap = serviceNameToTaskListMap.get(serviceName);
+        if(factorToTaskMap != null) {
+            ScheduledFuture task = factorToTaskMap.get(factor);
+            if(task != null) {
+                task.cancel(true);
+                factorToTaskMap.remove(factor);
 
                 if (log.isInfoEnabled()) {
-                    log.info(String.format("Mock statistics updaters stopped: [service-name] %s", serviceName));
+                    log.info(String.format("Mock statistics updater task stopped: [service-name] %s" +
+                            " [factor] %s", serviceName, factor));
                 }
             }
         }
@@ -130,7 +142,7 @@ public class MockHealthStatisticsGenerator {
      * @return
      */
     public boolean statisticsUpdaterTasksScheduled(String serviceName) {
-        List<ScheduledFuture> tasks = serviceNameToTaskListMap.get(serviceName);
+        Map<String, ScheduledFuture> tasks = serviceNameToTaskListMap.get(serviceName);
         return ((tasks != null) && (tasks.size() > 0));
     }
 }
