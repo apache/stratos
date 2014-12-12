@@ -165,7 +165,7 @@ public class ClusterStatusEventPublisher {
                             }
                         }
                 } else {
-                    log.warn("In-active is not in the possible state list of [cluster] " + clusterId);
+                    log.warn("Inactive is not in the possible state list of [cluster] " + clusterId);
                 }
             }
         } finally {

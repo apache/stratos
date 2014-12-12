@@ -96,7 +96,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
                 //send the in activation event
                 if (component instanceof Application) {
                     //send application activated event
-                    log.warn("Sending application instance in-active for [Application] " + appId +
+                    log.warn("Sending application instance inactive for [Application] " + appId +
                             " [ApplicationInstance] " + instanceId);
                     ApplicationBuilder.handleApplicationInstanceInactivateEvent(appId, instanceId);
 
