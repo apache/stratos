@@ -74,6 +74,7 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float requestsServedPerInstance, float averageRequestsServedPerInstance, boolean arspiReset) {
 
+
         float requestsInstanceCanHandle = requestsServedPerInstance;
 
         if (arspiReset && averageRequestsServedPerInstance != 0) {
@@ -91,12 +92,32 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(numberOfInstances);
     }
 
-    public int getNumberOfInstancesRequiredBasedOnLoadAndMemoryConsumption(float upperLimit, float lowerLimit, double predictedValue, int activeMemberCount) {
-        double numberOfInstances = 0;
-        if(upperLimit != 0) {
-            numberOfInstances = (activeMemberCount * predictedValue) / upperLimit;
+    public int getNumberOfInstancesRequiredBasedOnMemoryConsumption(float threshold, double predictedValue,
+                                                                    int max, int min) {
+        double numberOfAdditionalInstancesRequired = 0;
+        if(predictedValue != threshold) {
+
+            float scalingRange = 100 - threshold;
+            int instanceRange = max - min;
+
+            if(instanceRange != 0){
+
+                float gradient = scalingRange / instanceRange;
+                numberOfAdditionalInstancesRequired = (predictedValue - threshold) / gradient;
+            }
         }
-        return (int) Math.ceil(numberOfInstances);
+        return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);
+    }
+
+    public int getNumberOfInstancesRequiredBasedOnLoadAverage(float threshold, double predictedValue, int min) {
+
+        double numberOfInstances;
+        if(threshold != 0) {
+
+            numberOfInstances = (min * predictedValue) / threshold;
+            return (int) Math.ceil(numberOfInstances);
+        }
+        return min;
     }
 
     public int getMaxNumberOfInstancesRequired(int numberOfInstancesReuquiredBasedOnRif, int numberOfInstancesReuquiredBasedOnMemoryConsumption, boolean mcReset, int numberOfInstancesReuquiredBasedOnLoadAverage, boolean laReset) {
