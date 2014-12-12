@@ -110,6 +110,7 @@ public class GroupInstanceTerminatedProcessor extends MessageProcessor {
                     return false;
                 }
                 context.setStatus(status);
+                group.removeInstance(event.getInstanceId());
             }
         }
 

@@ -44,7 +44,10 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -74,7 +77,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      */
     public Monitor findGroupMonitorWithId(String groupId) {
         //searching within active monitors
-        return findGroupMonitor(groupId, aliasToActiveMonitorsMap.values());
+        return findGroupMonitor(groupId, aliasToActiveMonitorsMap);
     }
 
 
@@ -85,16 +88,17 @@ public class ApplicationMonitor extends ParentComponentMonitor {
      * @param monitors the group monitors found in the app monitor
      * @return the found GroupMonitor
      */
-    private Monitor findGroupMonitor(String id, Collection<Monitor> monitors) {
-        for (Monitor monitor : monitors) {
-            // check if alias is equal, if so, return
-            if (monitor.getId().equals(id)) {
-                return monitor;
-            } else {
-                // check if this Group has nested sub Groups. If so, traverse them as well
-                if (monitor instanceof ParentComponentMonitor) {
-                    return findGroupMonitor(id, ((ParentComponentMonitor) monitor).
-                            getAliasToActiveMonitorsMap().values());
+    private Monitor findGroupMonitor(String id, Map<String, Monitor> monitors) {
+        if (monitors.containsKey(id)) {
+            return monitors.get(id);
+        }
+
+        for (Monitor monitor : monitors.values()) {
+            if(monitor instanceof ParentComponentMonitor) {
+                Monitor monitor1 = findGroupMonitor(id, ((ParentComponentMonitor) monitor).
+                        getAliasToActiveMonitorsMap());
+                if (monitor1 != null) {
+                    return monitor1;
                 }
             }
         }
@@ -110,10 +114,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         ApplicationInstance applicationInstance = (ApplicationInstance) this.instanceIdToInstanceMap.
                 get(instanceId);
 
-        if(applicationInstance == null) {
+        if (applicationInstance == null) {
             log.warn("The required application [instance] " + instanceId + " not found in the AppMonitor");
         } else {
-            if(applicationInstance.getStatus() != status) {
+            if (applicationInstance.getStatus() != status) {
                 applicationInstance.setStatus(status);
             }
         }
@@ -364,4 +368,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     public void destroy() {
         //TODO to wipe out the drools
     }
+
+    @Override
+    public void createInstanceOnDemand(String instanceId) {
+
+    }
+
 }

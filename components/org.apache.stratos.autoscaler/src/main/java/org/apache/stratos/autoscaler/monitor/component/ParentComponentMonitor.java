@@ -41,7 +41,6 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
@@ -180,11 +179,11 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
                         get(context.getId());
-                groupMonitor.createInstanceAndStartDependencyOnScaleup(instanceId);
+                groupMonitor.createInstanceOnDemand(instanceId);
             } else if (context instanceof ClusterChildContext) {
                 VMClusterMonitor clusterMonitor = (VMClusterMonitor) this.aliasToActiveMonitorsMap.
                         get(context.getId());
-                clusterMonitor.createClusterInstanceOnScaleUp(instanceId);
+                clusterMonitor.createInstanceOnDemand(instanceId);
             }
         }
 
@@ -200,7 +199,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                                     List<String> instanceIds) {
         if (applicationContexts != null && applicationContexts.isEmpty()) {
             //all the groups/clusters have been started and waiting for activation
-            log.info("There is no child found for the [group]: " + this.id);
+            log.info("No more children to start for [group/application] " + this.id);
             return false;
 
         }
@@ -242,12 +241,8 @@ public abstract class ParentComponentMonitor extends Monitor {
             } else {
                 //starting a new instance of the child
                 Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
-                if (context instanceof ClusterChildContext) {
-                    MonitorStatusEventBuilder.notifyChildCluster(monitor, ClusterStatus.Created, instanceId);
-                } else if (context instanceof GroupChildContext) {
-                    MonitorStatusEventBuilder.notifyChildGroup(monitor, GroupStatus.Created, instanceId);
-                }
-
+                //Creating the new instance
+                monitor.createInstanceOnDemand(instanceId);
             }
         }
 
@@ -283,7 +278,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                         process(this.id, this.appId, instanceId);
             } else {
-                log.info("started a child: " + startDep + " by the group/cluster: " + childId);
+                log.info("started a child: " + startDep + " by the group/cluster: " + this.id);
             }
         } catch (MonitorNotFoundException e) {
             //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription

@@ -104,19 +104,57 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
             }
         } else {
             for (Group group : aliasToGroupMap.values()) {
-                return travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
+                Group foundGroup = travereAndCheckRecursively(group.getAliasToGroupMap(), groupAlias);
+                if (foundGroup != null) {
+                    return foundGroup;
+                }
             }
         }
 
         return null;
     }
 
+    /**
+     * This will recursively search for the cluster data holder in the application by the alias.
+     *
+     * @param alias the alias of the cluster
+     * @return found data holder
+     */
     public ClusterDataHolder getClusterDataHolderRecursivelyByAlias(String alias) {
         if (this.aliasToClusterDataMap.containsKey(alias)) {
             return this.aliasToClusterDataMap.get(alias);
         } else {
-            if (this.aliasToGroupMap != null && !this.aliasToGroupMap.isEmpty()) {
-                return getClusterDataByAlias(alias, this.aliasToGroupMap.values());
+            for (Group group : aliasToGroupMap.values()) {
+                ClusterDataHolder foundDataHolder = traverseAndCheckClusterDataHolderRecursively(
+                        this.aliasToGroupMap, alias);
+                if (foundDataHolder != null) {
+                    return foundDataHolder;
+                }
+            }
+
+        }
+        return null;
+
+    }
+
+    private ClusterDataHolder traverseAndCheckClusterDataHolderRecursively(
+            Map<String, Group> aliasToGroupMap, String alias) {
+        for (Group group : aliasToGroupMap.values()) {
+            if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
+                if (group.getClusterData(alias) != null) {
+                    return group.getClusterData(alias);
+                }
+            }
+        }
+
+        for (Group group : aliasToGroupMap.values()) {
+            if (group.getGroups() != null) {
+                ClusterDataHolder foundDataHolder =
+                        traverseAndCheckClusterDataHolderRecursively(group.getAliasToGroupMap(),
+                                alias);
+                if (foundDataHolder != null) {
+                    return foundDataHolder;
+                }
             }
         }
         return null;
@@ -321,23 +359,6 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         }
     }
 
-    private ClusterDataHolder getClusterDataByAlias(String alias, Collection<Group> groups) {
-
-        for (Group group : groups) {
-            if (group.getClusterDataMap() != null && !group.getClusterDataMap().isEmpty()) {
-                if (group.getClusterData(alias) != null) {
-                    return group.getClusterData(alias);
-                }
-            }
-        }
-
-        for(Group group : groups) {
-            if (group.getGroups() != null) {
-                return getClusterDataByAlias(alias, group.getGroups());
-            }
-        }
-        return null;
-    }
 
     public Map<String, T> getInstanceIdToInstanceContextMap() {
         return instanceIdToInstanceContextMap;
