@@ -187,12 +187,9 @@ public abstract class ParentComponentMonitor extends Monitor {
         for (ApplicationChildContext context : applicationContexts) {
             if (context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
-                        get(context.getId());
-                groupMonitor.createInstanceOnDemand(instanceId);
-            } else if (context instanceof ClusterChildContext) {
-                VMClusterMonitor clusterMonitor = (VMClusterMonitor) this.aliasToActiveMonitorsMap.
-                        get(context.getId());
-                clusterMonitor.createInstanceOnDemand(instanceId);
+                                                        get(context.getId());
+            } else if(context instanceof ClusterChildContext) {
+
             }
         }
 
@@ -491,8 +488,8 @@ public abstract class ParentComponentMonitor extends Monitor {
                     TopologyManager.acquireReadLockForCluster(monitor1.getServiceId(),
                             monitor1.getClusterId());
                     try {
-                        if (((ClusterInstance)monitor1.getInstance(instanceId)).getStatus()
-                                                    == ClusterStatus.Active) {
+                        if (((ClusterInstance) monitor1.getInstance(instanceId)).getStatus()
+                                == ClusterStatus.Active) {
                             parentsActive = true;
                         }
                     } finally {
@@ -508,7 +505,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsInactive(String childId, String instanceId) {
-        if (!this.inactiveInstancesMap.containsKey(childId)) {
+        if (this.inactiveInstancesMap.containsKey(childId)) {
             this.inactiveInstancesMap.get(childId).add(instanceId);
         } else {
             List<String> instanceIds = new ArrayList<String>();
@@ -522,7 +519,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (this.inactiveInstancesMap.containsKey(childId) &&
                 this.inactiveInstancesMap.get(childId).contains(instanceId)) {
             this.inactiveInstancesMap.get(childId).remove(instanceId);
-            if(this.inactiveInstancesMap.get(childId).isEmpty()) {
+            if (this.inactiveInstancesMap.get(childId).isEmpty()) {
                 this.inactiveInstancesMap.remove(childId);
             }
         }
@@ -533,7 +530,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (this.terminatingInstancesMap.containsKey(childId) &&
                 this.terminatingInstancesMap.get(childId).contains(instanceId)) {
             this.terminatingInstancesMap.get(childId).remove(instanceId);
-            if(this.terminatingInstancesMap.get(childId).isEmpty()) {
+            if (this.terminatingInstancesMap.get(childId).isEmpty()) {
                 this.terminatingInstancesMap.remove(childId);
             }
         }
@@ -541,21 +538,18 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     // move to inactive monitors list to use in the Terminated event
     protected synchronized void markInstanceAsTerminating(String childId, String instanceId) {
-        if (!this.terminatingInstancesMap.containsKey(childId)) {
-            if (this.inactiveInstancesMap.containsKey(childId) &&
-                    this.inactiveInstancesMap.get(childId).contains(instanceId)) {
-                this.inactiveInstancesMap.get(childId).remove(instanceId);
-                this.terminatingInstancesMap.get(childId).add(instanceId);
-            } else {
-                if (this.inactiveInstancesMap.containsKey(childId) &&
-                        this.inactiveInstancesMap.get(childId).contains(instanceId)) {
-                    this.inactiveInstancesMap.get(childId).remove(instanceId);
-                }
-                List<String> instanceIds = new ArrayList<String>();
-                instanceIds.add(instanceId);
-                this.terminatingInstancesMap.put(childId, instanceIds);
-            }
+        if (this.inactiveInstancesMap.containsKey(childId) &&
+                this.inactiveInstancesMap.get(childId).contains(instanceId)) {
+            this.inactiveInstancesMap.get(childId).remove(instanceId);
         }
+        if (this.terminatingInstancesMap.containsKey(childId)) {
+            this.terminatingInstancesMap.get(childId).add(instanceId);
+        } else {
+            List<String> instanceIds = new ArrayList<String>();
+            instanceIds.add(instanceId);
+            this.terminatingInstancesMap.put(childId, instanceIds);
+        }
+    }
     }
 
     protected synchronized void startMonitor(ParentComponentMonitor parent,
