@@ -20,6 +20,7 @@
 package org.apache.stratos.cloud.controller.iaases.mock.statistics.generator;
 
 import org.apache.stratos.cloud.controller.iaases.mock.MockAutoscalingFactor;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.ContinueLastSampleValueException;
 import org.apache.stratos.cloud.controller.iaases.mock.exceptions.NoSampleValuesFoundException;
 import org.apache.stratos.cloud.controller.iaases.mock.exceptions.StopStatisticsPublishingException;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.StatisticsPatternMode;
@@ -73,7 +74,8 @@ public class MockHealthStatisticsPattern {
      * Returns next sample value
      * @return
      */
-    public int getNextSample() throws NoSampleValuesFoundException, StopStatisticsPublishingException {
+    public int getNextSample() throws NoSampleValuesFoundException, StopStatisticsPublishingException,
+            ContinueLastSampleValueException {
         if((sampleValues == null) || (sampleValues.size() < 1)) {
             throw new NoSampleValuesFoundException();
         }
@@ -86,7 +88,8 @@ public class MockHealthStatisticsPattern {
                 return Integer.parseInt(sampleValuesIterator.next().toString());
             } else if(getMode() == StatisticsPatternMode.Continue) {
                 // Continue: return the last value
-                return Integer.parseInt(sampleValues.get(sampleValues.size() - 1).toString());
+                int lastSampleValue = Integer.parseInt(sampleValues.get(sampleValues.size() - 1).toString());
+                throw new ContinueLastSampleValueException(lastSampleValue);
             } else if(getMode() == StatisticsPatternMode.Stop) {
                 throw new StopStatisticsPublishingException();
             } else {
