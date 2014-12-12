@@ -129,7 +129,7 @@ dialect "mvel"
     //            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
 
                 boolean partitionsAvailable = true;
-                int count = 0;
+                int count = 0;                
                 while(count != additionalInstances && partitionsAvailable){
 
                     ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
@@ -137,7 +137,12 @@ dialect "mvel"
 
                         log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                         log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                        log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.isHasScalingDependants() + " [cluster] " + clusterId );
+                        if(clusterInstanceContext.isHasScalingDependants()) {
+                        	delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), factor);
+                        } else {
+                        	delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                        }
                         count++;
                     } else {
 

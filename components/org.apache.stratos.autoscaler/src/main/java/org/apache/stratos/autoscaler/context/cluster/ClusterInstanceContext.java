@@ -64,9 +64,12 @@ public class ClusterInstanceContext extends InstanceContext {
     private int currentPartitionIndex;
 
     private String networkPartitionId;
+    
+    private boolean hasScalingDependants;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
-                                  int min, int max, String networkPartitionId) {
+                                  int min, int max, String networkPartitionId,
+                                  boolean hasScalingDependants) {
 
         super(clusterInstanceId);
         this.networkPartitionId = networkPartitionId;
@@ -80,8 +83,7 @@ public class ClusterInstanceContext extends InstanceContext {
         memoryConsumption = new MemoryConsumption();
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
-
-
+        this.hasScalingDependants = hasScalingDependants;
     }
 
     public List<ClusterLevelPartitionContext> getPartitionCtxts() {
@@ -459,4 +461,9 @@ public class ClusterInstanceContext extends InstanceContext {
     public boolean isAverageRequestServedPerInstanceReset() {
         return averageRequestServedPerInstanceReset;
     }
+
+	public boolean isHasScalingDependants() {
+		return hasScalingDependants;
+	}
+   
 }

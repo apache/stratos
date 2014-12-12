@@ -1148,7 +1148,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 }
 
                 // create VMClusterContext and then add all the instanceContexts
-                clusterContext.addInstanceContext(parentInstanceId, cluster);
+                clusterContext.addInstanceContext(parentInstanceId, cluster, this.hasGroupScalingDependent());
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
                     this.addInstance(clusterInstance);
                 }

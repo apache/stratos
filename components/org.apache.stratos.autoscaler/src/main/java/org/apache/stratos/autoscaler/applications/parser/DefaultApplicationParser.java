@@ -461,6 +461,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             dependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders, groupCtxt));
         }
         dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(),serviceGroup));
+        //dependencyOrder.setScalingDependents(scalingDependents);
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, ClusterDataHolder> clusterDataMap;

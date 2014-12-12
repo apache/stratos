@@ -312,6 +312,10 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
             // validate termination behavior
             validateTerminationBehavior(depDefs.getTerminationBehaviour());
             deps.setTerminationBehaviour(depDefs.getTerminationBehaviour());
+			if (depDefs.getScalingDependants() != null) {
+				deps.setScalingDependants(depDefs.getScalingDependants()
+				        .toArray(new String[depDefs.getScalingDependants().size()]));
+			}
             servicegroup.setDependencies(deps);
         }
 
@@ -340,10 +344,10 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 depsDef.setStartupOrders(startupOrdersDef);
             }
 
-            String [] scalingOrders = deps.getScalingOrders();
-            if (scalingOrders != null && scalingOrders[0] != null) {
-                List<String> scalingOrdersDef = Arrays.asList(scalingOrders);
-                depsDef.setStartupOrders(scalingOrdersDef);
+            String [] scalingDependants = deps.getScalingDependants();
+            if (scalingDependants != null && scalingDependants[0] != null) {
+                List<String> scalingDependenciesDef = Arrays.asList(scalingDependants);
+                depsDef.setScalingDependants(scalingDependenciesDef);
             }
 
             depsDef.setTerminationBehaviour(deps.getTerminationBehaviour());

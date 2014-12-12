@@ -125,13 +125,14 @@ public class MonitorFactory {
                     groupMonitor.setHasStartupDependents(false);
                 }
             }
+            
+                       
             if (group.isGroupScalingEnabled()) {
                 groupMonitor.setGroupScalingEnabled(true);
             } else if (parentMonitor instanceof GroupMonitor) {
-                if (((GroupMonitor) parentMonitor).isGroupScalingEnabled() ||
-                        parentMonitor.hasGroupScalingDependent()) {
+                /*if (parentMonitor.hasGroupScalingDependent() || parentMonitor.getList --> not empty) {
                     groupMonitor.setHasGroupScalingDependent(true);
-                }
+                }*/
             }
         } finally {
             ApplicationHolder.releaseReadLock();

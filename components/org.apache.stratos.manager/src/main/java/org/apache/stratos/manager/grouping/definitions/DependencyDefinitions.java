@@ -33,7 +33,7 @@ public class DependencyDefinitions implements Serializable {
 
     private List<String> startupOrders;
 
-    private List<String> scalingOrders;
+    private List<String> scalingDependants;
 
     private String terminationBehaviour;
 
@@ -53,11 +53,12 @@ public class DependencyDefinitions implements Serializable {
 		this.startupOrders = startupOrders;
 	}
 
-    public List<String> getScalingOrders() {
-        return scalingOrders;
-    }
+	public List<String> getScalingDependants() {
+		return scalingDependants;
+	}
 
-    public void setScalingOrders(List<String> scalingOrders) {
-        this.scalingOrders = scalingOrders;
-    }
+	public void setScalingDependants(List<String> scalingDependants) {
+		this.scalingDependants = scalingDependants;
+	}
+	
 }
