@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -392,8 +393,14 @@ public class ApplicationBuilder {
                            monitor1.destroy();
                        }
                     }
-                    monitor.getNetworkPartitionContext(context.getNetworkPartitionId()).
-                            removeClusterGroupContext(instanceId);
+                    GroupLevelNetworkPartitionContext networkPartitionContext =
+                            monitor.getNetworkPartitionContext(context.getNetworkPartitionId());
+                    networkPartitionContext.removeClusterGroupContext(instanceId);
+                    if(context.getPartitionId() != null) {
+                        networkPartitionContext.getPartitionCtxt(context.getPartitionId()).
+                                removeActiveInstance(context);
+                    }
+
                     monitor.removeInstance(instanceId);
                     monitor.setStatus(status, instanceId);
                 }
