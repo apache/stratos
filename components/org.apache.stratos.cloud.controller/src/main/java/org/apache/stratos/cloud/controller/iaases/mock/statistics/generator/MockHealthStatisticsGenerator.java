@@ -24,8 +24,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
 import org.apache.stratos.common.threading.StratosThreadPool;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,6 +45,8 @@ public class MockHealthStatisticsGenerator {
             StratosThreadPool.getScheduledExecutorService("MOCK_STATISTICS_GENERATOR_EXECUTOR_SERVICE", 10);
 
     private boolean scheduled;
+    // Map<ServiceName, List<ScheduledFuture>>
+    private Map<String, List<ScheduledFuture>> serviceNameToTaskListMap;
 
     public static MockHealthStatisticsGenerator getInstance() {
         if (instance == null) {
@@ -53,36 +60,76 @@ public class MockHealthStatisticsGenerator {
     }
 
     private MockHealthStatisticsGenerator() {
+        serviceNameToTaskListMap = new ConcurrentHashMap<String, List<ScheduledFuture>>();
     }
 
-    public void scheduleStatisticsUpdaters() {
-        if(!scheduled) {
-            synchronized (MockHealthStatisticsGenerator.class) {
-                if(!scheduled) {
-                    List<MockHealthStatisticsPattern> statisticsPatterns = MockIaasConfig.getInstance().
-                            getMockHealthStatisticsConfig().getStatisticsPatterns();
+    /**
+     * Schedule statistics updater tasks for the given service/cartridge type.
+     *
+     * @param serviceName
+     */
+    public void scheduleStatisticsUpdaterTasks(String serviceName) {
+        synchronized (MockHealthStatisticsGenerator.class) {
+            if (!statisticsUpdaterTasksScheduled(serviceName)) {
+                List<MockHealthStatisticsPattern> statisticsPatterns = MockIaasConfig.getInstance().
+                        getMockHealthStatisticsConfig().getStatisticsPatterns();
 
-                    for (MockHealthStatisticsPattern statisticsPattern : statisticsPatterns) {
-                        scheduledExecutorService.scheduleAtFixedRate(new MockHealthStatisticsUpdater(statisticsPattern), 0,
+                List taskList = serviceNameToTaskListMap.get(serviceName);
+                if (taskList == null) {
+                    taskList = new ArrayList<ScheduledFuture>();
+                    serviceNameToTaskListMap.put(serviceName, taskList);
+                }
+
+                for (MockHealthStatisticsPattern statisticsPattern : statisticsPatterns) {
+                    if (statisticsPattern.getCartridgeType().equals(serviceName)) {
+                        MockHealthStatisticsUpdater runnable = new MockHealthStatisticsUpdater(statisticsPattern);
+                        ScheduledFuture<?> task = scheduledExecutorService.scheduleAtFixedRate(runnable, 0,
                                 statisticsPattern.getSampleDuration(), TimeUnit.SECONDS);
+                        taskList.add(task);
                     }
+                }
 
-                    if (log.isInfoEnabled()) {
-                        log.info("Mock statistics updaters scheduled");
-                    }
-                    scheduled = true;
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Mock statistics updaters scheduled: [service-name] %s", serviceName));
                 }
             }
         }
     }
 
-    public void stopStatisticsUpdaters() {
+    /**
+     * Stop statistics updater tasks of the given service/cartridge type.
+     *
+     * @param serviceName
+     */
+    public void stopStatisticsUpdaterTasks(String serviceName) {
         synchronized (MockHealthStatisticsGenerator.class) {
-            scheduledExecutorService.shutdownNow();
+            List<ScheduledFuture> taskList = serviceNameToTaskListMap.get(serviceName);
+            if ((taskList != null) && (taskList.size() > 0)) {
+                Iterator<ScheduledFuture> iterator = taskList.iterator();
+                while(iterator.hasNext()) {
+                    // Cancel task
+                    ScheduledFuture task = iterator.next();
+                    task.cancel(true);
+
+                    // Remove from task list
+                    iterator.remove();
+                }
+
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Mock statistics updaters stopped: [service-name] %s", serviceName));
+                }
+            }
         }
     }
 
-    public boolean isScheduled() {
-        return scheduled;
+    /**
+     * Returns true if there are statistics updater tasks scheduled for the given service/cartridge type
+     * else returns false.
+     * @param serviceName
+     * @return
+     */
+    public boolean statisticsUpdaterTasksScheduled(String serviceName) {
+        List<ScheduledFuture> tasks = serviceNameToTaskListMap.get(serviceName);
+        return ((tasks != null) && (tasks.size() > 0));
     }
 }

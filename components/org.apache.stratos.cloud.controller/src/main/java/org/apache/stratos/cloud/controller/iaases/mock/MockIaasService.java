@@ -33,6 +33,7 @@ import org.apache.stratos.common.threading.StratosThreadPool;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -58,15 +59,16 @@ public class MockIaasService {
     private static volatile MockIaasService instance;
 
     private MockPartitionValidator partitionValidator;
-    private ConcurrentHashMap<String, MockMember> membersMap;
+    // Map<ServiceName, Map<MemberId,MockMember>>
+    private Map<String, Map<String, MockMember>> serviceNameToMockMemberMap;
 
     private MockIaasService() {
         super();
         partitionValidator = new MockPartitionValidator();
-        membersMap = readFromRegistry();
-        if(membersMap == null) {
+        serviceNameToMockMemberMap = readFromRegistry();
+        if(serviceNameToMockMemberMap == null) {
             // No members found in registry, create a new map
-            membersMap = new ConcurrentHashMap<String, MockMember>();
+            serviceNameToMockMemberMap = new ConcurrentHashMap<String, Map<String, MockMember>>();
         }
     }
 
@@ -88,13 +90,18 @@ public class MockIaasService {
      * Start mock members
      */
     public void startMockMembers() {
-        if((membersMap != null) && (membersMap.size() > 0)) {
-            // Start existing mock members
-            for (MockMember mockMember : membersMap.values()) {
-                mockMemberExecutorService.submit(mockMember);
+        if(serviceNameToMockMemberMap != null) {
+            for(Map.Entry<String, Map<String, MockMember>> serviceNameEntry : serviceNameToMockMemberMap.entrySet())  {
+                // Start mock members
+                for(Map.Entry<String, MockMember> memberEntry : serviceNameEntry.getValue().entrySet()) {
+                    mockMemberExecutorService.submit(memberEntry.getValue());
+                }
+
+                // Schedule statistics updater tasks for service
+                if(serviceNameEntry.getValue().entrySet().size() > 0) {
+                    MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceNameEntry.getKey());
+                }
             }
-            // Schedule health statistics updaters
-            MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaters();
         }
     }
 
@@ -105,7 +112,7 @@ public class MockIaasService {
                     clusterContext.getClusterId(), memberContext.getMemberId(), memberContext.getNetworkPartitionId(),
                     memberContext.getPartition().getId(), memberContext.getInstanceId());
             MockMember mockMember = new MockMember(mockMemberContext);
-            membersMap.put(mockMember.getMockMemberContext().getMemberId(), mockMember);
+            addMemberToMap(mockMember);
             mockMemberExecutorService.submit(mockMember);
 
             // Prepare node metadata
@@ -115,24 +122,34 @@ public class MockIaasService {
             // Persist changes
             persistInRegistry();
 
-            if(!MockHealthStatisticsGenerator.getInstance().isScheduled()) {
-                MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaters();
-            }
+            String serviceName = mockMemberContext.getServiceName();
+            MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
 
             return nodeMetadata;
         }
     }
 
+    private void addMemberToMap(MockMember mockMember) {
+        String serviceName = mockMember.getMockMemberContext().getServiceName();
+        Map<String, MockMember> memberMap = serviceNameToMockMemberMap.get(serviceName);
+        if(memberMap == null) {
+            memberMap = new ConcurrentHashMap<String, MockMember>();
+            serviceNameToMockMemberMap.put(serviceName, memberMap);
+        }
+        memberMap.put(mockMember.getMockMemberContext().getMemberId(), mockMember);
+    }
+
     private void persistInRegistry() {
         try {
-            RegistryManager.getInstance().persist(MOCK_IAAS_MEMBERS, membersMap);
+            RegistryManager.getInstance().persist(MOCK_IAAS_MEMBERS,
+                    (ConcurrentHashMap<String, Map<String, MockMember>>)serviceNameToMockMemberMap);
         } catch (RegistryException e) {
             log.error("Could not persist mock iaas members in registry", e);
         }
     }
 
-    private static ConcurrentHashMap<String, MockMember> readFromRegistry() {
-        return (ConcurrentHashMap<String, MockMember>) RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
+    private ConcurrentHashMap<String, Map<String, MockMember>> readFromRegistry() {
+        return (ConcurrentHashMap<String, Map<String, MockMember>>) RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
     }
 
     public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
@@ -188,14 +205,20 @@ public class MockIaasService {
 
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
         synchronized (MockIaasService.class) {
-            MockMember mockMember = membersMap.get(memberContext.getMemberId());
-            if (mockMember != null) {
-                mockMember.terminate();
-                membersMap.remove(memberContext.getMemberId());
-            }
+            String serviceName = memberContext.getCartridgeType();
+            Map<String, MockMember> memberMap = serviceNameToMockMemberMap.get(serviceName);
+            if(memberMap != null) {
+                MockMember mockMember = memberMap.get(memberContext.getMemberId());
+                if(mockMember != null) {
+                    if (mockMember != null) {
+                        mockMember.terminate();
+                        memberMap.remove(memberContext.getMemberId());
+                    }
 
-            if(membersMap.size() == 0) {
-                MockHealthStatisticsGenerator.getInstance().stopStatisticsUpdaters();
+                    if (memberMap.size() == 0) {
+                        MockHealthStatisticsGenerator.getInstance().stopStatisticsUpdaterTasks(serviceName);
+                    }
+                }
             }
         }
     }
