@@ -126,16 +126,14 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     public void setStatus(GroupStatus status, String instanceId) {
         GroupInstance groupInstance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
         if (groupInstance == null) {
-            log.warn("The required group [instance] " + instanceId + " not found in the GroupMonitor");
+            if(status != GroupStatus.Terminated) {
+                log.warn("The required group [instance] " + instanceId + " not found in the GroupMonitor");
+            }
         } else {
             if (groupInstance.getStatus() != status) {
                 groupInstance.setStatus(status);
             }
         }
-        /*if (status == GroupStatus.Inactive && !this.hasStartupDependents) {
-            log.info("[Group] " + this.id + "is not notifying the parent, " +
-                    "since it is identified as the independent unit");
-        } else {*/
         // notify parent
         log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
         if (this.isGroupScalingEnabled()) {
