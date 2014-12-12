@@ -404,15 +404,19 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 childPartitionContexts = new ArrayList<GroupLevelPartitionContext>();
 
                 for (ChildLevelPartition childLevelPartition : childLevelPartitions) {
-                    partitionContext = new GroupLevelPartitionContext(childLevelPartition.getMax(),
-                            childLevelPartition.getPartitionId(), networkPartitionId);
-                    childPartitionContexts.add((GroupLevelPartitionContext) partitionContext);
-                    networkPartitionContext.addPartitionContext(
-                            (GroupLevelPartitionContext) partitionContext);
-                    if (log.isInfoEnabled()) {
-                        log.info("[Partition] " + childLevelPartition.getPartitionId() +
-                                "has been added for the [Group] " + this.id);
+                    if(networkPartitionContext.
+                            getPartitionCtxt(childLevelPartition.getPartitionId()) == null) {
+                        partitionContext = new GroupLevelPartitionContext(childLevelPartition.getMax(),
+                                childLevelPartition.getPartitionId(), networkPartitionId);
+                        childPartitionContexts.add((GroupLevelPartitionContext) partitionContext);
+                        networkPartitionContext.addPartitionContext(
+                                (GroupLevelPartitionContext) partitionContext);
+                        if (log.isInfoEnabled()) {
+                            log.info("[Partition] " + childLevelPartition.getPartitionId() +
+                                    "has been added for the [Group] " + this.id);
+                        }
                     }
+
                 }
             }
         }
