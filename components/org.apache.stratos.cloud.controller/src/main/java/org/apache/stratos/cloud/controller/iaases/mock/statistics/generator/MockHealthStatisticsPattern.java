@@ -30,14 +30,16 @@ import java.util.List;
 public class MockHealthStatisticsPattern {
     private String cartridgeType;
     private MockAutoscalingFactor factor;
+    private boolean loop;
     private List<Integer> sampleValues;
     private int sampleDuration;
     private Iterator sampleValuesIterator;
 
-    public MockHealthStatisticsPattern(String cartridgeType, MockAutoscalingFactor factor, List<Integer> sampleValues,
+    public MockHealthStatisticsPattern(String cartridgeType, MockAutoscalingFactor factor, boolean loop, List<Integer> sampleValues,
                                        int sampleDuration) {
         this.cartridgeType = cartridgeType;
         this.factor = factor;
+        this.loop = loop;
         this.sampleValues = sampleValues;
         this.sampleValuesIterator = this.sampleValues.iterator();
         this.sampleDuration = sampleDuration;
@@ -56,15 +58,35 @@ public class MockHealthStatisticsPattern {
     }
 
     /**
+     * Returns looping is enabled or not.
+     * @return
+     */
+    public boolean isLoop() {
+        return loop;
+    }
+
+    /**
      * Returns next sample value
      * @return
      */
     public int getNextSample() {
-        if(!sampleValuesIterator.hasNext()) {
-            // Reset iterator
-            sampleValuesIterator = sampleValues.iterator();
+        if((sampleValues == null) || (sampleValues.size() < 1)) {
+            return -1;
         }
-        return Integer.parseInt(sampleValuesIterator.next().toString());
+
+        if(!sampleValuesIterator.hasNext()) {
+            // Iterator has come to the end of the list
+            if(isLoop()) {
+                // Looping is enabled, reset the iterator
+                sampleValuesIterator = sampleValues.iterator();
+                return Integer.parseInt(sampleValuesIterator.next().toString());
+            } else {
+                // Looping is disabled, return the last value
+                return Integer.parseInt(sampleValues.get(sampleValues.size() - 1).toString());
+            }
+        } else {
+            return Integer.parseInt(sampleValuesIterator.next().toString());
+        }
     }
 
     /**

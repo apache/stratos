@@ -41,12 +41,14 @@ public class MockHealthStatisticsUpdater implements Runnable {
     public void run() {
         try {
             int nextSample = statisticsPattern.getNextSample();
-            MockHealthStatistics.getInstance().addStatistics(statisticsPattern.getCartridgeType(),
-                    statisticsPattern.getFactor(), nextSample);
+            if(nextSample != -1) {
+                MockHealthStatistics.getInstance().addStatistics(statisticsPattern.getCartridgeType(),
+                        statisticsPattern.getFactor(), nextSample);
 
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] %s [value] %d",
-                        statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString(), nextSample));
+                if (log.isInfoEnabled()) {
+                    log.info(String.format("Mock statistics updated: [cartridge-type] %s [factor] %s [value] %d",
+                            statisticsPattern.getCartridgeType(), statisticsPattern.getFactor().toString(), nextSample));
+                }
             }
         } catch (Exception e) {
             log.error("Could not update mock statistics", e);

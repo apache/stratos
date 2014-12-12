@@ -81,7 +81,8 @@ public class MockHealthStatisticsGenerator {
                 }
 
                 for (MockHealthStatisticsPattern statisticsPattern : statisticsPatterns) {
-                    if (statisticsPattern.getCartridgeType().equals(serviceName)) {
+                    if (statisticsPattern.getCartridgeType().equals(serviceName) &&
+                            (statisticsPattern.getSampleDuration() > 0)) {
                         MockHealthStatisticsUpdater runnable = new MockHealthStatisticsUpdater(statisticsPattern);
                         ScheduledFuture<?> task = scheduledExecutorService.scheduleAtFixedRate(runnable, 0,
                                 statisticsPattern.getSampleDuration(), TimeUnit.SECONDS);

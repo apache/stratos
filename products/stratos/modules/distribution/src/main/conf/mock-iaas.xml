@@ -20,13 +20,16 @@
 <mock-iaas enabled="true">
     <health-statistics>
         <cartridge type="tomcat">
-            <pattern factor="memory-consumption">
+            <!-- factor:memory-consumption|load-average|request-in-flight-->
+            <!-- if loop is set to true after the last sample value it will loop from the beginning,
+                 else the last sample value will be continued -->
+            <pattern factor="memory-consumption" loop="false">
                 <!-- Sample values -->
-                <sampleValues>20,30,40,50,60,70,50,40,30,20,20,20,20,20,20,20</sampleValues>
+                <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
                 <!-- Duration of each sample value in seconds -->
                 <sampleDuration>60</sampleDuration>
             </pattern>
-            <pattern factor="load-average">
+            <pattern factor="load-average" loop="false">
                 <!-- Sample values -->
                 <sampleValues>20</sampleValues>
                 <!-- Duration of each sample value in seconds -->

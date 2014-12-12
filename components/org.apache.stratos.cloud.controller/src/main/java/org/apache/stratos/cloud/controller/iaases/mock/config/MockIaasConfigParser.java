@@ -39,6 +39,7 @@ public class MockIaasConfigParser {
     private static final QName ENABLED_ATTRIBUTE = new QName("enabled");
     private static final QName TYPE_ATTRIBUTE = new QName("type");
     private static final QName FACTOR_ATTRIBUTE = new QName("factor");
+    private static final QName LOOP_ATTRIBUTE = new QName("loop");
     private static final String HEALTH_STATISTICS_ELEMENT = "health-statistics";
     private static final String SAMPLE_VALUES_ELEMENT = "sampleValues";
     private static final String SAMPLE_DURATION_ELEMENT = "sampleDuration";
@@ -80,14 +81,23 @@ public class MockIaasConfigParser {
 
                         while (patternIterator.hasNext()) {
                             OMElement patternElement = (OMElement) patternIterator.next();
-                            OMAttribute factorAttribute = patternElement.getAttribute(FACTOR_ATTRIBUTE);
 
+                            OMAttribute factorAttribute = patternElement.getAttribute(FACTOR_ATTRIBUTE);
                             if (factorAttribute == null) {
                                 throw new RuntimeException("Factor attribute not found in pattern element: " +
                                         "[cartridge-type] " + cartridgeType);
                             }
                             String factorStr = factorAttribute.getAttributeValue();
                             MockAutoscalingFactor autoscalingFactor = convertAutoscalingFactor(factorStr);
+
+                            OMAttribute loopAttribute = patternElement.getAttribute(LOOP_ATTRIBUTE);
+                            if(loopAttribute == null) {
+                                throw new RuntimeException("Loop attribute not found in pattern element: " +
+                                        "[cartridge-type] " + cartridgeType);
+                            }
+                            String loopStr = loopAttribute.getAttributeValue();
+                            boolean loop = Boolean.parseBoolean(loopStr);
+
                             String sampleValuesStr = null;
                             String sampleDurationStr = null;
                             Iterator patternChildIterator = patternElement.getChildElements();
@@ -101,18 +111,16 @@ public class MockIaasConfigParser {
                                 }
                             }
 
-                            if (sampleValuesStr == null) {
-                                throw new RuntimeException("Sample values not found in pattern [factor] " + factorStr);
-                            }
-                            if (sampleDurationStr == null) {
-                                throw new RuntimeException("Sample duration not found in pattern [factor] " + factorStr);
+                            List<Integer> sampleValues = null;
+                            int sampleDuration = -1;
+                            if((StringUtils.isNotEmpty(sampleValuesStr)) && (StringUtils.isNotEmpty(sampleDurationStr))) {
+                                String[] sampleValuesArray = sampleValuesStr.split(",");
+                                sampleValues = convertStringArrayToIntegerList(sampleValuesArray);
+                                sampleDuration = Integer.parseInt(sampleDurationStr);
                             }
 
-                            String[] sampleValuesArray = sampleValuesStr.split(",");
-                            List<Integer> sampleValues = convertStringArrayToIntegerList(sampleValuesArray);
                             MockHealthStatisticsPattern mockHealthStatisticsPattern = new MockHealthStatisticsPattern
-                                    (cartridgeType, autoscalingFactor, sampleValues, Integer.parseInt(sampleDurationStr));
-
+                                    (cartridgeType, autoscalingFactor, loop, sampleValues, sampleDuration);
                             mockHealthStatisticsConfig.addStatisticsPattern(mockHealthStatisticsPattern);
                         }
                     }
