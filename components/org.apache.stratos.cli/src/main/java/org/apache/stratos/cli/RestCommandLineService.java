@@ -85,7 +85,7 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_DEPLOY_PARTITION = API_CONTEXT + "/partitions";
-    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies";
+    private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_CLUSTER = API_CONTEXT + "/kubernetesCluster";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/minion";
@@ -99,7 +99,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_UNDEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges/{id}";
 
     private static final String ENDPOINT_LIST_PARTITIONS = API_CONTEXT + "/partitions";
-    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalePolicies";
+    private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/subscriptions/cartridges";
@@ -111,7 +111,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
-    private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies/{id}";
+    private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
     private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{id}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/clusters/";
