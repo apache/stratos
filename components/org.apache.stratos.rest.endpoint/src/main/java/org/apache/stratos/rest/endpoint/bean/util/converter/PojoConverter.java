@@ -720,12 +720,11 @@ public class PojoConverter {
 
     public static AutoscalePolicy populateAutoscalePojo(org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy
                                                                 autoscalePolicy) {
-
-        AutoscalePolicy autoscalePolicyBean = new AutoscalePolicy();
         if (autoscalePolicy == null) {
-            return autoscalePolicyBean;
+            return null;
         }
 
+        AutoscalePolicy autoscalePolicyBean = new AutoscalePolicy();
         autoscalePolicyBean.setId(autoscalePolicy.getId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         autoscalePolicyBean.setIsPublic(autoscalePolicy.getIsPublic());
