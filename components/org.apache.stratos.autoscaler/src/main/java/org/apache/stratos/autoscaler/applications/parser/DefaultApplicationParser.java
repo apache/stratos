@@ -472,10 +472,15 @@ public class DefaultApplicationParser implements ApplicationParser {
             for (GroupContext subGroupCtxt : groupCtxt.getGroupContexts()) {
                 // get the complete Group Definition                
 				if (subGroupCtxt != null) {
-					Group nestedGroup = parseGroup(appId, tenantId, key,
-					        subGroupCtxt, subscribableInfoCtxts,
-					        serviceGroup);
-					nestedGroups.put(nestedGroup.getAlias(), nestedGroup);
+                    for(ServiceGroup nestedServiceGroup : serviceGroup.getGroups()) {
+                        if(nestedServiceGroup.getName().equals(subGroupCtxt.getName())) {
+                            Group nestedGroup = parseGroup(appId, tenantId, key,
+                                    subGroupCtxt, subscribableInfoCtxts,
+                                    nestedServiceGroup);
+                            nestedGroups.put(nestedGroup.getAlias(), nestedGroup);
+                        }
+                    }
+
 				}
             }
 
@@ -488,7 +493,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Find the startup order
      *
-     * @param groupContext GroupContext with Group defintion information
+     * @param serviceGroup GroupContext with Group defintion information
      * @return Set of Startup Orders which are defined in the Group
      *
      * @throws ApplicationDefinitionException
