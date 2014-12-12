@@ -550,7 +550,7 @@ public abstract class ParentComponentMonitor extends Monitor {
             this.terminatingInstancesMap.put(childId, instanceIds);
         }
     }
-    }
+
 
     protected synchronized void startMonitor(ParentComponentMonitor parent,
                                              ApplicationChildContext context, List<String> instanceId) {
@@ -636,79 +636,74 @@ public abstract class ParentComponentMonitor extends Monitor {
         return autoscaleAlgorithm;
     }
 
-    private class MonitorAdder implements Runnable {
-        private ApplicationChildContext context;
-        private ParentComponentMonitor parent;
-        private String appId;
-        private List<String> instanceId;
+private class MonitorAdder implements Runnable {
+    private ApplicationChildContext context;
+    private ParentComponentMonitor parent;
+    private String appId;
+    private List<String> instanceId;
 
-        public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
-                            String appId, List<String> instanceId) {
-            this.parent = parent;
-            this.context = context;
-            this.appId = appId;
-            this.instanceId = instanceId;
-        }
+    public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
+                        String appId, List<String> instanceId) {
+        this.parent = parent;
+        this.context = context;
+        this.appId = appId;
+        this.instanceId = instanceId;
+    }
 
-        public void run() {
-	        Monitor monitor = null;
-	        int retries = 5;
-	        boolean success = false;
-	        while (!success && retries != 0) {
-	            /*//TODO remove thread.sleep, exectutor service
+    public void run() {
+        Monitor monitor = null;
+        int retries = 5;
+        boolean success = false;
+        while (!success && retries != 0) {
+                /*//TODO remove thread.sleep, exectutor service
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                 }*/
 
-		        if (log.isInfoEnabled()) {
-			        log.info("Monitor is going to be started for [group/cluster] "
-			                 + context.getId());
-		        }
-		        try {
-			        monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
-		        } catch (DependencyBuilderException e) {
-			        String msg = "Monitor creation failed for: " + context.getId();
-			        log.warn(msg, e);
-			        retries--;
-		        } catch (TopologyInConsistentException e) {
-			        String msg = "Monitor creation failed for: " + context.getId();
-			        log.warn(msg, e);
-			        retries--;
-		        } catch (PolicyValidationException e) {
-			        String msg = "Monitor creation failed for: " + context.getId();
-			        log.warn(msg, e);
-			        retries--;
-		        } catch (PartitionValidationException e) {
-			        String msg = "Monitor creation failed for: " + context.getId();
-			        log.warn(msg, e);
-			        retries--;
-		        }
-		        success = true;
-		        if (log.isInfoEnabled()) {
-			        log.info(String
-					                 .format("Monitor thread has been started successfully: [cluster] %s ",
-					                         context.getId()));
-		        }
-            }
-
-            if (monitor == null) {
-                String msg = "Monitor creation failed, even after retrying for 5 times, "
-                        + "for : " + context.getId();
-                log.error(msg);
-                //TODO parent.notify();
-                throw new RuntimeException(msg);
-            }
-
-            aliasToActiveMonitorsMap.put(context.getId(), monitor);
-            pendingMonitorsList.remove(context.getId());
-            // ApplicationBuilder.
             if (log.isInfoEnabled()) {
-                log.info(String.format("Monitor has been added successfully for: %s",
-                        context.getId()));
+                log.info("Monitor is going to be started for [group/cluster] "
+                        + context.getId());
             }
+            try {
+                monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
+            } catch (DependencyBuilderException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (TopologyInConsistentException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (PolicyValidationException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            } catch (PartitionValidationException e) {
+                String msg = "Monitor creation failed for: " + context.getId();
+                log.warn(msg, e);
+                retries--;
+            }
+            success = true;
+        }
+
+        if (monitor == null) {
+            String msg = "Monitor creation failed, even after retrying for 5 times, "
+                    + "for : " + context.getId();
+            log.error(msg);
+            //TODO parent.notify();
+            throw new RuntimeException(msg);
+        }
+
+        aliasToActiveMonitorsMap.put(context.getId(), monitor);
+        pendingMonitorsList.remove(context.getId());
+        // ApplicationBuilder.
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Monitor has been added successfully for: %s",
+                    context.getId()));
         }
     }
+}
 
 	public Set<String> getScalingDependencies() {
 		return scalingDependencies;
