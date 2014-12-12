@@ -167,41 +167,41 @@ public class StratosApiV41 extends AbstractApi {
         rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
         return rb.build();
     }
-    
+
     /**
-     * Gets the cartridges by category.
-     *
-     * @param category the category
-     * @param criteria the criteria if required for further filtering
-     * @return the cartridges by category
-     * @throws RestAPIException the rest api exception
+     * Returns cartridges by category.
+     * @param filter
+     * @param criteria
+     * @return
+     * @throws RestAPIException
      */
     @GET
     @Path("/cartridges/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter, @QueryParam("criteria") String criteria) throws RestAPIException {
+    public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter,
+                                          @QueryParam("criteria") String criteria) throws RestAPIException {
         List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByFilter(filter, criteria, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
         return rb.build();
     }
-    
+
     /**
-     * Gets a specific cartridge by category.
-     *
-     * @param category the category
-     * @param cartridgeType the cartridge type
-     * @return the cartridge by category
-     * @throws RestAPIException the rest api exception
+     * Returns a specific cartridge by category.
+     * @param filter
+     * @param cartridgeType
+     * @return
+     * @throws RestAPIException
      */
     @GET
     @Path("/cartridges/{filter}/{cartridgeType}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter, @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter,
+                                         @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         Cartridge cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridge);
