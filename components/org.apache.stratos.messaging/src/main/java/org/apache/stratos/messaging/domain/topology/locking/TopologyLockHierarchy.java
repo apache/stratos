@@ -70,12 +70,14 @@ public class TopologyLockHierarchy {
             synchronized (serviceNameToTopologyLockMap) {
                 if (!serviceNameToTopologyLockMap.containsKey(serviceName)) {
                     serviceNameToTopologyLockMap.put(serviceName, topologyLock);
-                    log.info("Added lock for Service " + serviceName);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Added lock for service " + serviceName);
+                    }
                 }
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Topology Lock for Service " + serviceName + " already exists");
+                log.debug("Topology Lock for service " + serviceName + " already exists");
             }
         }
     }
@@ -90,12 +92,14 @@ public class TopologyLockHierarchy {
             synchronized (clusterIdToTopologyLockMap) {
                 if (!clusterIdToTopologyLockMap.containsKey(clusterId)) {
                     clusterIdToTopologyLockMap.put(clusterId, topologyLock);
-                    log.info("Added lock for Cluster " + clusterId);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Added lock for cluster " + clusterId);
+                    }
                 }
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Topology Lock for Cluster " + clusterId + " already exists");
+                log.debug("Topology lock for cluster " + clusterId + " already exists");
             }
         }
     }
@@ -106,20 +110,24 @@ public class TopologyLockHierarchy {
 
     public void removeTopologyLockForService (String serviceName) {
         if (serviceNameToTopologyLockMap.remove(serviceName) != null) {
-            log.info("Removed lock for Service " + serviceName);
+            if (log.isDebugEnabled()) {
+                log.debug("Removed lock for service " + serviceName);
+            }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Lock already removed for Service " + serviceName);
+                log.debug("Lock already removed for service " + serviceName);
             }
         }
     }
 
     public void removeTopologyLockForCluster (String clusterId) {
         if (clusterIdToTopologyLockMap.remove(clusterId) != null) {
-            log.info("Removed lock for Cluster " + clusterId);
+            if (log.isDebugEnabled()) {
+                log.debug("Removed lock for cluster " + clusterId);
+            }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Lock already removed for Cluster " + clusterId);
+                log.debug("Lock already removed for cluster " + clusterId);
             }
         }
     }
