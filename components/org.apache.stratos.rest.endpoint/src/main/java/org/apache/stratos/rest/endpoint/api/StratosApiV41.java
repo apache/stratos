@@ -457,7 +457,11 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/autoscalingPolicy")
     public Response getAutoscalingPolicy(@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId)).build();
+        AutoscalePolicy autoScalePolicy = StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId);
+        if(autoScalePolicy == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(autoScalePolicy).build();
     }
 
     /**
