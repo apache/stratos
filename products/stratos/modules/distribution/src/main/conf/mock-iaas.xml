@@ -21,15 +21,18 @@
     <health-statistics>
         <cartridge type="tomcat">
             <!-- factor:memory-consumption|load-average|request-in-flight-->
-            <!-- if loop is set to true after the last sample value it will loop from the beginning,
-                 else the last sample value will be continued -->
-            <pattern factor="memory-consumption" loop="false">
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
                 <!-- Sample values -->
                 <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
                 <!-- Duration of each sample value in seconds -->
                 <sampleDuration>60</sampleDuration>
             </pattern>
-            <pattern factor="load-average" loop="false">
+            <pattern factor="load-average" mode="continue">
                 <!-- Sample values -->
                 <sampleValues>20</sampleValues>
                 <!-- Duration of each sample value in seconds -->

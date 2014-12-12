@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.iaases.mock.MockAutoscalingFactor;
 import org.apache.stratos.cloud.controller.iaases.mock.MockMemberContext;
+import org.apache.stratos.cloud.controller.iaases.mock.exceptions.NoStatisticsFoundException;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.MockHealthStatistics;
 
 /**
@@ -45,43 +46,55 @@ public class MockHealthStatisticsNotifier implements Runnable {
 
     @Override
     public void run() {
-        try {
-            if (statsPublisher.isEnabled()) {
-                double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
-                        mockMemberContext.getServiceName(), MockAutoscalingFactor.MemoryConsumption);
-                double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
-                        mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
-                            mockMemberContext.getMemberId(), memoryConsumption));
-                }
-                statsPublisher.publish(
-                        mockMemberContext.getClusterId(),
-                        mockMemberContext.getInstanceId(),
-                        mockMemberContext.getNetworkPartitionId(),
-                        mockMemberContext.getMemberId(),
-                        mockMemberContext.getPartitionId(),
-                        MEMORY_CONSUMPTION,
-                        memoryConsumption
-                );
-
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
-                            mockMemberContext.getMemberId(), loadAvereage));
-                }
-                statsPublisher.publish(
-                        mockMemberContext.getClusterId(),
-                        mockMemberContext.getInstanceId(),
-                        mockMemberContext.getNetworkPartitionId(),
-                        mockMemberContext.getMemberId(),
-                        mockMemberContext.getPartitionId(),
-                        LOAD_AVERAGE,
-                        loadAvereage
-                );
-            } else if (log.isWarnEnabled()) {
+        if (!statsPublisher.isEnabled()) {
+            if (log.isWarnEnabled()) {
                 log.warn("Statistics publisher is disabled");
             }
+            return;
+        }
+
+        try {
+            double memoryConsumption = MockHealthStatistics.getInstance().getStatistics(
+                    mockMemberContext.getServiceName(), MockAutoscalingFactor.MemoryConsumption);
+
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Publishing memory consumption: [member-id] %s [value] %f",
+                        mockMemberContext.getMemberId(), memoryConsumption));
+            }
+            statsPublisher.publish(
+                    mockMemberContext.getClusterId(),
+                    mockMemberContext.getInstanceId(),
+                    mockMemberContext.getNetworkPartitionId(),
+                    mockMemberContext.getMemberId(),
+                    mockMemberContext.getPartitionId(),
+                    MEMORY_CONSUMPTION,
+                    memoryConsumption
+            );
+        } catch (NoStatisticsFoundException ignore) {
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not publish health statistics", e);
+            }
+        }
+
+
+        try {
+            double loadAvereage = MockHealthStatistics.getInstance().getStatistics(
+                    mockMemberContext.getServiceName(), MockAutoscalingFactor.LoadAverage);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Publishing load average: [member-id] %s [value] %f",
+                        mockMemberContext.getMemberId(), loadAvereage));
+            }
+            statsPublisher.publish(
+                    mockMemberContext.getClusterId(),
+                    mockMemberContext.getInstanceId(),
+                    mockMemberContext.getNetworkPartitionId(),
+                    mockMemberContext.getMemberId(),
+                    mockMemberContext.getPartitionId(),
+                    LOAD_AVERAGE,
+                    loadAvereage
+            );
+        } catch (NoStatisticsFoundException ignore) {
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("Could not publish health statistics", e);
