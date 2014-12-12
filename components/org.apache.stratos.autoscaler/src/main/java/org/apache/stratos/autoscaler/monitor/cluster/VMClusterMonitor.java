@@ -1132,10 +1132,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
             if (clusterInstance != null) {
                 // Cluster instance is already there. No need to create one.
-                VMClusterContext clusterContext;
-                clusterContext =
-                        ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
-                this.setClusterContext(clusterContext);
+                VMClusterContext clusterContext = (VMClusterContext) this.getClusterContext();
+                if(clusterContext == null) {
+                    clusterContext =
+                            ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
+                    this.setClusterContext(clusterContext);
+                }
+
                 // create VMClusterContext and then add all the instanceContexts
                 clusterContext.addInstanceContext(parentInstanceId, cluster);
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
