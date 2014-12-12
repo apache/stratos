@@ -52,9 +52,11 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -263,23 +265,19 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
         }
 
-        //find the child context of this group, from scaling dependency tree
-        GroupChildContext currentChildContextInScalingTree =
-                (GroupChildContext) scalingDependencyTree.findApplicationContextWithIdInScalingDependencyTree(id);
-
+        //find the child context of this group,        
         //Notifying children, if this group has scaling dependencies
-        if (currentChildContextInScalingTree.isGroupScalingEnabled()) {
-            for (ApplicationChildContext applicationChildContext :
-                    currentChildContextInScalingTree.getApplicationChildContextList()) {
-
-                //Get group monitor so that it can notify it's children
-                Monitor monitor = aliasToActiveMonitorsMap.get(applicationChildContext.getId());
-
-                if (monitor instanceof GroupMonitor || monitor instanceof ApplicationMonitor) {
-
-                    monitor.onParentScalingEvent(scalingEvent);
-                }
-            }
+        if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
+        	// has dependencies. Notify children
+			if (aliasToActiveMonitorsMap != null
+			        && !aliasToActiveMonitorsMap.values().isEmpty()) {
+				for (String dependent : scalingDependencies) {
+					Monitor monitor = aliasToActiveMonitorsMap.get(dependent);
+					if (monitor instanceof GroupMonitor || monitor instanceof ApplicationMonitor) {
+	                    monitor.onParentScalingEvent(scalingEvent);
+	                }
+                }				
+			}
         }
     }
 

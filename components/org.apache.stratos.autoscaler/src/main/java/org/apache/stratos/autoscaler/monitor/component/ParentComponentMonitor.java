@@ -44,6 +44,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -65,7 +66,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
-    protected DependencyTree scalingDependencyTree;
+    protected Set<String> scalingDependencies;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //Pending monitors list
@@ -84,8 +85,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         this.id = component.getUniqueIdentifier();
         //Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
-        //Building the scaling dependencies for this monitor within the immediate children
-        scalingDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
+        scalingDependencies  =  DependencyBuilder.getInstance().buildScalingDependencies(component);
     }
 
     /**
@@ -706,5 +706,8 @@ private class MonitorAdder implements Runnable {
     }
 }
 
+	public Set<String> getScalingDependencies() {
+		return scalingDependencies;
+	}    
 
 }

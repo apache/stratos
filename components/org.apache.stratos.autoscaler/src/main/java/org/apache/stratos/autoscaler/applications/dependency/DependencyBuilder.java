@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.exception.application.DependencyBuilderExce
 import org.apache.stratos.messaging.domain.applications.*;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -131,69 +132,7 @@ public class DependencyBuilder {
                 }
             }
 
-            //Parsing the scaling order
-            Set<ScalingDependentList> scalingDependentLists = dependencyOrder.getScalingDependentLists();
-
-            if (scalingDependentLists != null) {
-                for (ScalingDependentList scalingDependentList : scalingDependentLists) {
-                    foundContext = null;
-                    parentContext = null;
-
-
-                    for (String scalingOrderComponent : scalingDependentList.getScalingDependentListComponents()) {
-
-
-                        if (scalingOrderComponent != null){
-                            String applicationContextId = null;
-                            if (scalingOrderComponent.startsWith(Constants.GROUP + ".")) {
-                                //getting the group alias
-                                applicationContextId = getGroupFromStartupOrder(scalingOrderComponent);
-
-                            } else if (scalingOrderComponent.startsWith(Constants.CARTRIDGE + ".")) {
-                                //getting the cluster alias
-                                applicationContextId = getClusterFromStartupOrder(scalingOrderComponent);
-
-                            } else {
-                                log.warn("[Scaling Order]: " + scalingOrderComponent + " contains unknown reference");
-                            }
-
-                            if(applicationContextId != null) {
-                                ApplicationChildContext applicationContext
-                                         = dependencyTree.findApplicationContextWithIdInPrimaryTree(applicationContextId);
-
-                                ApplicationChildContext existingApplicationContext =
-                                        dependencyTree.findApplicationContextWithIdInScalingDependencyTree(applicationContextId);
-                                if (existingApplicationContext == null) {
-
-                                    if (parentContext != null) {
-
-                                        parentContext.setGroupScalingEnabled(true);
-                                        //appending the scaling order to already added parent group/cluster
-                                        parentContext.addApplicationContext(applicationContext);
-                                        parentContext = applicationContext;
-                                        if (log.isDebugEnabled()) {
-                                            log.debug("Found an existing [dependency] " + parentContext.getId() +
-                                                    " and adding the [dependency] " + applicationContextId + " as the child");
-                                        }
-                                    } else {
-                                        //adding list of scaling order to the dependency tree
-                                        dependencyTree.addScalingApplicationContext(applicationContext);
-                                        parentContext = applicationContext;
-                                    }
-                                } else {
-                                    String msg = "Scaling order is not consistent. It contains the group/cluster " +
-                                            "which has been already used in another scaling order";
-                                    throw new DependencyBuilderException(msg);
-
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-            }
-
+            
         }
 
         //adding the rest of the children who are independent to the top level
@@ -216,6 +155,36 @@ public class DependencyBuilder {
         }
         return dependencyTree;
     }
+    
+    /**
+     * 
+     * Utility method to build scaling dependencies
+     * 
+     */
+	public Set<String> buildScalingDependencies(ParentComponent component) {
+		log.info(" ******* in build scaling dependencies ************ "); // TODO - remove
+		Set<String> scalingDependencies = new HashSet<String>();
+		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
+			log.info(" ******* in build scaling dependencies 22 ************ "); // TODO - remove
+		for (String string : component.getDependencyOrder().getScalingDependents()) {
+	    
+			log.info(" ******* in build scaling dependencies 33 ************ "); // TODO - remove
+		        if (string.startsWith(Constants.GROUP + ".")) {
+		            //getting the group alias            
+		            scalingDependencies.add(getGroupFromStartupOrder(string));
+		        } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
+		            //getting the cluster alias
+		            String id = getClusterFromStartupOrder(string);
+		            //getting the cluster-id from cluster alias
+		            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
+		            scalingDependencies.add(clusterDataHolder.getClusterId());
+		        } else {
+		            log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
+		        }
+        }
+		}
+	    return scalingDependencies;
+    }
 
     /**
      * Utility method to get the group alias from the startup order Eg: group.mygroup
@@ -236,6 +205,7 @@ public class DependencyBuilder {
     public static String getClusterFromStartupOrder(String startupOrder) {
         return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
     }
+
 
 
 }

@@ -26,7 +26,7 @@ public class Dependencies implements Serializable {
 
     private String [] startupOrders;
 
-    private String [] scalingOrders;
+    private String [] scalingDependants;
 
     private String terminationBehaviour;
 
@@ -46,11 +46,12 @@ public class Dependencies implements Serializable {
         this.startupOrders = startupOrders;
     }
 
-    public String[] getScalingOrders() {
-        return scalingOrders;
-    }
+	public String[] getScalingDependants() {
+		return scalingDependants;
+	}
 
-    public void setScalingOrders(String[] scalingOrders) {
-        this.scalingOrders = scalingOrders;
-    }
+	public void setScalingDependants(String[] scalingDependants) {
+		this.scalingDependants = scalingDependants;
+	}
+    
 }

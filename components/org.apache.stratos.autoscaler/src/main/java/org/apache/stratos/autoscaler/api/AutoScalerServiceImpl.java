@@ -341,15 +341,15 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     log.debug("StartupOrder: is null");
                 }
             }
-            String[] scalingOrders = dependencies.getScalingOrders();
+            String[] scalingDependents = dependencies.getScalingDependants();
 
             if (log.isDebugEnabled()) {
-                log.debug("ScalingOrders " + scalingOrders);
+                log.debug("ScalingDependent " + scalingDependents);
 
-                if (scalingOrders != null) {
-                    log.debug("ScalingOrder:size " + scalingOrders.length);
+                if (scalingDependents != null) {
+                    log.debug("ScalingDependents:size " + scalingDependents.length);
                 } else {
-                    log.debug("ScalingOrder: is null");
+                    log.debug("ScalingDependent: is null");
                 }
             }
         }
