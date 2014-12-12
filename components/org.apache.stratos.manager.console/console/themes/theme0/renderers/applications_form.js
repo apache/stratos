@@ -136,7 +136,8 @@ var render = function (theme, data, meta, require) {
                         context: {
                             formContext: data.breadcrumbPathLevelTwo,
                             appName: data.appName,
-                            topology_data: data.topology_data,
+                            editorCartridges: data.editorCartridges,
+                            editorGroups:data.editorGroups,
                             form_action: data.form_action,
                             formHtml: data.formHtml,
                             formData: data.formData,
@@ -144,9 +145,8 @@ var render = function (theme, data, meta, require) {
                             formDataEdit: data.formDataEdit,
                             isForm: data.isForm,
                             isEdit: data.isEdit,
-                            formTitle: data.formTitle,
-                            content_body: {sections: data.list_data
-                            }
+                            formTitle: data.formTitle
+
                         }
                     }
 

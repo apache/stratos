@@ -1,0 +1,125 @@
+.left-side{
+    float: left;
+    width: 20%;
+}
+
+.right-side{
+    float: left;
+    width: 79%;
+    margin-top:20px;
+}
+#applicationId{
+    left: 318px;
+    top: 33px;
+}
+
+.stepnode {
+    border: 1px solid black;
+    position: absolute !important;
+    width: 5em;
+    height: 5em;
+    padding: 0.5em;
+    z-index: 1;
+    border-radius: 0.5em;
+    box-shadow: 2px 2px 19px #aaa;
+    background: white;
+    word-wrap: break-word;
+    padding-top: 24px;
+    text-align: center;
+}
+
+.block-cartridge {
+    width: 80px;
+    height: 80px;
+    background-color: rgb(109, 123, 112);
+    float: left;
+    margin: 5px;
+    padding: 5px;
+    word-wrap: break-word;
+    cursor: pointer;
+}
+
+.block-group {
+    width: 80px;
+    height: 80px;
+    background-color: rgb(109, 123, 112);
+    float: left;
+    margin: 5px;
+    padding: 5px;
+    word-wrap: break-word;
+    cursor: pointer;
+}
+
+.app-creator {
+    height: 600px;
+    background-color: rgb(244, 244, 244);
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-left: 10px;
+    position: relative;
+    background-image: url("../images/grid.png");
+}
+
+#whiteboard{
+    width: 800px;
+    height: 600px;
+    position: absolute;
+}
+
+.description{
+    min-height: 300px;
+    max-height: 400px;
+}
+
+.component-section{
+    max-height: 200px;
+    overflow: auto;
+    min-height: 200px;
+}
+
+.description-section{
+    min-height: 260px;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.app-details {
+    margin: 10px;
+}
+
+.app-details-tab-content{
+    border: 1px solid #ddd;
+    border-top: transparent;
+    min-height: 233px;
+    padding: 20px;
+    border-radius:  0 0 4px 4px;
+}
+.dragActive {
+    border: 2px dotted orange;
+
+}
+
+.node-disable{
+    background-color: #bdc3c7;
+}
+
+
+.node circle {
+    fill: #fff;
+    stroke: steelblue;
+    stroke-width: 3px;
+}
+
+.node text { font: 12px sans-serif; }
+
+.link {
+    fill: none;
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
+.input-false{
+    background-color: #CCC;
+    border-color: #ddd;
+    border-width: 1px;
+}

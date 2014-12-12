@@ -32,23 +32,25 @@ var log = new Log("apachestratos.applications_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
-        formDataEdit = topology_data = '',
+        formDataEdit = topology_data = editorGroups = editorCartridges = '',
         isEdit = applicationView = applicationEditor= isForm = false,
         userPermissions = session.get('PERMISSIONS');
 
 //create left menu
 var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
+
 if (!elements) {
     elements = uriMatcher.match('/{context}/applications/{formtype}/{action}/');
     isForm = true;
-
 
     if (elements.formtype == 'applications' && elements.action != 'new') {
         applicationView = true;
         topology_data = util.RESTCalls.getApplicationTopology(elements.action);
     }else if(elements.formtype == 'applications' && elements.action == 'new'){
         applicationEditor = true;
+        editorGroups =  util.RESTCalls.getGroups();
+        editorCartridges = util.RESTCalls.getCartridges();
     }else  if(elements.action != 'new'){
         isEdit = true;
     }
@@ -69,7 +71,6 @@ var formtype = elements.formtype;
 switch (formtype) {
     case "groups":
         list_data = util.RESTCalls.getGroups();
-            log.info(list_data)
         if (list_data.groups && list_data.groups.length === 0) {
             list_data = null;
         }else{
@@ -114,9 +115,11 @@ var caramelData = {
     isEdit: isEdit,
     appName: elements.action,
     topology_data: JSON.stringify(topology_data),
+    editorGroups: JSON.stringify(editorGroups),
+    editorCartridges: JSON.stringify(editorCartridges),
     applicationView: applicationView,
     applicationEditor: applicationEditor,
-formTitle: formTitle,
+    formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
     formDataEdit: JSON.stringify(formDataEdit),
