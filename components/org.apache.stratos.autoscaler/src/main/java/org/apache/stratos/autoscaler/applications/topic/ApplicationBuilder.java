@@ -400,11 +400,11 @@ public class ApplicationBuilder {
                         networkPartitionContext.getPartitionCtxt(context.getPartitionId()).
                                 removeActiveInstance(context);
                     }
-
                     monitor.removeInstance(instanceId);
+                    group.removeInstance(instanceId);
                     monitor.setStatus(status, instanceId);
                 }
-                group.removeInstance(instanceId);
+
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
 
