@@ -71,7 +71,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class CloudControllerServiceImpl implements CloudControllerService {
 
-	private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
+    private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext
             .getInstance();
@@ -94,7 +94,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
             String msg = "Invalid cartridge definition: Cartridge type: " + cartridgeConfig.getType() +
-                         " Cause: Cannot instantiate a cartridge instance with the given configuration: " + e.getMessage();
+                    " Cause: Cannot instantiate a cartridge instance with the given configuration: " + e.getMessage();
             log.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
@@ -392,7 +392,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
-	        addToPayload(payload, "INSTANCE_ID", memberContext.getInstanceId());
+            addToPayload(payload, "INSTANCE_ID", memberContext.getInstanceId());
             if (memberContext.getProperties() != null) {
                 org.apache.stratos.common.Properties properties = memberContext.getProperties();
                 if (properties != null) {
@@ -544,7 +544,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // check if status == active, if true, then this is a termination on member faulty
         Topology topology;
         try {
-            TopologyManager.acquireReadLock();
+            TopologyManager.acquireWriteLock();
             topology = TopologyManager.getTopology();
             org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
 
@@ -578,7 +578,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             ThreadExecutor exec = ThreadExecutor.getInstance();
             exec.execute(new InstanceTerminator(memberContext));
         } finally {
-            TopologyManager.releaseReadLock();
+            TopologyManager.releaseWriteLock();
         }
     }
 
@@ -592,7 +592,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      */
     private boolean isMemberExpired(Member member, long initTime, long expiryTime) {
         if (member.getStatus() == MemberStatus.ReadyToShutDown) {
-            if (initTime == 0){
+            if (initTime == 0) {
                 // obsolete init time hasn't been set, i.e. not a member detected faulty.
                 // this is a graceful shutdown
                 return false;
@@ -610,11 +610,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     /**
      * Corrects the member status upon termination call if the member is in an Active state
      *
-     * @param member The {@link org.apache.stratos.messaging.domain.topology.Member} object that is being
-     *               checked for status
+     * @param member   The {@link org.apache.stratos.messaging.domain.topology.Member} object that is being
+     *                 checked for status
      * @param topology The {@link org.apache.stratos.messaging.domain.topology.Topology} object to update
      *                 the topology if needed.
-     *
      */
     private boolean fixMemberStatus(Member member, Topology topology) {
         if (member.getStatus() == MemberStatus.Activated) {
@@ -626,15 +625,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     member.getMemberId(),
                     member.getInstanceId());
 
-            try {
-                TopologyManager.acquireWriteLock();
-                member.setStatus(MemberStatus.ReadyToShutDown);
-                log.info("Member Ready to shut down event adding status started");
+            member.setStatus(MemberStatus.ReadyToShutDown);
+            log.info("Member Ready to shut down event adding status started");
 
-                TopologyManager.updateTopology(topology);
-            } finally {
-                TopologyManager.releaseWriteLock();
-            }
+            TopologyManager.updateTopology(topology);
 
             TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
             //publishing data
@@ -856,7 +850,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         deleteVolumes(ctxt);
                         onClusterRemoval(clusterId_);
                     } finally {
-                        if(lock != null) {
+                        if (lock != null) {
                             CloudControllerContext.getInstance().releaseWriteLock(lock);
                         }
                     }
@@ -893,7 +887,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 CloudControllerContext.getInstance().updateCartridge(cartridge);
                             }
                         } finally {
-                            if(lock != null) {
+                            if (lock != null) {
                                 CloudControllerContext.getInstance().releaseWriteLock(lock);
                             }
                         }
@@ -922,13 +916,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // send cluster removal notifications and update the state
             onClusterRemoval(clusterId);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
 
-    /***
+    /**
      * FIXME: A validate method shouldn't persist any data
      */
     @Override
@@ -984,11 +978,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String partitionId = entry.getKey();
                 Future<IaasProvider> job = entry.getValue();
                 try {
-                    
+
                     // add to a temporary Map
                     IaasProvider iaasProvider = job.get();
-                    
-                    if(iaasProvider != null) {
+
+                    if (iaasProvider != null) {
                         partitionToIaasProviders.put(partitionId, iaasProvider);
                     }
 
@@ -1016,7 +1010,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             return true;
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1063,7 +1057,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             String clusterId = containerClusterContext.getClusterId();
             handleNullObject(clusterId, "Container start-up failed. Cluster id is null.");
-            
+
             Partition partition = containerClusterContext.getPartition();
             handleNullObject(partition, "Container start-up failed. Null partition found in ContainerClusterContext.");
 
@@ -1080,7 +1074,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             if (cartridge == null) {
                 String msg = "Instance start-up failed. No matching Cartridge found [type] " + cartridgeType + ". " +
-                                containerClusterContext.toString();
+                        containerClusterContext.toString();
                 log.error(msg);
                 throw new UnregisteredCartridgeException(msg);
             }
@@ -1220,7 +1214,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new IllegalStateException(msg, e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1248,7 +1242,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 //        return propVal;
 //
 //    }
-    
+
     private String validateProperty(String property, org.apache.stratos.common.Properties properties, String object) {
 
         String propVal = CloudControllerUtil.getProperty(properties, property);
@@ -1258,7 +1252,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId, String kubernetesMasterIp,
-            String kubernetesMasterPort, int upperPort, int lowerPort) {
+                                                                 String kubernetesMasterPort, int upperPort, int lowerPort) {
 
         KubernetesClusterContext origCtxt =
                 CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
@@ -1369,7 +1363,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
             return membersToBeRemoved.toArray(new MemberContext[0]);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1517,7 +1511,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new IllegalStateException(msg, e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1567,12 +1561,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new MemberTerminationFailedException(msg, e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
-    
+
     private void handleNullObject(Object obj, String errorMsg) {
         if (obj == null) {
             log.error(errorMsg);
@@ -1581,7 +1575,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts)  throws
+    public void createApplicationClusters(String appId, ApplicationClusterContext[] appClustersContexts) throws
             ApplicationClusterRegistrationException {
         if (appClustersContexts == null || appClustersContexts.length == 0) {
             String errorMsg = "No application cluster information found, unable to create clusters";
@@ -1623,15 +1617,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             CloudControllerContext.getInstance().persist();
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
 
-    public void createClusterInstance (String serviceType, String clusterId,
-                                       String alias, String instanceId, String partitionId,
-                                       String networkPartitionId) throws ClusterInstanceCreationException {
+    public void createClusterInstance(String serviceType, String clusterId,
+                                      String alias, String instanceId, String partitionId,
+                                      String networkPartitionId) throws ClusterInstanceCreationException {
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
@@ -1640,12 +1634,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             CloudControllerContext.getInstance().persist();
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
-    
+
     @Override
     public KubernetesGroup[] getAllKubernetesGroups() {
         return CloudControllerContext.getInstance().getKubernetesGroups();
@@ -1685,7 +1679,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Add to information model
             CloudControllerContext.getInstance().addKubernetesGroup(kubernetesGroup);
             CloudControllerContext.getInstance().persist();
-            
+
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes group deployed successfully: [id] %s, [description] %s",
                         kubernetesGroup.getGroupId(), kubernetesGroup.getDescription()));
@@ -1694,12 +1688,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } catch (Exception e) {
             throw new InvalidKubernetesGroupException(e.getMessage(), e);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
-    
+
     @Override
     public boolean addKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesGroupException {
@@ -1737,16 +1731,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             kubernetesGroupStored.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
             CloudControllerContext.getInstance().updateKubernetesGroup(kubernetesGroupStored);
             CloudControllerContext.getInstance().persist();
-            
+
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes host deployed successfully: [id] %s", kubernetesGroupStored.getGroupId()));
             }
-            
+
             return true;
         } catch (Exception e) {
             throw new InvalidKubernetesHostException(e.getMessage(), e);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1780,7 +1774,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new NonExistingKubernetesGroupException(e.getMessage(), e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1834,7 +1828,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new NonExistingKubernetesHostException(e.getMessage(), e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1867,7 +1861,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new InvalidKubernetesMasterException(e.getMessage(), e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
@@ -1905,7 +1899,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 throw new InvalidKubernetesHostException(e.getMessage(), e);
             }
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
