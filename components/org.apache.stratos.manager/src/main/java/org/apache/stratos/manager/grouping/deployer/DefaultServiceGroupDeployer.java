@@ -289,8 +289,8 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
         String[] cartridges = new String[cartridgesDef.size()];
 
+        int i = 0;
         for (ServiceGroupDefinition groupDefinition : groupsDef) {
-            int i = 0;
             subGroups[i] = populateServiceGroupPojo(groupDefinition);
             ++i;
         }
