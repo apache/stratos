@@ -833,8 +833,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         synchronized (this) {
             partitionCtxt.moveMemberToObsoleteList(memberId);
         }
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Faulty member is added to obsolete list and removed from the active members list: "
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Faulty member is added to obsolete list and removed from the active members list: "
                     + "[member] %s [partition] %s [cluster] %s ", memberId, partitionId, clusterId));
         }
 
@@ -861,8 +861,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         ClusterLevelPartitionContext clusterLevelPartitionContext;
         clusterLevelPartitionContext = networkPartitionCtxt.getPartitionCtxt(partitionId);
         clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Member stat context has been added successfully: "
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Member stat context has been added successfully: "
                     + "[member] %s", memberId));
         }
         clusterLevelPartitionContext.movePendingMemberToActiveMembers(memberId);
@@ -919,14 +919,14 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             //move member to pending termination list
             if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
                 partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Member is removed from the pending termination members " +
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Member is removed from the pending termination members " +
                             "and moved to obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
             } else if(partitionCtxt.getObsoleteMember(memberId) != null) {
-                if (log.isInfoEnabled()) {
-                    log.info(String.format("Member is  in obsolete list: [member] %s " +
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format("Member is  in obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
             } //TODO else part
@@ -974,8 +974,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     + "pending and termination pending: %s", memberId));
         }
 
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Member stat context has been removed successfully: "
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Member stat context has been removed successfully: "
                     + "[member] %s", memberId));
         }
         //Checking whether the cluster state can be changed either from in_active to created/terminating to terminated
@@ -1042,11 +1042,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         .getClusterInstanceContext(instanceId);
 
                 for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
-                    //if (log.isDebugEnabled()) {
-                    log.info("Starting to terminate all members in cluster [" + getClusterId() + "] Network Partition [ " +
-                            instanceContext.getNetworkPartitionId() + " ], Partition [ " +
-                            partitionContext.getPartitionId() + " ]");
-                    // }
+                    if (log.isInfoEnabled()) {
+                        log.info("Starting to terminate all members in cluster [" + getClusterId() + "] " +
+                                "Network Partition [" + instanceContext.getNetworkPartitionId() + "], Partition [" +
+                                partitionContext.getPartitionId() + "]");
+                    }
                     // need to terminate active, pending and obsolete members
                     //FIXME to traverse concurrent
                     // active members
@@ -1058,7 +1058,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                     }
                     for (String memberId : activeMembers) {
-                        log.info("Sending instance cleanup for the active member [member id] " + memberId);
+                        log.info("Sending instance cleanup event for the active member: [member-id] " + memberId);
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
                         InstanceNotificationPublisher.getInstance().
                                 sendInstanceCleanupEventForMember(memberId);
@@ -1075,8 +1075,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         MemberContext pendingMemberCtxt = pendingIterator.next();
                         // pending members
                         String memeberId = pendingMemberCtxt.getMemberId();
-                        log.info("Moving pending member [member id] " + memeberId +
-                                " obsolete list");
+                        if(log.isDebugEnabled()) {
+                            log.debug("Moving pending member [member id] " + memeberId + " to obsolete list");
+                        }
                         partitionContext.movePendingMemberToObsoleteMembers(memeberId);
                     }
 
@@ -1204,8 +1205,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     }
                     for (String memberId : members) {
                         // pending members
-                        log.info("Moving pending member [member id] " + memberId +
-                                " obsolete list");
+                        if(log.isDebugEnabled()) {
+                            log.debug("Moving pending member [member id] " + memberId + " the obsolete list");
+                        }
                         partitionContext.movePendingMemberToObsoleteMembers(memberId);
                     }
                 }
