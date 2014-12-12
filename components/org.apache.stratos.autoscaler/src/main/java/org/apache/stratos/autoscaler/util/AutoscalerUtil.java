@@ -22,6 +22,9 @@ package org.apache.stratos.autoscaler.util;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.xml.namespace.QName;
 
@@ -37,6 +40,7 @@ import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Applications;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -50,7 +54,10 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
  */
 public class AutoscalerUtil {
 
-    private static final Log log = LogFactory.getLog(AutoscalerUtil.class);
+	private static final Log log = LogFactory.getLog(AutoscalerUtil.class);
+	public static final String IDENTIFIER = "Auto-Scaler";
+	public static final int THREAD_POOL_SIZE = 10;
+	private ExecutorService executorService= StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
 
     private AutoscalerUtil() {
 
@@ -59,7 +66,16 @@ public class AutoscalerUtil {
     public static AutoscalerUtil getInstance() {
         return Holder.INSTANCE;
     }
-    private static class Holder {
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
+
+	private static class Holder {
         private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
     }
 
@@ -363,21 +379,18 @@ public class AutoscalerUtil {
     }
 
     public synchronized void startApplicationMonitor(String applicationId) {
-        Thread th = null;
-        AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-        if (autoscalerContext.getAppMonitor(applicationId) == null) {
-            autoscalerContext.addPendingMonitor(applicationId);
-            th = new Thread(new ApplicationMonitorAdder(applicationId));
-        }
-        if (th != null) {
-            th.start();
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug(String
-                        .format("Application monitor thread already exists: " +
-                                "[application] %s ", applicationId));
-            }
-        }
+
+	    AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+	    if (autoscalerContext.getAppMonitor(applicationId) == null) {
+		    autoscalerContext.addPendingMonitor(applicationId);
+		    executorService.submit(new ApplicationMonitorAdder(applicationId));
+	    } else {
+		    if (log.isDebugEnabled()) {
+			    log.debug(String
+					              .format("Application monitor thread already exists: " +
+					                      "[application] %s ", applicationId));
+		    }
+	    }
     }
 
     private class ApplicationMonitorAdder implements Runnable {
