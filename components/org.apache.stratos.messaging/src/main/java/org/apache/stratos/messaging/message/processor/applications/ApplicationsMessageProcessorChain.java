@@ -33,7 +33,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
     private GroupInstanceCreatedProcessor groupCreatedMessageProcessor;
     private GroupInstanceActivatedProcessor groupActivatedMessageProcessor;
-    private GroupInstanceInActivateProcessor groupInActivateMessageProcessor;
+    private GroupInstanceInactivateProcessor groupInactivateMessageProcessor;
     private GroupInstanceTerminatedProcessor groupTerminatedProcessor;
     private GroupInstanceTerminatingProcessor groupTerminatingProcessor;
     private ApplicationInstanceCreatedMessageProcessor applicationInstanceCreatedMessageProcessor;
@@ -54,8 +54,8 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
         groupActivatedMessageProcessor = new GroupInstanceActivatedProcessor();
         add(groupActivatedMessageProcessor);
 
-        groupInActivateMessageProcessor = new GroupInstanceInActivateProcessor();
-        add(groupInActivateMessageProcessor);
+        groupInactivateMessageProcessor = new GroupInstanceInactivateProcessor();
+        add(groupInactivateMessageProcessor);
 
         groupTerminatedProcessor = new GroupInstanceTerminatedProcessor();
         add(groupTerminatedProcessor);
@@ -97,7 +97,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
         if (eventListener instanceof GroupInstanceCreatedEventListener) {
             groupCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInstanceInactivateEventListener) {
-            groupInActivateMessageProcessor.addEventListener(eventListener);
+            groupInactivateMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInstanceActivatedEventListener) {
             groupActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof GroupInstanceTerminatingEventListener) {

@@ -39,7 +39,7 @@ import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
-import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInActiveProcessor;
+import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -839,7 +839,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         }
 
         ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().process(
-                ClusterStatusInActiveProcessor.class.getName(), clusterId, instanceId);
+                ClusterStatusInactiveProcessor.class.getName(), clusterId, instanceId);
     }
 
     @Override

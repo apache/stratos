@@ -214,10 +214,10 @@ public class AutoscalerTopologyEventReceiver {
             }
         });
 
-        topologyEventReceiver.addEventListener(new ClusterInstanceInActivateEventListener() {
+        topologyEventReceiver.addEventListener(new ClusterInstanceInactivateEventListener() {
             @Override
             protected void onEvent(Event event) {
-                log.info("[ClusterInActivateEvent] Received: " + event.getClass());
+                log.info("[ClusterInactivateEvent] Received: " + event.getClass());
                 ClusterInstanceInactivateEvent clusterInactivateEvent = (ClusterInstanceInactivateEvent) event;
                 String clusterId = clusterInactivateEvent.getClusterId();
                 String instanceId = clusterInactivateEvent.getInstanceId();

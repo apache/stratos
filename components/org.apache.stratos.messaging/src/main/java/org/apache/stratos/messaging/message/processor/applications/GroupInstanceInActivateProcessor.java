@@ -33,8 +33,8 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * This processor will act upon the Group activation events
  */
-public class GroupInstanceInActivateProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(GroupInstanceInActivateProcessor.class);
+public class GroupInstanceInactivateProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(GroupInstanceInactivateProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override

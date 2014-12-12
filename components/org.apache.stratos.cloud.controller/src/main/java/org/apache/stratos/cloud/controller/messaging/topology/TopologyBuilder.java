@@ -824,50 +824,50 @@ public class TopologyBuilder {
 
     }
 
-    public static void handleClusterInActivateEvent(
-            ClusterStatusClusterInactivateEvent clusterInActivateEvent) {
+    public static void handleClusterInactivateEvent(
+            ClusterStatusClusterInactivateEvent clusterInactivateEvent) {
         Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(clusterInActivateEvent.getServiceName());
+        Service service = topology.getService(clusterInactivateEvent.getServiceName());
         //update the status of the cluster
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                    clusterInActivateEvent.getServiceName()));
+                    clusterInactivateEvent.getServiceName()));
             return;
         }
 
-        Cluster cluster = service.getCluster(clusterInActivateEvent.getClusterId());
+        Cluster cluster = service.getCluster(clusterInactivateEvent.getClusterId());
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                    clusterInActivateEvent.getClusterId()));
+                    clusterInactivateEvent.getClusterId()));
             return;
         }
 
-        ClusterInstanceInactivateEvent clusterInActivatedEvent1 =
+        ClusterInstanceInactivateEvent clusterInactivatedEvent1 =
                 new ClusterInstanceInactivateEvent(
-                        clusterInActivateEvent.getAppId(),
-                        clusterInActivateEvent.getServiceName(),
-                        clusterInActivateEvent.getClusterId(),
-                        clusterInActivateEvent.getInstanceId());
+                        clusterInactivateEvent.getAppId(),
+                        clusterInactivateEvent.getServiceName(),
+                        clusterInactivateEvent.getClusterId(),
+                        clusterInactivateEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            ClusterInstance context = cluster.getInstanceContexts(clusterInActivateEvent.getInstanceId());
+            ClusterInstance context = cluster.getInstanceContexts(clusterInactivateEvent.getInstanceId());
             if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
-                        clusterInActivateEvent.getClusterId() + " [instance-id] " +
-                        clusterInActivateEvent.getInstanceId());
+                        clusterInactivateEvent.getClusterId() + " [instance-id] " +
+                        clusterInactivateEvent.getInstanceId());
                 return;
             }
             ClusterStatus status = ClusterStatus.Inactive;
             if(context.isStateTransitionValid(status)) {
                 context.setStatus(status);
-                log.info("Cluster InActive adding status started for" + cluster.getClusterId());
+                log.info("Cluster Inactive adding status started for" + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
                 //publishing data
-                TopologyEventPublisher.sendClusterInactivateEvent(clusterInActivatedEvent1);
+                TopologyEventPublisher.sendClusterInactivateEvent(clusterInactivatedEvent1);
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
-                        clusterInActivateEvent.getClusterId(), clusterInActivateEvent.getInstanceId(),
+                        clusterInactivateEvent.getClusterId(), clusterInactivateEvent.getInstanceId(),
                         context.getStatus(), status));
                 return;
             }

@@ -25,7 +25,7 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessorChain;
  */
 public class ClusterStatusProcessorChain extends StatusProcessorChain {
     private ClusterStatusTerminatedProcessor clusterStatusTerminatedProcessor;
-    private ClusterStatusInActiveProcessor clusterStatusInActiveProcessor;
+    private ClusterStatusInactiveProcessor clusterStatusInactiveProcessor;
     private ClusterStatusActiveProcessor clusterStatusActiveProcessor;
 
     @Override
@@ -33,8 +33,8 @@ public class ClusterStatusProcessorChain extends StatusProcessorChain {
         clusterStatusTerminatedProcessor = new ClusterStatusTerminatedProcessor();
         add(clusterStatusTerminatedProcessor);
 
-        clusterStatusInActiveProcessor = new ClusterStatusInActiveProcessor();
-        add(clusterStatusInActiveProcessor);
+        clusterStatusInactiveProcessor = new ClusterStatusInactiveProcessor();
+        add(clusterStatusInactiveProcessor);
 
         clusterStatusActiveProcessor = new ClusterStatusActiveProcessor();
         add(clusterStatusActiveProcessor);

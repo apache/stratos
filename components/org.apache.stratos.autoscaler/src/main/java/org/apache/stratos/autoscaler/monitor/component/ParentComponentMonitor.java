@@ -292,8 +292,7 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected void onChildInactiveEvent(String childId, final String instanceId) {
         List<ApplicationChildContext> terminationList;
         terminationList = this.startupDependencyTree.getTerminationDependencies(childId);
-
-        //Need to notify the parent about the status  change from Active-->InActive
+        //Need to notify the parent about the status  change from Active-->Inactive
         // TODO to make app also inaction if (this.parent != null) {
                 ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
                         process(id, appId, instanceId);
@@ -603,11 +602,11 @@ public abstract class ParentComponentMonitor extends Monitor {
         return hasInDepChild;
     }
 
-    public Map<String, List<String>> getAliasToInActiveMonitorsMap() {
+    public Map<String, List<String>> getAliasToInactiveMonitorsMap() {
         return this.inactiveInstancesMap;
     }
 
-    public void setAliasToInActiveMonitorsMap(Map<String, List<String>> inactiveMonitorsList) {
+    public void setAliasToInactiveMonitorsMap(Map<String, List<String>> inactiveMonitorsList) {
         this.inactiveInstancesMap = inactiveMonitorsList;
     }
 

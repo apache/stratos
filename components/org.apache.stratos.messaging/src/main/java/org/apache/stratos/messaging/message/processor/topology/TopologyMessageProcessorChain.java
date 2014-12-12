@@ -40,7 +40,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ClusterCreatedMessageProcessor clusterCreatedMessageProcessor;
     private ClusterResetMessageProcessor clusterResetMessageProcessor;
     private ClusterInstanceActivatedProcessor clusterActivatedProcessor;
-    private ClusterInstanceInActivateProcessor clusterInActivateProcessor;
+    private ClusterInstanceInactivateProcessor clusterInactivateProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
     private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
@@ -76,8 +76,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         clusterActivatedProcessor = new ClusterInstanceActivatedProcessor();
         add(clusterActivatedProcessor);
 
-        clusterInActivateProcessor = new ClusterInstanceInActivateProcessor();
-        add(clusterInActivateProcessor);
+        clusterInactivateProcessor = new ClusterInstanceInactivateProcessor();
+        add(clusterInactivateProcessor);
 
         clusterRemovedMessageProcessor = new ClusterRemovedMessageProcessor();
         add(clusterRemovedMessageProcessor);
@@ -131,8 +131,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             appClustersRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterInstanceActivatedEventListener) {
             clusterActivatedProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof ClusterInstanceInActivateEventListener) {
-            clusterInActivateProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ClusterInstanceInactivateEventListener) {
+            clusterInactivateProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterRemovedEventListener) {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterInstanceCreatedEventListener) {

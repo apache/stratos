@@ -36,8 +36,8 @@ import java.util.Map;
 /**
  * Cluster active status processor
  */
-public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
-    private static final Log log = LogFactory.getLog(GroupStatusInActiveProcessor.class);
+public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
+    private static final Log log = LogFactory.getLog(GroupStatusInactiveProcessor.class);
     private GroupStatusProcessor nextProcessor;
 
     @Override
@@ -91,8 +91,8 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
             clusterData = component.getClusterDataMap();
 
             if (groups.isEmpty() && getAllClusterInactive(clusterData, instanceId) ||
-                    clusterData.isEmpty() && getAllGroupInActive(groups, instanceId) ||
-                    getAllClusterInactive(clusterData, instanceId) || getAllGroupInActive(groups, instanceId)) {
+                    clusterData.isEmpty() && getAllGroupInactive(groups, instanceId) ||
+                    getAllClusterInactive(clusterData, instanceId) || getAllGroupInactive(groups, instanceId)) {
                 //send the in activation event
                 if (component instanceof Application) {
                     //send application activated event
@@ -106,7 +106,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
                     //send activation to the parent
                     if (((Group) component).getStatus(instanceId) != GroupStatus.Inactive) {
                         log.info("sending group inactive: " + component.getUniqueIdentifier());
-                        ApplicationBuilder.handleGroupInActivateEvent(appId, component.getUniqueIdentifier(), instanceId);
+                        ApplicationBuilder.handleGroupInactivateEvent(appId, component.getUniqueIdentifier(), instanceId);
                         return true;
                     }
                 }
@@ -124,7 +124,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
 
 
     /**
-     * Find out whether any of the clusters of a group in the InActive state
+     * Find out whether any of the clusters of a group in the Inactive state
      *
      * @param clusterData clusters of the group
      * @return whether inactive or not
@@ -159,7 +159,7 @@ public class GroupStatusInActiveProcessor extends GroupStatusProcessor {
      * @param groups groups of a group/application
      * @return whether inactive or not
      */
-    private boolean getAllGroupInActive(Map<String, Group> groups, String instanceId) {
+    private boolean getAllGroupInactive(Map<String, Group> groups, String instanceId) {
         boolean groupStat = false;
         for (Group group : groups.values()) {
             GroupInstance context = group.getInstanceContexts(instanceId);

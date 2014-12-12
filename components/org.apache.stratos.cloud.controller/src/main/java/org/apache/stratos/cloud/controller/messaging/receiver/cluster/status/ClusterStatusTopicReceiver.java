@@ -97,7 +97,7 @@ public class ClusterStatusTopicReceiver {
 		statusEventReceiver.addEventListener(new ClusterStatusClusterInactivateEventListener() {
 			@Override
 			protected void onEvent(Event event) {
-				TopologyBuilder.handleClusterInActivateEvent((ClusterStatusClusterInactivateEvent) event);
+				TopologyBuilder.handleClusterInactivateEvent((ClusterStatusClusterInactivateEvent) event);
 			}
 		});
 	}
