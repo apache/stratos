@@ -380,6 +380,17 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         " [cluster]: " + this.getClusterId());
             }
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
+        } else if (statusEvent.getStatus() == GroupStatus.Created || statusEvent.getStatus() ==
+                ApplicationStatus.Created) {
+            try {
+                createClusterInstanceOnScaleUp(instanceId);
+            } catch (PolicyValidationException e) {
+                //FIXME to revert and notify parent or throw exception to parent
+                log.error("Error while creating new cluster instance", e);
+            } catch (PartitionValidationException e) {
+                log.error("Error while creating new cluster instance", e);
+            }
+
         }
     }
 

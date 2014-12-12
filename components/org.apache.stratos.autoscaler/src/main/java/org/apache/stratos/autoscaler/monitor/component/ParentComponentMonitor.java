@@ -40,6 +40,7 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -179,8 +180,11 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (context instanceof GroupChildContext) {
                 GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
                         get(context.getId());
+                groupMonitor.createInstanceAndStartDependencyOnScaleup(instanceId);
             } else if (context instanceof ClusterChildContext) {
-
+                VMClusterMonitor clusterMonitor = (VMClusterMonitor) this.aliasToActiveMonitorsMap.
+                        get(context.getId());
+                clusterMonitor.createClusterInstanceOnScaleUp(instanceId);
             }
         }
 
