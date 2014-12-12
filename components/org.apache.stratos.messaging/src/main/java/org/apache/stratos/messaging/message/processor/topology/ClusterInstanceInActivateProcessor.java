@@ -35,8 +35,8 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * This processor will act upon the cluster activated event
  */
-public class ClusterInstanceInActivateProcessor extends MessageProcessor {
-    private static final Log log = LogFactory.getLog(ClusterInstanceInActivateProcessor.class);
+public class ClusterInstanceInactivateProcessor extends MessageProcessor {
+    private static final Log log = LogFactory.getLog(ClusterInstanceInactivateProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override

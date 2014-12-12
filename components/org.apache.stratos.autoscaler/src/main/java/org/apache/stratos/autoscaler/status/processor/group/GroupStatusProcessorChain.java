@@ -31,7 +31,7 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
     private GroupStatusActiveProcessor groupStatusActiveProcessor;
     private GroupStatusTerminatedProcessor groupStatusTerminatedProcessor;
     private GroupStatusTerminatingProcessor groupStatusTerminatingProcessor;
-    private GroupStatusInActiveProcessor groupStatusInActiveProcessor;
+    private GroupStatusInactiveProcessor groupStatusInactiveProcessor;
 
     @Override
     public void initialize() {
@@ -44,8 +44,8 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
         groupStatusTerminatingProcessor = new GroupStatusTerminatingProcessor();
         add(groupStatusTerminatingProcessor);
 
-        groupStatusInActiveProcessor = new GroupStatusInActiveProcessor();
-        add(groupStatusInActiveProcessor);
+        groupStatusInactiveProcessor = new GroupStatusInactiveProcessor();
+        add(groupStatusInactiveProcessor);
 
     }
 

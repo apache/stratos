@@ -145,7 +145,7 @@ public class ClusterStatusEventPublisher {
         }
     }
 
-    public static void sendClusterInActivateEvent(String appId, String serviceName,
+    public static void sendClusterInactivateEvent(String appId, String serviceName,
                                                   String clusterId, String instanceId) {
         try {
             TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
@@ -155,10 +155,10 @@ public class ClusterStatusEventPublisher {
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
                 if (clusterInstance.isStateTransitionValid(ClusterStatus.Inactive)){
                         if(clusterInstance.getStatus() != ClusterStatus.Inactive) {
-                            ClusterStatusClusterInactivateEvent clusterInActivateEvent =
+                            ClusterStatusClusterInactivateEvent clusterInactivateEvent =
                                     new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
 
-                            publishEvent(clusterInActivateEvent);
+                            publishEvent(clusterInactivateEvent);
                         } else {
                             if(log.isDebugEnabled()){
                                 log.warn("Cluster is already inactive [cluster] " + clusterId);

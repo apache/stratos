@@ -553,7 +553,7 @@ public class ApplicationBuilder {
     }
 
 
-    public static void handleGroupInActivateEvent(String appId, String groupId, String instanceId) {
+    public static void handleGroupInactivateEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling group inactive event: [group]: " + groupId +
                     " [application-id] " + appId);
@@ -583,7 +583,7 @@ public class ApplicationBuilder {
                 context.setStatus(status);
                 updateGroupMonitor(appId, groupId, status, instanceId);
                 ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendGroupInstanceInActivateEvent(appId, groupId, instanceId);
+                ApplicationsEventPublisher.sendGroupInstanceInactivateEvent(appId, groupId, instanceId);
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()

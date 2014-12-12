@@ -22,7 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
@@ -31,8 +30,8 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 /**
  * Cluster inactive checking processor
  */
-public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
-    private static final Log log = LogFactory.getLog(ClusterStatusInActiveProcessor.class);
+public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
+    private static final Log log = LogFactory.getLog(ClusterStatusInactiveProcessor.class);
     private ClusterStatusProcessor nextProcessor;
 
     @Override
@@ -42,7 +41,7 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
     @Override
     public boolean process(String type, String clusterId, String instanceId) {
         boolean statusChanged;
-        if (type == null || (ClusterStatusInActiveProcessor.class.getName().equals(type))) {
+        if (type == null || (ClusterStatusInactiveProcessor.class.getName().equals(type))) {
             statusChanged = doProcess(clusterId, instanceId);
             if (statusChanged) {
                 return statusChanged;
@@ -65,9 +64,9 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
         VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
 
-        boolean clusterInActive;
-        clusterInActive = getClusterInactive(instanceId, monitor);
-        if(clusterInActive) {
+        boolean clusterInactive;
+        clusterInactive = getClusterInactive(instanceId, monitor);
+        if(clusterInactive) {
             //if the monitor is dependent, temporarily pausing it
             if (monitor.hasStartupDependents()) {
                 monitor.setHasFaultyMember(true);
@@ -77,33 +76,33 @@ public class ClusterStatusInActiveProcessor extends ClusterStatusProcessor {
                         + monitor.getAppId() + " [cluster]: " + clusterId);
             }
             //send cluster In-Active event to cluster status topic
-            ClusterStatusEventPublisher.sendClusterInActivateEvent(monitor.getAppId(),
+            ClusterStatusEventPublisher.sendClusterInactivateEvent(monitor.getAppId(),
                     monitor.getServiceId(), clusterId, instanceId);
         }
-        return clusterInActive;
+        return clusterInactive;
     }
 
     private boolean getClusterInactive(String instanceId, VMClusterMonitor monitor) {
-        boolean clusterInActive = false;
+        boolean clusterInactive = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
                 monitor.getAllNetworkPartitionCtxts().values()) {
             ClusterInstanceContext instanceContext = clusterLevelNetworkPartitionContext.
                     getClusterInstanceContext(instanceId);
             if(instanceContext != null) {
                 if(instanceContext.getActiveMembers() < instanceContext.getMinInstanceCount()) {
-                    clusterInActive = true;
+                    clusterInactive = true;
                     break;
                 } else {
-                    clusterInActive = false;
+                    clusterInactive = false;
                     break;
                 }
             } else {
-                clusterInActive = false;
+                clusterInactive = false;
                 break;
             }
 
 
         }
-        return clusterInActive;
+        return clusterInactive;
     }
 }
