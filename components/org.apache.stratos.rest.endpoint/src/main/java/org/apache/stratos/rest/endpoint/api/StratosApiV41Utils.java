@@ -1101,14 +1101,7 @@ public class StratosApiV41Utils {
             String clusterId = clusterDataHolder.getClusterId();
             String serviceType = clusterDataHolder.getServiceType();
             TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-            Cluster topLevelCluster;
-
-            try {
-                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            } finally {
-                TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
-            }
+            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
             applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster, entry.getKey()));
         }
     }
