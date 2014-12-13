@@ -26,6 +26,7 @@
     word-wrap: break-word;
     padding-top: 24px;
     text-align: center;
+    cursor: pointer;
 }
 
 .block-cartridge {
@@ -67,7 +68,7 @@
 
 #whiteboard{
     width: 800px;
-    height: 600px;
+    height: 585px;
     position: absolute;
 }
 
@@ -139,3 +140,17 @@
 }
 
 #component-data{margin-top: 20px}
+.stepnode i {
+    margin-top: 2px;
+    color: #e67e22;
+}
+
+.notification {
+    position: absolute;
+    background-color: #fff;
+    width: 30px;
+    height: 30px;
+    border-radius: 15px;
+    top: 52px;
+    left: 52px;
+}

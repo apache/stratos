@@ -98,6 +98,7 @@ function addJsplumbCartridge(idname, cartridgeCounter) {
         anchor: "TopCenter"
     }, endpointOptions);
     // jsPlumb.addEndpoint($(Div), sourceEndpoint);
+    $(Div).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
     DragEl($(Div));
     Repaint();
 }
@@ -110,6 +111,7 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
         .addClass('input-false')
         .addClass('stepnode')
         .appendTo('#whiteboard');
+    $(divRoot).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
     jsPlumb.addEndpoint($(divRoot), {
         anchor:"BottomCenter"
     }, bottomConnectorOptions);
@@ -136,7 +138,7 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .addClass('input-false')
                 .addClass('stepnode')
                 .appendTo('#whiteboard');
-
+            $(divCartridge).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
             jsPlumb.addEndpoint($(divCartridge), {
                 anchor: "TopCenter"
             }, generatedCartridgeEndpointOptions);
@@ -162,6 +164,7 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .addClass('stepnode')
                 .addClass('input-false')
                 .appendTo('#whiteboard');
+            $(divGroup).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
             jsPlumb.addEndpoint($(divGroup), {
                 anchor:"BottomCenter"
             }, bottomConnectorOptions);
@@ -674,7 +677,7 @@ $(document).ready(function(){
     DragEl(".stepnode");
     Repaint();
 
-    $('#whiteboard').on('dblclick', '.stepnode', function(){
+    $('#whiteboard').on('click', '.stepnode', function(){
         //get tab activated
         if($(this).attr('id') == 'applicationId'){
             activateTab('general');
@@ -737,6 +740,7 @@ $(document).ready(function(){
     $('#component-info-update').on('click', function(){
         $('#'+blockId).attr('data-generated', encodeURIComponent(JSON.stringify(editor.getValue())));
         $('#'+blockId).removeClass('input-false');
+        $('#'+blockId).find('div>i').removeClass('fa-exclamation-circle').addClass('fa-check-circle-o').css('color','#2ecc71');
         $('#deploy').prop("disabled", false);
     });
 
