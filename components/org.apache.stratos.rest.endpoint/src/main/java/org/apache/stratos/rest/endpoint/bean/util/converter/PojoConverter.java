@@ -1149,11 +1149,21 @@ public class PojoConverter {
         DependencyContext dependencyContext = new DependencyContext();
         dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
 
-        if (dependencyDefinitions != null && dependencyDefinitions.getStartupOrders() != null) {
-            String[] startupOrders = new String[dependencyDefinitions.getStartupOrders().size()];
-            startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
-            dependencyContext.setStartupOrdersContexts(startupOrders);
+        if (dependencyDefinitions != null){
+
+            if(dependencyDefinitions.getStartupOrders() != null) {
+                String[] startupOrders = new String[dependencyDefinitions.getStartupOrders().size()];
+                startupOrders = dependencyDefinitions.getStartupOrders().toArray(startupOrders);
+                dependencyContext.setStartupOrdersContexts(startupOrders);
+            }
+            if (dependencyDefinitions.getScalingDependants() != null) {
+                String[] scalingDependents = new String[dependencyDefinitions.getScalingDependants().size()];
+                scalingDependents = dependencyDefinitions.getStartupOrders().toArray(scalingDependents);
+                dependencyContext.setScalingDependents(scalingDependents);
+            }
         }
+
+
 
         return dependencyContext;
     }
