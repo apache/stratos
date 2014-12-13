@@ -1189,7 +1189,6 @@ public class PojoConverter {
 
 
     public static ApplicationBean applicationToBean(Application application) {
-
         if (application == null) {
             return null;
         }
