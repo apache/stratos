@@ -117,7 +117,7 @@ dialect "mvel"
 
 	then
 
-	    log.debug("Number Of Required Instances " + numberOfRequiredInstances + " Instances Count " + activeInstancesCount);
+	    log.debug("[scaling] [number of required instances] " + numberOfRequiredInstances + " [active instances count] " + activeInstancesCount + " [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId);
 
         if(scaleUp){
             if (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMaxInstanceCount()) {
