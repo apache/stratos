@@ -53,7 +53,7 @@ public class ApplicationManager {
      */
     public static void acquireReadLockForApplications() {
         if(log.isDebugEnabled()) {
-            log.debug("Read lock acquired for Applications");
+            log.debug("Read lock acquired for applications");
         }
         applicationLockHierarchy.getApplicationLock().acquireReadLock();
     }
@@ -63,7 +63,7 @@ public class ApplicationManager {
      */
     public static void releaseReadLockForApplications() {
         if(log.isDebugEnabled()) {
-            log.debug("Read lock released for Applications");
+            log.debug("Read lock released for applications");
         }
         applicationLockHierarchy.getApplicationLock().releaseReadLock();
     }
@@ -80,12 +80,12 @@ public class ApplicationManager {
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
         if (applicationLock == null) {
-            handleLockNotFound("Application lock not found for Application " + applicationId);
+            handleLockNotFound("Application lock not found: [application-id] " + applicationId);
 
         } else {
             applicationLock.acquireReadLock();
             if(log.isDebugEnabled()) {
-                log.debug("Read lock acquired for Application " + applicationId);
+                log.debug("Read lock acquired: [application-id] " + applicationId);
             }
         }
     }
@@ -99,12 +99,12 @@ public class ApplicationManager {
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
         if (applicationLock == null) {
-            handleLockNotFound("Application lock not found for Application " + applicationId);
+            handleLockNotFound("Application lock not found: [application-id] " + applicationId);
 
         } else {
             applicationLock.releaseReadLock();
             if(log.isDebugEnabled()) {
-                log.debug("Read lock released for Application " + applicationId);
+                log.debug("Read lock released: [application-id] " + applicationId);
             }
         }
 
