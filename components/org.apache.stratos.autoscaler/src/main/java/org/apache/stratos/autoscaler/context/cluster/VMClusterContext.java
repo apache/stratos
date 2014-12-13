@@ -278,7 +278,7 @@ public class VMClusterContext extends AbstractClusterContext {
         ClusterLevelPartitionContext clusterLevelPartitionContext = new ClusterLevelPartitionContext(
                 maxInstances,
                 partition,
-                clusterInstance.getNetworkPartitionId());
+                clusterInstance.getNetworkPartitionId(), clusterId);
         clusterLevelPartitionContext.setServiceName(cluster.getServiceName());
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 
