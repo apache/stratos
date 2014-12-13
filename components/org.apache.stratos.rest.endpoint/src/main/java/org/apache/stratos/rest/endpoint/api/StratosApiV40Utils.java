@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptio
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -86,7 +85,7 @@ public class StratosApiV40Utils {
     static StratosApiResponse deployCartridge (CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                                String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a Cartridge [type] "+cartridgeDefinitionBean.type);
+        log.info("Starting to deploy a Cartridge [type] "+ cartridgeDefinitionBean.getType());
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
 
@@ -116,12 +115,12 @@ public class StratosApiV40Utils {
                 throw new RestAPIException(message, e);
             }
 
-            log.info("Successfully deployed Cartridge [type] "+cartridgeDefinitionBean.type);
+            log.info("Successfully deployed Cartridge [type] "+ cartridgeDefinitionBean.getType());
 
         }
 
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.type);
+        stratosApiResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.getType());
         return stratosApiResponse;
     }
 

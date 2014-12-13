@@ -72,7 +72,7 @@ public class MockContext {
     	int tenantId = getTenantId();
     	List<CartridgeDefinitionBean> tenantCartridges;
     	
-    	if(!cartridgeDefinitionBean.isPublic){
+    	if(!cartridgeDefinitionBean.isPublic()){
     		if(this.cartridgeDefinitionBeanList.containsKey(tenantId)){
         		tenantCartridges = this.cartridgeDefinitionBeanList.get(tenantId);
         	}
@@ -94,13 +94,13 @@ public class MockContext {
     	tenantCartridges.add(cartridgeDefinitionBean);
         
     	Cartridge cartridge = new Cartridge();
-        cartridge.setCartridgeType(cartridgeDefinitionBean.type);
-        cartridge.setDescription(cartridgeDefinitionBean.description);
-        cartridge.setDisplayName(cartridgeDefinitionBean.displayName);
-        cartridge.setMultiTenant(cartridgeDefinitionBean.multiTenant);
-        cartridge.setProvider(cartridgeDefinitionBean.provider);
-        cartridge.setVersion(cartridgeDefinitionBean.version);
-        cartridge.setIsPublic(cartridgeDefinitionBean.isPublic);
+        cartridge.setCartridgeType(cartridgeDefinitionBean.getType());
+        cartridge.setDescription(cartridgeDefinitionBean.getDescription());
+        cartridge.setDisplayName(cartridgeDefinitionBean.getDisplayName());
+        cartridge.setMultiTenant(cartridgeDefinitionBean.isMultiTenant());
+        cartridge.setProvider(cartridgeDefinitionBean.getProvider());
+        cartridge.setVersion(cartridgeDefinitionBean.getVersion());
+        cartridge.setIsPublic(cartridgeDefinitionBean.isPublic());
 
         Map<String,Cartridge> cartridges;
         if(cartridge.isMultiTenant()){

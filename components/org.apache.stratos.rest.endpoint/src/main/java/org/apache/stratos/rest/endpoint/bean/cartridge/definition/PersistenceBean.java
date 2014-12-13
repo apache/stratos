@@ -25,22 +25,38 @@ import java.util.List;
 @XmlRootElement
 public class PersistenceBean {
 
-    public boolean isRequired;
+    private boolean isRequired;
 
-    public List<VolumeBean> volume;
+    private List<VolumeBean> volume;
 
     public String toString () {
-        return " [ Persistence Required : " +isRequired  + "\n" +
+        return " [ Persistence Required : " + isRequired() + "\n" +
                 "volume: " + getVolumes() + "] ";
     }
 
     private String getVolumes() {
         StringBuilder volumeBuilder = new StringBuilder();
-        if(volume != null && !volume.isEmpty()) {
-            for(VolumeBean volumeBean : volume) {
+        if(getVolume() != null && !getVolume().isEmpty()) {
+            for(VolumeBean volumeBean : getVolume()) {
                 volumeBuilder.append(volumeBean.toString());
             }
         }
         return volumeBuilder.toString();
+    }
+
+    public boolean isRequired() {
+        return isRequired;
+    }
+
+    public void setRequired(boolean isRequired) {
+        this.isRequired = isRequired;
+    }
+
+    public List<VolumeBean> getVolume() {
+        return volume;
+    }
+
+    public void setVolume(List<VolumeBean> volume) {
+        this.volume = volume;
     }
 }

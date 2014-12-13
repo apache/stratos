@@ -83,8 +83,15 @@
                 <value>domains</value>
                 <value>kubernetesHost</value>
                 <value>cartridges</value>
+                <value>subGroups</value>
+                <value>groups</value>
+                <value>clusters</value>
                 <value>startupOrders</value>
-                <value>dependencies</value>
+                <value>childPolicies</value>
+                <value>childLevelNetworkPartition</value>
+                <value>childLevelPartitions</value>
+                <value>networkPartition</value>
+                <value>partitions</value>
                 <value>instances</value>
             </list>
         </property>

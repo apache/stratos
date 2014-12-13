@@ -145,7 +145,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         StratosApiV41Utils.createCartridgeDefinition(cartridgeDefinitionBean, getConfigContext(), getUsername(),
                 getTenantDomain());
-        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.type).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
         return Response.created(url).build();
 
     }
@@ -162,10 +162,13 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
-        return rb.build();
+        List<CartridgeDefinitionBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
+        if(cartridges == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        CartridgeDefinitionBean[] cartridgeArray = cartridges.isEmpty() ?
+                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]);
+        return Response.ok().entity(cartridgeArray).build();
     }
 
     /**
@@ -182,9 +185,11 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter,
                                           @QueryParam("criteria") String criteria) throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV41Utils.getCartridgesByFilter(filter, criteria, getConfigContext());
+        List<CartridgeDefinitionBean> cartridges = StratosApiV41Utils.
+                getCartridgesByFilter(filter, criteria, getConfigContext());
         ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]));
+        rb.entity(cartridges.isEmpty() ?
+                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]));
         return rb.build();
     }
 
@@ -202,7 +207,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter,
                                          @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        Cartridge cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
+        CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         ResponseBuilder rb = Response.ok();
         rb.entity(cartridge);
         return rb.build();

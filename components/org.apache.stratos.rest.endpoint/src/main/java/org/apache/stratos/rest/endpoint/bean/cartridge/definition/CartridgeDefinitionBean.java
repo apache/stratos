@@ -26,60 +26,60 @@ import java.util.List;
 @XmlRootElement(name = "cartridgeDefinitionBean")
 public class CartridgeDefinitionBean {
 
-	public String type;
+	private String type;
 
-	public String host;
+	private String host;
 
-	public String provider;
+	private String provider;
 
 	//Four types - Application,Framework,Data,LB
-	public String category;
+    private String category;
 
-	public String displayName;
+	private String displayName;
 
-	public String description;
+	private String description;
 
-	public String version;
+	private String version;
 
-	public boolean multiTenant;
+	private boolean multiTenant;
 
-	public boolean isPublic;
+	private boolean isPublic;
 
-    public DeploymentBean deployment;
+    private DeploymentBean deployment;
 
-    public List<PortMappingBean> portMapping;
+    private List<PortMappingBean> portMapping;
     
-    public PersistenceBean persistence;
+    private PersistenceBean persistence;
 
-    public List<IaasProviderBean> iaasProvider;
+    private List<IaasProviderBean> iaasProvider;
 
-    public List<PropertyBean> property;
+    private List<PropertyBean> property;
     
-    public String defaultAutoscalingPolicy;
+    private String defaultAutoscalingPolicy;
 
-    public String defaultDeploymentPolicy;
+    private String defaultDeploymentPolicy;
     
-    public String serviceGroup;
+    private String serviceGroup;
     
-    public ContainerBean container;
+    private ContainerBean container;
     
-    public String deployerType;
+    private String deployerType;
 
     private String[] exportingProperties;
 
     public String toString () {
 
-        return "Type: " + type + ", Provider: " + provider + ", Category: " + category+ ", Host: " + host + ", Display Name: " + displayName +
-                ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant +", Public " + isPublic + "\n" +
+        return "Type: " + getType() + ", Provider: " + getProvider() + ", Category: " + getCategory() + ", Host: " + getHost() + ", Display Name: " + getDisplayName() +
+                ", Description: " + getDescription() +  ", Version: " + getVersion() + ", Multitenant " + isMultiTenant() +", Public " + isPublic() + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString()
-                + "\n Exports " + exportingProperties.toString();
+                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ getPersistence().toString()
+                + "\n Exports " + getExportingProperties().toString();
     }
 
 	private String getDeploymentDetails () {
 
-        if(deployment != null) {
-            return deployment.toString();
+        if(getDeployment() != null) {
+            return getDeployment().toString();
         }
         return null;
     }
@@ -87,8 +87,8 @@ public class CartridgeDefinitionBean {
     private String getPortMappings () {
 
         StringBuilder portMappingBuilder = new StringBuilder();
-        if(portMapping != null && !portMapping.isEmpty()) {
-            for(PortMappingBean portMappingBean : portMapping) {
+        if(getPortMapping() != null && !getPortMapping().isEmpty()) {
+            for(PortMappingBean portMappingBean : getPortMapping()) {
                 portMappingBuilder.append(portMappingBean.toString());
             }
         }
@@ -98,8 +98,8 @@ public class CartridgeDefinitionBean {
     private String getIaasProviders () {
 
         StringBuilder iaasBuilder = new StringBuilder();
-        if(iaasProvider != null && !iaasProvider.isEmpty()) {
-            for(IaasProviderBean iaasProviderBean : iaasProvider) {
+        if(getIaasProvider() != null && !getIaasProvider().isEmpty()) {
+            for(IaasProviderBean iaasProviderBean : getIaasProvider()) {
                 iaasBuilder.append(iaasProviderBean.toString());
             }
         }
@@ -109,8 +109,8 @@ public class CartridgeDefinitionBean {
     private String getProperties () {
 
         StringBuilder propertyBuilder = new StringBuilder();
-        if(property != null) {
-            for(PropertyBean propertyBean : property) {
+        if(getProperty() != null) {
+            for(PropertyBean propertyBean : getProperty()) {
                 propertyBuilder.append(propertyBean.name + " : " + propertyBean.value + " | ");
             }
         }
@@ -126,4 +126,155 @@ public class CartridgeDefinitionBean {
     }
 
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public boolean isMultiTenant() {
+        return multiTenant;
+    }
+
+    public void setMultiTenant(boolean multiTenant) {
+        this.multiTenant = multiTenant;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
+    public DeploymentBean getDeployment() {
+        return deployment;
+    }
+
+    public void setDeployment(DeploymentBean deployment) {
+        this.deployment = deployment;
+    }
+
+    public List<PortMappingBean> getPortMapping() {
+        return portMapping;
+    }
+
+    public void setPortMapping(List<PortMappingBean> portMapping) {
+        this.portMapping = portMapping;
+    }
+
+    public PersistenceBean getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(PersistenceBean persistence) {
+        this.persistence = persistence;
+    }
+
+    public List<IaasProviderBean> getIaasProvider() {
+        return iaasProvider;
+    }
+
+    public void setIaasProvider(List<IaasProviderBean> iaasProvider) {
+        this.iaasProvider = iaasProvider;
+    }
+
+    public List<PropertyBean> getProperty() {
+        return property;
+    }
+
+    public void setProperty(List<PropertyBean> property) {
+        this.property = property;
+    }
+
+    public String getDefaultAutoscalingPolicy() {
+        return defaultAutoscalingPolicy;
+    }
+
+    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
+        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
+    }
+
+    public String getDefaultDeploymentPolicy() {
+        return defaultDeploymentPolicy;
+    }
+
+    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
+        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
+    }
+
+    public String getServiceGroup() {
+        return serviceGroup;
+    }
+
+    public void setServiceGroup(String serviceGroup) {
+        this.serviceGroup = serviceGroup;
+    }
+
+    public ContainerBean getContainer() {
+        return container;
+    }
+
+    public void setContainer(ContainerBean container) {
+        this.container = container;
+    }
+
+    public String getDeployerType() {
+        return deployerType;
+    }
+
+    public void setDeployerType(String deployerType) {
+        this.deployerType = deployerType;
+    }
 }

@@ -23,23 +23,79 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class VolumeBean {
 
-    public String id;
+    private String id;
 
-    public String size;
+    private String size;
 
-    public String device;
+    private String device;
 
-    public boolean removeOnTermination;
+    private boolean removeOnTermination;
 
-    public String mappingPath;
+    private String mappingPath;
     
-    public String snapshotId;
+    private String snapshotId;
 
-    public String volumeId;
+    private String volumeId;
 
     public String toString () {
-        return " [ Persistence Required : " + ", Size: " + size + ", device: " +
-                device + " remove on termination " + removeOnTermination +
-                ", mappingPath : " + mappingPath + "] ";
+        return " [ Persistence Required : " + ", Size: " + getSize() + ", device: " +
+                getDevice() + " remove on termination " + isRemoveOnTermination() +
+                ", mappingPath : " + getMappingPath() + "] ";
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public String getDevice() {
+        return device;
+    }
+
+    public void setDevice(String device) {
+        this.device = device;
+    }
+
+    public boolean isRemoveOnTermination() {
+        return removeOnTermination;
+    }
+
+    public void setRemoveOnTermination(boolean removeOnTermination) {
+        this.removeOnTermination = removeOnTermination;
+    }
+
+    public String getMappingPath() {
+        return mappingPath;
+    }
+
+    public void setMappingPath(String mappingPath) {
+        this.mappingPath = mappingPath;
+    }
+
+    public String getSnapshotId() {
+        return snapshotId;
+    }
+
+    public void setSnapshotId(String snapshotId) {
+        this.snapshotId = snapshotId;
+    }
+
+    public String getVolumeId() {
+        return volumeId;
+    }
+
+    public void setVolumeId(String volumeId) {
+        this.volumeId = volumeId;
     }
 }
