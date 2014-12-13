@@ -126,7 +126,6 @@ dialect "mvel"
 
                 //Calculating the factor scaling
                 float factor = numberOfRequiredInstances / clusterInstanceContext.getMinInstanceCount();
-    //            delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getId(), factor);
 
                 boolean partitionsAvailable = true;
                 int count = 0;                
@@ -139,7 +138,8 @@ dialect "mvel"
                         log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
                         log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.isHasScalingDependants() + " [cluster] " + clusterId );
                         if(clusterInstanceContext.isHasScalingDependants()) {
-                        	delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), factor);
+
+                        	delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId(), factor);
                         } else {
                         	delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
                         }

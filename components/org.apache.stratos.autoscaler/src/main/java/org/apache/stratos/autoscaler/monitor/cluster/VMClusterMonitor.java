@@ -442,9 +442,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     }
 
-    public void sendClusterScalingEvent(String networkPartitionId, float factor) {
+    public void sendClusterScalingEvent(String networkPartitionId, String instanceId, float factor) {
 
-        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, factor, this.id);
+        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id);
     }
 
     @Override
