@@ -64,15 +64,17 @@ public class ClusterInstanceContext extends InstanceContext {
     private int currentPartitionIndex;
 
     private String networkPartitionId;
-    
+    private String clusterId;
+
     private boolean hasScalingDependants;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
-                                  int min, int max, String networkPartitionId,
+                                  int min, int max, String networkPartitionId, String clusterId,
                                   boolean hasScalingDependants) {
 
         super(clusterInstanceId);
         this.networkPartitionId = networkPartitionId;
+        this.clusterId = clusterId;
         this.minInstanceCount = min;
         this.maxInstanceCount = max;
         partitionCtxts = new ArrayList<ClusterLevelPartitionContext>();
