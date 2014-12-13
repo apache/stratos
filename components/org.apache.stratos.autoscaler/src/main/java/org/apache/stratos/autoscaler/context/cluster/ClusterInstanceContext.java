@@ -467,5 +467,8 @@ public class ClusterInstanceContext extends InstanceContext {
 	public boolean isHasScalingDependants() {
 		return hasScalingDependants;
 	}
-   
+
+    public String getClusterId() {
+        return clusterId;
+    }
 }
