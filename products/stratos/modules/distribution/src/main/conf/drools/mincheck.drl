@@ -70,11 +70,11 @@ dialect "mvel"
         if(isPrimary){
 
             additionalInstances = clusterInstanceContext.getMinInstanceCount() - primaryMemberCount;
-            log.debug("[min-check] true [primary] true [primary member count] " + primaryMemberCount);
+            log.debug("[min-check] true [primary] true [primary member count] " + primaryMemberCount + " [cluster] " + clusterInstanceContext.getClusterId());
         } else {
 
             additionalInstances = clusterInstanceContext.getMinInstanceCount() - clusterInstanceContext.getNonTerminatedMemberCount();
-            log.debug("[min-check] true [primary] false [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount());
+            log.debug("[min-check] true [primary] false [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount()+ " [cluster] " + clusterInstanceContext.getClusterId());
         }
 
         int count = 0;
@@ -84,8 +84,8 @@ dialect "mvel"
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
              if(partitionContext != null){
 
-                log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" );
-                log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterInstanceContext.getClusterId());
+                log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId + " [cluster] " + clusterInstanceContext.getClusterId());
                 delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
 
                 count++;
