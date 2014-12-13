@@ -43,6 +43,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     private static final Log log = LogFactory.getLog(ClusterLevelPartitionContext.class);
     private final int PENDING_MEMBER_FAILURE_THRESHOLD = 5;
     private String serviceName;
+    private String clusterId;
     private int minimumMemberCount = 0;
     private int pendingMembersFailureCount = 0;
     // properties
@@ -82,9 +83,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.pendingMembers = new ArrayList<MemberContext>();
     }
 
-    public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId) {
+    public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId, String clusterId) {
 
         super(max, partition, networkPartitionId);
+        this.clusterId = clusterId;
         this.pendingMembers = new ArrayList<MemberContext>();
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
