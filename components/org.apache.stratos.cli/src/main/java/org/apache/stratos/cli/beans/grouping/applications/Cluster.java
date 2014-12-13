@@ -18,64 +18,39 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
+import java.util.List;
+
 public class Cluster {
-    private Member[] member;
+    public String alias;
 
-    private String isLbCluster;
+    public String serviceName;
 
-    private String[] hostNames;
+    public String clusterId;
 
-    private String tenantRange;
+    public List<Member> member;
 
-    private String clusterId;
+    public String tenantRange;
 
-    private String serviceName;
+    public List<String> hostNames;
 
-    public Member[] getMember() {
-        return member;
+    public boolean isLbCluster;
+
+    public List<Property> property;
+
+    private List<Instance> instances;
+
+    public List<Instance> getInstances() {
+        return instances;
     }
 
-    public void setMember(Member[] member) {
-        this.member = member;
+    public void setInstances(List<Instance> instances) {
+        this.instances = instances;
     }
 
-    public String getIsLbCluster() {
-        return isLbCluster;
-    }
-
-    public void setIsLbCluster(String isLbCluster) {
-        this.isLbCluster = isLbCluster;
-    }
-
-    public String[] getHostNames() {
-        return hostNames;
-    }
-
-    public void setHostNames(String[] hostNames) {
-        this.hostNames = hostNames;
-    }
-
-    public String getTenantRange() {
-        return tenantRange;
-    }
-
-    public void setTenantRange(String tenantRange) {
-        this.tenantRange = tenantRange;
-    }
-
-    public String getClusterId() {
-        return clusterId;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
+    @Override
+    public String toString() {
+        return "Cluster [serviceName=" + serviceName + ", clusterId=" + clusterId + ", member=" + member
+                + ", tenantRange=" + tenantRange + ", hostNames=" + hostNames + ", isLbCluster=" + isLbCluster
+                + ", property=" + property + "]";
     }
 }

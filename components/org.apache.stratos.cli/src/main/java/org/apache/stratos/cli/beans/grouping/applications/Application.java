@@ -18,53 +18,53 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Application
 {
     private String id;
-
-    private String tenantAdminUsername;
-
     private String tenantDomain;
+    private String tenantAdminUsername;
+    public List<Group> groups = null;
+    public List<Cluster> clusters = null;
+    private List<Instance> instances;
 
-    private Group group;
-
-    public String getId ()
-    {
-        return id;
+    public Application(){
+        this.groups = new ArrayList<Group>();
+        this.clusters = new ArrayList<Cluster>();
+    }
+    public void addGroup(Group groupBean) {
+        this.groups.add(groupBean);
     }
 
-    public void setId (String id)
-    {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getTenantAdminUsername ()
-    {
-        return tenantAdminUsername;
-    }
-
-    public void setTenantAdminUsername (String tenantAdminUsername)
-    {
-        this.tenantAdminUsername = tenantAdminUsername;
-    }
-
-    public String getTenantDomain ()
-    {
-        return tenantDomain;
-    }
-
-    public void setTenantDomain (String tenantDomain)
-    {
+    public void setTenantDomain(String tenantDomain) {
         this.tenantDomain = tenantDomain;
     }
 
-    public Group getGroup()
-    {
-        return group;
+    public void setTenantAdminUsername(String tenantAdminUsername) {
+        this.tenantAdminUsername = tenantAdminUsername;
     }
 
-    public void setGroup(Group group)
-    {
-        this.group = group;
+    public String getId() {
+        return id;
+    }
+
+    public String getTenantDomain() {
+        return tenantDomain;
+    }
+
+    public String getTenantAdminUsername() {
+        return tenantAdminUsername;
+    }
+    public List<Instance> getInstances() {
+        return instances;
+    }
+    public void setInstances(List<Instance> instances) {
+        this.instances = instances;
     }
 }

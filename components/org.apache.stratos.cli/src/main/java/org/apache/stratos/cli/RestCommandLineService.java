@@ -40,18 +40,15 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.stratos.cli.beans.SubscriptionInfo;
 import org.apache.stratos.cli.beans.TenantInfoBean;
 import org.apache.stratos.cli.beans.UserInfoBean;
 import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
 import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.cli.beans.cartridge.Cartridge;
-import org.apache.stratos.cli.beans.cartridge.CartridgeInfoBean;
 import org.apache.stratos.cli.beans.cartridge.PortMapping;
 import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
 import org.apache.stratos.cli.beans.grouping.applications.Application;
-import org.apache.stratos.cli.beans.grouping.applications.ApplicationBean;
 import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupBean;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
@@ -991,7 +988,7 @@ public class RestCommandLineService {
     public void listApplications() throws CommandException {
         try {
             ApplicationList list = (ApplicationList) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
-                    ApplicationList.class, "application");
+                    ApplicationList.class, "applications");
 
             if ((list == null) || (list.getApplications() == null) || (list.getApplications().size() == 0)) {
                 System.out.println("No applications found");
@@ -1369,16 +1366,16 @@ public class RestCommandLineService {
     // This method helps to describe applications
     public void describeApplication (String applicationID) {
         try {
-            ApplicationBean bean = (ApplicationBean) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
-                    ApplicationBean.class, "applications");
+            ApplicationList applications = (ApplicationList) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
+                    ApplicationList.class, "applications");
 
-            if ((bean == null) || (bean.getApplication() == null)) {
+            if (applications == null) {
                 System.out.println("Application not found: " + applicationID);
                 return;
             }
 
-            System.out.println("Application : " + applicationID);
-            System.out.println(getGson().toJson(bean.getApplication()));
+            System.out.println("Application: " + applicationID);
+            System.out.println(getGson().toJson(applications));
         } catch (Exception e) {
             String message = "Error in describing application: " + applicationID;
             System.out.println(message);
@@ -1427,7 +1424,7 @@ public class RestCommandLineService {
             return applications;
         }
 
-        public void setDeploymentPolicy(ArrayList<Application> applications) {
+        public void setApplications(ArrayList<Application> applications) {
             this.applications = applications;
         }
 
