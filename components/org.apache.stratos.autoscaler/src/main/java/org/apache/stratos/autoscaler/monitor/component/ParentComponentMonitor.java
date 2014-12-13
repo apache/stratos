@@ -40,21 +40,16 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
-import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -64,8 +59,8 @@ import java.util.concurrent.ExecutorService;
  */
 public abstract class ParentComponentMonitor extends Monitor {
 	private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
-	public static final String IDENTIFIER = "Auto-Scaler";
-	public static final int THREAD_POOL_SIZE = 10;
+    private static final String IDENTIFIER = "Auto-Scaler";
+    private static final int THREAD_POOL_SIZE = 10;
 
 	//The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
@@ -92,8 +87,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         //Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
         //Building the scaling dependencies for this monitor within the immediate children
-        scalingDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
-		//Create the executor service with identifier and thread pool size
+        scalingDependencies  =  DependencyBuilder.getInstance().buildScalingDependencies(component);
+        //Create the executor service with identifier and thread pool size
 	    executorService= StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
     }
 
@@ -707,6 +702,5 @@ private class MonitorAdder implements Runnable {
 
 	public Set<String> getScalingDependencies() {
 		return scalingDependencies;
-	}    
-
+	}
 }
