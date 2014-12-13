@@ -431,6 +431,7 @@ public class PojoConverter {
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                 new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
+        deploymentPolicy.setId(deploymentPolicyBean.id);
         deploymentPolicy.setDescription(deploymentPolicyBean.description);
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic);
         if (deploymentPolicyBean.applicationPolicy != null
