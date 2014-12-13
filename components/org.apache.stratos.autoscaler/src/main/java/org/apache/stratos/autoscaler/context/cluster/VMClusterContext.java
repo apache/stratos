@@ -253,7 +253,7 @@ public class VMClusterContext extends AbstractClusterContext {
             }
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     clusterLevelNetworkPartitionContext.getPartitionAlgorithm(),
-                    minInstances, maxInstances, nPartitionId, hasGroupScalingDependent);
+                    minInstances, maxInstances, nPartitionId, clusterId, hasGroupScalingDependent);
         }
         String partitionId;
         if (childLevelPartition != null) {
