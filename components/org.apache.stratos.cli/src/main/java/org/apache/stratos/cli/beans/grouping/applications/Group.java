@@ -18,65 +18,75 @@
  */
 package org.apache.stratos.cli.beans.grouping.applications;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Group
 {
-    private String deploymentPolicy;
-
-    private Cluster cluster;
-
+    private List<Group> subGroups = null;
+    private List<Cluster> clusters = null;
     private String alias;
-
+    private String deploymentPolicy;
     private String autoScalingPolicy;
+    private List<Instance> instances;
 
-    private SubGroup[] subGroups;
-
-    public String getDeploymentPolicy ()
-    {
-        return deploymentPolicy;
+    public Group(){
+        this.setClusters(new ArrayList<Cluster>());
+        this.setSubGroups(new ArrayList<Group>());
     }
 
-    public void setDeploymentPolicy (String deploymentPolicy)
-    {
-        this.deploymentPolicy = deploymentPolicy;
+    public void addGroup(Group groupBean){
+        getSubGroups().add(groupBean);
+    }
+    public void addCluster(Cluster cluster){
+        getClusters().add(cluster);
     }
 
-    public Cluster getCluster()
-    {
-        return cluster;
-    }
-
-    public void setCluster(Cluster cluster)
-    {
-        this.cluster = cluster;
-    }
-
-    public String getAlias ()
-    {
-        return alias;
-    }
-
-    public void setAlias (String alias)
-    {
-        this.alias = alias;
-    }
-
-    public String getAutoScalingPolicy ()
-    {
-        return autoScalingPolicy;
-    }
-
-    public void setAutoScalingPolicy (String autoScalingPolicy)
-    {
-        this.autoScalingPolicy = autoScalingPolicy;
-    }
-
-    public SubGroup[] getSubGroups ()
-    {
+    public List<Group> getSubGroups() {
         return subGroups;
     }
 
-    public void setSubGroups (SubGroup[] subGroups)
-    {
+    public void setSubGroups(List<Group> subGroups) {
         this.subGroups = subGroups;
+    }
+
+    public List<Cluster> getClusters() {
+        return clusters;
+    }
+
+    public void setClusters(List<Cluster> clusters) {
+        this.clusters = clusters;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public void setDeploymentPolicy(String deploymentPolicy) {
+        this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public void setAutoScalingPolicy(String autoScalingPolicy) {
+        this.autoScalingPolicy = autoScalingPolicy;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
+    public String getAutoScalingPolicy() {
+        return autoScalingPolicy;
+    }
+
+    public List<Instance> getInstances() {
+        return instances;
+    }
+
+    public void setInstances(List<Instance> instances) {
+        this.instances = instances;
     }
 }
