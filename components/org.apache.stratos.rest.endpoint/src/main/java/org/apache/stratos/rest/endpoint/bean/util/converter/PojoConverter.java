@@ -96,54 +96,54 @@ public class PojoConverter {
 
         CartridgeConfig cartridgeConfig = new CartridgeConfig();
 
-	    cartridgeConfig.setType(cartridgeDefinitionBean.type);
-	    cartridgeConfig.setHostName(cartridgeDefinitionBean.host);
-	    cartridgeConfig.setProvider(cartridgeDefinitionBean.provider);
-	    cartridgeConfig.setCategory(cartridgeDefinitionBean.category);
-	    cartridgeConfig.setVersion(cartridgeDefinitionBean.version);
-	    cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.multiTenant);
-	    cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic);
-	    cartridgeConfig.setDisplayName(cartridgeDefinitionBean.displayName);
-	    cartridgeConfig.setDescription(cartridgeDefinitionBean.description);
-	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.defaultAutoscalingPolicy);
-	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.defaultDeploymentPolicy);
-	    cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.serviceGroup);
-	    cartridgeConfig.setDeployerType(cartridgeDefinitionBean.deployerType);
+	    cartridgeConfig.setType(cartridgeDefinitionBean.getType());
+	    cartridgeConfig.setHostName(cartridgeDefinitionBean.getHost());
+	    cartridgeConfig.setProvider(cartridgeDefinitionBean.getProvider());
+	    cartridgeConfig.setCategory(cartridgeDefinitionBean.getCategory());
+	    cartridgeConfig.setVersion(cartridgeDefinitionBean.getVersion());
+	    cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.isMultiTenant());
+	    cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic());
+	    cartridgeConfig.setDisplayName(cartridgeDefinitionBean.getDisplayName());
+	    cartridgeConfig.setDescription(cartridgeDefinitionBean.getDescription());
+	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.getDefaultAutoscalingPolicy());
+	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.getDefaultDeploymentPolicy());
+	    cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.getServiceGroup());
+	    cartridgeConfig.setDeployerType(cartridgeDefinitionBean.getDeployerType());
 
 
         //deployment information
-        if (cartridgeDefinitionBean.deployment != null) {
-            cartridgeConfig.setBaseDir(cartridgeDefinitionBean.deployment.baseDir);
-            if (cartridgeDefinitionBean.deployment.dir != null && !cartridgeDefinitionBean.deployment.dir.isEmpty()) {
-                cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.deployment.dir.
-                        toArray(new String[cartridgeDefinitionBean.deployment.dir.size()]));
+        if (cartridgeDefinitionBean.getDeployment() != null) {
+            cartridgeConfig.setBaseDir(cartridgeDefinitionBean.getDeployment().baseDir);
+            if (cartridgeDefinitionBean.getDeployment().dir != null && !cartridgeDefinitionBean.getDeployment().dir.isEmpty()) {
+                cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.getDeployment().dir.
+                        toArray(new String[cartridgeDefinitionBean.getDeployment().dir.size()]));
             }
         }
         //port mapping
-        if (cartridgeDefinitionBean.portMapping != null && !cartridgeDefinitionBean.portMapping.isEmpty()) {
-            cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.portMapping));
+        if (cartridgeDefinitionBean.getPortMapping() != null && !cartridgeDefinitionBean.getPortMapping().isEmpty()) {
+            cartridgeConfig.setPortMappings(getPortMappingsAsArray(cartridgeDefinitionBean.getPortMapping()));
         }
 
         //persistance mapping
-        if (cartridgeDefinitionBean.persistence != null) {
-            cartridgeConfig.setPersistence(getPersistence(cartridgeDefinitionBean.persistence));
+        if (cartridgeDefinitionBean.getPersistence() != null) {
+            cartridgeConfig.setPersistence(getPersistence(cartridgeDefinitionBean.getPersistence()));
         }
 
         //IaaS
-        if (cartridgeDefinitionBean.iaasProvider != null && !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
-            cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
+        if (cartridgeDefinitionBean.getIaasProvider() != null && !cartridgeDefinitionBean.getIaasProvider().isEmpty()) {
+            cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.getIaasProvider()));
         }
         //Properties
-        if (cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
-            cartridgeConfig.setProperties(getCCProperties(cartridgeDefinitionBean.property));
+        if (cartridgeDefinitionBean.getProperty() != null && !cartridgeDefinitionBean.getProperty().isEmpty()) {
+            cartridgeConfig.setProperties(getCCProperties(cartridgeDefinitionBean.getProperty()));
         }
 
         if (cartridgeDefinitionBean.getExportingProperties() != null) {
             cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
         }
 
-        if (cartridgeDefinitionBean.container != null) {
-            cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.container));
+        if (cartridgeDefinitionBean.getContainer() != null) {
+            cartridgeConfig.setContainer(getContainer(cartridgeDefinitionBean.getContainer()));
         }
 
         return cartridgeConfig;
@@ -224,22 +224,22 @@ public class PojoConverter {
 
     public static Persistence getPersistence(PersistenceBean persistenceBean) {
         Persistence persistence = new Persistence();
-        persistence.setPersistanceRequired(persistenceBean.isRequired);
-        VolumeBean[] volumeBean = new VolumeBean[persistenceBean.volume.size()];
-        persistenceBean.volume.toArray(volumeBean);
-        Volume[] volumes = new Volume[persistenceBean.volume.size()];
+        persistence.setPersistanceRequired(persistenceBean.isRequired());
+        VolumeBean[] volumeBean = new VolumeBean[persistenceBean.getVolume().size()];
+        persistenceBean.getVolume().toArray(volumeBean);
+        Volume[] volumes = new Volume[persistenceBean.getVolume().size()];
         for (int i = 0; i < volumes.length; i++) {
             Volume volume = new Volume();
-            volume.setId(volumeBean[i].id);
-            volume.setVolumeId(volumeBean[i].volumeId);
+            volume.setId(volumeBean[i].getId());
+            volume.setVolumeId(volumeBean[i].getVolumeId());
             if (StringUtils.isEmpty(volume.getVolumeId())) {
-                volume.setSize(Integer.parseInt(volumeBean[i].size));
+                volume.setSize(Integer.parseInt(volumeBean[i].getSize()));
             }
 
-            volume.setDevice(volumeBean[i].device);
-            volume.setRemoveOntermination(volumeBean[i].removeOnTermination);
-            volume.setMappingPath(volumeBean[i].mappingPath);
-            volume.setSnapshotId(volumeBean[i].snapshotId);
+            volume.setDevice(volumeBean[i].getDevice());
+            volume.setRemoveOntermination(volumeBean[i].isRemoveOnTermination());
+            volume.setMappingPath(volumeBean[i].getMappingPath());
+            volume.setSnapshotId(volumeBean[i].getSnapshotId());
 
             volumes[i] = volume;
         }

@@ -29,6 +29,8 @@ import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
@@ -59,7 +61,9 @@ import org.apache.stratos.rest.endpoint.bean.GroupBean;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
 import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
+import org.apache.stratos.rest.endpoint.bean.cartridge.definition.VolumeBean;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
 import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
@@ -88,7 +92,7 @@ public class StratosApiV41Utils {
     public static void createCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a cartridge: [type] " + cartridgeDefinitionBean.type);
+        log.info("Starting to deploy a cartridge: [type] " + cartridgeDefinitionBean.getType());
 
         CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
@@ -98,11 +102,11 @@ public class StratosApiV41Utils {
 		    throw new RestAPIException("Category is not specified, cartridge deployment failed");
 	    }
         try {
-            CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.deployerType).deploy(cartridgeConfig);
+            CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.getDeployerType()).deploy(cartridgeConfig);
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info("Successfully deployed cartridge: [type] " + cartridgeDefinitionBean.type);
+        log.info("Successfully deployed cartridge: [type] " + cartridgeDefinitionBean.getType());
     }
     
     public static void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
@@ -182,9 +186,9 @@ public class StratosApiV41Utils {
         }
     }
     
-    public static List<Cartridge> getCartridgesByFilter(String filter, String criteria, ConfigurationContext configurationContext) 
+    public static List<CartridgeDefinitionBean> getCartridgesByFilter(String filter, String criteria, ConfigurationContext configurationContext)
 			throws RestAPIException {
-		List<Cartridge> cartridges = null;
+		List<CartridgeDefinitionBean> cartridges = null;
 		
 		if (filter.equals("singleTenant")) {
 			cartridges = getAvailableCartridges(null, false, configurationContext);
@@ -199,12 +203,12 @@ public class StratosApiV41Utils {
 		return cartridges;
 	}
 	
-	public static Cartridge getCartridgeByFilter(String filter, String cartridgeType, ConfigurationContext configurationContext) 
+	public static CartridgeDefinitionBean getCartridgeByFilter(String filter, String cartridgeType, ConfigurationContext configurationContext)
 	throws RestAPIException {
-		List<Cartridge> cartridges = getCartridgesByFilter(filter, null, configurationContext);
+		List<CartridgeDefinitionBean> cartridges = getCartridgesByFilter(filter, null, configurationContext);
 		
-		for (Cartridge cartridge : cartridges) {
-			if (cartridge.getCartridgeType().equals(cartridgeType)) {
+		for (CartridgeDefinitionBean cartridge : cartridges) {
+			if (cartridge.getType().equals(cartridgeType)) {
 				return cartridge;
 			}
 		}
@@ -213,13 +217,13 @@ public class StratosApiV41Utils {
 		throw new RestAPIException(msg);
 	}
     
-    private static List<Cartridge> getAvailableLbCartridges(Boolean multiTenant,
+    private static List<CartridgeDefinitionBean> getAvailableLbCartridges(Boolean multiTenant,
                                                     ConfigurationContext configurationContext) throws RestAPIException {
-        List<Cartridge> cartridges = getAvailableCartridges(null, multiTenant,
+        List<CartridgeDefinitionBean> cartridges = getAvailableCartridges(null, multiTenant,
                 configurationContext);
-        List<Cartridge> lbCartridges = new ArrayList<Cartridge>();
-        for (Cartridge cartridge : cartridges) {
-            if (cartridge.isLoadBalancer()) {
+        List<CartridgeDefinitionBean> lbCartridges = new ArrayList<CartridgeDefinitionBean>();
+        for (CartridgeDefinitionBean cartridge : cartridges) {
+            if ("loadbalancer".equalsIgnoreCase(cartridge.getCategory())) {
                 lbCartridges.add(cartridge);
             }
         }
@@ -232,8 +236,8 @@ public class StratosApiV41Utils {
         return lbCartridges;
     }
 
-	private static List<Cartridge> getAvailableCartridgesByProvider(String provider, ConfigurationContext configurationContext) throws RestAPIException {
-		List<Cartridge> cartridges = new ArrayList<Cartridge>();
+	private static List<CartridgeDefinitionBean> getAvailableCartridgesByProvider(String provider, ConfigurationContext configurationContext) throws RestAPIException {
+		List<CartridgeDefinitionBean> cartridges = new ArrayList<CartridgeDefinitionBean>();
 
 		if (log.isDebugEnabled()) {
 			log.debug("Getting available cartridges. Privider name : " + provider );
@@ -268,30 +272,22 @@ public class StratosApiV41Utils {
 						continue;
 					}
 
-					Cartridge cartridge = new Cartridge();
-					cartridge.setCartridgeType(cartridgeType);
+                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
+					cartridge.setType(cartridgeType);
 					cartridge.setProvider(cartridgeInfo.getProvider());
 					cartridge.setCategory(cartridgeInfo.getCategory());
 					cartridge.setDisplayName(cartridgeInfo.getDisplayName());
 					cartridge.setDescription(cartridgeInfo.getDescription());
 					cartridge.setVersion(cartridgeInfo.getVersion());
 					cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-					cartridge.setHostName(cartridgeInfo.getHostName());
+					cartridge.setHost(cartridgeInfo.getHostName());
 					cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
 					cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
 					//cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-					cartridge.setCartridgeAlias("-");
-					cartridge.setPersistence(cartridgeInfo.getPersistence());
+					//cartridge.setCartridgeAlias("-");
+					cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
 					cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
-					if (cartridgeInfo.getProperties() != null) {
-						for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo
-								.getProperties()) {
-							if (property.getName().equals("load.balancer")) {
-								cartridge.setLoadBalancer(true);
-							}
-						}
-					}
 					//cartridge.setActiveInstances(0);
 					cartridges.add(cartridge);
 				}
@@ -306,7 +302,7 @@ public class StratosApiV41Utils {
 			throw new RestAPIException(msg, e);
 		}
 
-		Collections.sort(cartridges);
+		//Collections.sort(cartridges);
 
 		if (log.isDebugEnabled()) {
 			log.debug("Returning available cartridges " + cartridges.size());
@@ -315,8 +311,8 @@ public class StratosApiV41Utils {
 		return cartridges;
     }
 
-    public static List<Cartridge> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
-        List<Cartridge> cartridges = new ArrayList<Cartridge>();
+    public static List<CartridgeDefinitionBean> getAvailableCartridges(String cartridgeSearchString, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
+        List<CartridgeDefinitionBean> cartridges = new ArrayList<CartridgeDefinitionBean>();
 
         if (log.isDebugEnabled()) {
             log.debug("Getting available cartridges. Search String: " + cartridgeSearchString + ", Multi-Tenant: " + multiTenant);
@@ -361,32 +357,24 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-	                Cartridge cartridge = new Cartridge();
-	                cartridge.setCartridgeType(cartridgeType);
-	                cartridge.setProvider(cartridgeInfo.getProvider());
-	                cartridge.setCategory(cartridgeInfo.getCategory());
-	                cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-	                cartridge.setDescription(cartridgeInfo.getDescription());
-	                cartridge.setVersion(cartridgeInfo.getVersion());
-	                cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-	                cartridge.setHostName(cartridgeInfo.getHostName());
-	                cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-	                cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-	                //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-	                cartridge.setCartridgeAlias("-");
-	                cartridge.setPersistence(cartridgeInfo.getPersistence());
-	                cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
+                    cartridge.setType(cartridgeType);
+                    cartridge.setProvider(cartridgeInfo.getProvider());
+                    cartridge.setCategory(cartridgeInfo.getCategory());
+                    cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+                    cartridge.setDescription(cartridgeInfo.getDescription());
+                    cartridge.setVersion(cartridgeInfo.getVersion());
+                    cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+                    cartridge.setHost(cartridgeInfo.getHostName());
+                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
+                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
+                    //cartridge.setCartridgeAlias("-");
+                    cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
+                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
-	                if (cartridgeInfo.getProperties() != null) {
-		                for (org.apache.stratos.cloud.controller.stub.Property property : cartridgeInfo
-				                .getProperties()) {
-			                if (property.getName().equals("load.balancer")) {
-				                cartridge.setLoadBalancer(true);
-			                }
-		                }
-	                }
-	                //cartridge.setActiveInstances(0);
-	                cartridges.add(cartridge);
+                    //cartridge.setActiveInstances(0);
+                    cartridges.add(cartridge);
 
 
                     if (cartridgeInfo.getMultiTenant() && !allowMultipleSubscription) {
@@ -413,13 +401,37 @@ public class StratosApiV41Utils {
             throw new RestAPIException(msg, e);
         }
 
-        Collections.sort(cartridges);
+        //Collections.sort(cartridges);
 
         if (log.isDebugEnabled()) {
             log.debug("Returning available cartridges " + cartridges.size());
         }
 
         return cartridges;
+    }
+
+    private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {
+        if(persistence == null) {
+            return null;
+        }
+
+        PersistenceBean persistenceBean = new PersistenceBean();
+        persistenceBean.setRequired(persistence.isPersistanceRequiredSpecified());
+        persistenceBean.setVolume(convertVolumesToVolumeBeans(persistence.getVolumes()));
+        return persistenceBean;
+    }
+
+    private static List<VolumeBean> convertVolumesToVolumeBeans(Volume[] volumes) {
+        List<VolumeBean> list = new ArrayList<VolumeBean>();
+        for(Volume volume : volumes) {
+            VolumeBean volumeBean = new VolumeBean();
+            volumeBean.setId(volume.getId());
+            volumeBean.setDevice(volume.getDevice());
+            volumeBean.setSize(String.valueOf(volume.getSize()));
+            volumeBean.setSnapshotId(volume.getSnapshotId());
+            list.add(volumeBean);
+        }
+        return list;
     }
 
     private static boolean isAlreadySubscribed(String cartridgeType,
