@@ -373,6 +373,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         if (terminationList != null) {
             allDependentTerminated = allDependentTerminated(terminationList);
         }
+        log.info("Calculating the dependencies to be started upon the termination of the " +
+                "group/cluster " + eventId + " for [instance] " + instanceId);
 
         List<ApplicationChildContext> parentContexts = this.startupDependencyTree.
                 findAllParentContextWithId(eventId);
