@@ -133,10 +133,6 @@ public class PojoConverter {
         if (cartridgeDefinitionBean.iaasProvider != null && !cartridgeDefinitionBean.iaasProvider.isEmpty()) {
             cartridgeConfig.setIaasConfigs(getIaasConfigsAsArray(cartridgeDefinitionBean.iaasProvider));
         }
-        //LB
-        if (cartridgeDefinitionBean.loadBalancer != null) {
-            cartridgeConfig.setLbConfig(getLBConfig(cartridgeDefinitionBean.loadBalancer));
-        }
         //Properties
         if (cartridgeDefinitionBean.property != null && !cartridgeDefinitionBean.property.isEmpty()) {
             cartridgeConfig.setProperties(getCCProperties(cartridgeDefinitionBean.property));

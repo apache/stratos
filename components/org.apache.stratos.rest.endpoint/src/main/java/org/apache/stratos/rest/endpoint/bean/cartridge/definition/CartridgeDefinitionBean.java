@@ -53,8 +53,6 @@ public class CartridgeDefinitionBean {
 
     public List<IaasProviderBean> iaasProvider;
 
-    public LoadBalancerBean loadBalancer;
-
     public List<PropertyBean> property;
     
     public String defaultAutoscalingPolicy;
@@ -74,7 +72,7 @@ public class CartridgeDefinitionBean {
         return "Type: " + type + ", Provider: " + provider + ", Category: " + category+ ", Host: " + host + ", Display Name: " + displayName +
                 ", Description: " + description +  ", Version: " + version + ", Multitenant " + multiTenant +", Public " + isPublic + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n LoadBalancer: " + getLoadBalancerInfo() + "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString()
+                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ persistence.toString()
                 + "\n Exports " + exportingProperties.toString();
     }
 
@@ -82,14 +80,6 @@ public class CartridgeDefinitionBean {
 
         if(deployment != null) {
             return deployment.toString();
-        }
-        return null;
-    }
-
-    private String getLoadBalancerInfo() {
-
-        if(loadBalancer != null) {
-            return loadBalancer.toString();
         }
         return null;
     }
