@@ -388,7 +388,7 @@ public class PojoConverter {
                 //set load average information
                 org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds loadAverage = new
                         org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds();
-                loadAverage.setUpperLimit(autoscalePolicyBean.getLoadThresholds().loadAverage.upperLimit);
+                loadAverage.setUpperLimit(autoscalePolicyBean.getLoadThresholds().loadAverage.threshold);
                 loadAverage.setLowerLimit(autoscalePolicyBean.getLoadThresholds().loadAverage.lowerLimit);
                 //set load average
                 loadThresholds.setLoadAverage(loadAverage);
@@ -398,7 +398,7 @@ public class PojoConverter {
                 org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds requestsInFlight = new
                         org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds();
                 //set request in flight information
-                requestsInFlight.setUpperLimit(autoscalePolicyBean.getLoadThresholds().requestsInFlight.upperLimit);
+                requestsInFlight.setUpperLimit(autoscalePolicyBean.getLoadThresholds().requestsInFlight.threshold);
                 requestsInFlight.setLowerLimit(autoscalePolicyBean.getLoadThresholds().requestsInFlight.lowerLimit);
                 //set request in flight
                 loadThresholds.setRequestsInFlight(requestsInFlight);
@@ -409,7 +409,7 @@ public class PojoConverter {
                         org.apache.stratos.autoscaler.stub.autoscale.policy.MemoryConsumptionThresholds();
 
                 //set memory consumption information
-                memoryConsumption.setUpperLimit(autoscalePolicyBean.getLoadThresholds().memoryConsumption.upperLimit);
+                memoryConsumption.setUpperLimit(autoscalePolicyBean.getLoadThresholds().memoryConsumption.threshold);
                 memoryConsumption.setLowerLimit(autoscalePolicyBean.getLoadThresholds().memoryConsumption.lowerLimit);
                 //set memory consumption
                 loadThresholds.setMemoryConsumption(memoryConsumption);
@@ -741,19 +741,19 @@ public class PojoConverter {
         LoadThresholds loadThresholdBean = new LoadThresholds();
         if (loadThresholds.getLoadAverage() != null) {
             LoadAverageThresholds loadAverage = new LoadAverageThresholds();
-            loadAverage.upperLimit = loadThresholds.getLoadAverage().getUpperLimit();
+            loadAverage.threshold = loadThresholds.getLoadAverage().getUpperLimit();
             loadAverage.lowerLimit = loadThresholds.getLoadAverage().getLowerLimit();
             loadThresholdBean.loadAverage = loadAverage;
         }
         if (loadThresholds.getMemoryConsumption() != null) {
             MemoryConsumptionThresholds memoryConsumption = new MemoryConsumptionThresholds();
-            memoryConsumption.upperLimit = loadThresholds.getMemoryConsumption().getUpperLimit();
+            memoryConsumption.threshold = loadThresholds.getMemoryConsumption().getUpperLimit();
             memoryConsumption.lowerLimit = loadThresholds.getMemoryConsumption().getLowerLimit();
             loadThresholdBean.memoryConsumption = memoryConsumption;
         }
         if (loadThresholds.getRequestsInFlight() != null) {
             RequestsInFlightThresholds requestsInFlight = new RequestsInFlightThresholds();
-            requestsInFlight.upperLimit = loadThresholds.getRequestsInFlight().getUpperLimit();
+            requestsInFlight.threshold = loadThresholds.getRequestsInFlight().getUpperLimit();
             requestsInFlight.lowerLimit = loadThresholds.getRequestsInFlight().getLowerLimit();
             loadThresholdBean.requestsInFlight = requestsInFlight;
         }

@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class RequestsInFlightThresholds {
 
-    public float upperLimit;
+    public float threshold;
 
     public float lowerLimit;
 
