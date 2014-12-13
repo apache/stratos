@@ -85,6 +85,7 @@
                 <value>cartridges</value>
                 <value>startupOrders</value>
                 <value>dependencies</value>
+                <value>instances</value>
             </list>
         </property>
     </bean>
