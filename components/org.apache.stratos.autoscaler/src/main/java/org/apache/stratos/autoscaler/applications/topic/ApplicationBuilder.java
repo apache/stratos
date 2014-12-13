@@ -386,8 +386,11 @@ public class ApplicationBuilder {
                 context.setStatus(status);
                 //removing the group instance and context
                 GroupMonitor monitor = getGroupMonitor(appId, groupId);
+                ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
+                                                    getAppMonitor(appId);
+
                 if(monitor != null) {
-                    if(monitor.hasMonitors()) {
+                    if(monitor.hasMonitors() && applicationMonitor.isTerminating()) {
                        for(Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
                            //destroying the drools
                            monitor1.destroy();
@@ -402,12 +405,10 @@ public class ApplicationBuilder {
                     }
                     monitor.removeInstance(instanceId);
                     group.removeInstance(instanceId);
+                    ApplicationHolder.persistApplication(application);
+                    ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
                     monitor.setStatus(status, instanceId);
                 }
-
-                ApplicationHolder.persistApplication(application);
-                ApplicationsEventPublisher.sendGroupInstanceTerminatedEvent(appId, groupId, instanceId);
-
             } else {
                 log.warn("Group state transition is not valid: [group-id] " + groupId +
                         " [instance-id] " + instanceId + " [current-state] " + context.getStatus()

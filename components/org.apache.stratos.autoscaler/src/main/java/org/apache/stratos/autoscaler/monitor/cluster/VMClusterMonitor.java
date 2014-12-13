@@ -242,7 +242,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",
-                                        instanceContext.getId()));
+                                        instanceContext.getId() +  " for the cluster: " + clusterId));
                             }
 
                             minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
