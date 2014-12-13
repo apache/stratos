@@ -88,7 +88,7 @@ public class StratosApiV41Utils {
     public static void createCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a cartridge [type] " + cartridgeDefinitionBean.type);
+        log.info("Starting to deploy a cartridge: [type] " + cartridgeDefinitionBean.type);
 
         CartridgeConfig cartridgeConfig = PojoConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
@@ -102,7 +102,7 @@ public class StratosApiV41Utils {
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info("Successfully deployed cartridge [type] " + cartridgeDefinitionBean.type);
+        log.info("Successfully deployed cartridge: [type] " + cartridgeDefinitionBean.type);
     }
     
     public static void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
@@ -113,18 +113,17 @@ public class StratosApiV41Utils {
             CartridgeInfo cartridgeInfo = null;
             try {
                 cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
-
             } catch (RemoteException e) {
-                log.error("Error in getting Cartridge details for type " + cartridgeType);
+                log.error("Could not find cartridge: [type] " + cartridgeType);
                 throw new RestAPIException(e);
 
             } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-                log.error("Error in getting Cartridge details for type " + cartridgeType);
+                log.error("Could not find cartridge: [type] " + cartridgeType);
                 throw new RestAPIException(e);
             }
 
             if (cartridgeInfo == null) {
-                String errorMsg = "Cartridge information not found for type " + cartridgeType;
+                String errorMsg = "Could not find cartridge: [type] " + cartridgeType;
                 log.error(errorMsg);
                 throw new RestAPIException(errorMsg);
             }

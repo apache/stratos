@@ -176,8 +176,7 @@ public class CloudControllerUtil {
                         iaasProvider.setPayload(payload);
                     }
 
-                    org.apache.stratos.common.Properties props1 =
-                                                                                 iaasConfig.getProperties();
+                    org.apache.stratos.common.Properties props1 = iaasConfig.getProperties();
                     if (props1 != null) {
                         for (Property prop : props1.getProperties()) {
                             iaasProvider.addProperty(prop.getName(), prop.getValue());

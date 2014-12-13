@@ -82,7 +82,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException {
 
-        handleNullObject(cartridgeConfig, "Invalid Cartridge Definition: Definition is null.");
+        handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
@@ -90,7 +90,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         Cartridge cartridge = null;
         try {
-            // cartridge can never be null
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
             String msg = "Invalid cartridge definition: Cartridge type: " + cartridgeConfig.getType() +
@@ -117,20 +116,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
+        // Undeploy if already deployed
         if (cloudControllerContext.getCartridge(cartridgeType) != null) {
             Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
             // undeploy
             try {
                 undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
-            } catch (InvalidCartridgeTypeException e) {
-                //ignore
+            } catch (InvalidCartridgeTypeException ignore) {
             }
-            populateNewCartridge(cartridge, cartridgeToBeRemoved);
+            copyIaasProviders(cartridge, cartridgeToBeRemoved);
         }
 
+        // Add cartridge to the cloud controller context and persist
         CloudControllerContext.getInstance().addCartridge(cartridge);
-
-        // persist
         CloudControllerContext.getInstance().persist();
 
         List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
@@ -139,16 +137,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         TopologyBuilder.handleServiceCreated(cartridgeList);
         // transaction ends
 
-        log.info("Successfully deployed the Cartridge definition: " + cartridgeType);
+        if(log.isInfoEnabled()) {
+            log.info("Successfully deployed the cartridge: [type] " + cartridgeType);
+        }
     }
 
-    private void populateNewCartridge(Cartridge cartridge,
-                                      Cartridge cartridgeToBeRemoved) {
+    private void copyIaasProviders(Cartridge destCartridge,
+                                   Cartridge sourceCartridge) {
 
-        List<IaasProvider> newIaasProviders = cartridge.getIaases();
-        Map<String, IaasProvider> oldPartitionToIaasMap = cartridgeToBeRemoved.getPartitionToIaasProvider();
+        List<IaasProvider> newIaasProviders = destCartridge.getIaases();
+        Map<String, IaasProvider> iaasProviderMap = sourceCartridge.getPartitionToIaasProvider();
 
-        for (Entry<String, IaasProvider> entry : oldPartitionToIaasMap.entrySet()) {
+        for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
             if (entry == null) {
                 continue;
             }
@@ -157,12 +157,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (newIaasProviders.contains(oldIaasProvider)) {
                 if (log.isDebugEnabled()) {
                     log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
-                            + "[partition id] : " + partitionId + " [cartridge type] " + cartridge.getType());
+                            + "[partition id] : " + partitionId + " [cartridge type] " + destCartridge.getType());
                 }
-                cartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
+                destCartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
             }
         }
-
     }
 
     public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
@@ -741,19 +740,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public CartridgeInfo getCartridgeInfo(String cartridgeType)
-            throws UnregisteredCartridgeException {
-        Cartridge cartridge = CloudControllerContext.getInstance()
-                .getCartridge(cartridgeType);
-
+    public CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException {
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge != null) {
-
             return CloudControllerUtil.toCartridgeInfo(cartridge);
-
         }
 
-        String msg = "Cannot find a Cartridge having a type of "
-                + cartridgeType + ". Hence unable to find information.";
+        String msg = "Could not find cartridge: [type] " + cartridgeType;
         log.error(msg);
         throw new UnregisteredCartridgeException(msg);
     }
@@ -763,16 +756,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         final String clusterId_ = clusterId;
 
         ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
-
         handleNullObject(ctxt, "Service unregistration failed. Invalid cluster id: " + clusterId);
 
         String cartridgeType = ctxt.getCartridgeType();
-
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
 
         if (cartridge == null) {
             String msg =
-                    "Service unregistration failed. No matching Cartridge found [type] " + cartridgeType + ". ";
+                    "Service unregistration failed. No matching cartridge found: [type] " + cartridgeType;
             log.error(msg);
             throw new UnregisteredClusterException(msg);
         }
@@ -780,17 +771,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // if it's a kubernetes cluster
         if (StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
             unregisterDockerService(clusterId_);
-
         } else {
-
-//	        TopologyBuilder.handleClusterMaintenanceMode(CloudControllerContext.getInstance().getClusterContext(clusterId_));
-
             Runnable terminateInTimeout = new Runnable() {
                 @Override
                 public void run() {
                     ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                     if (ctxt == null) {
-                        String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
+                        String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
                         log.error(msg);
                         return;
                     }
@@ -832,14 +819,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
                         ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId_);
                         if (ctxt == null) {
-                            String msg = "Service unregistration failed. Cluster not found: " + clusterId_;
+                            String msg = "Service unregistration failed. Cluster not found: [cluster-id] " + clusterId_;
                             log.error(msg);
                             return;
                         }
                         Collection<Member> members = TopologyManager.getTopology().
                                 getService(ctxt.getCartridgeType()).getCluster(clusterId_).getMembers();
-                        // TODO why end time is needed?
-                        // long endTime = System.currentTimeMillis() + ctxt.getTimeoutInMillis() * members.size();
 
                         while (members.size() > 0) {
                             //waiting until all the members got removed from the Topology/ timed out
@@ -867,7 +852,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                 for (Volume volume : ctxt.getVolumes()) {
                                     if (volume.getId() != null) {
                                         String iaasType = volume.getIaasType();
-                                        //Iaas iaas = CloudControllerContext.getInstance().getIaasProvider(iaasType).buildComputeServiceAndTemplate();
                                         Iaas iaas = cartridge.getIaasProvider(iaasType).getIaas();
                                         if (iaas != null) {
                                             try {
@@ -923,7 +907,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     /**
-     * FIXME: A validate method shouldn't persist any data
+     * FIXME: A validate method shouldn't persist data
      */
     @Override
     public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions)
