@@ -976,14 +976,19 @@ public class StratosApiV41Utils {
             throw new RestAPIException(e);
         }
     }
-    
+
+    /**
+     * Deploy application with a deployment policy.
+     * @param deploymentPolicyBean
+     * @throws RestAPIException
+     */
     public static void deployApplication(
             org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Starting to deploy a deployment policy of application: "
-                    + deploymentPolicyBean.applicationPolicy.applicationId);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Starting to deploy application: [application-id] %s [deployment-policy-id] %s",
+                    deploymentPolicyBean.applicationPolicy.applicationId, deploymentPolicyBean.id));
         }
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -994,6 +999,10 @@ public class StratosApiV41Utils {
 
             try {
                 autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Application deployed successfully: [application-id] %s [deployment-policy-id] %s",
+                            deploymentPolicy.getApplicationId(), deploymentPolicy.getId()));
+                }
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -1002,9 +1011,6 @@ public class StratosApiV41Utils {
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
-
-            log.info(String.format("Application deployed: [application-id] %s [deployment-policy-id] %s",
-                    deploymentPolicy.getApplicationId(), deploymentPolicy.getId()));
         }
     }
 
