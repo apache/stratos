@@ -90,7 +90,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         //Building the scaling dependencies for this monitor within the immediate children
         scalingDependencies  =  component.getDependencyOrder().getScalingDependents();
         //Create the executor service with identifier and thread pool size
-	    executorService= StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
+	    executorService = StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
     }
 
     /**
