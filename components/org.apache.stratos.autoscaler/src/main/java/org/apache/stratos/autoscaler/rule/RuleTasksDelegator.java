@@ -308,13 +308,14 @@ public class RuleTasksDelegator {
 
 
     public void delegateScalingDependencyNotification(String clusterId, String networkPartitionId, String instanceId,
-                                                      float factor) {
+                                                      int requiredInstanceCount, int minimumInstanceCount) {
 
     	if(log.isDebugEnabled()) {
     		log.debug("Scaling dependent notification..");
     	}
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        float factor = requiredInstanceCount / minimumInstanceCount;
         if (clusterMonitor instanceof VMClusterMonitor) {
 
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;

@@ -124,29 +124,29 @@ dialect "mvel"
                 int additionalInstances = numberOfRequiredInstances - activeInstancesCount ;
                 clusterInstanceContext.resetScaleDownRequestsCount();
 
-                //Calculating the factor scaling
-                float factor = numberOfRequiredInstances / clusterInstanceContext.getMinInstanceCount();
+                log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
+                if(clusterInstanceContext.hasScalingDependants()) {
 
-                boolean partitionsAvailable = true;
-                int count = 0;                
-                while(count != additionalInstances && partitionsAvailable){
+                    log.debug("[scale-up] Notifying dependencies [cluster] " + clusterId);
+                    delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId(), numberOfRequiredInstances, clusterInstanceContext.getMinInstanceCount());
+                } else {
 
-                    ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
-                    if(partitionContext != null){
+                    boolean partitionsAvailable = true;
+                    int count = 0;
 
-                        log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                        log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                        log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
-                        if(clusterInstanceContext.hasScalingDependants()) {
+                    while(count != additionalInstances && partitionsAvailable){
 
-                        	delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId(), factor);
+                        ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                        if(partitionContext != null){
+
+                            log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                            log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                            delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                            count++;
                         } else {
-                        	delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
-                        }
-                        count++;
-                    } else {
 
-                        partitionsAvailable = false;
+                            partitionsAvailable = false;
+                        }
                     }
                 }
             } else{
