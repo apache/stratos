@@ -192,28 +192,6 @@
                         </div>
                     </div>
                 {{/each}}
-                {{#each content_body.sections.partition}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-th-large"></i>
-                        </div>
-                        <h2 class="truncate">{{id}} </h2>
-
-                        <div class="toggle-menu-description">{{description}} </div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
-                            </button>
-                        </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                        data-url="{{url ""}}/configure/partitions/{{id}}/" > Details
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                {{/each}}
             </div>
         </div>
     </div>
