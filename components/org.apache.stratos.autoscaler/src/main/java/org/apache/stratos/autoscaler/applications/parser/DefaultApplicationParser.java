@@ -207,14 +207,26 @@ public class DefaultApplicationParser implements ApplicationParser {
                 DependencyOrder appDependencyOrder = new DependencyOrder();
                 String [] startupOrders = appCtxt.getComponents().getDependencyContext().getStartupOrdersContexts();
                 if (startupOrders != null) {
-                	if (log.isDebugEnabled()) {
-                    	log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " +
-                    				appCtxt.getAlias() + " #: " + startupOrders.length);
+                    if (log.isDebugEnabled()) {
+                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " +
+                                appCtxt.getAlias() + " #: " + startupOrders.length);
                     }
-                    appDependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders));
+                    appDependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders));
                 } else {
-                	if (log.isDebugEnabled()) {
-                    	log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
+                    if (log.isDebugEnabled()) {
+                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
+                    }
+                }
+                String [] scalingDependents = appCtxt.getComponents().getDependencyContext().getScalingDependents();
+                if (scalingDependents != null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("parsing application ... buildCompositeAppStructure: scalingDependents != null for app alias: " +
+                                appCtxt.getAlias() + " #: " + scalingDependents.length);
+                    }
+                    appDependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scalingDependents));
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
                     }
                 }
                 String terminationBehavior = appCtxt.getComponents().getDependencyContext().getTerminationBehaviour();
@@ -458,7 +470,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // create the Dependency Ordering
         String []  startupOrders = getStartupOrderForGroup(groupCtxt.getName(),serviceGroup);
         if (startupOrders != null) {
-            dependencyOrder.setStartupOrders(ParserUtils.convert(startupOrders, groupCtxt));
+            dependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders, groupCtxt));
         }
         dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(),serviceGroup));
         //dependencyOrder.setScalingDependents(scalingDependents);
