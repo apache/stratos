@@ -109,28 +109,30 @@
                         </div>
                     {{/each}}
                 {{/ifCond}}
-                {{#each content_body.sections}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-th-large"></i>
-                        </div>
-                        <h2 class="truncate">{{name}} </h2>
+                {{#ifCond formtype "==" "groups"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-th-large"></i>
+                            </div>
+                            <h2 class="truncate">{{name}} </h2>
 
-                        <div class="toggle-menu-description">{{description}} </div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
-                                    data-url="{{url ""}}/applications/groups/{{name}}/" > Details
-                            </button>
-                        </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
+                            <div class="toggle-menu-description">{{description}} </div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
                                         data-url="{{url ""}}/applications/groups/{{name}}/" > Details
                                 </button>
                             </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
+                                            data-url="{{url ""}}/applications/groups/{{name}}/" > Details
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                {{/each}}
+                    {{/each}}
+                {{/ifCond}}
             </div>
         </div>
     </div>
