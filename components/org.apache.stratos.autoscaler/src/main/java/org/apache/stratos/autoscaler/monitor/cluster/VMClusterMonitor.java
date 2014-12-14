@@ -85,7 +85,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        //autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
@@ -93,8 +93,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.VM_MIN_CHECK_DROOL_FILE);
-        /*this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);*/
+        this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
+                StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
     }
 
     private static void terminateMember(String memberId) {
@@ -437,14 +437,14 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
         getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
 
-        dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getScaleCheckKnowledgeSession()
-                , scaleCheckFactHandle, clusterInstanceContext);
+        dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getDependentScaleCheckKnowledgeSession()
+                , dependentScaleCheckFactHandle, clusterInstanceContext);
 
     }
 
     public void sendClusterScalingEvent(String networkPartitionId, String instanceId, float factor) {
 
-        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id);
+        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
     }
 
     @Override
