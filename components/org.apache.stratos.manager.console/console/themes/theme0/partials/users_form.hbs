@@ -93,16 +93,18 @@
                         </div>
                     {{/each}}
                 {{/ifCond}}
-                {{#each content_body.sections.tenantInfoBean}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-building"></i>
-                        </div>
-                        <h2>{{tenantDomain}} </h2>
+                {{#ifCond formtype "==" "tenants"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-building"></i>
+                            </div>
+                            <h2>{{tenantDomain}} </h2>
 
-                        <div class="toggle-menu-description">{{email}} - {{createdDate}} </div>
-                    </div>
-                {{/each}}
+                            <div class="toggle-menu-description">{{email}} - {{createdDate}} </div>
+                        </div>
+                    {{/each}}
+                {{/ifCond}}
             </div>
         </div>
     </div>

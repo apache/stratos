@@ -55,7 +55,7 @@ if (elements.formtype == 'users') {
 
 } else if (elements.formtype == 'tenants') {
     list_data = util.RESTCalls.getTenants();
-    if (list_data.tenantInfoBean && list_data.tenantInfoBean.length === 0) {
+    if (list_data && list_data.length === 0) {
         list_data = null;
     }
 }
