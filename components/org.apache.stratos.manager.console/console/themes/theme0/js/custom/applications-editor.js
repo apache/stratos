@@ -614,7 +614,7 @@ function generateCartridges(data){
         cartridgeListHtml += '<div class="block-cartridge" ' +
             'data-info="'+cartridgeData.description+ '"'+
             'data-toggle="tooltip" data-placement="bottom" title="Single Click to view details. Double click to add"'+
-            'id="'+cartridgeData.cartridgeType+'">'
+            'id="'+cartridgeData.type+'">'
             + cartridgeData.displayName+
             '</div>'
     }
