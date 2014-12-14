@@ -85,28 +85,30 @@
             {{/if}}
 
             <div class="row general-table row-overide">
-                {{#each content_body.sections.applications}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-th-large"></i>
-                        </div>
-                        <h2 class="truncate">{{id}} </h2>
+                {{#ifCond formtype "==" "applications"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-th-large"></i>
+                            </div>
+                            <h2 class="truncate">{{id}} </h2>
 
-                        <div class="toggle-menu-description">{{description}} </div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/applications/applications/{{id}}/" > Details
-                            </button>
-                        </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                            <div class="toggle-menu-description">{{description}} </div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
                                         data-url="{{url ""}}/applications/applications/{{id}}/" > Details
                                 </button>
                             </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                            data-url="{{url ""}}/applications/applications/{{id}}/" > Details
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                {{/each}}
+                    {{/each}}
+                {{/ifCond}}
                 {{#each content_body.sections}}
                     <div class="block col-md-4 grid-group-item border-right">
                         <div class="toggle-menu-icon">

@@ -84,7 +84,7 @@ switch (formtype) {
         break;
     case "applications":
         list_data = util.RESTCalls.getApplications();
-        if (list_data.applications && list_data.applications.length === 0) {
+        if (list_data && list_data.length === 0) {
             list_data = null;
         }
         break;
@@ -120,6 +120,7 @@ var caramelData = {
     applicationEditor: applicationEditor,
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
+    formtype:elements.formtype,
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
     formDataEdit: JSON.stringify(formDataEdit),
     formData: JSON.stringify(formData),
