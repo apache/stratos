@@ -745,9 +745,9 @@ $(document).ready(function(){
     });
 
     //get create cartridge list
-    generateCartridges(cartridgeList.cartridge);
+    generateCartridges(cartridgeList);
     //get group JSON
-    generateGroups(groupList.groups);
+    generateGroups(groupList);
 
     //handle single click for cartridge
     $('#cartridge-list').on('click', ".block-cartridge", function(){
