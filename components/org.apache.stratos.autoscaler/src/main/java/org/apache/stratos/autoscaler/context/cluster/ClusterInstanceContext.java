@@ -464,7 +464,7 @@ public class ClusterInstanceContext extends InstanceContext {
         return averageRequestServedPerInstanceReset;
     }
 
-	public boolean isHasScalingDependants() {
+	public boolean hasScalingDependants() {
 		return hasScalingDependants;
 	}
 
