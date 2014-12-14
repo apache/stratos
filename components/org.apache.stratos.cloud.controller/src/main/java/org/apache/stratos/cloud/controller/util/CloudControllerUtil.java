@@ -31,6 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidKubernetesGroupExcep
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
+import org.apache.stratos.cloud.controller.registry.Deserializer;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
@@ -118,7 +119,7 @@ public class CloudControllerUtil {
         // populate LB config
         cartridge.setLbConfig(config.getLbConfig());
 
-        List<IaasProvider> iaasProviders = CloudControllerConfig.getInstance().getIaasProviders();
+        List<IaasProvider> iaases = CloudControllerConfig.getInstance().getIaasProviders();
 
         // populate IaaSes
         IaasConfig[] iaasConfigs = config.getIaasConfigs();
@@ -126,9 +127,9 @@ public class CloudControllerUtil {
             for (IaasConfig iaasConfig : iaasConfigs) {
                 if (iaasConfig != null) {
                     IaasProvider iaasProvider = null;
-                    if (iaasProviders != null) {
+                    if (iaases != null) {
                         // check whether this is a reference to a predefined IaaS.
-                        for (IaasProvider iaas : iaasProviders) {
+                        for (IaasProvider iaas : iaases) {
                             if (iaas.getType().equals(iaasConfig.getType())) {
                                 iaasProvider = new IaasProvider(iaas);
                                 break;
@@ -223,7 +224,7 @@ public class CloudControllerUtil {
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()
 		                                                                   .size()]));
-		carInfo.setIaasProviders(createNewIaasProviderArray(cartridge.getIaases()));
+		carInfo.setIaasProviders(cartridge.getIaases().toArray(new IaasProvider[cartridge.getIaases().size()]));
         carInfo.setAppTypes(cartridge.getAppTypeMappings()
                                 .toArray(new AppType[cartridge.getAppTypeMappings()
                                                                   .size()]));
@@ -245,28 +246,6 @@ public class CloudControllerUtil {
 
 		return carInfo;
 	}
-
-    /**
-     * Create new iaas provider array by excluding iaas objects.
-     * @param iaasProviders
-     * @return
-     */
-    private static IaasProvider[] createNewIaasProviderArray(List<IaasProvider> iaasProviders) {
-        List<IaasProvider> iaasProviderList = new ArrayList<IaasProvider>();
-        for(IaasProvider sourceObject : iaasProviders) {
-            IaasProvider destObject = new IaasProvider();
-            destObject.setName(sourceObject.getName());
-            destObject.setClassName(sourceObject.getClassName());
-            destObject.setCredential(sourceObject.getCredential());
-            destObject.setIdentity(sourceObject.getIdentity());
-            destObject.setImage(sourceObject.getImage());
-            destObject.setProperties(sourceObject.getProperties());
-            destObject.setProvider(sourceObject.getProvider());
-            destObject.setType(sourceObject.getType());
-            iaasProviderList.add(destObject);
-        }
-        return iaasProviderList.toArray(new IaasProvider[iaasProviderList.size()]);
-    }
 
     public static void sleep(long time){
     	try {
