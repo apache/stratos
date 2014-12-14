@@ -211,9 +211,20 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    public Object getEntity(String serviceEndpoint, Class responseJsonClass, String identifier, String entityName) {
+    public Object getEntity(String serviceEndpoint, Class responseJsonClass, String identifierPlaceHolder, String identifier, String entityName) {
         try {
-            return executeGet(serviceEndpoint.replace("{id}", identifier), responseJsonClass);
+            return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseJsonClass);
+        } catch (Exception e) {
+            String message = String.format("Error in getting %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+            return null;
+        }
+    }
+
+    public Object getEntity(String serviceEndpoint, Type responseType, String identifierPlaceHolder, String identifier, String entityName) {
+        try {
+            return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseType);
         } catch (Exception e) {
             String message = String.format("Error in getting %s", entityName);
             System.out.println(message);
