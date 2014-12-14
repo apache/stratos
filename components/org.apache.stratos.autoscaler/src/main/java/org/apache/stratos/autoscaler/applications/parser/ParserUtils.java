@@ -23,13 +23,14 @@ import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.applications.StartupOrder;
 
 import java.util.*;
 
 public class ParserUtils {
 
-    public static Set<StartupOrder> convert (String [] startupOrderArr) throws ApplicationDefinitionException {
+    public static Set<StartupOrder> convertStartupOrder(String[] startupOrderArr) throws ApplicationDefinitionException {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
 
@@ -60,7 +61,7 @@ public class ParserUtils {
         return new StartupOrder(startupOrders);
     }
 
-    public static Set<StartupOrder> convert (String [] startupOrderArr, GroupContext groupContext)
+    public static Set<StartupOrder> convertStartupOrder(String[] startupOrderArr, GroupContext groupContext)
             throws ApplicationDefinitionException {
 
         Set<StartupOrder> startupOrders = new HashSet<StartupOrder>();
@@ -71,7 +72,7 @@ public class ParserUtils {
 
 
         for (String commaSeparatedStartupOrder : startupOrderArr) {
-            // convert all Startup Orders to aliases-based
+            // convertStartupOrder all Startup Orders to aliases-based
             List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
             startupOrders.add(getStartupOrder(components, groupContext));
         }
@@ -92,7 +93,7 @@ public class ParserUtils {
                 String cartridgeType = component.substring(10);
                 aliasBasedComponent = getAliasForServiceType(cartridgeType, groupContext);
                 if (aliasBasedComponent == null) {
-                    throw new ApplicationDefinitionException("Unable convert Startup Order to alias-based; " +
+                    throw new ApplicationDefinitionException("Unable convertStartupOrder Startup Order to alias-based; " +
                             "cannot find the matching alias for Service type " + cartridgeType);
                 }
 
@@ -102,7 +103,7 @@ public class ParserUtils {
                 String groupName = component.substring(6);
                 aliasBasedComponent = getAliasForGroupName(groupName, groupContext);
                 if (aliasBasedComponent == null) {
-                    throw new ApplicationDefinitionException("Unable convert Startup Order to alias-based; " +
+                    throw new ApplicationDefinitionException("Unable convertStartupOrder Startup Order to alias-based; " +
                             "cannot find the matching alias for Group name " + groupName);
                 }
 
@@ -116,6 +117,96 @@ public class ParserUtils {
         }
 
         return new StartupOrder(aliasBasedComponents);
+    }
+
+
+    public static Set<ScalingDependentList> convertScalingDependentList(String[] scalingDependentListArr) throws ApplicationDefinitionException {
+
+        Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
+
+        if (scalingDependentListArr == null) {
+            return scalingDependentLists;
+        }
+
+        for (String commaSeparatedScalingDependentList : scalingDependentListArr) {
+            scalingDependentLists.add(getScalingDependentList(commaSeparatedScalingDependentList));
+        }
+
+        return scalingDependentLists;
+    }
+
+    private static ScalingDependentList getScalingDependentList (String commaSeparatedScalingDependentList) throws ApplicationDefinitionException{
+
+        List<String> scalingDependentLists = new ArrayList<String>();
+
+        for (String scalingDependentList : Arrays.asList(commaSeparatedScalingDependentList.split(","))) {
+            scalingDependentList = scalingDependentList.trim();
+            if (!scalingDependentList.startsWith("cartridge.") && !scalingDependentList.startsWith("group.")) {
+                throw new ApplicationDefinitionException("Incorrect Scaling Dependent List specified, should start with 'cartridge.' or 'group.'");
+            }
+
+            scalingDependentLists.add(scalingDependentList);
+        }
+
+        return new ScalingDependentList(scalingDependentLists);
+    }
+
+    public static Set<ScalingDependentList> convertScalingDependentList(String[] scalingDependentListArr, GroupContext groupContext)
+            throws ApplicationDefinitionException {
+
+        Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
+
+        if (scalingDependentListArr == null) {
+            return scalingDependentLists;
+        }
+
+
+        for (String commaSeparatedScalingDependentList : scalingDependentListArr) {
+            // convertScalingDependentList all scaling dependents to aliases-based
+            List<String> components = Arrays.asList(commaSeparatedScalingDependentList.split(","));
+            scalingDependentLists.add(getScalingDependentList(components, groupContext));
+        }
+
+        return scalingDependentLists;
+    }
+
+    private static ScalingDependentList getScalingDependentList (List<String> components, GroupContext groupContext)
+            throws ApplicationDefinitionException {
+
+        List<String> aliasBasedComponents = new ArrayList<String>();
+
+        for (String component : components) {
+            component = component.trim();
+
+            String aliasBasedComponent;
+            if (component.startsWith("cartridge.")) {
+                String cartridgeType = component.substring(10);
+                aliasBasedComponent = getAliasForServiceType(cartridgeType, groupContext);
+                if (aliasBasedComponent == null) {
+                    throw new ApplicationDefinitionException("Unable convertScalingDependentList Scaling dependent list to alias-based; " +
+                            "cannot find the matching alias for Service type " + cartridgeType);
+                }
+
+                aliasBasedComponent = "cartridge.".concat(aliasBasedComponent);
+
+            } else if (component.startsWith("group.")) {
+                String groupName = component.substring(6);
+                aliasBasedComponent = getAliasForGroupName(groupName, groupContext);
+                if (aliasBasedComponent == null) {
+                    throw new ApplicationDefinitionException("Unable convertScalingDependentList Scaling dependent list to alias-based; " +
+                            "cannot find the matching alias for Group name " + groupName);
+                }
+
+                aliasBasedComponent = "group.".concat(aliasBasedComponent);
+
+            } else {
+                throw new ApplicationDefinitionException("Incorrect Scaling dependent list specified, " +
+                        "should start with 'cartridge.' or 'group.'");
+            }
+            aliasBasedComponents.add(aliasBasedComponent);
+        }
+
+        return new ScalingDependentList(aliasBasedComponents);
     }
 
     private static String getAliasForGroupName (String groupName, GroupContext groupContext) {
