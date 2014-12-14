@@ -27,10 +27,8 @@ import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.common.beans.cartridge.definition.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
@@ -60,10 +58,6 @@ import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.cartridge.definition.PersistenceBean;
-import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
-import org.apache.stratos.common.beans.cartridge.definition.VolumeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
@@ -272,23 +266,7 @@ public class StratosApiV41Utils {
 						continue;
 					}
 
-                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
-					cartridge.setType(cartridgeType);
-					cartridge.setProvider(cartridgeInfo.getProvider());
-					cartridge.setCategory(cartridgeInfo.getCategory());
-					cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-					cartridge.setDescription(cartridgeInfo.getDescription());
-					cartridge.setVersion(cartridgeInfo.getVersion());
-					cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-					cartridge.setHost(cartridgeInfo.getHostName());
-					cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-					cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-					//cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-					//cartridge.setCartridgeAlias("-");
-					cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-					cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
-
-					//cartridge.setActiveInstances(0);
+                    CartridgeDefinitionBean cartridge = convertCartridgeInfoToCartridgeDefBean(cartridgeType, cartridgeInfo);
 					cartridges.add(cartridge);
 				}
 			} else {
@@ -357,23 +335,7 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
-                    cartridge.setType(cartridgeType);
-                    cartridge.setProvider(cartridgeInfo.getProvider());
-                    cartridge.setCategory(cartridgeInfo.getCategory());
-                    cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-                    cartridge.setDescription(cartridgeInfo.getDescription());
-                    cartridge.setVersion(cartridgeInfo.getVersion());
-                    cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-                    cartridge.setHost(cartridgeInfo.getHostName());
-                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-                    //cartridge.setCartridgeAlias("-");
-                    cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
-
-                    //cartridge.setActiveInstances(0);
+                    CartridgeDefinitionBean cartridge = convertCartridgeInfoToCartridgeDefBean(cartridgeType, cartridgeInfo);
                     cartridges.add(cartridge);
 
 
@@ -408,6 +370,82 @@ public class StratosApiV41Utils {
         }
 
         return cartridges;
+    }
+
+    private static CartridgeDefinitionBean convertCartridgeInfoToCartridgeDefBean(String cartridgeType, CartridgeInfo cartridgeInfo) {
+        CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
+        cartridge.setType(cartridgeType);
+        cartridge.setProvider(cartridgeInfo.getProvider());
+        cartridge.setCategory(cartridgeInfo.getCategory());
+        cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+        cartridge.setDescription(cartridgeInfo.getDescription());
+        cartridge.setVersion(cartridgeInfo.getVersion());
+        cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+        cartridge.setHost(cartridgeInfo.getHostName());
+        cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+        cartridge.setIaasProvider(convertIaaSProvidersToIaaSProviderBeans(cartridgeInfo.getIaasProviders()));
+        cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
+        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
+        cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+        return cartridge;
+    }
+
+    private static List<IaasProviderBean> convertIaaSProvidersToIaaSProviderBeans(IaasProvider[] iaasProviders) {
+        if(iaasProviders == null) {
+            return null;
+        }
+
+        List<IaasProviderBean> iaasProviderBeans = new ArrayList<IaasProviderBean>();
+        for(IaasProvider iaasProvider : iaasProviders) {
+            IaasProviderBean iaasProviderBean = new IaasProviderBean();
+            iaasProviderBean.setProvider(iaasProvider.getProvider());
+            iaasProviderBean.setType(iaasProvider.getType());
+            iaasProviderBean.setClassName(iaasProvider.getClassName());
+            iaasProviderBean.setIdentity(iaasProvider.getIdentity());
+            iaasProviderBean.setCredential(iaasProvider.getCredential());
+            iaasProviderBean.setImageId(iaasProvider.getImage());
+            iaasProviderBean.setName(iaasProvider.getName());
+            iaasProviderBean.setNetworkInterfaces(
+                    convertNetworkInterfacesToNetworkInterfaceBeans(iaasProvider.getNetworkInterfaces()));
+            iaasProviderBeans.add(iaasProviderBean);
+        }
+        return iaasProviderBeans;
+    }
+
+    private static List<NetworkInterfaceBean> convertNetworkInterfacesToNetworkInterfaceBeans
+            (NetworkInterface[] networkInterfaces) {
+        if(networkInterfaces == null) {
+            return null;
+        }
+
+        List<NetworkInterfaceBean> networkInterfaceBeans = new ArrayList<NetworkInterfaceBean>();
+        for(NetworkInterface networkInterface : networkInterfaces) {
+            NetworkInterfaceBean networkInterfaceBean = new NetworkInterfaceBean();
+            networkInterfaceBean.setFixedIp(networkInterface.getFixedIp());
+            networkInterfaceBean.setNetworkUuid(networkInterface.getNetworkUuid());
+            networkInterfaceBean.setPortUuid(networkInterface.getPortUuid());
+            networkInterfaceBean.setFloatingNetworks(
+                    convertFlowtingNetworksToFloatingNetworkBeans(networkInterface.getFloatingNetworks()));
+            networkInterfaceBeans.add(networkInterfaceBean);
+        }
+        return networkInterfaceBeans;
+    }
+
+    private static List<FloatingNetworkBean> convertFlowtingNetworksToFloatingNetworkBeans
+            (FloatingNetworks floatingNetworks) {
+        if(floatingNetworks == null) {
+            return null;
+        }
+
+        List<FloatingNetworkBean> list = new ArrayList<FloatingNetworkBean>();
+        for(FloatingNetwork floatingNetwork : floatingNetworks.getFloatingNetworks()) {
+            FloatingNetworkBean floatingNetworkBean = new FloatingNetworkBean();
+            floatingNetworkBean.setName(floatingNetwork.getName());
+            floatingNetworkBean.setNetworkUuid(floatingNetwork.getNetworkUuid());
+            floatingNetworkBean.setFloatingIP(floatingNetwork.getFloatingIP());
+            list.add(floatingNetworkBean);
+        }
+        return list;
     }
 
     private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {

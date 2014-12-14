@@ -224,7 +224,8 @@ public class CloudControllerUtil {
 		carInfo.setPortMappings(cartridge.getPortMappings()
 		                                 .toArray(new PortMapping[cartridge.getPortMappings()
 		                                                                   .size()]));
-		carInfo.setAppTypes(cartridge.getAppTypeMappings()
+		carInfo.setIaasProviders(cartridge.getIaases().toArray(new IaasProvider[cartridge.getIaases().size()]));
+        carInfo.setAppTypes(cartridge.getAppTypeMappings()
                                 .toArray(new AppType[cartridge.getAppTypeMappings()
                                                                   .size()]));
         carInfo.setServiceGroup(cartridge.getServiceGroup());

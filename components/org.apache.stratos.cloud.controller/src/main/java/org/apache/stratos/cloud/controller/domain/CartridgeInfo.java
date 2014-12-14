@@ -67,6 +67,8 @@ public class CartridgeInfo {
 
     private String serviceGroup;
 
+    private IaasProvider[] iaasProviders;
+
     public CartridgeInfo(){
     	
     }
@@ -238,5 +240,13 @@ public class CartridgeInfo {
 
 	public void setCategory(String category) {
 		this.category = category;
+    }
+
+    public void setIaasProviders(IaasProvider[] iaasProviders) {
+        this.iaasProviders = iaasProviders;
+    }
+
+    public IaasProvider[] getIaasProviders() {
+        return iaasProviders;
     }
 }
