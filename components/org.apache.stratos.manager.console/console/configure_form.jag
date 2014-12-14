@@ -72,13 +72,13 @@ switch (formtype) {
 
     case "autoscalingpolicies":
         list_data = util.RESTCalls.getPolicyAutoScale();
-        if (list_data.autoscalePolicy && list_data.autoscalePolicy.length === 0) {
+        if (list_data && list_data.length === 0) {
             list_data = null;
         }else{
-            formDataEdit = list_data.autoscalePolicy;
-            for (specNumber in list_data.autoscalePolicy) {
-                if (list_data.autoscalePolicy[specNumber].id == elements.action) {
-                    formDataEdit = list_data.autoscalePolicy[specNumber];
+            formDataEdit = list_data;
+            for (specNumber in list_data) {
+                if (list_data[specNumber].id == elements.action) {
+                    formDataEdit = list_data[specNumber];
                 }
 
             }
@@ -106,9 +106,9 @@ switch (formtype) {
             list_data = null; //TODO endpoint doesn't return correct info
         }else{
             formDataEdit = list_data.kubernetesGroup;
-            for (specNumber in list_data.kubernetesGroup) {
-                if (list_data.kubernetesGroup[specNumber].groupId == elements.action) {
-                    formDataEdit = list_data.kubernetesGroup[specNumber];
+            for (specNumber in list_data) {
+                if (list_data[specNumber].groupId == elements.action) {
+                    formDataEdit = list_data[specNumber];
                 }
 
             }

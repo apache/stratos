@@ -91,74 +91,80 @@
             {{/if}}
 
             <div class="row general-table row-overide">
-                {{#each content_body.sections.kubernetesGroup}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-gears "></i>
-                        </div>
-                        <h2 class="truncate">{{groupId}} </h2>
+                {{#ifCond formtype "==" "docker"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-gears "></i>
+                            </div>
+                            <h2 class="truncate">{{groupId}} </h2>
 
-                        <div class="toggle-menu-description">{{description}}</div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
-                            </button>
-                        </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                            <div class="toggle-menu-description">{{description}}</div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
                                         data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                {{/each}}
-                {{#each content_body.sections}}
-                    <div class="block col-md-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa icon-{{type}} fa-inbox "></i>
-                        </div>
-                        <h2 class="truncate">{{displayName}} </h2>
-
-                        <div class="toggle-menu-description">{{description}}</div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/{{../formtype}}/{{type}}/" > Details
-                            </button>
-                        </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_"
-                                        data-url="{{url ""}}/configure/{{../formtype}}/{{type}}/" > Details
-                                </button>
-
-
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                            data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {{/each}}
-                {{#each content_body.sections.autoscalePolicy}}
-                    <div class="block col-md-4 col-xs-4 grid-group-item border-right">
-                        <div class="toggle-menu-icon">
-                            <i class="fa fa-expand "></i>
-                        </div>
-                        <h2 class="truncate">{{id}} </h2>
+                    {{/each}}
+                {{/ifCond}}
+                {{#ifCond formtype "==" "cartridges"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa icon-{{type}} fa-inbox "></i>
+                            </div>
+                            <h2 class="truncate">{{displayName}} </h2>
 
-                        <div class="toggle-menu-description">{{description}}</div>
-                        <div class="list-button" style="display: none;">
-                            <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                    data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
-                            </button>
+                            <div class="toggle-menu-description">{{description}}</div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
+                                        data-url="{{url ""}}/configure/{{../formtype}}/{{type}}/" > Details
+                                </button>
+                            </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_"
+                                            data-url="{{url ""}}/configure/{{../formtype}}/{{type}}/" > Details
+                                    </button>
+
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="bottom-bar-wrapper">
-                            <div class="bottom-bar">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                    {{/each}}
+                {{/ifCond}}
+                {{#ifCond formtype "==" "autoscalingpolicies"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 col-xs-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-expand "></i>
+                            </div>
+                            <h2 class="truncate">{{id}} </h2>
+
+                            <div class="toggle-menu-description">{{description}}</div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
                                         data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
                                 </button>
                             </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
+                                            data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                {{/each}}
+                    {{/each}}
+                {{/ifCond}}
             </div>
         </div>
     </div>
