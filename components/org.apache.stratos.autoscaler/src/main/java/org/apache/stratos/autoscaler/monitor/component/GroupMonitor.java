@@ -33,6 +33,7 @@ import org.apache.stratos.autoscaler.exception.application.DependencyBuilderExce
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
@@ -42,10 +43,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -269,14 +267,28 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         //Notifying children, if this group has scaling dependencies
         if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
         	// has dependencies. Notify children
-			if (aliasToActiveMonitorsMap != null
-			        && !aliasToActiveMonitorsMap.values().isEmpty()) {
-				for (String dependent : scalingDependencies) {
-					Monitor monitor = aliasToActiveMonitorsMap.get(dependent);
-					if (monitor instanceof GroupMonitor || monitor instanceof ApplicationMonitor) {
-	                    monitor.onParentScalingEvent(scalingEvent);
-	                }
-                }				
+			if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
+
+				for (ScalingDependentList scalingDependentList : scalingDependencies) {
+
+                    for(String scalingDependentListComponent : scalingDependentList.getScalingDependentListComponents()){
+
+                        if(scalingDependentListComponent.equals(scalingEvent.getId())){
+
+                            for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
+
+                                if(!scalingDependentListComponent.equals(scalingDependentListComponentInSelectedList)){
+
+                                    Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
+                                    if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
+                                        monitor.onParentScalingEvent(scalingEvent);
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
 			}
         }
     }
