@@ -350,9 +350,6 @@ public class RestCommandLineService {
             System.out.println("Multi-Tenant: " + cartridge.isMultiTenant());
             System.out.println("Hostname: " + cartridge.getHost());
 
-            System.out.println("-------------------------------------");
-            System.out.println("IaaS Providers: ");
-            System.out.println("-------------------------------------");
             if(cartridge.getIaasProvider() != null) {
                 RowMapper<IaasProviderBean> cartridgeMapper = new RowMapper<IaasProviderBean>() {
                     public String[] getData(IaasProviderBean row) {
@@ -369,11 +366,13 @@ public class RestCommandLineService {
                 IaasProviderBean[] iaasProviders = new IaasProviderBean[cartridgeList.size()];
                 iaasProviders = cartridge.getIaasProvider().toArray(iaasProviders);
 
+                System.out.println("-------------------------------------");
+                System.out.println("IaaS Providers: ");
+                System.out.println("-------------------------------------");
                 CliUtils.printTable(iaasProviders, cartridgeMapper, "Provider", "Type", "Name", "Image ID",
                         "Max Instance Limit");
             }
             System.out.println("-------------------------------------");
-
         } catch (Exception e) {
             String message = "Error in describing cartridge: " + cartridgeType;
             System.out.println(message);
