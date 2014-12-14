@@ -8,7 +8,7 @@
         "disable_properties": true,
         "disable_collapse": true
     },
-    "required": ["type", "provider", "host", "displayName", "description", "version", "multiTenant", "portMapping"],
+    "required": ["type","category", "provider", "host", "displayName", "description", "version", "multiTenant", "portMapping"],
     "properties": {
         "type": {
             "type": "string",
@@ -19,6 +19,17 @@
             "default": "php",
             "propertyOrder": 1,
             "maxItems": 1
+        },
+        "category": {
+            "type": "string",
+            "id": "root/category",
+            "id": "root/category",
+            "title": "Category",
+            "name": "Category",
+            "default": "framework",
+            "propertyOrder": 1,
+            "maxItems": 1,
+            "enum": ["application","framework","data","lb"]
         },
         "isPublic": {
             "type": "boolean",
