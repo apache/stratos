@@ -195,11 +195,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                     for(String scalingDependentListComponent : scalingDependentList.getScalingDependentListComponents()){
 
-                        if(scalingDependentListComponent.equals(scalingEvent.getId())){
+                        if(scalingDependentListComponent.equals("cartridge."
+                                + scalingEvent.getId().substring(0, scalingEvent.getId().indexOf('.')))
+                                || scalingDependentListComponent.equals("group."
+                                + scalingEvent.getId().substring(0, scalingEvent.getId().indexOf('.')))){
 
                             for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
 
-                                Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
+                                Monitor monitor = aliasToActiveMonitorsMap.get(
+                                        scalingDependentListComponentInSelectedList.substring(
+                                                scalingDependentListComponentInSelectedList.indexOf('.') + 1) +
+                                                "." + scalingEvent.getServiceName() +
+                                                ".domain");
                                 if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
                                     monitor.onParentScalingEvent(scalingEvent);
                                 }
