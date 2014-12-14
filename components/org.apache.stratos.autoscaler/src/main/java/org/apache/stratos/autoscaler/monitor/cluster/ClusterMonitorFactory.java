@@ -43,7 +43,7 @@ public class ClusterMonitorFactory {
      * @throws PolicyValidationException    when deployment policy is not valid
      * @throws PartitionValidationException when partition is not valid
      */
-    public static AbstractClusterMonitor getMonitor(Cluster cluster)
+    public static AbstractClusterMonitor getMonitor(Cluster cluster, boolean hasScalingDependents)
             throws PolicyValidationException, PartitionValidationException {
 
         AbstractClusterMonitor clusterMonitor;
@@ -52,20 +52,20 @@ public class ClusterMonitorFactory {
 //////        } else if (cluster.isLbCluster()) {
 //////            clusterMonitor = getVMLbClusterMonitor(cluster);
 //        } else {
-            clusterMonitor = getVMClusterMonitor(cluster);
+            clusterMonitor = getVMClusterMonitor(cluster, hasScalingDependents);
 //        }
 
         return clusterMonitor;
     }
 
-    private static VMClusterMonitor getVMClusterMonitor(Cluster cluster)
+    private static VMClusterMonitor getVMClusterMonitor(Cluster cluster, boolean hasScalingDependents)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
             return null;
         }
 
-        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster);
+        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster, hasScalingDependents);
 
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
@@ -156,7 +156,7 @@ public class ClusterMonitorFactory {
 //                cluster.getClusterId(), cluster.getServiceName(),  autoscalePolicy, minReplicas, maxReplicas);
 
 
-        KubernetesClusterMonitor dockerClusterMonitor = new KubernetesClusterMonitor(cluster);
+//        KubernetesClusterMonitor dockerClusterMonitor = new KubernetesClusterMonitor(cluster);
 
         //populate the members after restarting
 //        for (Member member : cluster.getMembers()) {
@@ -201,7 +201,8 @@ public class ClusterMonitorFactory {
 //            }
 //        }
 
-        log.info("KubernetesServiceClusterMonitor created: " + dockerClusterMonitor.toString());
-        return dockerClusterMonitor;
+//        log.info("KubernetesServiceClusterMonitor created: " + dockerClusterMonitor.toString());
+//        return dockerClusterMonitor;
+        return null;
     }
 }

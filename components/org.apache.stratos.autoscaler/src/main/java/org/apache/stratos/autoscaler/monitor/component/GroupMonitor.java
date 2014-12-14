@@ -22,8 +22,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
-import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
@@ -50,11 +48,9 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -74,6 +70,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     //Monitoring interval of the monitor
     private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
 
+    //has scaling dependents
+    protected boolean hasScalingDependents;
     /**
      * Constructor of GroupMonitor
      *
@@ -81,11 +79,12 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      * @throws DependencyBuilderException    throws when couldn't build the Topology
      * @throws TopologyInConsistentException throws when topology is inconsistent
      */
-    public GroupMonitor(Group group, String appId, List<String> parentInstanceId) throws DependencyBuilderException,
+    public GroupMonitor(Group group, String appId, List<String> parentInstanceId, boolean hasScalingDependents) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
+        this.hasScalingDependents = hasScalingDependents;
     }
 
     @Override
@@ -251,7 +250,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
-        if (hasGroupScalingDependent) {
+        if (hasScalingDependents) {
 
             //notify parent
             parent.onChildScalingEvent(scalingEvent);
