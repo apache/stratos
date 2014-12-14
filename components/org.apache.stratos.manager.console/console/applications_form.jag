@@ -93,10 +93,10 @@ switch (formtype) {
         if(list_data == null) {
             list_data = null;
         }else{
-            formDataEdit = list_data.deploymentPolicy;
-            for (specNumber in list_data.deploymentPolicy) {
-                if (list_data.deploymentPolicy[specNumber].id == elements.action) {
-                    formDataEdit = list_data.deploymentPolicy[specNumber];
+            formDataEdit = list_data;
+            for (specNumber in list_data) {
+                if (list_data[specNumber].id == elements.action) {
+                    formDataEdit = list_data[specNumber];
                 }
 
             }

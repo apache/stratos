@@ -52,7 +52,7 @@ RESTCalls = new function(){
     };
 
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
-        return this.send("POST","/deploymentPolicies",policyDefinition);
+        return this.send("POST","/applicationDeployments",policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
