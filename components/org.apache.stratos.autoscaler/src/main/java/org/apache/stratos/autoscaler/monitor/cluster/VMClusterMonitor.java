@@ -76,10 +76,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
-    protected VMClusterMonitor(Cluster cluster) {
+    //has scaling dependents
+    private boolean hasScalingDependents;
+
+    protected VMClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
         super(cluster);
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
-
+        this.hasScalingDependents = hasScalingDependents;
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
@@ -1137,18 +1140,21 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             partitionId = parentMonitorInstance.getPartitionId();
         }
         if (parentMonitorInstance != null) {
+
             ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
             if (clusterInstance != null) {
+
                 // Cluster instance is already there. No need to create one.
                 VMClusterContext clusterContext = (VMClusterContext) this.getClusterContext();
                 if(clusterContext == null) {
-                    clusterContext =
-                            ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
+
+                    clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
+                                    this.hasScalingDependents);
                     this.setClusterContext(clusterContext);
                 }
 
                 // create VMClusterContext and then add all the instanceContexts
-                clusterContext.addInstanceContext(parentInstanceId, cluster, this.hasGroupScalingDependent());
+                clusterContext.addInstanceContext(parentInstanceId, cluster, this.hasScalingDependents);
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
                     this.addInstance(clusterInstance);
                 }
@@ -1223,4 +1229,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
 
+    public boolean hasScalingDependents() {
+        return hasScalingDependents;
+    }
 }
