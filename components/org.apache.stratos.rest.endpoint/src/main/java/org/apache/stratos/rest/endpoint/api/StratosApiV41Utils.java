@@ -999,8 +999,8 @@ public class StratosApiV41Utils {
             throws RestAPIException {
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Starting to deploy application: [application-id] %s [deployment-policy-id] %s",
-                    deploymentPolicyBean.getApplicationPolicy().getApplicationId(), deploymentPolicyBean.getId()));
+            log.info(String.format("Starting to deploy application: [application-id] %s",
+                    deploymentPolicyBean.getApplicationPolicy().getApplicationId()));
         }
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();

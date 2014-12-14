@@ -72,14 +72,17 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private Cluster cluster;
     private int monitoringIntervalMilliseconds;
     private boolean isDestroyed;
+    //has scaling dependents
+    private boolean hasScalingDependents;
 
-    protected AbstractClusterMonitor(Cluster cluster) {
+    protected AbstractClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
 
         super();
         this.setCluster(new Cluster(cluster));
         this.serviceType = cluster.getServiceName();
         this.clusterId = cluster.getClusterId();
         this.monitoringStarted = new AtomicBoolean(false);
+        this.hasScalingDependents = hasScalingDependents;
     }
 
     protected abstract void readConfigurations();
@@ -412,5 +415,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
         this.cluster = cluster;
     }
 
-
+    public boolean hasScalingDependents() {
+        return hasScalingDependents;
+    }
 }

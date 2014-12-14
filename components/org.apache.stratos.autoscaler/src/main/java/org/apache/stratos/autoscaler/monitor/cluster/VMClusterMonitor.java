@@ -76,10 +76,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
-    protected VMClusterMonitor(Cluster cluster) {
-        super(cluster);
-        this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
 
+    protected VMClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
+        super(cluster, hasScalingDependents);
+        this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
@@ -1137,18 +1137,21 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             partitionId = parentMonitorInstance.getPartitionId();
         }
         if (parentMonitorInstance != null) {
+
             ClusterInstance clusterInstance = cluster.getInstanceContexts(parentInstanceId);
             if (clusterInstance != null) {
+
                 // Cluster instance is already there. No need to create one.
                 VMClusterContext clusterContext = (VMClusterContext) this.getClusterContext();
                 if(clusterContext == null) {
-                    clusterContext =
-                            ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster);
+
+                    clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
+                                    hasScalingDependents());
                     this.setClusterContext(clusterContext);
                 }
 
                 // create VMClusterContext and then add all the instanceContexts
-                clusterContext.addInstanceContext(parentInstanceId, cluster, this.hasGroupScalingDependent());
+                clusterContext.addInstanceContext(parentInstanceId, cluster, hasScalingDependents());
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
                     this.addInstance(clusterInstance);
                 }

@@ -449,13 +449,14 @@ public class AutoscalerTopologyEventReceiver {
                                     VMClusterContext clusterContext =
                                             (VMClusterContext) clusterMonitor.getClusterContext();
                                     if (clusterContext == null) {
-                                        clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster);
+                                        clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster,
+                                                clusterMonitor.hasScalingDependents());
                                         clusterMonitor.setClusterContext(clusterContext);
 
                                     }
                                     log.info(" Cluster monitor has scaling dependents"
-                                    		+ "  ["+clusterMonitor.hasGroupScalingDependent()+"] "); // TODO -- remove this log..
-                                    clusterContext.addInstanceContext(instanceId, cluster, clusterMonitor.hasGroupScalingDependent());
+                                    		+ "  ["+clusterMonitor.hasScalingDependents()+"] "); // TODO -- remove this log..
+                                    clusterContext.addInstanceContext(instanceId, cluster, clusterMonitor.hasScalingDependents());
                                     if (clusterMonitor.getInstance(instanceId) == null) {
                                         // adding the same instance in topology to monitor as a reference
                                         ClusterInstance clusterInstance1 = cluster.getInstanceContexts(instanceId);

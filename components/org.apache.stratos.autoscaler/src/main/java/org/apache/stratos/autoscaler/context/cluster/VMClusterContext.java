@@ -60,7 +60,7 @@ public class VMClusterContext extends AbstractClusterContext {
     protected AutoscalePolicy autoscalePolicy;
 
     public VMClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
-                            DeploymentPolicy deploymentPolicy) {
+                            DeploymentPolicy deploymentPolicy, boolean hasScalingDependents) {
 
         super(clusterId, serviceId);
         this.deploymentPolicy = deploymentPolicy;
@@ -121,7 +121,7 @@ public class VMClusterContext extends AbstractClusterContext {
         return null;
     }
 
-    public void addInstanceContext(String instanceId, Cluster cluster, boolean hasGroupScalingDependent)
+    public void addInstanceContext(String instanceId, Cluster cluster, boolean hasScalingDependents)
             throws PolicyValidationException, PartitionValidationException {
         ClusterLevelNetworkPartitionContext networkPartitionContext = null;
         ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
@@ -148,10 +148,10 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterInstance.getPartitionId() != null) {
             //Need to add partition Context based on the given one from the parent
             networkPartitionContext = addPartition(clusterInstance, cluster,
-                    networkPartitionContext, null, hasGroupScalingDependent);
+                    networkPartitionContext, null, hasScalingDependents);
         } else {
             networkPartitionContext = parseDeploymentPolicy(clusterInstance, cluster,
-                    policy, networkPartitionContext, hasGroupScalingDependent);
+                    policy, networkPartitionContext, hasScalingDependents);
         }
         if (!networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
             this.networkPartitionCtxts.put(clusterInstance.getNetworkPartitionId(),
@@ -212,7 +212,7 @@ public class VMClusterContext extends AbstractClusterContext {
             Cluster cluster,
             ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext,
             ChildLevelPartition childLevelPartition,
-            boolean hasGroupScalingDependent)
+            boolean hasScalingDependents)
             throws PolicyValidationException, PartitionValidationException {
         if (clusterLevelNetworkPartitionContext == null) {
             String msg =
@@ -253,7 +253,7 @@ public class VMClusterContext extends AbstractClusterContext {
             }
             clusterInstanceContext = new ClusterInstanceContext(clusterInstance.getInstanceId(),
                     clusterLevelNetworkPartitionContext.getPartitionAlgorithm(),
-                    minInstances, maxInstances, nPartitionId, clusterId, hasGroupScalingDependent);
+                    minInstances, maxInstances, nPartitionId, clusterId, hasScalingDependents);
         }
         String partitionId;
         if (childLevelPartition != null) {

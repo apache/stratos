@@ -18,22 +18,8 @@
  */
 package org.apache.stratos.cli;
 
-import java.lang.reflect.Type;
-import java.net.ConnectException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
@@ -42,31 +28,35 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.stratos.cli.exception.CommandException;
+import org.apache.stratos.cli.exception.ExceptionMapper;
+import org.apache.stratos.cli.utils.CliConstants;
+import org.apache.stratos.cli.utils.CliUtils;
+import org.apache.stratos.cli.utils.RowMapper;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.autoscaler.partition.Partition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.common.beans.cartridge.definition.PortMappingBean;
-import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.common.beans.ApplicationBean;
-import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.common.beans.topology.Member;
-import org.apache.stratos.cli.exception.CommandException;
-import org.apache.stratos.cli.exception.ExceptionMapper;
-import org.apache.stratos.cli.utils.CliConstants;
-import org.apache.stratos.cli.utils.CliUtils;
-import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import javax.net.ssl.*;
+import java.lang.reflect.Type;
+import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class RestCommandLineService {
 
@@ -100,7 +90,6 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
-    private static final String ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS = API_CONTEXT + "/subscriptions/cartridges";
     private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenants";
     private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/users";
     private static final String ENDPOINT_LIST_KUBERNETES_CLUSTERS = API_CONTEXT + "/kubernetesCluster";
@@ -111,6 +100,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
     private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{id}";
+    private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/clusters/";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
@@ -303,14 +293,14 @@ public class RestCommandLineService {
             }
 
             RowMapper<CartridgeDefinitionBean> cartridgeMapper = new RowMapper<CartridgeDefinitionBean>() {
-
                 public String[] getData(CartridgeDefinitionBean cartridge) {
-                    String[] data = new String[5];
+                    String[] data = new String[6];
                     data[0] = cartridge.getType();
-                    data[1] = cartridge.getDisplayName();
-                    data[2] = cartridge.getDescription();
-                    data[3] = cartridge.getVersion();
-                    data[4] = String.valueOf(cartridge.isMultiTenant());
+                    data[1] = cartridge.getCategory();
+                    data[2] = cartridge.getDisplayName();
+                    data[3] = cartridge.getDescription();
+                    data[4] = cartridge.getVersion();
+                    data[5] = String.valueOf(cartridge.isMultiTenant());
                     return data;
                 }
             };
@@ -319,7 +309,8 @@ public class RestCommandLineService {
             cartridges = cartridgeList.toArray(cartridges);
 
             System.out.println("Cartridges found:");
-            CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Description", "Version", "Multi-Tenant");
+            CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Category", "Name", "Description", "Version",
+                    "Multi-Tenant");
         } catch (Exception e) {
             String message = "Error in listing cartridges";
             System.out.println(message);
@@ -327,27 +318,61 @@ public class RestCommandLineService {
         }
     }
 
-    // Describe currently available multi tenant and single tenant cartridges
-    public void describeAvailableCartridges(String cartridgeType) throws CommandException {
+    public void describeCartridge(final String cartridgeType) throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
             }.getType();
+            // GET /cartridges/{cartridgeType} not available, hence using the list method
             List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     listType, "cartridges");
 
-            if ((cartridgeList == null) || (cartridgeList.size() == 0)) {
+            CartridgeDefinitionBean cartridge = null;
+            for(CartridgeDefinitionBean item : cartridgeList) {
+                if(item.getType().equals(cartridgeType)) {
+                    cartridge = item;
+                    break;
+                }
+            }
+
+            if (cartridge == null) {
                 System.out.println("Cartridge not found");
                 return;
             }
 
-            for (CartridgeDefinitionBean tmp : cartridgeList) {
-                if (tmp.getType().equalsIgnoreCase(cartridgeType)) {
-                    System.out.println("Cartridge:");
-                    System.out.println(getGson().toJson(tmp));
-                    return;
-                }
+            System.out.println("-------------------------------------");
+            System.out.println("Cartridge Information:");
+            System.out.println("-------------------------------------");
+            System.out.println("Type: " + cartridge.getType());
+            System.out.println("Category: " + cartridge.getCategory());
+            System.out.println("Name: " + cartridge.getDisplayName());
+            System.out.println("Description: " + cartridge.getDescription());
+            System.out.println("Version: " + cartridge.getVersion());
+            System.out.println("Multi-Tenant: " + cartridge.isMultiTenant());
+            System.out.println("Hostname: " + cartridge.getHost());
+
+            if(cartridge.getIaasProvider() != null) {
+                RowMapper<IaasProviderBean> cartridgeMapper = new RowMapper<IaasProviderBean>() {
+                    public String[] getData(IaasProviderBean row) {
+                        String[] data = new String[5];
+                        data[0] = row.getProvider();
+                        data[1] = row.getType();
+                        data[2] = row.getName();
+                        data[3] = row.getImageId();
+                        data[4] = String.valueOf(row.getMaxInstanceLimit());
+                        return data;
+                    }
+                };
+
+                IaasProviderBean[] iaasProviders = new IaasProviderBean[cartridgeList.size()];
+                iaasProviders = cartridge.getIaasProvider().toArray(iaasProviders);
+
+                System.out.println("-------------------------------------");
+                System.out.println("IaaS Providers: ");
+                System.out.println("-------------------------------------");
+                CliUtils.printTable(iaasProviders, cartridgeMapper, "Provider", "Type", "Name", "Image ID",
+                        "Max Instance Limit");
             }
-            System.out.println("Cartridge not found: " + cartridgeType);
+            System.out.println("-------------------------------------");
         } catch (Exception e) {
             String message = "Error in describing cartridge: " + cartridgeType;
             System.out.println(message);
@@ -355,83 +380,12 @@ public class RestCommandLineService {
         }
     }
 
-    // List subscribe cartridges
-//    public void listCartridgeSubscriptions(final boolean showURLs) throws CommandException {
-//        try {
-//            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS,
-//                    CartridgeList.class, "cartridge subscriptions");
-//
-//            if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
-//                    (cartridgeList.getCartridge().size() == 0)) {
-//                System.out.println("No cartridge subscriptions found");
-//                return;
-//            }
-//
-//            CartridgeList applicationCartridgeList = new CartridgeList();
-//
-//            // Filter out LB cartridges
-//            List<Cartridge> allCartridges = cartridgeList.getCartridge();
-//            for (Cartridge cartridge : allCartridges) {
-//                if (!cartridge.isLoadBalancer()) {
-//                    applicationCartridgeList.getCartridge().add(cartridge);
-//                }
-//            }
-//
-//            Cartridge[] cartridges = new Cartridge[applicationCartridgeList.getCartridge().size()];
-//            cartridges = applicationCartridgeList.getCartridge().toArray(cartridges);
-//
-//            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
-//
-//                public String[] getData(Cartridge cartridge) {
-//                    String[] data = showURLs ? new String[11] : new String[9];
-//                    data[0] = cartridge.getCartridgeType();
-//                    data[1] = cartridge.getDisplayName();
-//                    data[2] = cartridge.getIsPublic() ? "Public" : "Private";
-//                    data[3] = cartridge.getVersion();
-//                    data[4] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
-//                    data[5] = cartridge.getCartridgeAlias();
-//                    data[6] = cartridge.getStatus();
-//                    data[7] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-//                    data[8] = cartridge.getHostName();
-//                    if (showURLs) {
-//                        data[9] = getAccessURLs(cartridge);
-//                        data[10] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
-//                    }
-//                    return data;
-//
-//                }
-//            };
-//
-//            List<String> headers = new ArrayList<String>();
-//            headers.add("Type");
-//            headers.add("Name");
-//            headers.add("Accessibility");
-//            headers.add("Version");
-//            headers.add("Tenancy Model");
-//            headers.add("Alias");
-//            headers.add("Status");
-//            headers.add("Running Instances");
-//            headers.add("Host Name");
-//            if (showURLs) {
-//                headers.add("Access URL(s)");
-//                headers.add("Repo URL");
-//            }
-//
-//            System.out.println("Cartridge subscriptions found:");
-//            CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
-//        } catch (Exception e) {
-//            String message = "Error in listing cartridge subscriptions";
-//            System.out.println(message);
-//            log.error(message, e);
-//        }
-//    }
-
     // Lists subscribed cartridge info (from alias)
     public void describeCartridgeSubscription(String alias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             CartridgeWrapper cartridgeWrapper = (CartridgeWrapper) restClient.getEntity(ENDPOINT_GET_CARTRIDGE_OF_TENANT,
-                    CartridgeWrapper.class, alias, "cartridge subscription");
+                    CartridgeWrapper.class, "{id}", alias, "cartridge subscription");
 
             if((cartridgeWrapper == null) || (cartridgeWrapper.getCartridge() == null)) {
                 System.out.println("Cartridge subscription not found: " + alias);
@@ -538,11 +492,11 @@ public class RestCommandLineService {
                     break;
                 }
                 if (resultStringCluster != null && !resultStringCluster.isEmpty()) {
-                    
+
                     printLBs(resultStringCluster);
                 }
             }
-            
+
             System.out.println("==================================================");
 
         } catch (Exception e) {
@@ -1070,13 +1024,14 @@ public class RestCommandLineService {
 
     public void describeDeploymentPolicy(String id) throws CommandException {
         try {
-            DeploymentPolicy policy = (DeploymentPolicy) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY, DeploymentPolicy.class, id, "deployment policy");
-	        
+            DeploymentPolicy policy = (DeploymentPolicy) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
+                    DeploymentPolicy.class, "{id}", id, "deployment policy");
+
 	        if (policy == null) {
 	            System.out.println("Deployment policy not found: " + id);
 	            return;
 	        }
-	
+
 	        System.out.println("Deployment policy: " + id);
 	        System.out.println(getGson().toJson(policy));
 	    } catch (Exception e) {
@@ -1087,9 +1042,10 @@ public class RestCommandLineService {
     }
 
     public void describeAutoScalingPolicy(String id) throws CommandException {
-        try {           
-            AutoscalePolicy policy = (AutoscalePolicy) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY, AutoscalePolicy.class, id, "autoscaling policy");
-            
+        try {
+            AutoscalePolicy policy = (AutoscalePolicy) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY,
+                    AutoscalePolicy.class, "{id}", id, "autoscaling policy");
+
             if (policy == null) {
                 System.out.println("Autoscaling policy not found: " + id);
                 return;
@@ -1241,7 +1197,7 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
-    
+
     // This method helps to update cartridge subscription properties
     public void updateSubscritptionProperties(String alias, String subscriptionJson) {
         String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{subscriptionAlias}", alias);

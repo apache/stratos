@@ -46,8 +46,8 @@ public final class KubernetesServiceClusterMonitor extends KubernetesClusterMoni
 
     private String lbReferenceType;
 
-    public KubernetesServiceClusterMonitor(Cluster cluster) {
-        super(cluster);
+    public KubernetesServiceClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
+        super(cluster, hasScalingDependents);
         readConfigurations();
     }
 

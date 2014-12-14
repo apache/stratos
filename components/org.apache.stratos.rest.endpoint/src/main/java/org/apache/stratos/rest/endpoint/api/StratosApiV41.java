@@ -187,10 +187,12 @@ public class StratosApiV41 extends AbstractApi {
                                           @QueryParam("criteria") String criteria) throws RestAPIException {
         List<CartridgeDefinitionBean> cartridges = StratosApiV41Utils.
                 getCartridgesByFilter(filter, criteria, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridges.isEmpty() ?
-                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]));
-        return rb.build();
+        if(cartridges == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        CartridgeDefinitionBean[] cartridgeArray = cartridges.isEmpty() ?
+                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]);
+        return Response.ok().entity(cartridgeArray).build();
     }
 
     /**
@@ -208,9 +210,10 @@ public class StratosApiV41 extends AbstractApi {
     public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter,
                                          @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
-        ResponseBuilder rb = Response.ok();
-        rb.entity(cartridge);
-        return rb.build();
+        if(cartridge == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(cartridge).build();
     }
 
     /**

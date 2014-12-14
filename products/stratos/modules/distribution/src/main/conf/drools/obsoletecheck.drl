@@ -55,11 +55,11 @@ rule "Terminate Obsoleted Instances"
 dialect "mvel"
         when
             ctxt : ClusterLevelPartitionContext ()
-            eval(log.debug("Running obsolete instances rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
-            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Obsolete member count: " + ctxt.getObsoletedMembers().size()))
+            eval(log.debug("Running obsolete instances rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId() + " [cluster] " + clusterId))
+            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId +" Obsolete member count: " + ctxt.getObsoletedMembers().size()))
             eval(ctxt.getObsoletedMembers().keySet().size() > 0)
             memberId : String() from ctxt.getObsoletedMembers().keySet()
-            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " Member id: " + memberId))
+            eval(log.debug("[obsolete-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Member id: " + memberId))
         then
            delegator.terminateObsoleteInstance(memberId);
 end
@@ -69,10 +69,10 @@ dialect "mvel"
         when
             ctxt : ClusterLevelPartitionContext ()
             eval(log.debug("Running instances cleanup event sender rule: [partition] " + ctxt.getPartitionId() + " [network-partition] " + ctxt.getNetworkPartitionId()))
-            eval(log.debug("[instance-cleanup-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() +" Pending termination member count: " + ctxt.getTerminationPendingMembers().size()))
+            eval(log.debug("[instance-cleanup-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Pending termination member count: " + ctxt.getTerminationPendingMembers().size()))
             eval(ctxt.getTerminationPendingMembers().size() > 0)
             memberId : String() from ctxt.getTerminationPendingMembers()
-            eval(log.debug("[instance-cleanup-check ] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " Member id: " + memberId))
+            eval(log.debug("[instance-cleanup-check ] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Member id: " + memberId))
         then
            delegator.delegateInstanceCleanup(memberId);
 end

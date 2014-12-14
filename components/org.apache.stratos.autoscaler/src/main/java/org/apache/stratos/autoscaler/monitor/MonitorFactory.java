@@ -24,10 +24,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
-import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
@@ -38,15 +35,11 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
-import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
-import org.apache.stratos.messaging.domain.instance.Instance;
+import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -113,7 +106,19 @@ public class MonitorFactory {
         try {
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
-            groupMonitor = new GroupMonitor(group, appId, instanceIds);
+
+
+            boolean hasScalingDependents = false;
+
+            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
+
+                if(scalingDependentList.getScalingDependentListComponents().contains(context.getId())){
+
+                    hasScalingDependents = true;
+                }
+            }
+
+            groupMonitor = new GroupMonitor(group, appId, instanceIds, hasScalingDependents);
             groupMonitor.setAppId(appId);
             if (parentMonitor != null) {
                 groupMonitor.setParent(parentMonitor);
@@ -130,8 +135,8 @@ public class MonitorFactory {
             if (group.isGroupScalingEnabled()) {
                 groupMonitor.setGroupScalingEnabled(true);
             } else if (parentMonitor instanceof GroupMonitor) {
-                /*if (parentMonitor.hasGroupScalingDependent() || parentMonitor.getList --> not empty) {
-                    groupMonitor.setHasGroupScalingDependent(true);
+                /*if (parentMonitor.hasScalingDependents() || parentMonitor.getList --> not empty) {
+                    groupMonitor.setHasScalingDependents(true);
                 }*/
             }
         } finally {
@@ -250,7 +255,17 @@ public class MonitorFactory {
                 String msg = "[Service] " + serviceName + " cannot be found in the Topology";
                 throw new TopologyInConsistentException(msg);
             }
-            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster);
+
+            boolean hasScalingDependents = false;
+
+            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
+
+                if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))){
+
+                    hasScalingDependents = true;
+                }
+            }
+            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents);
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
@@ -264,11 +279,11 @@ public class MonitorFactory {
             }
 
             //setting the scaling dependent behaviour of the cluster monitor
-            if (parentMonitor.hasGroupScalingDependent() || (context.isGroupScalingEnabled())) {
-                clusterMonitor.setHasGroupScalingDependent(true);
-            } else {
-                clusterMonitor.setHasGroupScalingDependent(false);
-            }
+//            if (parentMonitor.hasScalingDependents() || (context.isGroupScalingEnabled())) {
+//                clusterMonitor.setHasScalingDependents(true);
+//            } else {
+//                clusterMonitor.setHasScalingDependents(false);
+//            }
             //Creating the instance of the cluster
             ((VMClusterMonitor)clusterMonitor).createClusterInstance(parentInstanceIds, cluster);
             //add it to autoscaler context

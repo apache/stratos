@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.autoscaler.monitor;
 
-import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.messaging.domain.instance.Instance;
 
@@ -39,8 +38,6 @@ public abstract class Monitor implements EventHandler {
     protected ParentComponentMonitor parent;
     //has startup dependents
     protected boolean hasStartupDependents;
-    //has scaling dependents
-    protected boolean hasGroupScalingDependent;
     //monitors map, key=InstanceId and value=ClusterInstance/GroupInstance/ApplicationInstance
     protected Map<String, Instance> instanceIdToInstanceMap;
 
@@ -117,30 +114,12 @@ public abstract class Monitor implements EventHandler {
     }
 
     /**
-     * Return whether this monitor has scaling dependencies
-     *
-     * @return startup dependencies exist or not
-     */
-    public boolean hasGroupScalingDependent() {
-        return hasGroupScalingDependent;
-    }
-
-    /**
      * To set whether monitor has any startup dependencies
      *
      * @param hasDependent
      */
     public void setHasStartupDependents(boolean hasDependent) {
         this.hasStartupDependents = hasDependent;
-    }
-
-    /**
-     * To set whether monitor has any scaling dependencies
-     *
-     * @param hasDependent
-     */
-    public void setHasGroupScalingDependent(boolean hasDependent) {
-        this.hasGroupScalingDependent = hasDependent;
     }
 
     /**
