@@ -35,6 +35,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
@@ -259,7 +260,7 @@ public class MonitorFactory {
 
             for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
 
-                if(scalingDependentList.getScalingDependentListComponents().contains(clusterId)){
+                if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + serviceName)){
 
                     hasScalingDependents = true;
                 }
