@@ -136,8 +136,8 @@ dialect "mvel"
 
                         log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
                         log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                        log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.isHasScalingDependants() + " [cluster] " + clusterId );
-                        if(clusterInstanceContext.isHasScalingDependants()) {
+                        log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
+                        if(clusterInstanceContext.hasScalingDependants()) {
 
                         	delegator.delegateScalingDependencyNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId(), factor);
                         } else {
