@@ -71,15 +71,14 @@ var formtype = elements.formtype;
 switch (formtype) {
     case "groups":
         list_data = util.RESTCalls.getGroups();
-        if (list_data.groups && list_data.groups.length === 0) {
+        if (list_data && list_data.length === 0) {
             list_data = null;
         }else{
-            formDataEdit = list_data.groups;
-            for (specNumber in list_data.groups) {
-                if (list_data.groups[specNumber].name == elements.action) {
-                    formDataEdit = list_data.groups[specNumber];
+            formDataEdit = list_data;
+            for (specNumber in list_data) {
+                if (list_data[specNumber].name == elements.action) {
+                    formDataEdit = list_data[specNumber];
                 }
-
             }
         }
         break;
