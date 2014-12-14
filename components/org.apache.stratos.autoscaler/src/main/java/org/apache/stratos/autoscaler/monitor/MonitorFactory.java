@@ -260,7 +260,7 @@ public class MonitorFactory {
 
             for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
 
-                if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + serviceName)){
+                if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))){
 
                     hasScalingDependents = true;
                 }
