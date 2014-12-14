@@ -276,12 +276,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
                             for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
 
-                                if(!scalingDependentListComponent.equals(scalingDependentListComponentInSelectedList)){
-
-                                    Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
-                                    if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
-                                        monitor.onParentScalingEvent(scalingEvent);
-                                    }
+                                Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
+                                if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
+                                    monitor.onParentScalingEvent(scalingEvent);
                                 }
                             }
                             break;
