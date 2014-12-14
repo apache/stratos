@@ -1158,7 +1158,7 @@ public class PojoConverter {
             }
             if (dependencyDefinitions.getScalingDependants() != null) {
                 String[] scalingDependents = new String[dependencyDefinitions.getScalingDependants().size()];
-                scalingDependents = dependencyDefinitions.getStartupOrders().toArray(scalingDependents);
+                scalingDependents = dependencyDefinitions.getScalingDependants().toArray(scalingDependents);
                 dependencyContext.setScalingDependents(scalingDependents);
             }
         }
