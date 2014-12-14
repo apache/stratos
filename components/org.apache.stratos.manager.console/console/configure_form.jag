@@ -87,21 +87,16 @@ switch (formtype) {
 
     case "cartridges":
         list_data = util.RESTCalls.getCartridges();
-
-        if (list_data.cartridge && list_data.cartridge.length === 0) {
+        if (list_data && list_data.length === 0) {
             list_data = null;
-        } else if (list_data.hasOwnProperty('cartridge')) {
-            //remove LB from current object
-            for (var i = 0; i < list_data.cartridge.length; i++) {
-                if (list_data.cartridge[i].loadBalancer === true) {
-                    list_data.cartridge.splice(i, 1);
-                    i = i - 1;
+        } else{
+            formDataEdit = list_data;
+            for (specNumber in list_data) {
+                if (list_data[specNumber].type == elements.action) {
+                    formDataEdit = list_data[specNumber];
                 }
+
             }
-            if(list_data.cartridge.length == 0 ){
-                list_data = null;
-            }
-        //TODO need to add listing with corrected JSON
         }
         break;
 
