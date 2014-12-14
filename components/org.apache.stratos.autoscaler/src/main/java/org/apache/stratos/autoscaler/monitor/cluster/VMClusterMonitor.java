@@ -76,13 +76,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private boolean hasPrimary;
     private float scalingFactorBasedOnDependencies = 1.0f;
 
-    //has scaling dependents
-    private boolean hasScalingDependents;
 
     protected VMClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
-        super(cluster);
+        super(cluster, hasScalingDependents);
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
-        this.hasScalingDependents = hasScalingDependents;
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
@@ -1149,12 +1146,12 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 if(clusterContext == null) {
 
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
-                                    this.hasScalingDependents);
+                                    hasScalingDependents());
                     this.setClusterContext(clusterContext);
                 }
 
                 // create VMClusterContext and then add all the instanceContexts
-                clusterContext.addInstanceContext(parentInstanceId, cluster, this.hasScalingDependents);
+                clusterContext.addInstanceContext(parentInstanceId, cluster, hasScalingDependents());
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
                     this.addInstance(clusterInstance);
                 }
@@ -1229,7 +1226,4 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
 
-    public boolean hasScalingDependents() {
-        return hasScalingDependents;
-    }
 }

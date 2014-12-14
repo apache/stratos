@@ -48,7 +48,7 @@ public class ClusterContextFactory {
 
     private static final Log log = LogFactory.getLog(ClusterContextFactory.class);
 
-    public static VMClusterContext getVMClusterContext(String instanceId, Cluster cluster)
+    public static VMClusterContext getVMClusterContext(String instanceId, Cluster cluster, boolean hasScalingDependents)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
@@ -67,7 +67,7 @@ public class ClusterContextFactory {
                                 getDeploymentPolicyByApplication(cluster.getAppId());
 
         return new VMClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
-                deploymentPolicy);
+                deploymentPolicy, hasScalingDependents);
     }
 
     /* public static VMClusterContext getVMLBClusterContext(Cluster cluster) throws PolicyValidationException {
