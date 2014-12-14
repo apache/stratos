@@ -28,8 +28,6 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
-import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -46,11 +44,13 @@ import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
 import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -119,35 +119,6 @@ public abstract class ParentComponentMonitor extends Monitor {
     }
 
     /**
-     * This will start the parallel dependencies at once from the top level.
-     * it will get invoked when the monitor starts up only.
-     */
-    public boolean startDependencyByInstanceCreation(String childId, String instanceId) throws
-            MonitorNotFoundException {
-        //start the first dependency
-        List<ApplicationChildContext> applicationContexts =
-                this.startupDependencyTree.getStarAbleDependencies(childId);
-        return startDependency(applicationContexts, instanceId);
-    }
-
-    /**
-     * This will start the parallel dependencies at once from the top level.
-     * it will get invoked when the monitor starts up only.
-     */
-    public void startDependency(ParentComponent component) {
-        //start the first dependency
-        List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
-                getStartAbleDependencies();
-        Collection<Instance> contexts = component.getInstanceIdToInstanceContextMap().values();
-        //traversing through all the Instance context and start them
-        List<String> instanceIds = new ArrayList<String>();
-        for (Instance context : contexts) {
-            instanceIds.add(context.getInstanceId());
-        }
-        startDependency(applicationContexts, instanceIds);
-    }
-
-    /**
      * This will get invoked based on the activation event of its one of the child
      *
      * @param id alias/clusterId of which receive the activated event
@@ -157,23 +128,16 @@ public abstract class ParentComponentMonitor extends Monitor {
                 .getStarAbleDependencies(id);
         List<String> instanceIds = new ArrayList<String>();
         instanceIds.add(instanceId);
-        boolean startup = startDependency(applicationContexts, instanceIds);
-        return startup;
-    }
-
-    public boolean startAllChildrenDependency(ParentComponent component, String instanceId)
-            throws TopologyInConsistentException {
-        /*List<ApplicationChildContext> applicationContexts = this.startupDependencyTree
-                .findAllChildrenOfAppContext(id);*/
-        return false;//startDependency(applicationContexts, instanceId);
+        return startDependency(applicationContexts, instanceIds);
     }
 
     /**
      * This will start the parallel dependencies at once from the top level
      * by traversing to find the terminated dependencies.
-     * it will get invoked when start a child monitor on termination of a sub tree
+     * it will get invoked when starting a child instance on termination of a sub tree
+     *
+     * @param instanceId instance id of the instance
      */
-
     public void startDependencyOnTermination(String instanceId) throws TopologyInConsistentException,
             MonitorNotFoundException, PolicyValidationException, PartitionValidationException {
 
@@ -219,6 +183,13 @@ public abstract class ParentComponentMonitor extends Monitor {
             if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
                 //to avoid if it is already started
                 startMonitor(this, context, instanceIds);
+            } else {
+                //starting a new instance of the child
+                Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
+                //Creating the new instance
+                for (String instanceId : instanceIds) {
+                    monitor.createInstanceOnDemand(instanceId);
+                }
             }
         }
 
@@ -275,11 +246,9 @@ public abstract class ParentComponentMonitor extends Monitor {
             removeInstanceFromFromInactiveMap(childId, instanceId);
             removeInstanceFromFromTerminatingMap(childId, instanceId);
 
-            boolean startDep;
+            boolean startDep = false;
             if (!aliasToActiveMonitorsMap.containsKey(childId) || !pendingMonitorsList.contains(childId)) {
                 startDep = startDependency(childId, instanceId);
-            } else {
-                startDep = startDependencyByInstanceCreation(childId, instanceId);
             }
 
             //Checking whether all the monitors got created
