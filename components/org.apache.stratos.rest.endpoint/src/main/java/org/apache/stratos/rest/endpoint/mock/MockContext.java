@@ -22,19 +22,19 @@ import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.manager.dto.Cartridge;
 import org.apache.stratos.manager.dto.SubscriptionInfo;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
-import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
-import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
-import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
-import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
-import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
+import org.apache.stratos.common.beans.UserInfoBean;
+import org.apache.stratos.common.beans.CartridgeInfoBean;
+import org.apache.stratos.common.beans.StratosApiResponse;
+import org.apache.stratos.common.beans.SubscriptionDomainRequest;
+import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.common.beans.autoscaler.partition.Partition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.common.beans.topology.Cluster;
+import org.apache.stratos.rest.endpoint.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.CarbonContext;
 import java.util.*;
@@ -493,7 +493,7 @@ public class MockContext {
     	int tenantId = getTenantId();
     	Map<String,Partition> partitions;
     	
-    	if(!partition.isPublic){
+    	if(!partition.isPublic()){
     		if (partitionMap.containsKey(tenantId)){
         		partitions = partitionMap.get(tenantId);
         	}
@@ -512,7 +512,7 @@ public class MockContext {
     		}
     	} 	
     	
-    	partitions.put(partition.id, partition);
+    	partitions.put(partition.getId(), partition);
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
         stratosApiResponse.setMessage("Successfully deployed partition");
         return stratosApiResponse;
@@ -551,7 +551,7 @@ public class MockContext {
     	int tenantId = getTenantId();
     	Map<String,DeploymentPolicy> policies;
     	
-    	if(!deploymentPolicy.isPublic){
+    	if(!deploymentPolicy.isPublic()){
     		if (deploymentPolicyMap.containsKey(tenantId)){
         		policies = deploymentPolicyMap.get(tenantId);
         	}
@@ -570,7 +570,7 @@ public class MockContext {
     		}
     	}
     	
-    	policies.put(deploymentPolicy.applicationPolicy.applicationId+UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
+    	policies.put(deploymentPolicy.getApplicationPolicy().getApplicationId() +UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
         stratosApiResponse.setMessage("Successfully deployed deployment policy definition");
         return stratosApiResponse;
@@ -622,7 +622,7 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).applicationPolicy.networkPartition.get(0).partitions.toArray(new Partition[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().get(0).getPartitions().toArray(new Partition[0]);
     		}
     	}
         	
@@ -631,7 +631,7 @@ public class MockContext {
         }
         //FIXME to parse thr all the NW partitions
     	return (deploymentPolicyMap.get(tenantId)).
-                get(deploymentPolicyId).applicationPolicy.networkPartition.get(0).partitions.toArray(new Partition[0]);
+                get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().get(0).getPartitions().toArray(new Partition[0]);
     }
 
     public ApplicationLevelNetworkPartition[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
@@ -644,14 +644,14 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).applicationPolicy.networkPartition.toArray(new ApplicationLevelNetworkPartition[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new ApplicationLevelNetworkPartition[0]);
     		}
     	}
         	
     	if(!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)){
     		throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         }
-    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).applicationPolicy.networkPartition.toArray(new ApplicationLevelNetworkPartition[0]);
+    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new ApplicationLevelNetworkPartition[0]);
     }
 
     public AutoscalePolicy[] getAutoscalePolicies()  throws RestAPIException{
@@ -813,9 +813,9 @@ public class MockContext {
     	}
         	  	
         Partition[] partitions = null;
-         for(ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.applicationPolicy.networkPartition){
-             if(networkPartition.id.equals(partitionGroupId)){
-                 partitions =  networkPartition.partitions.toArray(new Partition[0]);
+         for(ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.getApplicationPolicy().getNetworkPartition()){
+             if(networkPartition.getId().equals(partitionGroupId)){
+                 partitions =  networkPartition.getPartitions().toArray(new Partition[0]);
              }
          }
         if(partitions == null){
@@ -861,9 +861,9 @@ public class MockContext {
 		} else {
 			list = new ArrayList<SubscriptionDomain>();
 		}
-		for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean bean : request.domains) {
+		for (org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean bean : request.getDomains()) {
 			
-			SubscriptionDomain subscriptionDomain = new SubscriptionDomain(bean.domainName, bean.applicationContext);
+			SubscriptionDomain subscriptionDomain = new SubscriptionDomain(bean.getDomainName(), bean.getApplicationContext());
 			list.add(subscriptionDomain);
 		}
 		

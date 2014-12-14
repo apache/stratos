@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 public class RestClient implements GenericRestClient {
 
@@ -232,6 +233,17 @@ public class RestClient implements GenericRestClient {
         }
     }
 
+    public Object listEntity(String serviceEndpoint, Type type, String entityName) {
+        try {
+            return executeGet(serviceEndpoint, type);
+        } catch (Exception e) {
+            String message = String.format("Error in listing %s", entityName);
+            System.out.println(message);
+            logger.error(message, e);
+            return null;
+        }
+    }
+
     private int executePost(String serviceEndpoint, String postBody) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -248,6 +260,28 @@ public class RestClient implements GenericRestClient {
     }
 
     private Object executeGet(String serviceEndpoint, Class responseJsonClass) throws Exception {
+        String resultString = executeGet(serviceEndpoint);
+        if (resultString == null) {
+            return null;
+        }
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(resultString, responseJsonClass);
+    }
+
+    private Object executeGet(String serviceEndpoint, Type responseJsonType) throws Exception {
+        String resultString = executeGet(serviceEndpoint);
+        if (resultString == null) {
+            return null;
+        }
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        return gson.fromJson(resultString, responseJsonType);
+    }
+
+    private String executeGet(String serviceEndpoint) throws Exception {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpResponse response = null;
 
@@ -262,10 +296,7 @@ public class RestClient implements GenericRestClient {
                 CliUtils.printError(response);
                 return null;
             } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-                return gson.fromJson(resultString, responseJsonClass);
+                return CliUtils.getHttpResponseString(response);
             }
         } finally {
             httpClient.getConnectionManager().shutdown();

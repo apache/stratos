@@ -37,7 +37,7 @@ public class TenantInfoBean {
     private String email;
     private boolean active;
     private String successKey;
-    Calendar createdDate;
+    private Calendar createdDate;
     private String originatedService;
     private String usagePlan;
 

@@ -56,19 +56,19 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
-import org.apache.stratos.rest.endpoint.bean.GroupBean;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PersistenceBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.PropertyBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.VolumeBean;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.PersistenceBean;
+import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
+import org.apache.stratos.common.beans.cartridge.definition.VolumeBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.rest.endpoint.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import java.rmi.RemoteException;
@@ -613,7 +613,7 @@ public class StratosApiV41Utils {
     
     // Util methods for Deployment policies
     
-    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy[]
+    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy[]
     getDeploymentPolicies() throws RestAPIException {
 
         DeploymentPolicy[] deploymentPolicies = null;
@@ -632,7 +632,7 @@ public class StratosApiV41Utils {
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy
+    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy
     getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicy deploymentPolicy = null;
@@ -827,34 +827,34 @@ public class StratosApiV41Utils {
        
     // Util methods for clusters
     
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant(ConfigurationContext configurationContext) {
+    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenant(ConfigurationContext configurationContext) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), null);
-        ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
-                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        ArrayList<org.apache.stratos.common.beans.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
             clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
-                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
+                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
 
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenantAndCartridgeType(ConfigurationContext configurationContext,
+    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenantAndCartridgeType(ConfigurationContext configurationContext,
                                                                                                                 String cartridgeType) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), cartridgeType);
-        List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
-                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        List<org.apache.stratos.common.beans.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
             clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
-                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
+                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
 
@@ -995,12 +995,12 @@ public class StratosApiV41Utils {
      * @throws RestAPIException
      */
     public static void deployApplication(
-            org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
+            org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Starting to deploy application: [application-id] %s [deployment-policy-id] %s",
-                    deploymentPolicyBean.applicationPolicy.applicationId, deploymentPolicyBean.id));
+                    deploymentPolicyBean.getApplicationPolicy().getApplicationId(), deploymentPolicyBean.getId()));
         }
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -1114,7 +1114,7 @@ public class StratosApiV41Utils {
             String serviceType = clusterDataHolder.getServiceType();
             TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
             Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            applicationBean.clusters.add(PojoConverter.populateClusterPojos(topLevelCluster, entry.getKey()));
+            applicationBean.getClusters().add(PojoConverter.populateClusterPojos(topLevelCluster, entry.getKey()));
         }
     }
 

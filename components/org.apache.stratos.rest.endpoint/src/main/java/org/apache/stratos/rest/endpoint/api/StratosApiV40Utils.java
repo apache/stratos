@@ -47,16 +47,16 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
-import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.rest.endpoint.bean.util.converter.PojoConverter;
+import org.apache.stratos.common.beans.StratosApiResponse;
+import org.apache.stratos.common.beans.SubscriptionDomainRequest;
+import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.common.beans.autoscaler.partition.Partition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.rest.endpoint.util.converter.PojoConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
 import javax.ws.rs.core.Response;
@@ -191,7 +191,7 @@ public class StratosApiV40Utils {
         }
 
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully deployed partition definition with id " + partitionBean.id);
+        stratosApiResponse.setMessage("Successfully deployed partition definition with id " + partitionBean.getId());
         return stratosApiResponse;
     }
 
@@ -226,7 +226,7 @@ public class StratosApiV40Utils {
     }
 
     public static StratosApiResponse deployDeploymentPolicy(
-            org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
+            org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
             throws RestAPIException {
 
         String policyId = null;
@@ -394,7 +394,7 @@ public class StratosApiV40Utils {
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy[]
+    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy[]
     getDeploymentPolicies () throws RestAPIException {
 
         DeploymentPolicy [] deploymentPolicies = null;
@@ -414,7 +414,7 @@ public class StratosApiV40Utils {
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy[]
+    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy[]
     getDeploymentPolicies (String cartridgeType) throws RestAPIException {
 
         DeploymentPolicy [] deploymentPolicies = null;
@@ -440,7 +440,7 @@ public class StratosApiV40Utils {
         return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy
+    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy
     getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicy deploymentPolicy = null;
@@ -969,7 +969,7 @@ public class StratosApiV40Utils {
         return cartridgeSubsciptionManager.getCartridgeSubscription(ApplicationManagementUtil.getTenantId(configurationContext), alias);
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
+    public static org.apache.stratos.common.beans.topology.Cluster getCluster (String cartridgeType, String subscriptionAlias, ConfigurationContext configurationContext) throws RestAPIException {
 
         Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(configurationContext),
                 subscriptionAlias);
@@ -980,49 +980,49 @@ public class StratosApiV40Utils {
         }
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
+    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenant (ConfigurationContext configurationContext) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), null);
-        ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
-                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        ArrayList<org.apache.stratos.common.beans.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
             clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
-                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
+                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
 
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
+    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenantAndCartridgeType (ConfigurationContext configurationContext,
                                                                                                                  String cartridgeType) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
                 getTenantId(configurationContext), cartridgeType);
-        List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters =
-                new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        List<org.apache.stratos.common.beans.topology.Cluster> clusters =
+                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
             clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster =
-                new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters.size()];
+        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
+                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
 
     }
 
-    public static org.apache.stratos.rest.endpoint.bean.topology.Cluster[] getClustersForCartridgeType(String cartridgeType) {
+    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForCartridgeType(String cartridgeType) {
 
         Set<Cluster> clusterSet = TopologyClusterInformationModel
                 .getInstance()
                 .getClusters(cartridgeType);
-        List<org.apache.stratos.rest.endpoint.bean.topology.Cluster> clusters = new ArrayList<org.apache.stratos.rest.endpoint.bean.topology.Cluster>();
+        List<org.apache.stratos.common.beans.topology.Cluster> clusters = new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
             clusters.add(PojoConverter.populateClusterPojos(cluster, null));
         }
-        org.apache.stratos.rest.endpoint.bean.topology.Cluster[] arrCluster = new org.apache.stratos.rest.endpoint.bean.topology.Cluster[clusters
+        org.apache.stratos.common.beans.topology.Cluster[] arrCluster = new org.apache.stratos.common.beans.topology.Cluster[clusters
                 .size()];
         arrCluster = clusters.toArray(arrCluster);
         return arrCluster;
@@ -1166,17 +1166,17 @@ public class StratosApiV40Utils {
         try {
             int tenantId = ApplicationManagementUtil.getTenantId(configurationContext);
 
-            for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.domains) {
-                boolean isDomainExists = isSubscriptionDomainExists(configurationContext, cartridgeType, subscriptionAlias, subscriptionDomain.domainName);
+            for (org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.getDomains()) {
+                boolean isDomainExists = isSubscriptionDomainExists(configurationContext, cartridgeType, subscriptionAlias, subscriptionDomain.getDomainName());
                 if (isDomainExists) {
-                    String message = "Subscription domain " + subscriptionDomain.domainName + " exists";
+                    String message = "Subscription domain " + subscriptionDomain.getDomainName() + " exists";
                     throw new RestAPIException(Status.INTERNAL_SERVER_ERROR, message);
                 }
             }
 
-            for (org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.domains) {
+            for (org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean subscriptionDomain : request.getDomains()) {
                 cartridgeSubsciptionManager.addSubscriptionDomain(tenantId, subscriptionAlias,
-                        subscriptionDomain.domainName, subscriptionDomain.applicationContext);
+                        subscriptionDomain.getDomainName(), subscriptionDomain.getApplicationContext());
             }
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -1195,7 +1195,7 @@ public class StratosApiV40Utils {
             SubscriptionDomainBean subscriptionDomain = PojoConverter.populateSubscriptionDomainPojo(cartridgeSubsciptionManager.getSubscriptionDomain(tenantId,
                     subscriptionAlias, domain));
 
-            if (subscriptionDomain.domainName != null) {
+            if (subscriptionDomain.getDomainName() != null) {
                 return true;
             } else {
                 return false;
