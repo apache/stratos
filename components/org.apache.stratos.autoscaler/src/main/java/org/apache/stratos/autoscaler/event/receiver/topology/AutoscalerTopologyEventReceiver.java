@@ -428,7 +428,7 @@ public class AutoscalerTopologyEventReceiver {
 
                ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
                        (ClusterInstanceCreatedEvent) event;
-               VMClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+               AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
                        getClusterMonitor(clusterInstanceCreatedEvent.getClusterId());
                ClusterInstance clusterInstance = ((ClusterInstanceCreatedEvent) event).
                                                     getClusterInstance();
