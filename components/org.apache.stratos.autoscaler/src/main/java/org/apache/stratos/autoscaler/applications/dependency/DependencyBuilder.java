@@ -161,30 +161,30 @@ public class DependencyBuilder {
      * Utility method to build scaling dependencies
      * 
      */
-	public Set<String> buildScalingDependencies(ParentComponent component) {
-		log.info(" ******* in build scaling dependencies ************ "); // TODO - remove
-		Set<String> scalingDependencies = new HashSet<String>();
-		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
-			log.info(" ******* in build scaling dependencies 22 ************ "); // TODO - remove
-		for (String string : component.getDependencyOrder().getScalingDependents()) {
-	    
-			log.info(" ******* in build scaling dependencies 33 ************ "); // TODO - remove
-		        if (string.startsWith(Constants.GROUP + ".")) {
-		            //getting the group alias            
-		            scalingDependencies.add(getGroupFromStartupOrder(string));
-		        } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
-		            //getting the cluster alias
-		            String id = getClusterFromStartupOrder(string);
-		            //getting the cluster-id from cluster alias
-		            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
-		            scalingDependencies.add(clusterDataHolder.getClusterId());
-		        } else {
-		            log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
-		        }
-        }
-		}
-	    return scalingDependencies;
-    }
+//	public Set<String> buildScalingDependencies(ParentComponent component) {
+//		log.info(" ******* in build scaling dependencies ************ "); // TODO - remove
+//		Set<String> scalingDependencies = new HashSet<String>();
+//		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
+//			log.info(" ******* in build scaling dependencies 22 ************ "); // TODO - remove
+//		for (String string : component.getDependencyOrder().getScalingDependents()) {
+//
+//			log.info(" ******* in build scaling dependencies 33 ************ "); // TODO - remove
+//		        if (string.startsWith(Constants.GROUP + ".")) {
+//		            //getting the group alias
+//		            scalingDependencies.add(getGroupFromStartupOrder(string));
+//		        } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
+//		            //getting the cluster alias
+//		            String id = getClusterFromStartupOrder(string);
+//		            //getting the cluster-id from cluster alias
+//		            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
+//		            scalingDependencies.add(clusterDataHolder.getClusterId());
+//		        } else {
+//		            log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
+//		        }
+//        }
+//		}
+//	    return scalingDependencies;
+//    }
 
     /**
      * Utility method to get the group alias from the startup order Eg: group.mygroup

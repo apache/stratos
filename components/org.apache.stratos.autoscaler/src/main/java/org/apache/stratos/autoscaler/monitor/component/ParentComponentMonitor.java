@@ -44,6 +44,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.applications.ParentComponent;
+import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
@@ -65,7 +66,7 @@ public abstract class ParentComponentMonitor extends Monitor {
 	//The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
-    protected Set<String> scalingDependencies;
+    protected Set<ScalingDependentList> scalingDependencies;
     //monitors map, key=GroupAlias/clusterId and value=GroupMonitor/AbstractClusterMonitor
     protected Map<String, Monitor> aliasToActiveMonitorsMap;
     //Pending monitors list
@@ -87,7 +88,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         //Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
         //Building the scaling dependencies for this monitor within the immediate children
-        scalingDependencies  =  DependencyBuilder.getInstance().buildScalingDependencies(component);
+        scalingDependencies  =  component.getDependencyOrder().getScalingDependents();
         //Create the executor service with identifier and thread pool size
 	    executorService= StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
     }
@@ -702,7 +703,7 @@ private class MonitorAdder implements Runnable {
     }
 }
 
-	public Set<String> getScalingDependencies() {
+	public Set<ScalingDependentList> getScalingDependencies() {
 		return scalingDependencies;
 	}
 }
