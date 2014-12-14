@@ -59,8 +59,8 @@ dialect "mvel"
         autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
 
         eval(log.debug("Running minimum rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId()))
-        eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " Non terminated member count: " + clusterInstanceContext.getNonTerminatedMemberCount()))
-        eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " Minimum member count: " + clusterInstanceContext.getMinInstanceCount()))
+        eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " Non terminated member count: " + clusterInstanceContext.getNonTerminatedMemberCount()))
+        eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " Minimum member count: " + clusterInstanceContext.getMinInstanceCount()))
 
         eval ( (isPrimary && (primaryMemberCount < clusterInstanceContext.getMinInstanceCount())) || ( !isPrimary && (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMinInstanceCount())) )
 
@@ -70,11 +70,11 @@ dialect "mvel"
         if(isPrimary){
 
             additionalInstances = clusterInstanceContext.getMinInstanceCount() - primaryMemberCount;
-            log.debug("[min-check] true [primary] true [primary member count] " + primaryMemberCount + " [cluster] " + clusterInstanceContext.getClusterId());
+            log.debug("[min-check] true [primary] true [primary member count] " + primaryMemberCount + " [cluster] " + clusterId);
         } else {
 
             additionalInstances = clusterInstanceContext.getMinInstanceCount() - clusterInstanceContext.getNonTerminatedMemberCount();
-            log.debug("[min-check] true [primary] false [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount()+ " [cluster] " + clusterInstanceContext.getClusterId());
+            log.debug("[min-check] true [primary] false [non terminated member count] " + clusterInstanceContext.getNonTerminatedMemberCount()+ " [cluster] " + clusterId);
         }
 
         int count = 0;
@@ -84,8 +84,8 @@ dialect "mvel"
             ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
              if(partitionContext != null){
 
-                log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterInstanceContext.getClusterId());
-                log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId + " [cluster] " + clusterInstanceContext.getClusterId());
+                log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);
+                log.debug("[min-check] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId);
                 delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
 
                 count++;
