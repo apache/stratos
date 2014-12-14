@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.autoscaler.status.processor.group;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -37,6 +39,8 @@ import java.util.Map;
  * This will be used to process the group status
  */
 public abstract class GroupStatusProcessor extends StatusProcessor {
+    private static final Log log = LogFactory.getLog(GroupStatusProcessor.class);
+
 
     /**
      * Message processing and delegating logic.
@@ -111,10 +115,15 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context != null) {
+                    if(log.isInfoEnabled()) {
+                        log.info("Checking the status of cluster " + clusterId + " instance status is: " +
+                                context.getStatus().toString());
+                    }
                     if(context.getStatus() == status) {
                         clusterStat = true;
                     } else {
                         clusterStat = false;
+                        return clusterStat;
                     }
                 } else {
                     //Checking whether non-existent context is for a terminated state change

@@ -59,11 +59,11 @@ import java.util.concurrent.ExecutorService;
  * control them according to the dependencies respectively.
  */
 public abstract class ParentComponentMonitor extends Monitor {
-	private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
+    private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
     private static final String IDENTIFIER = "Auto-Scaler";
     private static final int THREAD_POOL_SIZE = 10;
 
-	//The monitors dependency tree with all the start-able/kill-able dependencies
+    //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
     protected Set<ScalingDependentList> scalingDependencies;
@@ -75,8 +75,8 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected Map<String, List<String>> inactiveInstancesMap;
     //terminating map, key=alias, value instanceIds
     protected Map<String, List<String>> terminatingInstancesMap;
-	//Executor service to maintain the thread pool
-	private ExecutorService executorService;
+    //Executor service to maintain the thread pool
+    private ExecutorService executorService;
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new ConcurrentHashMap<String, Monitor>();
@@ -181,11 +181,18 @@ public abstract class ParentComponentMonitor extends Monitor {
         List<ApplicationChildContext> applicationContexts = this.startupDependencyTree.
                 getStarAbleDependenciesByTermination(this, instanceId);
         for (ApplicationChildContext context : applicationContexts) {
-            if (context instanceof GroupChildContext) {
-                GroupMonitor groupMonitor = (GroupMonitor) this.aliasToActiveMonitorsMap.
-                                                        get(context.getId());
-            } else if(context instanceof ClusterChildContext) {
-
+            if (log.isDebugEnabled()) {
+                log.debug("Dependency check for the Group " + context.getId() + " started");
+            }
+            //FIXME whether to start new monitor or throw exception
+            if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+                String msg = "Required Monitor cannot be fount in the hierarchy";
+                throw new MonitorNotFoundException(msg);
+            } else {
+                //starting a new instance of the child
+                Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
+                //Creating the new instance
+                monitor.createInstanceOnDemand(instanceId);
             }
         }
 
@@ -296,8 +303,8 @@ public abstract class ParentComponentMonitor extends Monitor {
         terminationList = this.startupDependencyTree.getTerminationDependencies(childId);
         //Need to notify the parent about the status  change from Active-->Inactive
         // TODO to make app also inaction if (this.parent != null) {
-                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
-                        process(id, appId, instanceId);
+        ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().
+                process(id, appId, instanceId);
 
         //TODO checking whether terminating them in reverse order,
         // TODO if so can handle it in the parent event.
@@ -372,7 +379,7 @@ public abstract class ParentComponentMonitor extends Monitor {
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
         //Make sure that all the dependents have been terminated properly to start the recovery
         if (terminationList != null) {
-            allDependentTerminated = allDependentTerminated(terminationList);
+            allDependentTerminated = allDependentTerminated(terminationList, instanceId);
         }
         log.info("Calculating the dependencies to be started upon the termination of the " +
                 "group/cluster " + eventId + " for [instance] " + instanceId);
@@ -413,17 +420,20 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     }
 
-    private boolean allDependentTerminated(List<ApplicationChildContext> terminationList) {
+    private boolean allDependentTerminated(List<ApplicationChildContext> terminationList, String instanceId) {
         boolean allDependentTerminated = false;
         for (ApplicationChildContext context1 : terminationList) {
-            if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
-                log.warn("Dependent [monitor] " + context1.getId() + " not in the correct state");
+            if (this.inactiveInstancesMap.containsKey(context1.getId()) &&
+                    this.inactiveInstancesMap.get(context1.getId()).contains(instanceId)
+                    || this.terminatingInstancesMap.containsKey(context1.getId()) &&
+                    this.terminatingInstancesMap.get(context1.getId()).contains(instanceId)) {
+                log.info("Waiting for the [dependent] " + context1.getId() + " [instance] " +
+                        instanceId + "to be terminated...");
                 allDependentTerminated = false;
                 return allDependentTerminated;
-            } else if (this.inactiveInstancesMap.containsKey(context1.getId())) {
-                log.info("Waiting for the [dependent] " + context1.getId() + " to be terminated...");
-                allDependentTerminated = false;
-                return allDependentTerminated;
+            } else if (this.aliasToActiveMonitorsMap.get(context1.getId()).getInstance(instanceId) != null) {
+                log.info("[Dependent] " + context1.getId() + "[Instance] " + instanceId +
+                        "has not been started to terminate yet. Hence waiting....");
             } else {
                 allDependentTerminated = true;
             }
@@ -437,16 +447,16 @@ public abstract class ParentComponentMonitor extends Monitor {
         boolean parentsTerminated = false;
         for (ApplicationChildContext context1 : parentContexts) {
             if (this.inactiveInstancesMap.containsKey(context1.getId()) &&
-                    this.inactiveInstancesMap.get(context1.getId()).contains(instanceId)) {
+                    this.inactiveInstancesMap.get(context1.getId()).contains(instanceId)
+                    || this.terminatingInstancesMap.containsKey(context1.getId()) &&
+                    this.terminatingInstancesMap.get(context1.getId()).contains(instanceId)) {
                 log.info("Waiting for the [Parent Monitor] " + context1.getId()
                         + " to be terminated");
                 parentsTerminated = false;
                 return parentsTerminated;
-            } else if (this.aliasToActiveMonitorsMap.containsKey(context1.getId())) {
-                if (parentsTerminated) {
-                    log.warn("Found the Dependent [monitor] " + context1.getId()
-                            + " in the active list wrong state");
-                }
+            } else if (this.aliasToActiveMonitorsMap.get(context1.getId()).getInstance(instanceId) != null) {
+                log.info("[Dependent Parent] " + context1.getId() + "[Instance] " + instanceId +
+                        "has not been started to terminate yet. Hence waiting....");
             } else {
                 log.info("[Parent Monitor] " + context1.getId()
                         + " has already been terminated");
@@ -553,13 +563,13 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected synchronized void startMonitor(ParentComponentMonitor parent,
                                              ApplicationChildContext context, List<String> instanceId) {
 
-	    if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
-		    pendingMonitorsList.add(context.getId());
-		    executorService.submit(new MonitorAdder(parent, context, this.appId, instanceId));
-		    if (log.isDebugEnabled()) {
-			    log.debug(String.format("Monitor Adder has been added: [cluster] %s ",context.getId()));
-		    }
-	    }
+        if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+            pendingMonitorsList.add(context.getId());
+            executorService.submit(new MonitorAdder(parent, context, this.appId, instanceId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Monitor Adder has been added: [cluster] %s ", context.getId()));
+            }
+        }
 
     }
 
@@ -634,76 +644,76 @@ public abstract class ParentComponentMonitor extends Monitor {
         return autoscaleAlgorithm;
     }
 
-private class MonitorAdder implements Runnable {
-    private ApplicationChildContext context;
-    private ParentComponentMonitor parent;
-    private String appId;
-    private List<String> instanceId;
-
-    public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
-                        String appId, List<String> instanceId) {
-        this.parent = parent;
-        this.context = context;
-        this.appId = appId;
-        this.instanceId = instanceId;
+    public Set<ScalingDependentList> getScalingDependencies() {
+        return scalingDependencies;
     }
 
-    public void run() {
-        Monitor monitor = null;
-        int retries = 5;
-        boolean success = false;
-        while (!success && retries != 0) {
+    private class MonitorAdder implements Runnable {
+        private ApplicationChildContext context;
+        private ParentComponentMonitor parent;
+        private String appId;
+        private List<String> instanceId;
+
+        public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
+                            String appId, List<String> instanceId) {
+            this.parent = parent;
+            this.context = context;
+            this.appId = appId;
+            this.instanceId = instanceId;
+        }
+
+        public void run() {
+            Monitor monitor = null;
+            int retries = 5;
+            boolean success = false;
+            while (!success && retries != 0) {
                 /*//TODO remove thread.sleep, exectutor service
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e1) {
                 }*/
 
+                if (log.isInfoEnabled()) {
+                    log.info("Monitor is going to be started for [group/cluster] "
+                            + context.getId());
+                }
+                try {
+                    monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
+                } catch (DependencyBuilderException e) {
+                    String msg = "Monitor creation failed for: " + context.getId();
+                    log.warn(msg, e);
+                    retries--;
+                } catch (TopologyInConsistentException e) {
+                    String msg = "Monitor creation failed for: " + context.getId();
+                    log.warn(msg, e);
+                    retries--;
+                } catch (PolicyValidationException e) {
+                    String msg = "Monitor creation failed for: " + context.getId();
+                    log.warn(msg, e);
+                    retries--;
+                } catch (PartitionValidationException e) {
+                    String msg = "Monitor creation failed for: " + context.getId();
+                    log.warn(msg, e);
+                    retries--;
+                }
+                success = true;
+            }
+
+            if (monitor == null) {
+                String msg = "Monitor creation failed, even after retrying for 5 times, "
+                        + "for : " + context.getId();
+                log.error(msg);
+                //TODO parent.notify();
+                throw new RuntimeException(msg);
+            }
+
+            aliasToActiveMonitorsMap.put(context.getId(), monitor);
+            pendingMonitorsList.remove(context.getId());
+            // ApplicationBuilder.
             if (log.isInfoEnabled()) {
-                log.info("Monitor is going to be started for [group/cluster] "
-                        + context.getId());
+                log.info(String.format("Monitor has been added successfully for: %s",
+                        context.getId()));
             }
-            try {
-                monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
-            } catch (DependencyBuilderException e) {
-                String msg = "Monitor creation failed for: " + context.getId();
-                log.warn(msg, e);
-                retries--;
-            } catch (TopologyInConsistentException e) {
-                String msg = "Monitor creation failed for: " + context.getId();
-                log.warn(msg, e);
-                retries--;
-            } catch (PolicyValidationException e) {
-                String msg = "Monitor creation failed for: " + context.getId();
-                log.warn(msg, e);
-                retries--;
-            } catch (PartitionValidationException e) {
-                String msg = "Monitor creation failed for: " + context.getId();
-                log.warn(msg, e);
-                retries--;
-            }
-            success = true;
-        }
-
-        if (monitor == null) {
-            String msg = "Monitor creation failed, even after retrying for 5 times, "
-                    + "for : " + context.getId();
-            log.error(msg);
-            //TODO parent.notify();
-            throw new RuntimeException(msg);
-        }
-
-        aliasToActiveMonitorsMap.put(context.getId(), monitor);
-        pendingMonitorsList.remove(context.getId());
-        // ApplicationBuilder.
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Monitor has been added successfully for: %s",
-                    context.getId()));
         }
     }
-}
-
-	public Set<ScalingDependentList> getScalingDependencies() {
-		return scalingDependencies;
-	}
 }
