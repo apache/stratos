@@ -740,13 +740,12 @@ public class TopologyBuilder {
         }
         
         Member member = cluster.getMember(memberId);
-        String instanceId = member.getInstanceId();
-
 		if (member == null) {
-			log.warn(String.format("Member with member id %s does not exist",
+			log.warn(String.format("Member %s does not exist",
 					memberId));
 			return;
 		}
+        String instanceId = member.getInstanceId();
 
         try {
             TopologyManager.acquireWriteLock();
