@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundExcept
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
@@ -40,6 +41,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
@@ -176,6 +178,38 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     @Override
     public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
 
+
+        if (log.isDebugEnabled()) {
+            log.debug("Child scaling event received to [group]: " + this.getId()
+                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+        }
+
+        //find the child context of this group,
+        //Notifying children, if this group has scaling dependencies
+        if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
+            // has dependencies. Notify children
+            if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
+
+                for (ScalingDependentList scalingDependentList : scalingDependencies) {
+
+                    for(String scalingDependentListComponent : scalingDependentList.getScalingDependentListComponents()){
+
+                        if(scalingDependentListComponent.equals(scalingEvent.getId())){
+
+                            for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
+
+                                Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
+                                if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
+                                    monitor.onParentScalingEvent(scalingEvent);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override
