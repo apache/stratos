@@ -49,7 +49,7 @@ var formData = require('controllers/forms/schema/users/' + elements.formtype + '
 
 if (elements.formtype == 'users') {
     list_data = util.RESTCalls.getUserList();
-    if (list_data.userInfoBean && list_data.userInfoBean.length === 0) {
+    if (list_data && list_data.length === 0) {
         list_data = null;
     }
 
@@ -72,6 +72,7 @@ caramel.render({
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formData: JSON.stringify(formData),
+    formtype:elements.formtype,
     list_data: list_data,
     left_menu: leftMenu,
     error: error
