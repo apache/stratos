@@ -42,7 +42,7 @@
             <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
                 <property name="dropRootElement" value="true"/>
                 <property name="supportUnwrapped" value="true"/>
-            </bean>>
+            </bean>
             <ref bean="exceptionHandler"/>
         </jaxrs:providers>
     </jaxrs:server>

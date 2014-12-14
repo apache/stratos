@@ -31,18 +31,18 @@ import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
-import org.apache.stratos.rest.endpoint.bean.CartridgeInfoBean;
-import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
-import org.apache.stratos.rest.endpoint.bean.SubscriptionDomainRequest;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.partition.Partition;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.common.beans.CartridgeInfoBean;
+import org.apache.stratos.common.beans.StratosApiResponse;
+import org.apache.stratos.common.beans.SubscriptionDomainRequest;
+import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.common.beans.autoscaler.partition.Partition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.tenant.mgt.core.TenantPersistor;
 import org.apache.stratos.tenant.mgt.util.TenantMgtUtil;
@@ -437,7 +437,7 @@ public class StratosApiV40 extends AbstractApi {
             }
         }
         for (Cluster clusterObj : clusters) {
-            if (clusterObj.clusterId.equals(clusterId)){
+            if (clusterObj.getClusterId().equals(clusterId)){
                 cluster = clusterObj;
                 break;
             }
@@ -1075,7 +1075,7 @@ public class StratosApiV40 extends AbstractApi {
     public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                           @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
         SubscriptionDomainBean subscriptionDomainBean = StratosApiV40Utils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
-        if(subscriptionDomainBean.domainName == null){
+        if(subscriptionDomainBean.getDomainName() == null){
             return Response.status(Response.Status.NOT_FOUND).build();
         }else{
             return Response.ok().entity(subscriptionDomainBean).build();

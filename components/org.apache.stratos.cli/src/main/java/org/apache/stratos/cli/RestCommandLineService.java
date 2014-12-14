@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.cli;
 
+import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
+import com.google.gson.reflect.TypeToken;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -40,27 +42,26 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.stratos.cli.beans.TenantInfoBean;
-import org.apache.stratos.cli.beans.UserInfoBean;
-import org.apache.stratos.cli.beans.autoscaler.partition.Partition;
-import org.apache.stratos.cli.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.cli.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.cli.beans.cartridge.Cartridge;
-import org.apache.stratos.cli.beans.cartridge.PortMapping;
-import org.apache.stratos.cli.beans.cartridge.ServiceDefinitionBean;
-import org.apache.stratos.cli.beans.grouping.applications.Application;
-import org.apache.stratos.cli.beans.grouping.serviceGroups.ServiceGroupBean;
-import org.apache.stratos.cli.beans.kubernetes.KubernetesGroup;
-import org.apache.stratos.cli.beans.kubernetes.KubernetesGroupList;
-import org.apache.stratos.cli.beans.kubernetes.KubernetesHost;
-import org.apache.stratos.cli.beans.kubernetes.KubernetesHostList;
-import org.apache.stratos.cli.beans.topology.Cluster;
-import org.apache.stratos.cli.beans.topology.Member;
+import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.beans.UserInfoBean;
+import org.apache.stratos.common.beans.autoscaler.partition.Partition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.cartridge.definition.PortMappingBean;
+import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
+import org.apache.stratos.common.beans.topology.Cluster;
+import org.apache.stratos.common.beans.topology.Member;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.exception.ExceptionMapper;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
+import org.apache.stratos.manager.dto.Cartridge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -245,14 +246,16 @@ public class RestCommandLineService {
         this.restClient = new RestClient(serverURL, username, password);
     }
 
-    public Cartridge getCartridge(String cartridgeType) throws CommandException {
+    public CartridgeDefinitionBean getCartridge(String cartridgeType) throws CommandException {
         try {
-            CartridgeList list = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    CartridgeList.class, "cartridges");
+            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            }.getType();
+            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+                    listType, "cartridges");
 
-            for (int i = 0; i < list.getCartridge().size(); i++) {
-                Cartridge cartridge = list.getCartridge().get(i);
-                if (cartridgeType.equals(cartridge.getCartridgeType())) {
+            for (int i = 0; i < cartridgeList.size(); i++) {
+                CartridgeDefinitionBean cartridge = cartridgeList.get(i);
+                if (cartridgeType.equals(cartridge.getType())) {
                     return cartridge;
                 }
             }
@@ -264,20 +267,20 @@ public class RestCommandLineService {
         return null;
     }
 
-    public ArrayList<Cartridge> listCartridgesByServiceGroup(String serviceGroup) throws CommandException {
+    public ArrayList<CartridgeDefinitionBean> listCartridgesByServiceGroup(String serviceGroup) throws CommandException {
         try {
-            CartridgeList list = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    CartridgeList.class, "cartridges");
+            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            }.getType();
+            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+                    listType, "cartridges");
 
-            ArrayList<Cartridge> arrayList = new ArrayList<Cartridge>();
-            for (int i = 0; i < list.getCartridge().size(); i++) {
-                if (serviceGroup.equals(list.getCartridge().get(i).getServiceGroup())) {
-                    arrayList.add(list.getCartridge().get(i));
+            ArrayList<CartridgeDefinitionBean> arrayList = new ArrayList<CartridgeDefinitionBean>();
+            for (int i = 0; i < cartridgeList.size(); i++) {
+                if (serviceGroup.equals(cartridgeList.get(i).getServiceGroup())) {
+                    arrayList.add(cartridgeList.get(i));
                 }
             }
-
             return arrayList;
-
         } catch (Exception e) {
             String message = "Error in listing cartridges";
             System.out.println(message);
@@ -289,35 +292,34 @@ public class RestCommandLineService {
     // List currently available multi tenant and single tenant cartridges
     public void listCartridges() throws CommandException {
         try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    CartridgeList.class, "cartridges");
+            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            }.getType();
+            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+                    listType, "cartridges");
 
-            if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
-                    (cartridgeList.getCartridge().size() == 0)) {
+            if ((cartridgeList == null) || (cartridgeList.size() == 0)) {
                 System.out.println("No cartridges found");
                 return;
             }
 
-            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
+            RowMapper<CartridgeDefinitionBean> cartridgeMapper = new RowMapper<CartridgeDefinitionBean>() {
 
-                public String[] getData(Cartridge cartridge) {
-                    String[] data = new String[6];
-                    data[0] = cartridge.getCartridgeType();
+                public String[] getData(CartridgeDefinitionBean cartridge) {
+                    String[] data = new String[5];
+                    data[0] = cartridge.getType();
                     data[1] = cartridge.getDisplayName();
                     data[2] = cartridge.getDescription();
                     data[3] = cartridge.getVersion();
                     data[4] = String.valueOf(cartridge.isMultiTenant());
-                    data[5] = cartridge.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
             };
 
-            Cartridge[] cartridges = new Cartridge[cartridgeList.getCartridge().size()];
-            cartridges = cartridgeList.getCartridge().toArray(cartridges);
+            CartridgeDefinitionBean[] cartridges = new CartridgeDefinitionBean[cartridgeList.size()];
+            cartridges = cartridgeList.toArray(cartridges);
 
             System.out.println("Cartridges found:");
-            CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Description", "Version",
-                    "Is Multi-Tenant", "Accessibility");
+            CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Name", "Description", "Version", "Multi-Tenant");
         } catch (Exception e) {
             String message = "Error in listing cartridges";
             System.out.println(message);
@@ -328,17 +330,18 @@ public class RestCommandLineService {
     // Describe currently available multi tenant and single tenant cartridges
     public void describeAvailableCartridges(String cartridgeType) throws CommandException {
         try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    CartridgeList.class, "cartridges");
+            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            }.getType();
+            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+                    listType, "cartridges");
 
-            if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
-                    (cartridgeList.getCartridge().size() == 0)) {
+            if ((cartridgeList == null) || (cartridgeList.size() == 0)) {
                 System.out.println("Cartridge not found");
                 return;
             }
 
-            for (Cartridge tmp : cartridgeList.getCartridge()) {
-                if (tmp.getCartridgeType().equalsIgnoreCase(cartridgeType)) {
+            for (CartridgeDefinitionBean tmp : cartridgeList) {
+                if (tmp.getType().equalsIgnoreCase(cartridgeType)) {
                     System.out.println("Cartridge:");
                     System.out.println(getGson().toJson(tmp));
                     return;
@@ -353,75 +356,75 @@ public class RestCommandLineService {
     }
 
     // List subscribe cartridges
-    public void listCartridgeSubscriptions(final boolean showURLs) throws CommandException {
-        try {
-            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS,
-                    CartridgeList.class, "cartridge subscriptions");
-
-            if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
-                    (cartridgeList.getCartridge().size() == 0)) {
-                System.out.println("No cartridge subscriptions found");
-                return;
-            }
-
-            CartridgeList applicationCartridgeList = new CartridgeList();
-
-            // Filter out LB cartridges
-            List<Cartridge> allCartridges = cartridgeList.getCartridge();
-            for (Cartridge cartridge : allCartridges) {
-                if (!cartridge.isLoadBalancer()) {
-                    applicationCartridgeList.getCartridge().add(cartridge);
-                }
-            }
-
-            Cartridge[] cartridges = new Cartridge[applicationCartridgeList.getCartridge().size()];
-            cartridges = applicationCartridgeList.getCartridge().toArray(cartridges);
-
-            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
-
-                public String[] getData(Cartridge cartridge) {
-                    String[] data = showURLs ? new String[11] : new String[9];
-                    data[0] = cartridge.getCartridgeType();
-                    data[1] = cartridge.getDisplayName();
-                    data[2] = cartridge.getIsPublic() ? "Public" : "Private";
-                    data[3] = cartridge.getVersion();
-                    data[4] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
-                    data[5] = cartridge.getCartridgeAlias();
-                    data[6] = cartridge.getStatus();
-                    data[7] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-                    data[8] = cartridge.getHostName();
-                    if (showURLs) {
-                        data[9] = getAccessURLs(cartridge);
-                        data[10] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
-                    }
-                    return data;
-
-                }
-            };
-
-            List<String> headers = new ArrayList<String>();
-            headers.add("Type");
-            headers.add("Name");
-            headers.add("Accessibility");
-            headers.add("Version");
-            headers.add("Tenancy Model");
-            headers.add("Alias");
-            headers.add("Status");
-            headers.add("Running Instances");
-            headers.add("Host Name");
-            if (showURLs) {
-                headers.add("Access URL(s)");
-                headers.add("Repo URL");
-            }
-
-            System.out.println("Cartridge subscriptions found:");
-            CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
-        } catch (Exception e) {
-            String message = "Error in listing cartridge subscriptions";
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
+//    public void listCartridgeSubscriptions(final boolean showURLs) throws CommandException {
+//        try {
+//            CartridgeList cartridgeList = (CartridgeList) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_SUBSCRIPTIONS,
+//                    CartridgeList.class, "cartridge subscriptions");
+//
+//            if ((cartridgeList == null) || (cartridgeList.getCartridge() == null) ||
+//                    (cartridgeList.getCartridge().size() == 0)) {
+//                System.out.println("No cartridge subscriptions found");
+//                return;
+//            }
+//
+//            CartridgeList applicationCartridgeList = new CartridgeList();
+//
+//            // Filter out LB cartridges
+//            List<Cartridge> allCartridges = cartridgeList.getCartridge();
+//            for (Cartridge cartridge : allCartridges) {
+//                if (!cartridge.isLoadBalancer()) {
+//                    applicationCartridgeList.getCartridge().add(cartridge);
+//                }
+//            }
+//
+//            Cartridge[] cartridges = new Cartridge[applicationCartridgeList.getCartridge().size()];
+//            cartridges = applicationCartridgeList.getCartridge().toArray(cartridges);
+//
+//            RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
+//
+//                public String[] getData(Cartridge cartridge) {
+//                    String[] data = showURLs ? new String[11] : new String[9];
+//                    data[0] = cartridge.getCartridgeType();
+//                    data[1] = cartridge.getDisplayName();
+//                    data[2] = cartridge.getIsPublic() ? "Public" : "Private";
+//                    data[3] = cartridge.getVersion();
+//                    data[4] = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+//                    data[5] = cartridge.getCartridgeAlias();
+//                    data[6] = cartridge.getStatus();
+//                    data[7] = cartridge.isMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+//                    data[8] = cartridge.getHostName();
+//                    if (showURLs) {
+//                        data[9] = getAccessURLs(cartridge);
+//                        data[10] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+//                    }
+//                    return data;
+//
+//                }
+//            };
+//
+//            List<String> headers = new ArrayList<String>();
+//            headers.add("Type");
+//            headers.add("Name");
+//            headers.add("Accessibility");
+//            headers.add("Version");
+//            headers.add("Tenancy Model");
+//            headers.add("Alias");
+//            headers.add("Status");
+//            headers.add("Running Instances");
+//            headers.add("Host Name");
+//            if (showURLs) {
+//                headers.add("Access URL(s)");
+//                headers.add("Repo URL");
+//            }
+//
+//            System.out.println("Cartridge subscriptions found:");
+//            CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+//        } catch (Exception e) {
+//            String message = "Error in listing cartridge subscriptions";
+//            System.out.println(message);
+//            log.error(message, e);
+//        }
+//    }
 
     // Lists subscribed cartridge info (from alias)
     public void describeCartridgeSubscription(String alias) throws CommandException {
@@ -438,9 +441,9 @@ public class RestCommandLineService {
             Cartridge cartridge = cartridgeWrapper.getCartridge();
 
             // Get LB IP s
-            Map<String, Set<String>> lbIpMap = getLbIpList(cartridge, httpClient);
-            final Set<String> lbPrivateIpSet = lbIpMap.get("private");
-            final Set<String> lbFloatingIpSet = lbIpMap.get("floating");
+            //Map<String, Set<String>> lbIpMap = getLbIpList(cartridge, httpClient);
+            //final Set<String> lbPrivateIpSet = lbIpMap.get("private");
+            //final Set<String> lbFloatingIpSet = lbIpMap.get("floating");
             Cartridge[] cartridges = new Cartridge[1];
             cartridges[0] = cartridge;
 
@@ -448,94 +451,34 @@ public class RestCommandLineService {
             System.out.println("\tType : " + cartridge.getCartridgeType());
             System.out.println("\tName : " + cartridge.getDisplayName());
             System.out.println("\tVersion : " + cartridge.getVersion());
-            System.out.println("\tPublic : " + cartridge.getIsPublic());
-            String tenancy = cartridge.isMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+            //System.out.println("\tPublic : " + cartridge.getIsPublic());
+            String tenancy = cartridge.isMultiTenantSpecified() ? "Multi-Tenant" : "Single-Tenant";
             System.out.println("\tTenancy Model	: " + tenancy);
             System.out.println("\tAlias : " + cartridge.getCartridgeAlias());
             System.out.println("\tStatus : " + cartridge.getStatus());
             String instanceCount = String.valueOf(cartridge.getActiveInstances());
             System.out.println("\tRunning Instances	: " + instanceCount);
-            System.out.println("\tAccess URL(s) : " + getAccessURLs(cartridge));
+            //System.out.println("\tAccess URL(s) : " + getAccessURLs(cartridge));
             if (cartridge.getRepoURL() != null) {
                 System.out.println("\tRepo URL : " + cartridge.getRepoURL());
             }
-            System.out.println("\tLB Private IP	: " + lbPrivateIpSet.toString());
-            if (lbFloatingIpSet != null) {
-                System.out.println("\tLB Floating IP : " + lbFloatingIpSet.toString());
-            }
-            if (cartridge.getProvider().equals("data")) {
-                System.out.println("\tDB-username : " + cartridge.getDbUserName());
-                System.out.println("\tDB-password : " + cartridge.getPassword());
-                System.out.println("\tDB-Host IP (private)  : " + cartridge.getIp());
-                if (cartridge.getPublicIp() != null) {
-                    System.out.println("\tDB-Host IP (floating) : "
-                            + cartridge.getPublicIp());
-                }
-            }
+            //System.out.println("\tLB Private IP	: " + lbPrivateIpSet.toString());
+            //if (lbFloatingIpSet != null) {
+            //    System.out.println("\tLB Floating IP : " + lbFloatingIpSet.toString());
+            //}
+            //if (cartridge.getProvider().equals("data")) {
+//                System.out.println("\tDB-username : " + cartridge.getDbUserName());
+//                System.out.println("\tDB-password : " + cartridge.getPassword());
+//                System.out.println("\tDB-Host IP (private)  : " + cartridge.getIp());
+//                if (cartridge.getPublicIp() != null) {
+//                    System.out.println("\tDB-Host IP (floating) : "
+//                            + cartridge.getPublicIp());
+//                }
+//            }
         } catch (Exception e) {
             String message = "Error in getting cartridge subscription";
             System.out.println(message);
             log.error(message, e);
-        }
-    }
-
-    private Map<String, Set<String>> getLbIpList(Cartridge cartridge, DefaultHttpClient httpClient) throws Exception {
-        try {
-            Map<String, Set<String>> privateFloatingLBIPMap = new HashMap<String, Set<String>>();
-            Set<String> lbFloatingIpSet = new HashSet<String>();
-            Set<String> lbPrivateIpSet = new HashSet<String>();
-            Member[] members = getMembers(cartridge.getCartridgeType(), cartridge.getCartridgeAlias(), httpClient);
-
-            Set<String> lbClusterIdSet = new HashSet<String>();
-
-            for (Member member : members) {
-                lbClusterIdSet.add(member.getLbClusterId());
-                cartridge.setIp(member.getMemberIp());
-                cartridge.setPublicIp(member.getMemberPublicIp());
-            }
-
-            // Invoke  cluster/{clusterId}
-            for (String clusterId : lbClusterIdSet) {
-                HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL()
-                        + ENDPOINT_GET_CLUSTER_OF_TENANT + "lb");
-
-                String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
-                String resultStringCluster = CliUtils.getHttpResponseString(responseCluster);
-
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-
-                if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                    ExceptionMapper exception = gson.fromJson(resultStringCluster, ExceptionMapper.class);
-                    System.out.println(exception);
-                    return null;
-                }
-
-                ArrayList<Cluster> clusterList = getClusterListObjectFromString(resultStringCluster);
-                Cluster cluster = clusterList.get(0);
-                if (cluster == null) {
-                    System.out.println("Subscribe cartridge list is null");
-                    return null;
-                }
-
-                Member[] lbMembers = new Member[cluster.getMember().size()];
-                lbMembers = cluster.getMember().toArray(lbMembers);
-
-                for (Member lbMember : lbMembers) {
-                    lbPrivateIpSet.add(lbMember.getMemberIp());
-                    lbFloatingIpSet.add(lbMember.getMemberPublicIp());
-                }
-
-            }
-            privateFloatingLBIPMap.put("private", lbPrivateIpSet);
-            privateFloatingLBIPMap.put("floating", lbFloatingIpSet);
-
-            return privateFloatingLBIPMap;
-        } catch (Exception e) {
-            String message = "Error in getting load balancer ip list";
-            System.out.println(message);
-            log.error(message, e);
-            return null;
         }
     }
 
@@ -559,7 +502,7 @@ public class RestCommandLineService {
                 return;
             }
 
-            System.out.println("\nList of members in the [cluster]: " + alias);
+            System.out.println("\nList of members in the cluster: " + alias);
             for (Member member : members) {
                 System.out.println("\n\tServiceName : " + member.getServiceName());
                 System.out.println("\tClusterId : " + member.getClusterId());
@@ -654,14 +597,6 @@ public class RestCommandLineService {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         return gson.fromJson(resultString, Cluster.class);
-    }
-
-    private ArrayList<Cluster> getClusterListObjectFromString(String resultString) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
-
-        ClusterList clusterlist = gson.fromJson(resultString, ClusterList.class);
-        return clusterlist.getCluster();
     }
 
     private void printLBs(String resultString) {
@@ -893,11 +828,12 @@ public class RestCommandLineService {
     // This method helps to list all tenants
     public void listAllTenants() throws CommandException {
         try {
-            TenantInfoList tenantInfoList = (TenantInfoList)restClient.listEntity(ENDPOINT_LIST_TENANTS,
-                    TenantInfoList.class, "tenants");
+            Type listType = new TypeToken<ArrayList<TenantInfoBean>>() {
+            }.getType();
+            List<TenantInfoBean> tenantInfoList = (List<TenantInfoBean>)restClient.listEntity(ENDPOINT_LIST_TENANTS,
+                    listType, "tenants");
 
-            if ((tenantInfoList == null) || (tenantInfoList.getTenantInfoBean() == null) ||
-                    (tenantInfoList.getTenantInfoBean().size() == 0)) {
+            if ((tenantInfoList == null) || (tenantInfoList.size() == 0)) {
                 System.out.println("No tenants found");
                 return;
             }
@@ -909,16 +845,16 @@ public class RestCommandLineService {
                     data[1] = "" + tenantInfo.getTenantId();
                     data[2] = tenantInfo.getEmail();
                     data[3] = tenantInfo.isActive() ? "Active" : "De-active";
-                    data[4] = tenantInfo.getCreatedDate();
+                    //data[4] = tenantInfo.getCreatedDate();
                     return data;
                 }
             };
 
-            TenantInfoBean[] tenantArray = new TenantInfoBean[tenantInfoList.getTenantInfoBean().size()];
-            tenantArray = tenantInfoList.getTenantInfoBean().toArray(tenantArray);
+            TenantInfoBean[] tenantArray = new TenantInfoBean[tenantInfoList.size()];
+            tenantArray = tenantInfoList.toArray(tenantArray);
 
             System.out.println("Tenants:");
-            CliUtils.printTable(tenantArray, rowMapper, "Domain", "Tenant ID", "Email", "State", "Created Date");
+            CliUtils.printTable(tenantArray, rowMapper, "Domain", "Tenant ID", "Email", "State");
         } catch (Exception e) {
             String message = "Error in listing users";
             System.out.println(message);
@@ -929,11 +865,12 @@ public class RestCommandLineService {
     // This method helps to list all users
     public void listAllUsers() throws CommandException {
         try {
-            UserInfoList userInfoList = (UserInfoList) restClient.listEntity(ENDPOINT_LIST_USERS,
-                    UserInfoList.class, "users");
+            Type listType = new TypeToken<ArrayList<UserInfoBean>>() {
+            }.getType();
+            List<UserInfoBean> userInfoList = (List<UserInfoBean>) restClient.listEntity(ENDPOINT_LIST_USERS,
+                    listType, "users");
 
-            if ((userInfoList == null) || (userInfoList.getUserInfoBean() == null) ||
-                    (userInfoList.getUserInfoBean().size() == 0)) {
+            if ((userInfoList == null) || (userInfoList.size() == 0)) {
                 System.out.println("No users found");
                 return;
             }
@@ -947,8 +884,8 @@ public class RestCommandLineService {
                 }
             };
 
-            UserInfoBean[] usersArray = new UserInfoBean[userInfoList.getUserInfoBean().size()];
-            usersArray = userInfoList.getUserInfoBean().toArray(usersArray);
+            UserInfoBean[] usersArray = new UserInfoBean[userInfoList.size()];
+            usersArray = userInfoList.toArray(usersArray);
 
             System.out.println("Users:");
             CliUtils.printTable(usersArray, rowMapper, "Username", "Role");
@@ -987,24 +924,26 @@ public class RestCommandLineService {
     // This method helps to list applications
     public void listApplications() throws CommandException {
         try {
-            ApplicationList list = (ApplicationList) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
-                    ApplicationList.class, "applications");
+            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
+            }.getType();
+            List<ApplicationBean> list = (List<ApplicationBean>) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
+                    listType, "applications");
 
-            if ((list == null) || (list.getApplications() == null) || (list.getApplications().size() == 0)) {
+            if ((list == null) || (list.size() == 0)) {
                 System.out.println("No applications found");
                 return;
             }
 
-            RowMapper<Application> rowMapper = new RowMapper<Application>() {
-                public String[] getData(Application definition) {
+            RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
+                public String[] getData(ApplicationBean definition) {
                     String[] data = new String[1];
                     data[0] = definition.getId();
                     return data;
                 }
             };
 
-            Application[] array = new Application[list.getApplications().size()];
-            array = list.getApplications().toArray(array);
+            ApplicationBean[] array = new ApplicationBean[list.size()];
+            array = list.toArray(array);
 
             System.out.println("Applications found:");
             CliUtils.printTable(array, rowMapper, "Application ID");
@@ -1028,10 +967,12 @@ public class RestCommandLineService {
     // This method lists available partitions
     public void listPartitions() throws CommandException {
         try {
-            PartitionList list = (PartitionList) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
-                    PartitionList.class, "partitions");
+            Type listType = new TypeToken<ArrayList<Partition>>() {
+            }.getType();
+            List<Partition> list = (List<Partition>) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
+                    listType, "partitions");
 
-            if ((list == null) || (list.getPartition() == null) || (list.getPartition().size() == 0)) {
+            if ((list == null) || (list.size() == 0)) {
                 System.out.println("No partitions found");
                 return;
             }
@@ -1047,8 +988,8 @@ public class RestCommandLineService {
                 }
             };
 
-            Partition[] partitions = new Partition[list.getPartition().size()];
-            partitions = list.getPartition().toArray(partitions);
+            Partition[] partitions = new Partition[list.size()];
+            partitions = list.toArray(partitions);
 
             System.out.println("Partitions found:");
             CliUtils.printTable(partitions, rowMapper, "ID", "Provider", "Accessibility");
@@ -1061,10 +1002,12 @@ public class RestCommandLineService {
 
     public void listAutoscalingPolicies() throws CommandException {
         try {
-            AutoscalePolicyList list = (AutoscalePolicyList) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
-                    AutoscalePolicyList.class, "autoscaling policies");
+            Type listType = new TypeToken<ArrayList<AutoscalePolicy>>() {
+            }.getType();
+            List<AutoscalePolicy> list = (List<AutoscalePolicy>) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
+                    listType, "autoscaling policies");
 
-            if ((list == null) || (list.getAutoscalePolicy() == null) || (list.getAutoscalePolicy().size() == 0)) {
+            if ((list == null) || (list == null) || (list.size() == 0)) {
                 System.out.println("No autoscaling policies found");
                 return;
             }
@@ -1079,8 +1022,8 @@ public class RestCommandLineService {
                 }
             };
 
-            AutoscalePolicy[] array = new AutoscalePolicy[list.getAutoscalePolicy().size()];
-            array = list.getAutoscalePolicy().toArray(array);
+            AutoscalePolicy[] array = new AutoscalePolicy[list.size()];
+            array = list.toArray(array);
 
             System.out.println("Autoscaling policies found:");
             CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
@@ -1093,10 +1036,12 @@ public class RestCommandLineService {
 
     public void listDeploymentPolicies() throws CommandException {
         try {
-            DeploymentPolicyList list = (DeploymentPolicyList) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
-                    DeploymentPolicyList.class, "deployment policies");
+            Type listType = new TypeToken<ArrayList<DeploymentPolicy>>() {
+            }.getType();
+            List<DeploymentPolicy> list = (List<DeploymentPolicy>) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
+                    listType, "deployment policies");
 
-            if ((list == null) || (list.getDeploymentPolicy() == null) || (list.getDeploymentPolicy().size() == 0)) {
+            if ((list == null) || (list.size() == 0)) {
                 System.out.println("No deployment policies found");
                 return;
             }
@@ -1111,8 +1056,8 @@ public class RestCommandLineService {
                 }
             };
 
-            DeploymentPolicy[] array = new DeploymentPolicy[list.getDeploymentPolicy().size()];
-            array = list.getDeploymentPolicy().toArray(array);
+            DeploymentPolicy[] array = new DeploymentPolicy[list.size()];
+            array = list.toArray(array);
 
             System.out.println("Deployment policies found:");
             CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
@@ -1141,31 +1086,6 @@ public class RestCommandLineService {
 	    }
     }
 
-    public void describePartition(String id) throws CommandException {
-        try {
-            PartitionList list = (PartitionList) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
-                    PartitionList.class, "partitions");
-
-            if ((list == null) || (list.getPartition() == null) || (list.getPartition().size() == 0)) {
-                System.out.println("Partition not found: " + id);
-                return;
-            }
-
-            for (Partition partition : list.getPartition()) {
-                if (partition.getId().equals(id)) {
-                    System.out.println("Partition: " + id);
-                    System.out.println(getGson().toJson(partition));
-                    return;
-                }
-            }
-            System.out.println("Partition not found: " + id);
-        } catch (Exception e) {
-            String message = "Error in describing partition: " + id;
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
     public void describeAutoScalingPolicy(String id) throws CommandException {
         try {           
             AutoscalePolicy policy = (AutoscalePolicy) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY, AutoscalePolicy.class, id, "autoscaling policy");
@@ -1190,8 +1110,11 @@ public class RestCommandLineService {
 
     public void listKubernetesClusters() {
         try {
-            KubernetesGroupList list = (KubernetesGroupList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, KubernetesGroupList.class, "kubernetes cluster");
-            if ((list != null) && (list.getKubernetesGroup() != null) && (list.getKubernetesGroup().size() > 0)) {
+            Type listType = new TypeToken<ArrayList<KubernetesHost>>() {
+            }.getType();
+            List<KubernetesGroup> list = (List<KubernetesGroup>) restClient.
+                    listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, listType, "kubernetes cluster");
+            if ((list != null) && (list.size() > 0)) {
                 RowMapper<KubernetesGroup> partitionMapper = new RowMapper<KubernetesGroup>() {
                     public String[] getData(KubernetesGroup kubernetesGroup) {
                         String[] data = new String[2];
@@ -1201,8 +1124,8 @@ public class RestCommandLineService {
                     }
                 };
 
-                KubernetesGroup[] array = new KubernetesGroup[list.getKubernetesGroup().size()];
-                array = list.getKubernetesGroup().toArray(array);
+                KubernetesGroup[] array = new KubernetesGroup[list.size()];
+                array = list.toArray(array);
                 System.out.println("Kubernetes groups found:");
                 CliUtils.printTable(array, partitionMapper, "Group ID", "Description");
             } else {
@@ -1249,9 +1172,11 @@ public class RestCommandLineService {
 
     public void listKubernetesHosts(String clusterId) {
         try {
-            KubernetesHostList list = (KubernetesHostList) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{kubernetesClusterId}", clusterId),
-                    KubernetesHostList.class, "kubernetes host");
-            if ((list != null) && (list.getKubernetesHost() != null) && (list.getKubernetesHost().size() > 0)) {
+            Type listType = new TypeToken<ArrayList<KubernetesHost>>() {
+            }.getType();
+            List<KubernetesHost> list = (List<KubernetesHost>) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{kubernetesClusterId}", clusterId),
+                    listType, "kubernetes host");
+            if ((list != null) && (list.size() > 0)) {
                 RowMapper<KubernetesHost> partitionMapper = new RowMapper<KubernetesHost>() {
                     public String[] getData(KubernetesHost kubernetesHost) {
                         String[] data = new String[3];
@@ -1262,8 +1187,8 @@ public class RestCommandLineService {
                     }
                 };
 
-                KubernetesHost[] array = new KubernetesHost[list.getKubernetesHost().size()];
-                array = list.getKubernetesHost().toArray(array);
+                KubernetesHost[] array = new KubernetesHost[list.size()];
+                array = list.toArray(array);
                 System.out.println("Kubernetes hosts found:");
                 CliUtils.printTable(array, partitionMapper, "Host ID", "Hostname", "IP Address");
             } else {
@@ -1336,16 +1261,16 @@ public class RestCommandLineService {
     // This method helps to describe service group definition
     public void describeServiceGroup (String groupDefinitionName) {
         try {
-            ServiceGroupBean bean = (ServiceGroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
-                    ServiceGroupBean.class, "serviceGroup");
+            GroupBean bean = (GroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
+                    GroupBean.class, "serviceGroup");
 
-            if ((bean == null) || (bean.getServiceGroupDefinition() == null)) {
+            if (bean == null) {
                 System.out.println("Service group not found: " + groupDefinitionName);
                 return;
             }
 
             System.out.println("Service Group : " + groupDefinitionName);
-            System.out.println(getGson().toJson(bean.getServiceGroupDefinition()));
+            System.out.println(getGson().toJson(bean));
         } catch (Exception e) {
             String message = "Error in describing service group: " + groupDefinitionName;
             System.out.println(message);
@@ -1366,8 +1291,11 @@ public class RestCommandLineService {
     // This method helps to describe applications
     public void describeApplication (String applicationID) {
         try {
-            ApplicationList applications = (ApplicationList) restClient.listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
-                    ApplicationList.class, "applications");
+            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
+            }.getType();
+            List<ApplicationBean> applications = (List<ApplicationBean>) restClient
+                    .listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
+                            listType, "applications");
 
             if (applications == null) {
                 System.out.println("Application not found: " + applicationID);
@@ -1383,166 +1311,13 @@ public class RestCommandLineService {
         }
     }
 
-    // This class convert JSON string to deploymentpolicylist object
-    private class DeploymentPolicyList {
-        private ArrayList<DeploymentPolicy> deploymentPolicy;
-
-        public ArrayList<DeploymentPolicy> getDeploymentPolicy() {
-            return deploymentPolicy;
-        }
-
-        public void setDeploymentPolicy(ArrayList<DeploymentPolicy> deploymentPolicy) {
-            this.deploymentPolicy = deploymentPolicy;
-        }
-
-        DeploymentPolicyList() {
-            deploymentPolicy = new ArrayList<DeploymentPolicy>();
-        }
-    }
-
-    // This class convert JSON string to autoscalepolicylist object
-    private class AutoscalePolicyList {
-        private ArrayList<AutoscalePolicy> autoscalePolicy;
-
-        public ArrayList<AutoscalePolicy> getAutoscalePolicy() {
-            return autoscalePolicy;
-        }
-
-        public void setAutoscalePolicy(ArrayList<AutoscalePolicy> autoscalePolicy) {
-            this.autoscalePolicy = autoscalePolicy;
-        }
-
-        AutoscalePolicyList() {
-            autoscalePolicy = new ArrayList<AutoscalePolicy>();
-        }
-    }
-
-    private class ApplicationList {
-        private ArrayList<Application> applications;
-
-        public ArrayList<Application> getApplications() {
-            return applications;
-        }
-
-        public void setApplications(ArrayList<Application> applications) {
-            this.applications = applications;
-        }
-
-        ApplicationList() {
-            applications = new ArrayList<Application>();
-        }
-    }
-
-    // This class convert JSON string to servicedefinitionbean object
-    private class ServiceDefinitionList {
-        private ArrayList<ServiceDefinitionBean> serviceDefinitionBean;
-
-        public ArrayList<ServiceDefinitionBean> getServiceDefinition() {
-            return serviceDefinitionBean;
-        }
-
-        public void setServiceDefinition(ArrayList<ServiceDefinitionBean> serviceDefinitionBean) {
-            this.serviceDefinitionBean = serviceDefinitionBean;
-        }
-
-        ServiceDefinitionList() {
-            serviceDefinitionBean = new ArrayList<ServiceDefinitionBean>();
-        }
-    }
-
-    // This class convert JSON string to PartitionLIst object
-    private class PartitionList {
-        private ArrayList<Partition> partition;
-
-        public ArrayList<Partition> getPartition() {
-            return partition;
-        }
-
-        public void setPartition(ArrayList<Partition> partition) {
-            this.partition = partition;
-        }
-
-        PartitionList() {
-            partition = new ArrayList<Partition>();
-        }
-    }
-
-    // This class convert JSON string to TenantInfoBean object
-    private class TenantInfoList {
-        private ArrayList<TenantInfoBean> tenantInfoBean;
-
-        public ArrayList<TenantInfoBean> getTenantInfoBean() {
-            return tenantInfoBean;
-        }
-
-        public void setTenantInfoBean(ArrayList<TenantInfoBean> tenantInfoBean) {
-            this.tenantInfoBean = tenantInfoBean;
-        }
-
-        TenantInfoList() {
-            tenantInfoBean = new ArrayList<TenantInfoBean>();
-        }
-    }
-
-    // This class convert JSON string to UserInfoBean object
-    private class UserInfoList {
-        private ArrayList<UserInfoBean> userInfoBean;
-
-        public ArrayList<UserInfoBean> getUserInfoBean() {
-            return userInfoBean;
-        }
-
-        public void setUserInfoBean(ArrayList<UserInfoBean> userInfoBean) {
-            this.userInfoBean = userInfoBean;
-        }
-
-        UserInfoList() {
-            userInfoBean = new ArrayList<UserInfoBean>();
-        }
-    }
-
-    // This class is for convert JSON string to CartridgeList object
-    private class CartridgeList {
-        private ArrayList<Cartridge> cartridge;
-
-        public ArrayList<Cartridge> getCartridge() {
-            return cartridge;
-        }
-
-        public void setCartridge(ArrayList<Cartridge> cartridge) {
-            this.cartridge = cartridge;
-        }
-
-        CartridgeList() {
-            cartridge = new ArrayList<Cartridge>();
-        }
-    }
-
-    private class ClusterList {
-        private ArrayList<Cluster> cluster;
-
-        public ArrayList<Cluster> getCluster() {
-            return cluster;
-        }
-
-        public void setCluster(ArrayList<Cluster> clusters) {
-            this.cluster = clusters;
-        }
-
-        ClusterList() {
-            cluster = new ArrayList<Cluster>();
-        }
-
-        ;
-    }
-
     // This will return access url from a given cartridge
-    private String getAccessURLs(Cartridge cartridge) {
-        PortMapping[] portMappings = cartridge.getPortMappings();
+    private String getAccessURLs(CartridgeDefinitionBean cartridge) {
+        List<PortMappingBean> portMappings = cartridge.getPortMapping();
         StringBuilder urlBuilder = new StringBuilder();
 
-        for (PortMapping portMapping : portMappings) {
-            String url = portMapping.getProtocol() + "://" + cartridge.getHostName() + ":" + portMapping.getProxyPort() + "/";
+        for (PortMappingBean portMapping : portMappings) {
+            String url = portMapping.getProtocol() + "://" + cartridge.getHost() + ":" + portMapping.getProxyPort() + "/";
             urlBuilder.append(url).append(", ");
         }
 
@@ -1601,17 +1376,18 @@ public class RestCommandLineService {
                 return false;
             }
 
-            CartridgeList cartridgeList = gson.fromJson(resultString, CartridgeList.class);
+            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {}.getType();
+            List<CartridgeDefinitionBean> cartridgeList = gson.fromJson(resultString, listType);
 
             if (cartridgeList == null) {
                 System.out.println("Available cartridge list is null");
                 return false;
             }
 
-            ArrayList<Cartridge> multiTenetCartridge = new ArrayList<Cartridge>();
+            ArrayList<CartridgeDefinitionBean> multiTenetCartridge = new ArrayList<CartridgeDefinitionBean>();
 
-            for (Cartridge cartridge : cartridgeList.getCartridge()) {
-                if (cartridge.isMultiTenant() && cartridge.getCartridgeType().equals(type)) {
+            for (CartridgeDefinitionBean cartridge : cartridgeList) {
+                if (cartridge.isMultiTenant() && cartridge.getType().equals(type)) {
                     multiTenetCartridge.add(cartridge);
                 }
             }

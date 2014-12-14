@@ -30,20 +30,20 @@ import org.apache.stratos.manager.grouping.definitions.ServiceGroupDefinition;
 import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.subscription.CartridgeSubscription;
 import org.apache.stratos.manager.user.mgt.StratosUserManager;
-import org.apache.stratos.manager.user.mgt.beans.UserInfoBean;
+import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.manager.user.mgt.exception.UserManagerException;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
-import org.apache.stratos.rest.endpoint.bean.ApplicationBean;
-import org.apache.stratos.rest.endpoint.bean.StratosApiResponse;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.rest.endpoint.bean.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.rest.endpoint.bean.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesGroup;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesHost;
-import org.apache.stratos.rest.endpoint.bean.kubernetes.KubernetesMaster;
-import org.apache.stratos.rest.endpoint.bean.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.rest.endpoint.bean.topology.Cluster;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.StratosApiResponse;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
@@ -675,7 +675,7 @@ public class StratosApiV41 extends AbstractApi {
             }
         }
         for (Cluster clusterObj : clusters) {
-            if (clusterObj.clusterId.equals(clusterId)) {
+            if (clusterObj.getClusterId().equals(clusterId)) {
                 cluster = clusterObj;
                 break;
             }

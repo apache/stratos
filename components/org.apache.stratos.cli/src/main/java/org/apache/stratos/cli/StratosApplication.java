@@ -129,26 +129,14 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeployAutoscalingPolicyCommand();
         commands.put(command.getName(), command);
 
-        /*command = new DeployServiceCommand();
-        commands.put(command.getName(), command);
-
-        command = new UndeployServiceDefinitionCommand();
-        commands.put(command.getName(), command);*/
-
         command = new ListApplicationsCommand();
         commands.put(command.getName(), command);
-
-        /*command = new ListServicesCommand();
-        commands.put(command.getName(), command);*/
 
         command = new UndeployCartridgeDefinitionCommand();
         commands.put(command.getName(), command);
 
         command = new DeployDeploymentPolicyCommand();
         commands.put(command.getName(), command);
-
-        //command = new ListPartitionCommand();
-        //commands.put(command.getName(), command);
 
         command = new ListAutoscalePolicyCommand();
         commands.put(command.getName(), command);
@@ -160,9 +148,6 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		commands.put(command.getName(), command);
 
         command = new DescribeCartridgeCommand();
-        commands.put(command.getName(), command);
-
-        command = new DescribePartitionCommand();
         commands.put(command.getName(), command);
 
         command = new DescribeDeploymentPolicyCommand();
