@@ -19,7 +19,7 @@
 package org.apache.stratos.autoscaler.monitor;
 
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 
 /**
@@ -46,19 +46,19 @@ public interface EventHandler {
      *
      * @param scalingEvent
      */
-    public abstract void onChildScalingEvent(MonitorScalingEvent scalingEvent);
+    public abstract void onChildScalingEvent(ScalingEvent scalingEvent);
 
     /**
      * Triggered when a scaling event is received from the parent.
      *
      * @param scalingEvent
      */
-    public abstract void onParentScalingEvent(MonitorScalingEvent scalingEvent);
+    public abstract void onParentScalingEvent(ScalingEvent scalingEvent);
 
     /**
      * Triggered when scaling decision is made.
      *
      * @param scalingEvent
      */
-    public abstract void onEvent(MonitorScalingEvent scalingEvent);
+    public abstract void onEvent(ScalingEvent scalingEvent);
 }

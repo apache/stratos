@@ -57,9 +57,9 @@ public class MonitorStatusEventBuilder {
                                                  String appId, String serviceName) {
 
         //Send notifications to parent of the cluster monitor
-        MonitorScalingEvent monitorScalingEvent = new MonitorScalingEvent(appId, networkPartitionId, instanceId, factor,
+        ScalingEvent scalingEvent = new ScalingEvent(appId, networkPartitionId, instanceId, factor,
                 serviceName) ;
-        notifyParent(parent, monitorScalingEvent);
+        notifyParent(parent, scalingEvent);
     }
 
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
@@ -96,11 +96,11 @@ public class MonitorStatusEventBuilder {
         child.onParentStatusEvent(statusEvent);
     }
 
-    private static void notifyParent(ParentComponentMonitor parent, MonitorScalingEvent scalingEvent) {
+    private static void notifyParent(ParentComponentMonitor parent, ScalingEvent scalingEvent) {
         parent.onChildScalingEvent(scalingEvent);
     }
 
-    public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorScalingEvent scalingEvent) {
+    public static void notifyChildren (ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
             activeChildMonitor.onParentScalingEvent(scalingEvent);
         }

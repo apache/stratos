@@ -18,24 +18,9 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
-import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
-import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
-import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
-import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-
-import java.util.Arrays;
-import java.util.List;
 
 /*
  * It is monitoring a kubernetes service cluster periodically.

@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentE
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -248,7 +248,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     }
 
     @Override
-    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onChildScalingEvent(ScalingEvent scalingEvent) {
 
         if (hasScalingDependents) {
 
@@ -290,13 +290,13 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     }
 
     @Override
-    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
         //Notify all children about scaling
     }
 
     @Override
-    public void onEvent(MonitorScalingEvent scalingEvent) {
+    public void onEvent(ScalingEvent scalingEvent) {
 
     }
 

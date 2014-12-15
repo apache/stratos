@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -176,7 +176,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onChildScalingEvent(ScalingEvent scalingEvent) {
 
 
         if (log.isDebugEnabled()) {
@@ -220,12 +220,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
     }
 
     @Override
-    public void onEvent(MonitorScalingEvent scalingEvent) {
+    public void onEvent(ScalingEvent scalingEvent) {
 
     }
 

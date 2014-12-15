@@ -21,13 +21,13 @@ package org.apache.stratos.autoscaler.monitor.events;
 /**
  * This is to handle scaling of the monitors
  */
-public class MonitorScalingEvent extends MonitorEvent {
+public class ScalingEvent extends MonitorEvent {
 
     private float factor;
     private String networkPartitionId;
     private String serviceName;
 
-    public  MonitorScalingEvent(String id, String networkPartitionId, String instanceId, float factor, String serviceName) {
+    public ScalingEvent(String id, String networkPartitionId, String instanceId, float factor, String serviceName) {
         super(id, instanceId);
         this.factor = factor;
         this.networkPartitionId = networkPartitionId;
