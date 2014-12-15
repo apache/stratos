@@ -34,7 +34,7 @@ import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -384,12 +384,12 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void onChildScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onChildScalingEvent(ScalingEvent scalingEvent) {
 
     }
 
     @Override
-    public void onParentScalingEvent(MonitorScalingEvent scalingEvent) {
+    public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
         if (log.isDebugEnabled()) {
             log.debug("Parent scaling event received to [cluster]: " + this.getClusterId()

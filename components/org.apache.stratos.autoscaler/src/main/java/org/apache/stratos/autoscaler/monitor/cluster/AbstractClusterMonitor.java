@@ -25,7 +25,7 @@ import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.events.MonitorScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -327,7 +327,7 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onEvent(MonitorScalingEvent scalingEvent) {
+    public void onEvent(ScalingEvent scalingEvent) {
 
     }
 
