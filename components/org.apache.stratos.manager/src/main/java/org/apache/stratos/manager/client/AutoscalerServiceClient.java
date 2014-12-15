@@ -96,7 +96,7 @@ public class AutoscalerServiceClient {
             throws RemoteException {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies;
-        autoscalePolicies = stub.getAllAutoScalingPolicy();
+        autoscalePolicies = stub.getAutoScalingPolicies();
 
         return autoscalePolicies;
     }
@@ -110,29 +110,6 @@ public class AutoscalerServiceClient {
         return autoscalePolicy;
     }
 
-    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies()
-            throws RemoteException {
-
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
-        deploymentPolicies = stub.getAllDeploymentPolicies();
-
-        return deploymentPolicies;
-    }
-
-    public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] getDeploymentPolicies(
-            String cartridgeType) throws RemoteException {
-
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy[] deploymentPolicies;
-        deploymentPolicies = stub
-                .getValidDeploymentPoliciesforCartridge(cartridgeType);
-
-        return deploymentPolicies;
-    }
-
-    public void unDeployDeploymentPolicy(String applicationId) throws RemoteException {
-        stub.undeployDeploymentPolicy(applicationId);
-    }
-
     public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
 
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy;
@@ -141,25 +118,32 @@ public class AutoscalerServiceClient {
         return deploymentPolicy;
     }
 
-    public String addDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-    AutoScalerServiceInvalidPolicyExceptionException {
-
-    	return stub.addDeploymentPolicy(deploymentPolicy);
-
-    }
-    
-    public boolean deployDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            AutoScalerServiceInvalidPolicyExceptionException {
-
-        return stub.deployDeploymentPolicy(deploymentPolicy);
-
+    public void addApplication(ApplicationContext applicationContext) throws AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
+        stub.addApplication(applicationContext);
     }
 
-    public boolean updateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            AutoScalerServiceInvalidPolicyExceptionException {
+    public ApplicationContext getApplication(String applicationId) throws RemoteException {
+        return stub.getApplication(applicationId);
+    }
 
-        return stub.updateDeploymentPolicy(deploymentPolicy);
+    public ApplicationContext[] getApplications() throws RemoteException {
+        return stub.getApplications();
+    }
 
+    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws RemoteException,
+            AutoScalerServiceInvalidPolicyExceptionException, AutoScalerServiceApplicationDefinitionExceptionException {
+
+        return stub.deployApplication(applicationId, deploymentPolicy);
+
+    }
+
+    public void undeployApplication(String applicationId) throws
+            AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
+        stub.undeployApplication(applicationId);
+    }
+
+    public void deleteApplication(String applicationId) throws RemoteException {
+        stub.deleteApplication(applicationId);
     }
 
     public boolean deployAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
@@ -184,16 +168,6 @@ public class AutoscalerServiceClient {
 
     public void deployServiceGroup(ServiceGroup serviceGroup) throws AutoScalerServiceInvalidServiceGroupExceptionException, RemoteException {
         stub.deployServiceGroup(serviceGroup);
-    }
-
-    public void deployApplication(ApplicationContext applicationContext) throws
-            AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
-        stub.deployApplicationDefinition(applicationContext);
-    }
-
-    public void undeployApplication(String applicationId, int tenantId, String tenantDomain) throws
-            AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
-        stub.unDeployApplicationDefinition(applicationId, tenantId, tenantDomain);
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {

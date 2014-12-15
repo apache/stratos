@@ -225,35 +225,6 @@ public class StratosApiV40Utils {
         return stratosApiResponse;
     }
 
-    public static StratosApiResponse deployDeploymentPolicy(
-            org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy deploymentPolicyBean)
-            throws RestAPIException {
-
-        String policyId = null;
-
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-
-            DeploymentPolicy deploymentPolicy = PojoConverter.convetToASDeploymentPolicyPojo(deploymentPolicyBean);
-
-            try {
-                policyId = autoscalerServiceClient.addDeploymentPolicy(deploymentPolicy);
-            } catch (RemoteException e) {
-                log.error(e.getMessage(), e);
-                throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
-                String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
-                log.error(message, e);
-                throw new RestAPIException(message, e);
-            }
-
-        }
-
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully deployed deployment policy definition with type " + policyId);
-        return stratosApiResponse;
-    }
-
     private static CloudControllerServiceClient getCloudControllerServiceClient () throws RestAPIException {
 
         try {
@@ -392,52 +363,6 @@ public class StratosApiV40Utils {
         }
 
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
-    }
-
-    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy[]
-    getDeploymentPolicies () throws RestAPIException {
-
-        DeploymentPolicy [] deploymentPolicies = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies();
-            } catch (RemoteException e) {
-                String errorMsg = "Error getting available deployment policies. Cause : " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-
-
-        return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
-    }
-
-    public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy[]
-    getDeploymentPolicies (String cartridgeType) throws RestAPIException {
-
-        DeploymentPolicy [] deploymentPolicies = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                deploymentPolicies = autoscalerServiceClient.getDeploymentPolicies(cartridgeType);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting available deployment policies for cartridge type " +
-                        cartridgeType+". Cause: "+e.getMessage();;
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        if(deploymentPolicies.length == 0) {
-            String errorMsg = "Cannot find any matching deployment policy for Cartridge [type] "+cartridgeType;
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-
-        return PojoConverter.populateDeploymentPolicyPojos(deploymentPolicies);
     }
 
     public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy

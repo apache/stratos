@@ -30,11 +30,9 @@ public class ApplicationDefinition implements Serializable {
     private static final long serialVersionUID = -2829206180707597651L;
 
 	private String applicationId;
-
     private String alias;
-
     private ComponentDefinition components;
-    
+    private String status;
     private List<PropertyBean> property;
     
     public String getApplicationId() {
@@ -61,12 +59,19 @@ public class ApplicationDefinition implements Serializable {
         this.components = components;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
 	public List<PropertyBean> getProperty() {
 		return property;
 	}
 
 	public void setProperty(List<PropertyBean> property) {
 		this.property = property;
-	}   
-    
+	}
 }

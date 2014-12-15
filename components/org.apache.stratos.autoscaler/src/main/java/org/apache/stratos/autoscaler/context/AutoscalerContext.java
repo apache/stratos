@@ -20,13 +20,13 @@
  */
 package org.apache.stratos.autoscaler.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.registry.RegistryManager;
 
 /**
  * It holds all cluster monitors which are active in stratos.
@@ -35,6 +35,8 @@ public class AutoscalerContext {
 
     private static final AutoscalerContext INSTANCE = new AutoscalerContext();
 
+    // Map<ApplicationId, ApplicationContext>
+    private Map<String, ApplicationContext> applicationContextMap;
     // Map<ClusterId, AbstractClusterMonitor>
     private Map<String, AbstractClusterMonitor> clusterMonitors;
     // Map<ApplicationId, ApplicationMonitor>
@@ -43,9 +45,27 @@ public class AutoscalerContext {
     private List<String> pendingApplicationMonitors;
 
     private AutoscalerContext() {
+        applicationContextMap = readApplicationContextsFromRegistry();
+        if(applicationContextMap == null) {
+            applicationContextMap = new ConcurrentHashMap<String, ApplicationContext>();
+        }
         setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
         setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
         pendingApplicationMonitors = new ArrayList<String>();
+    }
+
+    private Map<String, ApplicationContext> readApplicationContextsFromRegistry() {
+        String[] resourcePaths = RegistryManager.getInstance().getApplicationContextResourcePaths();
+        if((resourcePaths == null) || (resourcePaths.length == 0)) {
+            return null;
+        }
+
+        Map<String, ApplicationContext> applicationContextMap = new ConcurrentHashMap<String, ApplicationContext>();
+        for(String resourcePath : resourcePaths) {
+            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContextByResourcePath(resourcePath);
+            applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        }
+        return applicationContextMap;
     }
 
     public static AutoscalerContext getInstance() {
@@ -114,5 +134,33 @@ public class AutoscalerContext {
 
     public boolean monitorExists(String appId) {
         return this.applicationMonitors.containsKey(appId);
+    }
+
+    public void addApplicationContext(ApplicationContext applicationContext) {
+        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        RegistryManager.getInstance().persistApplicationContext(applicationContext);
+    }
+
+    public void removeApplicationContext(String applicationId) {
+        if(applicationContextMap.containsKey(applicationId)) {
+            applicationContextMap.remove(applicationId);
+            RegistryManager.getInstance().removeApplicationContext(applicationId);
+        }
+    }
+
+    public ApplicationContext getApplicationContext(String applicationId) {
+        if(applicationContextMap.containsKey(applicationId)) {
+            return applicationContextMap.get(applicationId);
+        }
+        return null;
+    }
+
+    public Collection<ApplicationContext> getApplicationContexts() {
+        return applicationContextMap.values();
+    }
+
+    public void updateApplicationContext(ApplicationContext applicationContext) {
+        applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
+        RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 }

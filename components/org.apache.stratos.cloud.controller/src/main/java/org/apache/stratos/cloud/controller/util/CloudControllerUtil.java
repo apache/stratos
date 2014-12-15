@@ -207,30 +207,30 @@ public class CloudControllerUtil {
 	  
     public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
 
-		CartridgeInfo carInfo = new CartridgeInfo();
-		carInfo.setType(cartridge.getType());
-		carInfo.setDisplayName(cartridge.getDisplayName());
-		carInfo.setDescription(cartridge.getDescription());
-		carInfo.setHostName(cartridge.getHostName());
-		carInfo.setDeploymentDirs(cartridge.getDeploymentDirs());
-		carInfo.setProvider(cartridge.getProvider());
-	    carInfo.setCategory(cartridge.getCategory());
-		carInfo.setVersion(cartridge.getVersion());
-		carInfo.setMultiTenant(cartridge.isMultiTenant());
-		carInfo.setBaseDir(cartridge.getBaseDir());
-		carInfo.setLbConfig(cartridge.getLbConfig());
-		carInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
-        carInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
-		carInfo.setPortMappings(cartridge.getPortMappings()
-		                                 .toArray(new PortMapping[cartridge.getPortMappings()
-		                                                                   .size()]));
-		carInfo.setAppTypes(cartridge.getAppTypeMappings()
-                                .toArray(new AppType[cartridge.getAppTypeMappings()
-                                                                  .size()]));
-        carInfo.setServiceGroup(cartridge.getServiceGroup());
+		CartridgeInfo cartridgeInfo = new CartridgeInfo();
+		cartridgeInfo.setType(cartridge.getType());
+		cartridgeInfo.setDisplayName(cartridge.getDisplayName());
+		cartridgeInfo.setDescription(cartridge.getDescription());
+		cartridgeInfo.setHostName(cartridge.getHostName());
+		cartridgeInfo.setDeploymentDirs(cartridge.getDeploymentDirs());
+		cartridgeInfo.setProvider(cartridge.getProvider());
+	    cartridgeInfo.setCategory(cartridge.getCategory());
+		cartridgeInfo.setVersion(cartridge.getVersion());
+		cartridgeInfo.setMultiTenant(cartridge.isMultiTenant());
+		cartridgeInfo.setBaseDir(cartridge.getBaseDir());
+		cartridgeInfo.setLbConfig(cartridge.getLbConfig());
+		cartridgeInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
+        cartridgeInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
+		cartridgeInfo.setPortMappings(cartridge.getPortMappings()
+                .toArray(new PortMapping[cartridge.getPortMappings()
+                        .size()]));
+		cartridgeInfo.setAppTypes(cartridge.getAppTypeMappings()
+                .toArray(new AppType[cartridge.getAppTypeMappings()
+                        .size()]));
+        cartridgeInfo.setServiceGroup(cartridge.getServiceGroup());
 		
 		List<Property> propList = new ArrayList<Property>();
-        carInfo.setPersistence(cartridge.getPersistence());
+        cartridgeInfo.setPersistence(cartridge.getPersistence());
 		
 		for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")
@@ -241,9 +241,9 @@ public class CloudControllerUtil {
         }
 		Property[] props = new Property[propList.size()];
 		
-		carInfo.setProperties(propList.toArray(props));
+		cartridgeInfo.setProperties(propList.toArray(props));
 
-		return carInfo;
+		return cartridgeInfo;
 	}
 
     public static void sleep(long time){

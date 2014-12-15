@@ -31,29 +31,87 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.Properties;
 
 public interface AutoScalerServiceInterface {
+    /**
+     * Add autoscaling policy
+     * @param autoscalePolicy
+     * @return
+     * @throws InvalidPolicyException
+     */
+    public boolean addAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException;
 
-    public DeploymentPolicy[] getAllDeploymentPolicies();
-
-    public String addDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
-    
-    public boolean deployDeploymentPolicy(DeploymentPolicy deploymentPolicy);
-
-    public boolean undeployDeploymentPolicy(String deploymentPolicyName);
-
-    public boolean updateDeploymentPolicy(DeploymentPolicy depPolicy) throws InvalidPolicyException;
-
-    public AutoscalePolicy[] getAllAutoScalingPolicy();
-
-    public boolean addAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
-
-    public boolean updateAutoScalingPolicy(AutoscalePolicy aspolicy) throws InvalidPolicyException;
-
-    public DeploymentPolicy[] getValidDeploymentPoliciesforCartridge(String cartridgeType);
-
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId);
-
+    /**
+     * Get an autoscaling policy
+     * @param autoscalingPolicyId
+     * @return
+     */
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId);
 
+    /**
+     * Get autoscaling policies
+     * @return
+     */
+    public AutoscalePolicy[] getAutoScalingPolicies();
+
+    /**
+     * Update an autoscaling policy
+     * @param autoscalePolicy
+     * @return
+     * @throws InvalidPolicyException
+     */
+    public boolean updateAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException;
+
+    /**
+     * Add an application
+     *
+     * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext}
+     * @throws ApplicationDefinitionException if an error occurs
+     */
+    public void addApplication(ApplicationContext applicationContext) throws ApplicationDefinitionException;
+
+    /**
+     * Get an application
+     * @param applicationId
+     */
+    public ApplicationContext getApplication(String applicationId);
+
+    /**
+     * Get all applications
+     */
+    public ApplicationContext[] getApplications();
+
+    /**
+     * Deploy an application in created state
+     * @param applicationId
+     * @param deploymentPolicy
+     * @return
+     */
+    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws ApplicationDefinitionException;
+
+    /**
+     * Undeploy an application in deployed state
+     * @param applicationId
+     * @return
+     */
+    public void undeployApplication(String applicationId);
+
+    /**
+     * Delete an application
+     * @param applicationId
+     */
+    public void deleteApplication(String applicationId);
+
+    /**
+     * Returns a deployment policy of an application
+     * @param applicationId
+     * @return
+     */
+    public DeploymentPolicy getDeploymentPolicy(String applicationId);
+
+    /**
+     * Returns network partitions of a deployment policy
+     * @param deploymentPolicyId
+     * @return
+     */
     public org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
 
     /**
@@ -62,24 +120,6 @@ public interface AutoScalerServiceInterface {
      * @param properties updated properties.
      */
     void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
-    
-    /**
-     * deploys an Application Definition
-     *
-     * @param applicationContext {@link org.apache.stratos.autoscaler.applications.pojo.ApplicationContext} object
-     * @throws ApplicationDefinitionException if an error is encountered
-     */
-    public void deployApplicationDefinition (ApplicationContext applicationContext) throws ApplicationDefinitionException;
-
-    /**
-     * undeploys an Application Definition
-     *
-     * @param applicationId Id of the Application to be undeployed
-     * @throws ApplicationDefinitionException if an error is encountered
-     */
-    public void unDeployApplicationDefinition (String applicationId, int tenantId, String tenantDomain)
-            throws ApplicationDefinitionException;
-
 
     /**
      * Get service group by name
