@@ -272,7 +272,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
         ServiceGroup servicegroup = new ServiceGroup();
 
         // implement conversion (mostly List -> Array)
-        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled);
         List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 
