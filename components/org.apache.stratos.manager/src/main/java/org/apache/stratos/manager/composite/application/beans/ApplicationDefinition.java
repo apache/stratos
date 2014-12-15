@@ -30,6 +30,8 @@ public class ApplicationDefinition implements Serializable {
     private static final long serialVersionUID = -2829206180707597651L;
 
 	private String applicationId;
+    private String name;
+    private String description;
     private String alias;
     private ComponentDefinition components;
     private String status;
@@ -41,6 +43,22 @@ public class ApplicationDefinition implements Serializable {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getAlias() {

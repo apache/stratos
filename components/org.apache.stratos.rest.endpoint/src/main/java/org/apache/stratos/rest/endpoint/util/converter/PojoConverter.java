@@ -1057,33 +1057,35 @@ public class PojoConverter {
         return portRangeBean;
     }
 
-    public static ApplicationContext convertApplicationDefinitionToApplicationContext(ApplicationDefinition compositeAppDefinition) {
+    public static ApplicationContext convertApplicationDefinitionToApplicationContext(ApplicationDefinition applicationDefinition) {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
-        applicationContext.setApplicationId(compositeAppDefinition.getApplicationId());
-        applicationContext.setAlias(compositeAppDefinition.getAlias());
+        applicationContext.setApplicationId(applicationDefinition.getApplicationId());
+        applicationContext.setName(applicationDefinition.getName());
+        applicationContext.setDescription(applicationDefinition.getDescription());
+        applicationContext.setAlias(applicationDefinition.getAlias());
         //applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
 
         // convert and set components
-        if (compositeAppDefinition.getComponents() != null) {
+        if (applicationDefinition.getComponents() != null) {
             org.apache.stratos.autoscaler.stub.pojo.ComponentContext componentContext =
                     new org.apache.stratos.autoscaler.stub.pojo.ComponentContext();
                       
             // top level Groups
-            if (compositeAppDefinition.getComponents().getGroups() != null) {
+            if (applicationDefinition.getComponents().getGroups() != null) {
                 componentContext.setGroupContexts(
-                        convertGroupDefinitionsToGroupContexts(compositeAppDefinition.getComponents().getGroups()));
+                        convertGroupDefinitionsToGroupContexts(applicationDefinition.getComponents().getGroups()));
             }
             // top level dependency information
-            if (compositeAppDefinition.getComponents().getDependencies() != null) {
+            if (applicationDefinition.getComponents().getDependencies() != null) {
                 componentContext.setDependencyContext(
-                        convertDependencyDefinitionsToDependencyContexts(compositeAppDefinition.getComponents().getDependencies()));
+                        convertDependencyDefinitionsToDependencyContexts(applicationDefinition.getComponents().getDependencies()));
             }
             // top level cartridge context information
-            if (compositeAppDefinition.getComponents().getCartridges() != null) {
+            if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(
-                        convertCartridgeDefinitionsToCartridgeContexts(compositeAppDefinition.getComponents().getCartridges()));
+                        convertCartridgeDefinitionsToCartridgeContexts(applicationDefinition.getComponents().getCartridges()));
             }
             applicationContext.setComponents(componentContext);
         }
@@ -1093,6 +1095,8 @@ public class PojoConverter {
     public static ApplicationDefinition convertApplicationContextToApplicationDefinition(ApplicationContext applicationContext) {
         ApplicationDefinition applicationDefinition = new ApplicationDefinition();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
+        applicationDefinition.setName(applicationContext.getName());
+        applicationDefinition.setDescription(applicationContext.getDescription());
         applicationDefinition.setAlias(applicationContext.getAlias());
 
         // convert and set components
