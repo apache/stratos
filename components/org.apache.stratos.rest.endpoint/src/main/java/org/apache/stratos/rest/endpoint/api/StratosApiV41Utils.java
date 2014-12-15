@@ -1010,8 +1010,7 @@ public class StratosApiV41Utils {
 
             autoscalerServiceClient.deployApplication(applicationId, stubDeploymentPolicy);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Application deployed successfully: [application-id] %s [deployment-policy-id] %s",
-                        stubDeploymentPolicy.getApplicationId(), stubDeploymentPolicy.getId()));
+                log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
