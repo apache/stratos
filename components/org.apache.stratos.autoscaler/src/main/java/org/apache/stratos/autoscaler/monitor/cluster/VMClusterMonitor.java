@@ -186,7 +186,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         return false;
     }
 
-    public void monitor() {
+    public synchronized void monitor() {
 
         for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
 
@@ -942,6 +942,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
             } //TODO else part
+
+            if(partitionCtxt.getTotalMemberCount() == 0) {
+                this.monitor();
+            }
 
 
         } catch (Exception e) {

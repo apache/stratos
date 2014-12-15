@@ -468,6 +468,8 @@ public class AutoscalerTopologyEventReceiver {
                                         clusterMonitor.startScheduler();
                                         log.info("Monitoring task for Cluster Monitor with cluster id "
                                                 + clusterInstanceCreatedEvent.getClusterId() + " started successfully");
+                                    } else {
+                                        ((VMClusterMonitor)clusterMonitor).monitor();
                                     }
                                 } catch (PolicyValidationException e) {
                                     log.error(e.getMessage(), e);
