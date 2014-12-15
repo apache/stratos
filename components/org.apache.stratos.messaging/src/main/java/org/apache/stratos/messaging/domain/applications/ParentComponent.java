@@ -23,6 +23,7 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Abstraction for a an entity that can have child entities
@@ -45,12 +46,16 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     private boolean isGroupInstanceMonitoringEnabled;
     //deployment policy
     private String deploymentPolicy;
+    //generate the sequence no for the instanceId
+    private AtomicInteger instanceIdSequence;
+
 
     public ParentComponent() {
         this.isGroupScalingEnabled = false;
         this.isGroupInstanceMonitoringEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
+        instanceIdSequence = new AtomicInteger();
     }
 
     /**
@@ -386,5 +391,11 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
+    }
+
+    public String getNextInstanceId(String alias) {
+        int nextSequence = instanceIdSequence.incrementAndGet();
+        String instanceId = alias + "-" + nextSequence;
+        return instanceId;
     }
 }

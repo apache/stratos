@@ -38,11 +38,8 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.wso2.carbon.CarbonConstants;
-import org.wso2.carbon.base.CarbonBaseConstants;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-import org.wso2.carbon.utils.CarbonUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -90,7 +87,7 @@ public class ApplicationBuilder {
         ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
-    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId, String instanceId,
+    public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,
                                                                             String networkPartitionId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application activation event: [application-id] " + appId);
@@ -108,6 +105,7 @@ public class ApplicationBuilder {
                         appId));
                 return null;
             }
+            String instanceId = application.getNextInstanceId(appId);
 
             if (!application.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish
@@ -201,7 +199,7 @@ public class ApplicationBuilder {
                         appId));
                 return;
             } else {
-            	// Check whether given application is deployed
+                // Check whether given application is deployed
                 org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy policy =
                         PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
                 if (policy != null) {
@@ -211,21 +209,21 @@ public class ApplicationBuilder {
                     return;
                 }
             }
-            
+
             //get cluster data to send in event before deleting the application
             appClusterDataToSend = new HashSet<ClusterDataHolder>();
             Set<ClusterDataHolder> appClusterData = application.getClusterDataRecursively();
             for (ClusterDataHolder currClusterData : appClusterData) {
-            	ClusterDataHolder newClusterData = new ClusterDataHolder(currClusterData.getServiceType(), currClusterData.getClusterId());
-            	appClusterDataToSend.add(newClusterData);
+                ClusterDataHolder newClusterData = new ClusterDataHolder(currClusterData.getServiceType(), currClusterData.getClusterId());
+                appClusterDataToSend.add(newClusterData);
             }
-            
+
             ApplicationHolder.removeApplication(appId);
 
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-        
+
         ApplicationsEventPublisher.sendApplicationDeletedEvent(appId, appClusterDataToSend);
     }
 
@@ -331,11 +329,11 @@ public class ApplicationBuilder {
                                 setTenantId(MultitenantConstants.SUPER_TENANT_ID);
                         String policyId = PolicyManager.getInstance().
                                 getDeploymentPolicyIdByApplication(appId);
-                        if(policyId != null) {
+                        if (policyId != null) {
                             try {
                                 PolicyManager.getInstance().undeployDeploymentPolicy(policyId);
                                 log.info("Deployment policy for the [Application] " + appId +
-                                        "has been removed." );
+                                        "has been removed.");
                             } catch (InvalidPolicyException e) {
                                 log.error("Error while unDeploying the policy for [application] " + appId);
                             }
@@ -387,19 +385,19 @@ public class ApplicationBuilder {
                 //removing the group instance and context
                 GroupMonitor monitor = getGroupMonitor(appId, groupId);
                 ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
-                                                    getAppMonitor(appId);
+                        getAppMonitor(appId);
 
-                if(monitor != null) {
-                    if(monitor.hasMonitors() && applicationMonitor.isTerminating()) {
-                       for(Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
-                           //destroying the drools
-                           monitor1.destroy();
-                       }
+                if (monitor != null) {
+                    if (monitor.hasMonitors() && applicationMonitor.isTerminating()) {
+                        for (Monitor monitor1 : monitor.getAliasToActiveMonitorsMap().values()) {
+                            //destroying the drools
+                            monitor1.destroy();
+                        }
                     }
                     GroupLevelNetworkPartitionContext networkPartitionContext =
                             monitor.getNetworkPartitionContext(context.getNetworkPartitionId());
                     networkPartitionContext.removeClusterGroupContext(instanceId);
-                    if(context.getPartitionId() != null) {
+                    if (context.getPartitionId() != null) {
                         networkPartitionContext.getPartitionCtxt(context.getPartitionId()).
                                 removeActiveInstance(context);
                     }
@@ -503,7 +501,6 @@ public class ApplicationBuilder {
     public static GroupInstance handleGroupInstanceCreatedEvent(String appId, String groupId,
                                                                 String parentId,
                                                                 String networkPartitionId,
-                                                                String instanceId,
                                                                 String partitionId) {
         GroupInstance instance = null;
         ApplicationHolder.acquireWriteLock();
@@ -529,6 +526,16 @@ public class ApplicationBuilder {
             }
 
             GroupStatus status = GroupStatus.Created;
+            String instanceId = parentId;
+            int minGroupInstances = group.getGroupMinInstances();
+            int maxGroupInstances = group.getGroupMaxInstances();
+            /*
+            * When min != 1 or max != 1, we need to generate
+            * instance ids as it is having more than one group instances
+            */
+            if (minGroupInstances > 1 || maxGroupInstances > 1) {
+                instanceId = group.getNextInstanceId(groupId);
+            }
 
             if (!group.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish

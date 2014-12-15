@@ -652,18 +652,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      */
     private GroupInstance createGroupInstance(Group group, String networkPartitionId,
                                               String parentInstanceId, String partitionId) {
-        String instanceId = parentInstanceId;
-        int minGroupInstances = group.getGroupMinInstances();
-        int maxGroupInstances = group.getGroupMaxInstances();
-        /*
-        * When min != 1 or max != 1, we need to generate
-        * instance ids as it is having more than one group instances
-        */
-        if (minGroupInstances > 1 || maxGroupInstances > 1) {
-            instanceId = this.generateInstanceId(group);
-        }
+
         return ApplicationBuilder.handleGroupInstanceCreatedEvent(appId, group.getUniqueIdentifier(),
-                parentInstanceId, networkPartitionId, instanceId, partitionId);
+                parentInstanceId, networkPartitionId, partitionId);
     }
 
     public Map<String, GroupLevelNetworkPartitionContext> getNetworkPartitionCtxts() {

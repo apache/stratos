@@ -381,9 +381,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     private ApplicationInstance createApplicationInstance(Application application, String networkPartitionId) {
-        String instanceId = this.generateInstanceId(application);
+        //String instanceId = this.generateInstanceId(application);
         ApplicationInstance instance = ApplicationBuilder.handleApplicationInstanceCreatedEvent(
-                appId, instanceId, networkPartitionId);
+                appId, networkPartitionId);
         return instance;
     }
 
