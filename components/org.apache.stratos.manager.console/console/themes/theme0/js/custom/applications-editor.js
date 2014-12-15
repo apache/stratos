@@ -35,7 +35,7 @@ var bottomConnectorOptions = {
     isSource:true,
     connectorStyle : { strokeStyle:"#666" },
     isTarget:false,
-    maxConnections:5
+    maxConnections:20
 };
 
 var endpointOptions = {
@@ -636,6 +636,36 @@ function generateGroups(data){
     //append cartridge into html content
     $('#group-list').append(groupListHtml);
 }
+
+//node positioning algo with dagre js
+function dagrePosition(){
+    // construct dagre graph from JsPlumb graph
+    var g = new dagre.graphlib.Graph();
+    g.setGraph({ranksep:'80'});
+    g.setDefaultEdgeLabel(function() { return {}; });
+    var nodes = $(".stepnode");
+
+    for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        g.setNode(n.id, {width: 52, height: 52});
+    }
+    var edges = jsPlumb.getAllConnections();
+    for (var i = 0; i < edges.length; i++) {
+        var c = edges[i];
+        g.setEdge(c.source.id,c.target.id );
+    }
+    // calculate the layout (i.e. node positions)
+    dagre.layout(g);
+
+    // Applying the calculated layout
+    g.nodes().forEach(function(v) {
+        console.log(g.nodes(v).x)
+        $("#" + v).css("left", g.node(v).x + "px");
+        $("#" + v).css("top", g.node(v).y + "px");
+    });
+    jsPlumb.repaintEverything();
+}
+
 // Document ready events
 $(document).ready(function(){
 
@@ -756,6 +786,8 @@ $(document).ready(function(){
     //handle double click for cartridge
     $('#cartridge-list').on('dblclick', ".block-cartridge", function(){
         addJsplumbCartridge($(this).attr('id'),cartridgeCounter);
+        //reposition after cartridge add
+        dagrePosition();
         //increase global count for instances
         cartridgeCounter++;
     });
@@ -772,11 +804,15 @@ $(document).ready(function(){
     $('#group-list').on('dblclick', ".block-group", function(){
         var groupJSON = JSON.parse(decodeURIComponent($(this).attr('data-info')));
         addJsplumbGroup(groupJSON,cartridgeCounter);
+        //reposition after group add
+        dagrePosition();
         //increase global count for instances
         cartridgeCounter++;
     });
 
+    //reposition on click event on editor
+    $('.reposition').on('click', function(){
+        dagrePosition();
+    });
 
 });
-
-
