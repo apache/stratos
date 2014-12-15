@@ -682,6 +682,12 @@
             <fileMode>600</fileMode>
         </file>
         <file>
+            <source>src/main/conf/axis2/tenant-axis2.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/axis2/</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>600</fileMode>
+        </file>
+        <file>
             <source>src/main/conf/metadataservice.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf</outputDirectory>
             <filtered>true</filtered>
