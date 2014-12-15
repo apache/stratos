@@ -474,7 +474,7 @@ public class ClusterInstanceContext extends InstanceContext {
         return clusterId;
     }
 
-    public boolean isGroupScalingEnabledSubtree() {
+    public boolean isInGroupScalingEnabledSubtree() {
         return groupScalingEnabledSubtree;
     }
 }

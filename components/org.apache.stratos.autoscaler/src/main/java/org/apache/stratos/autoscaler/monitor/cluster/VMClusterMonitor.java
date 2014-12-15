@@ -36,6 +36,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
@@ -389,6 +390,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
+    public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+
+    }
+
+    @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
         if (log.isDebugEnabled()) {
@@ -445,6 +451,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     public void sendClusterScalingEvent(String networkPartitionId, String instanceId, float factor) {
 
         MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
+    }
+
+    public void sendScalingOverMaxEvent(String networkPartitionId, String instanceId, float factor) {
+
+        MonitorStatusEventBuilder.handleScalingOverMaxEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
     }
 
     @Override
