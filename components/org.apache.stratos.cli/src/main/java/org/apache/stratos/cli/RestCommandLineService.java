@@ -132,7 +132,15 @@ public class RestCommandLineService {
         return gsonBuilder.create();
     }
 
-    // Login method. This will authenticate the user
+    /**
+     * Authenticate and login to stratos server.
+     * @param serverURL
+     * @param username
+     * @param password
+     * @param validateLogin
+     * @return
+     * @throws Exception
+     */
     public boolean login(String serverURL, String username, String password, boolean validateLogin) throws Exception {
         try {
             // Avoid validating SSL certificate
@@ -143,8 +151,7 @@ public class RestCommandLineService {
                     return true;
                 }
             };
-            // Create a trust manager that does not validate certificate
-            // chains
+            // Create a trust manager that does not validate certificate chains
             TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
                 public java.security.cert.X509Certificate[] getAcceptedIssuers() {
                     return null;
@@ -171,7 +178,7 @@ public class RestCommandLineService {
                 log.debug("Initialized REST Client for user {}", username);
             }
         } catch (AxisFault e) {
-            System.out.println("Error connecting to the back-end");
+            System.out.println("Error connecting to the stratos server");
             throw new CommandException(e);
         }
 
@@ -213,7 +220,13 @@ public class RestCommandLineService {
         }
     }
 
-    // Initialize the rest client and set username and password of the user
+    /**
+     * Initialize the rest client and set username and password of the user
+     * @param serverURL
+     * @param username
+     * @param password
+     * @throws AxisFault
+     */
     private void initializeRestClient(String serverURL, String username, String password) throws AxisFault {
         HttpTransportProperties.Authenticator authenticator = new HttpTransportProperties.Authenticator();
         authenticator.setUsername(username);
@@ -236,50 +249,10 @@ public class RestCommandLineService {
         this.restClient = new RestClient(serverURL, username, password);
     }
 
-    public CartridgeDefinitionBean getCartridge(String cartridgeType) throws CommandException {
-        try {
-            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
-            }.getType();
-            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    listType, "cartridges");
-
-            for (int i = 0; i < cartridgeList.size(); i++) {
-                CartridgeDefinitionBean cartridge = cartridgeList.get(i);
-                if (cartridgeType.equals(cartridge.getType())) {
-                    return cartridge;
-                }
-            }
-        } catch (Exception e) {
-            String message = "Error in getting cartridge";
-            System.out.println(message);
-            log.error(message, e);
-        }
-        return null;
-    }
-
-    public ArrayList<CartridgeDefinitionBean> listCartridgesByServiceGroup(String serviceGroup) throws CommandException {
-        try {
-            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
-            }.getType();
-            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
-                    listType, "cartridges");
-
-            ArrayList<CartridgeDefinitionBean> arrayList = new ArrayList<CartridgeDefinitionBean>();
-            for (int i = 0; i < cartridgeList.size(); i++) {
-                if (serviceGroup.equals(cartridgeList.get(i).getServiceGroup())) {
-                    arrayList.add(cartridgeList.get(i));
-                }
-            }
-            return arrayList;
-        } catch (Exception e) {
-            String message = "Error in listing cartridges";
-            System.out.println(message);
-            log.error(message, e);
-            return null;
-        }
-    }
-
-    // List currently available multi tenant and single tenant cartridges
+    /**
+     * List cartridges
+     * @throws CommandException
+     */
     public void listCartridges() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
@@ -318,6 +291,11 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Describe a cartridge
+     * @param cartridgeType
+     * @throws CommandException
+     */
     public void describeCartridge(final String cartridgeType) throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
@@ -380,168 +358,6 @@ public class RestCommandLineService {
         }
     }
 
-    // Lists subscribed cartridge info (from alias)
-    public void describeCartridgeSubscription(String alias) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-            CartridgeWrapper cartridgeWrapper = (CartridgeWrapper) restClient.getEntity(ENDPOINT_GET_CARTRIDGE_OF_TENANT,
-                    CartridgeWrapper.class, "{id}", alias, "cartridge subscription");
-
-            if((cartridgeWrapper == null) || (cartridgeWrapper.getCartridge() == null)) {
-                System.out.println("Cartridge subscription not found: " + alias);
-                return;
-            }
-
-            Cartridge cartridge = cartridgeWrapper.getCartridge();
-
-            // Get LB IP s
-            //Map<String, Set<String>> lbIpMap = getLbIpList(cartridge, httpClient);
-            //final Set<String> lbPrivateIpSet = lbIpMap.get("private");
-            //final Set<String> lbFloatingIpSet = lbIpMap.get("floating");
-            Cartridge[] cartridges = new Cartridge[1];
-            cartridges[0] = cartridge;
-
-            System.out.println("\nSubscribed Cartridges Info\n");
-            System.out.println("\tType : " + cartridge.getCartridgeType());
-            System.out.println("\tName : " + cartridge.getDisplayName());
-            System.out.println("\tVersion : " + cartridge.getVersion());
-            //System.out.println("\tPublic : " + cartridge.getIsPublic());
-            String tenancy = cartridge.isMultiTenantSpecified() ? "Multi-Tenant" : "Single-Tenant";
-            System.out.println("\tTenancy Model	: " + tenancy);
-            System.out.println("\tAlias : " + cartridge.getCartridgeAlias());
-            System.out.println("\tStatus : " + cartridge.getStatus());
-            String instanceCount = String.valueOf(cartridge.getActiveInstances());
-            System.out.println("\tRunning Instances	: " + instanceCount);
-            //System.out.println("\tAccess URL(s) : " + getAccessURLs(cartridge));
-            if (cartridge.getRepoURL() != null) {
-                System.out.println("\tRepo URL : " + cartridge.getRepoURL());
-            }
-            //System.out.println("\tLB Private IP	: " + lbPrivateIpSet.toString());
-            //if (lbFloatingIpSet != null) {
-            //    System.out.println("\tLB Floating IP : " + lbFloatingIpSet.toString());
-            //}
-            //if (cartridge.getProvider().equals("data")) {
-//                System.out.println("\tDB-username : " + cartridge.getDbUserName());
-//                System.out.println("\tDB-password : " + cartridge.getPassword());
-//                System.out.println("\tDB-Host IP (private)  : " + cartridge.getIp());
-//                if (cartridge.getPublicIp() != null) {
-//                    System.out.println("\tDB-Host IP (floating) : "
-//                            + cartridge.getPublicIp());
-//                }
-//            }
-        } catch (Exception e) {
-            String message = "Error in getting cartridge subscription";
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
-    public void listMembersOfCluster(String cartridgeType, String alias) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-
-            Member[] members = getMembers(cartridgeType, alias, httpClient);
-
-            if (members == null) {
-                // these conditions are handled in the getMembers method
-                return;
-            }
-
-            if (members.length == 0) {
-                if (log.isDebugEnabled()) {
-                    log.debug("No members found");
-                }
-                System.out.println("No members found for the corresponding cluster for type " + cartridgeType
-                        + ", alias " + alias);
-                return;
-            }
-
-            System.out.println("\nList of members in the cluster: " + alias);
-            for (Member member : members) {
-                System.out.println("\n\tServiceName : " + member.getServiceName());
-                System.out.println("\tClusterId : " + member.getClusterId());
-                System.out.println("\tNewtworkPartitionId : " + member.getNetworkPartitionId());
-                System.out.println("\tPartitionId : " + member.getPartitionId());
-                System.out.println("\tStatus : " + member.getStatus());
-                if (member.getLbClusterId() != null) {
-                    System.out.println("\tLBCluster : " + member.getLbClusterId());
-                }
-                System.out.println("\tMemberPrivateIp : " + member.getMemberIp());
-                System.out.println("\tMemberFloatingIp : " + member.getMemberPublicIp());
-                System.out.println("\tMember Properties : " + member.getProperty());
-                System.out.println("\t-----------------------");
-            }
-
-            System.out.println("==================================================");
-            System.out.println("List of LB members for the [cluster]: " + alias);
-
-            // Invoke  clusters/{clusterId}
-            for (Member m : members) {
-                HttpResponse responseCluster = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_GET_CLUSTER_OF_TENANT
-                        + m.getLbClusterId());
-
-                String responseCode = "" + responseCluster.getStatusLine().getStatusCode();
-                String resultStringCluster = CliUtils.getHttpResponseString(responseCluster);
-
-                GsonBuilder gsonBuilder = new GsonBuilder();
-                Gson gson = gsonBuilder.create();
-
-                if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                    ExceptionMapper exception = gson.fromJson(resultStringCluster, ExceptionMapper.class);
-                    System.out.println(exception);
-                    break;
-                }
-                if (resultStringCluster != null && !resultStringCluster.isEmpty()) {
-
-                    printLBs(resultStringCluster);
-                }
-            }
-
-            System.out.println("==================================================");
-
-        } catch (Exception e) {
-            String message = "Error in listing members";
-            System.out.println(message);
-            log.error(message, e);
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
-    }
-
-    private Member[] getMembers(String cartridgeType, String alias, DefaultHttpClient httpClient) throws Exception {
-        try {
-            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_GET_CLUSTER_OF_TENANT + alias);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            Gson gson = new Gson();
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return null;
-            }
-
-            Cluster cluster = getClusterObjectFromString(CliUtils.getHttpResponseString(response));
-
-            if (cluster == null) {
-                System.out.println("No existing subscriptions found for alias " + alias);
-                return null;
-            }
-
-            Member[] members = new Member[cluster.getMember().size()];
-            members = cluster.getMember().toArray(members);
-
-            return members;
-        } catch (Exception e) {
-            String message = "Error in listing members";
-            System.out.println(message);
-            log.error(message, e);
-            return null;
-        }
-    }
-
     private Cluster getClusterObjectFromString(String resultString) {
         String tmp;
         if (resultString.startsWith("{\"cluster\"")) {
@@ -551,41 +367,6 @@ public class RestCommandLineService {
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
         return gson.fromJson(resultString, Cluster.class);
-    }
-
-    private void printLBs(String resultString) {
-
-        Cluster cluster = getClusterObjectFromString(resultString);
-
-        if (cluster == null) {
-            System.out.println("Subscribe cartridge list is null");
-            return;
-        }
-
-        Member[] members = new Member[cluster.getMember().size()];
-        members = cluster.getMember().toArray(members);
-
-        if (members.length == 0) {
-            if (log.isDebugEnabled()) {
-                log.debug("No subscribed cartridges found");
-            }
-            System.out.println("There are no subscribed cartridges");
-            return;
-        }
-
-        for (Member member : members) {
-            System.out.println("\n\tServiceName : " + member.getServiceName());
-            System.out.println("\tClusterId : " + member.getClusterId());
-            System.out.println("\tNewtworkPartitionId : " + member.getNetworkPartitionId());
-            System.out.println("\tPartitionId : " + member.getPartitionId());
-            System.out.println("\tStatus : " + member.getStatus());
-            if (member.getLbClusterId() != null) {
-                System.out.println("\tLBCluster : " + member.getLbClusterId());
-            }
-            System.out.println("\tMemberPrivateIp : " + member.getMemberIp());
-            System.out.println("\tMemberFloatingIp : " + member.getMemberPublicIp());
-            System.out.println("\t-----------------------");
-        }
     }
 
     // This method helps to create the new tenant
@@ -860,11 +641,6 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_CARTRIDGE, "cartridge", id);
     }
 
-    // This method helps to deploy partitions
-    public void deployPartition(String partitionDefinition) throws CommandException {
-        restClient.deployEntity(ENDPOINT_DEPLOY_PARTITION, partitionDefinition, "partition");
-    }
-
     // This method helps to deploy autoscalling polices
     public void deployAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
@@ -908,52 +684,6 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deploy deployment polices
-    public void deployDeploymentPolicy(String deploymentPolicy) throws CommandException {
-        restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
-    }
-
-    // This method helps to update a deployment policy
-    public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
-        restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
-    }
-
-    // This method lists available partitions
-    public void listPartitions() throws CommandException {
-        try {
-            Type listType = new TypeToken<ArrayList<Partition>>() {
-            }.getType();
-            List<Partition> list = (List<Partition>) restClient.listEntity(ENDPOINT_LIST_PARTITIONS,
-                    listType, "partitions");
-
-            if ((list == null) || (list.size() == 0)) {
-                System.out.println("No partitions found");
-                return;
-            }
-
-            RowMapper<Partition> rowMapper = new RowMapper<Partition>() {
-
-                public String[] getData(Partition partition) {
-                    String[] data = new String[3];
-                    data[0] = partition.getId();
-                    data[1] = partition.getProvider();
-                    data[2] = partition.getIsPublic() ? "Public" : "Private";
-                    return data;
-                }
-            };
-
-            Partition[] partitions = new Partition[list.size()];
-            partitions = list.toArray(partitions);
-
-            System.out.println("Partitions found:");
-            CliUtils.printTable(partitions, rowMapper, "ID", "Provider", "Accessibility");
-        } catch (Exception e) {
-            String message = "Error in listing partitions";
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
     public void listAutoscalingPolicies() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<AutoscalePolicy>>() {
@@ -983,40 +713,6 @@ public class RestCommandLineService {
             CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
         } catch (Exception e) {
             String message = "Error in listing autoscaling policies";
-            System.out.println(message);
-            log.error(message, e);
-        }
-    }
-
-    public void listDeploymentPolicies() throws CommandException {
-        try {
-            Type listType = new TypeToken<ArrayList<DeploymentPolicy>>() {
-            }.getType();
-            List<DeploymentPolicy> list = (List<DeploymentPolicy>) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
-                    listType, "deployment policies");
-
-            if ((list == null) || (list.size() == 0)) {
-                System.out.println("No deployment policies found");
-                return;
-            }
-
-            RowMapper<DeploymentPolicy> rowMapper = new RowMapper<DeploymentPolicy>() {
-
-                public String[] getData(DeploymentPolicy policy) {
-                    String[] data = new String[2];
-                    data[0] = policy.getApplicationId();
-                    data[1] = policy.getIsPublic() ? "Public" : "Private";
-                    return data;
-                }
-            };
-
-            DeploymentPolicy[] array = new DeploymentPolicy[list.size()];
-            array = list.toArray(array);
-
-            System.out.println("Deployment policies found:");
-            CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
-        } catch (Exception e) {
-            String message = "Error in listing deployment policies";
             System.out.println(message);
             log.error(message, e);
         }
@@ -1198,12 +894,6 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to update cartridge subscription properties
-    public void updateSubscritptionProperties(String alias, String subscriptionJson) {
-        String url = ENDPOINT_UPDATE_SUBSCRIPTION_PROPERTIES.replace("{subscriptionAlias}", alias);
-        restClient.updateEntity(url, subscriptionJson, "subscription alias: "+alias);
-    }
-
     // This method helps to deploy service groups
     public void deployServiceGroup (String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
@@ -1267,19 +957,6 @@ public class RestCommandLineService {
         }
     }
 
-    // This will return access url from a given cartridge
-    private String getAccessURLs(CartridgeDefinitionBean cartridge) {
-        List<PortMappingBean> portMappings = cartridge.getPortMapping();
-        StringBuilder urlBuilder = new StringBuilder();
-
-        for (PortMappingBean portMapping : portMappings) {
-            String url = portMapping.getProtocol() + "://" + cartridge.getHost() + ":" + portMapping.getProxyPort() + "/";
-            urlBuilder.append(url).append(", ");
-        }
-
-        return urlBuilder.toString();
-    }
-
     // This is for handle exception
     private void handleException(String key, Exception e, Object... args) throws CommandException {
         if (log.isDebugEnabled()) {
@@ -1294,67 +971,5 @@ public class RestCommandLineService {
 
         System.out.println(message);
         throw new CommandException(message, e);
-    }
-
-    // This class is to convert JSON string to Cartridge object
-    public class CartridgeWrapper {
-        private Cartridge cartridge;
-
-        public Cartridge getCartridge() {
-            return cartridge;
-        }
-
-        public void setCartridge(Cartridge cartridge) {
-            this.cartridge = cartridge;
-        }
-
-        public CartridgeWrapper() {
-        }
-    }
-
-    public boolean isMultiTenant(String type) throws CommandException {
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        try {
-            HttpResponse response = restClient.doGet(httpClient, restClient.getBaseURL() + ENDPOINT_LIST_CARTRIDGES);
-
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-            String resultString = CliUtils.getHttpResponseString(response);
-            if (resultString == null) {
-                return false;
-            }
-
-            GsonBuilder gsonBuilder = new GsonBuilder();
-            Gson gson = gsonBuilder.create();
-
-            if (!responseCode.equals(CliConstants.RESPONSE_OK)) {
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
-                return false;
-            }
-
-            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {}.getType();
-            List<CartridgeDefinitionBean> cartridgeList = gson.fromJson(resultString, listType);
-
-            if (cartridgeList == null) {
-                System.out.println("Available cartridge list is null");
-                return false;
-            }
-
-            ArrayList<CartridgeDefinitionBean> multiTenetCartridge = new ArrayList<CartridgeDefinitionBean>();
-
-            for (CartridgeDefinitionBean cartridge : cartridgeList) {
-                if (cartridge.isMultiTenant() && cartridge.getType().equals(type)) {
-                    multiTenetCartridge.add(cartridge);
-                }
-            }
-
-            return multiTenetCartridge.size() > 0;
-
-        } catch (Exception e) {
-            handleException("Exception in listing cartridges", e);
-            return false;
-        } finally {
-            httpClient.getConnectionManager().shutdown();
-        }
     }
 }
