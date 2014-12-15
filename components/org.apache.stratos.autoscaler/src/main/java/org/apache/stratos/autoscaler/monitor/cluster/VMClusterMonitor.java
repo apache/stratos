@@ -254,7 +254,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             boolean rifReset = instanceContext.isRifReset();
                             boolean memoryConsumptionReset = instanceContext.isMemoryConsumptionReset();
                             boolean loadAverageReset = instanceContext.isLoadAverageReset();
-                            boolean averageRequestServedPerInstanceReset = instanceContext.isAverageRequestServedPerInstanceReset();
+                            boolean averageRequestServedPerInstanceReset
+                                    = instanceContext.isAverageRequestServedPerInstanceReset();
 
                             if (log.isDebugEnabled()) {
                                 log.debug("Execution point of scaling Rule, [Is rif Reset] : " + rifReset
@@ -294,8 +295,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                                 instanceContext.setLoadAverageReset(false);
                             } else if (log.isDebugEnabled()) {
                                 log.debug(String.format("Scale rule will not run since the LB statistics have not " +
-                                                "received before this cycle for [cluster instance context] %s ",
-                                        instanceContext.getId()));
+                                                "received before this cycle for [cluster instance context] %s [cluster] %s",
+                                        instanceContext.getId(), clusterId));
                             }
 
                         }
