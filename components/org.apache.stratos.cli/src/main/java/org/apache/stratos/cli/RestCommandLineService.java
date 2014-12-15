@@ -1004,7 +1004,7 @@ public class RestCommandLineService {
 
                 public String[] getData(DeploymentPolicy policy) {
                     String[] data = new String[2];
-                    data[0] = policy.getId();
+                    data[0] = policy.getApplicationId();
                     data[1] = policy.getIsPublic() ? "Public" : "Private";
                     return data;
                 }
