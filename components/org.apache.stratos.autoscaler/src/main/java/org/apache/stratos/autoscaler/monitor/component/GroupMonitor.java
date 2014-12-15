@@ -176,8 +176,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
          String instanceId = statusEvent.getInstanceId();
          LifeCycleState status1 = statusEvent.getStatus();
          String id = this.id;
-
-        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
 
         if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
             onChildActivatedEvent(childId, instanceId);

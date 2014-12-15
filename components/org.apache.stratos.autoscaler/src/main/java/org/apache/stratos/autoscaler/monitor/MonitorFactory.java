@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
-import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
@@ -83,7 +82,6 @@ public class MonitorFactory {
     }
 
 
-
     /**
      * This will create the GroupMonitor based on given groupId by going thr Topology
      *
@@ -107,17 +105,15 @@ public class MonitorFactory {
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
 
-
             boolean hasScalingDependents = false;
-            if(parentMonitor.getScalingDependencies() != null) {
-                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
-
-                    if(scalingDependentList.getScalingDependentListComponents().contains(context.getId())){
-
+            if (parentMonitor.getScalingDependencies() != null) {
+                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
+                    if (scalingDependentList.getScalingDependentListComponents().contains(context.getId())) {
                         hasScalingDependents = true;
                     }
                 }
             }
+
             groupMonitor = new GroupMonitor(group, appId, instanceIds, hasScalingDependents);
             groupMonitor.setAppId(appId);
             if (parentMonitor != null) {
@@ -130,15 +126,6 @@ public class MonitorFactory {
                     groupMonitor.setHasStartupDependents(false);
                 }
             }
-            
-                       
-            if (group.isGroupScalingEnabled()) {
-                groupMonitor.setGroupScalingEnabled(true);
-            } else if (parentMonitor instanceof GroupMonitor) {
-                /*if (parentMonitor.hasScalingDependents() || parentMonitor.getList --> not empty) {
-                    groupMonitor.setHasScalingDependents(true);
-                }*/
-            }
         } finally {
             ApplicationHolder.releaseReadLock();
 
@@ -147,7 +134,7 @@ public class MonitorFactory {
         Group group = ApplicationHolder.getApplications().
                 getApplication(appId).getGroupRecursively(context.getId());
         //Starting the minimum dependencies
-        initialStartup = groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
+        groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
 
         /**
          * If not first app deployment, acquiring read lock to check current the status of the group,
@@ -200,7 +187,7 @@ public class MonitorFactory {
 
         }
 
-        initialStartup = applicationMonitor.startMinimumDependencies(application);
+        applicationMonitor.startMinimumDependencies(application);
 
         /*//If not first app deployment, then calculate the current status of the app instance.
         if (!initialStartup) {
@@ -257,16 +244,15 @@ public class MonitorFactory {
             }
 
             boolean hasScalingDependents = false;
-            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
-
-                if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))){
-
+            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
+                if (scalingDependentList.getScalingDependentListComponents().
+                        contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))) {
                     hasScalingDependents = true;
                 }
             }
 
             boolean groupScalingEnabledSubtree = false;
-            if(parentMonitor instanceof GroupMonitor){
+            if (parentMonitor instanceof GroupMonitor) {
 
                 GroupMonitor groupMonitor = (GroupMonitor) parentMonitor;
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
@@ -285,35 +271,24 @@ public class MonitorFactory {
                 clusterMonitor.setHasStartupDependents(false);
             }
 
-            //setting the scaling dependent behaviour of the cluster monitor
-//            if (parentMonitor.hasScalingDependents() || (context.isGroupScalingEnabled())) {
-//                clusterMonitor.setHasScalingDependents(true);
-//            } else {
-//                clusterMonitor.setHasScalingDependents(false);
-//            }
             //Creating the instance of the cluster
-            ((VMClusterMonitor)clusterMonitor).createClusterInstance(parentInstanceIds, cluster);
+            ((VMClusterMonitor) clusterMonitor).createClusterInstance(parentInstanceIds, cluster);
             //add it to autoscaler context
             AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
 
-
             return clusterMonitor;
-
         } finally {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
     }
 
     private static boolean findIfChildIsInGroupScalingEnabledSubTree(GroupMonitor groupMonitor) {
-
         boolean groupScalingEnabledSubtree = false;
         ParentComponentMonitor parentComponentMonitor = groupMonitor.getParent();
 
-        if(parentComponentMonitor != null && parentComponentMonitor instanceof GroupMonitor){
-
+        if (parentComponentMonitor != null && parentComponentMonitor instanceof GroupMonitor) {
             findIfChildIsInGroupScalingEnabledSubTree((GroupMonitor) parentComponentMonitor);
         } else {
-
             return groupMonitor.isGroupScalingEnabled();
         }
         return groupScalingEnabledSubtree;
