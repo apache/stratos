@@ -244,10 +244,12 @@ public class MonitorFactory {
             }
 
             boolean hasScalingDependents = false;
-            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
-                if (scalingDependentList.getScalingDependentListComponents().
-                        contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))) {
-                    hasScalingDependents = true;
+            if(parentMonitor.getScalingDependencies() != null) {
+                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
+                    if (scalingDependentList.getScalingDependentListComponents().
+                            contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))) {
+                        hasScalingDependents = true;
+                    }
                 }
             }
 
