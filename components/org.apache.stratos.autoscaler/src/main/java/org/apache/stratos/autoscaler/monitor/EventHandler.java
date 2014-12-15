@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.monitor;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 
 /**
  * Event Handler to notify the observer/to receive notification
@@ -47,6 +48,13 @@ public interface EventHandler {
      * @param scalingEvent
      */
     public abstract void onChildScalingEvent(ScalingEvent scalingEvent);
+
+    /**
+     * Triggered when a scaling over max event is received from a child.
+     *
+     * @param scalingOverMaxEvent
+     */
+    public abstract void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent);
 
     /**
      * Triggered when a scaling event is received from the parent.
