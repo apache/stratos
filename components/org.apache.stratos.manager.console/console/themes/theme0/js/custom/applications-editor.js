@@ -816,3 +816,8 @@ $(document).ready(function(){
     });
 
 });
+
+//bootstrap tooltip added
+$(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+})
