@@ -324,19 +324,17 @@ public class RuleTasksDelegator {
 
     }
 
-    public void delegateScalingOverMaxNotification(String clusterId, String networkPartitionId, String instanceId,
-                                                      int requiredInstanceCount, int minimumInstanceCount) {
+    public void delegateScalingOverMaxNotification(String clusterId, String networkPartitionId, String instanceId) {
 
         if(log.isDebugEnabled()) {
             log.debug("Scaling dependent notification..");
         }
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        float factor = requiredInstanceCount / minimumInstanceCount;
         if (clusterMonitor instanceof VMClusterMonitor) {
 
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;
-            vmClusterMonitor.sendClusterScalingEvent(networkPartitionId, instanceId, factor);
+            vmClusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
         }
 
     }
