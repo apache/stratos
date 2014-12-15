@@ -150,7 +150,11 @@ dialect "mvel"
                     }
                 }
             } else{
-                log.info("[scale-up] Max is reached, hence not scaling up [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() + " [max] " + clusterInstanceContext.getMaxInstanceCount());
+                log.info("[scale-up] Max is reached, hence not scaling up cluster monitor itself. [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() + " [max] " + clusterInstanceContext.getMaxInstanceCount());
+                if(clusterInstanceContext.isInGroupScalingEnabledSubtree()){
+
+                    delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
+                }
             }
         } else if(scaleDown){
 

@@ -453,9 +453,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
     }
 
-    public void sendScalingOverMaxEvent(String networkPartitionId, String instanceId, float factor) {
+    public void sendScalingOverMaxEvent(String networkPartitionId, String instanceId) {
 
-        MonitorStatusEventBuilder.handleScalingOverMaxEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
+        MonitorStatusEventBuilder.handleScalingOverMaxEvent(this.parent, networkPartitionId, instanceId,
+                this.id, serviceType);
     }
 
     @Override
