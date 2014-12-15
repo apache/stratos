@@ -114,20 +114,13 @@
 		    	<GrantTypeName>password</GrantTypeName>
 			<GrantTypeHandlerImplClass>org.wso2.carbon.identity.oauth2.token.handlers.grant.PasswordGrantHandler</GrantTypeHandlerImplClass>
 		    </SupportedGrantType>
-		    <!--
-		    <SupportedGrantType>
-		    	<GrantTypeName>password</GrantTypeName>
-			<GrantTypeHandlerImplClass>org.udara.handlers.MyPasswordGrantHandler</GrantTypeHandlerImplClass>
-		    </SupportedGrantType>
-		    -->
 		    <SupportedGrantType>
 		    	<GrantTypeName>refresh_token</GrantTypeName>
 			<GrantTypeHandlerImplClass>org.wso2.carbon.identity.oauth2.token.handlers.grant.RefreshGrantHandler</GrantTypeHandlerImplClass>
 		    </SupportedGrantType>
 		    <SupportedGrantType>
 		    	<GrantTypeName>client_credentials</GrantTypeName>
-			<!--<GrantTypeHandlerImplClass>org.wso2.carbon.identity.oauth2.token.handlers.grant.ClientCredentialsGrantHandler</GrantTypeHandlerImplClass>-->
-			<GrantTypeHandlerImplClass>org.udara.handlers.ClientCredentialsGrantHandler</GrantTypeHandlerImplClass>
+			<GrantTypeHandlerImplClass>org.apache.stratos.custom.handlers.granttype.ClientCredentialsGrantHandler</GrantTypeHandlerImplClass>
 		    </SupportedGrantType>
 		    <SupportedGrantType>
 		    	<GrantTypeName>urn:ietf:params:oauth:grant-type:saml2-bearer</GrantTypeName>
