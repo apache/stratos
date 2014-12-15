@@ -40,6 +40,7 @@ public final class AutoScalerConstants {
 	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
 	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
     public static final String APPLICATIONS_RESOURCE = "/applications";
+    public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
 
     /**
      * Cluster monitoring  interval

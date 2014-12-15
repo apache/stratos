@@ -167,10 +167,10 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deployDeploymentPolicyDefinition (DeploymentPolicy deploymentPolicy)
+    public Response deployDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
-
-        return StratosApiV40Utils.deployDeploymentPolicy(deploymentPolicy);
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -178,9 +178,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Partition[] getPartitions () throws RestAPIException {
-
-        return StratosApiV40Utils.getAvailablePartitions();
+    public Response getPartitions() throws RestAPIException {
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -252,9 +252,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicy[] getDeploymentPolicies () throws RestAPIException {
-
-        return StratosApiV40Utils.getDeploymentPolicies();
+    public Response getDeploymentPolicies() throws RestAPIException {
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -262,10 +262,10 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicy getDeploymentPolicies (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public Response getDeploymentPolicies(@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
-
-        return StratosApiV40Utils.getDeploymentPolicy(deploymentPolicyId);
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -273,10 +273,10 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public DeploymentPolicy[] getValidDeploymentPolicies (@PathParam("cartridgeType") String cartridgeType)
+    public Response getValidDeploymentPolicies(@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
-
-        return StratosApiV40Utils.getDeploymentPolicies(cartridgeType);
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET

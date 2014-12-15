@@ -183,7 +183,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationDeleted(String appId) {
+    public static void handleApplicationUndeployed(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application unDeployment for [application-id] " + appId);
         }
