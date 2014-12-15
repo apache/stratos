@@ -77,8 +77,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     private float scalingFactorBasedOnDependencies = 1.0f;
 
 
-    protected VMClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
-        super(cluster, hasScalingDependents);
+    protected VMClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
+        super(cluster, hasScalingDependents, groupScalingEnabledSubtree);
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
@@ -1151,7 +1151,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 }
 
                 // create VMClusterContext and then add all the instanceContexts
-                clusterContext.addInstanceContext(parentInstanceId, cluster, hasScalingDependents());
+                clusterContext.addInstanceContext(parentInstanceId, cluster, hasScalingDependents(),
+                        groupScalingEnabledSubtree());
                 if (this.getInstance(clusterInstance.getInstanceId()) == null) {
                     this.addInstance(clusterInstance);
                 }

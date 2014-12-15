@@ -257,7 +257,6 @@ public class MonitorFactory {
             }
 
             boolean hasScalingDependents = false;
-
             for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
 
                 if(scalingDependentList.getScalingDependentListComponents().contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))){
@@ -265,7 +264,15 @@ public class MonitorFactory {
                     hasScalingDependents = true;
                 }
             }
-            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents);
+
+            boolean groupScalingEnabledSubtree = false;
+            if(parentMonitor instanceof GroupMonitor){
+
+                GroupMonitor groupMonitor = (GroupMonitor) parentMonitor;
+                groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
+            }
+            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents,
+                    groupScalingEnabledSubtree);
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
@@ -295,5 +302,20 @@ public class MonitorFactory {
         } finally {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
+    }
+
+    private static boolean findIfChildIsInGroupScalingEnabledSubTree(GroupMonitor groupMonitor) {
+
+        boolean groupScalingEnabledSubtree = false;
+        ParentComponentMonitor parentComponentMonitor = groupMonitor.getParent();
+
+        if(parentComponentMonitor != null && parentComponentMonitor instanceof GroupMonitor){
+
+            findIfChildIsInGroupScalingEnabledSubTree((GroupMonitor) parentComponentMonitor);
+        } else {
+
+            return groupMonitor.isGroupScalingEnabled();
+        }
+        return groupScalingEnabledSubtree;
     }
 }

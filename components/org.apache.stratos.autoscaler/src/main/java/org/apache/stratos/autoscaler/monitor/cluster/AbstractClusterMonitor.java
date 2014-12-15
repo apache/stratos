@@ -74,10 +74,12 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
     private boolean isDestroyed;
     //has scaling dependents
     private boolean hasScalingDependents;
+    private boolean groupScalingEnabledSubtree;
 
-    protected AbstractClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
+    protected AbstractClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
         super();
+        this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
         this.setCluster(new Cluster(cluster));
         this.serviceType = cluster.getServiceName();
         this.clusterId = cluster.getClusterId();
@@ -417,5 +419,10 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     public boolean hasScalingDependents() {
         return hasScalingDependents;
+    }
+
+    public boolean groupScalingEnabledSubtree() {
+
+        return groupScalingEnabledSubtree;
     }
 }

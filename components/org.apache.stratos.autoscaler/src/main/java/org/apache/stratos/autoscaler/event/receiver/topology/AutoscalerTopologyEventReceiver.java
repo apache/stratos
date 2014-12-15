@@ -456,7 +456,8 @@ public class AutoscalerTopologyEventReceiver {
                                     }
                                     log.info(" Cluster monitor has scaling dependents"
                                     		+ "  ["+clusterMonitor.hasScalingDependents()+"] "); // TODO -- remove this log..
-                                    clusterContext.addInstanceContext(instanceId, cluster, clusterMonitor.hasScalingDependents());
+                                    clusterContext.addInstanceContext(instanceId, cluster,
+                                            clusterMonitor.hasScalingDependents(), clusterMonitor.groupScalingEnabledSubtree());
                                     if (clusterMonitor.getInstance(instanceId) == null) {
                                         // adding the same instance in topology to monitor as a reference
                                         ClusterInstance clusterInstance1 = cluster.getInstanceContexts(instanceId);
