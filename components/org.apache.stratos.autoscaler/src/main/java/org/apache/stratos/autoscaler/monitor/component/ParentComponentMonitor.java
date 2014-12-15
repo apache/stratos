@@ -230,11 +230,11 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     }
 
-    protected String generateInstanceId(ParentComponent component) {
+    /*protected String generateInstanceId(ParentComponent component) {
         String instanceId = component.getUniqueIdentifier() + "_" +
                 (component.getInstanceContextCount() + 1);
         return instanceId;
-    }
+    }*/
 
     /**
      * This will start the child monitors based on the active of siblings according to start up order
