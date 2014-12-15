@@ -90,13 +90,13 @@ public class MonitorStatusEventBuilder {
     }
 
     /*public static void notifyChildCluster(Monitor child, ClusterStatus state, List<String> instanceId) {
-        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, instanceId, child.getId());
+        MonitorStatusEvent statusEvent = new ClusterStatusEvent(state, instanceId, child.getApplicationId());
         child.onParentStatusEvent(statusEvent);
     }
 
     public static void notifyChildGroup(Monitor child, GroupStatus state, List<String> instanceIds)
             throws ParentMonitorNotFoundException {
-        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceIds);
+        MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getApplicationId(), instanceIds);
         child.onParentStatusEvent(statusEvent);
     }*/
 

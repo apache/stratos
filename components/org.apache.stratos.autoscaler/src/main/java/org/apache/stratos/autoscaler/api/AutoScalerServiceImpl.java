@@ -92,7 +92,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             } catch (PartitionValidationException ignoredException) {
                 // if this policy doesn't valid for the given cartridge, add a debug log.
                 if (log.isDebugEnabled()) {
-                    log.debug("Deployment policy [id] " + deploymentPolicy.getId()
+                    log.debug("Deployment policy [id] " + deploymentPolicy.getApplicationId()
                             + " is not valid for Cartridge [type] " + cartridgeType, ignoredException);
                 }
             }*/

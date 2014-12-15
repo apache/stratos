@@ -145,7 +145,7 @@ public class RegistryManager {
     }
 
     public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getId();
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getApplicationId();
         persist(deploymentPolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(deploymentPolicy.toString());
@@ -522,7 +522,7 @@ public class RegistryManager {
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy deleted from registry: [id] %s",
-                    depPolicy.getId()));
+                    depPolicy.getApplicationId()));
         }
     }
 
