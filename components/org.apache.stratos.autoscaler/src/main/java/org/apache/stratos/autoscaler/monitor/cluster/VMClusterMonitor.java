@@ -34,8 +34,8 @@ import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -243,7 +243,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Running minimum check for cluster instance %s ",
-                                        instanceContext.getId() +  " for the cluster: " + clusterId));
+                                        instanceContext.getId() + " for the cluster: " + clusterId));
                             }
 
                             minCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getMinCheckKnowledgeSession(),
@@ -331,14 +331,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         }
     }
 
-//    public String getLbReferenceType() {
-//        return lbReferenceType;
-//    }
-//
-//    public void setLbReferenceType(String lbReferenceType) {
-//        this.lbReferenceType = lbReferenceType;
-//    }
-
     @Override
     public void destroy() {
         getMinCheckKnowledgeSession().dispose();
@@ -354,7 +346,6 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
     @Override
     public String toString() {
         return "VMClusterMonitor [clusterId=" + getClusterId() +
-//                ", lbReferenceType=" + lbReferenceType +
                 ", hasPrimary=" + hasPrimary + " ]";
     }
 
@@ -915,20 +906,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         String memberId = memberReadyToShutdownEvent.getMemberId();
         String partitionId = getPartitionOfMember(memberId);
         ClusterLevelPartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
-        // terminate the shutdown ready member
-        //CloudControllerClient ccClient = CloudControllerClient.getInstance();
 
         try {
-            //NetworkPartitionContext nwPartitionCtxt;
-            //String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
-            //nwPartitionCtxt = getNetworkPartitionCtxt(networkPartitionId);
-
-            // start a new member in the same Partition
-            //String memberId = memberReadyToShutdownEvent.getMemberId();
             String clusterId = memberReadyToShutdownEvent.getClusterId();
-            //String partitionId = getPartitionOfMember(memberId);
-            //PartitionContext partitionCtxt = nwPartitionCtxt.getPartitionCtxt(partitionId);
-
             //move member to pending termination list
             if (partitionCtxt.getPendingTerminationMember(memberId) != null) {
                 partitionCtxt.movePendingTerminationMemberToObsoleteMembers(memberId);
@@ -937,14 +917,16 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             "and moved to obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
-            } else if(partitionCtxt.getObsoleteMember(memberId) != null) {
+            } else if (partitionCtxt.getObsoleteMember(memberId) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Member is  in obsolete list: [member] %s " +
                             "[partition] %s [cluster] %s ", memberId, partitionId, clusterId));
                 }
             } //TODO else part
 
-            if(partitionCtxt.getTotalMemberCount() == 0) {
+            //when no more members are there to terminate Invoking it monitor directly
+            // to speed up the termination process
+            if (partitionCtxt.getTotalMemberCount() == 0) {
                 this.monitor();
             }
 
@@ -1051,13 +1033,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     @Override
     public void terminateAllMembers(final String instanceId, final String networkPartitionId) {
-
+        final VMClusterMonitor monitor = this;
         Thread memberTerminator = new Thread(new Runnable() {
             public void run() {
 
                 ClusterInstanceContext instanceContext = getAllNetworkPartitionCtxts().get(networkPartitionId)
                         .getClusterInstanceContext(instanceId);
-
+                boolean allMovedToObsolete = true;
                 for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                     if (log.isInfoEnabled()) {
                         log.info("Starting to terminate all members in cluster [" + getClusterId() + "] " +
@@ -1092,14 +1074,20 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                         MemberContext pendingMemberCtxt = pendingIterator.next();
                         // pending members
                         String memeberId = pendingMemberCtxt.getMemberId();
-                        if(log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
                             log.debug("Moving pending member [member id] " + memeberId + " to obsolete list");
                         }
                         partitionContext.movePendingMemberToObsoleteMembers(memeberId);
                     }
+                    if(partitionContext.getTotalMemberCount() == 0) {
+                        allMovedToObsolete = allMovedToObsolete && true;
+                    } else {
+                        allMovedToObsolete = false;
+                    }
+                }
 
-//                terminateAllFactHandle = AutoscalerRuleEvaluator.evaluateTerminateAll
-//                        (terminateAllKnowledgeSession, terminateAllFactHandle, partitionContext);
+                if(allMovedToObsolete) {
+                    monitor.monitor();
                 }
             }
         }, "Member Terminator - [cluster id] " + getClusterId());
@@ -1160,10 +1148,10 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
                 // Cluster instance is already there. No need to create one.
                 VMClusterContext clusterContext = (VMClusterContext) this.getClusterContext();
-                if(clusterContext == null) {
+                if (clusterContext == null) {
 
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
-                                    hasScalingDependents());
+                            hasScalingDependents());
                     this.setClusterContext(clusterContext);
                 }
 
@@ -1233,7 +1221,7 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                     }
                     for (String memberId : members) {
                         // pending members
-                        if(log.isDebugEnabled()) {
+                        if (log.isDebugEnabled()) {
                             log.debug("Moving pending member [member id] " + memberId + " the obsolete list");
                         }
                         partitionContext.movePendingMemberToObsoleteMembers(memberId);
