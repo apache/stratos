@@ -64,9 +64,9 @@ public class KubernetesClusterMonitor extends VMClusterMonitor {
 
 //    private StatefulKnowledgeSession dependentScaleCheckKnowledgeSession;
 
-    protected KubernetesClusterMonitor(Cluster cluster, boolean hasScalingDependents) {
+    protected KubernetesClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
-        super(cluster, hasScalingDependents);
+        super(cluster, hasScalingDependents, groupScalingEnabledSubtree);
 
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.CONTAINER_OBSOLETE_CHECK_DROOL_FILE);

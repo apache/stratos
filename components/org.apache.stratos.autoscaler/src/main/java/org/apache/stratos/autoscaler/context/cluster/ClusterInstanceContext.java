@@ -67,10 +67,11 @@ public class ClusterInstanceContext extends InstanceContext {
     private String clusterId;
 
     private boolean hasScalingDependants;
+    private boolean groupScalingEnabledSubtree;
 
     public ClusterInstanceContext(String clusterInstanceId, String partitionAlgo,
                                   int min, int max, String networkPartitionId, String clusterId,
-                                  boolean hasScalingDependants) {
+                                  boolean hasScalingDependants, boolean groupScalingEnabledSubtree) {
 
         super(clusterInstanceId);
         this.networkPartitionId = networkPartitionId;
@@ -86,6 +87,7 @@ public class ClusterInstanceContext extends InstanceContext {
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
         this.hasScalingDependants = hasScalingDependants;
+        this.groupScalingEnabledSubtree = groupScalingEnabledSubtree;
     }
 
     public List<ClusterLevelPartitionContext> getPartitionCtxts() {
@@ -470,5 +472,9 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public String getClusterId() {
         return clusterId;
+    }
+
+    public boolean isGroupScalingEnabledSubtree() {
+        return groupScalingEnabledSubtree;
     }
 }

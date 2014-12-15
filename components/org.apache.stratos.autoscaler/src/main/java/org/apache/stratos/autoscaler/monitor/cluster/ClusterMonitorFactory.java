@@ -43,7 +43,8 @@ public class ClusterMonitorFactory {
      * @throws PolicyValidationException    when deployment policy is not valid
      * @throws PartitionValidationException when partition is not valid
      */
-    public static AbstractClusterMonitor getMonitor(Cluster cluster, boolean hasScalingDependents)
+    public static AbstractClusterMonitor getMonitor(Cluster cluster, boolean hasScalingDependents,
+                                                    boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
         AbstractClusterMonitor clusterMonitor;
@@ -52,20 +53,21 @@ public class ClusterMonitorFactory {
 //////        } else if (cluster.isLbCluster()) {
 //////            clusterMonitor = getVMLbClusterMonitor(cluster);
 //        } else {
-            clusterMonitor = getVMClusterMonitor(cluster, hasScalingDependents);
+            clusterMonitor = getVMClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
 //        }
 
         return clusterMonitor;
     }
 
-    private static VMClusterMonitor getVMClusterMonitor(Cluster cluster, boolean hasScalingDependents)
+    private static VMClusterMonitor getVMClusterMonitor(Cluster cluster, boolean hasScalingDependents,
+                                                        boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
             return null;
         }
 
-        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster, hasScalingDependents);
+        VMClusterMonitor clusterMonitor = new VMClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
 
         // find lb reference type
         java.util.Properties props = cluster.getProperties();
