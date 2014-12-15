@@ -307,7 +307,7 @@ public class AutoscalerUtil {
             property.setValue(value);
             propertyList.add(property);
         }
-        
+
         if(propertyList.isEmpty()) {
             return null;
         }
@@ -317,7 +317,7 @@ public class AutoscalerUtil {
         properties.setProperties(propertyArray);
         return properties;
     }
-    
+
     public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
             org.apache.stratos.common.Properties properties) {
         org.apache.stratos.cloud.controller.stub.Properties stubProps = new org.apache.stratos.cloud.controller.stub.Properties();

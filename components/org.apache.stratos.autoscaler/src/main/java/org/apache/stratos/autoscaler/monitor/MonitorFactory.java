@@ -109,15 +109,15 @@ public class MonitorFactory {
 
 
             boolean hasScalingDependents = false;
+            if(parentMonitor.getScalingDependencies() != null) {
+                for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
 
-            for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()){
+                    if(scalingDependentList.getScalingDependentListComponents().contains(context.getId())){
 
-                if(scalingDependentList.getScalingDependentListComponents().contains(context.getId())){
-
-                    hasScalingDependents = true;
+                        hasScalingDependents = true;
+                    }
                 }
             }
-
             groupMonitor = new GroupMonitor(group, appId, instanceIds, hasScalingDependents);
             groupMonitor.setAppId(appId);
             if (parentMonitor != null) {
