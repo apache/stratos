@@ -67,9 +67,10 @@
 }
 
 #whiteboard{
-    width: 800px;
+    width: 100%;
     height: 585px;
     position: absolute;
+    overflow: auto;
 }
 
 .description{
@@ -153,4 +154,21 @@
     border-radius: 15px;
     top: 52px;
     left: 52px;
+}
+.reposition {
+    float: right;
+    margin: 11px 20px;
+    padding: 5px;
+    background-color: white;
+    border-radius: 40px;
+    width: 40px;
+    z-index: 9999;
+    position: relative;
+    cursor: pointer;
+}
+
+.reposition i{
+    padding-left: 4px;
+    color: rgb(93, 170, 254);
+    padding-top: 2px;
 }
