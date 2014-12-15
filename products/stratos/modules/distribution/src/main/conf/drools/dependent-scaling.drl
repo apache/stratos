@@ -55,7 +55,7 @@ dialect "mvel"
             int count = 0;
             boolean partitionsAvailable = true;
 
-            while(count != additionalInstances){
+            while(count != additionalInstances  && partitionsAvailable){
 
                 ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                 if(partitionContext != null){
@@ -75,7 +75,7 @@ dialect "mvel"
 
             int count = 0;
 
-            while(count != redundantInstances && partitionsAvailable){
+            while(count != redundantInstances){
                 MemberStatsContext selectedMemberStatsContext = null;
                 double lowestOverallLoad = 0.0;
                 boolean foundAValue = false;
