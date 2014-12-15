@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildPolicyHolder;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 
@@ -35,7 +34,6 @@ import java.util.Arrays;
 public class DeploymentPolicy implements Serializable{
 
     private static final long serialVersionUID = 5675507196284400099L;
-    private String id;
     private String applicationId;
     private String description;
     private boolean isPublic;
@@ -44,27 +42,27 @@ public class DeploymentPolicy implements Serializable{
     private int tenantId;
 
     /**
-     * Gets the value of the id property.
+     * Gets the value of the applicationId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getId() {
-        return id;
+    public String getApplicationId() {
+        return applicationId;
     }
 
     /**
-     * Sets the value of the id property.
+     * Sets the value of the applicationId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setId(String value) {
-        this.id = value;
+    public void setApplicationId(String value) {
+        this.applicationId = value;
     }
     
     /**
@@ -187,7 +185,7 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public String toString() {
-        return "Deployment Policy [id]" + this.id + " Description " +  this.description 
+        return "Deployment Policy [applicationId]" + this.applicationId + " Description " +  this.description
         		+ " isPublic " +  this.isPublic 
         		+" [partitions] " + Arrays.toString(this.getAllPartitions());
     }
@@ -208,14 +206,6 @@ public class DeploymentPolicy implements Serializable{
         } else {
             this.childPolicies = Arrays.copyOf(childPolicies, childPolicies.length);
         }
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
     }
 
     public ChildPolicy getChildPolicy(String id) {

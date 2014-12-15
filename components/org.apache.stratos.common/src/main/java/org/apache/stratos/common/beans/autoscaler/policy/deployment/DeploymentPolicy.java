@@ -26,7 +26,8 @@ import java.util.List;
 @XmlRootElement
 public class DeploymentPolicy {
 
-    private String id;
+    //partition groups
+    private String applicationId;
 
     private String description;
 
@@ -36,12 +37,12 @@ public class DeploymentPolicy {
 
     private List<ChildPolicy> childPolicies;
 
-    public String getId() {
-        return id;
+    public String getApplicationId() {
+        return applicationId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
     }
 
     public boolean getIsPublic() {

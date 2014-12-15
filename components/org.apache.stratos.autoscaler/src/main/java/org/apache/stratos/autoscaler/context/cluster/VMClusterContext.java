@@ -219,7 +219,7 @@ public class VMClusterContext extends AbstractClusterContext {
         if (clusterLevelNetworkPartitionContext == null) {
             String msg =
                     "Network Partition is null in deployment policy: [policy-name]: " +
-                            deploymentPolicy.getId();
+                            deploymentPolicy.getApplicationId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -231,7 +231,7 @@ public class VMClusterContext extends AbstractClusterContext {
             String msg =
                     "[Partition] " + clusterInstance.getPartitionId() + " for [networkPartition] " +
                             clusterInstance.getNetworkPartitionId() + "is null " +
-                            "in deployment policy: [policy-name]: " + deploymentPolicy.getId();
+                            "in deployment policy: [policy-name]: " + deploymentPolicy.getApplicationId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }

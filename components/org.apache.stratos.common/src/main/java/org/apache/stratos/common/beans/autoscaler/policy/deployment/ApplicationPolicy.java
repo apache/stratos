@@ -25,19 +25,9 @@ import java.util.List;
 
 @XmlRootElement
 public class ApplicationPolicy {
-    //partition groups
-    private String applicationId;
+
 
     private List<ApplicationLevelNetworkPartition> networkPartition;
-
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
 
     public List<ApplicationLevelNetworkPartition> getNetworkPartition() {
         return networkPartition;

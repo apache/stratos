@@ -1000,7 +1000,7 @@ public class StratosApiV41Utils {
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Starting to deploy application: [application-id] %s",
-                    deploymentPolicyBean.getApplicationPolicy().getApplicationId()));
+                    deploymentPolicyBean.getApplicationId()));
         }
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -1013,7 +1013,7 @@ public class StratosApiV41Utils {
                 autoscalerServiceClient.deployDeploymentPolicy(deploymentPolicy);
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Application deployed successfully: [application-id] %s [deployment-policy-id] %s",
-                            deploymentPolicy.getApplicationId(), deploymentPolicy.getId()));
+                            deploymentPolicy.getApplicationId(), deploymentPolicy.getApplicationId()));
                 }
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);

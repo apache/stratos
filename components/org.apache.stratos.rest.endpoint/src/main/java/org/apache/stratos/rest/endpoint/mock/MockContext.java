@@ -570,7 +570,7 @@ public class MockContext {
     		}
     	}
     	
-    	policies.put(deploymentPolicy.getApplicationPolicy().getApplicationId() +UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
+    	policies.put(deploymentPolicy.getApplicationId() +UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
         stratosApiResponse.setMessage("Successfully deployed deployment policy definition");
         return stratosApiResponse;

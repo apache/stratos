@@ -106,7 +106,7 @@ public class ClusterContextFactory {
          // partition group = network partition context
          for (ChildLevelNetworkPartition networkPartition : deploymentPolicy.getChildLevelNetworkPartitions()) {
 
-             String networkPartitionId = networkPartition.getId();
+             String networkPartitionId = networkPartition.getApplicationId();
  //            NetworkPartitionLbHolder networkPartitionLbHolder =
  //                    PartitionManager.getInstance()
  //                            .getNetworkPartitionLbHolder(networkPartitionId);
@@ -126,7 +126,7 @@ public class ClusterContextFactory {
                      networkPartition.getPartitions());
              for (Member member : cluster.getMembers()) {
                  String memberId = member.getMemberId();
-                 if (member.getNetworkPartitionId().equalsIgnoreCase(clusterLevelNetworkPartitionContext.getId())) {
+                 if (member.getNetworkPartitionId().equalsIgnoreCase(clusterLevelNetworkPartitionContext.getApplicationId())) {
                      MemberContext memberContext = new MemberContext();
                      memberContext.setClusterId(member.getClusterId());
                      memberContext.setMemberId(memberId);

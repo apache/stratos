@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.pojo.policy;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -100,24 +99,24 @@ public class PolicyManager {
     }
 
     public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        if(StringUtils.isEmpty(policy.getId())){
+        if(StringUtils.isEmpty(policy.getApplicationId())){
             throw new AutoScalerException("Deploying policy id cannot be empty");
         }
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Updating deployment policy: [id] %s", policy.getId()));
+                log.info(String.format("Updating deployment policy: [id] %s", policy.getApplicationId()));
             }
             fillPartitions(policy);
         } catch (InvalidPartitionException e) {
             log.error(e);
-            throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getId()), e);
+            throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getApplicationId()), e);
         }
 
         updateDeploymentPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getId()));
+            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getApplicationId()));
         }
         return true;
     }
@@ -126,7 +125,7 @@ public class PolicyManager {
         //TODO fill partition by extracting the partitions from policy
 //        PartitionManager partitionMgr = PartitionManager.getInstance();
 //        for (Partition partition : deploymentPolicy.getAllPartitions()) {
-//            String partitionId = partition.getId();
+//            String partitionId = partition.getApplicationId();
 //            if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
 //                String msg = "Could not find partition: [id] " + partitionId + ". " +
 //                        "Please deploy the partitions before deploying the deployment policies.";
@@ -213,30 +212,30 @@ public class PolicyManager {
 
     // Add the deployment policy to As in memmory information model. Does not persist.
     public String addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
-        if (StringUtils.isEmpty(policy.getId())) {
+        if (StringUtils.isEmpty(policy.getApplicationId())) {
             // id = application id + random string
             String id = policy.getApplicationId() + UUID.randomUUID().getLeastSignificantBits();
-            policy.setId(id);
+            policy.setApplicationId(id);
         }
-        if (!deploymentPolicyListMap.containsKey(policy.getId())) {
+        if (!deploymentPolicyListMap.containsKey(policy.getApplicationId())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: " + policy.getId());
+                log.debug("Adding deployment policy: " + policy.getApplicationId());
             }
-            deploymentPolicyListMap.put(policy.getId(), policy);
+            deploymentPolicyListMap.put(policy.getApplicationId(), policy);
         } else {
-        	String errMsg = "Specified deployment policy [" + policy.getId()+ "] already exists";
+        	String errMsg = "Specified deployment policy [" + policy.getApplicationId()+ "] already exists";
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
         }
         
-        return policy.getId();
+        return policy.getApplicationId();
     }
 
     public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
         if (log.isDebugEnabled()) {
-            log.debug("Updating deployment policy: " + policy.getId());
+            log.debug("Updating deployment policy: " + policy.getApplicationId());
         }
-        deploymentPolicyListMap.put(policy.getId(), policy);
+        deploymentPolicyListMap.put(policy.getApplicationId(), policy);
     }
 
     /**
