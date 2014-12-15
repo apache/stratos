@@ -229,12 +229,6 @@ public class StratosApiV41Utils {
                 lbCartridges.add(cartridge);
             }
         }
-
-		/*if(lbCartridges == null || lbCartridges.isEmpty()) {
-            String msg = "Load balancer Cartridges are not available.";
-	        log.error(msg);
-	        throw new RestAPIException(msg) ;
-		}*/
         return lbCartridges;
     }
 
@@ -242,12 +236,10 @@ public class StratosApiV41Utils {
 		List<CartridgeDefinitionBean> cartridges = new ArrayList<CartridgeDefinitionBean>();
 
 		if (log.isDebugEnabled()) {
-			log.debug("Getting available cartridges. Privider name : " + provider );
+			log.debug("Reading cartridges: [provider-name] " + provider );
 		}
 
 		try {
-
-
 			String[] availableCartridges = CloudControllerServiceClient.getServiceClient().getRegisteredCartridges();
 
 			if (availableCartridges != null) {
@@ -274,23 +266,7 @@ public class StratosApiV41Utils {
 						continue;
 					}
 
-                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
-					cartridge.setType(cartridgeType);
-					cartridge.setProvider(cartridgeInfo.getProvider());
-					cartridge.setCategory(cartridgeInfo.getCategory());
-					cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-					cartridge.setDescription(cartridgeInfo.getDescription());
-					cartridge.setVersion(cartridgeInfo.getVersion());
-					cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-					cartridge.setHost(cartridgeInfo.getHostName());
-					cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-					cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-					//cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-					//cartridge.setCartridgeAlias("-");
-					cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-					cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
-
-					//cartridge.setActiveInstances(0);
+                    CartridgeDefinitionBean cartridge = convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
 					cartridges.add(cartridge);
 				}
 			} else {
@@ -359,23 +335,7 @@ public class StratosApiV41Utils {
                         continue;
                     }
 
-                    CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
-                    cartridge.setType(cartridgeType);
-                    cartridge.setProvider(cartridgeInfo.getProvider());
-                    cartridge.setCategory(cartridgeInfo.getCategory());
-                    cartridge.setDisplayName(cartridgeInfo.getDisplayName());
-                    cartridge.setDescription(cartridgeInfo.getDescription());
-                    cartridge.setVersion(cartridgeInfo.getVersion());
-                    cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-                    cartridge.setHost(cartridgeInfo.getHostName());
-                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-                    //cartridge.setCartridgeAlias("-");
-                    cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
-
-                    //cartridge.setActiveInstances(0);
+                    CartridgeDefinitionBean cartridge = convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
                     cartridges.add(cartridge);
 
 
@@ -410,6 +370,41 @@ public class StratosApiV41Utils {
         }
 
         return cartridges;
+    }
+
+    public static CartridgeDefinitionBean getCartridge(String cartridgeType) throws RestAPIException {
+        try {
+            CartridgeInfo cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+            if(cartridgeInfo == null) {
+                return null;
+            }
+            return convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+        } catch (RemoteException e) {
+            String message = e.getMessage();
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            String message = e.getMessage();
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    private static CartridgeDefinitionBean convertCartridgeToCartridgeDefinitionBean(CartridgeInfo cartridgeInfo) {
+        CartridgeDefinitionBean cartridge = new CartridgeDefinitionBean();
+        cartridge.setType(cartridgeInfo.getType());
+        cartridge.setProvider(cartridgeInfo.getProvider());
+        cartridge.setCategory(cartridgeInfo.getCategory());
+        cartridge.setDisplayName(cartridgeInfo.getDisplayName());
+        cartridge.setDescription(cartridgeInfo.getDescription());
+        cartridge.setVersion(cartridgeInfo.getVersion());
+        cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
+        cartridge.setHost(cartridgeInfo.getHostName());
+        cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
+        cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
+        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
+        cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+        return cartridge;
     }
 
     private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {
@@ -1003,7 +998,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            if (!applicationId.equals(deploymentPolicy.getApplicationPolicy().getApplicationId())) {
+            if (!applicationId.equals(deploymentPolicy.getApplicationId())) {
                 String message = String.format("Application id %s does not match with the deployment policy",
                         applicationId);
                 log.error(message);

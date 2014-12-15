@@ -171,6 +171,19 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().entity(cartridgeArray).build();
     }
 
+    @GET
+    @Path("/cartridges/{cartridgeType}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/view/cartridge")
+    public Response getCartridge(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+        CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridge(cartridgeType);
+        if(cartridge == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok().entity(cartridge).build();
+    }
+
     /**
      * Returns cartridges by category.
      * @param filter
@@ -179,7 +192,7 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException
      */
     @GET
-    @Path("/cartridges/{filter}")
+    @Path("/cartridges/filter/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
@@ -203,12 +216,12 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException
      */
     @GET
-    @Path("/cartridges/{filter}/{cartridgeType}")
+    @Path("/cartridges/{cartridgeType}/filter/{filter}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
-    public Response getCartridgeByFilter(@DefaultValue("") @PathParam("filter") String filter,
-                                         @PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public Response getCartridgeByFilter(@PathParam("cartridgeType") String cartridgeType,
+                                         @DefaultValue("") @PathParam("filter") String filter) throws RestAPIException {
         CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         if(cartridge == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
