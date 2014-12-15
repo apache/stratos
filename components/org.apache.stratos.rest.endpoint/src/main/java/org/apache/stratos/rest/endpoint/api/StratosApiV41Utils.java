@@ -26,7 +26,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.stub.pojo.ApplicationContextStatus;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
