@@ -348,7 +348,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/application")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addApplication(ApplicationDefinition applicationDefinition)
             throws RestAPIException {
         StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
@@ -365,7 +365,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/list/applications")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplications()
             throws RestAPIException {
         List<ApplicationDefinition> applicationDefinitions = StratosApiV41Utils.getApplications();
@@ -376,7 +376,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/list/applications")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplication(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
         ApplicationDefinition applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
@@ -397,7 +397,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/application/{applicationId}/deploy")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/deploy/application")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response deployApplication(@PathParam("applicationId") String applicationId, DeploymentPolicy deploymentPolicy)
             throws RestAPIException {
         StratosApiV41Utils.deployApplication(applicationId, deploymentPolicy);
@@ -415,7 +415,7 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}/undeploy")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/deploymentPolicy")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response undeployApplication(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
         StratosApiV41Utils.undeployApplication(applicationId);
@@ -434,7 +434,7 @@ public class StratosApiV41 extends AbstractApi {
     @GET
     @Path("/applications/{applicationId}/runtime")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/list/applicationRuntimes")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationRuntime(@PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
         if (applicationRuntime == null) {
@@ -455,48 +455,12 @@ public class StratosApiV41 extends AbstractApi {
     @Path("/applications/{applicationId}")
     @Produces("application/json")
     @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/delete/application")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public Response deleteApplication(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
         StratosApiV41Utils.deleteApplication(applicationId);
         return Response.noContent().build();
-    }
-
-    // API methods for deployment policies
-
-    /**
-     * Gets a specific deployment policy.
-     *
-     * @param deploymentPolicyId the deployment policy id
-     * @return the deployment policy
-     * @throws RestAPIException the rest api exception
-     */
-    @GET
-    @Path("/deploymentPolicies/{deploymentPolicyId}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/deploymentPolicy")
-    public Response getDeploymentPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
-            throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getDeploymentPolicy(deploymentPolicyId)).build();
-    }
-
-    /**
-     * Gets the partition groups for the deployment policy.
-     *
-     * @param deploymentPolicyId the deployment policy id
-     * @return the partition groups
-     * @throws RestAPIException the rest api exception
-     */
-    @GET
-    @Path("/deploymentPolicies/{deploymentPolicyId}/partitionGroup")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/view/partition")
-    public Response getPartitionGroupsForDeploymentPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId)
-            throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getPartitionGroups(deploymentPolicyId)).build();
     }
 
     // API methods for autoscaling policies
