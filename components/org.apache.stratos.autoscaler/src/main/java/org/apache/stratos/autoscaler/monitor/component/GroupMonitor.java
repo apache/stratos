@@ -33,8 +33,8 @@ import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentE
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -60,19 +60,17 @@ import java.util.Map;
 public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
-
+    //has scaling dependents
+    protected boolean hasScalingDependents;
     //Indicates whether groupScaling enabled or not
     private boolean groupScalingEnabled;
     //Network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
-
     //Indicates whether the monitor is destroyed or not
     private boolean isDestroyed;
     //Monitoring interval of the monitor
     private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
 
-    //has scaling dependents
-    protected boolean hasScalingDependents;
     /**
      * Constructor of GroupMonitor
      *
@@ -83,6 +81,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     public GroupMonitor(Group group, String appId, List<String> parentInstanceId, boolean hasScalingDependents) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
+        this.groupScalingEnabled = group.isGroupScalingEnabled();
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
         this.hasScalingDependents = hasScalingDependents;
@@ -126,7 +125,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     public void setStatus(GroupStatus status, String instanceId) {
         GroupInstance groupInstance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
         if (groupInstance == null) {
-            if(status != GroupStatus.Terminated) {
+            if (status != GroupStatus.Terminated) {
                 log.warn("The required group [instance] " + instanceId + " not found in the GroupMonitor");
             }
         } else {
@@ -171,14 +170,22 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     @Override
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
+        String childId = statusEvent.getId();
+        String instanceId = statusEvent.getInstanceId();
+        LifeCycleState status1 = statusEvent.getStatus();
+        //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
 
-         String childId = statusEvent.getId();
-         String instanceId = statusEvent.getInstanceId();
-         LifeCycleState status1 = statusEvent.getStatus();
-         String id = this.id;
-         //Events coming from parent are In_Active(in faulty detection), Scaling events, termination
+        if (status1 == GroupStatus.Active) {
+            //Verifying whether all the minimum no of instances of child
+            // became active to take next action
+            boolean isChildActive = verifyGroupStatus(instanceId, GroupStatus.Active);
+            if (isChildActive) {
+                onChildActivatedEvent(childId, instanceId);
+            } else {
+                log.info("Waiting for other group instances to be active");
+            }
 
-        if (status1 == ClusterStatus.Active || status1 == GroupStatus.Active) {
+        } else if (status1 == ClusterStatus.Active) {
             onChildActivatedEvent(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Inactive || status1 == GroupStatus.Inactive) {
@@ -186,8 +193,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             /*if (!aliasToActiveMonitorsMap.get(childId).hasStartupDependents()) {
                 onChildActivatedEvent(childId, instanceId);
             } else {*/
-                markInstanceAsInactive(childId, instanceId);
-                onChildInactiveEvent(childId, instanceId);
+            markInstanceAsInactive(childId, instanceId);
+            onChildInactiveEvent(childId, instanceId);
             //}
 
         } else if (status1 == ClusterStatus.Terminating || status1 == GroupStatus.Terminating) {
@@ -195,26 +202,40 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             markInstanceAsTerminating(childId, instanceId);
 
         } else if (status1 == ClusterStatus.Terminated || status1 == GroupStatus.Terminated) {
-            //Check whether all dependent goes Terminated and then start them in parallel.
-            removeInstanceFromFromInactiveMap(childId, instanceId);
-            removeInstanceFromFromTerminatingMap(childId, instanceId);
-
-            GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
-            if (instance != null) {
-                if (instance.getStatus() == GroupStatus.Terminating || instance.getStatus() == GroupStatus.Terminated) {
-                    ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
-                            appId, instanceId);
+            //Verifying whether all the minimum no of instances of child
+            // became active to take next action
+            if (status1 == GroupStatus.Terminated) {
+                boolean childTerminated = verifyGroupStatus(instanceId, (GroupStatus) status1);
+                if (childTerminated) {
+                    onTerminationOfInstance(childId, instanceId);
                 } else {
-                    onChildTerminatedEvent(childId, instanceId);
+                    log.info("Waiting for other group instances to be terminated");
                 }
             } else {
-                log.warn("The required instance cannot be found in the the [GroupMonitor] " +
-                        id);
+                onTerminationOfInstance(childId, instanceId);
             }
         }
     }
 
+    private void onTerminationOfInstance(String childId, String instanceId) {
+        //Check whether all dependent goes Terminated and then start them in parallel.
+        removeInstanceFromFromInactiveMap(childId, instanceId);
+        removeInstanceFromFromTerminatingMap(childId, instanceId);
 
+        GroupInstance instance = (GroupInstance) instanceIdToInstanceMap.get(instanceId);
+        if (instance != null) {
+            if (instance.getStatus() == GroupStatus.Terminating ||
+                    instance.getStatus() == GroupStatus.Terminated) {
+                ServiceReferenceHolder.getInstance().getGroupStatusProcessorChain().process(id,
+                        appId, instanceId);
+            } else {
+                onChildTerminatedEvent(childId, instanceId);
+            }
+        } else {
+            log.warn("The required instance cannot be found in the the [GroupMonitor] " +
+                    id);
+        }
+    }
 
 
     @Override
@@ -249,9 +270,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     @Override
     public void onChildScalingEvent(ScalingEvent scalingEvent) {
-
         if (hasScalingDependents) {
-
             //notify parent
             parent.onChildScalingEvent(scalingEvent);
         }
@@ -264,20 +283,24 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
         //find the child context of this group,        
         //Notifying children, if this group has scaling dependencies
-        if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
-        	// has dependencies. Notify children
-			if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
+        if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
+            // has dependencies. Notify children
+            if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
 
-				for (ScalingDependentList scalingDependentList : scalingDependencies) {
+                for (ScalingDependentList scalingDependentList : scalingDependencies) {
 
-                    for(String scalingDependentListComponent : scalingDependentList.getScalingDependentListComponents()){
+                    for (String scalingDependentListComponent : scalingDependentList.
+                                                            getScalingDependentListComponents()) {
 
-                        if(scalingDependentListComponent.equals(scalingEvent.getId())){
+                        if (scalingDependentListComponent.equals(scalingEvent.getId())) {
 
-                            for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
+                            for (String scalingDependentListComponentInSelectedList :
+                                        scalingDependentList.getScalingDependentListComponents()) {
 
-                                Monitor monitor = aliasToActiveMonitorsMap.get(scalingDependentListComponentInSelectedList);
-                                if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
+                                Monitor monitor = aliasToActiveMonitorsMap.
+                                                    get(scalingDependentListComponentInSelectedList);
+                                if (monitor instanceof GroupMonitor ||
+                                                            monitor instanceof VMClusterMonitor) {
                                     monitor.onParentScalingEvent(scalingEvent);
                                 }
                             }
@@ -285,7 +308,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                         }
                     }
                 }
-			}
+            }
         }
     }
 
@@ -415,7 +438,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 childPartitionContexts = new ArrayList<GroupLevelPartitionContext>();
 
                 for (ChildLevelPartition childLevelPartition : childLevelPartitions) {
-                    if(networkPartitionContext.
+                    if (networkPartitionContext.
                             getPartitionCtxt(childLevelPartition.getPartitionId()) == null) {
                         partitionContext = new GroupLevelPartitionContext(childLevelPartition.getMax(),
                                 childLevelPartition.getPartitionId(), networkPartitionId);
@@ -527,7 +550,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 for (int i = 0; i < groupMin - existingGroupInstances.size(); i++) {
                     // Get partitionContext to create instance in
                     partitionContext = getPartitionContext(groupLevelNetworkPartitionContext,
-                                                            parentPartitionId);
+                            parentPartitionId);
                     groupInstanceId = createGroupInstanceAndAddToMonitor(group, parentInstanceContext,
                             partitionContext,
                             groupLevelNetworkPartitionContext,
@@ -545,8 +568,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     }
 
     private PartitionContext getPartitionContext(
-                                GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext,
-                                String parentPartitionId) {
+            GroupLevelNetworkPartitionContext groupLevelNetworkPartitionContext,
+            String parentPartitionId) {
         PartitionContext partitionContext;
         // Get partitionContext to create instance in
         List<GroupLevelPartitionContext> partitionContexts = groupLevelNetworkPartitionContext.
@@ -596,9 +619,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         int groupMax = group.getGroupMaxInstances();
         int groupMin = group.getGroupMinInstances();
         List<Instance> instances = group.getInstanceContextsWithParentId(parentInstanceId);
-        if(instances.isEmpty()) {
+        if (instances.isEmpty()) {
             //Need to create totally new group instance
-            for (int i = 0; i < groupMin ; i++) {
+            for (int i = 0; i < groupMin; i++) {
                 // Get partitionContext to create instance in
                 partitionContext = getPartitionContext(groupLevelNetworkPartitionContext,
                         parentPartitionId);
@@ -630,7 +653,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             }
         }
         //TODO Starting all the instances, can do in parallel
-        for(String instanceId : instanceIdsToStart) {
+        for (String instanceId : instanceIdsToStart) {
             try {
                 startDependency(group, instanceId);
             } catch (MonitorNotFoundException e) {
@@ -699,9 +722,14 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             if (!instances.isEmpty()) {
                 int minInstances = this.networkPartitionCtxts.get(networkPartitionId).
                         getMinInstanceCount();
-                if (noOfInstancesOfRequiredStatus >= minInstances) {
+                //if terminated all the instances in this instances map should be in terminated state
+                if(noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
+                        requiredStatus == GroupStatus.Terminated) {
+                   return true;
+                } else if (noOfInstancesOfRequiredStatus >= minInstances) {
                     return true;
                 } else {
+                    //of only one is inActive implies that the whole group is Inactive
                     if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
                         return true;
                     }
