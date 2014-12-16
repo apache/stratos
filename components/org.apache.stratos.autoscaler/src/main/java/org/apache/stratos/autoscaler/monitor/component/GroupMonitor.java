@@ -140,7 +140,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
      *
      * @param status status of the group
      */
-    public void setStatus(GroupStatus status, String instanceId) {
+    public void setStatus(GroupStatus status, String instanceId, String parentInstanceId) {
         GroupInstance groupInstance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
         if (groupInstance == null) {
             if (status != GroupStatus.Terminated) {
@@ -151,8 +151,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 groupInstance.setStatus(status);
             }
         }
-        // notify parent
-        log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
+
         if (this.isGroupScalingEnabled()) {
             try {
                 ApplicationHolder.acquireReadLock();
@@ -164,14 +163,20 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                     Group group = application.getGroupRecursively(this.id);
                     if (group != null) {
                         GroupInstance context = group.getInstanceContexts(instanceId);
+                        // notify parent
+                        log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                                " [instance] " +  context.getParentId());
                         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
-                                status, this.id, context.getParentId());
+                                status, this.id, parentInstanceId);
                     }
                 }
             } finally {
                 ApplicationHolder.releaseReadLock();
             }
         } else {
+            // notify parent
+            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                    " [instance] " + instanceId);
             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                     status, this.id, instanceId);
         }
@@ -265,12 +270,21 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             //Get all the instances which related to this instanceId
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
+                if (log.isInfoEnabled()) {
+                    log.info("Publishing Cluster terminating event for [application] " + appId +
+                            " [group] " + id + " [instance] " + instanceId);
+                }
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             } else {
-                //Using parentId need to get the children
+                //Using parentId need to get the all the children and ask them to terminate
+                // as they can't exist without the parent
                 List<String> instanceIds = this.getInstancesByParentInstanceId(instanceId);
                 if (!instanceIds.isEmpty()) {
                     for (String instanceId1 : instanceIds) {
+                        if (log.isInfoEnabled()) {
+                            log.info("Publishing Cluster terminating event for [application] " + appId +
+                                    " [group] " + id + " [instance] " + instanceId1);
+                        }
                         ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
                     }
                 }
@@ -278,8 +292,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
             }
         } else if (statusEvent.getStatus() == ClusterStatus.Created ||
                 statusEvent.getStatus() == GroupStatus.Created) {
-            Application application = ApplicationHolder.getApplications().getApplication(this.appId);
-            Group group = application.getGroupRecursively(statusEvent.getId());
             //starting a new instance of this monitor
             createInstanceOnDemand(statusEvent.getInstanceId());
         }

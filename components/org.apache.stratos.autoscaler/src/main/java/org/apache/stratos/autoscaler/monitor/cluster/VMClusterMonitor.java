@@ -369,8 +369,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
                 ApplicationStatus.Terminating) {
             if (log.isInfoEnabled()) {
-                log.info("Publishing Cluster terminating event for [application]: " + appId +
-                        " [cluster]: " + this.getClusterId());
+                log.info("Publishing Cluster terminating event for [application] " + appId +
+                        " [cluster] " + this.getClusterId() + " [instance] " + instanceId);
             }
             ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
         }
