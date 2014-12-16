@@ -111,6 +111,14 @@ public class GroupInstanceContext extends InstanceContext {
         this.idToScalingEvent.put(scalingEvent.getId(), scalingEvent);
     }
 
+    public ScalingEvent getScalingEvent(String id) {
+        return this.idToScalingEvent.get(id);
+    }
+
+    public ScalingOverMaxEvent getScalingMaxEvent(String id) {
+        return this.idToScalingOverMaxEvent.get(id);
+    }
+
     public void removeScalingOverMaxEvent(String id) {
         this.idToScalingOverMaxEvent.remove(id);
     }

@@ -25,13 +25,11 @@ public class ScalingEvent extends MonitorEvent {
 
     private float factor;
     private String networkPartitionId;
-    private String serviceName;
 
-    public ScalingEvent(String id, String networkPartitionId, String instanceId, float factor, String serviceName) {
+    public ScalingEvent(String id, String networkPartitionId, String instanceId, float factor) {
         super(id, instanceId);
         this.factor = factor;
         this.networkPartitionId = networkPartitionId;
-        this.serviceName = serviceName;
     }
 
     public float getFactor() {
@@ -48,9 +46,5 @@ public class ScalingEvent extends MonitorEvent {
 
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
     }
 }

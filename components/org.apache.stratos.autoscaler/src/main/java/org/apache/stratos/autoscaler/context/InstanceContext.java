@@ -24,6 +24,8 @@ package org.apache.stratos.autoscaler.context;
 public abstract class InstanceContext {
     protected String id;
 
+    protected String parentInstanceId;
+
     public InstanceContext(String id) {
         this.id = id;
     }
@@ -34,5 +36,13 @@ public abstract class InstanceContext {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getParentInstanceId() {
+        return parentInstanceId;
+    }
+
+    public void setParentInstanceId(String parentInstanceId) {
+        this.parentInstanceId = parentInstanceId;
     }
 }

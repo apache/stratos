@@ -62,11 +62,4 @@ public interface EventHandler {
      * @param scalingEvent
      */
     public abstract void onParentScalingEvent(ScalingEvent scalingEvent);
-
-    /**
-     * Triggered when scaling decision is made.
-     *
-     * @param scalingEvent
-     */
-    public abstract void onEvent(ScalingEvent scalingEvent);
 }

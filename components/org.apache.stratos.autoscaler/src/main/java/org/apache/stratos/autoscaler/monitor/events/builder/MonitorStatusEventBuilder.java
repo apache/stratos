@@ -54,21 +54,20 @@ public class MonitorStatusEventBuilder {
 
     public static void handleClusterScalingEvent(ParentComponentMonitor parent,
                                                  String networkPartitionId, String instanceId, float factor,
-                                                 String appId, String serviceName) {
+                                                 String appId) {
 
         //Send notifications to parent of the cluster monitor
-        ScalingEvent scalingEvent = new ScalingEvent(appId, networkPartitionId, instanceId, factor,
-                serviceName) ;
+        ScalingEvent scalingEvent = new ScalingEvent(appId, networkPartitionId, instanceId, factor) ;
         notifyParent(parent, scalingEvent);
     }
 
     public static void handleScalingOverMaxEvent(ParentComponentMonitor parent,
                                                  String networkPartitionId, String instanceId,
-                                                 String appId, String serviceName) {
+                                                 String appId) {
 
         //Send notifications to parent of the cluster monitor
-        ScalingOverMaxEvent scalingOverMaxEvent = new ScalingOverMaxEvent(appId, networkPartitionId, instanceId,
-                serviceName) ;
+        ScalingOverMaxEvent scalingOverMaxEvent = new ScalingOverMaxEvent(appId, networkPartitionId,
+                                                            instanceId) ;
         notifyParent(parent, scalingOverMaxEvent);
     }
 
