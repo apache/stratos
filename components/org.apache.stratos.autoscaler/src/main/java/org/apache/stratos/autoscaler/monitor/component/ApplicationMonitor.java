@@ -188,7 +188,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         //find the child context of this group,
         //Notifying children, if this group has scaling dependencies
-        if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
+        /*if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
             // has dependencies. Notify children
             if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
 
@@ -217,21 +217,17 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     }
                 }
             }
-        }
+        }*/
     }
 
     @Override
     public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+        //TODO to check for the capability of cloud bursting
 
     }
 
     @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
-
-    }
-
-    @Override
-    public void onEvent(ScalingEvent scalingEvent) {
 
     }
 
@@ -417,7 +413,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
-    public void createInstanceOnDemand(String instanceId) {
+    public boolean createInstanceOnDemand(String instanceId) {
+        return false;
 
     }
 

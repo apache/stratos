@@ -26,9 +26,7 @@ import org.apache.stratos.autoscaler.applications.dependency.context.Application
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.messaging.domain.applications.*;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This is to build the startup/termination dependencies
@@ -161,30 +159,33 @@ public class DependencyBuilder {
      * Utility method to build scaling dependencies
      * 
      */
-//	public Set<String> buildScalingDependencies(ParentComponent component) {
-//		log.info(" ******* in build scaling dependencies ************ "); // TODO - remove
-//		Set<String> scalingDependencies = new HashSet<String>();
-//		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
-//			log.info(" ******* in build scaling dependencies 22 ************ "); // TODO - remove
-//		for (String string : component.getDependencyOrder().getScalingDependents()) {
-//
-//			log.info(" ******* in build scaling dependencies 33 ************ "); // TODO - remove
-//		        if (string.startsWith(Constants.GROUP + ".")) {
-//		            //getting the group alias
-//		            scalingDependencies.add(getGroupFromStartupOrder(string));
-//		        } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
-//		            //getting the cluster alias
-//		            String id = getClusterFromStartupOrder(string);
-//		            //getting the cluster-id from cluster alias
-//		            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
-//		            scalingDependencies.add(clusterDataHolder.getClusterId());
-//		        } else {
-//		            log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
-//		        }
-//        }
-//		}
-//	    return scalingDependencies;
-//    }
+	public Set<ScalingDependentList> buildScalingDependencies(ParentComponent component) {
+		Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
+		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
+		for (ScalingDependentList dependentList : component.getDependencyOrder().getScalingDependents()) {
+            List<String> scalingDependencies = new ArrayList<String>();
+            for(String string : dependentList.getScalingDependentListComponents()) {
+                if (string.startsWith(Constants.GROUP + ".")) {
+                    //getting the group alias
+                    scalingDependencies.add(getGroupFromStartupOrder(string));
+                } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
+                    //getting the cluster alias
+                    String id = getClusterFromStartupOrder(string);
+                    //getting the cluster-id from cluster alias
+                    ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
+                    scalingDependencies.add(clusterDataHolder.getClusterId());
+                } else {
+                    log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
+                }
+            }
+            ScalingDependentList scalingDependentList = new ScalingDependentList(scalingDependencies);
+            scalingDependentLists.add(scalingDependentList);
+
+
+        }
+		}
+	    return scalingDependentLists;
+    }
 
     /**
      * Utility method to get the group alias from the startup order Eg: group.mygroup

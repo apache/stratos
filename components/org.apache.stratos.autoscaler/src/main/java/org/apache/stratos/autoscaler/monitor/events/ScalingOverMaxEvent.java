@@ -24,12 +24,10 @@ package org.apache.stratos.autoscaler.monitor.events;
 public class ScalingOverMaxEvent extends MonitorEvent {
 
     private String networkPartitionId;
-    private String serviceName;
 
-    public ScalingOverMaxEvent(String id, String networkPartitionId, String instanceId, String serviceName) {
+    public ScalingOverMaxEvent(String id, String networkPartitionId, String instanceId) {
         super(id, instanceId);
         this.networkPartitionId = networkPartitionId;
-        this.serviceName = serviceName;
     }
 
     public String getNetworkPartitionId() {
@@ -38,9 +36,5 @@ public class ScalingOverMaxEvent extends MonitorEvent {
 
     public void setNetworkPartitionId(String networkPartitionId) {
         this.networkPartitionId = networkPartitionId;
-    }
-
-    public String getServiceName() {
-        return serviceName;
     }
 }

@@ -328,11 +328,6 @@ public abstract class AbstractClusterMonitor extends Monitor implements Runnable
 
     }
 
-    @Override
-    public void onEvent(ScalingEvent scalingEvent) {
-
-    }
-
     public boolean isHasFaultyMember() {
         return hasFaultyMember;
     }

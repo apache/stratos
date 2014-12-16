@@ -43,7 +43,7 @@ public abstract class Monitor implements EventHandler {
 
     public abstract void destroy();
 
-    public abstract void createInstanceOnDemand(String instanceId);
+    public abstract boolean createInstanceOnDemand(String instanceId);
 
     public Monitor() {
         this.instanceIdToInstanceMap = new HashMap<String, Instance>();

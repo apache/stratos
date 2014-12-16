@@ -442,13 +442,13 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     public void sendClusterScalingEvent(String networkPartitionId, String instanceId, float factor) {
 
-        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id, serviceType);
+        MonitorStatusEventBuilder.handleClusterScalingEvent(this.parent, networkPartitionId, instanceId, factor, this.id);
     }
 
     public void sendScalingOverMaxEvent(String networkPartitionId, String instanceId) {
 
         MonitorStatusEventBuilder.handleScalingOverMaxEvent(this.parent, networkPartitionId, instanceId,
-                this.id, serviceType);
+                this.id);
     }
 
     @Override
@@ -1119,11 +1119,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
     }
 
-    public void createInstanceOnDemand(String instanceId) {
+    public boolean createInstanceOnDemand(String instanceId) {
         Cluster cluster = TopologyManager.getTopology().getService(this.serviceType).
                 getCluster(this.clusterId);
         try {
-            createInstance(instanceId, cluster);
+            return createInstance(instanceId, cluster);
             //TODO exception
         } catch (PolicyValidationException e) {
             log.error("Error while creating the cluster instance", e);
@@ -1131,10 +1131,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             log.error("Error while creating the cluster instance", e);
 
         }
+        return false;
 
     }
 
-    private void createInstance(String parentInstanceId, Cluster cluster)
+    private boolean createInstance(String parentInstanceId, Cluster cluster)
             throws PolicyValidationException, PartitionValidationException {
         Instance parentMonitorInstance = this.parent.getInstance(parentInstanceId);
         String partitionId = null;
@@ -1178,9 +1179,12 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionId());
+
             }
+            return true;
 
         } else {
+            return false;
 
         }
 
