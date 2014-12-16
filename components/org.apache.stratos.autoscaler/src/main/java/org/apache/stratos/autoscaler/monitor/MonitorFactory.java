@@ -125,6 +125,7 @@ public class MonitorFactory {
                 } else {
                     groupMonitor.setHasStartupDependents(false);
                 }
+	            groupMonitor.startScheduler();
             }
         } finally {
             ApplicationHolder.releaseReadLock();

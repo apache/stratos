@@ -48,10 +48,10 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -66,10 +66,15 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
     private boolean groupScalingEnabled;
     //Network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
+
+	private Map<String, ScalingEvent> mapScalingEvent;
+
     //Indicates whether the monitor is destroyed or not
     private boolean isDestroyed;
     //Monitoring interval of the monitor
     private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
+
+	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
      * Constructor of GroupMonitor
@@ -85,37 +90,49 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
         this.hasScalingDependents = hasScalingDependents;
-    }
+	}
 
     @Override
     public void run() {
-        while (!isDestroyed) {
-            try {
+        try {
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Group monitor is running : " + this.toString());
-                }
-                monitor();
-            } catch (Exception e) {
-                log.error("Group monitor failed : " + this.toString(), e);
-            }
-            try {
-                Thread.sleep(monitoringIntervalMilliseconds);
-            } catch (InterruptedException ignore) {
-            }
-        }
+		    if (log.isDebugEnabled()) {
+			    log.debug("Group monitor is running : " + this.toString());
+		    }
+		    monitor();
+	    } catch (Exception e) {
+		    log.error("Group monitor failed : " + this.toString(), e);
+	    }
     }
 
-    public void monitor() {
+	public void startScheduler() {
+		scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
+	}
 
-        Runnable monitoringRunnable = new Runnable() {
-            @Override
-            public void run() {
-                //TODO implement group monitor
-            }
-        };
-        monitoringRunnable.run();
+	protected void stopScheduler() {
+		scheduler.shutdownNow();
     }
+
+	public void monitor() {
+
+		Runnable monitoringRunnable = new Runnable() {
+			@Override
+			public void run() {
+				float finalFactor = 1;
+				if (log.isInfoEnabled()) {
+					log.info("Group monitor is running====== : " + this.toString());
+				}
+
+				Collection<ScalingEvent> events = mapScalingEvent.values();
+				for (ScalingEvent event : events) {
+					log.info("Monitor Scaling Event"+event.getId());
+				}
+				//TODO : call the on demand group scaling
+				mapScalingEvent.clear();
+			}
+		};
+		monitoringRunnable.run();
+	}
 
     /**
      * Will set the status of the monitor based on Topology Group status/child status like scaling
@@ -309,6 +326,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 }
             }
         }
+	    if (scalingEvent.getId().equals(appId)) {
+		    mapScalingEvent.put(scalingEvent.getInstanceId(), scalingEvent);
+	    }
     }
 
     @Override
