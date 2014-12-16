@@ -998,8 +998,8 @@ public class StratosApiV41Utils {
             }
 
             if (!applicationId.equals(deploymentPolicy.getApplicationId())) {
-                String message = String.format("Application id %s does not match with the deployment policy",
-                        applicationId);
+                String message = String.format("Application id %s does not match with the deployment policy %s",
+                        applicationId, deploymentPolicy.getApplicationId());
                 log.error(message);
                 throw new RestAPIException(message);
             }
