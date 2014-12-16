@@ -57,11 +57,10 @@ public class GroupStatusProcessorChain extends StatusProcessorChain {
         if (root == null) {
             throw new RuntimeException("Message processor chain is not initialized");
         }
-        if (log.isInfoEnabled()) {
-            log.info("GroupProcessor chain calculating the status for the group " +
+        if (log.isDebugEnabled()) {
+            log.debug("GroupProcessor chain calculating the status for the group " +
                     "[ " + idOfComponent + " ]");
         }
-
         root.process(idOfComponent, appId, instanceId);
     }
 }

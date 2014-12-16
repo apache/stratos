@@ -651,8 +651,8 @@ public class DefaultApplicationParser implements ApplicationParser {
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases, properties);
 
-        //String oAuth_token = createToken(appId);
-        //payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oAuth_token);
+        String oAuth_token = createToken(appId);
+        payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oAuth_token);
 
         String textPayload = payloadData.toString();
 

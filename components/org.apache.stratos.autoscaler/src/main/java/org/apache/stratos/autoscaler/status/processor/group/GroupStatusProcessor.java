@@ -115,8 +115,8 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context != null) {
-                    if(log.isInfoEnabled()) {
-                        log.info("Checking the status of cluster " + clusterId + " instance status is: " +
+                    if(log.isDebugEnabled()) {
+                        log.debug("Checking the status of cluster " + clusterId + " instance status is: " +
                                 context.getStatus().toString());
                     }
                     if(context.getStatus() == status) {
