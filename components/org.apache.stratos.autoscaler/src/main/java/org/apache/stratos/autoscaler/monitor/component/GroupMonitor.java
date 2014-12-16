@@ -136,8 +136,8 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         // notify parent
         log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId());
         if (this.isGroupScalingEnabled()) {
-            ApplicationHolder.acquireReadLock();
             try {
+                ApplicationHolder.acquireReadLock();
                 Application application = ApplicationHolder.getApplications().
                         getApplication(this.appId);
                 if (application != null) {
@@ -148,7 +148,6 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                         GroupInstance context = group.getInstanceContexts(instanceId);
                         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                 status, this.id, context.getParentId());
-
                     }
                 }
             } finally {

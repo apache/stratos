@@ -56,8 +56,8 @@ public class ApplicationBuilder {
             log.debug("Handling complete application event");
         }
 
-        ApplicationHolder.acquireReadLock();
         try {
+            ApplicationHolder.acquireReadLock();
             ApplicationsEventPublisher.sendCompleteApplicationsEvent(applications);
         } finally {
             ApplicationHolder.releaseReadLock();

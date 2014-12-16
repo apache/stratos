@@ -32,7 +32,7 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
-import org.apache.stratos.autoscaler.exception.kubernetes.*;
+import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
@@ -77,28 +77,29 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     }
 
     private boolean validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-
-        for(ChildPolicy childPolicy : deploymentPolicy.getChildPolicies()) {
-            String alias = childPolicy.getId();
+        try {
             ApplicationHolder.acquireReadLock();
-            List<Partition> partitionList = new ArrayList<Partition>();
-            for(ChildLevelNetworkPartition networkPartition : childPolicy.getChildLevelNetworkPartitions()) {
-                Partition[] partitions = deploymentPolicy.getApplicationLevelNetworkPartition(
-                                                    networkPartition.getId()).getPartitions();
-                for(Partition partition : partitions) {
-                    partitionList.add(partition);
+
+            for (ChildPolicy childPolicy : deploymentPolicy.getChildPolicies()) {
+                String alias = childPolicy.getId();
+                List<Partition> partitionList = new ArrayList<Partition>();
+                for (ChildLevelNetworkPartition networkPartition : childPolicy.getChildLevelNetworkPartitions()) {
+                    Partition[] partitions = deploymentPolicy.getApplicationLevelNetworkPartition(
+                            networkPartition.getId()).getPartitions();
+                    for (Partition partition : partitions) {
+                        partitionList.add(partition);
+                    }
                 }
-            }
-            try {
+
                 Application application = ApplicationHolder.getApplications().
-                                getApplication(deploymentPolicy.getApplicationId());
+                        getApplication(deploymentPolicy.getApplicationId());
                 Partition[] partitions = new Partition[partitionList.size()];
-                if(application != null) {
+                if (application != null) {
                     Group group = application.getGroupRecursively(alias);
-                    if(group != null) {
+                    if (group != null) {
                         Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
                         //validating the group deployment policy against the leaf cartridges
-                        for(ClusterDataHolder clusterDataHolder : clusterDataHolders) {
+                        for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
                             CloudControllerClient.getInstance().validateDeploymentPolicy(
                                     clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
                         }
@@ -106,7 +107,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                         //Validating the cartridge level deployment policy
                         ClusterDataHolder clusterDataHolder = application.
                                 getClusterDataHolderRecursivelyByAlias(alias);
-                        if(clusterDataHolder != null) {
+                        if (clusterDataHolder != null) {
                             CloudControllerClient.getInstance().validateDeploymentPolicy(
                                     clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
                         } else {
@@ -118,23 +119,20 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     }
                 } else {
                     String msg = "Error while retrieving the application for the Deployment policy: " +
-                    deploymentPolicy.getApplicationId();
+                            deploymentPolicy.getApplicationId();
                     log.error(msg);
                     throw new TopologyInConsistentException(msg);
                 }
-
-            } catch (PartitionValidationException e) {
-                log.error("Error while validating the deployment policy", e);
-                //TODO throw exception
-            } catch (TopologyInConsistentException e) {
-                log.error("Error while validating the deployment policy", e);
-                //TODO throw exception
-            } finally {
-                ApplicationHolder.releaseReadLock();
             }
-
+        } catch (PartitionValidationException e) {
+            log.error("Error while validating the deployment policy", e);
+            //TODO throw exception
+        } catch (TopologyInConsistentException e) {
+            log.error("Error while validating the deployment policy", e);
+            //TODO throw exception
+        } finally {
+            ApplicationHolder.releaseReadLock();
         }
-
         return true;
     }
 
@@ -166,12 +164,18 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     @Override
     public void addApplication(ApplicationContext applicationContext)
             throws ApplicationDefinitionException {
+
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Starting to add application: [application-id] ",
+                    applicationContext.getApplicationId()));
+        }
+
         ApplicationParser applicationParser = new DefaultApplicationParser();
         applicationParser.parse(applicationContext);
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Application added successfully: [application-id] ",
+            log.info(String.format("Successfully added application: [application-id] ",
                     applicationContext.getApplicationId()));
         }
     }
@@ -201,16 +205,18 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         try {
             String policyId = PolicyManager.getInstance().deployDeploymentPolicy(policy);
         } catch (InvalidPolicyException e) {
-            log.error("Error while deploying the deployment policy " + policy.getApplicationId(), e);
+            String message = "Could not deploy application: [application-id] " + policy.getApplicationId();
+            log.error(message, e);
+            throw new RuntimeException(message, e);
         }
 
         //Need to start the application Monitor after validation of the deployment policies.
         //FIXME add validation
         validateDeploymentPolicy(policy);
         //Check whether all the clusters are there
-        ApplicationHolder.acquireReadLock();
         boolean allClusterInitialized = false;
         try {
+            ApplicationHolder.acquireReadLock();
             application = ApplicationHolder.getApplications().getApplication(policy.getApplicationId());
             if (application != null) {
                 allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
@@ -228,7 +234,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                         "Waiting for them to be created");
             }
         } else {
-            log.info("The application Monitor has already been created for [Application] " + applicationId);
+            log.info("The application monitor has already been created: [application-id] " + applicationId);
         }
         applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
         AutoscalerContext.getInstance().updateApplicationContext(applicationContext);

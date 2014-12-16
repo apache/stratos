@@ -411,8 +411,7 @@ public class AutoscalerUtil {
                 }*/
                 try {
                     long start = System.currentTimeMillis();
-                    log.info("application monitor is going to be started for [application] " +
-                            appId);
+                    log.info("Application monitor is going to be started for [application] " + appId);
                     try {
                         applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
                     } catch (PolicyValidationException e) {
