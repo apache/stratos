@@ -369,7 +369,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplications()
             throws RestAPIException {
         List<ApplicationDefinition> applicationDefinitions = StratosApiV41Utils.getApplications();
-        return Response.ok(applicationDefinitions).build();
+        ApplicationDefinition[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationDefinition[applicationDefinitions.size()]);
+        return Response.ok(applicationDefinitionsArray).build();
     }
 
     @GET

@@ -1065,7 +1065,7 @@ public class PojoConverter {
         applicationContext.setName(applicationDefinition.getName());
         applicationContext.setDescription(applicationDefinition.getDescription());
         applicationContext.setAlias(applicationDefinition.getAlias());
-        //applicationContext.setDeploymentPolicy(compositeAppDefinition.getDeploymentPolicy());
+        applicationContext.setStatus(applicationDefinition.getStatus());
 
         // convert and set components
         if (applicationDefinition.getComponents() != null) {
@@ -1097,10 +1097,12 @@ public class PojoConverter {
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
+        applicationDefinition.setStatus(applicationContext.getStatus());
         applicationDefinition.setAlias(applicationContext.getAlias());
 
         // convert and set components
         if (applicationContext.getComponents() != null) {
+            applicationDefinition.setComponents(new ComponentDefinition());
             // top level Groups
             if (applicationContext.getComponents().getGroupContexts() != null) {
                 applicationDefinition.getComponents().setGroups(
@@ -1200,12 +1202,16 @@ public class PojoConverter {
     convertPropertiesToPropertyBeansList(org.apache.stratos.autoscaler.stub.Properties properties) {
         List<org.apache.stratos.manager.composite.application.beans.PropertyBean> propertyBeanList =
                 new ArrayList<org.apache.stratos.manager.composite.application.beans.PropertyBean>();
-        for(org.apache.stratos.autoscaler.stub.Property property : properties.getProperties()) {
-            org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean =
-                    new org.apache.stratos.manager.composite.application.beans.PropertyBean();
-            propertyBean.setName(property.getName());
-            propertyBean.setValue(property.getValue());
-            propertyBeanList.add(propertyBean);
+        if((properties != null) && (properties.getProperties() != null)) {
+            for (org.apache.stratos.autoscaler.stub.Property property : properties.getProperties()) {
+                if(property != null) {
+                    org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean =
+                            new org.apache.stratos.manager.composite.application.beans.PropertyBean();
+                    propertyBean.setName(property.getName());
+                    propertyBean.setValue(property.getValue());
+                    propertyBeanList.add(propertyBean);
+                }
+            }
         }
         return propertyBeanList;
     }
