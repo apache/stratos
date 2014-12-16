@@ -34,6 +34,10 @@ public class ScalingDependentList implements Serializable {
         return scalingDependentListComponents;
     }
 
+    public boolean isScalingDependent(String id) {
+        return scalingDependentListComponents.contains(id);
+    }
+
     public void setScalingDependentListComponents(List<String> scalingDependentListComponents) {
         this.scalingDependentListComponents = scalingDependentListComponents;
     }
