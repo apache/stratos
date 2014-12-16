@@ -1063,6 +1063,7 @@ public class StratosApiV41Utils {
             for(ApplicationContext applicationContext : applicationContexts) {
                 ApplicationDefinition applicationDefinition =
                         PojoConverter.convertApplicationContextToApplicationDefinition(applicationContext);
+                applicationDefinitions.add(applicationDefinition);
             }
             return applicationDefinitions;
         } catch (RemoteException e) {
