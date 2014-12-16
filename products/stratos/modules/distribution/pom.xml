@@ -566,15 +566,46 @@
                 <executions>
                     <execution>
                         <id>1-run-ant</id>
-                        <phase>test</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>run</goal>
                         </goals>
                         <configuration>
                             <tasks>
+				 <copy
+					todir="target/wso2carbon-core-4.2.0/dbscripts/identity"
+					overwrite="false">
+				    <fileset
+					    dir="${basedir}/../p2-profile-gen/target/wso2carbon-core-4.2.0/dbscripts/identity/">
+				    </fileset>
+				</copy>
                                 <path id="h2.classpath">
                                     <path refid="maven.compile.classpath" />
                                 </path>
+                                <echo message="########### Adding identity , identity/application-mgt tables to WSO2Carbon DB ##############" />
+                                <sql
+                                        driver="org.h2.Driver"
+                                        url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database//WSO2CARBON_DB"
+                                        userid="wso2carbon" password="wso2carbon" autocommit="true"
+                                        onerror="continue">
+                                    <classpath>
+                                        <path refid="h2.classpath"/>
+                                    </classpath>
+                                    <fileset
+                                            file="target/wso2carbon-core-4.2.0/dbscripts/identity/application-mgt/h2.sql"/>
+                                </sql>
+                                <sql
+                                        driver="org.h2.Driver"
+                                        url="jdbc:h2:${basedir}/target/wso2carbon-core-4.2.0/repository/database/WSO2CARBON_DB"
+                                        userid="wso2carbon" password="wso2carbon" autocommit="true"
+                                        onerror="continue">
+                                    <classpath>
+                                        <path refid="h2.classpath"/>
+                                    </classpath>
+                                    <fileset
+                                            file="target/wso2carbon-core-4.2.0/dbscripts/identity/h2.sql"/>
+                                </sql>
+
                                 <echo message="########### Create Billing Database ##############" />
                                 <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2BILLING_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
                                     <classpath>
@@ -583,33 +614,10 @@
                                     <fileset file="../../dbscripts/billing-h2.sql" />
                                     <fileset file="../../dbscripts/metering_h2.sql" />
                                 </sql>
-                                <echo message="##################### END ########################" />
+				<echo message="##################### END ########################" />
                             </tasks>
                         </configuration>
                     </execution>
-
-                    <execution>
-                        <id>1-run-ant2</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <tasks>
-                                <path id="h2.classpath">
-                                    <path refid="maven.compile.classpath" />
-                                </path>
-                                <echo message="########### Create S2 Foundation Schema Database ##############" />
-                                <sql driver="org.h2.Driver" url="jdbc:h2:${basedir}/target/database/WSO2S2_DB" userid="wso2carbon" password="wso2carbon" autocommit="true" onerror="continue">
-                                    <classpath>
-                                        <path refid="h2.classpath" />
-                                    </classpath>
-                                    <fileset file="../../dbscripts/s2_h2.sql" />
-                                </sql>
-                                <echo message="##################### END ########################" />
-                            </tasks>
-                        </configuration>
-		     </execution>
                     <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
