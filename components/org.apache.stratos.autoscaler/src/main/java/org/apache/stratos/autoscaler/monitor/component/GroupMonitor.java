@@ -90,6 +90,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
         this.hasScalingDependents = hasScalingDependents;
+	    mapScalingEvent=new HashMap<String, ScalingEvent>();
 	}
 
     @Override
@@ -284,52 +285,52 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         }
     }
 
-    @Override
-    public void onChildScalingEvent(ScalingEvent scalingEvent) {
-        if (hasScalingDependents) {
-            //notify parent
-            parent.onChildScalingEvent(scalingEvent);
-        }
+	@Override
+	public void onChildScalingEvent(ScalingEvent scalingEvent) {
+		if (hasScalingDependents) {
+			//notify parent
+			parent.onChildScalingEvent(scalingEvent);
+		}
 
-        if (log.isDebugEnabled()) {
-            log.debug("Child scaling event received to [group]: " + this.getId()
-                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-        }
+		if (log.isDebugEnabled()) {
+			log.debug("Child scaling event received to [group]: " + this.getId()
+			          + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+			          + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+		}
 
-        //find the child context of this group,        
-        //Notifying children, if this group has scaling dependencies
-        if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
-            // has dependencies. Notify children
-            if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
+		//find the child context of this group,
+		//Notifying children, if this group has scaling dependencies
+		if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
+			// has dependencies. Notify children
+			if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
 
-                for (ScalingDependentList scalingDependentList : scalingDependencies) {
+				for (ScalingDependentList scalingDependentList : scalingDependencies) {
 
-                    for (String scalingDependentListComponent : scalingDependentList.
-                                                            getScalingDependentListComponents()) {
+					for (String scalingDependentListComponent : scalingDependentList
+							.getScalingDependentListComponents()) {
 
-                        if (scalingDependentListComponent.equals(scalingEvent.getId())) {
+						if (scalingDependentListComponent.equals(scalingEvent.getId())) {
 
-                            for (String scalingDependentListComponentInSelectedList :
-                                        scalingDependentList.getScalingDependentListComponents()) {
+							for (String scalingDependentListComponentInSelectedList :
+									scalingDependentList.getScalingDependentListComponents()) {
 
-                                Monitor monitor = aliasToActiveMonitorsMap.
-                                                    get(scalingDependentListComponentInSelectedList);
-                                if (monitor instanceof GroupMonitor ||
-                                                            monitor instanceof VMClusterMonitor) {
-                                    monitor.onParentScalingEvent(scalingEvent);
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-	    if (scalingEvent.getId().equals(appId)) {
-		    mapScalingEvent.put(scalingEvent.getInstanceId(), scalingEvent);
-	    }
-    }
+								Monitor monitor = aliasToActiveMonitorsMap.get(
+										scalingDependentListComponentInSelectedList);
+								if (monitor instanceof GroupMonitor ||
+								    monitor instanceof VMClusterMonitor) {
+									monitor.onParentScalingEvent(scalingEvent);
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+		if (scalingEvent.getId().equals(appId)) {
+			mapScalingEvent.put(scalingEvent.getInstanceId(), scalingEvent);
+		}
+	}
 
     @Override
     public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
