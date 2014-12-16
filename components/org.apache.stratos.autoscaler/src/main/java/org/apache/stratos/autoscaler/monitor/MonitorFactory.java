@@ -99,9 +99,9 @@ public class MonitorFactory {
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
         boolean initialStartup = false;
-        //acquiring read lock to create the monitor
-        ApplicationHolder.acquireReadLock();
         try {
+            //acquiring read lock to create the monitor
+            ApplicationHolder.acquireReadLock();
             Group group = ApplicationHolder.getApplications().
                     getApplication(appId).getGroupRecursively(context.getId());
 
@@ -128,7 +128,6 @@ public class MonitorFactory {
             }
         } finally {
             ApplicationHolder.releaseReadLock();
-
         }
 
         Group group = ApplicationHolder.getApplications().
@@ -158,33 +157,31 @@ public class MonitorFactory {
      * This will create a new app monitor based on the give appId by getting the
      * application from Topology
      *
-     * @param appId appId of the application which requires to create app monitor
+     * @param applicationId appId of the application which requires to create app monitor
      * @return ApplicationMonitor
      * @throws DependencyBuilderException    throws while building dependency for app monitor
      * @throws TopologyInConsistentException throws while traversing thr topology
      */
-    public static ApplicationMonitor getApplicationMonitor(String appId)
+    public static ApplicationMonitor getApplicationMonitor(String applicationId)
             throws DependencyBuilderException,
             TopologyInConsistentException, PolicyValidationException {
         ApplicationMonitor applicationMonitor;
-        boolean initialStartup = false;
         Application application;
-        //acquiring read lock to start the monitor
-        ApplicationHolder.acquireReadLock();
         try {
-            application = ApplicationHolder.getApplications().getApplication(appId);
+            //acquiring read lock to start the monitor
+            ApplicationHolder.acquireReadLock();
+            application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasStartupDependents(false);
 
 
             } else {
-                String msg = "[Application] " + appId + " cannot be found in the Topology";
+                String msg = "Application not found in the topology: [application-id] " + applicationId;
                 throw new TopologyInConsistentException(msg);
             }
         } finally {
             ApplicationHolder.releaseReadLock();
-
         }
 
         applicationMonitor.startMinimumDependencies(application);
@@ -202,7 +199,6 @@ public class MonitorFactory {
         }*/
 
         return applicationMonitor;
-
     }
 
     /**

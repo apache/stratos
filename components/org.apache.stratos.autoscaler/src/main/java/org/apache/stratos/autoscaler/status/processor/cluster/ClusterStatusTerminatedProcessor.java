@@ -103,8 +103,6 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                     }
                 }
             }
-
-
         } finally {
             TopologyManager.releaseReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
 

@@ -241,8 +241,8 @@ public class VMClusterContext extends AbstractClusterContext {
         int maxInstances = 1;
         if (clusterInstanceContext == null) {
             int minInstances = 1;
-            ApplicationHolder.acquireReadLock();
             try {
+                ApplicationHolder.acquireReadLock();
                 Application application = ApplicationHolder.getApplications().
                         getApplication(cluster.getAppId());
                 ClusterDataHolder dataHolder = application.

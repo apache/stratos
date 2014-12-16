@@ -90,8 +90,8 @@ public class AutoscalerTopologyEventReceiver {
             protected void onEvent(Event event) {
                 if (!topologyInitialized) {
                     log.info("[CompleteTopologyEvent] Received: " + event.getClass());
-                    ApplicationHolder.acquireReadLock();
                     try {
+                        ApplicationHolder.acquireReadLock();
                         Applications applications = ApplicationHolder.getApplications();
                         if (applications != null) {
                             for (Application application : applications.getApplications().values()) {
@@ -536,7 +536,7 @@ public class AutoscalerTopologyEventReceiver {
                 try {
                     long start = System.currentTimeMillis();
                     if (log.isDebugEnabled()) {
-                        log.debug("application monitor is going to be started for [application] " +
+                        log.debug("Application monitor is going to be started for [application] " +
                                 appId);
                     }
                     try {
