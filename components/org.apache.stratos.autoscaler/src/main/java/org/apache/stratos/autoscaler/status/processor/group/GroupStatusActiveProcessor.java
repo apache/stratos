@@ -66,6 +66,10 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
         Map<String, Group> groups;
         Map<String, ClusterDataHolder> clusterData;
 
+        if (log.isDebugEnabled()) {
+            log.debug("StatusChecker calculating the active status for the group " +
+                    "[ " + idOfComponent + " ]" + " for the instance " + " [ " + instanceId + " ]");
+        }
         try {
             ApplicationHolder.acquireWriteLock();
             if (idOfComponent.equals(appId)) {

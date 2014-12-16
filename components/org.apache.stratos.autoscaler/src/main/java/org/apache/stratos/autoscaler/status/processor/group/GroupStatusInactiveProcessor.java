@@ -71,8 +71,9 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
         Map<String, Group> groups;
         Map<String, ClusterDataHolder> clusterData;
 
-        if (log.isInfoEnabled()) {
-            log.info("StatusChecker calculating the status for the group [ " + idOfComponent + " ]");
+        if (log.isDebugEnabled()) {
+            log.debug("StatusChecker calculating the inactive status for the group " +
+                    "[ " + idOfComponent + " ]" + " for the instance " + " [ " + instanceId + " ]");
         }
 
         try {
