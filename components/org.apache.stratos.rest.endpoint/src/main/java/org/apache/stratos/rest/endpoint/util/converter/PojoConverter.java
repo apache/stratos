@@ -1124,16 +1124,18 @@ public class PojoConverter {
         List<GroupDefinition> groupDefinitions = new ArrayList<GroupDefinition>();
         if(groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
-                GroupDefinition groupDefinition = new GroupDefinition();
-                groupDefinition.setAlias(groupContext.getAlias());
-                groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
-                groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
-                groupDefinition.setGroupScalingEnabled(groupContext.getGroupScalingEnabled());
-                groupDefinition.setName(groupContext.getName());
-                groupDefinition.setGroups(convertGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
-                groupDefinition.setCartridges(convertCartridgeContextsToCartridgeDefinitions(
-                        groupContext.getCartridgeContexts()));
-                groupDefinitions.add(groupDefinition);
+                if(groupContext != null) {
+                    GroupDefinition groupDefinition = new GroupDefinition();
+                    groupDefinition.setAlias(groupContext.getAlias());
+                    groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
+                    groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
+                    groupDefinition.setGroupScalingEnabled(groupContext.getGroupScalingEnabled());
+                    groupDefinition.setName(groupContext.getName());
+                    groupDefinition.setGroups(convertGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
+                    groupDefinition.setCartridges(convertCartridgeContextsToCartridgeDefinitions(
+                            groupContext.getCartridgeContexts()));
+                    groupDefinitions.add(groupDefinition);
+                }
             }
         }
         return groupDefinitions;
@@ -1164,12 +1166,14 @@ public class PojoConverter {
         List<CartridgeDefinition> cartridgeDefinitions = new ArrayList<CartridgeDefinition>();
         if(cartridgeContexts != null) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
-                CartridgeDefinition cartridgeDefinition = new CartridgeDefinition();
-                cartridgeDefinition.setType(cartridgeContext.getType());
-                cartridgeDefinition.setCartridgeMin(cartridgeContext.getCartridgeMin());
-                cartridgeDefinition.setCartridgeMax(cartridgeContext.getCartridgeMax());
-                cartridgeDefinition.setSubscribableInfo(convertSubscribableInfoContextToSubscribableInfo(cartridgeContext.getSubscribableInfoContext()));
-                cartridgeDefinitions.add(cartridgeDefinition);
+                if(cartridgeContext != null) {
+                    CartridgeDefinition cartridgeDefinition = new CartridgeDefinition();
+                    cartridgeDefinition.setType(cartridgeContext.getType());
+                    cartridgeDefinition.setCartridgeMin(cartridgeContext.getCartridgeMin());
+                    cartridgeDefinition.setCartridgeMax(cartridgeContext.getCartridgeMax());
+                    cartridgeDefinition.setSubscribableInfo(convertSubscribableInfoContextToSubscribableInfo(cartridgeContext.getSubscribableInfoContext()));
+                    cartridgeDefinitions.add(cartridgeDefinition);
+                }
             }
         }
         return cartridgeDefinitions;
