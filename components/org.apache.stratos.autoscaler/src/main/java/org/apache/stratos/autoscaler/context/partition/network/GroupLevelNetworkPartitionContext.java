@@ -20,6 +20,7 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
 
@@ -83,6 +84,10 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     public void addInstanceContext(GroupInstanceContext context) {
         this.instanceIdToInstanceContextMap.put(context.getId(), context);
 
+    }
+
+    public GroupInstanceContext getInstanceContext(String instanceId) {
+        return this.instanceIdToInstanceContextMap.get(instanceId);
     }
 
     public int getMinInstanceCount() {

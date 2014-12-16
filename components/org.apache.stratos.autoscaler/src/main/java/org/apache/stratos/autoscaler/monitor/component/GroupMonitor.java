@@ -48,7 +48,10 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -60,21 +63,17 @@ import java.util.concurrent.TimeUnit;
 public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     //has scaling dependents
     protected boolean hasScalingDependents;
     //Indicates whether groupScaling enabled or not
     private boolean groupScalingEnabled;
     //Network partition contexts
     private Map<String, GroupLevelNetworkPartitionContext> networkPartitionCtxts;
-
-	private Map<String, ScalingEvent> mapScalingEvent;
-
     //Indicates whether the monitor is destroyed or not
     private boolean isDestroyed;
     //Monitoring interval of the monitor
     private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
-
-	private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     /**
      * Constructor of GroupMonitor
@@ -90,50 +89,48 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         this.appId = appId;
         networkPartitionCtxts = new HashMap<String, GroupLevelNetworkPartitionContext>();
         this.hasScalingDependents = hasScalingDependents;
-	    mapScalingEvent=new HashMap<String, ScalingEvent>();
-	}
+    }
 
     @Override
     public void run() {
         try {
-
-		    if (log.isDebugEnabled()) {
-			    log.debug("Group monitor is running : " + this.toString());
-		    }
-		    monitor();
-	    } catch (Exception e) {
-		    log.error("Group monitor failed : " + this.toString(), e);
-	    }
+            if (log.isDebugEnabled()) {
+                log.debug("Group monitor is running : " + this.toString());
+            }
+            monitor();
+        } catch (Exception e) {
+            log.error("Group monitor failed : " + this.toString(), e);
+        }
     }
 
-	public void startScheduler() {
-		scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
-	}
-
-	protected void stopScheduler() {
-		scheduler.shutdownNow();
+    public void startScheduler() {
+        scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
-	public void monitor() {
+    protected void stopScheduler() {
+        scheduler.shutdownNow();
+    }
 
-		Runnable monitoringRunnable = new Runnable() {
-			@Override
-			public void run() {
-				float finalFactor = 1;
-				if (log.isInfoEnabled()) {
-					log.info("Group monitor is running====== : " + this.toString());
-				}
+    public void monitor() {
 
-				Collection<ScalingEvent> events = mapScalingEvent.values();
-				for (ScalingEvent event : events) {
-					log.info("Monitor Scaling Event"+event.getId());
-				}
-				//TODO : call the on demand group scaling
-				mapScalingEvent.clear();
-			}
-		};
-		monitoringRunnable.run();
-	}
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                float finalFactor = 1;
+                if (log.isDebugEnabled()) {
+                    log.debug("Group monitor is running====== : " + this.toString());
+                }
+
+				/*Collection<ScalingEvent> events = mapScalingEvent.values();
+                for (ScalingEvent event : events) {
+                    log.info("Monitor Scaling Event"+event.getId());
+                }
+                //TODO : call the on demand group scaling
+                mapScalingEvent.clear();*/
+            }
+        };
+        monitoringRunnable.run();
+    }
 
     /**
      * Will set the status of the monitor based on Topology Group status/child status like scaling
@@ -165,7 +162,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                         GroupInstance context = group.getInstanceContexts(instanceId);
                         // notify parent
                         log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
-                                " [instance] " +  context.getParentId());
+                                " [instance] " + context.getParentId());
                         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                 status, this.id, parentInstanceId);
                     }
@@ -297,56 +294,90 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
         }
     }
 
-	@Override
-	public void onChildScalingEvent(ScalingEvent scalingEvent) {
-		if (hasScalingDependents) {
-			//notify parent
-			parent.onChildScalingEvent(scalingEvent);
-		}
+    @Override
+    public void onChildScalingEvent(ScalingEvent scalingEvent) {
+        if (hasScalingDependents) {
+            //notify parent
+            parent.onChildScalingEvent(scalingEvent);
+        }
 
-		if (log.isDebugEnabled()) {
-			log.debug("Child scaling event received to [group]: " + this.getId()
-			          + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-			          + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-		}
+        if (log.isDebugEnabled()) {
+            log.debug("Child scaling event received to [group]: " + this.getId()
+                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+        }
 
-		//find the child context of this group,
-		//Notifying children, if this group has scaling dependencies
-		if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
-			// has dependencies. Notify children
-			if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
+        //find the child context of this group,
+        //Notifying children, if this group has scaling dependencies
+        if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
+            // has dependencies. Notify children
+            if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
 
-				for (ScalingDependentList scalingDependentList : scalingDependencies) {
+                for (ScalingDependentList scalingDependentList : scalingDependencies) {
 
-					for (String scalingDependentListComponent : scalingDependentList
-							.getScalingDependentListComponents()) {
+                    for (String scalingDependentListComponent : scalingDependentList
+                            .getScalingDependentListComponents()) {
 
-						if (scalingDependentListComponent.equals(scalingEvent.getId())) {
+                        if (scalingDependentListComponent.equals(scalingEvent.getId())) {
 
-							for (String scalingDependentListComponentInSelectedList :
-									scalingDependentList.getScalingDependentListComponents()) {
+                            for (String scalingDependentListComponentInSelectedList :
+                                    scalingDependentList.getScalingDependentListComponents()) {
 
-								Monitor monitor = aliasToActiveMonitorsMap.get(
-										scalingDependentListComponentInSelectedList);
-								if (monitor instanceof GroupMonitor ||
-								    monitor instanceof VMClusterMonitor) {
-									monitor.onParentScalingEvent(scalingEvent);
-								}
-							}
-							break;
-						}
-					}
-				}
-			}
-		}
-		if (scalingEvent.getId().equals(appId)) {
-			mapScalingEvent.put(scalingEvent.getInstanceId(), scalingEvent);
-		}
-	}
+                                Monitor monitor = aliasToActiveMonitorsMap.get(
+                                        scalingDependentListComponentInSelectedList);
+                                if (monitor instanceof GroupMonitor ||
+                                        monitor instanceof VMClusterMonitor) {
+                                    monitor.onParentScalingEvent(scalingEvent);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        String networkPartitionId = scalingEvent.getNetworkPartitionId();
+        String instanceId = scalingEvent.getInstanceId();
+        String id = scalingEvent.getId();
+        GroupLevelNetworkPartitionContext networkPartitionContext =
+                this.networkPartitionCtxts.get(networkPartitionId);
+        if (networkPartitionContext != null) {
+            GroupInstanceContext instanceContext = networkPartitionContext.getInstanceContext(instanceId);
+            if (instanceContext != null) {
+                if (instanceContext.containsScalingEvent(id)) {
+                    instanceContext.removeScalingEvent(id);
+                    instanceContext.addScalingEvent(scalingEvent);
+                } else {
+                    instanceContext.addScalingEvent(scalingEvent);
+                }
+            }
+        }
+    }
 
     @Override
     public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+        //Checking whether this monitor has room to create new instances else
+        // notify the parent with max out
+        //TODO by drool or periodic monitor or here
 
+        //adding the scaling over max event to group instance Context
+        String networkPartitionId = scalingOverMaxEvent.getNetworkPartitionId();
+        String instanceId = scalingOverMaxEvent.getInstanceId();
+        String id = scalingOverMaxEvent.getId();
+        GroupLevelNetworkPartitionContext networkPartitionContext =
+                this.networkPartitionCtxts.get(networkPartitionId);
+        if (networkPartitionContext != null) {
+            GroupInstanceContext instanceContext = networkPartitionContext.getInstanceContext(instanceId);
+            if (instanceContext != null) {
+                if (instanceContext.containsScalingEvent(id)) {
+                    instanceContext.removeScalingOverMaxEvent(id);
+                    instanceContext.addScalingOverMaxEvent(scalingOverMaxEvent);
+                } else {
+                    instanceContext.addScalingOverMaxEvent(scalingOverMaxEvent);
+                }
+            }
+        }
     }
 
     @Override
@@ -755,9 +786,9 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
                 int minInstances = this.networkPartitionCtxts.get(networkPartitionId).
                         getMinInstanceCount();
                 //if terminated all the instances in this instances map should be in terminated state
-                if(noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
+                if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
                         requiredStatus == GroupStatus.Terminated) {
-                   return true;
+                    return true;
                 } else if (noOfInstancesOfRequiredStatus >= minInstances) {
                     return true;
                 } else {
@@ -774,7 +805,7 @@ public class GroupMonitor extends ParentComponentMonitor implements Runnable {
 
     @Override
     public void destroy() {
-        //TODO to stop all the drools
+        stopScheduler();
     }
 
 }
