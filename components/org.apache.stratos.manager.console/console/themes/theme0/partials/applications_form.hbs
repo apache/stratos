@@ -91,21 +91,30 @@
                             <div class="toggle-menu-icon">
                                 <i class="fa fa-th-large"></i>
                             </div>
-                            <h2 class="truncate">{{id}} </h2>
+                            <h2 class="truncate">{{applicationId}} </h2>
 
-                            <div class="toggle-menu-description">{{description}} </div>
+                            <div class="toggle-menu-description">{{description}} {{status}}</div>
+                            {{#ifCond status "!=" "Created"}}
                             <div class="list-button" style="display: none;">
-                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                        data-url="{{url ""}}/applications/applications/{{id}}/" > Details
+                                <button class="btn btn-danger btn-lg hover-undeploy" type="button"
+                                        id="{{applicationId}}"> Undeploy</button>
+                                <button class="btn btn-info btn-lg hover-details" type="button"
+                                        id="details_list_{{applicationId}}"
+                                        data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Details
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
-                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                            data-url="{{url ""}}/applications/applications/{{id}}/" > Details
+                                    <button class="btn btn-danger btn-lg hover-undeploy" type="button"
+                                            id="{{applicationId}}"> Undeploy</button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button"
+                                            id="details_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Details
                                     </button>
+
                                 </div>
                             </div>
+                            {{/ifCond}}
                         </div>
                     {{/each}}
                 {{/ifCond}}
