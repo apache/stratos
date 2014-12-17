@@ -30,6 +30,7 @@ import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBea
  */
 @XmlRootElement
 public class SubscriptionDomainRequest {
+
     private List<SubscriptionDomainBean> domains;
 
     public List<SubscriptionDomainBean> getDomains() {

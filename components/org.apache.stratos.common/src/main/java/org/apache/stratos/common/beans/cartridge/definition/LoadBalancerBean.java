@@ -26,11 +26,8 @@ import java.util.List;
 public class LoadBalancerBean {
 
     private String type;
-    
     private String deploymentPolicy;
-    
     private String autoscalingPolicy;
-
     private List<PropertyBean> property;
 
     public String getType() {

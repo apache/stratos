@@ -28,13 +28,9 @@ import java.util.List;
 public class Partition {
 
     private String id;
-    
     private String description;
-    
     private boolean isPublic;
-
     private String provider;
-
     private List<PropertyBean> property;
 
     public String getId() {

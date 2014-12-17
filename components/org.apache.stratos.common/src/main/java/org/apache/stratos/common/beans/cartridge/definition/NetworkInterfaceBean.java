@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement (name = "networkInterfaces")
 public class NetworkInterfaceBean {
+
 	private String networkUuid;
 	private String fixedIp;
 	private String portUuid;

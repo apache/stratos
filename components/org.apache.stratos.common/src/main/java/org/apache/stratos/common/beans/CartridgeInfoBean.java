@@ -26,24 +26,21 @@ import java.util.List;
 
 @XmlRootElement
 public class CartridgeInfoBean {
-    String cartridgeType;
-    String alias;
-    String autoscalePolicy;
-    String deploymentPolicy;
-    String repoURL;
-    boolean privateRepo;
-    String repoUsername;
-    String repoPassword;
-    String dataCartridgeType;
-    String dataCartridgeAlias;
-    boolean commitsEnabled;
 
+    private String cartridgeType;
+    private String alias;
+    private String autoscalePolicy;
+    private String deploymentPolicy;
+    private String repoURL;
+    private boolean privateRepo;
+    private String repoUsername;
+    private String repoPassword;
+    private String dataCartridgeType;
+    private String dataCartridgeAlias;
+    private boolean commitsEnabled;
     private String serviceGroup;
-
     private PersistenceBean persistence;
-
     private List<PropertyBean> property;
-
     private List<String> domains;
 
     public CartridgeInfoBean() {

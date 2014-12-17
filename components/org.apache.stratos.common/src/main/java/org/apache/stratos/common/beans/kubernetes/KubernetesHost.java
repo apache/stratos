@@ -28,6 +28,7 @@ import java.util.List;
 
 @XmlRootElement
 public class KubernetesHost {
+
     private String hostId;
     private String hostname;
     private String hostIpAddress;

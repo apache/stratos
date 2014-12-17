@@ -26,7 +26,6 @@ import java.util.List;
 public class DeploymentBean {
 
     private String baseDir;
-
     private List<String> dir;
 
     private String getDirectories () {

@@ -24,7 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Instance {
 
 	private String status;
-	
 	private String instanceId;
 
 	public String getStatus() {

@@ -26,23 +26,14 @@ import java.util.List;
 public class IaasProviderBean {
 
     private String type;
-
     private String name;
-
     private String className;
-
     private String imageId;
-
     private int maxInstanceLimit;
-
     private String provider;
-
     private String identity;
-
     private String credential;
-
     private List<PropertyBean> property;
-    
     private List<NetworkInterfaceBean> networkInterfaces;
 
     public List<NetworkInterfaceBean> getNetworkInterfaces() {
@@ -126,7 +117,6 @@ public class IaasProviderBean {
     }
 
     private String getIaasPropertiesString () {
-
         StringBuilder iaasPropertyBuilder = new StringBuilder();
         if(getProperty() != null) {
             for (PropertyBean propertyBean : getProperty()) {

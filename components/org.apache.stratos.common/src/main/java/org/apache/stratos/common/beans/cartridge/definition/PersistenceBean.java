@@ -26,7 +26,6 @@ import java.util.List;
 public class PersistenceBean {
 
     private boolean isRequired;
-
     private List<VolumeBean> volume;
 
     public String toString () {

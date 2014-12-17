@@ -22,8 +22,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ChildLevelPartition {
-    private String id;
 
+    private String id;
     private int max;
 
     public String getId() {

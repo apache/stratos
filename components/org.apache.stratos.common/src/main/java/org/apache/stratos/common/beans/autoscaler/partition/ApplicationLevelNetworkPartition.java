@@ -26,10 +26,7 @@ import java.util.List;
 public class ApplicationLevelNetworkPartition {
 
     private String id;
-
     private boolean activeByDefault;
-
-    //partition Ids
     private List<Partition> partitions;
 
     public String getId() {

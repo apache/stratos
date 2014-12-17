@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "error")
 public class Error {
+
     private int errorCode;
     private String errorMessage;
 

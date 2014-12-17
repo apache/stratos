@@ -27,21 +27,13 @@ import java.util.List;
 public class Cluster {
 
     private String alias;
-
 	private String serviceName;
-
     private String clusterId;
-
     private List<Member> member;
-
     private String tenantRange;
-
     private List<String> hostNames;
-
     private boolean isLbCluster;
-
     private List<PropertyBean> property;
-
     private List<Instance> instances;    
     
     public List<Instance> getInstances() {

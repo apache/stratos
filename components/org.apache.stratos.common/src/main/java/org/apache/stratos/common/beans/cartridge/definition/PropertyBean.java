@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PropertyBean {
 
     private String name;
-
     private String value;
 
     public String getName() {
