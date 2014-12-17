@@ -111,16 +111,29 @@ public class DependencyBuilder {
                                 if (parentContext == null) {
                                     //if existing context found, add it to child of existing context and
                                     //set the existing context as the next parent
-                                    existingApplicationContext.addApplicationContext(applicationContext);
+                                    //existingApplicationContext.addApplicationContext(applicationContext);
                                     parentContext = existingApplicationContext;
                                     if (log.isDebugEnabled()) {
                                         log.debug("Found an existing [dependency] " + id + " and setting it " +
                                                 "for the next dependency to follow");
                                     }
                                 } else {
-                                    String msg = "Startup order is not consistent. It contains the group/cluster " +
-                                            "which has been used more than one in another startup order";
-                                    throw new DependencyBuilderException(msg);
+                                    ApplicationChildContext existingParentContext =
+                                            dependencyTree.findParentContextWithId(
+                                                    applicationContext.getId());
+                                    if(existingParentContext != null && existingParentContext.getId().
+                                            equals(parentContext.getId())) {
+                                        if(log.isDebugEnabled()) {
+                                            log.debug("Found an existing parent Context. " +
+                                                    "Hence skipping it and parsing the next value.");
+                                        }
+                                        parentContext = existingApplicationContext;
+                                    } else {
+                                        String msg = "Startup order is not consistent. It contains the group/cluster " +
+                                                "which has been used more than one in another startup order";
+                                        throw new DependencyBuilderException(msg);
+                                    }
+
                                 }
 
                             }
