@@ -26,15 +26,10 @@ import java.util.List;
 @XmlRootElement
 public class DeploymentPolicy {
 
-    //partition groups
     private String applicationId;
-
     private String description;
-
     private boolean isPublic;
-
     private ApplicationPolicy applicationPolicy;
-
     private List<ChildPolicy> childPolicies;
 
     public String getApplicationId() {

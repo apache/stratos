@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement (name = "floatingNetworks")
 public class FloatingNetworkBean {
+
 	private String name;
 	private String networkUuid;
 	private String floatingIP;

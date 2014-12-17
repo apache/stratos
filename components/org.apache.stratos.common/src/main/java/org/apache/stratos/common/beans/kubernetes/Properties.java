@@ -18,33 +18,32 @@
  */
 package org.apache.stratos.common.beans.kubernetes;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Had to wrap {@link Property} array using a class, since there's a bug in current
  * stub generation.
  */
+@XmlRootElement
 public class Properties implements Serializable{
 
     private static final long serialVersionUID = 1986895299288322592L;
-    private Property[] properties;
+    private List<Property> properties;
 
-    public Property[] getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(Property[] properties) {
-        if(properties == null) {
-            this.properties = new Property[0];
-        } else {
-            this.properties = Arrays.copyOf(properties, properties.length);
-        }
+    public void setProperties(List<Property> properties) {
+        this.properties = properties;
     }
 
     @Override
     public String toString() {
-        return "Properties [properties=" + Arrays.toString(properties) + "]";
+        return "Properties [properties=" + properties + "]";
     }
     
 }

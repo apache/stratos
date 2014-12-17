@@ -41,8 +41,9 @@ public class TenantInfoBean {
     private String originatedService;
     private String usagePlan;
 
+    public TenantInfoBean() {
 
-    public TenantInfoBean(){}
+    }
 
     /*copy constructor*/
     public TenantInfoBean(TenantInfoBean tenantInfoBean) {

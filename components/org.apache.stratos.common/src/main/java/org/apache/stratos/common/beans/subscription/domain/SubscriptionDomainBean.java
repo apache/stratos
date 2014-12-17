@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "domains")
 public class SubscriptionDomainBean {
+
     private String domainName;
     private String applicationContext;
 

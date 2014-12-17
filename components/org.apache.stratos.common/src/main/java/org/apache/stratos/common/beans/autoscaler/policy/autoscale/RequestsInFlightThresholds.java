@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class RequestsInFlightThresholds {
 
     private float threshold;
-
     private float lowerLimit;
 
     public float getThreshold() {

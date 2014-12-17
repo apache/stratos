@@ -18,14 +18,17 @@
  */
 package org.apache.stratos.common.beans.kubernetes;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * Holds a property 
  */
-public class Property implements Serializable{
+@XmlRootElement
+public class Property implements Serializable {
     
     private static final long serialVersionUID = -2191782657999410197L;
+
     private String name;
     private String value;
     

@@ -26,7 +26,6 @@ import java.util.List;
 @XmlRootElement
 public class ApplicationPolicy {
 
-
     private List<ApplicationLevelNetworkPartition> networkPartition;
 
     public List<ApplicationLevelNetworkPartition> getNetworkPartition() {

@@ -27,45 +27,28 @@ import java.util.List;
 public class CartridgeDefinitionBean {
 
 	private String type;
-
 	private String host;
-
 	private String provider;
-
-	//Four types - Application,Framework,Data,LB
+    /**
+     * Category: Application|Framework|Data|LoadBalancer
+     */
     private String category;
-
 	private String displayName;
-
 	private String description;
-
 	private String version;
-
 	private boolean multiTenant;
-
 	private boolean isPublic;
-
     private DeploymentBean deployment;
-
     private List<PortMappingBean> portMapping;
-    
     private PersistenceBean persistence;
-
     private List<IaasProviderBean> iaasProvider;
-
-    private List<PropertyBean> property;
-    
     private String defaultAutoscalingPolicy;
-
     private String defaultDeploymentPolicy;
-    
     private String serviceGroup;
-    
     private ContainerBean container;
-    
     private String deployerType;
-
-    private String[] exportingProperties;
+    private List<PropertyBean> property;
+    private List<String> exportingProperties;
 
     public String toString () {
 
@@ -117,11 +100,11 @@ public class CartridgeDefinitionBean {
         return propertyBuilder.toString();
     }
 
-    public String[] getExportingProperties() {
+    public List<String> getExportingProperties() {
         return exportingProperties;
     }
 
-    public void setExportingProperties(String[] exportingProperties) {
+    public void setExportingProperties(List<String> exportingProperties) {
         this.exportingProperties = exportingProperties;
     }
 

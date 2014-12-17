@@ -10,6 +10,7 @@ import java.util.List;
 
 @XmlRootElement(name="applications")
 public class ApplicationBean {
+
     private String id;
     private String name;
     private String description;

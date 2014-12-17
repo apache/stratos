@@ -25,8 +25,8 @@ import java.util.List;
 
 @XmlRootElement
 public class ChildPolicy {
-    private String childId;
 
+    private String childId;
     private List<ChildLevelNetworkPartition> networkPartition;
 
     public String getChildId() {

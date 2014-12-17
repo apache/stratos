@@ -23,10 +23,9 @@ import java.util.List;
 
 @XmlRootElement
 public class ChildLevelNetworkPartition {
+
     private String id;
-
     private String partitionAlgo;
-
     private List<ChildLevelPartition> partitions;
 
     public String getId() {

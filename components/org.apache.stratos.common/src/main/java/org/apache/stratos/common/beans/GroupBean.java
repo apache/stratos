@@ -28,6 +28,7 @@ import java.util.List;
 
 @XmlRootElement(name="groups")
 public class GroupBean {
+
     private List<GroupBean> subGroups = null;
     private List<Cluster> clusters = null;
     private String alias;

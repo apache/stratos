@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class PortRange {
+
     private int upper;
     private int lower;
 

@@ -24,17 +24,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class VolumeBean {
 
     private String id;
-
     private String size;
-
     private String device;
-
     private boolean removeOnTermination;
-
     private String mappingPath;
-    
     private String snapshotId;
-
     private String volumeId;
 
     public String toString () {

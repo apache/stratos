@@ -24,12 +24,12 @@ import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
 
 @XmlRootElement
 public class Member {
+
     private String serviceName;
     private String clusterId;
     private String networkPartitionId;
     private String partitionId;
     private String memberId;
-
     private String status;
     private String memberIp;
     private String lbClusterId;

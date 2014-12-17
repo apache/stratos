@@ -25,9 +25,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class PortMappingBean {
 
     private String protocol;
-
     private int port;
-
     private int proxyPort;
 
     public String toString () {
