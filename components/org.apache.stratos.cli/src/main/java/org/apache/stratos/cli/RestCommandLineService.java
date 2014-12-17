@@ -75,7 +75,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEPLOY_KUBERNETES_CLUSTER = API_CONTEXT + "/kubernetesCluster";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/minion";
     private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups";
-    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications/{applicationId}/deploy";
 
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER= API_CONTEXT + "/kubernetesCluster/{id}";
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts/{id}";
@@ -930,8 +930,9 @@ public class RestCommandLineService {
     }
 
     // This method helps to deploy applications
-    public void deployApplication (String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION, entityBody, "application");
+    public void deployApplication (String applicationId, String entityBody) {
+        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId), entityBody,
+                "application");
     }
 
     // This method helps to undeploy applications
