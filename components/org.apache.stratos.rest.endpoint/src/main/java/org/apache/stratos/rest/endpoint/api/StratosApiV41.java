@@ -702,7 +702,7 @@ public class StratosApiV41 extends AbstractApi {
             tenantId = persistor.persistTenant(tenant, false, tenantInfoBean.getSuccessKey(),
                     tenantInfoBean.getOriginatedService(), false);
         } catch (Exception e) {
-            String msg = "Error in persisting tenant " + tenantDomain;
+            String msg = "Could not add tenant: " + e.getMessage();
             log.error(msg, e);
             throw new RestAPIException(msg);
         }

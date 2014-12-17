@@ -58,10 +58,7 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 public class ObjectConverter {
 
@@ -1499,17 +1496,18 @@ public class ObjectConverter {
             return null;
         }
 
-        org.apache.stratos.common.beans.TenantInfoBean stratosTenantInfoBean =
+        org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean =
                 new org.apache.stratos.common.beans.TenantInfoBean();
-        stratosTenantInfoBean.setTenantId(carbonTenantInfoBean.getTenantId());
-        stratosTenantInfoBean.setTenantDomain(carbonTenantInfoBean.getTenantDomain());
-        stratosTenantInfoBean.setActive(carbonTenantInfoBean.isActive());
-        stratosTenantInfoBean.setAdmin(carbonTenantInfoBean.getAdmin());
-        stratosTenantInfoBean.setEmail(carbonTenantInfoBean.getEmail());
-        stratosTenantInfoBean.setFirstname(carbonTenantInfoBean.getFirstname());
-        stratosTenantInfoBean.setLastname(carbonTenantInfoBean.getLastname());
-        stratosTenantInfoBean.setCreatedDate(carbonTenantInfoBean.getCreatedDate());
-        return stratosTenantInfoBean;
+        tenantInfoBean.setTenantId(carbonTenantInfoBean.getTenantId());
+        tenantInfoBean.setTenantDomain(carbonTenantInfoBean.getTenantDomain());
+        tenantInfoBean.setActive(carbonTenantInfoBean.isActive());
+        tenantInfoBean.setAdmin(carbonTenantInfoBean.getAdmin());
+        tenantInfoBean.setEmail(carbonTenantInfoBean.getEmail());
+        tenantInfoBean.setAdminPassword(carbonTenantInfoBean.getAdminPassword());
+        tenantInfoBean.setFirstname(carbonTenantInfoBean.getFirstname());
+        tenantInfoBean.setLastname(carbonTenantInfoBean.getLastname());
+        tenantInfoBean.setCreatedDate(carbonTenantInfoBean.getCreatedDate().getTimeInMillis());
+        return tenantInfoBean;
     }
 
     public static TenantInfoBean convertTenantInfoBeanToCarbonTenantInfoBean(
@@ -1525,9 +1523,14 @@ public class ObjectConverter {
         carbonTenantInfoBean.setActive(tenantInfoBean.isActive());
         carbonTenantInfoBean.setAdmin(tenantInfoBean.getAdmin());
         carbonTenantInfoBean.setEmail(tenantInfoBean.getEmail());
+        carbonTenantInfoBean.setAdminPassword(tenantInfoBean.getAdminPassword());
         carbonTenantInfoBean.setFirstname(tenantInfoBean.getFirstname());
         carbonTenantInfoBean.setLastname(tenantInfoBean.getLastname());
-        carbonTenantInfoBean.setCreatedDate(tenantInfoBean.getCreatedDate());
+        if(tenantInfoBean.getCreatedDate() > 0) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(tenantInfoBean.getCreatedDate());
+            carbonTenantInfoBean.setCreatedDate(calendar);
+        }
         return carbonTenantInfoBean;
     }
 }
