@@ -1492,17 +1492,42 @@ public class ObjectConverter {
 	    return instanceList;
     }
 
-    public static org.apache.stratos.common.beans.TenantInfoBean convertTenantInfoBean(TenantInfoBean tenantInfoBean) {
+    public static org.apache.stratos.common.beans.TenantInfoBean convertCarbonTenantInfoBeanToTenantInfoBean(
+            TenantInfoBean carbonTenantInfoBean) {
+
+        if(carbonTenantInfoBean == null) {
+            return null;
+        }
+
         org.apache.stratos.common.beans.TenantInfoBean stratosTenantInfoBean =
                 new org.apache.stratos.common.beans.TenantInfoBean();
-        stratosTenantInfoBean.setTenantId(tenantInfoBean.getTenantId());
-        stratosTenantInfoBean.setTenantDomain(tenantInfoBean.getTenantDomain());
-        stratosTenantInfoBean.setActive(tenantInfoBean.isActive());
-        stratosTenantInfoBean.setAdmin(tenantInfoBean.getAdmin());
-        stratosTenantInfoBean.setEmail(tenantInfoBean.getEmail());
-        stratosTenantInfoBean.setFirstname(tenantInfoBean.getFirstname());
-        stratosTenantInfoBean.setLastname(tenantInfoBean.getLastname());
-        stratosTenantInfoBean.setCreatedDate(tenantInfoBean.getCreatedDate());
+        stratosTenantInfoBean.setTenantId(carbonTenantInfoBean.getTenantId());
+        stratosTenantInfoBean.setTenantDomain(carbonTenantInfoBean.getTenantDomain());
+        stratosTenantInfoBean.setActive(carbonTenantInfoBean.isActive());
+        stratosTenantInfoBean.setAdmin(carbonTenantInfoBean.getAdmin());
+        stratosTenantInfoBean.setEmail(carbonTenantInfoBean.getEmail());
+        stratosTenantInfoBean.setFirstname(carbonTenantInfoBean.getFirstname());
+        stratosTenantInfoBean.setLastname(carbonTenantInfoBean.getLastname());
+        stratosTenantInfoBean.setCreatedDate(carbonTenantInfoBean.getCreatedDate());
         return stratosTenantInfoBean;
+    }
+
+    public static TenantInfoBean convertTenantInfoBeanToCarbonTenantInfoBean(
+            org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) {
+
+        if(tenantInfoBean == null) {
+            return null;
+        }
+
+        TenantInfoBean carbonTenantInfoBean = new TenantInfoBean();
+        carbonTenantInfoBean.setTenantId(tenantInfoBean.getTenantId());
+        carbonTenantInfoBean.setTenantDomain(tenantInfoBean.getTenantDomain());
+        carbonTenantInfoBean.setActive(tenantInfoBean.isActive());
+        carbonTenantInfoBean.setAdmin(tenantInfoBean.getAdmin());
+        carbonTenantInfoBean.setEmail(tenantInfoBean.getEmail());
+        carbonTenantInfoBean.setFirstname(tenantInfoBean.getFirstname());
+        carbonTenantInfoBean.setLastname(tenantInfoBean.getLastname());
+        carbonTenantInfoBean.setCreatedDate(tenantInfoBean.getCreatedDate());
+        return carbonTenantInfoBean;
     }
 }

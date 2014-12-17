@@ -662,7 +662,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/modify/tenants")
     @SuperTenantService(true)
-    public Response createTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public Response createTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
@@ -693,7 +693,8 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException("Invalid data"); // obscure error message.
         }
 
-        Tenant tenant = TenantMgtUtil.initializeTenant(tenantInfoBean);
+        Tenant tenant = TenantMgtUtil.initializeTenant(
+                ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
         TenantPersistor persistor = ServiceHolder.getTenantPersistor();
         // not validating the domain ownership, since created by super tenant
         int tenantId = 0; //TODO verify whether this is the correct approach (isSkeleton)
@@ -717,7 +718,7 @@ public class StratosApiV41 extends AbstractApi {
 
         //Notify tenant addition
         try {
-            TenantMgtUtil.triggerAddTenant(tenantInfoBean);
+            TenantMgtUtil.triggerAddTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
         } catch (StratosException e) {
             String msg = "Error in notifying tenant addition.";
             log.error(msg, e);
@@ -725,7 +726,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         // For the super tenant tenant creation, tenants are always activated as they are created.
         try {
-            TenantMgtUtil.activateTenantInitially(tenantInfoBean, tenantId);
+            TenantMgtUtil.activateTenantInitially(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean), tenantId);
         } catch (Exception e) {
             String msg = "Error in initial activation of tenant " + tenantDomain;
             log.error(msg, e);
@@ -756,11 +757,10 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/modify/tenants")
     @SuperTenantService(true)
-    public Response updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public Response updateTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws RestAPIException {
 
         try {
             updateExistingTenant(tenantInfoBean);
-
         } catch (TenantNotFoundException ex) {
             Response.status(Response.Status.NOT_FOUND).build();
         } catch (Exception e) {
@@ -772,7 +772,7 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
-    private void updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
+    private void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws Exception {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
@@ -885,7 +885,7 @@ public class StratosApiV41 extends AbstractApi {
 
         //Notify tenant update to all listeners
         try {
-            TenantMgtUtil.triggerUpdateTenant(tenantInfoBean);
+            TenantMgtUtil.triggerUpdateTenant(ObjectConverter.convertTenantInfoBeanToCarbonTenantInfoBean(tenantInfoBean));
         } catch (StratosException e) {
             String msg = "Error in notifying tenant update.";
             log.error(msg, e);
@@ -906,7 +906,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean getTenantForDomain(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public org.apache.stratos.common.beans.TenantInfoBean getTenantForDomain(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         try {
             return getTenantByDomain(tenantDomain);
@@ -917,7 +917,7 @@ public class StratosApiV41 extends AbstractApi {
         }
     }
 
-    private TenantInfoBean getTenantByDomain(String tenantDomain) throws Exception {
+    private org.apache.stratos.common.beans.TenantInfoBean getTenantByDomain(String tenantDomain) throws Exception {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
 
@@ -939,7 +939,8 @@ public class StratosApiV41 extends AbstractApi {
             throw new Exception(msg, e);
         }
 
-        TenantInfoBean bean = TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant);
+        org.apache.stratos.common.beans.TenantInfoBean bean =
+                ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
 
         // retrieve first and last names from the UserStoreManager
         bean.setFirstname(ClaimsMgtUtil.getFirstNamefromUserStoreManager(
@@ -1037,7 +1038,7 @@ public class StratosApiV41 extends AbstractApi {
 
         List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
-            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertTenantInfoBean(
+            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(
                     TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
             tenantList.add(bean);
         }
@@ -1057,10 +1058,10 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] getPartialSearchTenants(@PathParam("tenantDomain") String tenantDomain)
+    public org.apache.stratos.common.beans.TenantInfoBean[] getPartialSearchTenants(@PathParam("tenantDomain") String tenantDomain)
             throws RestAPIException {
 
-        List<TenantInfoBean> tenantList = null;
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = null;
         try {
             tenantList = searchPartialTenantsDomains(tenantDomain);
         } catch (Exception e) {
@@ -1068,10 +1069,10 @@ public class StratosApiV41 extends AbstractApi {
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
-        return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
+        return tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()]);
     }
     
-    private List<TenantInfoBean> searchPartialTenantsDomains(String domain) throws RestAPIException {
+    private List<org.apache.stratos.common.beans.TenantInfoBean> searchPartialTenantsDomains(String domain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         Tenant[] tenants;
         try {
@@ -1083,9 +1084,10 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        List<TenantInfoBean> tenantList = new ArrayList<TenantInfoBean>();
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
-            TenantInfoBean bean = TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant);
+            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(
+                    TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
             tenantList.add(bean);
         }
         return tenantList;
