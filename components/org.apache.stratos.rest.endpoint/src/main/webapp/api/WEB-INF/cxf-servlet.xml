@@ -128,6 +128,7 @@
                 <value>networkPartition</value>
                 <value>partitions</value>
                 <value>instances</value>
+                <value>dependencyAliases</value>
             </list>
         </property>
     </bean>

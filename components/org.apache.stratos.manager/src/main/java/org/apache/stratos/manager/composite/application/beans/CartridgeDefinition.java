@@ -28,11 +28,8 @@ public class CartridgeDefinition implements Serializable {
     private static final long serialVersionUID = 8968224678298479827L;
 
 	private String type;
-	
 	private int cartridgeMin;
-	
 	private int cartridgeMax;
-	
 	private SubscribableInfo subscribableInfo;
 
 	public String getType() {
