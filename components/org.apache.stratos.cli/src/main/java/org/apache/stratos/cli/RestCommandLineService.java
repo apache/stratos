@@ -380,23 +380,19 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
-
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_ADD_TENANT, jsonString);
 
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
                 System.out.println("Tenant added successfully");
                 return;
-            } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
             }
-
         } catch (Exception e) {
-            handleException("Exception in creating tenant", e);
+            String message = "Could not add tenant";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -424,17 +420,13 @@ public class RestCommandLineService {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_ADD_USER, jsonString);
 
-            String responseCode = "" + response.getStatusLine().getStatusCode();
-
-            if (responseCode.equals(CliConstants.RESPONSE_CREATED)) {
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
                 System.out.println("User added successfully");
                 return;
-            } else {
-                String resultString = CliUtils.getHttpResponseString(response);
-                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
-                System.out.println(exception);
             }
-
         } catch (Exception e) {
             String message = "Could not add user";
             printError(message, e);
