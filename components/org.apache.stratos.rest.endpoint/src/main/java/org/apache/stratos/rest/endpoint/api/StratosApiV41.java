@@ -404,6 +404,20 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.deployApplication(applicationId, deploymentPolicy);
         return Response.accepted().build();
     }
+
+    @GET
+    @Path("/applications/{applicationId}/deploymentPolicy")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getApplicationDeploymentPolicy(@PathParam("applicationId") String applicationId)
+            throws RestAPIException {
+        DeploymentPolicy deploymentPolicy = StratosApiV41Utils.getDeploymentPolicy(applicationId);
+        if(deploymentPolicy == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(deploymentPolicy).build();
+    }
     
     /**
      * Undeploy application.

@@ -203,7 +203,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         ApplicationBuilder.handleApplicationCreated(application, applicationParser.getApplicationClusterContexts());
 
         try {
-            String policyId = PolicyManager.getInstance().deployDeploymentPolicy(policy);
+            PolicyManager.getInstance().addDeploymentPolicy(policy);
         } catch (InvalidPolicyException e) {
             String message = "Could not deploy application: [application-id] " + policy.getApplicationId();
             log.error(message, e);

@@ -33,6 +33,7 @@ import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.partition.Partition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.*;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.*;
 import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
@@ -417,6 +418,151 @@ public class PojoConverter {
         return deploymentPolicy;
     }
 
+    public static DeploymentPolicy convertStubDeploymentPolicyToDeploymentPolicy(
+            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy) {
+
+        DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
+
+        deploymentPolicy.setApplicationId(stubDeploymentPolicy.getApplicationId());
+        deploymentPolicy.setDescription(stubDeploymentPolicy.getDescription());
+        deploymentPolicy.setPublic(stubDeploymentPolicy.getIsPublic());
+        if (stubDeploymentPolicy.getApplicationLevelNetworkPartitions() != null) {
+            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
+                    networkPartitions = stubDeploymentPolicy.getApplicationLevelNetworkPartitions();
+            if(networkPartitions != null) {
+                deploymentPolicy.setApplicationPolicy(new ApplicationPolicy());
+                List<ApplicationLevelNetworkPartition> networkPartitionList = new ArrayList<ApplicationLevelNetworkPartition>();
+                for(org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition
+                        networkPartition : networkPartitions) {
+                    if(networkPartition != null) {
+                        networkPartitionList.add(convertStubNetworkPartitionToNetworkPartition(networkPartition));
+                    }
+                }
+                deploymentPolicy.getApplicationPolicy().setNetworkPartition(networkPartitionList);
+            }
+        }
+
+        if (stubDeploymentPolicy.getChildPolicies() != null) {
+            List<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy> childPolicyList =
+                    new ArrayList<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy>();
+            for(org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy stubChildDeploymentPolicy :
+                    stubDeploymentPolicy.getChildPolicies()) {
+                if(stubChildDeploymentPolicy != null) {
+                    childPolicyList.add(convertStubChildPolicyToChildPolicy(stubChildDeploymentPolicy));
+                }
+            }
+            deploymentPolicy.setChildPolicies(childPolicyList);
+        }
+        return deploymentPolicy;
+    }
+
+    private static org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy
+    convertStubChildPolicyToChildPolicy(ChildPolicy stubChildDeploymentPolicy) {
+        if(stubChildDeploymentPolicy == null) {
+            return null;
+        }
+        org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy childPolicy = new
+                org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy();
+        childPolicy.setChildId(stubChildDeploymentPolicy.getId());
+        if(stubChildDeploymentPolicy.getChildLevelNetworkPartitions() != null) {
+            List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition> networkPartitionList
+                    = new ArrayList<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition>();
+            for(org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition
+                    stubChildLevelNetworkPartition : stubChildDeploymentPolicy.getChildLevelNetworkPartitions()) {
+                networkPartitionList.add(convertStubChildLevelNetworkPartitionToChildLevelNetworkPartition(stubChildLevelNetworkPartition));
+            }
+            childPolicy.setNetworkPartition(networkPartitionList);
+        }
+        return childPolicy;
+    }
+
+    private static org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition
+    convertStubChildLevelNetworkPartitionToChildLevelNetworkPartition(
+            ChildLevelNetworkPartition stubChildLevelNetworkPartition) {
+        if(stubChildLevelNetworkPartition == null) {
+            return null;
+        }
+        org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition childLevelNetworkPartition =
+                new org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition();
+        childLevelNetworkPartition.setId(stubChildLevelNetworkPartition.getId());
+        childLevelNetworkPartition.setPartitionAlgo(stubChildLevelNetworkPartition.getPartitionAlgo());
+        if(stubChildLevelNetworkPartition.getChildLevelPartitions() != null) {
+            List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition> partitionList =
+                    new ArrayList<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition>();
+            for(org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition stubChildLevelPartition : stubChildLevelNetworkPartition.getChildLevelPartitions()) {
+                partitionList.add(convertStubChildLevelPartitionToChildLevelPartition(stubChildLevelPartition));
+            }
+            childLevelNetworkPartition.setPartitions(partitionList);
+        }
+        return childLevelNetworkPartition;
+    }
+
+    private static org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition
+    convertStubChildLevelPartitionToChildLevelPartition(ChildLevelPartition stubChildLevelPartition) {
+        if(stubChildLevelPartition == null) {
+            return null;
+        }
+        org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition childLevelPartition =
+                new org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition();
+        childLevelPartition.setId(stubChildLevelPartition.getPartitionId());
+        childLevelPartition.setMax(stubChildLevelPartition.getMax());
+        return childLevelPartition;
+    }
+
+    private static ApplicationLevelNetworkPartition convertStubNetworkPartitionToNetworkPartition(
+            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition stubNetworkPartition) {
+        if(stubNetworkPartition == null) {
+            return null;
+        }
+
+        ApplicationLevelNetworkPartition networkPartition = new ApplicationLevelNetworkPartition();
+        networkPartition.setId(stubNetworkPartition.getId());
+        networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
+        if(stubNetworkPartition.getPartitions() != null) {
+            List<Partition> partitionList = new ArrayList<Partition>();
+            for(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition :
+                    stubNetworkPartition.getPartitions()) {
+                if(stubPartition != null) {
+                    partitionList.add(convertStubPartitionToPartition(stubPartition));
+                }
+            }
+            networkPartition.setPartitions(partitionList);
+        }
+        return networkPartition;
+    }
+
+    private static Partition convertStubPartitionToPartition(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition) {
+        if(stubPartition == null) {
+            return null;
+        }
+        Partition partition = new Partition();
+        partition.setId(stubPartition.getId());
+        partition.setPublic(stubPartition.getIsPublic());
+        partition.setDescription(stubPartition.getDescription());
+        partition.setProvider(stubPartition.getProvider());
+        if(stubPartition.getProperties() != null) {
+            List<PropertyBean> propertyBeanList = new ArrayList<PropertyBean>();
+            for(org.apache.stratos.autoscaler.stub.Property stubProperty : stubPartition.getProperties().getProperties()) {
+                if(stubProperty != null) {
+                    propertyBeanList.add(convertStubPropertyToPropertyBean(stubProperty));
+                }
+            }
+            partition.setProperty(propertyBeanList);
+        }
+        return partition;
+    }
+
+    private static PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property stubProperty) {
+        if(stubProperty == null) {
+            return null;
+        }
+
+        PropertyBean propertyBean = new PropertyBean();
+        propertyBean.setName(stubProperty.getName());
+        propertyBean.setValue(stubProperty.getValue());
+        return propertyBean;
+    }
+
     private static org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] convertToCCPartitionGroup(List<ApplicationLevelNetworkPartition> networkPartitionBeans) {
 
         org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
@@ -751,22 +897,14 @@ public class PojoConverter {
     public static DeploymentPolicy populateDeploymentPolicyPojo(org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy
                                                                         deploymentPolicy) {
 
-        DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
         if (deploymentPolicy == null) {
-            return deploymentPolicyBean;
+            return null;
         }
 
+        DeploymentPolicy deploymentPolicyBean = new DeploymentPolicy();
         deploymentPolicyBean.setDescription(deploymentPolicy.getDescription());
         deploymentPolicyBean.setPublic(deploymentPolicy.getIsPublic());
-//TODO populate the Network partition based on new policy structure
-//        if (deploymentPolicy.getApplicationLevelNetworkPartition() != null && deploymentPolicy.getApplicationLevelNetworkPartition().length > 0) {
-//            deploymentPolicyBean.setPartitionGroup(Arrays.asList(populatePartitionGroupPojos(deploymentPolicy.getApplicationLevelNetworkPartition())));
-//        }
-
-        /*if (deploymentPolicy.getAllPartitions() != null && deploymentPolicy.getAllPartitions().length > 0) {
-            deploymentPolicyBean.partition = Arrays.asList(populatePartitionPojos(deploymentPolicy.getAllPartitions()));
-        }*/
-
+        deploymentPolicyBean.setApplicationId(deploymentPolicy.getApplicationId());
         return deploymentPolicyBean;
     }
 
@@ -1051,7 +1189,7 @@ public class PojoConverter {
             // top level Groups
             if (applicationDefinition.getComponents().getGroups() != null) {
                 componentContext.setGroupContexts(
-                        convertGroupDefinitionsToGroupContexts(applicationDefinition.getComponents().getGroups()));
+                        convertGroupDefinitionsToStubGroupContexts(applicationDefinition.getComponents().getGroups()));
             }
             // top level dependency information
             if (applicationDefinition.getComponents().getDependencies() != null) {
@@ -1174,7 +1312,7 @@ public class PojoConverter {
         subscribableInfo.setMinMembers(subscribableInfoContext.getMinMembers());
         subscribableInfo.setMaxMembers(subscribableInfoContext.getMaxMembers());
         subscribableInfo.setPrivateRepo(subscribableInfoContext.getPrivateRepo());
-        subscribableInfo.setProperty(convertPropertiesToPropertyBeansList(subscribableInfoContext.getProperties()));
+        subscribableInfo.setProperty(convertStubPropertiesToPropertyBeanList(subscribableInfoContext.getProperties()));
         subscribableInfo.setRepoPassword(subscribableInfoContext.getRepoPassword());
         subscribableInfo.setRepoUsername(subscribableInfoContext.getRepoUsername());
         subscribableInfo.setRepoUrl(subscribableInfoContext.getRepoUrl());
@@ -1182,7 +1320,8 @@ public class PojoConverter {
     }
 
     private static List<org.apache.stratos.manager.composite.application.beans.PropertyBean>
-    convertPropertiesToPropertyBeansList(org.apache.stratos.autoscaler.stub.Properties properties) {
+        convertStubPropertiesToPropertyBeanList(org.apache.stratos.autoscaler.stub.Properties properties) {
+
         List<org.apache.stratos.manager.composite.application.beans.PropertyBean> propertyBeanList =
                 new ArrayList<org.apache.stratos.manager.composite.application.beans.PropertyBean>();
         if((properties != null) && (properties.getProperties() != null)) {
@@ -1225,16 +1364,15 @@ public class PojoConverter {
 		infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
 		infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
 		infoContext.setMinMembers(subscribableInfo.getMinMembers());
-		//infoContext.setPrivateRepo(subscribableInfo.getpr);
 		infoContext.setRepoPassword(subscribableInfo.getRepoPassword());
 		infoContext.setRepoUrl(subscribableInfo.getRepoUrl());
 		infoContext.setRepoUsername(subscribableInfo.getRepoUsername());
-		infoContext.setProperties(convertProperties(subscribableInfo.getProperty()));
+		infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
 		
 	    return infoContext;
     }
 
-	private static org.apache.stratos.autoscaler.stub.Properties convertProperties(
+	private static org.apache.stratos.autoscaler.stub.Properties convertPropertyBeansToStubProperties(
             List<org.apache.stratos.manager.composite.application.beans.PropertyBean> property) {
 		org.apache.stratos.autoscaler.stub.Properties prop = new org.apache.stratos.autoscaler.stub.Properties();
 		if (property != null) {
@@ -1269,7 +1407,7 @@ public class PojoConverter {
     }
 
     private static org.apache.stratos.autoscaler.stub.pojo.GroupContext[]
-    convertGroupDefinitionsToGroupContexts(List<GroupDefinition> groupDefinitions) {
+        convertGroupDefinitionsToStubGroupContexts(List<GroupDefinition> groupDefinitions) {
 
         GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
         int i = 0;
@@ -1283,7 +1421,7 @@ public class PojoConverter {
            
             // Groups
             if (groupDefinition.getGroups() != null) {
-                groupContext.setGroupContexts(convertGroupDefinitionsToGroupContexts(groupDefinition.getGroups()));
+                groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups()));
             }
             
             groupContext.setCartridgeContexts(convertCartridgeDefinitionsToCartridgeContexts(groupDefinition.getCartridges()));
@@ -1350,8 +1488,6 @@ public class PojoConverter {
 	            instanceList.add(instance);
             }
 	    }
-	    
 	    return instanceList;
     }
-
 }
