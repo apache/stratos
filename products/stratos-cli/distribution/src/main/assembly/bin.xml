@@ -22,34 +22,33 @@
     <formats>
         <format>zip</format>
     </formats>
-    <includeBaseDirectory>false</includeBaseDirectory>
-
     <fileSets>
         <fileSet>
-            <directory>../../../components/org.apache.stratos.cli/target</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
-            <includes>
-                <include>org.apache.stratos.cli-${pom.version}.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/bin</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <directory>${project.basedir}/src/main/bin</directory>
+            <outputDirectory>/bin</outputDirectory>
             <includes>
                 <include>stratos.sh</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
-            <directory>src/main/bin</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <directory>${project.basedir}/src/main/bin</directory>
+            <outputDirectory>/bin</outputDirectory>
             <includes>
                 <include>stratos.bat</include>
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <includes>
+                <include>log4j.properties</include>
+            </includes>
+            <fileMode>0600</fileMode>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}</directory>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <outputDirectory>/</outputDirectory>
             <includes>
                 <include>INSTALL.txt</include>
                 <include>README.txt</include>
@@ -58,16 +57,32 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/notice/NOTICE</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <source>${project.basedir}/src/main/notice/NOTICE</source>
+            <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
         <file>
-            <source>src/main/license/LICENSE</source>
-            <outputDirectory>${pom.artifactId}-${pom.version}</outputDirectory>
+            <source>${project.basedir}/src/main/license/LICENSE</source>
+            <outputDirectory>/</outputDirectory>
             <filtered>true</filtered>
             <fileMode>644</fileMode>
         </file>
     </files>
+    <dependencySets>
+        <dependencySet>
+            <excludes>
+                <exclude>*:annotations*</exclude>
+                <exclude>*:icu4j*</exclude>
+                <exclude>*:jaxen*</exclude>
+                <exclude>*:jboss-transaction-api*</exclude>
+                <exclude>*:wrapper*</exclude>
+                <exclude>*:xom*</exclude>
+                <exclude>slf4j.wso2:slf4j</exclude>
+            </excludes>
+            <outputDirectory>/lib</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
 </assembly>
