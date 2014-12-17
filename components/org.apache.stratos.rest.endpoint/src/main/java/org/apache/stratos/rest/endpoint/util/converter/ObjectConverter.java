@@ -56,6 +56,7 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -1489,5 +1490,19 @@ public class ObjectConverter {
             }
 	    }
 	    return instanceList;
+    }
+
+    public static org.apache.stratos.common.beans.TenantInfoBean convertTenantInfoBean(TenantInfoBean tenantInfoBean) {
+        org.apache.stratos.common.beans.TenantInfoBean stratosTenantInfoBean =
+                new org.apache.stratos.common.beans.TenantInfoBean();
+        stratosTenantInfoBean.setTenantId(tenantInfoBean.getTenantId());
+        stratosTenantInfoBean.setTenantDomain(tenantInfoBean.getTenantDomain());
+        stratosTenantInfoBean.setActive(tenantInfoBean.isActive());
+        stratosTenantInfoBean.setAdmin(tenantInfoBean.getAdmin());
+        stratosTenantInfoBean.setEmail(tenantInfoBean.getEmail());
+        stratosTenantInfoBean.setFirstname(tenantInfoBean.getFirstname());
+        stratosTenantInfoBean.setLastname(tenantInfoBean.getLastname());
+        stratosTenantInfoBean.setCreatedDate(tenantInfoBean.getCreatedDate());
+        return stratosTenantInfoBean;
     }
 }

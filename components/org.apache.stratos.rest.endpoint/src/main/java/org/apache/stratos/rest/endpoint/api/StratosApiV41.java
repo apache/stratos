@@ -46,6 +46,7 @@ import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.exception.TenantNotFoundException;
+import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
@@ -1012,7 +1013,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public TenantInfoBean[] getTenants() throws RestAPIException {
-        List<TenantInfoBean> tenantList = null;
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = null;
         try {
             tenantList = getAllTenants();
         } catch (Exception e) {
@@ -1023,7 +1024,7 @@ public class StratosApiV41 extends AbstractApi {
         return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
     }
 
-    private List<TenantInfoBean> getAllTenants() throws RestAPIException {
+    private List<org.apache.stratos.common.beans.TenantInfoBean> getAllTenants() throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         Tenant[] tenants;
         try {
@@ -1034,9 +1035,10 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        List<TenantInfoBean> tenantList = new ArrayList<TenantInfoBean>();
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
-            TenantInfoBean bean = TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant);
+            org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertTenantInfoBean(
+                    TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
             tenantList.add(bean);
         }
         return tenantList;
