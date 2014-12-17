@@ -1012,7 +1012,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] getTenants() throws RestAPIException {
+    public org.apache.stratos.common.beans.TenantInfoBean[] getTenants() throws RestAPIException {
         List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = null;
         try {
             tenantList = getAllTenants();
@@ -1021,7 +1021,7 @@ public class StratosApiV41 extends AbstractApi {
             log.error(msg, e);
             throw new RestAPIException(msg);
         }
-        return tenantList.toArray(new TenantInfoBean[tenantList.size()]);
+        return tenantList.toArray(new org.apache.stratos.common.beans.TenantInfoBean[tenantList.size()]);
     }
 
     private List<org.apache.stratos.common.beans.TenantInfoBean> getAllTenants() throws RestAPIException {
@@ -1057,7 +1057,9 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public TenantInfoBean[] getPartialSearchTenants(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public TenantInfoBean[] getPartialSearchTenants(@PathParam("tenantDomain") String tenantDomain)
+            throws RestAPIException {
+
         List<TenantInfoBean> tenantList = null;
         try {
             tenantList = searchPartialTenantsDomains(tenantDomain);
