@@ -509,10 +509,8 @@ public class StratosApiV41Utils {
     }
 
     private static AutoscalerServiceClient getAutoscalerServiceClient() throws RestAPIException {
-
         try {
             return AutoscalerServiceClient.getServiceClient();
-
         } catch (AxisFault axisFault) {
             String errorMsg = "Error while getting AutoscalerServiceClient instance to connect to the "
                     + "Autoscaler. Cause: " + axisFault.getMessage();
@@ -607,31 +605,18 @@ public class StratosApiV41Utils {
         return PojoConverter.populateAutoscalePojo(autoscalePolicy);
     }
 
-    // Util methods for Deployment policies
     public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy
-    getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
+        getDeploymentPolicy(String applicationId) throws RestAPIException {
 
-        DeploymentPolicy deploymentPolicy = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                deploymentPolicy = autoscalerServiceClient.getDeploymentPolicy(deploymentPolicyId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting deployment policy with id " +
-                        deploymentPolicyId + ". Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
+        try {
+            AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+            DeploymentPolicy deploymentPolicy = autoscalerServiceClient.getDeploymentPolicy(applicationId);
+            return PojoConverter.convertStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
+        } catch (RemoteException e) {
+            String errorMsg = "Could not read deployment policy: [application-id] " + applicationId;
+            log.error(errorMsg, e);
+            throw new RestAPIException(errorMsg, e);
         }
-
-        if (deploymentPolicy == null) {
-            String errorMsg = "Cannot find a matching deployment policy for [id] " + deploymentPolicyId;
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-
-        return PojoConverter.populateDeploymentPolicyPojo(deploymentPolicy);
     }
 
     public static ApplicationLevelNetworkPartition[] getPartitionGroups(String deploymentPolicyId)
@@ -1060,10 +1045,14 @@ public class StratosApiV41Utils {
         try {
             List<ApplicationDefinition> applicationDefinitions = new ArrayList<ApplicationDefinition>();
             ApplicationContext[] applicationContexts = AutoscalerServiceClient.getServiceClient().getApplications();
-            for(ApplicationContext applicationContext : applicationContexts) {
-                ApplicationDefinition applicationDefinition =
-                        PojoConverter.convertApplicationContextToApplicationDefinition(applicationContext);
-                applicationDefinitions.add(applicationDefinition);
+            if(applicationContexts != null) {
+                for (ApplicationContext applicationContext : applicationContexts) {
+                    if(applicationContext != null) {
+                        ApplicationDefinition applicationDefinition =
+                                PojoConverter.convertApplicationContextToApplicationDefinition(applicationContext);
+                        applicationDefinitions.add(applicationDefinition);
+                    }
+                }
             }
             return applicationDefinitions;
         } catch (RemoteException e) {

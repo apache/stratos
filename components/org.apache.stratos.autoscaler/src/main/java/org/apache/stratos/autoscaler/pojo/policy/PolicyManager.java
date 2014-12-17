@@ -70,7 +70,7 @@ public class PolicyManager {
         this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
         if (log.isInfoEnabled()) {
-            log.info(String.format("Autoscaling policy is deployed successfully: [id] %s", policy.getId()));
+            log.info(String.format("Autoscaling policy is added successfully: [id] %s", policy.getId()));
         }
         return true;
     }
@@ -88,37 +88,14 @@ public class PolicyManager {
     }
 
     // Add the deployment policy to information model and persist.
-    public String deployDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        String policyId = addDeploymentPolicyToInformationModel(policy);
+    public void addDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
+        addDeploymentPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is deployed successfully: [id] %s", policyId));
+            log.info(String.format("Deployment policy is added successfully: [application-id] %s",
+                    policy.getApplicationId()));
         }
-        return policyId;
-    }
-
-    public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        if(StringUtils.isEmpty(policy.getApplicationId())){
-            throw new AutoScalerException("Deploying policy id cannot be empty");
-        }
-        try {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Updating deployment policy: [id] %s", policy.getApplicationId()));
-            }
-            fillPartitions(policy);
-        } catch (InvalidPartitionException e) {
-            log.error(e);
-            throw new InvalidPolicyException(String.format("Deployment policy is invalid: [id] %s", policy.getApplicationId()), e);
-        }
-
-        updateDeploymentPolicyToInformationModel(policy);
-        RegistryManager.getInstance().persistDeploymentPolicy(policy);
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getApplicationId()));
-        }
-        return true;
     }
 
     private void fillPartitions(DeploymentPolicy deploymentPolicy) throws InvalidPartitionException {
@@ -211,11 +188,9 @@ public class PolicyManager {
     }
 
     // Add the deployment policy to As in memmory information model. Does not persist.
-    public String addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
+    public void addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
         if (StringUtils.isEmpty(policy.getApplicationId())) {
-            // id = application id + random string
-            String id = policy.getApplicationId() + UUID.randomUUID().getLeastSignificantBits();
-            policy.setApplicationId(id);
+            throw new RuntimeException("Application id is not defined in deployment policy");
         }
         if (!deploymentPolicyListMap.containsKey(policy.getApplicationId())) {
             if (log.isDebugEnabled()) {
@@ -227,8 +202,6 @@ public class PolicyManager {
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
         }
-        
-        return policy.getApplicationId();
     }
 
     public void updateDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
