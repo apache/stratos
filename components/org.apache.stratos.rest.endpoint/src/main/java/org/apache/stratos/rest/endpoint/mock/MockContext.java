@@ -34,7 +34,7 @@ import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionB
 import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.common.beans.topology.Cluster;
-import org.apache.stratos.rest.endpoint.util.converter.PojoConverter;
+import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.CarbonContext;
 import java.util.*;
@@ -878,7 +878,7 @@ public class MockContext {
 		List<String> tenantAliases = tenantIdToAliasesMap.get(tenantId);
 		if(tenantAliases != null && tenantAliases.contains(alias)) {
 			
-			return PojoConverter.populateSubscriptionDomainPojos(subscriptionAliasToDomainMap.get(alias));
+			return ObjectConverter.populateSubscriptionDomainPojos(subscriptionAliasToDomainMap.get(alias));
 		}
         return new ArrayList<SubscriptionDomainBean>();
 	}
@@ -890,7 +890,7 @@ public class MockContext {
 			for (SubscriptionDomain subscriptionDomain : subscriptionAliasToDomainMap.get(subscriptionAlias)) {
 				if(subscriptionDomain.getDomainName().equals(domainName)) {
 					
-					return PojoConverter.populateSubscriptionDomainPojo(subscriptionDomain);
+					return ObjectConverter.populateSubscriptionDomainPojo(subscriptionDomain);
 				}
 			}
 		}

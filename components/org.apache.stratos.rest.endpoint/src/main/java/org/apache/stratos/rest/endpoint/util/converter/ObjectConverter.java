@@ -62,7 +62,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
-public class PojoConverter {
+public class ObjectConverter {
 
     public static CartridgeConfig populateCartridgeConfigPojo(CartridgeDefinitionBean cartridgeDefinitionBean) {
 
@@ -188,7 +188,7 @@ public class PojoConverter {
             }
 
             if (iaasProviderBeansArray[i].getNetworkInterfaces() != null && !iaasProviderBeansArray[i].getNetworkInterfaces().isEmpty()) {
-                iaasConfig.setNetworkInterfaces(PojoConverter.getNetworkInterfaces(iaasProviderBeansArray[i].getNetworkInterfaces()));
+                iaasConfig.setNetworkInterfaces(ObjectConverter.getNetworkInterfaces(iaasProviderBeansArray[i].getNetworkInterfaces()));
             }
 
             iaasConfigsArray[i] = iaasConfig;
@@ -293,7 +293,7 @@ public class PojoConverter {
             networkInterface.setFixedIp(nib.getFixedIp());
             networkInterface.setPortUuid(nib.getPortUuid());
             if (nib.getFloatingNetworks() != null && !nib.getFloatingNetworks().isEmpty()) {
-            	networkInterface.setFloatingNetworks(PojoConverter.getFloatingNetworks(nib.getFloatingNetworks()));
+            	networkInterface.setFloatingNetworks(ObjectConverter.getFloatingNetworks(nib.getFloatingNetworks()));
             }
 
             networkInterfacesArray[i++] = networkInterface;
