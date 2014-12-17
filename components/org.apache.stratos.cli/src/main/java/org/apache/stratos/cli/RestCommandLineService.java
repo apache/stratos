@@ -52,6 +52,7 @@ import javax.net.ssl.*;
 import java.lang.reflect.Type;
 import java.net.ConnectException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -578,7 +579,7 @@ public class RestCommandLineService {
                     data[1] = "" + tenantInfo.getTenantId();
                     data[2] = tenantInfo.getEmail();
                     data[3] = tenantInfo.isActive() ? "Active" : "De-active";
-                    //data[4] = tenantInfo.getCreatedDate();
+                    data[4] = new Date(tenantInfo.getCreatedDate()).toString();
                     return data;
                 }
             };
@@ -587,7 +588,7 @@ public class RestCommandLineService {
             tenantArray = tenantInfoList.toArray(tenantArray);
 
             System.out.println("Tenants:");
-            CliUtils.printTable(tenantArray, rowMapper, "Domain", "Tenant ID", "Email", "State");
+            CliUtils.printTable(tenantArray, rowMapper, "Domain", "Tenant ID", "Email", "State", "Created Date");
         } catch (Exception e) {
             String message = "Could not list tenants";
             printError(message, e);
