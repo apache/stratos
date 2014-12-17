@@ -102,10 +102,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DeleteUserCommand();
         commands.put(command.getName(), command);
 
-        command = new ListAllUsers();
+        command = new ListUsers();
         commands.put(command.getName(), command);
 
-        command = new ListAllTenants();
+        command = new ListTenants();
         commands.put(command.getName(), command);
 
         command = new DeactivateTenantCommand();
@@ -114,10 +114,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ActivateTenantCommand();
         commands.put(command.getName(), command);
 
-        command = new DeployCartridgeCommand();
+        command = new AddCartridgeCommand();
         commands.put(command.getName(), command);
 
-        command = new DeployAutoscalingPolicyCommand();
+        command = new AddAutoscalingPolicyCommand();
         commands.put(command.getName(), command);
 
         command = new ListApplicationsCommand();
@@ -141,7 +141,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new SyncCommand();
 		commands.put(command.getName(), command);
 
-        command = new DeployKubernetesGroupCommand();
+        command = new AddKubernetesGroupCommand();
         commands.put(command.getName(), command);
 
         command = new ListKubernetesGroupsCommand();
@@ -150,7 +150,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ListKubernetesHostsCommand();
         commands.put(command.getName(), command);
 
-        command = new DeployKubernetesHostCommand();
+        command = new AddKubernetesHostCommand();
         commands.put(command.getName(), command);
 
         command = new UnDeployKubernetesGroupCommand();
@@ -165,7 +165,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new UpdateKubernetesHostCommand();
         commands.put(command.getName(), command);
 
-        command = new DeployServiceGroupCommand();
+        command = new AddCartridgeGroupCommand();
         commands.put(command.getName(), command);
 
         command = new DescribeServiceGroupCommand();

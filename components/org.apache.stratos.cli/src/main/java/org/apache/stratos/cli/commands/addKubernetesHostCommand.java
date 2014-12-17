@@ -28,38 +28,43 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 
 /**
- * Deploy service group command.
+ * Deploy kubernetes host command.
  */
-public class DeployServiceGroupCommand implements Command<StratosCommandContext> {
+public class AddKubernetesHostCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeployServiceGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AddKubernetesHostCommand.class);
 
     private Options options;
 
-    public DeployServiceGroupCommand() {
+    public AddKubernetesHostCommand() {
         options = new Options();
-        Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Service group resource path");
-        option.setArgName("resource path");
-        options.addOption(option);
+        Option resourcePathOption = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
+                "Kubernetes host resource path");
+        resourcePathOption.setArgName("resource path");
+        Option clusterIdOption = new Option(CliConstants.CLUSTER_ID_OPTION, CliConstants.CLUSTER_ID_LONG_OPTION, true,
+                "Kubernetes cluster id");
+        clusterIdOption.setArgName("cluster id");
+        options.addOption(clusterIdOption);
+        options.addOption(resourcePathOption);
     }
 
     @Override
     public String getName() {
-        return "deploy-service-group";
+        return "add-kubernetes-host";
     }
 
     @Override
     public String getDescription() {
-        return "Deploy service group";
+        return "Add kubernetes host";
     }
 
     @Override
     public String getArgumentSyntax() {
-        return null;
+    	return null;
     }
 
     @Override
@@ -72,28 +77,40 @@ public class DeployServiceGroupCommand implements Command<StratosCommandContext>
         if (logger.isDebugEnabled()) {
             logger.debug("Executing command: ", getName());
         }
-
+        
         if ((args == null) || (args.length <= 0)) {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
         }
-
+       			
         try {
             CommandLineParser parser = new GnuParser();
             CommandLine commandLine = parser.parse(options, args);
-            if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+            
+            if((commandLine.hasOption(CliConstants.RESOURCE_PATH)) && (commandLine.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
+	               
+                // get cluster id arg value
+            	String clusterId = commandLine.getOptionValue(CliConstants.CLUSTER_ID_OPTION);
+                if (clusterId == null) {
+                    context.getStratosApplication().printUsage(getName());
+                    return CliConstants.COMMAND_FAILED;
+                }
+                
+                // get resource path arg value
+            	String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployServiceGroup(resourceFileContent);
+                
+                RestCommandLineService.getInstance().addKubernetesHost(resourceFileContent, clusterId);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
-                System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+                context.getStratosApplication().printUsage(getName());
                 return CliConstants.COMMAND_FAILED;
             }
+           
         } catch (ParseException e) {
             logger.error("Error parsing arguments", e);
             System.out.println(e.getMessage());

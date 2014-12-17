@@ -28,34 +28,33 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 
 /**
- * Deploy kubernetes group command.
+ * Deploy service group command.
  */
-public class DeployKubernetesGroupCommand implements Command<StratosCommandContext> {
+public class AddCartridgeGroupCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeployKubernetesGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AddCartridgeGroupCommand.class);
 
     private Options options;
 
-    public DeployKubernetesGroupCommand() {
+    public AddCartridgeGroupCommand() {
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Kubernetes group resource path");
+                "Cartridge group resource path");
         option.setArgName("resource path");
         options.addOption(option);
     }
 
     @Override
     public String getName() {
-        return "deploy-kubernetes-group";
+        return "add-cartridge-group";
     }
 
     @Override
     public String getDescription() {
-        return "Deploy kubernetes group";
+        return "Add cartridge group";
     }
 
     @Override
@@ -89,7 +88,7 @@ public class DeployKubernetesGroupCommand implements Command<StratosCommandConte
                     return CliConstants.COMMAND_FAILED;
                 }
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployKubernetesCluster(resourceFileContent);
+                RestCommandLineService.getInstance().addCartridgeGroup(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
