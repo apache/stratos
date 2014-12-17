@@ -30,17 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public class CliTool {
 
-	private static final Logger logger = LoggerFactory.getLogger(CliTool.class);
-
-	/**
-	 * Main executable method used to call from CLI.
-	 * 
-	 */
-	public static void main(final String[] args) {
-		CliTool cliTool = new CliTool();
-		cliTool.createConfigDirectory();
-		cliTool.handleConsoleInputs(args);
-	}
+	private static final Logger log = LoggerFactory.getLogger(CliTool.class);
 
 	/**
 	 * Here is the place all the command line inputs get processed
@@ -48,27 +38,27 @@ public class CliTool {
 	 * @param arguments
 	 *            passed to CLI tool.
 	 */
-	private void handleConsoleInputs(String[] arguments) {
-		if (logger.isInfoEnabled()) {
-			logger.info("Stratos CLI Started...");
+	void handleConsoleInputs(String[] arguments) {
+		if (log.isInfoEnabled()) {
+			log.info("Stratos CLI started...");
 		}
 		StratosApplication application = new StratosApplication(arguments);
 		application.start(arguments);
 	}
 
-	private void createConfigDirectory() {
+	void createConfigDirectory() {
 		File stratosFile = new File(System.getProperty("user.home"), STRATOS_DIR);
 		if (stratosFile.exists()) {
-			if (logger.isInfoEnabled()) {
-				logger.info("Using directory: {}", stratosFile.getPath());
+			if (log.isInfoEnabled()) {
+				log.info("Using directory: {}", stratosFile.getPath());
 			}
 		} else {
 			if (stratosFile.mkdir()) {
-				if (logger.isInfoEnabled()) {
-					logger.info("Created directory: {}", stratosFile.getPath());
+				if (log.isInfoEnabled()) {
+					log.info("Created directory: {}", stratosFile.getPath());
 				}
-			} else if (logger.isWarnEnabled()) {
-				logger.warn("Failed to created directory: {}", stratosFile.getPath());
+			} else if (log.isWarnEnabled()) {
+				log.warn("Failed to created directory: {}", stratosFile.getPath());
 			}
 		}
 	}

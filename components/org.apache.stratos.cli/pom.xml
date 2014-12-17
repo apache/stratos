@@ -38,10 +38,6 @@
 	</properties>
 
 	<dependencies>
-		<!-- <dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.ui</artifactId>
-		</dependency> -->
 		<!-- Adding HttpClient dependencies. Those were resolved with above one -->
 		<dependency>
 			<groupId>commons-httpclient</groupId>
@@ -118,30 +114,6 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<configuration>
-					<archive>
-						<manifest>
-							<mainClass>org.apache.stratos.cli.CliTool</mainClass>
-						</manifest>
-					</archive>
-					<descriptors>
-						<descriptor>src/main/assembly/src.xml</descriptor>
-					</descriptors>
-					<appendAssemblyId>false</appendAssemblyId>
-				</configuration>
-				<executions>
-					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance merges -->
-						<phase>package</phase> <!-- bind to the packaging phase -->
-						<goals>
-							<goal>single</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 			<plugin>  
 				<groupId>org.apache.maven.plugins</groupId> 
 				<artifactId>maven-dependency-plugin</artifactId> 

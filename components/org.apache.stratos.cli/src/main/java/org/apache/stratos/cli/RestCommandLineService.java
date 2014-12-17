@@ -26,6 +26,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.stratos.cli.exception.CommandException;
@@ -174,7 +175,8 @@ public class RestCommandLineService {
                 log.debug("Initialized REST Client for user {}", username);
             }
         } catch (AxisFault e) {
-            System.out.println("Error connecting to the stratos server");
+            String message = "Error connecting to the stratos server";
+            printError(message, e);
             throw new CommandException(e);
         }
 
@@ -198,18 +200,15 @@ public class RestCommandLineService {
             }
         } catch (ConnectException e) {
             String message = "Could not connect to stratos manager";
-            System.out.println(message);
-            log.error(message, e);
+            printError(message, e);
             return false;
         } catch (java.lang.NoSuchMethodError e) {
             String message = "Authentication failed!";
-            System.out.println(message);
-            log.error(message, e);
+            printError(message, e);
             return false;
         } catch (Exception e) {
             String message = "An unknown error occurred: " + e.getMessage();
-            System.out.println(message);
-            log.error(message, e);
+            printError(message, e);
             return false;
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -282,8 +281,7 @@ public class RestCommandLineService {
                     "Multi-Tenant");
         } catch (Exception e) {
             String message = "Error in listing cartridges";
-            System.out.println(message);
-            log.error(message, e);
+            printError(message, e);
         }
     }
 
@@ -349,8 +347,7 @@ public class RestCommandLineService {
             System.out.println("-------------------------------------");
         } catch (Exception e) {
             String message = "Error in describing cartridge: " + cartridgeType;
-            System.out.println(message);
-            log.error(message, e);
+            printError(message, e);
         }
     }
 
@@ -438,7 +435,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Exception in creating User", e);
+            String message = "Could not add user";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -466,7 +464,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Exception in deleting " + tenantDomain + " tenant", e);
+            String message = "Could not delete tenant";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -494,7 +493,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Exception in deleting " + userName + " user", e);
+            String message = "Could not delete user";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -522,7 +522,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Exception in deactivating " + tenantDomain + " tenant", e);
+            String message = "Could not de-activate tenant";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -550,7 +551,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Error in activating tenant: " + tenantDomain, e);
+            String message = "Could not activate tenant";
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -587,9 +589,8 @@ public class RestCommandLineService {
             System.out.println("Tenants:");
             CliUtils.printTable(tenantArray, rowMapper, "Domain", "Tenant ID", "Email", "State");
         } catch (Exception e) {
-            String message = "Error in listing users";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list tenants";
+            printError(message, e);
         }
     }
 
@@ -621,9 +622,8 @@ public class RestCommandLineService {
             System.out.println("Users:");
             CliUtils.printTable(usersArray, rowMapper, "Username", "Role");
         } catch (Exception e) {
-            String message = "Error in listing users";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list users";
+            printError(message, e);
         }
     }
 
@@ -664,7 +664,8 @@ public class RestCommandLineService {
                 public String[] getData(ApplicationDefinition applicationDefinition) {
                     String[] data = new String[4];
                     data[0] = applicationDefinition.getApplicationId();
-                    data[1] = applicationDefinition.getName();
+                    data[1] = StringUtils.isEmpty(applicationDefinition.getName()) ? "" :
+                            applicationDefinition.getName();
                     data[2] = applicationDefinition.getAlias();
                     data[3] = applicationDefinition.getStatus();
                     return data;
@@ -677,10 +678,21 @@ public class RestCommandLineService {
             System.out.println("Applications found:");
             CliUtils.printTable(array, rowMapper, "Application ID", "Name", "Alias", "Status");
         } catch (Exception e) {
-            String message = "Error in listing applications";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list applications";
+            printError(message, e);
         }
+    }
+
+    /**
+     * Print error on console and log
+     * @param message
+     * @param e
+     */
+    private void printError(String message, Throwable e) {
+        // CLI console only get system output
+        System.out.println(message);
+        // Log error
+        log.error(message, e);
     }
 
     public void listAutoscalingPolicies() throws CommandException {
@@ -711,9 +723,8 @@ public class RestCommandLineService {
             System.out.println("Autoscaling policies found:");
             CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
         } catch (Exception e) {
-            String message = "Error in listing autoscaling policies";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list autoscaling policies";
+            printError(message, e);
         }
     }
 
@@ -731,8 +742,7 @@ public class RestCommandLineService {
 	        System.out.println(getGson().toJson(policy));
 	    } catch (Exception e) {
 	        String message = "Error in describing deployment policy: " + id;
-	        System.out.println(message);
-	        log.error(message, e);
+	        printError(message, e);
 	    }
     }
 
@@ -749,9 +759,8 @@ public class RestCommandLineService {
             System.out.println("Autoscaling policy: " + id);
             System.out.println(getGson().toJson(policy));
         } catch (Exception e) {
-            String message = "Error in describing autoscaling policy: " + id;
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not describe autoscaling policy: " + id;
+            printError(message, e);
         }
     }
 
@@ -784,9 +793,8 @@ public class RestCommandLineService {
                 return;
             }
         } catch (Exception e) {
-            String message = "Error in listing kubernetes groups";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list kubernetes groups";
+            printError(message, e);
         }
     }
 
@@ -815,7 +823,8 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            handleException("Error in deploying host to Kubernetes cluster: " + clusterId, e);
+            String message = "Could not add host to Kubernetes cluster: " + clusterId;
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -847,9 +856,8 @@ public class RestCommandLineService {
                 return;
             }
         } catch (Exception e) {
-            String message = "Error in listing kubernetes hosts";
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not list kubernetes hosts";
+            printError(message, e);
         }
     }
 
@@ -885,9 +893,8 @@ public class RestCommandLineService {
                 System.out.println(exception);
             }
         } catch (Exception e) {
-            String message = "Error in synchronizing artifacts for cartridge subscription alias: " + cartridgeAlias;
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not synchronize artifacts for cartridge subscription alias: " + cartridgeAlias;
+            printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
         }
@@ -917,9 +924,8 @@ public class RestCommandLineService {
             System.out.println("Service Group : " + groupDefinitionName);
             System.out.println(getGson().toJson(bean));
         } catch (Exception e) {
-            String message = "Error in describing service group: " + groupDefinitionName;
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not describe service group: " + groupDefinitionName;
+            printError(message, e);
         }
     }
 
@@ -950,9 +956,8 @@ public class RestCommandLineService {
             System.out.println("Application: " + applicationID);
             System.out.println(getGson().toJson(application));
         } catch (Exception e) {
-            String message = "Error in describing application: " + applicationID;
-            System.out.println(message);
-            log.error(message, e);
+            String message = "Could not describe application: " + applicationID;
+            printError(message, e);
         }
     }
 

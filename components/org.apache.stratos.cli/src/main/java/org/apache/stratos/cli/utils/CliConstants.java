@@ -25,13 +25,9 @@ package org.apache.stratos.cli.utils;
 public class CliConstants {
 
 	public static final String STRATOS_APPLICATION_NAME = "stratos";
-
 	public static final String STRATOS_URL_ENV_PROPERTY = "STRATOS_URL";
-
 	public static final String STRATOS_USERNAME_ENV_PROPERTY = "STRATOS_USERNAME";
-
 	public static final String STRATOS_PASSWORD_ENV_PROPERTY = "STRATOS_PASSWORD";
-
 	public static final String STRATOS_SHELL_PROMPT = "stratos> ";
 	
 	public static final int COMMAND_SUCCESSFULL = 0;
