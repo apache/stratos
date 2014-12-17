@@ -135,7 +135,7 @@ RESTCalls = new function(){
     };
 
     this.getApplicationTopology = function(appId){
-        return this.sendReceive("GET","/applications/" + appId,{});
+        return this.sendReceive("GET","/applications/" + appId + '/runtime',{});
     };
 
     this.getClusterInfo = function(clusterId){
