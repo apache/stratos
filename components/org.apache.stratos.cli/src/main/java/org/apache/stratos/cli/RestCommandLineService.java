@@ -559,7 +559,7 @@ public class RestCommandLineService {
     }
 
     // This method helps to list all tenants
-    public void listAllTenants() throws CommandException {
+    public void listTenants() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<TenantInfoBean>>() {
             }.getType();
@@ -628,7 +628,7 @@ public class RestCommandLineService {
     }
 
     // This method helps to deploy cartridge definitions
-    public void deployCartridgeDefinition(String cartridgeDefinition) throws CommandException {
+    public void addCartridge(String cartridgeDefinition) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
 
@@ -638,7 +638,7 @@ public class RestCommandLineService {
     }
 
     // This method helps to deploy autoscalling polices
-    public void deployAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
+    public void addAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
@@ -764,7 +764,7 @@ public class RestCommandLineService {
         }
     }
 
-    public void deployKubernetesCluster(String entityBody) {
+    public void addKubernetesCluster(String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_CLUSTER, entityBody, "kubernetes cluster");
     }
 
@@ -802,7 +802,7 @@ public class RestCommandLineService {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER, "kubernetes cluster", clusterId);
     }
 
-    public void deployKubernetesHost(String entityBody, String clusterId) throws CommandException {
+    public void addKubernetesHost(String entityBody, String clusterId) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
@@ -901,7 +901,7 @@ public class RestCommandLineService {
     }
 
     // This method helps to deploy service groups
-    public void deployServiceGroup (String entityBody) {
+    public void addCartridgeGroup(String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
     }
 

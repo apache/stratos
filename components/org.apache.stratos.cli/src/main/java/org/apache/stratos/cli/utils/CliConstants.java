@@ -128,12 +128,12 @@ public class CliConstants {
     /**
      * Autoscaling policy deployment
      */
-    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "deploy-autoscaling-policy";
+    public static final String AUTOSCALING_POLICY_DEPLOYMENT = "add-autoscaling-policy";
 
     /**
      * Deploy, deployment service
      */
-    public static final String DEPLOY_SERVICE_DEPLOYMENT = "deploy-service";
+    public static final String DEPLOY_SERVICE_DEPLOYMENT = "add-service";
 
     /**
      * Deployment policy deployment

@@ -35,7 +35,7 @@ import java.io.IOException;
  */
 public class UpdateKubernetesHostCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeployKubernetesGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AddKubernetesGroupCommand.class);
 
     private Options options;
 

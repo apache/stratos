@@ -27,11 +27,11 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListAllTenants implements Command<StratosCommandContext> {
+public class ListTenants implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(ListAllTenants.class);
+    private static final Logger logger = LoggerFactory.getLogger(ListTenants.class);
 
-    public ListAllTenants(){
+    public ListTenants(){
     }
 
     public String getName() {
@@ -51,7 +51,7 @@ public class ListAllTenants implements Command<StratosCommandContext> {
             logger.debug("Executing {} command...", getName());
         }
         if (args == null || args.length == 0) {
-            RestCommandLineService.getInstance().listAllTenants();
+            RestCommandLineService.getInstance().listTenants();
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());
