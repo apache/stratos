@@ -96,7 +96,7 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
-    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{id}";
+    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/applications/{applicationId}/deploymentPolicy";
     private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_CLUSTER_OF_TENANT = API_CONTEXT + "/clusters/";
@@ -728,20 +728,20 @@ public class RestCommandLineService {
         }
     }
 
-    public void describeDeploymentPolicy(String id) throws CommandException {
+    public void describeDeploymentPolicy(String applicationId) throws CommandException {
         try {
             DeploymentPolicy policy = (DeploymentPolicy) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
-                    DeploymentPolicy.class, "{id}", id, "deployment policy");
+                    DeploymentPolicy.class, "{applicationId}", applicationId, "deployment policy");
 
 	        if (policy == null) {
-	            System.out.println("Deployment policy not found: " + id);
+	            System.out.println("Deployment policy not found: " + applicationId);
 	            return;
 	        }
 
-	        System.out.println("Deployment policy: " + id);
+	        System.out.println("Deployment policy: " + applicationId);
 	        System.out.println(getGson().toJson(policy));
 	    } catch (Exception e) {
-	        String message = "Error in describing deployment policy: " + id;
+	        String message = "Error in describing deployment policy: " + applicationId;
 	        printError(message, e);
 	    }
     }
