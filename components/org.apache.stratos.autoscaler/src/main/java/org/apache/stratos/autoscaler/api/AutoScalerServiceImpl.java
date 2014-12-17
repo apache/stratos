@@ -166,7 +166,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             throws ApplicationDefinitionException {
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Starting to add application: [application-id] ",
+            log.info(String.format("Starting to add application: [application-id] %s",
                     applicationContext.getApplicationId()));
         }
 
@@ -175,7 +175,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Successfully added application: [application-id] ",
+            log.info(String.format("Successfully added application: [application-id] %s",
                     applicationContext.getApplicationId()));
         }
     }
