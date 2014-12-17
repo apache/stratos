@@ -33,21 +33,17 @@ import org.apache.stratos.cli.exception.ExceptionMapper;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
-import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
-import org.apache.stratos.common.beans.autoscaler.partition.Partition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
-import org.apache.stratos.common.beans.cartridge.definition.PortMappingBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.topology.Cluster;
-import org.apache.stratos.common.beans.topology.Member;
-import org.apache.stratos.manager.dto.Cartridge;
+import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -654,9 +650,9 @@ public class RestCommandLineService {
     // This method helps to list applications
     public void listApplications() throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
+            Type listType = new TypeToken<ArrayList<ApplicationDefinition>>() {
             }.getType();
-            List<ApplicationBean> list = (List<ApplicationBean>) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
+            List<ApplicationDefinition> list = (List<ApplicationDefinition>) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
                     listType, "applications");
 
             if ((list == null) || (list.size() == 0)) {
@@ -664,19 +660,22 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
-                public String[] getData(ApplicationBean definition) {
-                    String[] data = new String[1];
-                    data[0] = definition.getId();
+            RowMapper<ApplicationDefinition> rowMapper = new RowMapper<ApplicationDefinition>() {
+                public String[] getData(ApplicationDefinition applicationDefinition) {
+                    String[] data = new String[4];
+                    data[0] = applicationDefinition.getApplicationId();
+                    data[1] = applicationDefinition.getName();
+                    data[2] = applicationDefinition.getAlias();
+                    data[3] = applicationDefinition.getStatus();
                     return data;
                 }
             };
 
-            ApplicationBean[] array = new ApplicationBean[list.size()];
+            ApplicationDefinition[] array = new ApplicationDefinition[list.size()];
             array = list.toArray(array);
 
             System.out.println("Applications found:");
-            CliUtils.printTable(array, rowMapper, "Application ID");
+            CliUtils.printTable(array, rowMapper, "Application ID", "Name", "Alias", "Status");
         } catch (Exception e) {
             String message = "Error in listing applications";
             System.out.println(message);
@@ -937,19 +936,19 @@ public class RestCommandLineService {
     // This method helps to describe applications
     public void describeApplication (String applicationID) {
         try {
-            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
+            Type listType = new TypeToken<ApplicationDefinition>() {
             }.getType();
-            List<ApplicationBean> applications = (List<ApplicationBean>) restClient
-                    .listEntity(ENDPOINT_GET_APPLICATION.replace("{appId}", applicationID),
-                            listType, "applications");
+            ApplicationDefinition application = (ApplicationDefinition) restClient
+                    .getEntity(ENDPOINT_GET_APPLICATION, ApplicationDefinition.class, "{appId}", applicationID,
+                            "application");
 
-            if (applications == null) {
+            if (application == null) {
                 System.out.println("Application not found: " + applicationID);
                 return;
             }
 
             System.out.println("Application: " + applicationID);
-            System.out.println(getGson().toJson(applications));
+            System.out.println(getGson().toJson(application));
         } catch (Exception e) {
             String message = "Error in describing application: " + applicationID;
             System.out.println(message);

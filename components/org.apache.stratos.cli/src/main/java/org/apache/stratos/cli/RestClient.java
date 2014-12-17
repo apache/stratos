@@ -211,7 +211,8 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    public Object getEntity(String serviceEndpoint, Class responseJsonClass, String identifierPlaceHolder, String identifier, String entityName) {
+    public Object getEntity(String serviceEndpoint, Class responseJsonClass, String identifierPlaceHolder,
+                            String identifier, String entityName) {
         try {
             return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseJsonClass);
         } catch (Exception e) {

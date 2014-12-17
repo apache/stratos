@@ -19,34 +19,31 @@
 
 package org.apache.stratos.rest.endpoint.util.converter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
-import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.stub.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.stub.pojo.DependencyContext;
-import org.apache.stratos.autoscaler.stub.pojo.GroupContext;
-import org.apache.stratos.autoscaler.stub.pojo.SubscribableInfoContext;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.Container;
-import org.apache.stratos.cloud.controller.stub.domain.FloatingNetwork;
-import org.apache.stratos.cloud.controller.stub.domain.FloatingNetworks;
-import org.apache.stratos.cloud.controller.stub.domain.IaasConfig;
-import org.apache.stratos.cloud.controller.stub.domain.LoadbalancerConfig;
-import org.apache.stratos.cloud.controller.stub.domain.NetworkInterface;
-import org.apache.stratos.cloud.controller.stub.domain.NetworkInterfaces;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
+import org.apache.stratos.autoscaler.stub.pojo.*;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.cloud.controller.stub.domain.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.common.beans.autoscaler.partition.Partition;
+import org.apache.stratos.common.beans.autoscaler.policy.autoscale.*;
+import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.common.beans.cartridge.definition.*;
+import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.beans.kubernetes.PortRange;
+import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.common.beans.topology.Instance;
+import org.apache.stratos.common.beans.topology.Member;
+import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.composite.application.beans.*;
 import org.apache.stratos.manager.deploy.service.Service;
 import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
@@ -58,34 +55,11 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.common.beans.ApplicationBean;
-import org.apache.stratos.common.beans.GroupBean;
-import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.common.beans.autoscaler.partition.Partition;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.LoadAverageThresholds;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.LoadThresholds;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.MemoryConsumptionThresholds;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.RequestsInFlightThresholds;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.cartridge.definition.ContainerBean;
-import org.apache.stratos.common.beans.cartridge.definition.FloatingNetworkBean;
-import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
-import org.apache.stratos.common.beans.cartridge.definition.LoadBalancerBean;
-import org.apache.stratos.common.beans.cartridge.definition.NetworkInterfaceBean;
-import org.apache.stratos.common.beans.cartridge.definition.PersistenceBean;
-import org.apache.stratos.common.beans.cartridge.definition.PortMappingBean;
-import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
-import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.common.beans.cartridge.definition.VolumeBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
-import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
-import org.apache.stratos.common.beans.kubernetes.PortRange;
-import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.common.beans.topology.Instance;
-import org.apache.stratos.common.beans.topology.Member;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.List;
 
 public class PojoConverter {
 
@@ -136,7 +110,9 @@ public class PojoConverter {
         }
 
         if (cartridgeDefinitionBean.getExportingProperties() != null) {
-            cartridgeConfig.setExportingProperties(cartridgeDefinitionBean.getExportingProperties());
+            List<String> propertiesList = cartridgeDefinitionBean.getExportingProperties();
+            String[] propertiesArray = propertiesList.toArray(new String[propertiesList.size()]);
+            cartridgeConfig.setExportingProperties(propertiesArray);
         }
 
         if (cartridgeDefinitionBean.getContainer() != null) {
@@ -1092,7 +1068,12 @@ public class PojoConverter {
         return applicationContext;
     }
 
-    public static ApplicationDefinition convertApplicationContextToApplicationDefinition(ApplicationContext applicationContext) {
+    public static ApplicationDefinition convertApplicationContextToApplicationDefinition(
+            ApplicationContext applicationContext) {
+        if(applicationContext == null) {
+            return null;
+        }
+
         ApplicationDefinition applicationDefinition = new ApplicationDefinition();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setName(applicationContext.getName());
@@ -1186,7 +1167,9 @@ public class PojoConverter {
         SubscribableInfo subscribableInfo = new SubscribableInfo();
         subscribableInfo.setAlias(subscribableInfoContext.getAlias());
         subscribableInfo.setAutoscalingPolicy(subscribableInfoContext.getAutoscalingPolicy());
-        subscribableInfo.setDependencyAliases(subscribableInfoContext.getDependencyAliases());
+        if(!CommonUtil.isEmptyArray(subscribableInfoContext.getDependencyAliases())) {
+            subscribableInfo.setDependencyAliases(subscribableInfoContext.getDependencyAliases());
+        }
         subscribableInfo.setDeploymentPolicy(subscribableInfoContext.getDeploymentPolicy());
         subscribableInfo.setMinMembers(subscribableInfoContext.getMinMembers());
         subscribableInfo.setMaxMembers(subscribableInfoContext.getMaxMembers());
