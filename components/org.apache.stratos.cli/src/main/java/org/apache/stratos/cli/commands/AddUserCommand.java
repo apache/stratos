@@ -84,7 +84,7 @@ public class AddUserCommand implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-        return CliConstants.ADD_USER;
+        return "add-user";
     }
 
     public String getDescription() {
