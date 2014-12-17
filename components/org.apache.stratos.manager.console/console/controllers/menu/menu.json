@@ -93,15 +93,6 @@
                     "icon": "fa-archive",
                     "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
                     "description": "Add applications"
-                },
-                {
-                    "link": "applications/deployments/",
-                    "linkexternal": false,
-                    "context": "/applications",
-                    "title": "Deployment Policies",
-                    "icon": "fa-road",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/deploymentpolicy"],
-                    "description": "Define specific policies for application deployment."
                 }
             ]
         },
