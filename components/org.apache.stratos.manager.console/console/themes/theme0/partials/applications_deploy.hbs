@@ -1,0 +1,66 @@
+<div id="centered">
+    <div class="row title">
+        <div class="title-main text-center">
+            <h1>Create Deployment Policy for Application {{applicationName}}</h1>
+        </div>
+    </div>
+    <div class='container' id='content'>
+        <div class='row'>
+            <div class='container text-center form-toolbar'>
+                <div class='col-md-5'>
+                    <div class="editor-button">
+
+                    </div>
+
+                </div>
+                <div class='col-md-7'>
+                    <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form='{{formContext}}'> Deploy {{formTitle}}</button>
+                    <button class='btn btn-default btn-lg pull-right button-gap' type='button' onclick='window.location.replace("../")'> Cancel</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="right-side">
+            <div class="app-creator">
+                <div id="whiteboard">
+
+                </div>
+            </div>
+            <div class="app-details">
+                <div role="tabpanel app-details-tab" >
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab"
+                                                                  data-toggle="tab">General Details</a></li>
+                        <li role="presentation"><a href="#components" aria-controls="components"
+                                                   role="tab" data-toggle="tab">Child Policies</a></li>
+
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content app-details-tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="general">
+                            <textarea  id="deployjsonedit" class="form-control"
+                                      autocomplete="off" style="height: 576px;"></textarea>
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane components" id="components">
+                            <button type="button" class="btn btn-primary" id="component-info-update" disabled="disabled">Update</button>
+                            <br/>
+                            <div id="component-data">
+                                <h4>Click on each node to get group or cartridge related information. Once you
+                                    fill all required fileds click on "Update" button.</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    var applicationJSON = {{{applicationJSON}}};
+</script>
