@@ -95,7 +95,7 @@ public class StratosApiV41Utils {
 
         log.info("Starting to deploy a cartridge: [type] " + cartridgeDefinitionBean.getType());
 
-        CartridgeConfig cartridgeConfig = ObjectConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
+        CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
             throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
         }
@@ -583,7 +583,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(errorMsg, e);
             }
         }
-        return ObjectConverter.populateAutoscalePojos(autoscalePolicies);
+        return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalePolicies);
     }
 
     public static AutoscalePolicy getAutoScalePolicy(String autoscalePolicyId) throws RestAPIException {
@@ -602,7 +602,7 @@ public class StratosApiV41Utils {
             }
         }
 
-        return ObjectConverter.populateAutoscalePojo(autoscalePolicy);
+        return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
     public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy
@@ -636,7 +636,7 @@ public class StratosApiV41Utils {
             }
         }
 
-        return ObjectConverter.populatePartitionGroupPojos(partitionGroups);
+        return ObjectConverter.convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(partitionGroups);
     }
 
     // Util methods for services and subscriptions
@@ -795,7 +795,7 @@ public class StratosApiV41Utils {
         ArrayList<org.apache.stratos.common.beans.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(ObjectConverter.populateClusterPojos(cluster, null));
+            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
         }
         org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
                 new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
@@ -812,7 +812,7 @@ public class StratosApiV41Utils {
         List<org.apache.stratos.common.beans.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(ObjectConverter.populateClusterPojos(cluster, null));
+            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
         }
         org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
                 new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
@@ -927,7 +927,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Could not read application", e);
         }
 
-        ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToApplicationContext(appDefinition);
+        ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
         applicationContext.setTeantAdminUsername(userName);
@@ -1032,7 +1032,7 @@ public class StratosApiV41Utils {
 
     public static ApplicationDefinition getApplication(String applicationId) throws RestAPIException {
         try {
-            return ObjectConverter.convertApplicationContextToApplicationDefinition(
+            return ObjectConverter.convertStubApplicationContextToApplicationDefinition(
                     AutoscalerServiceClient.getServiceClient().getApplication(applicationId));
         } catch (RemoteException e) {
             String message = "Could not read application: [application-id] " + applicationId;
@@ -1049,7 +1049,7 @@ public class StratosApiV41Utils {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if(applicationContext != null) {
                         ApplicationDefinition applicationDefinition =
-                                ObjectConverter.convertApplicationContextToApplicationDefinition(applicationContext);
+                                ObjectConverter.convertStubApplicationContextToApplicationDefinition(applicationContext);
                         applicationDefinitions.add(applicationDefinition);
                     }
                 }
@@ -1085,7 +1085,7 @@ public class StratosApiV41Utils {
             ApplicationManager.acquireReadLockForApplications();
             ApplicationBean applicationBean;
             for (Application application : ApplicationManager.getApplications().getApplications().values()) {
-                applicationBean = ObjectConverter.applicationToBean(application);
+                applicationBean = ObjectConverter.convertApplicationToApplicationBean(application);
                 addClustersToApplicationBean(applicationBean, application);
                 addGroupsToApplicationBean(applicationBean, application);
                 applicationBeanList.add(applicationBean);
@@ -1105,7 +1105,7 @@ public class StratosApiV41Utils {
             if (application == null) {
                 return null;
             }
-            applicationBean = ObjectConverter.applicationToBean(application);
+            applicationBean = ObjectConverter.convertApplicationToApplicationBean(application);
             addClustersToApplicationBean(applicationBean, application);
             addGroupsToApplicationBean(applicationBean, application);
         } finally {
@@ -1117,7 +1117,7 @@ public class StratosApiV41Utils {
     private static void addGroupsToApplicationBean(ApplicationBean applicationBean, Application application) {
         Collection<Group> groups = application.getGroups();
         for (Group group : groups) {
-            GroupBean groupBean = ObjectConverter.toGroupBean(group);
+            GroupBean groupBean = ObjectConverter.convertGroupToGroupBean(group);
             setSubGroups(group, groupBean);
             applicationBean.addGroup(groupBean);
         }
@@ -1131,7 +1131,7 @@ public class StratosApiV41Utils {
             String serviceType = clusterDataHolder.getServiceType();
             TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
             Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            applicationBean.getClusters().add(ObjectConverter.populateClusterPojos(topLevelCluster, entry.getKey()));
+            applicationBean.getClusters().add(ObjectConverter.convertClusterToClusterBean(topLevelCluster, entry.getKey()));
         }
     }
 
@@ -1139,7 +1139,7 @@ public class StratosApiV41Utils {
         Collection<Group> subgroups = group.getGroups();
         addClustersToGroupBean(group, groupBean);
         for (Group subGroup : subgroups) {
-            GroupBean subGroupBean = ObjectConverter.toGroupBean(subGroup);
+            GroupBean subGroupBean = ObjectConverter.convertGroupToGroupBean(subGroup);
 
             setSubGroups(subGroup, subGroupBean);
             groupBean.addGroup(subGroupBean);
@@ -1151,7 +1151,7 @@ public class StratosApiV41Utils {
         for (Map.Entry<String, ClusterDataHolder> x : clustersDatamap.entrySet()) {
             ClusterDataHolder clusterHolder = x.getValue();
             Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterHolder.getServiceType()).getCluster(clusterHolder.getClusterId());
-            groupBean.addCluster(ObjectConverter.populateClusterPojos(topLevelCluster, null));
+            groupBean.addCluster(ObjectConverter.convertClusterToClusterBean(topLevelCluster, null));
         }
     }
 
@@ -1184,7 +1184,7 @@ public class StratosApiV41Utils {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
-                    ObjectConverter.convertToCCKubernetesHostPojo(kubernetesHostBean);
+                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
 
             try {
                 return cloudControllerServiceClient.deployKubernetesHost(kubernetesGroupId, kubernetesHost);
@@ -1209,7 +1209,7 @@ public class StratosApiV41Utils {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster kubernetesMaster =
-                    ObjectConverter.convertToCCKubernetesMasterPojo(kubernetesMasterBean);
+                    ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMasterBean);
 
             try {
                 return cloudControllerServiceClient.updateKubernetesMaster(kubernetesMaster);
@@ -1236,7 +1236,7 @@ public class StratosApiV41Utils {
             try {
                 org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup[]
                         kubernetesGroups = cloudControllerServiceClient.getAvailableKubernetesGroups();
-                return ObjectConverter.populateKubernetesGroupsPojo(kubernetesGroups);
+                return ObjectConverter.convertStubKubernetesGroupsToKubernetesGroups(kubernetesGroups);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
@@ -1253,7 +1253,7 @@ public class StratosApiV41Utils {
             try {
                 org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup
                         kubernetesGroup = cloudControllerServiceClient.getKubernetesGroup(kubernetesGroupId);
-                return ObjectConverter.populateKubernetesGroupPojo(kubernetesGroup);
+                return ObjectConverter.convertStubKubernetesGroupToKubernetesGroup(kubernetesGroup);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
@@ -1313,7 +1313,7 @@ public class StratosApiV41Utils {
                 org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[]
                         kubernetesHosts = cloudControllerServiceClient.getKubernetesHosts(kubernetesGroupId);
 
-                List<KubernetesHost> arrayList = ObjectConverter.populateKubernetesHostsPojo(kubernetesHosts);
+                List<KubernetesHost> arrayList = ObjectConverter.convertStubKubernetesHostsToKubernetesHosts(kubernetesHosts);
                 KubernetesHost[] array = new KubernetesHost[arrayList.size()];
                 array = arrayList.toArray(array);
                 return array;
@@ -1335,7 +1335,7 @@ public class StratosApiV41Utils {
             try {
                 org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster
                         kubernetesMaster = cloudControllerServiceClient.getKubernetesMaster(kubernetesGroupId);
-                return ObjectConverter.populateKubernetesMasterPojo(kubernetesMaster);
+                return ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMaster);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
@@ -1353,7 +1353,7 @@ public class StratosApiV41Utils {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
-                    ObjectConverter.convertToCCKubernetesHostPojo(kubernetesHostBean);
+                    ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
             try {
                 return cloudControllerServiceClient.updateKubernetesHost(kubernetesHost);
             } catch (RemoteException e) {
@@ -1382,7 +1382,7 @@ public class StratosApiV41Utils {
                     throw new RestAPIException("No matching cluster found for [alias] " + alias);
                 }
                 if (property != null) {
-                    autoscalerServiceClient.updateClusterMonitor(cluster.getClusterId(), ObjectConverter.getProperties(property));
+                    autoscalerServiceClient.updateClusterMonitor(cluster.getClusterId(), ObjectConverter.convertPropertyBeansToProperties(property));
                 }
             } catch (AutoScalerServiceInvalidArgumentExceptionException e) {
                 String message = e.getFaultMessage().getInvalidArgumentException().getMessage();

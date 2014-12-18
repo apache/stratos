@@ -91,7 +91,7 @@ public class StratosApiV40Utils {
 
         if (cloudControllerServiceClient != null) {
 
-            CartridgeConfig cartridgeConfig = ObjectConverter.populateCartridgeConfigPojo(cartridgeDefinitionBean);
+            CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
 
             if(cartridgeConfig == null) {
                 throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
@@ -343,7 +343,7 @@ public class StratosApiV40Utils {
                 throw new RestAPIException(errorMsg, e);
             }
         }
-        return ObjectConverter.populateAutoscalePojos(autoscalePolicies);
+        return ObjectConverter.convertStubAutoscalePoliciesToAutoscalePolicies(autoscalePolicies);
     }
 
     public static AutoscalePolicy getAutoScalePolicy (String autoscalePolicyId) throws RestAPIException {
@@ -362,7 +362,7 @@ public class StratosApiV40Utils {
             }
         }
 
-        return ObjectConverter.populateAutoscalePojo(autoscalePolicy);
+        return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
     public static org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy
@@ -388,7 +388,7 @@ public class StratosApiV40Utils {
             throw new RestAPIException(errorMsg);
         }
 
-        return ObjectConverter.populateDeploymentPolicyPojo(deploymentPolicy);
+        return ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
     }
 
     public static ApplicationLevelNetworkPartition[] getPartitionGroups (String deploymentPolicyId)
@@ -408,7 +408,7 @@ public class StratosApiV40Utils {
             }
         }
 
-        return ObjectConverter.populatePartitionGroupPojos(applicationLevelNetworkPartitions);
+        return ObjectConverter.convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(applicationLevelNetworkPartitions);
     }
 
     static Cartridge getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
@@ -901,7 +901,7 @@ public class StratosApiV40Utils {
         if(cluster == null) {
             throw new RestAPIException("No matching cluster found for [cartridge type]: "+cartridgeType+ " [alias] "+subscriptionAlias);
         } else{
-            return ObjectConverter.populateClusterPojos(cluster, null);
+            return ObjectConverter.convertClusterToClusterBean(cluster, null);
         }
     }
 
@@ -912,7 +912,7 @@ public class StratosApiV40Utils {
         ArrayList<org.apache.stratos.common.beans.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
-            clusters.add(ObjectConverter.populateClusterPojos(cluster, null));
+            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
         }
         org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
                 new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
@@ -929,7 +929,7 @@ public class StratosApiV40Utils {
         List<org.apache.stratos.common.beans.topology.Cluster> clusters =
                 new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for(Cluster cluster : clusterSet) {
-            clusters.add(ObjectConverter.populateClusterPojos(cluster, null));
+            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
         }
         org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
                 new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
@@ -945,7 +945,7 @@ public class StratosApiV40Utils {
                 .getClusters(cartridgeType);
         List<org.apache.stratos.common.beans.topology.Cluster> clusters = new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
         for (Cluster cluster : clusterSet) {
-            clusters.add(ObjectConverter.populateClusterPojos(cluster, null));
+            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
         }
         org.apache.stratos.common.beans.topology.Cluster[] arrCluster = new org.apache.stratos.common.beans.topology.Cluster[clusters
                 .size()];
