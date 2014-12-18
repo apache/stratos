@@ -31,7 +31,7 @@ $(document).ready(function () {
         var rawout = [];
 
         var rootnode = {};
-        rootnode.name = data.applications.id;
+        rootnode.name = data.id;
         rootnode.parent = null;
         //create initial root node
         rawout.push(rootnode);
@@ -88,8 +88,8 @@ $(document).ready(function () {
             }
         }
 
-        secondorylevelclusters(data.applications.clusters, rawout, data.applications.id);
-        secondarylevelgroups(data.applications.groups, rawout, data.applications.id);
+        secondorylevelclusters(data.clusters, rawout, data.id);
+        secondarylevelgroups(data.groups, rawout, data.id);
         return rawout;
 
     }
