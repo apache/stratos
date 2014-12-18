@@ -51,8 +51,8 @@ RESTCalls = new function(){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployDeploymentPolicyDefinition = function(policyDefinition){
-        return this.send("POST","/applicationDeployments",policyDefinition);
+    this.deployDeploymentPolicyDefinition = function(applicationID, policyDefinition){
+        return this.send("POST","/application/"+applicationID+"/deploy",policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
