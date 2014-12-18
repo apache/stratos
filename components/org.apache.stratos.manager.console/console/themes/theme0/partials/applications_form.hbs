@@ -100,7 +100,7 @@
                                         id="{{applicationId}}"> Undeploy</button>
                                 <button class="btn btn-info btn-lg hover-details" type="button"
                                         id="details_list_{{applicationId}}"
-                                        data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Details
+                                        data-url="{{url ""}}/applications/applications/{{applicationId}}/" > View
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
@@ -109,11 +109,39 @@
                                             id="{{applicationId}}"> Undeploy</button>
                                     <button class="btn btn-info btn-lg hover-details" type="button"
                                             id="details_{{applicationId}}"
-                                            data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Details
+                                            data-url="{{url ""}}/applications/applications/{{applicationId}}/" > View
                                     </button>
 
                                 </div>
                             </div>
+                            {{else}}
+                                <div class="list-button" style="display: none;">
+                                    <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                            id="{{applicationId}}"> Delete</button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button"
+                                            id="details_list_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/applications/{{applicationId}}/" > View
+                                    </button>
+                                    <button class="btn btn-warning btn-lg hover-details" type="button"
+                                            id="details_{{applicationId}}"
+                                            data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Deploy
+                                    </button>
+                                </div>
+                                <div class="bottom-bar-wrapper">
+                                    <div class="bottom-bar">
+                                        <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                                id="{{applicationId}}"> Delete</button>
+                                        <button class="btn btn-info btn-lg hover-details" type="button"
+                                                id="details_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/applications/{{applicationId}}/" > View
+                                        </button>
+                                        <button class="btn btn-warning btn-lg hover-details" type="button"
+                                                id="details_{{applicationId}}"
+                                                data-url="{{url ""}}/applications/applications/{{applicationId}}/" > Deploy
+                                        </button>
+
+                                    </div>
+                                </div>
                             {{/ifCond}}
                         </div>
                     {{/each}}
