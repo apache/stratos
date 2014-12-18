@@ -39,6 +39,9 @@ try {
         case "deployments":
             formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
             break;
+        case "deleteapplication":
+            formSubmit = util.RESTCalls.deleteApplication(formPayload);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 
