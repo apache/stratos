@@ -185,7 +185,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static void handleApplicationUndeployed(String appId) {
+    public static void handleApplicationRemoval(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application unDeployment for [application-id] " + appId);
         }
@@ -293,7 +293,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static boolean handleApplicationPolicyUndeployed(String appId) {
+    public static boolean handleApplicationUndeployed(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminating event: [application-id] " + appId);
         }
