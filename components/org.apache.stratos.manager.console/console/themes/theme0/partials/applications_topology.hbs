@@ -120,23 +120,29 @@ $(document).ready(function () {
 // ************** Generate the tree diagram	 *****************
     var margin = {top: 40, right: 120, bottom: 20, left: 120},
             width = 960 - margin.right - margin.left,
-            height = 500 - margin.top - margin.bottom;
+            height = 900 - margin.top - margin.bottom;
 
     var i = 0;
 
     var tree = d3.layout.tree()
-            .size([height, width]);
+            .separation(function(a, b) { return ((a.parent == root) && (b.parent == root)) ? 5 : 4; })
+            .size([height+100, width]);
 
     var diagonal = d3.svg.diagonal()
             .projection(function (d) {
                 return [d.x, d.y];
             });
+    function redraw() {
+        svg.attr("transform",
+                        "translate(" + d3.event.translate + ")"
+                        + " scale(" + d3.event.scale + ")");
+    }
 
     var svg = d3.select(".application-topology").append("svg")
             .attr("width", width + margin.right + margin.left)
             .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            .call(d3.behavior.zoom().on("zoom", redraw))
+            .append("g");
 
     var i = 0;
     duration = 750;
@@ -153,7 +159,7 @@ $(document).ready(function () {
 
         // Normalize for fixed-depth.
         nodes.forEach(function (d) {
-            d.y = d.depth * 80;
+            d.y = d.depth * 100;
         });
 
         // Declare the nodes…
