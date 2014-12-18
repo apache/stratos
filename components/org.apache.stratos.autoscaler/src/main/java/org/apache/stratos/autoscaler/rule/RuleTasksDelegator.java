@@ -319,7 +319,8 @@ public class RuleTasksDelegator {
         }
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        float factor = requiredInstanceCount / minimumInstanceCount;
+        float fMinimumInstanceCount = minimumInstanceCount;
+        float factor = requiredInstanceCount / fMinimumInstanceCount;
         if (clusterMonitor instanceof VMClusterMonitor) {
 
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;

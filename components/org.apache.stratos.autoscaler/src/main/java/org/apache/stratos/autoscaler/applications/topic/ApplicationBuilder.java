@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -32,10 +33,15 @@ import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
+import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -200,7 +206,8 @@ public class ApplicationBuilder {
                         PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
                 if (policy != null) {
                     log.warn(String.format("Application has been found in the ApplicationsTopology" +
-                                    ": [application-id] %s, Please unDeploy the Application Policy before deleting the Application definition.",
+                                    ": [application-id] %s, Please unDeploy the Application Policy " +
+                                    "before deleting the Application definition.",
                             appId));
                     return;
                 }
@@ -285,6 +292,72 @@ public class ApplicationBuilder {
             }
         }
     }
+
+    public static boolean handleApplicationPolicyUndeployed(String appId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application terminating event: [application-id] " + appId);
+        }
+        Set<ClusterDataHolder> clusterData;
+        ApplicationHolder.acquireWriteLock();
+        try {
+            Applications applications = ApplicationHolder.getApplications();
+            Application application = applications.getApplication(appId);
+            //update the status of the Group
+            if (application == null) {
+                log.warn(String.format("Application does not exist: [application-id] %s",
+                        appId));
+                return false;
+            }
+            clusterData = application.getClusterDataRecursively();
+            Collection<ApplicationInstance> context = application.
+                    getInstanceIdToInstanceContextMap().values();
+            ApplicationStatus status = ApplicationStatus.Terminating;
+            for (ApplicationInstance context1 : context) {
+                if (context1.isStateTransitionValid(status)) {
+                    //setting the status, persist and publish
+                    application.setStatus(status, context1.getInstanceId());
+                    updateApplicationMonitor(appId, status, context1.getInstanceId());
+                    ApplicationHolder.persistApplication(application);
+                    ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, context1.getInstanceId());
+                } else {
+                    log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
+                                    " [instance-id] %s [current-status] %s [status-requested] %s", appId,
+                            context1.getInstanceId() + context1.getStatus(), status));
+                }
+            }
+        } finally {
+            ApplicationHolder.releaseWriteLock();
+        }
+
+        // if monitors is not found for any cluster, assume cluster is not there and send cluster terminating event.
+        // this assumes the cluster monitor will not fail after creating members, but will only fail before
+        for (ClusterDataHolder aClusterData : clusterData) {
+            if (AutoscalerContext.getInstance().getClusterMonitor(aClusterData.getClusterId()) == null) {
+                TopologyManager.acquireReadLockForCluster(aClusterData.getServiceType(),
+                        aClusterData.getClusterId());
+                try {
+                    Service service = TopologyManager.getTopology().getService(aClusterData.getServiceType());
+                    if (service != null) {
+                        Cluster cluster = service.getCluster(aClusterData.getClusterId());
+                        if (cluster != null) {
+                            for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
+                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId,
+                                        aClusterData.getServiceType(),
+                                        aClusterData.getClusterId(),
+                                        instance.getInstanceId());
+                            }
+                        }
+                    }
+                } finally {
+                    TopologyManager.releaseReadLockForCluster(aClusterData.getServiceType(),
+                            aClusterData.getClusterId());
+                }
+
+            }
+        }
+        return true;
+    }
+
 
     public static void handleGroupInstanceTerminatedEvent(String appId, String groupId, String instanceId) {
         if (log.isDebugEnabled()) {
