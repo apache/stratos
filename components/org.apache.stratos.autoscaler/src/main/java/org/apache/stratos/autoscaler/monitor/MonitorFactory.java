@@ -175,8 +175,8 @@ public class MonitorFactory {
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
                 applicationMonitor.setHasStartupDependents(false);
-
-
+                //starting the scheduler of the application monitor
+                applicationMonitor.startScheduler();
             } else {
                 String msg = "Application not found in the topology: [application-id] " + applicationId;
                 throw new TopologyInConsistentException(msg);
@@ -243,8 +243,7 @@ public class MonitorFactory {
             boolean hasScalingDependents = false;
             if(parentMonitor.getScalingDependencies() != null) {
                 for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
-                    if (scalingDependentList.getScalingDependentListComponents().
-                            contains("cartridge." + clusterId.substring(0, clusterId.indexOf('.')))) {
+                    if (scalingDependentList.getScalingDependentListComponents().contains(clusterId)) {
                         hasScalingDependents = true;
                     }
                 }

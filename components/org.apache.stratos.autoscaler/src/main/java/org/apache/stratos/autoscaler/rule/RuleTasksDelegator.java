@@ -315,7 +315,7 @@ public class RuleTasksDelegator {
                                                       int requiredInstanceCount, int minimumInstanceCount) {
 
         if(log.isDebugEnabled()) {
-            log.debug("Scaling dependent notification..");
+            log.debug("Scaling dependent notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
@@ -331,7 +331,7 @@ public class RuleTasksDelegator {
     public void delegateScalingOverMaxNotification(String clusterId, String networkPartitionId, String instanceId) {
 
         if(log.isDebugEnabled()) {
-            log.debug("Scaling dependent notification..");
+            log.debug("Scaling max out notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
         AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);

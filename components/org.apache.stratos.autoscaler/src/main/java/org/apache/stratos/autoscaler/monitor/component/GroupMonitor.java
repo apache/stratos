@@ -119,6 +119,11 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 if (groupScalingEnabled) {
                                     //one of the child is loaded and max out.
                                     // Hence creating new group instance
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("Handling group scaling for the [group] " + id +
+                                                "upon a max out event from " +
+                                                "the children");
+                                    }
                                     boolean createOnDemand = createInstanceOnDemand(instanceContext.
                                             getParentInstanceId());
                                     if (!createOnDemand) {

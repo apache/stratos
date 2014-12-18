@@ -471,6 +471,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (startupOrders != null) {
             dependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders, groupCtxt));
         }
+        String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
+        if(scaleDependents != null) {
+            dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
+        }
         dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(),serviceGroup));
         //dependencyOrder.setScalingDependents(scalingDependents);
         group.setDependencyOrder(dependencyOrder);
@@ -546,6 +550,46 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         return null;
     }
+
+
+    /**
+     * Find the scale dependent order
+     *
+     * @param serviceGroup GroupContext with Group defintion information
+     * @return Set of Startup Orders which are defined in the Group
+     *
+     * @throws ApplicationDefinitionException
+     */
+    private String [] getScaleDependentForGroup(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+
+        ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
+
+        if (nestedServiceGroup == null) {
+            handleError("Service Group Definition not found for name " + serviceGroupName);
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("parsing application ... getScaleDependentForGroup: " + serviceGroupName);
+        }
+
+        assert nestedServiceGroup != null;
+        if (nestedServiceGroup.getDependencies() != null) {
+            if (log.isDebugEnabled()) {
+                log.debug("parsing application ... getScaleDependentForGroup: dependencies != null " );
+            }
+            if (nestedServiceGroup.getDependencies().getScalingDependants() != null) {
+
+                String [] scalingDependants = nestedServiceGroup.getDependencies().getScalingDependants();
+                if (log.isDebugEnabled()) {
+                    log.debug("parsing application ... getScaleDependentForGroup: scalingDependants != null # of: " +  scalingDependants.length);
+                }
+                return scalingDependants;
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * Get kill behaviour related to a Group

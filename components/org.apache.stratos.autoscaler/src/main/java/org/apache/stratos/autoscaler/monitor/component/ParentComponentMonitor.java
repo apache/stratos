@@ -285,6 +285,12 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     @Override
     public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+        if (log.isDebugEnabled()) {
+            log.debug("Child Scaling max out event received to [group]: " + this.getId()
+                    + ", [network partition]: " + scalingOverMaxEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingOverMaxEvent.getId() + ", " +
+                    "[group instance] " + scalingOverMaxEvent.getInstanceId());
+        }
         //adding the scaling over max event to group instance Context
         String networkPartitionId = scalingOverMaxEvent.getNetworkPartitionId();
         String instanceId = scalingOverMaxEvent.getInstanceId();
@@ -570,15 +576,24 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                     getScalingDependentListComponents()) {
                 ScalingEvent scalingEvent = instanceContext.
                         getScalingEvent(scalingDependentListComponent);
-                if (highestFactorEvent == null) {
-                    highestFactorEvent = scalingEvent;
-                } else {
-                    if (scalingEvent.getFactor() > highestFactorEvent.getFactor()) {
+                if(scalingEvent != null) {
+                    if (highestFactorEvent == null) {
                         highestFactorEvent = scalingEvent;
+                    } else {
+                        if (scalingEvent.getFactor() > highestFactorEvent.getFactor()) {
+                            highestFactorEvent = scalingEvent;
+                        }
                     }
                 }
             }
-            highestScalingEventOfDependencies.add(highestFactorEvent);
+            if(highestFactorEvent != null) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Found the highest factor for the [dependent set] " +
+                            highestFactorEvent.getId() + " the factor is " +
+                            highestFactorEvent.getFactor());
+                }
+                highestScalingEventOfDependencies.add(highestFactorEvent);
+            }
         }
 
         for (ScalingEvent highestScalingEventOfChild : highestScalingEventOfDependencies) {
@@ -598,6 +613,12 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                                         networkPartitionContext.getId(),
                                         instanceContext.getId(),
                                         highestScalingEventOfChild.getFactor());
+                                if(log.isDebugEnabled()) {
+                                    log.debug("Notifying the [child] " + scalingEvent.getId() +
+                                            " [instance] " + scalingEvent.getInstanceId() +
+                                            " with the highest [factor] " + scalingEvent.getFactor() +
+                                            " upon decision of dependent scaling");
+                                }
                                 monitor.onParentScalingEvent(scalingEvent);
                             }
                         }
