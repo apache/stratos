@@ -455,7 +455,7 @@ public abstract class ParentComponentMonitor extends Monitor {
                     GroupMonitor monitor1 = (GroupMonitor) monitor;
                     try {
                         ApplicationHolder.acquireReadLock();
-                        if (monitor1.verifyGroupStatus(instanceId, GroupStatus.Active)) {
+                        if (monitor1.verifyGroupStatus(context1.getId(), instanceId, GroupStatus.Active)) {
                             parentsActive = true;
 
                         }
