@@ -287,9 +287,16 @@ function generateGroupPreview(data) {
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.x, d.y]; });
 
+    function redraw() {
+        svg.attr("transform",
+                "translate(" + d3.event.translate + ")"
+                + " scale(" + d3.event.scale + ")");
+    }
+
     var svg = d3.select(".description-section").append("svg")
         .attr("width", width)
         .attr("height", height)
+        .call(d3.behavior.zoom().on("zoom", redraw))
         .append("g")
         .attr("transform", "translate(" + -90+ "," + margin.top + ")");
 
