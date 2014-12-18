@@ -91,23 +91,9 @@ public class CloudControllerServiceClient {
 	}
 
     public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
-
 		stub.undeployCartridgeDefinition(cartridgeType);
-
 	}
-    
-    public void deployServiceGroup (ServiceGroup serviceGroup) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
-    	stub.deployServiceGroup(serviceGroup);
-    }
 
-    public void undeployDeploymentPOlicy (String applicationId) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
-        //stub.deployServiceGroup(serviceGroup);
-    }
-    
-    public void undeployServiceGroup (String name)throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
-    	stub.undeployServiceGroup(name);
-    }
-    
     public String [] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {
     	return stub.getServiceGroupSubGroups(name);
     }

@@ -22,6 +22,7 @@
 package org.apache.stratos.autoscaler.interfaces;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
@@ -122,7 +123,20 @@ public interface AutoScalerServiceInterface {
     void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
 
     /**
-     * Get service group by name
+     * Add a service group
+     * @param servicegroup
+     * @throws InvalidServiceGroupException
+     */
+    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+
+    /**
+     * Remove a service group
+     * @param groupName
+     */
+    public void removeServiceGroup(String groupName);
+
+    /**
+     * Get service group
      * @param name
      * @return
      */

@@ -78,7 +78,7 @@ public class AutoscalerServiceClient {
 
     public void undeployServiceGroupDefinition(String serviceGroupName)
             throws RemoteException, AutoScalerServiceAutoScalerExceptionException {
-        stub.undeployServiceGroup(serviceGroupName);
+        stub.removeServiceGroup(serviceGroupName);
     }
 
     public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartition(
@@ -166,8 +166,12 @@ public class AutoscalerServiceClient {
         return stub.getServiceGroups();
     }
 
-    public void deployServiceGroup(ServiceGroup serviceGroup) throws AutoScalerServiceInvalidServiceGroupExceptionException, RemoteException {
-        stub.deployServiceGroup(serviceGroup);
+    public void addServiceGroup(ServiceGroup serviceGroup) throws AutoScalerServiceInvalidServiceGroupExceptionException, RemoteException {
+        stub.addServiceGroup(serviceGroup);
+    }
+
+    public void removeServiceGroup(String groupName) throws RemoteException {
+        stub.removeServiceGroup(groupName);
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {

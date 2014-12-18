@@ -166,7 +166,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                 log.debug("deplying to cloud controller service group " + serviceGroupDefinition.getName());
             }
 
-            asServiceClient.deployServiceGroup(serviceGroup);
+            asServiceClient.addServiceGroup(serviceGroup);
 
         } catch (AxisFault axisFault) {
             throw new ADCException(axisFault);

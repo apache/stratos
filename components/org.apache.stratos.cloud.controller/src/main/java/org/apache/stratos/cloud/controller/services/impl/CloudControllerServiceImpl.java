@@ -84,6 +84,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
+        if(log.isInfoEnabled()) {
+            log.info("Starting to add cartridge: [type] " + cartridgeConfig.getType());
+        }
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
         }
@@ -92,8 +95,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
-            String msg = "Invalid cartridge definition: Cartridge type: " + cartridgeConfig.getType() +
-                    " Cause: Cannot instantiate a cartridge instance with the given configuration: " + e.getMessage();
+            String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
             log.error(msg, e);
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
@@ -102,9 +104,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (!StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
             if (iaasProviders == null || iaasProviders.isEmpty()) {
-                String msg = "Invalid cartridge definition: Cartridge type: " +
-                        cartridgeConfig.getType() +
-                        " Cause: Iaases of this cartridge is null or empty";
+                String msg = "Invalid cartridge definition, iaas providers not found: [cartridge-type] " + cartridgeConfig.getType();
                 log.error(msg);
                 throw new InvalidCartridgeDefinitionException(msg);
             }
@@ -138,7 +138,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
 
         if(log.isInfoEnabled()) {
-            log.info("Successfully deployed the cartridge: [type] " + cartridgeType);
+            log.info("Successfully added cartridge: [type] " + cartridgeType);
         }
     }
 

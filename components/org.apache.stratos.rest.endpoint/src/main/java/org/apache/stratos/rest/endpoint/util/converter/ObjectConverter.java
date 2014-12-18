@@ -393,7 +393,7 @@ public class ObjectConverter {
         }
 
         if (deploymentPolicyBean.getChildPolicies() != null && !deploymentPolicyBean.getChildPolicies().isEmpty()) {
-            deploymentPolicy.setChildPolicies(convertToCCChildPolicy(deploymentPolicyBean.getChildPolicies()));
+            deploymentPolicy.setChildPolicies(convertChildPoliciesToStubChildPolicies(deploymentPolicyBean.getChildPolicies()));
         }
 
         return deploymentPolicy;
@@ -569,20 +569,15 @@ public class ObjectConverter {
         return appNWPartitions;
     }
 
-    private static ChildPolicy[] convertToCCChildPolicy(List<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy> childPolicies) {
-
-        ChildPolicy[] childPolicies1 = new ChildPolicy[childPolicies.size()];
-
+    private static ChildPolicy[] convertChildPoliciesToStubChildPolicies(List<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy> childPolicies) {
+        ChildPolicy[] stubChildPolicyArray = new ChildPolicy[childPolicies.size()];
         for (int i = 0; i < childPolicies.size(); i++) {
             ChildPolicy childPolicy = new ChildPolicy();
             childPolicy.setAlias(childPolicies.get(i).getAlias());
             childPolicy.setChildLevelNetworkPartitions(convertToCCChildNetworkPartition(childPolicies.get(i).getNetworkPartition()));
-
-
-            childPolicies1[i] = childPolicy;
+            stubChildPolicyArray[i] = childPolicy;
         }
-
-        return childPolicies1;
+        return stubChildPolicyArray;
     }
 
     private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition> networkPartitions) {

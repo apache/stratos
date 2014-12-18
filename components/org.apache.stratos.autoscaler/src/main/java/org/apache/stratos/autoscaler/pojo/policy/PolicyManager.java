@@ -63,7 +63,10 @@ public class PolicyManager {
     }
 
     // Add the policy to information model and persist.
-    public boolean deployAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+    public boolean addAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Starting to add autoscaling policy: [id] %s", policy.getId()));
+        }
         if(StringUtils.isEmpty(policy.getId())){
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
@@ -96,36 +99,6 @@ public class PolicyManager {
             log.info(String.format("Deployment policy is added successfully: [application-id] %s",
                     policy.getApplicationId()));
         }
-    }
-
-    private void fillPartitions(DeploymentPolicy deploymentPolicy) throws InvalidPartitionException {
-        //TODO fill partition by extracting the partitions from policy
-//        PartitionManager partitionMgr = PartitionManager.getInstance();
-//        for (Partition partition : deploymentPolicy.getAllPartitions()) {
-//            String partitionId = partition.getApplicationId();
-//            if ((partitionId == null) || (!partitionMgr.partitionExist(partitionId))) {
-//                String msg = "Could not find partition: [id] " + partitionId + ". " +
-//                        "Please deploy the partitions before deploying the deployment policies.";
-//                throw new InvalidPartitionException(msg);
-//            }
-//
-//            fillPartition(partition, PartitionManager.getInstance().getPartitionById(partitionId));
-//        }
-    }
-
-    private static void fillPartition(Partition destPartition, Partition srcPartition) {
-        if(srcPartition.getProvider() == null)        	
-            throw new RuntimeException("Provider is not set in the deployed partition");
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Setting provider for partition: [id] %s [provider] %s", destPartition.getId(), srcPartition.getProvider()));
-        }
-        destPartition.setProvider(srcPartition.getProvider());
-
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Setting properties for partition: [id] %s [properties] %s", destPartition.getId(), srcPartition.getProperties()));
-        }
-        destPartition.setProperties(srcPartition.getProperties());
     }
 
     public void addASPolicyToInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
