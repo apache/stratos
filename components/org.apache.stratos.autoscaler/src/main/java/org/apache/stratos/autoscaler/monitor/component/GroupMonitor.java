@@ -50,10 +50,10 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -702,7 +702,6 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
 
-
     public boolean verifyGroupStatus(String childId, String instanceId, GroupStatus requiredStatus) {
         Monitor monitor = this.getMonitor(childId);
         List<String> groupInstances;
@@ -725,20 +724,27 @@ public class GroupMonitor extends ParentComponentMonitor {
             if (childGroupInstance.getStatus() == requiredStatus) {
                 noOfInstancesOfRequiredStatus++;
             }
+        }
 
-            if (!groupInstances.isEmpty()) {
-                GroupLevelNetworkPartitionContext networkPartitionContext =
-                        (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
-                        get(networkPartitionId);
-                int minInstances = networkPartitionContext.getMinInstanceCount();
-                //if terminated all the instances in this instances map should be in terminated state
-                if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
-                        requiredStatus == GroupStatus.Terminated) {
-                    return true;
-                } else if (noOfInstancesOfRequiredStatus >= minInstances) {
+        if (!groupInstances.isEmpty()) {
+            GroupLevelNetworkPartitionContext networkPartitionContext =
+                    (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
+                            get(networkPartitionId);
+            int minInstances = networkPartitionContext.getMinInstanceCount();
+            //if terminated all the instances in this instances map should be in terminated state
+            //if terminated all the instances in this instances map should be in terminated state
+            if (noOfInstancesOfRequiredStatus == this.inactiveInstancesMap.size() &&
+                    requiredStatus == GroupStatus.Terminated) {
+                return true;
+            } else if (noOfInstancesOfRequiredStatus >= minInstances) {
+                return true;
+            } else {
+                //of only one is inActive implies that the whole group is Inactive
+                if (requiredStatus == GroupStatus.Inactive && noOfInstancesOfRequiredStatus >= 1) {
                     return true;
                 }
             }
+
         }
         return false;
     }
