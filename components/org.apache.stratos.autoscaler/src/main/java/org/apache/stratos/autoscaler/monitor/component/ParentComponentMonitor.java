@@ -29,6 +29,9 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.InstanceContext;
+import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
@@ -38,6 +41,9 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -47,22 +53,19 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
+import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * Monitor is to monitor it's child monitors and
  * control them according to the dependencies respectively.
  */
-public abstract class ParentComponentMonitor extends Monitor {
+public abstract class ParentComponentMonitor extends Monitor implements Runnable {
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
     private static final String IDENTIFIER = "Auto-Scaler";
     private static final int THREAD_POOL_SIZE = 10;
-
+    //Scheduler executor service to execute this monitor in a thread
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
@@ -75,8 +78,12 @@ public abstract class ParentComponentMonitor extends Monitor {
     protected Map<String, List<String>> inactiveInstancesMap;
     //terminating map, key=alias, value instanceIds
     protected Map<String, List<String>> terminatingInstancesMap;
+    //network partition contexts
+    protected Map<String, NetworkPartitionContext> networkPartitionCtxts;
     //Executor service to maintain the thread pool
     private ExecutorService executorService;
+    //Monitoring interval of the monitor
+    private int monitoringIntervalMilliseconds = 60000;     //TODO get this from config file
 
     public ParentComponentMonitor(ParentComponent component) throws DependencyBuilderException {
         aliasToActiveMonitorsMap = new ConcurrentHashMap<String, Monitor>();
@@ -93,6 +100,21 @@ public abstract class ParentComponentMonitor extends Monitor {
         }
         //Create the executor service with identifier and thread pool size
 	    executorService = StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
+        networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();
+
+    }
+
+    /**
+     * This will monitor the network partition context with child notifications
+     */
+    public abstract void monitor();
+
+    public void startScheduler() {
+        scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
+    }
+
+    protected void stopScheduler() {
+        scheduler.shutdownNow();
     }
 
     /**
@@ -232,11 +254,64 @@ public abstract class ParentComponentMonitor extends Monitor {
 
     }
 
-    /*protected String generateInstanceId(ParentComponent component) {
-        String instanceId = component.getUniqueIdentifier() + "_" +
-                (component.getInstanceContextCount() + 1);
-        return instanceId;
-    }*/
+    @Override
+    public void onChildScalingEvent(ScalingEvent scalingEvent) {
+        if (log.isDebugEnabled()) {
+            log.debug("Child scaling event received to [group]: " + this.getId()
+                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+        }
+
+        String networkPartitionId = scalingEvent.getNetworkPartitionId();
+        String instanceId = scalingEvent.getInstanceId();
+        String id = scalingEvent.getId();
+        NetworkPartitionContext networkPartitionContext =
+                this.networkPartitionCtxts.get(networkPartitionId);
+        if (networkPartitionContext != null) {
+            InstanceContext instanceContext = networkPartitionContext.
+                    getInstanceContext(instanceId);
+            if (instanceContext != null) {
+                if (instanceContext.containsScalingEvent(id)) {
+                    instanceContext.removeScalingEvent(id);
+                    instanceContext.addScalingEvent(scalingEvent);
+                } else {
+                    instanceContext.addScalingEvent(scalingEvent);
+                }
+            }
+        }
+
+
+    }
+
+    @Override
+    public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+        //adding the scaling over max event to group instance Context
+        String networkPartitionId = scalingOverMaxEvent.getNetworkPartitionId();
+        String instanceId = scalingOverMaxEvent.getInstanceId();
+        String id = scalingOverMaxEvent.getId();
+        NetworkPartitionContext networkPartitionContext =
+                this.networkPartitionCtxts.get(networkPartitionId);
+        if (networkPartitionContext != null) {
+            InstanceContext instanceContext = networkPartitionContext.
+                    getInstanceContext(instanceId);
+            if (instanceContext != null) {
+                if (instanceContext.containsScalingEvent(id)) {
+                    instanceContext.removeScalingOverMaxEvent(id);
+                    instanceContext.addScalingOverMaxEvent(scalingOverMaxEvent);
+                } else {
+                    instanceContext.addScalingOverMaxEvent(scalingOverMaxEvent);
+                }
+            }
+        }
+        //calling monitor to go for group scaling or notify the parent
+        this.monitor();
+
+    }
+
+    public NetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
+        return this.networkPartitionCtxts.get(networkPartitionId);
+    }
+
 
     /**
      * This will start the child monitors based on the active of siblings according to start up order
@@ -480,6 +555,59 @@ public abstract class ParentComponentMonitor extends Monitor {
             }
         }
         return parentsActive;
+    }
+
+    protected void handleDependentScaling(InstanceContext instanceContext,
+                                          NetworkPartitionContext networkPartitionContext) {
+        /**
+         * Dependency scaling handling
+         * Finding out the highest scaling events within the scaling dependencies
+         */
+        List<ScalingEvent> highestScalingEventOfDependencies = new ArrayList<ScalingEvent>();
+        for (ScalingDependentList scalingDependentList : scalingDependencies) {
+            ScalingEvent highestFactorEvent = null;
+            for (String scalingDependentListComponent : scalingDependentList.
+                    getScalingDependentListComponents()) {
+                ScalingEvent scalingEvent = instanceContext.
+                        getScalingEvent(scalingDependentListComponent);
+                if (highestFactorEvent == null) {
+                    highestFactorEvent = scalingEvent;
+                } else {
+                    if (scalingEvent.getFactor() > highestFactorEvent.getFactor()) {
+                        highestFactorEvent = scalingEvent;
+                    }
+                }
+            }
+            highestScalingEventOfDependencies.add(highestFactorEvent);
+        }
+
+        for (ScalingEvent highestScalingEventOfChild : highestScalingEventOfDependencies) {
+            //find the child context of this group,
+            //Notifying children, if this group has scaling dependencies
+            if (scalingDependencies != null && !scalingDependencies.isEmpty()) {
+                for (ScalingDependentList scalingDependentList : scalingDependencies) {
+                    if (scalingDependentList.getScalingDependentListComponents().
+                            contains(highestScalingEventOfChild.getId())) {
+                        for (String scalingDependentListComponent : scalingDependentList
+                                .getScalingDependentListComponents()) {
+                            Monitor monitor = aliasToActiveMonitorsMap.get(
+                                    scalingDependentListComponent);
+                            if (monitor instanceof GroupMonitor ||
+                                    monitor instanceof VMClusterMonitor) {
+                                ScalingEvent scalingEvent = new ScalingEvent(monitor.getId(),
+                                        networkPartitionContext.getId(),
+                                        instanceContext.getId(),
+                                        highestScalingEventOfChild.getFactor());
+                                monitor.onParentScalingEvent(scalingEvent);
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        //Resetting the events
+        instanceContext.setIdToScalingEvent(new HashMap<String, ScalingEvent>());
     }
 
     // move to inactive monitors list to use in the Terminated event

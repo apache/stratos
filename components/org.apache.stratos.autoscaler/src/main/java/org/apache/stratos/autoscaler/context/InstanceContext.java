@@ -18,6 +18,12 @@
  */
 package org.apache.stratos.autoscaler.context;
 
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This will hold the instances related info.
  */
@@ -26,8 +32,16 @@ public abstract class InstanceContext {
 
     protected String parentInstanceId;
 
+    //key=id of the child, value=ScalingEvent
+    private Map<String, ScalingEvent> idToScalingEvent;
+    //key=id of the child, value=MaxOutScalingEvent
+    private Map<String, ScalingOverMaxEvent> idToScalingOverMaxEvent;
+
+
     public InstanceContext(String id) {
         this.id = id;
+        setIdToScalingEvent(new HashMap<String, ScalingEvent>());
+        setIdToScalingOverMaxEvent(new HashMap<String, ScalingOverMaxEvent>());
     }
 
     public String getId() {
@@ -44,5 +58,53 @@ public abstract class InstanceContext {
 
     public void setParentInstanceId(String parentInstanceId) {
         this.parentInstanceId = parentInstanceId;
+    }
+
+    public Map<String, ScalingEvent> getIdToScalingEvent() {
+        return idToScalingEvent;
+    }
+
+    public void setIdToScalingEvent(Map<String, ScalingEvent> idToScalingEvent) {
+        this.idToScalingEvent = idToScalingEvent;
+    }
+
+    public Map<String, ScalingOverMaxEvent> getIdToScalingOverMaxEvent() {
+        return idToScalingOverMaxEvent;
+    }
+
+    public void setIdToScalingOverMaxEvent(Map<String, ScalingOverMaxEvent> idToScalingOverMaxEvent) {
+        this.idToScalingOverMaxEvent = idToScalingOverMaxEvent;
+    }
+
+    public void removeScalingEvent(String id) {
+        this.idToScalingEvent.remove(id);
+    }
+
+    public void addScalingEvent(ScalingEvent scalingEvent) {
+        this.idToScalingEvent.put(scalingEvent.getId(), scalingEvent);
+    }
+
+    public ScalingEvent getScalingEvent(String id) {
+        return this.idToScalingEvent.get(id);
+    }
+
+    public ScalingOverMaxEvent getScalingMaxEvent(String id) {
+        return this.idToScalingOverMaxEvent.get(id);
+    }
+
+    public void removeScalingOverMaxEvent(String id) {
+        this.idToScalingOverMaxEvent.remove(id);
+    }
+
+    public void addScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
+        this.idToScalingOverMaxEvent.put(scalingOverMaxEvent.getId(), scalingOverMaxEvent);
+    }
+
+    public boolean containsScalingEvent(String id) {
+        return this.idToScalingEvent.containsKey(id);
+    }
+
+    public boolean containsScalingOverMaxEvent(String id) {
+        return this.idToScalingOverMaxEvent.containsKey(id);
     }
 }

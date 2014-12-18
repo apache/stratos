@@ -22,6 +22,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
+import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
@@ -190,10 +191,11 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
 
         for (ClusterLevelNetworkPartitionContext networkPartitionContext : getNetworkPartitionCtxts()) {
 
-            final Collection<ClusterInstanceContext> clusterInstanceContexts = networkPartitionContext.
-                    getClusterInstanceContextMap().values();
+            final Collection<InstanceContext> clusterInstanceContexts = networkPartitionContext.
+                    getInstanceIdToInstanceContextMap().values();
 
-            for (final ClusterInstanceContext instanceContext : clusterInstanceContexts) {
+            for (final InstanceContext pInstanceContext : clusterInstanceContexts) {
+                final ClusterInstanceContext instanceContext = (ClusterInstanceContext) pInstanceContext;
                 ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.
                         get(instanceContext.getId());
 
@@ -211,7 +213,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                             // store primary members in the cluster instance context
                             List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
 
-                            for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
+                            for (ClusterLevelPartitionContext partitionContext :
+                                                            instanceContext.getPartitionCtxts()) {
 
                                 // get active primary members in this cluster instance context
                                 for (MemberContext memberContext : partitionContext.getActiveMembers()) {
@@ -1037,8 +1040,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         Thread memberTerminator = new Thread(new Runnable() {
             public void run() {
 
-                ClusterInstanceContext instanceContext = getAllNetworkPartitionCtxts().get(networkPartitionId)
-                        .getClusterInstanceContext(instanceId);
+                ClusterInstanceContext instanceContext =
+                        (ClusterInstanceContext) getAllNetworkPartitionCtxts().get(networkPartitionId)
+                                                                    .getInstanceContext(instanceId);
                 boolean allMovedToObsolete = true;
                 for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                     if (log.isInfoEnabled()) {
@@ -1104,7 +1108,9 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
                 ((VMClusterContext) this.clusterContext).getNetworkPartitionCtxts();
         ClusterLevelNetworkPartitionContext networkPartitionContext =
                 clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
-        return networkPartitionContext.getClusterInstanceContextMap().get(instanceId);
+        ClusterInstanceContext instanceContext = (ClusterInstanceContext) networkPartitionContext.
+                                                        getInstanceContext(instanceId);
+        return instanceContext;
     }
 
     public Collection<ClusterLevelNetworkPartitionContext> getNetworkPartitionCtxts() {
@@ -1201,7 +1207,8 @@ public class VMClusterMonitor extends AbstractClusterMonitor {
         //FIXME to iterate properly
         for (ClusterLevelNetworkPartitionContext networkPartitionContext :
                 ((VMClusterContext) this.clusterContext).getNetworkPartitionCtxts().values()) {
-            ClusterInstanceContext clusterInstanceContext = networkPartitionContext.getClusterInstanceContext(instanceId);
+            ClusterInstanceContext clusterInstanceContext =
+                    (ClusterInstanceContext) networkPartitionContext.getInstanceContext(instanceId);
             if (clusterInstanceContext != null) {
                 for (ClusterLevelPartitionContext partitionContext : clusterInstanceContext.getPartitionCtxts()) {
                     List<String> members = new ArrayList<String>();

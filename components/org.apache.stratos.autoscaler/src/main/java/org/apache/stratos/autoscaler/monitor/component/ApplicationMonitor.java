@@ -22,18 +22,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
+import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.application.ApplicationInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
@@ -42,15 +42,11 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
-import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -58,8 +54,6 @@ import java.util.Map;
 public class ApplicationMonitor extends ParentComponentMonitor {
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
 
-    //network partition contexts
-    private Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts;
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
@@ -69,8 +63,68 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         super(application);
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
-        networkPartitionCtxts = new HashMap<String, ApplicationLevelNetworkPartitionContext>();
     }
+
+    @Override
+    public void run() {
+        try {
+            if (log.isDebugEnabled()) {
+                log.debug("Application monitor is running : " + this.toString());
+            }
+            monitor();
+        } catch (Exception e) {
+            log.error("Application monitor failed : " + this.toString(), e);
+        }
+    }
+
+    public synchronized void monitor() {
+        final Collection<NetworkPartitionContext> networkPartitionContexts =
+                this.networkPartitionCtxts.values();
+
+        Runnable monitoringRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (log.isDebugEnabled()) {
+                    log.debug("Application monitor is running====== : " + this.toString());
+                }
+                for (NetworkPartitionContext networkPartitionContext : networkPartitionContexts) {
+
+                    for (InstanceContext instanceContext : networkPartitionContext.
+                            getInstanceIdToInstanceContextMap().values()) {
+                        ApplicationInstance instance = (ApplicationInstance) instanceIdToInstanceMap.
+                                get(instanceContext.getId());
+                        //stopping the monitoring when the group is inactive/Terminating/Terminated
+                        if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
+                            //Gives priority to scaling max out rather than dependency scaling
+                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
+                                //handling the application bursting
+                                try {
+                                    if (log.isInfoEnabled()) {
+                                        log.info("Handling application busting, " +
+                                                "since resources are exhausted in " +
+                                                "this application instance ");
+                                    }
+                                    createInstanceOnBurstingForApplication();
+                                } catch (TopologyInConsistentException e) {
+                                    log.error("Error while bursting the application", e);
+                                } catch (PolicyValidationException e) {
+                                    log.error("Error while bursting the application", e);
+                                } catch (MonitorNotFoundException e) {
+                                    log.error("Error while bursting the application", e);
+                                }
+
+                            } else {
+                                handleDependentScaling(instanceContext, networkPartitionContext);
+
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        monitoringRunnable.run();
+    }
+
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
@@ -97,7 +151,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
 
         for (Monitor monitor : monitors.values()) {
-            if(monitor instanceof ParentComponentMonitor) {
+            if (monitor instanceof ParentComponentMonitor) {
                 Monitor monitor1 = findGroupMonitor(id, ((ParentComponentMonitor) monitor).
                         getAliasToActiveMonitorsMap());
                 if (monitor1 != null) {
@@ -176,55 +230,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         // nothing to do
     }
 
-    @Override
-    public void onChildScalingEvent(ScalingEvent scalingEvent) {
-
-
-        if (log.isDebugEnabled()) {
-            log.debug("Child scaling event received to [group]: " + this.getId()
-                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-        }
-
-        //find the child context of this group,
-        //Notifying children, if this group has scaling dependencies
-        /*if(scalingDependencies != null && !scalingDependencies.isEmpty()) {
-            // has dependencies. Notify children
-            if (aliasToActiveMonitorsMap != null && !aliasToActiveMonitorsMap.values().isEmpty()) {
-
-                for (ScalingDependentList scalingDependentList : scalingDependencies) {
-
-                    for(String scalingDependentListComponent : scalingDependentList.getScalingDependentListComponents()){
-
-                        if(scalingDependentListComponent.equals("cartridge."
-                                + scalingEvent.getId().substring(0, scalingEvent.getId().indexOf('.')))
-                                || scalingDependentListComponent.equals("group."
-                                + scalingEvent.getId().substring(0, scalingEvent.getId().indexOf('.')))){
-
-                            for(String scalingDependentListComponentInSelectedList : scalingDependentList.getScalingDependentListComponents()){
-
-                                Monitor monitor = aliasToActiveMonitorsMap.get(
-                                        scalingDependentListComponentInSelectedList.substring(
-                                                scalingDependentListComponentInSelectedList.indexOf('.') + 1) +
-                                                "." + scalingEvent.getServiceName() +
-                                                ".domain");
-                                if(monitor instanceof GroupMonitor || monitor instanceof VMClusterMonitor){
-                                    monitor.onParentScalingEvent(scalingEvent);
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-            }
-        }*/
-    }
-
-    @Override
-    public void onChildScalingOverMaxEvent(ScalingOverMaxEvent scalingOverMaxEvent) {
-        //TODO to check for the capability of cloud bursting
-
-    }
 
     @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
@@ -381,22 +386,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         ApplicationInstance instance = ApplicationBuilder.handleApplicationInstanceCreatedEvent(
                 appId, networkPartitionId);
         return instance;
-    }
-
-    public Map<String, ApplicationLevelNetworkPartitionContext> getApplicationLevelNetworkPartitionCtxts() {
-        return networkPartitionCtxts;
-    }
-
-    public void setApplicationLevelNetworkPartitionCtxts(Map<String, ApplicationLevelNetworkPartitionContext> networkPartitionCtxts) {
-        this.networkPartitionCtxts = networkPartitionCtxts;
-    }
-
-    public void addApplicationLevelNetworkPartitionContext(ApplicationLevelNetworkPartitionContext applicationLevelNetworkPartitionContext) {
-        this.networkPartitionCtxts.put(applicationLevelNetworkPartitionContext.getId(), applicationLevelNetworkPartitionContext);
-    }
-
-    public ApplicationLevelNetworkPartitionContext getNetworkPartitionContext(String networkPartitionId) {
-        return this.networkPartitionCtxts.get(networkPartitionId);
     }
 
     public boolean isTerminating() {

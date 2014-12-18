@@ -236,8 +236,8 @@ public class VMClusterContext extends AbstractClusterContext {
             throw new PolicyValidationException(msg);
         }
 
-        ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
-                getClusterInstanceContext(clusterInstance.getInstanceId());
+        ClusterInstanceContext clusterInstanceContext = (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+                getInstanceContext(clusterInstance.getInstanceId());
         int maxInstances = 1;
         if (clusterInstanceContext == null) {
             int minInstances = 1;
@@ -294,7 +294,7 @@ public class VMClusterContext extends AbstractClusterContext {
                     clusterLevelPartitionContext.getPartitionId()));
         }
 
-        clusterLevelNetworkPartitionContext.addClusterInstanceContext(clusterInstanceContext);
+        clusterLevelNetworkPartitionContext.addInstanceContext(clusterInstanceContext);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Cluster Instance context has been added: " +

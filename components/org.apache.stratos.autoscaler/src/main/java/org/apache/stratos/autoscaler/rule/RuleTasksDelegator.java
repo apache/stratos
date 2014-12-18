@@ -193,7 +193,9 @@ public class RuleTasksDelegator {
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
             VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
             ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
-            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+            ClusterInstanceContext clusterInstanceContext =
+                    (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+                                getInstanceContext(instanceId);
             minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
             
             
@@ -246,7 +248,9 @@ public class RuleTasksDelegator {
             VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
             VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
             ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
-            ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.getClusterInstanceContext(instanceId);
+            ClusterInstanceContext clusterInstanceContext =
+                    (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+                            getInstanceContext(instanceId);
             minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
             
             if (vmClusterMonitor.getCluster().isKubernetesCluster()) {

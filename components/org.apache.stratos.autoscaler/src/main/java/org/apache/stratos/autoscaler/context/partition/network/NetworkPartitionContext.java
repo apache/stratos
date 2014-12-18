@@ -20,10 +20,54 @@ package org.apache.stratos.autoscaler.context.partition.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.context.InstanceContext;
+import org.apache.stratos.autoscaler.context.group.GroupInstanceContext;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This will keep track of network partition level information.
  */
 public abstract class NetworkPartitionContext {
     private static final Log log = LogFactory.getLog(GroupLevelNetworkPartitionContext.class);
+    //id of the network partition context
+    private final String id;
+    //group instances kept inside a partition
+    private Map<String, InstanceContext> instanceIdToInstanceContextMap;
+
+    protected NetworkPartitionContext(String id) {
+        this.id = id;
+        instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public Map<String, InstanceContext> getInstanceIdToInstanceContextMap() {
+        return instanceIdToInstanceContextMap;
+    }
+
+    public void setInstanceIdToInstanceContextMap(Map<String, InstanceContext> instanceIdToInstanceContextMap) {
+        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    }
+
+    public void addInstanceContext(InstanceContext context) {
+        this.instanceIdToInstanceContextMap.put(context.getId(), context);
+
+    }
+
+    public InstanceContext getInstanceContext(String instanceId) {
+        return this.instanceIdToInstanceContextMap.get(instanceId);
+    }
+
+    public void removeInstanceContext(String instanceId) {
+        this.instanceIdToInstanceContextMap.remove(instanceId);
+    }
+
+    public boolean containsInstanceContext(String instanceId) {
+        return this.instanceIdToInstanceContextMap.containsKey(instanceId);
+    }
 }

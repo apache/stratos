@@ -25,7 +25,6 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
-import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
@@ -33,15 +32,10 @@ import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -251,7 +245,7 @@ public class ApplicationBuilder {
                         getAppMonitor(appId);
                 applicationMonitor.getNetworkPartitionContext(applicationInstance.
                                                                 getNetworkPartitionId()).
-                        removeClusterApplicationContext(instanceId);
+                        removeInstanceContext(instanceId);
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
                 //removing the monitor
@@ -335,8 +329,9 @@ public class ApplicationBuilder {
                         }
                     }
                     GroupLevelNetworkPartitionContext networkPartitionContext =
-                            monitor.getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
-                    networkPartitionContext.removeClusterGroupContext(instanceId);
+                            (GroupLevelNetworkPartitionContext) monitor.
+                                    getNetworkPartitionContext(groupInstance.getNetworkPartitionId());
+                    networkPartitionContext.removeInstanceContext(instanceId);
                     if (groupInstance.getPartitionId() != null) {
                         networkPartitionContext.getPartitionCtxt(groupInstance.getPartitionId()).
                                 removeActiveInstance(groupInstance);

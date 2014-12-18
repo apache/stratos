@@ -121,9 +121,10 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
                 monitor.getAllNetworkPartitionCtxts().values()) {
             //minimum check per partition
-            if (clusterLevelNetworkPartitionContext.containsClusterInstanceContext(instanceId)) {
-                ClusterInstanceContext clusterInstanceContext = clusterLevelNetworkPartitionContext.
-                        getClusterInstanceContext(instanceId);
+            if (clusterLevelNetworkPartitionContext.containsInstanceContext(instanceId)) {
+                ClusterInstanceContext clusterInstanceContext =
+                        (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
+                        getInstanceContext(instanceId);
                 if(clusterInstanceContext != null) {
                     for (ClusterLevelPartitionContext partitionContext :
                             clusterInstanceContext.getPartitionCtxts()) {
