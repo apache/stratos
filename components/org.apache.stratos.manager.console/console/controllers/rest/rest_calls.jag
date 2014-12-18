@@ -142,6 +142,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/applications/" + appId + '/runtime',{});
     };
 
+    this.getApplicationJSON = function(appId){
+        return this.sendReceive("GET","/applications/"+appId ,{});
+    };
+
     this.getClusterInfo = function(clusterId){
         return this.sendReceive("GET","/cluster/clusterId/" + clusterId,{});
     };

@@ -23,8 +23,9 @@ var log = new Log("apachestratos.configure_request"),
         util = require('/controllers/rest/rest_calls.jag'),
         formPayload = request.getParameter('formPayload'),
         formtype = request.getParameter('formtype'),
+        applicationId = request.getParameter('appId'),
         formSubmit;
-
+log.info(formPayload)
 //add login validator for pages
 include('/controllers/login/validator.jag');
 
@@ -37,7 +38,7 @@ try {
             formSubmit = util.RESTCalls.deployApplicationDefinition(formPayload);
             break;
         case "deployments":
-            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
+            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(applicationId, formPayload);
             break;
         case "deleteapplication":
             formSubmit = util.RESTCalls.deleteApplication(formPayload);

@@ -33,7 +33,8 @@ var log = new Log("apachestratos.applications_form"),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
         formDataEdit = topology_data = editorGroups = editorCartridges = '',
-        isEdit = applicationView = applicationEditor= isForm = false,
+        isEdit = applicationView = applicationEditor = isForm = false,
+        applicationDeploy = false,
         userPermissions = session.get('PERMISSIONS');
 
 //create left menu
@@ -42,18 +43,32 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 if (!elements) {
     elements = uriMatcher.match('/{context}/applications/{formtype}/{action}/');
-    isForm = true;
 
-    if (elements.formtype == 'applications' && elements.action != 'new') {
-        applicationView = true;
-        topology_data = util.RESTCalls.getApplicationTopology(elements.action);
-    }else if(elements.formtype == 'applications' && elements.action == 'new'){
-        applicationEditor = true;
-        editorGroups =  util.RESTCalls.getGroups();
-        editorCartridges = util.RESTCalls.getCartridges();
-    }else  if(elements.action != 'new'){
-        isEdit = true;
+    if(!elements){
+        elements = uriMatcher.match('/{context}/applications/{formtype}/{applicationId}/{action}');
+        if(elements.action == 'view'){
+
+        }else if(elements.action == 'deploy'){
+            var applicationName = elements.applicationId;
+            applicationDeploy = true;
+            //get application json
+            var applicationJSON = util.RESTCalls.getApplicationJSON(applicationName);
+        }
+
+    }else{
+        isForm = true;
+        if (elements.formtype == 'applications' && elements.action != 'new') {
+            applicationView = true;
+            topology_data = util.RESTCalls.getApplicationTopology(elements.action);
+        }else if(elements.formtype == 'applications' && elements.action == 'new'){
+            applicationEditor = true;
+            editorGroups =  util.RESTCalls.getGroups();
+            editorCartridges = util.RESTCalls.getCartridges();
+        }else  if(elements.action != 'new'){
+            isEdit = true;
+        }
     }
+
 }
 
 try {
@@ -118,6 +133,9 @@ var caramelData = {
     editorCartridges: JSON.stringify(editorCartridges),
     applicationView: applicationView,
     applicationEditor: applicationEditor,
+    applicationDeploy:applicationDeploy,
+    applicationName:applicationName,
+    applicationJSON:JSON.stringify(applicationJSON),
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formtype:elements.formtype,
