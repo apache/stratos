@@ -23,19 +23,20 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ch
 import java.io.Serializable;
 
 /**
- * This will keep the Children's policy in an application
+ * This will keep the children's policy in an application
  */
 public class ChildPolicy implements Serializable {
-    private String id;
+
+    private String alias;
 
     private ChildLevelNetworkPartition[] childLevelNetworkPartitions;
 
-    public String getId() {
-        return id;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setAlias(String id) {
+        this.alias = id;
     }
 
     public ChildLevelNetworkPartition[] getChildLevelNetworkPartitions() {

@@ -181,7 +181,7 @@ public class VMClusterContext extends AbstractClusterContext {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + childPolicy.getId());
+            log.debug("Child policy alias: " + childPolicy.getAlias());
         }
 
         ChildLevelPartition[] childLevelPartitions = childPolicy.
@@ -189,9 +189,8 @@ public class VMClusterContext extends AbstractClusterContext {
                         clusterLevelNetworkPartitionContext.getId()).
                 getChildLevelPartitions();
         if (childLevelPartitions == null) {
-            String msg =
-                    "Partitions are null in deployment policy: [policy-name]: " +
-                            childPolicy.getId();
+            String msg = "Partitions are null in child policy: [alias]: " +
+                            childPolicy.getAlias();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -218,7 +217,7 @@ public class VMClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
         if (clusterLevelNetworkPartitionContext == null) {
             String msg =
-                    "Network Partition is null in deployment policy: [policy-name]: " +
+                    "Network Partition is null in deployment policy: [application-id]: " +
                             deploymentPolicy.getApplicationId();
             log.error(msg);
             throw new PolicyValidationException(msg);
@@ -231,7 +230,7 @@ public class VMClusterContext extends AbstractClusterContext {
             String msg =
                     "[Partition] " + clusterInstance.getPartitionId() + " for [networkPartition] " +
                             clusterInstance.getNetworkPartitionId() + "is null " +
-                            "in deployment policy: [policy-name]: " + deploymentPolicy.getApplicationId();
+                            "in deployment policy: [application-id]: " + deploymentPolicy.getApplicationId();
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
@@ -349,19 +348,4 @@ public class VMClusterContext extends AbstractClusterContext {
 
         return partition1;
     }
-
-    //FIXME**********
-    /*private org.apache.stratos.cloud.controller.stub.pojo.Properties convertMemberPropsToMemberContextProps(
-            java.util.Properties properties) {
-        org.apache.stratos.cloud.controller.stub.pojo.Properties props = new org.apache.stratos.cloud.controller.stub.pojo.Properties();
-        for (Map.Entry<Object, Object> e : properties.entrySet()) {
-            Property property = new Property();
-            property.setName((String) e.getKey());
-            property.setValue((String) e.getValue());
-            props.addProperties(property);
-        }
-        return props;
-    }*/
-
-
 }

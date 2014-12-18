@@ -81,7 +81,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             ApplicationHolder.acquireReadLock();
 
             for (ChildPolicy childPolicy : deploymentPolicy.getChildPolicies()) {
-                String alias = childPolicy.getId();
+                String alias = childPolicy.getAlias();
                 List<Partition> partitionList = new ArrayList<Partition>();
                 for (ChildLevelNetworkPartition networkPartition : childPolicy.getChildLevelNetworkPartitions()) {
                     Partition[] partitions = deploymentPolicy.getApplicationLevelNetworkPartition(

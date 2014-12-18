@@ -26,15 +26,15 @@ import java.util.List;
 @XmlRootElement
 public class ChildPolicy {
 
-    private String childId;
+    private String alias;
     private List<ChildLevelNetworkPartition> networkPartition;
 
-    public String getChildId() {
-        return childId;
+    public String getAlias() {
+        return alias;
     }
 
-    public void setChildId(String childId) {
-        this.childId = childId;
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public List<ChildLevelNetworkPartition> getNetworkPartition() {
