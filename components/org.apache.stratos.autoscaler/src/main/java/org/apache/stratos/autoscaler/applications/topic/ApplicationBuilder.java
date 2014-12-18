@@ -284,6 +284,8 @@ public class ApplicationBuilder {
 
                 }
                 ApplicationsEventPublisher.sendApplicationInstanceTerminatedEvent(appId, instanceId);
+                //removing the clusters and persisted application
+                handleApplicationRemoval(appId);
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
                                 " [current-status] %s [status-requested] %s", appId,

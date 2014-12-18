@@ -186,10 +186,9 @@ public class GroupMonitor extends ParentComponentMonitor {
                     // as it has group scaling enabled.
                     Group group = application.getGroupRecursively(this.id);
                     if (group != null) {
-                        GroupInstance context = group.getInstanceContexts(instanceId);
                         // notify parent
                         log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
-                                " [instance] " + context.getParentId());
+                                " [instance] " + parentInstanceId);
                         MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                 status, this.id, parentInstanceId);
                     }
