@@ -270,7 +270,6 @@
            </includes>
 	    <excludes>
                 <exclude>**/jmx.xml</exclude>
-		<exclude>**/tenant-axis2.xml</exclude>
 		<exclude>**/authenticators.xml</exclude>
 		<exclude>**/logging-config.xml</exclude>
             </excludes>
