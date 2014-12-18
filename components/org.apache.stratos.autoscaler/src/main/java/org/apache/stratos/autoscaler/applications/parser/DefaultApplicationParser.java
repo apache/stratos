@@ -388,7 +388,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
         
         for (GroupContext groupCtxt : groupCtxts) {
-        	ServiceGroup serviceGroup  = getServiceGroup(groupCtxt.getName());        	
+        	ServiceGroup serviceGroup  = getServiceGroup(groupCtxt.getName());
+            if(serviceGroup == null) {
+                throw new RuntimeException("Service group not found: [group-name] " + groupCtxt.getName());
+            }
             Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, serviceGroup);
             groupAliasToGroup.put(group.getAlias(), group);
         }
