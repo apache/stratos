@@ -94,14 +94,15 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         //Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
         //Building the scaling dependencies for this monitor within the immediate children
-        if((component.getDependencyOrder() != null) && (component.getDependencyOrder().getScalingDependents() != null)) {
-            scalingDependencies  =  DependencyBuilder.getInstance().buildScalingDependencies(component);
+        if ((component.getDependencyOrder() != null) && (component.getDependencyOrder().
+                                                            getScalingDependents() != null)) {
+            scalingDependencies = DependencyBuilder.getInstance().buildScalingDependencies(component);
         } else {
             // No scaling dependencies found, initialize to an empty set
             scalingDependencies = new HashSet<ScalingDependentList>();
         }
         //Create the executor service with identifier and thread pool size
-	    executorService = StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
+        executorService = StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
         networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();
 
     }
@@ -578,7 +579,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                     getScalingDependentListComponents()) {
                 ScalingEvent scalingEvent = instanceContext.
                         getScalingEvent(scalingDependentListComponent);
-                if(scalingEvent != null) {
+                if (scalingEvent != null) {
                     if (highestFactorEvent == null) {
                         highestFactorEvent = scalingEvent;
                     } else {
@@ -588,8 +589,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                     }
                 }
             }
-            if(highestFactorEvent != null) {
-                if(log.isDebugEnabled()) {
+            if (highestFactorEvent != null) {
+                if (log.isDebugEnabled()) {
                     log.debug("Found the highest factor for the [dependent set] " +
                             highestFactorEvent.getId() + " the factor is " +
                             highestFactorEvent.getFactor());
@@ -615,7 +616,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                                         networkPartitionContext.getId(),
                                         instanceContext.getId(),
                                         highestScalingEventOfChild.getFactor());
-                                if(log.isDebugEnabled()) {
+                                if (log.isDebugEnabled()) {
                                     log.debug("Notifying the [child] " + scalingEvent.getId() +
                                             " [instance] " + scalingEvent.getInstanceId() +
                                             " with the highest [factor] " + scalingEvent.getFactor() +

@@ -19,11 +19,12 @@
 package org.apache.stratos.common.beans.topology;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 @XmlRootElement(name="applicationInstances")
-public class ApplicationInstanceBean {
+public class ApplicationInstanceBean implements Serializable {
 
 	private String status;
 	private String instanceId;
@@ -33,39 +34,8 @@ public class ApplicationInstanceBean {
     private List<ClusterInstanceBean> clusterInstances;
 
     public ApplicationInstanceBean() {
-        groupInstances = new ArrayList<GroupInstanceBean>();
-        clusterInstances = new ArrayList<ClusterInstanceBean>();
-    }
-
-    public void addGroupInstance(GroupInstanceBean groupInstance) {
-        this.getGroups().add(groupInstance);
-    }
-
-    public void addClusterInstance(ClusterInstanceBean clusterInstance) {
-        this.getClusterInstances().add(clusterInstance);
-    }
-    public List<ClusterInstanceBean> getClusterInstances() {
-        return clusterInstances;
-    }
-
-    public void setGroupInstances(List<GroupInstanceBean> instances) {
-        this.groupInstances = instances;
-    }
-
-    public List<GroupInstanceBean> getGroups() {
-        return groupInstances;
-    }
-
-    public void setGroups(List<GroupInstanceBean> groups) {
-        this.groupInstances = groups;
-    }
-
-    public List<GroupInstanceBean> getGroupInstances() {
-        return groupInstances;
-    }
-
-    public void setClusters(List<ClusterInstanceBean> clusters) {
-        this.clusterInstances = clusters;
+        setGroupInstances(new ArrayList<GroupInstanceBean>());
+        setClusterInstances(new ArrayList<ClusterInstanceBean>());
     }
 
 	public String getStatus() {
@@ -98,5 +68,21 @@ public class ApplicationInstanceBean {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public List<GroupInstanceBean> getGroupInstances() {
+        return groupInstances;
+    }
+
+    public void setGroupInstances(List<GroupInstanceBean> groupInstances) {
+        this.groupInstances = groupInstances;
+    }
+
+    public List<ClusterInstanceBean> getClusterInstances() {
+        return clusterInstances;
+    }
+
+    public void setClusterInstances(List<ClusterInstanceBean> clusterInstances) {
+        this.clusterInstances = clusterInstances;
     }
 }

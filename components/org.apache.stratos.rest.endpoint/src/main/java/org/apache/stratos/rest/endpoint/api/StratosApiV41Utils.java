@@ -31,6 +31,9 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.common.beans.ApplicationBean;
+import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
 import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
@@ -58,8 +61,8 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.common.beans.ApplicationBean;
-import org.apache.stratos.common.beans.GroupBean;
+//import org.apache.stratos.common.beans.ApplicationBean;
+//import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
@@ -1081,16 +1084,18 @@ public class StratosApiV41Utils {
         }
     }
     
-    public static ApplicationBean[] getApplicationRuntimes() {
-        List<ApplicationBean> applicationBeanList = new ArrayList<ApplicationBean>();
+    public static ApplicationInfoBean[] getApplicationRuntimes() {
+        List<ApplicationInfoBean> applicationBeanList = new ArrayList<ApplicationInfoBean>();
         try {
             ApplicationManager.acquireReadLockForApplications();
-            ApplicationBean applicationBean;
+            ApplicationInfoBean applicationInfoBean;
             for (Application application : ApplicationManager.getApplications().getApplications().values()) {
-                applicationBean = ObjectConverter.convertApplicationToApplicationBean(application);
-                addClustersToApplicationBean(applicationBean, application);
-                addGroupsToApplicationBean(applicationBean, application);
-                applicationBeanList.add(applicationBean);
+                applicationInfoBean = ObjectConverter.convertApplicationToApplicationBean(application);
+                for(ApplicationInstanceBean instanceBean : applicationInfoBean.getApplicationInstances()) {
+                    addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                    addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+                }
+                applicationBeanList.add(applicationInfoBean);
             }
         } finally {
             ApplicationManager.releaseReadLockForApplications();
@@ -1099,7 +1104,7 @@ public class StratosApiV41Utils {
         return applicationBeanList.toArray(new ApplicationBean[applicationBeanList.size()]);
     }
 
-    public static ApplicationBean getApplicationRuntime(String applicationId) {
+    /*public static ApplicationBean getApplicationRuntime(String applicationId) {
         ApplicationBean applicationBean = null;
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);
@@ -1114,10 +1119,10 @@ public class StratosApiV41Utils {
             ApplicationManager.releaseReadLockForApplication(applicationId);
         }
         return applicationBean;
-    }
+    }*/
 
-    public static org.apache.stratos.common.beans.topology.ApplicationBean getApplicationInstanceRuntime(String applicationId) {
-        org.apache.stratos.common.beans.topology.ApplicationBean applicationBean = null;
+    public static ApplicationInfoBean getApplicationInstanceRuntime(String applicationId) {
+        ApplicationInfoBean applicationBean = null;
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);
             Application application = ApplicationManager.getApplications().getApplication(applicationId);
@@ -1153,7 +1158,7 @@ public class StratosApiV41Utils {
                                                 applicationInstanceBean.getInstanceId(), group);
             for(GroupInstanceBean groupInstanceBean : groupInstanceBeans) {
                 setSubGroupInstances(group, groupInstanceBean);
-                applicationInstanceBean.addGroupInstance(groupInstanceBean);
+                applicationInstanceBean.getGroupInstances().add(groupInstanceBean);
             }
         }
     }
@@ -1213,17 +1218,16 @@ public class StratosApiV41Utils {
             groupBean.addGroup(subGroupBean);
         }
     }
-
     private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
         Collection<Group> subgroups = group.getGroups();
         addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
         for (Group subGroup : subgroups) {
             List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.
                     convertGroupToGroupInstancesBean(groupInstanceBean.getInstanceId(),
-                    subGroup);
+                            subGroup);
             for(GroupInstanceBean groupInstanceBean1 : groupInstanceBeans) {
                 setSubGroupInstances(subGroup, groupInstanceBean1);
-                groupInstanceBean.addGroupInstance(groupInstanceBean1);
+                groupInstanceBean.getGroupInstances().add(groupInstanceBean1);
             }
 
         }

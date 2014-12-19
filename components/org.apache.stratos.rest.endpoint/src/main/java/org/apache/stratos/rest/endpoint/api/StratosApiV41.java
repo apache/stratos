@@ -18,9 +18,10 @@
  */
 package org.apache.stratos.rest.endpoint.api;
 
+import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.ApplicationBean;
+//import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.StratosApiResponse;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
@@ -30,6 +31,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
@@ -473,7 +475,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationRuntime(@PathParam("applicationId") String applicationId) throws RestAPIException {
-        org.apache.stratos.common.beans.topology.ApplicationBean applicationRuntime = StratosApiV41Utils.
+        ApplicationInfoBean applicationRuntime = StratosApiV41Utils.
                                             getApplicationInstanceRuntime(applicationId);
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

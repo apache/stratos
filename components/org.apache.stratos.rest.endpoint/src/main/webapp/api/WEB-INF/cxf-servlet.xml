@@ -128,7 +128,6 @@
                 <value>childLevelPartitions</value>
                 <value>networkPartition</value>
                 <value>partitions</value>
-                <value>instances</value>
                 <value>dependencyAliases</value>
                 <value>groupInstances</value>
                 <value>clusterInstances</value>

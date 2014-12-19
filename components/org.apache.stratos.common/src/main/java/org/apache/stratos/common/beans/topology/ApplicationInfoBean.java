@@ -4,8 +4,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name="applications")
-public class ApplicationBean {
+@XmlRootElement
+public class ApplicationInfoBean {
 
     private String id;
     private String name;
@@ -14,12 +14,8 @@ public class ApplicationBean {
     private String tenantAdminUsername;
     private List<ApplicationInstanceBean> applicationInstances;
 
-    public ApplicationBean(){
-        applicationInstances = new ArrayList<ApplicationInstanceBean>();
-    }
-
-    public void addGroupInstance(ApplicationInstanceBean groupInstance) {
-        this.getGroups().add(groupInstance);
+    public ApplicationInfoBean() {
+        setApplicationInstances(new ArrayList<ApplicationInstanceBean>());
     }
 
     public String getId() {
@@ -46,36 +42,26 @@ public class ApplicationBean {
         this.description = description;
     }
 
-    public void setTenantDomain(String tenantDomain) {
-        this.tenantDomain = tenantDomain;
-    }
-
-    public void setTenantAdminUsername(String tenantAdminUsername) {
-        this.tenantAdminUsername = tenantAdminUsername;
-    }
-
     public String getTenantDomain() {
         return tenantDomain;
+    }
+
+    public void setTenantDomain(String tenantDomain) {
+        this.tenantDomain = tenantDomain;
     }
 
     public String getTenantAdminUsername() {
         return tenantAdminUsername;
     }
 
-
-    public void setApplicationInstances(List<ApplicationInstanceBean> instances) {
-		this.applicationInstances = instances;
-	}
-
-    public List<ApplicationInstanceBean> getGroups() {
-        return applicationInstances;
+    public void setTenantAdminUsername(String tenantAdminUsername) {
+        this.tenantAdminUsername = tenantAdminUsername;
     }
-
-    public void setGroups(List<ApplicationInstanceBean> groups) {
-        this.applicationInstances = groups;
-    }
-
     public List<ApplicationInstanceBean> getApplicationInstances() {
         return applicationInstances;
+    }
+
+    public void setApplicationInstances(List<ApplicationInstanceBean> applicationInstances) {
+        this.applicationInstances = applicationInstances;
     }
 }

@@ -19,10 +19,11 @@
 package org.apache.stratos.common.beans.topology;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 import java.util.List;
 
-@XmlRootElement(name="clusterInstance")
-public class ClusterInstanceBean {
+@XmlRootElement(name="clusterInstances")
+public class ClusterInstanceBean implements Serializable {
 
 	private String status;
 	private String instanceId;
