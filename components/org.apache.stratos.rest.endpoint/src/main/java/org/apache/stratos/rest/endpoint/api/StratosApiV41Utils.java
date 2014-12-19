@@ -156,7 +156,7 @@ public class StratosApiV41Utils {
                     }
 
                 } catch (ADCException e) {
-                    log.error(String.format("Error in getting MT Service details for type %S " , cartridgeType));
+                    log.error(String.format("Error in getting MT Service details for type %s " , cartridgeType));
                     throw new RestAPIException(e);
                 }
 
