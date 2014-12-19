@@ -210,8 +210,10 @@ public class DeploymentPolicy implements Serializable{
 
     public ChildPolicy getChildPolicy(String id) {
         for(ChildPolicy childPolicy : childPolicies) {
-            if (childPolicy.getAlias().equals(id)) {
-                return childPolicy;
+            if(childPolicy != null) {
+                if (childPolicy.getAlias().equals(id)) {
+                    return childPolicy;
+                }
             }
         }
         return null;

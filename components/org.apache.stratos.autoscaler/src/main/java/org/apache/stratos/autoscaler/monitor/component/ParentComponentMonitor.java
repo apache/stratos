@@ -95,8 +95,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         //Building the startup dependencies for this monitor within the immediate children
         startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
         //Building the scaling dependencies for this monitor within the immediate children
-        if(component.getDependencyOrder() != null) {
+        if((component.getDependencyOrder() != null) && (component.getDependencyOrder().getScalingDependents() != null)) {
             scalingDependencies  =  DependencyBuilder.getInstance().buildScalingDependencies(component);
+        } else {
+            // No scaling dependencies found, initialize to an empty set
+            scalingDependencies = new HashSet<ScalingDependentList>();
         }
         //Create the executor service with identifier and thread pool size
 	    executorService = StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
