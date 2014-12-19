@@ -21,19 +21,16 @@
             </xs:complexType>
             <xs:complexType name="LoadAverageThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
                     <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="MemoryConsumptionThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
                     <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="RequestsInFlightThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="lowerLimit" type="xs:float"/>
                     <xs:element minOccurs="0" name="upperLimit" type="xs:float"/>
                 </xs:sequence>
             </xs:complexType>
