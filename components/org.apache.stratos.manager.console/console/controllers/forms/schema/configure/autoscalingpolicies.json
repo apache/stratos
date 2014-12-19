@@ -61,15 +61,6 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "lowerLimit": {
-                            "type":"number",
-                            "id": "root/loadThresholds/requestsInFlight/lowerLimit",
-                            "title": "Lower Limit",
-                            "name": "Lower Limit",
-                            "default":5,
-                            "format": "number",
-                            "required":false
-                        },
                         "upperLimit": {
                             "type":"number",
                             "id": "root/loadThresholds/requestsInFlight/upperLimit",
@@ -92,15 +83,6 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "lowerLimit": {
-                            "type":"number",
-                            "id": "root/loadThresholds/memoryConsumption/lowerLimit",
-                            "title": "Lower Limit",
-                            "name": "Lower Limit",
-                            "default":50,
-                            "format": "number",
-                            "required":false
-                        },
                         "upperLimit": {
                             "type":"number",
                             "id": "root/loadThresholds/memoryConsumption/upperLimit",
@@ -123,15 +105,6 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "lowerLimit": {
-                            "type":"number",
-                            "id": "root/loadThresholds/loadAverage/lowerLimit",
-                            "title": "Lower Limit",
-                            "name": "Lower Limit",
-                            "default":20,
-                            "format": "number",
-                            "required":false
-                        },
                         "upperLimit": {
                             "type":"number",
                             "id": "root/loadThresholds/loadAverage/upperLimit",

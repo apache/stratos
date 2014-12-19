@@ -2,16 +2,13 @@
     "id": "autoscale_policy_mysql",
     "loadThresholds": {
       "requestsInFlight": {
-         "upperLimit": 30, 
-         "lowerLimit": 5
+         "threshold": 30
       },
       "memoryConsumption": {
-         "upperLimit": 40, 
-         "lowerLimit": 15
+         "threshold": 40
       },
       "loadAverage": {
-         "upperLimit": 150, 
-         "lowerLimit": 100
+         "threshold": 150
       }
     }  
 }
