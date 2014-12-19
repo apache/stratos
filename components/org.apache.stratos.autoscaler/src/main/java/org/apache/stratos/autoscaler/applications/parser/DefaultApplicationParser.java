@@ -60,12 +60,12 @@ import java.util.*;
  */
 public class DefaultApplicationParser implements ApplicationParser {
 
-    public static final String TOKEN_PAYLOD_PARAM_NAME = "TOKEN";
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private Set<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
  	private Map<String, SubscribableInfoContext> subscribableInformation = new HashMap<String, SubscribableInfoContext>();
+    private String oauthToken;
 
     public DefaultApplicationParser () {
         this.applicationClusterContexts = new HashSet<ApplicationClusterContext>();
@@ -106,6 +106,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             handleError("Invalid Composite Application Definition, no Subscribable Information specified");
         }
 
+        oauthToken = createToken(applicationCtxt.getApplicationId());
         return buildCompositeAppStructure (applicationCtxt, subscribablesInfo);
     }
 
@@ -343,7 +344,6 @@ public class DefaultApplicationParser implements ApplicationParser {
              clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
              clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
              clusterDataMap.put(subscriptionAlias, clusterDataHolder);
-    		 
         }
     	 
 
@@ -465,7 +465,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         Group group = new Group(appId, groupCtxt.getName(), groupCtxt.getAlias());
-        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName(),serviceGroup));
+        group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName(), serviceGroup));
         group.setGroupMinInstances(groupCtxt.getGroupMinInstances());
         group.setGroupMaxInstances(groupCtxt.getGroupMaxInstances());
         DependencyOrder dependencyOrder = new DependencyOrder();
@@ -696,10 +696,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties);
-
-        String oAuth_token = createToken(appId);
-        payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oAuth_token);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken);
 
         String textPayload = payloadData.toString();
 
