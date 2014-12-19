@@ -130,6 +130,10 @@
                 <value>partitions</value>
                 <value>instances</value>
                 <value>dependencyAliases</value>
+                <value>groupInstances</value>
+                <value>clusterInstances</value>
+                <value>applicationInstances</value>
+
             </list>
         </property>
     </bean>

@@ -41,8 +41,8 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.kubernetes.PortRange;
 import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.beans.topology.Instance;
-import org.apache.stratos.common.beans.topology.Member;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.composite.application.beans.*;
 import org.apache.stratos.manager.deploy.service.Service;
@@ -50,9 +50,7 @@ import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
 import org.apache.stratos.manager.subscription.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
-import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
-import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.instance.*;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
@@ -645,6 +643,54 @@ public class ObjectConverter {
             clusterBean.getHostNames().add(hostname);
         }
         return clusterBean;
+    }
+
+    public static ClusterInstanceBean convertClusterToClusterInstanceBean(String instanceId,
+                                                                          Cluster cluster, String alias) {
+        ClusterInstanceBean clusterInstanceBean = new ClusterInstanceBean();
+        clusterInstanceBean.setAlias(alias);
+        clusterInstanceBean.setServiceName(cluster.getServiceName());
+        clusterInstanceBean.setClusterId(cluster.getClusterId());
+        clusterInstanceBean.setInstanceId(instanceId);
+        clusterInstanceBean.setParentInstanceId(instanceId);
+        if(cluster.getInstanceContexts(instanceId) != null) {
+            clusterInstanceBean.setStatus(cluster.getInstanceContexts(instanceId).
+                    getStatus().toString());
+        }
+        clusterInstanceBean.setTenantRange(cluster.getTenantRange());
+        clusterInstanceBean.setMember(new ArrayList<Member>());
+        clusterInstanceBean.setHostNames(new ArrayList<String>());
+
+        for (org.apache.stratos.messaging.domain.topology.Member member : cluster.getMembers()) {
+            if(member.getInstanceId().equals(instanceId)) {
+                Member memberBean = new Member();
+                memberBean.setClusterId(member.getClusterId());
+                memberBean.setLbClusterId(member.getLbClusterId());
+                memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
+                memberBean.setPartitionId(member.getPartitionId());
+                memberBean.setMemberId(member.getMemberId());
+                if (member.getMemberIp() == null) {
+                    memberBean.setMemberIp("NULL");
+                } else {
+                    memberBean.setMemberIp(member.getMemberIp());
+                }
+                if (member.getMemberPublicIp() == null) {
+                    memberBean.setMemberPublicIp("NULL");
+                } else {
+                    memberBean.setMemberPublicIp(member.getMemberPublicIp());
+                }
+                memberBean.setServiceName(member.getServiceName());
+                memberBean.setStatus(member.getStatus().toString());
+                memberBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(member.getProperties()));
+                clusterInstanceBean.getMember().add(memberBean);
+            }
+
+        }
+
+        for (String hostname : cluster.getHostNames()) {
+            clusterInstanceBean.getHostNames().add(hostname);
+        }
+        return clusterInstanceBean;
     }
 
     private static org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] convertToCCPartitionPojos
@@ -1336,20 +1382,38 @@ public class ObjectConverter {
         applicationBean.setDescription(application.getDescription());
         applicationBean.setTenantDomain(application.getTenantDomain());
         applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
-        applicationBean.setInstances(convertApplicationInstancesToInstances(application));
+        //applicationBean.set(convertApplicationToApplicationInstanceBean(application));
         return applicationBean;
     }
 
-    private static List<Instance> convertApplicationInstancesToInstances(
+    public static org.apache.stratos.common.beans.topology.ApplicationBean convertApplicationToApplicationInstanceBean(Application application) {
+        if (application == null) {
+            return null;
+        }
+
+        org.apache.stratos.common.beans.topology.ApplicationBean applicationBean = new
+                org.apache.stratos.common.beans.topology.ApplicationBean();
+        applicationBean.setId(application.getUniqueIdentifier());
+        applicationBean.setName(application.getName());
+        applicationBean.setDescription(application.getDescription());
+        applicationBean.setTenantDomain(application.getTenantDomain());
+        applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        applicationBean.setApplicationInstances(convertApplicationInstancesToApplicationInstances(application));
+        return applicationBean;
+    }
+
+    private static List<ApplicationInstanceBean> convertApplicationInstancesToApplicationInstances(
             Application application) {
-    	List<Instance> applicationInstanceList = new ArrayList<Instance>();
+    	List<ApplicationInstanceBean> applicationInstanceList = new ArrayList<ApplicationInstanceBean>();
     	Collection<ApplicationInstance> applicationInstancesInTopology = 
     			application.getInstanceIdToInstanceContextMap().values();
     	
     	if(applicationInstancesInTopology != null) {
     		for (ApplicationInstance applicationInstance : applicationInstancesInTopology) {
-    			Instance instance = new Instance();
+                ApplicationInstanceBean instance = new ApplicationInstanceBean();
     			instance.setInstanceId(applicationInstance.getInstanceId());
+                instance.setApplicationId(application.getUniqueIdentifier());
+                instance.setParentInstanceId(applicationInstance.getParentId());
     			instance.setStatus(applicationInstance.getStatus().toString());
     			applicationInstanceList.add(instance);
             }
@@ -1367,6 +1431,45 @@ public class ObjectConverter {
         groupBean.setAlias(group.getUniqueIdentifier());
         groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
         return groupBean;
+    }
+
+    public static List<GroupInstanceBean> convertGroupToGroupInstancesBean(String instanceId, Group group) {
+        if (group == null) {
+            return null;
+        }
+
+        List<GroupInstanceBean> groupInstanceBeans = new ArrayList<GroupInstanceBean>();
+        if(group.getInstanceContexts(instanceId) != null) {
+            GroupInstance groupInstance = group.getInstanceContexts(instanceId);
+            GroupInstanceBean groupInstanceBean = new GroupInstanceBean();
+            groupInstanceBean.setParentInstanceId(instanceId);
+            groupInstanceBean.setInstanceId(groupInstance.getInstanceId());
+            groupInstanceBean.setStatus(groupInstance.getStatus().toString());
+            groupInstanceBean.setGroupId(group.getUniqueIdentifier());
+            /*for(Group group1 : group.getGroups()) {
+                groupInstanceBean.setGroupInstances(convertGroupToGroupInstancesBean(
+                        groupInstance.getInstanceId(), group1));
+            }*/
+            groupInstanceBeans.add(groupInstanceBean);
+
+        } else {
+            List<org.apache.stratos.messaging.domain.instance.Instance> groupInstances =
+                    group.getInstanceContextsWithParentId(instanceId);
+            for(org.apache.stratos.messaging.domain.instance.Instance groupInstance : groupInstances) {
+                GroupInstanceBean groupInstanceBean = new GroupInstanceBean();
+                groupInstanceBean.setParentInstanceId(instanceId);
+                groupInstanceBean.setInstanceId(groupInstance.getInstanceId());
+                groupInstanceBean.setStatus(((GroupInstance)groupInstance).getStatus().toString());
+                groupInstanceBean.setGroupId(group.getUniqueIdentifier());
+                /*for(Group group1 : group.getGroups()) {
+                    groupInstanceBean.setGroupInstances(convertGroupToGroupInstancesBean(
+                            groupInstance.getInstanceId(), group1));
+                }*/
+                groupInstanceBeans.add(groupInstanceBean);
+            }
+        }
+
+        return groupInstanceBeans;
     }
 
 	private static List<Instance> convertGroupInstancesToInstances(Group group) {

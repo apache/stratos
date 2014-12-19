@@ -31,6 +31,8 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
+import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
@@ -1114,12 +1116,45 @@ public class StratosApiV41Utils {
         return applicationBean;
     }
 
+    public static org.apache.stratos.common.beans.topology.ApplicationBean getApplicationInstanceRuntime(String applicationId) {
+        org.apache.stratos.common.beans.topology.ApplicationBean applicationBean = null;
+        try {
+            ApplicationManager.acquireReadLockForApplication(applicationId);
+            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            if (application == null) {
+                return null;
+            }
+            applicationBean = ObjectConverter.convertApplicationToApplicationInstanceBean(application);
+            for(ApplicationInstanceBean instanceBean : applicationBean.getApplicationInstances()) {
+                addClustersInstancesToApplicationInstanceBean(instanceBean, application);
+                addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
+            }
+
+        } finally {
+            ApplicationManager.releaseReadLockForApplication(applicationId);
+        }
+        return applicationBean;
+    }
+
     private static void addGroupsToApplicationBean(ApplicationBean applicationBean, Application application) {
         Collection<Group> groups = application.getGroups();
         for (Group group : groups) {
             GroupBean groupBean = ObjectConverter.convertGroupToGroupBean(group);
             setSubGroups(group, groupBean);
             applicationBean.addGroup(groupBean);
+        }
+    }
+
+    private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
+                                                                    Application application) {
+        Collection<Group> groups = application.getGroups();
+        for (Group group : groups) {
+            List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.convertGroupToGroupInstancesBean(
+                                                applicationInstanceBean.getInstanceId(), group);
+            for(GroupInstanceBean groupInstanceBean : groupInstanceBeans) {
+                setSubGroupInstances(group, groupInstanceBean);
+                applicationInstanceBean.addGroupInstance(groupInstanceBean);
+            }
         }
     }
 
@@ -1135,6 +1170,39 @@ public class StratosApiV41Utils {
         }
     }
 
+    private static void addClustersInstancesToApplicationInstanceBean(
+            ApplicationInstanceBean applicationInstanceBean,
+            Application application) {
+        Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
+        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
+            ClusterDataHolder clusterDataHolder = entry.getValue();
+            String clusterId = clusterDataHolder.getClusterId();
+            String serviceType = clusterDataHolder.getServiceType();
+            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+            applicationInstanceBean.getClusterInstances().add(ObjectConverter.
+                    convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
+                            topLevelCluster, entry.getKey()));
+        }
+    }
+
+    private static void addClustersInstancesToGroupInstanceBean(
+            GroupInstanceBean groupInstanceBean,
+            Group group) {
+        Map<String, ClusterDataHolder> topLevelClusterDataMap = group.getClusterDataMap();
+        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
+            ClusterDataHolder clusterDataHolder = entry.getValue();
+            String clusterId = clusterDataHolder.getClusterId();
+            String serviceType = clusterDataHolder.getServiceType();
+            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+            groupInstanceBean.getClusterInstances().add(ObjectConverter.
+                    convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
+                            topLevelCluster, entry.getKey()));
+        }
+    }
+
+
     private static void setSubGroups(Group group, GroupBean groupBean) {
         Collection<Group> subgroups = group.getGroups();
         addClustersToGroupBean(group, groupBean);
@@ -1143,6 +1211,21 @@ public class StratosApiV41Utils {
 
             setSubGroups(subGroup, subGroupBean);
             groupBean.addGroup(subGroupBean);
+        }
+    }
+
+    private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
+        Collection<Group> subgroups = group.getGroups();
+        addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
+        for (Group subGroup : subgroups) {
+            List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.
+                    convertGroupToGroupInstancesBean(groupInstanceBean.getInstanceId(),
+                    subGroup);
+            for(GroupInstanceBean groupInstanceBean1 : groupInstanceBeans) {
+                setSubGroupInstances(subGroup, groupInstanceBean1);
+                groupInstanceBean.addGroupInstance(groupInstanceBean1);
+            }
+
         }
     }
 

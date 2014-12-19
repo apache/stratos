@@ -445,13 +445,36 @@ public class StratosApiV41 extends AbstractApi {
      * @return Json representing the application details with 200 as HTTP status. HTTP 404 is returned when there is
      * no application with given Id.
      * @throws RestAPIException is thrown in case of failure occurs.
-     */
+     *//*
     @GET
     @Path("/applications/{applicationId}/runtime")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationRuntime(@PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
+        if (applicationRuntime == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        } else {
+            return Response.ok().entity(applicationRuntime).build();
+        }
+    }*/
+
+    /**
+     * This API resource provides information about the application denoted by the given appId. Details includes,
+     * Application details, top level cluster details, details of the group and sub groups.
+     *
+     * @param applicationId Id of the application.
+     * @return Json representing the application details with 200 as HTTP status. HTTP 404 is returned when there is
+     * no application with given Id.
+     * @throws RestAPIException is thrown in case of failure occurs.
+     */
+    @GET
+    @Path("/applications/{applicationId}/runtime")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getApplicationRuntime(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        org.apache.stratos.common.beans.topology.ApplicationBean applicationRuntime = StratosApiV41Utils.
+                                            getApplicationInstanceRuntime(applicationId);
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } else {
