@@ -38,7 +38,7 @@
                 </property>
             </activation>
             <properties>
-                <appName>stratosmetadataservice-test</appName>
+                <appName>metadata-test</appName>
             </properties>
         </profile>
         <profile>
@@ -47,7 +47,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <appName>stratosmetadataservice</appName>
+                <appName>metadata</appName>
             </properties>
         </profile>
     </profiles>
@@ -73,10 +73,7 @@
                             <directory>src/main/webapp/${appName}</directory>
                         </resource>
                       </webResources>
-                    <warName>metadataapi</warName>
-                            
-        			        
-                    
+                    <warName>metadata</warName>
                 </configuration>
             </plugin>
            
