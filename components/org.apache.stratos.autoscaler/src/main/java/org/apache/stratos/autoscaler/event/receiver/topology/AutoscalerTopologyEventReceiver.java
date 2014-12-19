@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
-import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -304,7 +304,7 @@ public class AutoscalerTopologyEventReceiver {
                 monitor.notifyParentMonitor(ClusterStatus.Terminated, instanceId);
                 //Removing the instance and instanceContext
                 ClusterInstance instance = (ClusterInstance) monitor.getInstance(instanceId);
-                ((VMClusterContext)monitor.getClusterContext()).
+                ((ClusterContext)monitor.getClusterContext()).
                         getNetworkPartitionCtxt(instance.getNetworkPartitionId()).
                         removeInstanceContext(instanceId);
                 monitor.removeInstance(instanceId);
@@ -446,8 +446,8 @@ public class AutoscalerTopologyEventReceiver {
                            Cluster cluster = service.getCluster(clusterInstanceCreatedEvent.getClusterId());
                             if (cluster != null) {
                                 try {
-                                    VMClusterContext clusterContext =
-                                            (VMClusterContext) clusterMonitor.getClusterContext();
+                                    ClusterContext clusterContext =
+                                            (ClusterContext) clusterMonitor.getClusterContext();
                                     if (clusterContext == null) {
                                         clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster,
                                                 clusterMonitor.hasScalingDependents());
@@ -470,7 +470,7 @@ public class AutoscalerTopologyEventReceiver {
                                                 + clusterInstanceCreatedEvent.getClusterId() + " started successfully");
                                     } else {
                                         //monitor already started. Invoking it directly to speed up the process
-                                        ((VMClusterMonitor)clusterMonitor).monitor();
+                                        ((ClusterMonitor)clusterMonitor).monitor();
                                     }
                                 } catch (PolicyValidationException e) {
                                     log.error(e.getMessage(), e);

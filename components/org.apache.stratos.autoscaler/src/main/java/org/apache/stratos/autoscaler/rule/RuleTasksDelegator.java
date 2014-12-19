@@ -1,4 +1,3 @@
-package org.apache.stratos.autoscaler.rule;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,33 +19,26 @@ package org.apache.stratos.autoscaler.rule;
  *
 */
 
+package org.apache.stratos.autoscaler.rule;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.*;
+import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
-import org.apache.stratos.autoscaler.client.InstanceNotificationClient;
+import org.apache.stratos.autoscaler.context.AutoscalerContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.cluster.KubernetesClusterContext;
-import org.apache.stratos.autoscaler.context.cluster.VMClusterContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.autoscaler.context.AutoscalerContext;
 
 /**
  * This will have utility methods that need to be executed from rule file...
@@ -190,8 +182,8 @@ public class RuleTasksDelegator {
 //            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
-            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
+            ClusterMonitor vmClusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+            ClusterContext clusterContext = (ClusterContext) vmClusterMonitor.getClusterContext();
             ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
@@ -245,8 +237,8 @@ public class RuleTasksDelegator {
 //            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
             //Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
-            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            VMClusterContext clusterContext = (VMClusterContext) vmClusterMonitor.getClusterContext();
+            ClusterMonitor vmClusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+            ClusterContext clusterContext = (ClusterContext) vmClusterMonitor.getClusterContext();
             ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
@@ -302,14 +294,12 @@ public class RuleTasksDelegator {
                     log.debug("Returned member context is null, did not add to pending members");
                 }
             }
-            
         } catch (Throwable e) {
             String message = "Cannot spawn an instance";
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
     }
-
 
     public void delegateScalingDependencyNotification(String clusterId, String networkPartitionId, String instanceId,
                                                       int requiredInstanceCount, int minimumInstanceCount) {
@@ -318,122 +308,29 @@ public class RuleTasksDelegator {
             log.debug("Scaling dependent notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
         float fMinimumInstanceCount = minimumInstanceCount;
         float factor = requiredInstanceCount / fMinimumInstanceCount;
-        if (clusterMonitor instanceof VMClusterMonitor) {
-
-            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;
-            vmClusterMonitor.sendClusterScalingEvent(networkPartitionId, instanceId, factor);
+        if (abstractClusterMonitor instanceof ClusterMonitor) {
+            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
+            clusterMonitor.sendClusterScalingEvent(networkPartitionId, instanceId, factor);
         }
-
     }
 
     public void delegateScalingOverMaxNotification(String clusterId, String networkPartitionId, String instanceId) {
-
         if(log.isDebugEnabled()) {
             log.debug("Scaling max out notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        AbstractClusterMonitor clusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-        if (clusterMonitor instanceof VMClusterMonitor) {
+        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        if (abstractClusterMonitor instanceof ClusterMonitor) {
 
-            VMClusterMonitor vmClusterMonitor = (VMClusterMonitor) clusterMonitor;
-            vmClusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
+            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
+            clusterMonitor.sendScalingOverMaxEvent(networkPartitionId, instanceId);
         }
-
     }
 
-    // Original method. Assume this is invoked from mincheck.drl
-    
-   /* public void delegateSpawn(PartitionContext partitionContext, String clusterId, String lbRefType) {
-        try {
-
-            String nwPartitionId = partitionContext.getNetworkPartitionId();
-                                                         .getNetworkPartitionLbHolder(nwPartitionId);
-            NetworkPartitionLbHolder lbHolder =
-                                          PartitionManager.getInstance()
-                                                          .getNetworkPartitionLbHolder(nwPartitionId);
-
-            
-            String lbClusterId = getLbClusterId(lbRefType, partitionContext, lbHolder);
-
-            MemberContext memberContext =
-                                         CloudControllerClient.getInstance()
-                                                              .spawnAnInstance(partitionContext.getPartition(),
-                                                                      clusterId,
-                                                                      lbClusterId, partitionContext.getNetworkPartitionId());
-            if (memberContext != null) {
-                partitionContext.addPendingMember(memberContext);
-                if(log.isDebugEnabled()){
-                    log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
-                            memberContext.getPartition().getPartitionId()));
-                }
-            } else if(log.isDebugEnabled()){
-                log.debug("Returned member context is null, did not add to pending members");
-            }
-
-        } catch (Throwable e) {
-            String message = "Cannot spawn an instance";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
-   	}*/
-
-//
-//    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
-//                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
-//
-//        String lbClusterId = null;
-//
-//        if (lbRefType != null) {
-//            if (lbRefType.equals(StratosConstants.DEFAULT_LOAD_BALANCER)) {
-//                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
-////                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
-//            } else if (lbRefType.equals(StratosConstants.SERVICE_AWARE_LOAD_BALANCER)) {
-//                String serviceName = partitionCtxt.getServiceName();
-//                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
-////                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
-//            } else {
-//                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
-//            }
-//        }
-//        if (log.isDebugEnabled()) {
-//            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
-//                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
-//                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
-//        }
-//        return lbClusterId;
-//    }
-
-//    public static String getLbClusterId(String lbRefType, ClusterLevelPartitionContext partitionCtxt,
-//                                        NetworkPartitionLbHolder networkPartitionLbHolder) {
-//
-//        String lbClusterId = null;
-//
-//        if (lbRefType != null) {
-//            if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-//                lbClusterId = networkPartitionLbHolder.getDefaultLbClusterId();
-////                lbClusterId = nwPartitionCtxt.getDefaultLbClusterId();
-//            } else if (lbRefType.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-//                String serviceName = partitionCtxt.getServiceName();
-//                lbClusterId = networkPartitionLbHolder.getLBClusterIdOfService(serviceName);
-////                lbClusterId = nwPartitionCtxt.getLBClusterIdOfService(serviceName);
-//            } else {
-//                log.warn("Invalid LB reference type defined: [value] " + lbRefType);
-//            }
-//        }
-//        if (log.isDebugEnabled()) {
-//            log.debug(String.format("Getting LB id for spawning instance [lb reference] %s ," +
-//                            " [partition] %s [network partition] %s [Lb id] %s ", lbRefType, partitionCtxt.getPartitionId(),
-//                    networkPartitionLbHolder.getNetworkPartitionId(), lbClusterId));
-//        }
-//        return lbClusterId;
-//    }
-
-
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
-
         log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
                 clusterMonitorPartitionContext.getPartitionId() + " ], NW Partition [ " +
                 clusterMonitorPartitionContext.getNetworkPartitionId() + " ]");
@@ -478,100 +375,12 @@ public class RuleTasksDelegator {
             if (log.isDebugEnabled()) {
                 log.debug("delegateTerminateAll - begin");
             }
-            CloudControllerClient.getInstance().terminateAllInstances(clusterId);
+            CloudControllerClient.getInstance().terminateInstances(clusterId);
             if (log.isDebugEnabled()) {
                 log.debug("delegateTerminateAll - done");
             }
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
-        }
-    }
-
-    public void delegateStartContainers(KubernetesClusterContext kubernetesClusterContext) {
-        try {
-            String kubernetesClusterId = kubernetesClusterContext.getKubernetesClusterID();
-            String clusterId = kubernetesClusterContext.getClusterId();
-            CloudControllerClient ccClient = CloudControllerClient.getInstance();
-//            MemberContext[] memberContexts = ccClient.startContainers(kubernetesClusterId, clusterId);
-//            if (null != memberContexts) {
-//                for (MemberContext memberContext : memberContexts) {
-//                    if (null != memberContext) {
-//                        kubernetesClusterContext.addPendingMember(memberContext);
-//                        kubernetesClusterContext.setServiceClusterCreated(true);
-//                        if (log.isDebugEnabled()) {
-//                            log.debug(String.format(
-//                                    "Pending member added, [member] %s [kub cluster] %s",
-//                                    memberContext.getMemberId(), kubernetesClusterId));
-//                        }
-//                    } else {
-//                        if (log.isDebugEnabled()) {
-//                            log.debug("Returned member context is null, did not add any pending members");
-//                        }
-//                    }
-//                }
-//            } else {
-//                if (log.isDebugEnabled()) {
-//                    log.debug("Returned member context is null, did not add to pending members");
-//                }
-//            }
-        } catch (Exception e) {
-            log.error("Cannot create containers ", e);
-        }
-    }
-
-    public void delegateScaleUpContainers(KubernetesClusterContext kubernetesClusterContext,
-                                          int newReplicasCount) {
-        String clusterId = kubernetesClusterContext.getClusterId();
-        try {
-            CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            // getting newly created pods' member contexts
-            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
-            if (null != memberContexts) {
-                for (MemberContext memberContext : memberContexts) {
-                    if (null != memberContext) {
-                        kubernetesClusterContext.addPendingMember(memberContext);
-                        if (log.isDebugEnabled()) {
-                            String kubernetesClusterID = kubernetesClusterContext.getKubernetesClusterID();
-                            log.debug(String.format(
-                                    "Pending member added, [member] %s [kub cluster] %s",
-                                    memberContext.getMemberId(), kubernetesClusterID));
-                        }
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Returned member context is null, did not add any pending members");
-                        }
-                    }
-                }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("Returned array of member context is null, did not add to pending members");
-                }
-            }
-        } catch (Exception e) {
-            log.error("Scaling up failed, couldn't update kubernetes controller ", e);
-        }
-    }
-
-    public void delegateScaleDownContainers(KubernetesClusterContext kubernetesClusterContext,
-                                            int newReplicasCount) {
-        String clusterId = kubernetesClusterContext.getClusterId();
-        try {
-            CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            // getting terminated pods's member contexts
-            MemberContext[] memberContexts = ccClient.updateContainers(clusterId, newReplicasCount);
-            if (null != memberContexts) {
-                for (MemberContext memberContext : memberContexts) {
-                    if (null != memberContext) {
-                        // we are not removing from active/pending list, it will be handled in AS event receiver
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Scaling down, terminated the member with id %s in cluster %s",
-                                    memberContext.getMemberId(), memberContext.getClusterId()));
-                        }
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.error("Scaling down failed, couldn't update kubernetes controller ", e);
         }
     }
 

@@ -24,7 +24,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 
 /**
@@ -61,7 +61,7 @@ public class ClusterStatusActiveProcessor extends ClusterStatusProcessor {
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
-        VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
+        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
         boolean clusterActive = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext : monitor.getNetworkPartitionCtxts()) {

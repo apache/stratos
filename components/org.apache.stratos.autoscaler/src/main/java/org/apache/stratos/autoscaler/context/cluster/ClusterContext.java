@@ -47,11 +47,11 @@ import org.apache.stratos.messaging.domain.topology.MemberStatus;
 /*
  * It holds the runtime data of a VM cluster
  */
-public class VMClusterContext extends AbstractClusterContext {
+public class ClusterContext extends AbstractClusterContext {
 
     private static final long serialVersionUID = 17570842529682141L;
 
-	private static final Log log = LogFactory.getLog(VMClusterContext.class);
+	private static final Log log = LogFactory.getLog(ClusterContext.class);
 
     // Map<NetworkpartitionId, Network Partition Context>
     protected Map<String, ClusterLevelNetworkPartitionContext> networkPartitionCtxts;
@@ -59,8 +59,8 @@ public class VMClusterContext extends AbstractClusterContext {
     protected DeploymentPolicy deploymentPolicy;
     protected AutoscalePolicy autoscalePolicy;
 
-    public VMClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
-                            DeploymentPolicy deploymentPolicy, boolean hasScalingDependents) {
+    public ClusterContext(String clusterId, String serviceId, AutoscalePolicy autoscalePolicy,
+                          DeploymentPolicy deploymentPolicy, boolean hasScalingDependents) {
 
         super(clusterId, serviceId);
         this.deploymentPolicy = deploymentPolicy;

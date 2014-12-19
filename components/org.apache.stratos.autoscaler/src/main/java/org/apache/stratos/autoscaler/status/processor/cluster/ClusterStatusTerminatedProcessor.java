@@ -26,7 +26,7 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
@@ -67,7 +67,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
     }
 
     private boolean doProcess(String clusterId, String instanceId) {
-        VMClusterMonitor monitor = (VMClusterMonitor) AutoscalerContext.getInstance().
+        ClusterMonitor monitor = (ClusterMonitor) AutoscalerContext.getInstance().
                 getClusterMonitor(clusterId);
         boolean clusterMonitorHasMembers = clusterInstanceHasMembers(monitor, instanceId);
         boolean clusterTerminated = false;
@@ -116,7 +116,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
      * @param monitor the cluster monitor
      * @return whether has members or not
      */
-    private boolean clusterInstanceHasMembers(VMClusterMonitor monitor, String instanceId) {
+    private boolean clusterInstanceHasMembers(ClusterMonitor monitor, String instanceId) {
         boolean hasMember = false;
         for (ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext :
                 monitor.getAllNetworkPartitionCtxts().values()) {

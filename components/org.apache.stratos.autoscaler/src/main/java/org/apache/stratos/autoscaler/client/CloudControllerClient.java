@@ -226,16 +226,16 @@ public class CloudControllerClient {
         }
     }
 
-    public synchronized void terminateAllInstances(String clusterId) throws TerminationException {
+    public synchronized void terminateInstances(String clusterId) throws TerminationException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
             }
             long startTime = System.currentTimeMillis();
-            stub.terminateAllInstances(clusterId);
+            stub.terminateInstances(clusterId);
             if (log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call terminateAllInstances() returned in %dms", (endTime - startTime)));
+                log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
             }
         } catch (RemoteException e) {
             String msg = e.getMessage();
@@ -422,13 +422,13 @@ public class CloudControllerClient {
 //        }
     }
 
-    public synchronized void terminateAllContainers(String clusterId) throws TerminationException {
+    public synchronized void terminateContainers(String clusterId) throws TerminationException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Terminating containers via cloud controller: [cluster] %s", clusterId));
             }
             long startTime = System.currentTimeMillis();
-            stub.terminateAllContainers(clusterId);
+            stub.terminateContainers(clusterId);
             if (log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call terminateContainer() returned in %dms", (endTime - startTime)));

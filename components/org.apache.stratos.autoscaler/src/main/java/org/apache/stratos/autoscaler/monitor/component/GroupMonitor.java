@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.exception.application.DependencyBuilderExce
 import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
@@ -327,7 +327,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                         Monitor monitor = aliasToActiveMonitorsMap.get(
                                 scalingDependentListComponent);
                         if (monitor instanceof GroupMonitor ||
-                                monitor instanceof VMClusterMonitor) {
+                                monitor instanceof ClusterMonitor) {
                             ScalingEvent childScalingEvent = new ScalingEvent(monitor.getId(),
                                     monitor.getId(),
                                     scalingEvent.getInstanceId(),

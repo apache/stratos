@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.InstanceContext;
-import org.apache.stratos.autoscaler.context.partition.network.ApplicationLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
@@ -41,7 +40,7 @@ import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.VMClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
@@ -611,7 +610,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                             Monitor monitor = aliasToActiveMonitorsMap.get(
                                     scalingDependentListComponent);
                             if (monitor instanceof GroupMonitor ||
-                                    monitor instanceof VMClusterMonitor) {
+                                    monitor instanceof ClusterMonitor) {
                                 ScalingEvent scalingEvent = new ScalingEvent(monitor.getId(),
                                         networkPartitionContext.getId(),
                                         instanceContext.getId(),
