@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.message.JsonMessage;
+import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -122,11 +123,11 @@ public class Util {
 				String[] array = tenantRange.split(TENANT_RANGE_DELIMITER);
 				if (array.length == 2) {
 					// Integer-Integer
-					if (isNumber(array[0]) && (isNumber(array[1]))) {
+					if (NumberUtils.isNumber(array[0]) && (NumberUtils.isNumber(array[1]))) {
 						valid = true;
 					}
 					// Integer-*
-					else if (isNumber(array[0]) && "*".equals(array[1])) {
+					else if (NumberUtils.isNumber(array[0]) && "*".equals(array[1])) {
 						valid = true;
 					}
 				}
@@ -137,21 +138,6 @@ public class Util {
 			throw new RuntimeException(String.format("Tenant range %s is not valid", tenantRange));
 	}
 
-	/**
-	 * Check given string is a number
-	 *
-	 * @param inputStr String to be checked
-	 * @return Boolean of given string is a number
-	 */
-	public static boolean isNumber(String inputStr) {
-		try {
-			Integer.parseInt(inputStr);
-			return true;
-		} catch (NumberFormatException ignore) {
-			// Not a valid number
-		}
-		return false;
-	}
 
 	/**
 	 * Transform json into an object of given type.
