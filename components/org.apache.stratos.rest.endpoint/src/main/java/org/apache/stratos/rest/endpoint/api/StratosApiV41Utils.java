@@ -95,27 +95,27 @@ public class StratosApiV41Utils {
     private static ServiceDeploymentManager serviceDeploymentManager = new ServiceDeploymentManager();
 
     // Util methods for cartridges
-    public static void addCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
-                                    String userName, String tenantDomain) throws RestAPIException {
+    public static void createCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
+                                       String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to add cartridge: [cartridge-type] " + cartridgeDefinitionBean.getType());
+        log.info(String.format("Starting to deploy a cartridge: [type] %s " , cartridgeDefinitionBean.getType()));
 
         CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
             throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
         }
 	    if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
-		    throw new RestAPIException("Category is not specified, cartridge deployment failed");
+		    throw new RestAPIException(String.format("Category is not specified %s , hence cartridge deployment failed",cartridgeConfig.getDisplayName()));
 	    }
         try {
             CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.getDeployerType()).deploy(cartridgeConfig);
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info("Successfully added cartridge: [cartridge-type] " + cartridgeDefinitionBean.getType());
+        log.info(String.format("Successfully deployed cartridge: [type] %s " , cartridgeDefinitionBean.getType()));
     }
 
-    public static void removeCartridge(String cartridgeType) throws RestAPIException {
+    public static void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -124,16 +124,16 @@ public class StratosApiV41Utils {
             try {
                 cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
             } catch (RemoteException e) {
-                log.error("Could not find cartridge: [type] " + cartridgeType);
+                log.error(String.format("Could not find cartridge: [type] %s ", cartridgeType));
                 throw new RestAPIException(e);
 
             } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
-                log.error("Could not find cartridge: [type] " + cartridgeType);
+                log.error(String.format("Could not find cartridge: [type]  %s " , cartridgeType));
                 throw new RestAPIException(e);
             }
 
             if (cartridgeInfo == null) {
-                String errorMsg = "Could not find cartridge: [type] " + cartridgeType;
+                String errorMsg = String.format("Could not find cartridge: [type] %s ", cartridgeType);
                 log.error(errorMsg);
                 throw new RestAPIException(errorMsg);
             }
@@ -145,16 +145,18 @@ public class StratosApiV41Utils {
                     Service service = serviceDeploymentManager.getService(cartridgeType);
                     if (service != null) {
                         // not allowed to undeploy!
-                        String errorMsg = "Multi tenant Service already exists for " + cartridgeType + ", cannot undeploy";
-                        log.error(errorMsg);
-                        throw new RestAPIException(errorMsg);
+	                    String errorMsg =
+			                    String.format("Multi tenant Service already exists for %s ,hence cannot undeploy",
+			                                  cartridgeType);
+	                    log.error(errorMsg);
+	                    throw new RestAPIException(errorMsg);
                     } else {
                         // can undeploy
                         undeployCartridgeDefinition(cloudControllerServiceClient, cartridgeType);
                     }
 
                 } catch (ADCException e) {
-                    log.error("Error in getting MT Service details for type " + cartridgeType);
+                    log.error(String.format("Error in getting MT Service details for type %S " , cartridgeType));
                     throw new RestAPIException(e);
                 }
 
@@ -164,7 +166,7 @@ public class StratosApiV41Utils {
                         cartridgeSubsciptionManager.getCartridgeSubscriptionsForType(cartridgeType);
                 if (cartridgeSubscriptions != null && !cartridgeSubscriptions.isEmpty()) {
                     // not allowed to undeploy!
-                    String errorMsg = "Subscription exists for " + cartridgeType + ", cannot undeploy";
+                    String errorMsg =String.format("Subscription exists for %s, cannot undeploy",cartridgeType);
                     log.error(errorMsg);
                     throw new RestAPIException(errorMsg);
                 } else {
@@ -179,7 +181,7 @@ public class StratosApiV41Utils {
                                                     String cartridgeType) throws RestAPIException {
 
         try {
-            cloudControllerServiceClient.removeCartridge(cartridgeType);
+            cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
 
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
@@ -236,6 +238,13 @@ public class StratosApiV41Utils {
         return lbCartridges;
     }
 
+	/**
+	 * Get the available cartridges by provider
+	 * @param provider provide name
+	 * @param configurationContext configuration context
+	 * @return List of the cartridge definitions
+	 * @throws RestAPIException
+	 */
 	private static List<CartridgeDefinitionBean> getAvailableCartridgesByProvider(String provider, ConfigurationContext configurationContext) throws RestAPIException {
 		List<CartridgeDefinitionBean> cartridges = new ArrayList<CartridgeDefinitionBean>();
 
@@ -526,7 +535,7 @@ public class StratosApiV41Utils {
 
     // Util methods for Autoscaling policies
 
-    public static void addAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
+    public static void createAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
         log.info(String.format("Deploying autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
@@ -854,7 +863,7 @@ public class StratosApiV41Utils {
 
     // Util methods for service groups
 
-    public static void addServiceGroup(ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
+    public static void createServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws RestAPIException {
 
         try {
             serviceGropingManager.deployServiceGroupDefinition(serviceGroupDefinition);
@@ -894,7 +903,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void removeServiceGroup(String serviceGroupDefinitionName) throws RestAPIException {
+    public static void deleteServiceGroupDefinition(String serviceGroupDefinitionName) throws RestAPIException {
 
         try {
             serviceGropingManager.undeployServiceGroupDefinition(serviceGroupDefinitionName);
@@ -1024,7 +1033,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void removeApplication(String applicationId) throws RestAPIException {
+    public static void deleteApplication(String applicationId) throws RestAPIException {
 
         try {
             AutoscalerServiceClient.getServiceClient().deleteApplication(applicationId);
@@ -1244,7 +1253,7 @@ public class StratosApiV41Utils {
 
     // Util methods for Kubernetes clusters
     
-    public static boolean addKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {
+    public static boolean deployKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -1265,7 +1274,7 @@ public class StratosApiV41Utils {
         return false;
     }
 
-    public static boolean addKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHostBean)
+    public static boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHostBean)
             throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
@@ -1354,7 +1363,7 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    public static boolean removeKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
+    public static boolean undeployKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
@@ -1373,7 +1382,7 @@ public class StratosApiV41Utils {
         return false;
     }
 
-    public static boolean removeKubernetesHost(String kubernetesHostId) throws RestAPIException {
+    public static boolean undeployKubernetesHost(String kubernetesHostId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
