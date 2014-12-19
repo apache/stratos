@@ -63,7 +63,7 @@ public class MetaDataAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId){
+    public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId) throws RestAPIException{
 
         List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
@@ -74,8 +74,10 @@ public class MetaDataAdmin {
                 propertiesArr = new NewProperty[properties.size()];
                 propertiesArr = properties.toArray(propertiesArr);
             }
-        } catch (Exception e) {
-            log.error("Error occurred while getting properties ", e);
+        } catch (RegistryException e) {
+	        String msg = "Error occurred while getting properties ";
+	        log.error(msg, e);
+	        throw new RestAPIException(msg, e);
         }
 
         Response.ResponseBuilder rb;
@@ -92,8 +94,7 @@ public class MetaDataAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-
-    public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName){
+    public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName) throws RestAPIException{
         List<NewProperty> properties;
 
 
@@ -111,8 +112,10 @@ public class MetaDataAdmin {
                     break;
                 }
             }
-        } catch (Exception e) {
-            log.error("Error occurred while getting property ", e);
+        } catch (RegistryException e) {
+	        String msg = "Error occurred while adding property";
+	        log.error(msg, e);
+	        throw new RestAPIException(msg, e);
         }
 
         Response.ResponseBuilder rb;
@@ -137,7 +140,9 @@ public class MetaDataAdmin {
         try {
             registry.addPropertyToCluster(applicationId, clusterId, property);
         } catch (RegistryException e) {
-            log.error("Error occurred while adding property", e);
+            String msg = "Error occurred while adding property";
+	        log.error(msg, e);
+	        throw new RestAPIException(msg, e);
         }
 
         return Response.created(url).build();
@@ -154,8 +159,10 @@ public class MetaDataAdmin {
 
         try {
             registry.addPropertiesToCluster(applicationId, clusterId, properties);
-        } catch (Exception e) {
-            log.error("Error occurred while adding properties ", e);
+        } catch (RegistryException e) {
+            String msg = "Error occurred while adding properties ";
+	        log.error(msg, e);
+	        throw new RestAPIException(msg, e);
         }
 
         return Response.created(url).build();
@@ -177,7 +184,7 @@ public class MetaDataAdmin {
         } catch (RegistryException e) {
             String msg= "Resource attached with appId could not be deleted";
             log.error(msg, e);
-            throw  new RestAPIException(" ", e);
+            throw  new RestAPIException(msg, e);
         }
 
         return Response.ok().build();

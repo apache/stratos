@@ -113,7 +113,7 @@ public class CarbonRegistry implements DataStore {
      * @throws RegistryException
      */
     public boolean deleteApplication(String applicationId) throws RegistryException {
-        if(StringUtils.isEmpty(applicationId)){
+        if(StringUtils.isBlank(applicationId)){
             throw new IllegalArgumentException("Application ID can not be null");
         }
         Registry tempRegistry = DataHolder.getRegistryService().getRegistry();

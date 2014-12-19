@@ -144,7 +144,7 @@ public class StratosApiV41Utils {
                 try {
                     Service service = serviceDeploymentManager.getService(cartridgeType);
                     if (service != null) {
-                        // not allowed to undeploy!
+	                    // not allowed to undeploy!
 	                    String errorMsg =
 			                    String.format("Multi tenant Service already exists for %s ,hence cannot undeploy",
 			                                  cartridgeType);
@@ -287,13 +287,19 @@ public class StratosApiV41Utils {
 					log.debug("There are no available cartridges");
 				}
 			}
-		} catch (Exception e) {
-			String msg = "Error while getting available cartridges. Cause: " + e.getMessage();
-			log.error(msg, e);
-			throw new RestAPIException(msg, e);
+		} catch (AxisFault axisFault) {
+			String errorMsg = String.format(
+					"Error while getting CloudControllerServiceClient instance to connect to the Cloud Controller. " +
+					"Cause: %s ", axisFault.getMessage());
+			log.error(errorMsg, axisFault);
+			throw new RestAPIException(errorMsg, axisFault);
+		} catch (RemoteException e) {
+			String errorMsg =
+					String.format("Error while getting cartridge information for provider %s  Cause: %s ", provider,
+					              e.getMessage());
+			log.error(errorMsg, e);
+			throw new RestAPIException(errorMsg, e);
 		}
-
-		//Collections.sort(cartridges);
 
 		if (log.isDebugEnabled()) {
 			log.debug("Returning available cartridges " + cartridges.size());
