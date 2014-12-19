@@ -35,7 +35,7 @@ public class GenericExceptionMapper implements ExceptionMapper<WebApplicationExc
 
     public Response toResponse(WebApplicationException webApplicationException) {
         if(log.isDebugEnabled()){
-            log.debug("Internal erver error", webApplicationException);
+            log.debug("Internal server error", webApplicationException);
         }
         // if no specific error message specified, spitting out a generaic error message
         String errorMessage = (webApplicationException.getMessage() != null)?

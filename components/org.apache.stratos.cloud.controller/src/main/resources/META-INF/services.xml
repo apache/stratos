@@ -33,7 +33,7 @@
         <operation name="removeCartridge">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/cartridgeDefinition</parameter>
         </operation>
-        <operation name="getRegisteredCartridges">
+        <operation name="getCartridges">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/cartridge</parameter>
         </operation>
         <operation name="getCartridgeInfo">

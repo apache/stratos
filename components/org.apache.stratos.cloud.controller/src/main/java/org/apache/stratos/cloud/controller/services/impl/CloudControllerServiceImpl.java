@@ -73,8 +73,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
     private static final Log log = LogFactory.getLog(CloudControllerServiceImpl.class);
 
-    private CloudControllerContext cloudControllerContext = CloudControllerContext
-            .getInstance();
+    private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
 
     public CloudControllerServiceImpl() {
     }
@@ -644,7 +643,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void terminateAllInstances(String clusterId) throws InvalidClusterException {
+    public void terminateInstances(String clusterId) throws InvalidClusterException {
 
         log.info("Starting to terminate all instances of cluster : "
                 + clusterId);
@@ -711,7 +710,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public String[] getRegisteredCartridges() {
+    public String[] getCartridges() {
         // get the list of cartridges registered
         Collection<Cartridge> cartridges = CloudControllerContext.getInstance().getCartridges();
 
@@ -889,7 +888,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
             // terminate all kubernetes units
             try {
-                terminateAllContainers(clusterId);
+                terminateContainers(clusterId);
             } catch (InvalidClusterException e) {
                 String msg = "Docker instance termination fails for cluster: " + clusterId;
                 log.error(msg, e);
@@ -1149,7 +1148,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Pods are not created for cluster : %s, hence deleting the service", clusterId));
                     }
-                    terminateAllContainers(clusterId);
+                    terminateContainers(clusterId);
                     return new MemberContext[0];
                 }
 
@@ -1258,7 +1257,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public MemberContext[] terminateAllContainers(String clusterId)
+    public MemberContext[] terminateContainers(String clusterId)
             throws InvalidClusterException {
         Lock lock = null;
         try {
@@ -1623,7 +1622,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public KubernetesGroup[] getAllKubernetesGroups() {
+    public KubernetesGroup[] getKubernetesGroups() {
         return CloudControllerContext.getInstance().getKubernetesGroups();
     }
 

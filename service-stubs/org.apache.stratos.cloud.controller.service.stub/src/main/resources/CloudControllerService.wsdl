@@ -5,45 +5,15 @@
             <xs:import namespace="http://domain.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://kubernetes.common.stratos.apache.org/xsd"/>
             <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:element name="CloudControllerServiceInvalidMemberException">
+            <xs:element name="getCartridges">
                 <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
-                    </xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+            <xs:element name="getCartridgesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax21:UnregisteredCartridgeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="registerService">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax26:Registrant"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="registerServiceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -65,6 +35,13 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -201,6 +178,18 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getKubernetesGroups">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getKubernetesGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:KubernetesGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getServiceGroupCartridges">
                 <xs:complexType>
                     <xs:sequence>
@@ -279,6 +268,13 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="CloudControllerServiceUnregisteredCartridgeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredCartridgeException" nillable="true" type="ax21:UnregisteredCartridgeException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
@@ -314,21 +310,21 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateAllInstances">
+            <xs:element name="terminateInstances">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateAllContainers">
+            <xs:element name="terminateContainers">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateAllContainersResponse">
+            <xs:element name="terminateContainersResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:MemberContext"/>
@@ -416,18 +412,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getRegisteredCartridges">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getRegisteredCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
                 <xs:complexType>
                     <xs:sequence>
@@ -459,18 +443,6 @@
                         <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
                         <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllKubernetesGroups">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAllKubernetesGroupsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:KubernetesGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -566,6 +538,34 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="CloudControllerServiceInvalidMemberException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerService">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax26:Registrant"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="registerServiceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:schema>
         <xs:schema xmlns:ax28="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.common.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
@@ -628,27 +628,17 @@
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
-            <xs:complexType name="InvalidMemberException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeTypeException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="UnregisteredCartridgeException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="InvalidCartridgeDefinitionException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidIaasProviderException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -674,6 +664,11 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidPartitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="UnregisteredCartridgeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -718,40 +713,14 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="InvalidMemberException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
         </xs:schema>
         <xs:schema xmlns:ax25="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
-            <xs:complexType name="Registrant">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Persistence">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Volume">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="iaasType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="mappingPath" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="removeOntermination" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="size" type="xs:int"/>
-                    <xs:element minOccurs="0" name="snapshotId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="volumeId" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="CartridgeConfig">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"/>
@@ -829,6 +798,24 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Persistence">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Volume">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="iaasType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="mappingPath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="removeOntermination" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="size" type="xs:int"/>
+                    <xs:element minOccurs="0" name="snapshotId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="volumeId" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PortMapping">
@@ -946,8 +933,27 @@
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="Registrant">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
         </xs:schema>
     </wsdl:types>
+    <wsdl:message name="getCartridgesRequest">
+        <wsdl:part name="parameters" element="ns:getCartridges"/>
+    </wsdl:message>
+    <wsdl:message name="getCartridgesResponse">
+        <wsdl:part name="parameters" element="ns:getCartridgesResponse"/>
+    </wsdl:message>
     <wsdl:message name="updateKubernetesMasterRequest">
         <wsdl:part name="parameters" element="ns:updateKubernetesMaster"/>
     </wsdl:message>
@@ -1029,14 +1035,14 @@
     <wsdl:message name="CloudControllerServiceUnregisteredCartridgeException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceUnregisteredCartridgeException"/>
     </wsdl:message>
-    <wsdl:message name="addServiceGroupRequest">
-        <wsdl:part name="parameters" element="ns:addServiceGroup"/>
-    </wsdl:message>
     <wsdl:message name="registerServiceRequest">
         <wsdl:part name="parameters" element="ns:registerService"/>
     </wsdl:message>
     <wsdl:message name="registerServiceResponse">
         <wsdl:part name="parameters" element="ns:registerServiceResponse"/>
+    </wsdl:message>
+    <wsdl:message name="addServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:addServiceGroup"/>
     </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateInstance"/>
@@ -1062,6 +1068,15 @@
     <wsdl:message name="getServiceGroupResponse">
         <wsdl:part name="parameters" element="ns:getServiceGroupResponse"/>
     </wsdl:message>
+    <wsdl:message name="terminateContainersRequest">
+        <wsdl:part name="parameters" element="ns:terminateContainers"/>
+    </wsdl:message>
+    <wsdl:message name="terminateContainersResponse">
+        <wsdl:part name="parameters" element="ns:terminateContainersResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidClusterException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
+    </wsdl:message>
     <wsdl:message name="removeKubernetesGroupRequest">
         <wsdl:part name="parameters" element="ns:removeKubernetesGroup"/>
     </wsdl:message>
@@ -1083,14 +1098,11 @@
     <wsdl:message name="CloudControllerServiceInvalidKubernetesHostException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidKubernetesHostException"/>
     </wsdl:message>
-    <wsdl:message name="terminateAllContainersRequest">
-        <wsdl:part name="parameters" element="ns:terminateAllContainers"/>
+    <wsdl:message name="getKubernetesGroupsRequest">
+        <wsdl:part name="parameters" element="ns:getKubernetesGroups"/>
     </wsdl:message>
-    <wsdl:message name="terminateAllContainersResponse">
-        <wsdl:part name="parameters" element="ns:terminateAllContainersResponse"/>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceInvalidClusterException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
+    <wsdl:message name="getKubernetesGroupsResponse">
+        <wsdl:part name="parameters" element="ns:getKubernetesGroupsResponse"/>
     </wsdl:message>
     <wsdl:message name="createClusterInstanceRequest">
         <wsdl:part name="parameters" element="ns:createClusterInstance"/>
@@ -1119,15 +1131,6 @@
     <wsdl:message name="CloudControllerServiceNonExistingKubernetesHostException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceNonExistingKubernetesHostException"/>
     </wsdl:message>
-    <wsdl:message name="terminateAllInstancesRequest">
-        <wsdl:part name="parameters" element="ns:terminateAllInstances"/>
-    </wsdl:message>
-    <wsdl:message name="getRegisteredCartridgesRequest">
-        <wsdl:part name="parameters" element="ns:getRegisteredCartridges"/>
-    </wsdl:message>
-    <wsdl:message name="getRegisteredCartridgesResponse">
-        <wsdl:part name="parameters" element="ns:getRegisteredCartridgesResponse"/>
-    </wsdl:message>
     <wsdl:message name="unregisterDockerServiceRequest">
         <wsdl:part name="parameters" element="ns:unregisterDockerService"/>
     </wsdl:message>
@@ -1140,11 +1143,8 @@
     <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
     </wsdl:message>
-    <wsdl:message name="getAllKubernetesGroupsRequest">
-        <wsdl:part name="parameters" element="ns:getAllKubernetesGroups"/>
-    </wsdl:message>
-    <wsdl:message name="getAllKubernetesGroupsResponse">
-        <wsdl:part name="parameters" element="ns:getAllKubernetesGroupsResponse"/>
+    <wsdl:message name="terminateInstancesRequest">
+        <wsdl:part name="parameters" element="ns:terminateInstances"/>
     </wsdl:message>
     <wsdl:message name="updateContainersRequest">
         <wsdl:part name="parameters" element="ns:updateContainers"/>
@@ -1186,6 +1186,10 @@
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeDefinitionException"/>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
+        <wsdl:operation name="getCartridges">
+            <wsdl:input message="ns:getCartridgesRequest" wsaw:Action="urn:getCartridges"/>
+            <wsdl:output message="ns:getCartridgesResponse" wsaw:Action="urn:getCartridgesResponse"/>
+        </wsdl:operation>
         <wsdl:operation name="updateKubernetesMaster">
             <wsdl:input message="ns:updateKubernetesMasterRequest" wsaw:Action="urn:updateKubernetesMaster"/>
             <wsdl:output message="ns:updateKubernetesMasterResponse" wsaw:Action="urn:updateKubernetesMasterResponse"/>
@@ -1232,14 +1236,14 @@
             <wsdl:output message="ns:startContainersResponse" wsaw:Action="urn:startContainersResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startContainersCloudControllerServiceUnregisteredCartridgeException"/>
         </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <wsdl:input message="ns:addServiceGroupRequest" wsaw:Action="urn:addServiceGroup"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:addServiceGroupCloudControllerServiceInvalidServiceGroupException"/>
-        </wsdl:operation>
         <wsdl:operation name="registerService">
             <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"/>
             <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:registerServiceCloudControllerServiceUnregisteredCartridgeException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <wsdl:input message="ns:addServiceGroupRequest" wsaw:Action="urn:addServiceGroup"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:addServiceGroupCloudControllerServiceInvalidServiceGroupException"/>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
@@ -1261,6 +1265,11 @@
             <wsdl:output message="ns:getServiceGroupResponse" wsaw:Action="urn:getServiceGroupResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:getServiceGroupCloudControllerServiceInvalidServiceGroupException"/>
         </wsdl:operation>
+        <wsdl:operation name="terminateContainers">
+            <wsdl:input message="ns:terminateContainersRequest" wsaw:Action="urn:terminateContainers"/>
+            <wsdl:output message="ns:terminateContainersResponse" wsaw:Action="urn:terminateContainersResponse"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateContainersCloudControllerServiceInvalidClusterException"/>
+        </wsdl:operation>
         <wsdl:operation name="removeKubernetesGroup">
             <wsdl:input message="ns:removeKubernetesGroupRequest" wsaw:Action="urn:removeKubernetesGroup"/>
             <wsdl:output message="ns:removeKubernetesGroupResponse" wsaw:Action="urn:removeKubernetesGroupResponse"/>
@@ -1277,10 +1286,9 @@
             <wsdl:fault message="ns:CloudControllerServiceInvalidKubernetesHostException" name="CloudControllerServiceInvalidKubernetesHostException" wsaw:Action="urn:addKubernetesHostCloudControllerServiceInvalidKubernetesHostException"/>
             <wsdl:fault message="ns:CloudControllerServiceNonExistingKubernetesGroupException" name="CloudControllerServiceNonExistingKubernetesGroupException" wsaw:Action="urn:addKubernetesHostCloudControllerServiceNonExistingKubernetesGroupException"/>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllContainers">
-            <wsdl:input message="ns:terminateAllContainersRequest" wsaw:Action="urn:terminateAllContainers"/>
-            <wsdl:output message="ns:terminateAllContainersResponse" wsaw:Action="urn:terminateAllContainersResponse"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllContainersCloudControllerServiceInvalidClusterException"/>
+        <wsdl:operation name="getKubernetesGroups">
+            <wsdl:input message="ns:getKubernetesGroupsRequest" wsaw:Action="urn:getKubernetesGroups"/>
+            <wsdl:output message="ns:getKubernetesGroupsResponse" wsaw:Action="urn:getKubernetesGroupsResponse"/>
         </wsdl:operation>
         <wsdl:operation name="createClusterInstance">
             <wsdl:input message="ns:createClusterInstanceRequest" wsaw:Action="urn:createClusterInstance"/>
@@ -1300,14 +1308,6 @@
             <wsdl:output message="ns:removeKubernetesHostResponse" wsaw:Action="urn:removeKubernetesHostResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceNonExistingKubernetesHostException" name="CloudControllerServiceNonExistingKubernetesHostException" wsaw:Action="urn:removeKubernetesHostCloudControllerServiceNonExistingKubernetesHostException"/>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllInstances">
-            <wsdl:input message="ns:terminateAllInstancesRequest" wsaw:Action="urn:terminateAllInstances"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateAllInstancesCloudControllerServiceInvalidClusterException"/>
-        </wsdl:operation>
-        <wsdl:operation name="getRegisteredCartridges">
-            <wsdl:input message="ns:getRegisteredCartridgesRequest" wsaw:Action="urn:getRegisteredCartridges"/>
-            <wsdl:output message="ns:getRegisteredCartridgesResponse" wsaw:Action="urn:getRegisteredCartridgesResponse"/>
-        </wsdl:operation>
         <wsdl:operation name="unregisterDockerService">
             <wsdl:input message="ns:unregisterDockerServiceRequest" wsaw:Action="urn:unregisterDockerService"/>
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredClusterException" name="CloudControllerServiceUnregisteredClusterException" wsaw:Action="urn:unregisterDockerServiceCloudControllerServiceUnregisteredClusterException"/>
@@ -1318,9 +1318,9 @@
             <wsdl:fault message="ns:CloudControllerServiceUnregisteredCartridgeException" name="CloudControllerServiceUnregisteredCartridgeException" wsaw:Action="urn:startInstanceCloudControllerServiceUnregisteredCartridgeException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstanceCloudControllerServiceInvalidIaasProviderException"/>
         </wsdl:operation>
-        <wsdl:operation name="getAllKubernetesGroups">
-            <wsdl:input message="ns:getAllKubernetesGroupsRequest" wsaw:Action="urn:getAllKubernetesGroups"/>
-            <wsdl:output message="ns:getAllKubernetesGroupsResponse" wsaw:Action="urn:getAllKubernetesGroupsResponse"/>
+        <wsdl:operation name="terminateInstances">
+            <wsdl:input message="ns:terminateInstancesRequest" wsaw:Action="urn:terminateInstances"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateInstancesCloudControllerServiceInvalidClusterException"/>
         </wsdl:operation>
         <wsdl:operation name="updateContainers">
             <wsdl:input message="ns:updateContainersRequest" wsaw:Action="urn:updateContainers"/>
@@ -1361,6 +1361,15 @@
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
         <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getCartridges">
+            <soap:operation soapAction="urn:getCartridges" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesGroup">
             <soap:operation soapAction="urn:addKubernetesGroup" style="document"/>
             <wsdl:input>
@@ -1472,6 +1481,15 @@
                 <soap:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <soap:operation soapAction="urn:addServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap:operation soapAction="urn:registerService" style="document"/>
             <wsdl:input>
@@ -1482,15 +1500,6 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <soap:operation soapAction="urn:addServiceGroup" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
@@ -1553,6 +1562,18 @@
                 <soap:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="terminateContainers">
+            <soap:operation soapAction="urn:terminateContainers" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <soap:operation soapAction="urn:getCartridgeInfo" style="document"/>
             <wsdl:input>
@@ -1580,17 +1601,14 @@
                 <soap:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllContainers">
-            <soap:operation soapAction="urn:terminateAllContainers" style="document"/>
+        <wsdl:operation name="getKubernetesGroups">
+            <soap:operation soapAction="urn:getKubernetesGroups" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
-            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
             <soap:operation soapAction="urn:unregisterService" style="document"/>
@@ -1634,15 +1652,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllInstances">
-            <soap:operation soapAction="urn:terminateAllInstances" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="unregisterDockerService">
             <soap:operation soapAction="urn:unregisterDockerService" style="document"/>
             <wsdl:input>
@@ -1651,15 +1660,6 @@
             <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getRegisteredCartridges">
-            <soap:operation soapAction="urn:getRegisteredCartridges" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <soap:operation soapAction="urn:startInstance" style="document"/>
@@ -1676,14 +1676,14 @@
                 <soap:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getAllKubernetesGroups">
-            <soap:operation soapAction="urn:getAllKubernetesGroups" style="document"/>
+        <wsdl:operation name="terminateInstances">
+            <soap:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateContainers">
             <soap:operation soapAction="urn:updateContainers" style="document"/>
@@ -1772,6 +1772,15 @@
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
         <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <wsdl:operation name="getCartridges">
+            <soap12:operation soapAction="urn:getCartridges" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesGroup">
             <soap12:operation soapAction="urn:addKubernetesGroup" style="document"/>
             <wsdl:input>
@@ -1883,6 +1892,15 @@
                 <soap12:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <soap12:operation soapAction="urn:addServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap12:operation soapAction="urn:registerService" style="document"/>
             <wsdl:input>
@@ -1893,15 +1911,6 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceUnregisteredCartridgeException">
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <soap12:operation soapAction="urn:addServiceGroup" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
@@ -1964,6 +1973,18 @@
                 <soap12:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="terminateContainers">
+            <soap12:operation soapAction="urn:terminateContainers" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"/>
+            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <soap12:operation soapAction="urn:getCartridgeInfo" style="document"/>
             <wsdl:input>
@@ -1991,17 +2012,14 @@
                 <soap12:fault use="literal" name="CloudControllerServiceNonExistingKubernetesGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllContainers">
-            <soap12:operation soapAction="urn:terminateAllContainers" style="document"/>
+        <wsdl:operation name="getKubernetesGroups">
+            <soap12:operation soapAction="urn:getKubernetesGroups" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
-            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
-            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="unregisterService">
             <soap12:operation soapAction="urn:unregisterService" style="document"/>
@@ -2045,15 +2063,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceNonExistingKubernetesHostException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllInstances">
-            <soap12:operation soapAction="urn:terminateAllInstances" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
-            </wsdl:fault>
-        </wsdl:operation>
         <wsdl:operation name="unregisterDockerService">
             <soap12:operation soapAction="urn:unregisterDockerService" style="document"/>
             <wsdl:input>
@@ -2062,15 +2071,6 @@
             <wsdl:fault name="CloudControllerServiceUnregisteredClusterException">
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredClusterException"/>
             </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getRegisteredCartridges">
-            <soap12:operation soapAction="urn:getRegisteredCartridges" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <soap12:operation soapAction="urn:startInstance" style="document"/>
@@ -2087,14 +2087,14 @@
                 <soap12:fault use="literal" name="CloudControllerServiceUnregisteredCartridgeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getAllKubernetesGroups">
-            <soap12:operation soapAction="urn:getAllKubernetesGroups" style="document"/>
+        <wsdl:operation name="terminateInstances">
+            <soap12:operation soapAction="urn:terminateInstances" style="document"/>
             <wsdl:input>
                 <soap12:body use="literal"/>
             </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"/>
-            </wsdl:output>
+            <wsdl:fault name="CloudControllerServiceInvalidClusterException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
+            </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="updateContainers">
             <soap12:operation soapAction="urn:updateContainers" style="document"/>
@@ -2183,6 +2183,15 @@
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
         <http:binding verb="POST"/>
+        <wsdl:operation name="getCartridges">
+            <http:operation location="getCartridges"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addKubernetesGroup">
             <http:operation location="addKubernetesGroup"/>
             <wsdl:input>
@@ -2261,6 +2270,12 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <http:operation location="addServiceGroup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <http:operation location="registerService"/>
             <wsdl:input>
@@ -2269,12 +2284,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <http:operation location="addServiceGroup"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <http:operation location="terminateInstance"/>
@@ -2318,6 +2327,15 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="terminateContainers">
+            <http:operation location="terminateContainers"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+            <wsdl:output>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="getCartridgeInfo">
             <http:operation location="getCartridgeInfo"/>
             <wsdl:input>
@@ -2336,8 +2354,8 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllContainers">
-            <http:operation location="terminateAllContainers"/>
+        <wsdl:operation name="getKubernetesGroups">
+            <http:operation location="getKubernetesGroups"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
@@ -2375,26 +2393,11 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="terminateAllInstances">
-            <http:operation location="terminateAllInstances"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="unregisterDockerService">
             <http:operation location="unregisterDockerService"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-        </wsdl:operation>
-        <wsdl:operation name="getRegisteredCartridges">
-            <http:operation location="getRegisteredCartridges"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <http:operation location="startInstance"/>
@@ -2405,14 +2408,11 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
-        <wsdl:operation name="getAllKubernetesGroups">
-            <http:operation location="getAllKubernetesGroups"/>
+        <wsdl:operation name="terminateInstances">
+            <http:operation location="terminateInstances"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
-            <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="updateContainers">
             <http:operation location="updateContainers"/>

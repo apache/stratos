@@ -33,7 +33,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 public interface CloudControllerService {
     
 	/**
-	 * Adds a Cartridge configuration
+	 * Add a cartridge
 	 * @param cartridgeConfig cartridge configuration to be deployed
 	 * @throws InvalidCartridgeDefinitionException if the cartridge configuration is not valid.
 	 * @throws InvalidIaasProviderException if the iaas providers configured are not valid.
@@ -43,23 +43,57 @@ public interface CloudControllerService {
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
-     * Removes a cartridge configuration which is already deployed.
+     * Remove a cartridge
      * @param cartridgeType type of the cartridge to be undeployed.
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
     public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException;
-    
+
+    /**
+     * Add a service group
+     * @param servicegroup
+     * @throws InvalidServiceGroupException
+     */
     public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
-    
+
+    /**
+     * Remove a service group
+     * @param name
+     * @throws InvalidServiceGroupException
+     */
     public void removeServiceGroup(String name) throws InvalidServiceGroupException;
-    
-    public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException;
-    
-    public String[] getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
-    
-    public String[] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
-    
-    public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
+
+    /**
+     * Get service group
+     * @param groupName
+     * @return
+     * @throws InvalidServiceGroupException
+     */
+    public ServiceGroup getServiceGroup (String groupName) throws InvalidServiceGroupException;
+
+    /**
+     * Get service group sub group
+     * @param groupName
+     * @return
+     * @throws InvalidServiceGroupException
+     */
+    public String[] getServiceGroupSubGroups (String groupName) throws InvalidServiceGroupException;
+
+    /**
+     * Get cartridges of a service group
+     * @param groupName
+     * @return
+     * @throws InvalidServiceGroupException
+     */
+    public String[] getServiceGroupCartridges (String groupName) throws InvalidServiceGroupException;
+
+    /**
+     * Get service group dependencies
+     * @param groupName
+     * @return
+     * @throws InvalidServiceGroupException
+     */
+    public Dependencies getServiceGroupDependencies (String groupName) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
@@ -70,7 +104,7 @@ public interface CloudControllerService {
     boolean validatePartition(Partition partition) throws InvalidPartitionException;
     
     /**
-     * Validate a given deployment policy.
+     * Validate a given deployment policy
      * @param cartridgeType type of the cartridge
      * @param partitions partitions
      * @return whether the policy is a valid one against the given Cartridge.
@@ -88,7 +122,7 @@ public interface CloudControllerService {
      * </p>
      * @param registrant information about the new subscription.
      * @return whether the registration is successful or not.
-     * 
+     *
      * @throws UnregisteredCartridgeException
      *             when the cartridge type requested by this service is
      *             not a registered one.
@@ -132,7 +166,7 @@ public interface CloudControllerService {
      *            cluster ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    void terminateAllInstances(String clusterId) throws InvalidClusterException;
+    void terminateInstances(String clusterId) throws InvalidClusterException;
     
     /**
      * Terminate all containers of the given cluster.
@@ -140,7 +174,7 @@ public interface CloudControllerService {
      * @return terminated {@link MemberContext}s
      * @throws InvalidClusterException
      */
-    MemberContext[] terminateAllContainers(String clusterId) throws InvalidClusterException;
+    MemberContext[] terminateContainers(String clusterId) throws InvalidClusterException;
     
     /**
      * Terminate a given member/Kubernetes Pod.
@@ -174,14 +208,14 @@ public interface CloudControllerService {
      * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
      */
     void unregisterDockerService(String clusterId) throws UnregisteredClusterException;
-
+    
     /**
      * Unregister the service cluster identified by the given cluster id.
      * @param clusterId service cluster id.
      * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
      */
     void unregisterService(String clusterId) throws UnregisteredClusterException;
-    
+
     /**
      * This method will return the information regarding the given cartridge, if present.
      * Else this will return <code>null</code>.
@@ -199,7 +233,7 @@ public interface CloudControllerService {
      * 
      * @return String array containing types of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s.
      */
-    String[] getRegisteredCartridges();
+    String[] getCartridges();
 
     /**
      * Returns the {@link org.apache.stratos.cloud.controller.domain.ClusterContext} object associated with the given cluster id, or null if not found
@@ -236,7 +270,7 @@ public interface CloudControllerService {
     /**
      * Retrieves registered Kubernetes Groups.
      */
-    public KubernetesGroup[] getAllKubernetesGroups();
+    public KubernetesGroup[] getKubernetesGroups();
 
     /**
      * Retrieves Kubernetes Group for given Kubernetes Group ID.

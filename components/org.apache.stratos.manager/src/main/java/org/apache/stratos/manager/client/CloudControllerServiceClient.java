@@ -125,11 +125,11 @@ public class CloudControllerServiceClient {
 
     public void terminateAllInstances(String clusterId) throws RemoteException, 
     CloudControllerServiceInvalidClusterExceptionException {
-		stub.terminateAllInstances(clusterId);
+		stub.terminateInstances(clusterId);
 	}
 
 	public String[] getRegisteredCartridges() throws RemoteException {
-		return stub.getRegisteredCartridges();
+		return stub.getCartridges();
 	}
 
 	public CartridgeInfo getCartridgeInfo(String cartridgeType) throws RemoteException, 
@@ -166,7 +166,7 @@ public class CloudControllerServiceClient {
     }
 
     public KubernetesGroup[] getAvailableKubernetesGroups() throws RemoteException {
-        return stub.getAllKubernetesGroups();
+        return stub.getKubernetesGroups();
     }
 
     public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws RemoteException,
