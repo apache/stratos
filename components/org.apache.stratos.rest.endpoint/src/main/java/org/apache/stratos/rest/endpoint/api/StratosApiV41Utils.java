@@ -1116,7 +1116,7 @@ public class StratosApiV41Utils {
             ApplicationManager.releaseReadLockForApplications();
         }
 
-        return applicationBeanList.toArray(new ApplicationBean[applicationBeanList.size()]);
+        return applicationBeanList.toArray(new ApplicationInfoBean[applicationBeanList.size()]);
     }
 
     /*public static ApplicationBean getApplicationRuntime(String applicationId) {
