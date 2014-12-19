@@ -327,7 +327,6 @@
     <xs:complexType name="thresholdValues">
         <xs:all>
             <xs:element name="upperLimit" type="xs:float" minOccurs="1" maxOccurs="1"/>
-            <xs:element name="lowerLimit" type="xs:float" minOccurs="1" maxOccurs="1"/>            
         </xs:all>
     </xs:complexType>
 </xs:schema>
