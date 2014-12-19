@@ -19,6 +19,7 @@
 
 package org.apache.stratos.autoscaler.applications;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.payload.BasicPayloadData;
@@ -35,6 +36,8 @@ import java.util.regex.Pattern;
 
 public class ApplicationUtils {
     private static final Log log = LogFactory.getLog(ApplicationUtils.class);
+
+    public static final String TOKEN_PAYLOD_PARAM_NAME = "TOKEN";
 
     public static boolean isAliasValid (String alias) {
 
@@ -194,7 +197,7 @@ public class ApplicationUtils {
 
     public static PayloadData createPayload(String appId, String groupName, CartridgeInfo cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
-                                            org.apache.stratos.common.Properties properties)
+                                            org.apache.stratos.common.Properties properties, String oauthToken)
             throws ApplicationDefinitionException {
 
         //Create the payload
@@ -249,6 +252,10 @@ public class ApplicationUtils {
         // adding the DEPLOYMENT="default" param
         if(!isDeploymentParam) {
             payloadData.add("DEPLOYMENT", "default");
+        }
+
+        if(!StringUtils.isEmpty(oauthToken)){
+            payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oauthToken);
         }
         //check if there are any custom payload entries defined
         if (customPayloadEntries != null) {
