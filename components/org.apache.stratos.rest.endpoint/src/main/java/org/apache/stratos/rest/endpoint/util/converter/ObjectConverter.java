@@ -344,7 +344,6 @@ public class ObjectConverter {
                 org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds loadAverage = new
                         org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds();
                 loadAverage.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getLoadAverage().getThreshold());
-                loadAverage.setLowerLimit(autoscalePolicyBean.getLoadThresholds().getLoadAverage().getLowerLimit());
                 //set load average
                 loadThresholds.setLoadAverage(loadAverage);
             }
@@ -354,7 +353,6 @@ public class ObjectConverter {
                         org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds();
                 //set request in flight information
                 requestsInFlight.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getRequestsInFlight().getThreshold());
-                requestsInFlight.setLowerLimit(autoscalePolicyBean.getLoadThresholds().getRequestsInFlight().getLowerLimit());
                 //set request in flight
                 loadThresholds.setRequestsInFlight(requestsInFlight);
             }
@@ -365,7 +363,6 @@ public class ObjectConverter {
 
                 //set memory consumption information
                 memoryConsumption.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getMemoryConsumption().getThreshold());
-                memoryConsumption.setLowerLimit(autoscalePolicyBean.getLoadThresholds().getMemoryConsumption().getLowerLimit());
                 //set memory consumption
                 loadThresholds.setMemoryConsumption(memoryConsumption);
             }
@@ -806,19 +803,16 @@ public class ObjectConverter {
         if (loadThresholds.getLoadAverage() != null) {
             LoadAverageThresholds loadAverage = new LoadAverageThresholds();
             loadAverage.setThreshold(loadThresholds.getLoadAverage().getUpperLimit());
-            loadAverage.setLowerLimit(loadThresholds.getLoadAverage().getLowerLimit());
             loadThresholdBean.setLoadAverage(loadAverage);
         }
         if (loadThresholds.getMemoryConsumption() != null) {
             MemoryConsumptionThresholds memoryConsumption = new MemoryConsumptionThresholds();
             memoryConsumption.setThreshold(loadThresholds.getMemoryConsumption().getUpperLimit());
-            memoryConsumption.setLowerLimit(loadThresholds.getMemoryConsumption().getLowerLimit());
             loadThresholdBean.setMemoryConsumption(memoryConsumption);
         }
         if (loadThresholds.getRequestsInFlight() != null) {
             RequestsInFlightThresholds requestsInFlight = new RequestsInFlightThresholds();
             requestsInFlight.setThreshold(loadThresholds.getRequestsInFlight().getUpperLimit());
-            requestsInFlight.setLowerLimit(loadThresholds.getRequestsInFlight().getLowerLimit());
             loadThresholdBean.setRequestsInFlight(requestsInFlight);
         }
 

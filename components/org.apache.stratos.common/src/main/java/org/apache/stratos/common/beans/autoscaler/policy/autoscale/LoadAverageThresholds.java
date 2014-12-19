@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class LoadAverageThresholds {
 
 	private float threshold;
-    private float lowerLimit;
 
     public float getThreshold() {
         return threshold;
@@ -33,13 +32,5 @@ public class LoadAverageThresholds {
 
     public void setThreshold(float threshold) {
         this.threshold = threshold;
-    }
-
-    public float getLowerLimit() {
-        return lowerLimit;
-    }
-
-    public void setLowerLimit(float lowerLimit) {
-        this.lowerLimit = lowerLimit;
     }
 }
