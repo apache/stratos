@@ -100,8 +100,7 @@ public class StratosApiV40Utils {
 
             // call CC
             try {
-                cloudControllerServiceClient
-                        .deployCartridgeDefinition(cartridgeConfig);
+                cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -114,13 +113,14 @@ public class StratosApiV40Utils {
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
-
-            log.info("Successfully deployed Cartridge [type] "+ cartridgeDefinitionBean.getType());
-
         }
 
         StratosApiResponse stratosApiResponse = new StratosApiResponse();
-        stratosApiResponse.setMessage("Successfully deployed cartridge definition with type " + cartridgeDefinitionBean.getType());
+        String message = "Successfully added cartridge definition: [cartridge-type] " + cartridgeDefinitionBean.getType();
+        stratosApiResponse.setMessage(message);
+        if(log.isInfoEnabled()) {
+            log.info(message);
+        }
         return stratosApiResponse;
     }
 

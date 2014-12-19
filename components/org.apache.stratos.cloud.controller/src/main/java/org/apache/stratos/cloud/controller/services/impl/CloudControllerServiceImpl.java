@@ -189,7 +189,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 return;
             }
         }
-        String msg = "Cartridge [type] " + cartridgeType + " is not a deployed Cartridge type.";
+        String msg = "Cartridge not found: [cartridge-type] " + cartridgeType;
         log.error(msg);
         throw new InvalidCartridgeTypeException(msg);
     }
@@ -265,7 +265,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
 
-        String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
+        String msg = "Service group not found: [group-name] " + name;
         log.error(msg);
         throw new InvalidServiceGroupException(msg);
 
@@ -284,7 +284,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (log.isDebugEnabled()) {
                 log.debug("getServiceGroupDefinition: no entry found for service group " + name);
             }
-            String msg = "ServiceGroup " + name + " is not a deployed Service Group definition";
+            String msg = "Service group not found: [group-name] " + name;
             throw new InvalidServiceGroupException(msg);
         }
 
@@ -294,7 +294,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupSubGroups(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
         }
 
         return serviceGroup.getSubGroups();
@@ -306,7 +306,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupCartridges(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
         }
         String[] cs = serviceGroup.getCartridges();
         return cs;
@@ -316,7 +316,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public Dependencies getServiceGroupDependencies(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid ServiceGroup " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
         }
         return serviceGroup.getDependencies();
     }
@@ -1665,7 +1665,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes group deployed successfully: [id] %s, [description] %s",
+                log.info(String.format("Kubernetes group added successfully: [id] %s, [description] %s",
                         kubernetesGroup.getGroupId(), kubernetesGroup.getDescription()));
             }
             return true;
@@ -1717,7 +1717,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host deployed successfully: [id] %s", kubernetesGroupStored.getGroupId()));
+                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesGroupStored.getGroupId()));
             }
 
             return true;

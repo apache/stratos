@@ -93,7 +93,7 @@ public class StratosApiV41Utils {
     public static void createCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
 
-        log.info("Starting to deploy a cartridge: [type] " + cartridgeDefinitionBean.getType());
+        log.info("Starting to add cartridge: [cartridge-type] " + cartridgeDefinitionBean.getType());
 
         CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
@@ -107,7 +107,7 @@ public class StratosApiV41Utils {
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info("Successfully deployed cartridge: [type] " + cartridgeDefinitionBean.getType());
+        log.info("Successfully added cartridge: [cartridge-type] " + cartridgeDefinitionBean.getType());
     }
 
     public static void deleteCartridgeDefinition(String cartridgeType) throws RestAPIException {
@@ -521,7 +521,7 @@ public class StratosApiV41Utils {
 
     // Util methods for Autoscaling policies
 
-    public static void createAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
+    public static void addAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
         log.info(String.format("Deploying autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 

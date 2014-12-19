@@ -528,10 +528,10 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response createAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
+    public Response addAutoscalingPolicy(AutoscalePolicy autoscalePolicy)
             throws RestAPIException {
 
-        StratosApiV41Utils.createAutoscalingPolicy(autoscalePolicy);
+        StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
         return Response.created(url).build();
     }
