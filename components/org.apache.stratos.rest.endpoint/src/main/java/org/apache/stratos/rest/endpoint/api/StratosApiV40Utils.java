@@ -100,7 +100,7 @@ public class StratosApiV40Utils {
 
             // call CC
             try {
-                cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
+                cloudControllerServiceClient.addCartridge(cartridgeConfig);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -149,7 +149,7 @@ public class StratosApiV40Utils {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                cloudControllerServiceClient.unDeployCartridgeDefinition(cartridgeType);
+                cloudControllerServiceClient.removeCartridge(cartridgeType);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);

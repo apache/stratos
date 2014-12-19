@@ -40,7 +40,7 @@ public class DefaultCartridgeDeployer extends CartridgeDeployer {
 	protected void deployCartridge(CartridgeConfig cartridgeConfig) throws ADCException {
 		try {
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getServiceClient();
-			cloudControllerServiceClient.deployCartridgeDefinition(cartridgeConfig);
+			cloudControllerServiceClient.addCartridge(cartridgeConfig);
 		} catch (Exception e) {
 			String msg = "Could not deploy cartridge";
 			log.error(msg, e);

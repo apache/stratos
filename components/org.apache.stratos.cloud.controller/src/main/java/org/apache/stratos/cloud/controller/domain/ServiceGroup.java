@@ -23,15 +23,11 @@ import java.io.Serializable;
 
 public class ServiceGroup implements Serializable {
 
-
 	private static final long serialVersionUID = -7413745300105885793L;
 
 	private String name;
-
     private String [] subGroups;
-
     private String [] cartridges;
-
     private Dependencies dependencies;
 
     public String getName() {

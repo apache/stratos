@@ -33,31 +33,31 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 public interface CloudControllerService {
     
 	/**
-	 * Deploys a Cartridge configuration 
+	 * Adds a Cartridge configuration
 	 * @param cartridgeConfig cartridge configuration to be deployed
 	 * @throws InvalidCartridgeDefinitionException if the cartridge configuration is not valid.
 	 * @throws InvalidIaasProviderException if the iaas providers configured are not valid.
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
-    void deployCartridgeDefinition(CartridgeConfig cartridgeConfig)
+    void addCartridge(CartridgeConfig cartridgeConfig)
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
     
     /**
-     * Undeploys a Cartridge configuration which is already deployed.
+     * Removes a cartridge configuration which is already deployed.
      * @param cartridgeType type of the cartridge to be undeployed.
      * @throws InvalidCartridgeTypeException if the cartridge type specified is not a deployed cartridge.
      */
-    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException;
+    public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException;
     
-    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
+    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
     
-    public void undeployServiceGroup(String name) throws InvalidServiceGroupException;
+    public void removeServiceGroup(String name) throws InvalidServiceGroupException;
     
     public ServiceGroup getServiceGroup (String name) throws InvalidServiceGroupException;
     
-    public String []getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
+    public String[] getServiceGroupSubGroups (String name) throws InvalidServiceGroupException;
     
-    public String [] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
+    public String[] getServiceGroupCartridges (String name) throws InvalidServiceGroupException;
     
     public Dependencies getServiceGroupDependencies (String name) throws InvalidServiceGroupException;
 
@@ -263,7 +263,7 @@ public interface CloudControllerService {
      * Register a Kubernetes cluster.
      *
      * @param kubernetesGroup
-     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesGroupException
+     * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesGroupException
      */
     public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException;
 
@@ -272,7 +272,7 @@ public interface CloudControllerService {
      *
      * @param groupId
      * @param kubernetesHost
-     * @throws org.apache.stratos.autoscaler.exception.kubernetes.InvalidKubernetesHostException
+     * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException
      */
     public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesGroupException;

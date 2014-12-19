@@ -83,7 +83,7 @@ public class StratosUserManager {
      * @param userName         UserName
      * @throws UserManagerException
      */
-    public void deleteUser(UserStoreManager userStoreManager, String userName)
+    public void removeUser(UserStoreManager userStoreManager, String userName)
             throws UserManagerException {
 
         try {

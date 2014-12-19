@@ -25,13 +25,7 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.Registrant;
-import org.apache.stratos.cloud.controller.stub.domain.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.domain.Dependencies;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup;
 import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster;
@@ -82,16 +76,16 @@ public class CloudControllerServiceClient {
         return serviceClient;
     }
 
-    public void deployCartridgeDefinition (CartridgeConfig cartridgeConfig)
+    public void addCartridge(CartridgeConfig cartridgeConfig)
     		throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
             CloudControllerServiceInvalidIaasProviderExceptionException {
 
-		stub.deployCartridgeDefinition(cartridgeConfig);
+		stub.addCartridge(cartridgeConfig);
 
 	}
 
-    public void unDeployCartridgeDefinition (String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
-		stub.undeployCartridgeDefinition(cartridgeType);
+    public void removeCartridge(String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
+		stub.removeCartridge(cartridgeType);
 	}
 
     public String [] getServiceGroupSubGroups(String name) throws RemoteException, CloudControllerServiceInvalidServiceGroupExceptionException {

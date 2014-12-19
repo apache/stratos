@@ -79,7 +79,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public CloudControllerServiceImpl() {
     }
 
-    public void deployCartridgeDefinition(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
+    public void addCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
             InvalidIaasProviderException {
 
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
@@ -121,7 +121,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
             // undeploy
             try {
-                undeployCartridgeDefinition(cartridgeToBeRemoved.getType());
+                removeCartridge(cartridgeToBeRemoved.getType());
             } catch (InvalidCartridgeTypeException ignore) {
             }
             copyIaasProviders(cartridge, cartridgeToBeRemoved);
@@ -164,7 +164,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    public void undeployCartridgeDefinition(String cartridgeType) throws InvalidCartridgeTypeException {
+    public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException {
 
         Cartridge cartridge = null;
         if ((cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType)) != null) {
@@ -184,7 +184,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 TopologyBuilder.handleServiceRemoved(cartridgeList);
 
                 if (log.isInfoEnabled()) {
-                    log.info("Successfully undeployed the Cartridge definition: " + cartridgeType);
+                    log.info("Successfully removed cartridge: [cartridge-type] " + cartridgeType);
                 }
                 return;
             }
@@ -194,7 +194,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         throw new InvalidCartridgeTypeException(msg);
     }
 
-    public void deployServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
+    public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null) {
             String msg = "Invalid ServiceGroup Definition: Definition is null.";
@@ -204,18 +204,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:" + servicegroup.getName());
+            log.debug("CloudControllerServiceImpl:addServiceGroup:" + servicegroup.getName());
         }
 
         String[] subGroups = servicegroup.getCartridges();
 
 
         if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups" + subGroups);
+            log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups" + subGroups);
             if (subGroups != null) {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups:size" + subGroups.length);
+                log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups:size" + subGroups.length);
             } else {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:subGroups: is null");
+                log.debug("CloudControllerServiceImpl:addServiceGroup:subGroups: is null");
             }
         }
 
@@ -223,32 +223,30 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         Dependencies dependencies = servicegroup.getDependencies();
 
         if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:deployServiceGroup:dependencies" + dependencies);
+            log.debug("CloudControllerServiceImpl:addServiceGroup:dependencies" + dependencies);
         }
 
         if (dependencies != null) {
             String[] startupOrders = dependencies.getStartupOrders();
 
             if (log.isDebugEnabled()) {
-                log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrders" + startupOrders);
+                log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrders" + startupOrders);
 
                 if (startupOrders != null) {
-                    log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder:size" + startupOrders.length);
+                    log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrder:size" + startupOrders.length);
                 } else {
-                    log.debug("CloudControllerServiceImpl:deployServiceGroup:startupOrder: is null");
+                    log.debug("CloudControllerServiceImpl:addServiceGroup:startupOrder: is null");
                 }
             }
         }
 
         CloudControllerContext.getInstance().addServiceGroup(servicegroup);
-
         CloudControllerContext.getInstance().persist();
-
     }
 
-    public void undeployServiceGroup(String name) throws InvalidServiceGroupException {
+    public void removeServiceGroup(String name) throws InvalidServiceGroupException {
         if (log.isDebugEnabled()) {
-            log.debug("CloudControllerServiceImpl:undeployServiceGroup: " + name);
+            log.debug("CloudControllerServiceImpl:removeServiceGroup: " + name);
         }
 
         ServiceGroup serviceGroup = null;
@@ -259,7 +257,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (CloudControllerContext.getInstance().getServiceGroups().remove(serviceGroup)) {
                 CloudControllerContext.getInstance().persist();
                 if (log.isInfoEnabled()) {
-                    log.info("Successfully undeployed the Service Group definition: " + serviceGroup);
+                    log.info("Successfully removed the service group: [group-name] " + serviceGroup);
                 }
                 return;
             }
@@ -281,11 +279,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ServiceGroup serviceGroup = CloudControllerContext.getInstance().getServiceGroup(name);
 
         if (serviceGroup == null) {
+            String message = "Service group not found: [group-name] " + name;
             if (log.isDebugEnabled()) {
-                log.debug("getServiceGroupDefinition: no entry found for service group " + name);
+                log.debug(message);
             }
-            String msg = "Service group not found: [group-name] " + name;
-            throw new InvalidServiceGroupException(msg);
+            throw new InvalidServiceGroupException(message);
         }
 
         return serviceGroup;
@@ -352,7 +350,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                    "Instance start-up failed. No matching Cartridge found [type] " + cartridgeType + ". " +
+                    "Instance start-up failed. No matching Cartridge found [cartridge-type] " + cartridgeType + ". " +
                             memberContext.toString();
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
@@ -499,7 +497,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
         }
         if (log.isDebugEnabled()) {
-            log.debug("Persistence payload is" + persistencePayload.toString());
+            log.debug("Persistence payload: " + persistencePayload.toString());
         }
         return persistencePayload;
     }
@@ -688,7 +686,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if ((cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType)) == null) {
 
             String msg = "Registration of cluster: " + clusterId +
-                    " failed. - Unregistered Cartridge type: " + cartridgeType;
+                    " failed. - Unregistered cartridge type: " + cartridgeType;
             log.error(msg);
             throw new UnregisteredCartridgeException(msg);
         }
