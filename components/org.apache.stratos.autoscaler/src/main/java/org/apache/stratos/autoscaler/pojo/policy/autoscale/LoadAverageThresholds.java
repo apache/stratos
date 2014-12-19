@@ -28,7 +28,6 @@ public class LoadAverageThresholds implements Serializable{
 
 	private static final long serialVersionUID = -2109860338694123343L;
 	private float upperLimit = 80.0F;
-	private float lowerLimit = 20.0F;
 	
 	public float getUpperLimit() {
 		return upperLimit;
@@ -36,17 +35,9 @@ public class LoadAverageThresholds implements Serializable{
 	public void setUpperLimit(float upperLimit) {
 		this.upperLimit = upperLimit;
 	}
-	public float getLowerLimit() {
-		return lowerLimit;
-	}
-	public void setLowerLimit(float lowerLimit) {
-		this.lowerLimit = lowerLimit;
-	}
-	
 	@Override
 	public String toString() {
-		return "LoadAverage [upperLimit=" + upperLimit + ", lowerLimit="
-				+ lowerLimit + "]";
+		return "LoadAverage [upperLimit=" + upperLimit + "]";
 	}
 
 }

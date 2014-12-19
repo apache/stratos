@@ -28,14 +28,7 @@ public class RequestsInFlightThresholds implements Serializable{
 
 	private static final long serialVersionUID = 8113964958155294290L;
 	private float upperLimit = 80.0F;
-	private float lowerLimit = 20.0F;
-	
-	public float getLowerLimit() {
-		return lowerLimit;
-	}
-	public void setLowerLimit(float lowerLimit) {
-		this.lowerLimit = lowerLimit;
-	}
+
 	public float getUpperLimit() {
 		return upperLimit;
 	}
@@ -44,8 +37,7 @@ public class RequestsInFlightThresholds implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return "RequestsInFlight [upperLimit=" + upperLimit + ", lowerLimit="
-				+ lowerLimit + "]";
+		return "RequestsInFlight [upperLimit=" + upperLimit + "]";
 	}
 	
 	

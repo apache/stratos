@@ -28,7 +28,6 @@ public class MemoryConsumptionThresholds implements Serializable {
 
 	private static final long serialVersionUID = 5755634390464664663L;
 	private float upperLimit = 80.0F;
-	private float lowerLimit = 20.0F;
 	
 	public float getUpperLimit() {
 		return upperLimit;
@@ -36,17 +35,10 @@ public class MemoryConsumptionThresholds implements Serializable {
 	public void setUpperLimit(float upperLimit) {
 		this.upperLimit = upperLimit;
 	}
-	public float getLowerLimit() {
-		return lowerLimit;
-	}
-	public void setLowerLimit(float lowerLimit) {
-		this.lowerLimit = lowerLimit;
-	}
 	
 	@Override
 	public String toString() {
-		return "MemoryConsumption [upperLimit=" + upperLimit + ", lowerLimit="
-				+ lowerLimit + "]";
+		return "MemoryConsumption [upperLimit=" + upperLimit + "]";
 	}
 
 }
