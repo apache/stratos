@@ -112,7 +112,7 @@ public class MetaDataAdmin {
 			    }
 		    }
 	    } catch (RegistryException e) {
-		    String msg = "Error occurred while adding property";
+		    String msg = "Error occurred while getting property";
 		    log.error(msg, e);
 		    throw new RestAPIException(msg, e);
 	    }
