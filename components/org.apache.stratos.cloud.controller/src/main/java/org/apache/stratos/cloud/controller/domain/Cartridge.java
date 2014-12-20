@@ -65,9 +65,7 @@ public class Cartridge implements Serializable{
     private List<AppType> appTypeMappings;
     
     private String serviceGroup;
-    
-    private String deployerType;
-    
+
     /**
      * Property map of this Cartridge.
      */
@@ -385,15 +383,6 @@ public class Cartridge implements Serializable{
 	public void setContainer(Container container) {
 		this.container = container;
 	}
-
-	public String getDeployerType() {
-		return deployerType;
-	}
-
-	public void setDeployerType(String deployerType) {
-		this.deployerType = deployerType;
-	}
-
 
     public String[] getExportingProperties() {
         return exportingProperties;

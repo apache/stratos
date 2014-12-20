@@ -18,13 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.iaases;
 
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
-import org.jclouds.compute.domain.NodeMetadata;
 
 /**
  * All IaaSes that are going to support by Cloud Controller, should extend this abstract class.
@@ -55,11 +51,10 @@ public abstract class Iaas {
     /**
      * Create vm/container instance.
      *
-     * @param clusterContext
      * @param memberContext
-     * @return
+     * @return updated memberContext
      */
-    public abstract NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext);
+    public abstract MemberContext createInstance(MemberContext memberContext) throws CartridgeNotFoundException;
 
     /**
      * This will deallocate/release the given IP address back to pool.
@@ -147,13 +142,18 @@ public abstract class Iaas {
      */
     public abstract String getIaasDevice(String device);
 
-    public abstract void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
-                                           String cartridgeType, NodeMetadata node);
+    public abstract void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition);
 
     /**
      * This method provides a way to set payload.
      */
     public abstract void setDynamicPayload(byte[] payload);
 
+    /**
+     * Terminate an instance.
+     * @param memberContext
+     * @throws InvalidCartridgeTypeException
+     * @throws InvalidMemberException
+     */
     public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException;
 }

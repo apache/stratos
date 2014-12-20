@@ -270,7 +270,7 @@ public class MonitorFactory {
             }
 
             //Creating the instance of the cluster
-            ((ClusterMonitor) clusterMonitor).createClusterInstance(parentInstanceIds, cluster);
+            ((ClusterMonitor) clusterMonitor).createClusterInstances(parentInstanceIds, cluster);
             //add it to autoscaler context
             AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
 

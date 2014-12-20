@@ -31,11 +31,11 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
  * The VCloud {@link PartitionValidator} implementation.
  *
  */
-public class GCEPartitionValidator extends IaasBasedPartitionValidator {
+public class GCEPartitionValidator implements PartitionValidator {
     
     private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);
+
     private IaasProvider iaasProvider;
-    private Iaas iaas;
 
     @Override
     public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
@@ -45,9 +45,7 @@ public class GCEPartitionValidator extends IaasBasedPartitionValidator {
     }
 
     @Override
-    public void setIaasProvider(IaasProvider iaas) {
-        this.iaasProvider = iaas;
-        this.iaas = iaas.getIaas();
+    public void setIaasProvider(IaasProvider iaasProvider) {
+        this.iaasProvider = iaasProvider;
     }
-
 }

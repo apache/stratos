@@ -108,7 +108,7 @@ public class StratosApiV41Utils {
 		    throw new RestAPIException(String.format("Category is not specified %s , hence cartridge deployment failed",cartridgeConfig.getDisplayName()));
 	    }
         try {
-            CartridgeDeploymentManager.getDeploymentManager(cartridgeDefinitionBean.getDeployerType()).deploy(cartridgeConfig);
+            CartridgeDeploymentManager.getDeploymentManager().deploy(cartridgeConfig);
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
@@ -127,7 +127,7 @@ public class StratosApiV41Utils {
                 log.error(String.format("Could not find cartridge: [type] %s ", cartridgeType));
                 throw new RestAPIException(e);
 
-            } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+            } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
                 log.error(String.format("Could not find cartridge: [type]  %s " , cartridgeType));
                 throw new RestAPIException(e);
             }

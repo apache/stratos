@@ -134,7 +134,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         }
 	    assertEquals(true, match);
 	    
-	    Pod[] selectedPods = client.getSelectedPods(new Label[]{l});
+	    Pod[] selectedPods = client.queryPods(new Label[]{l});
 	    assertEquals(1, selectedPods.length);
 	    
 	    if (log.isDebugEnabled()) {
@@ -154,15 +154,15 @@ public class KubernetesApiClientLiveTest extends TestCase{
 	        assertEquals(true, e instanceof KubernetesClientException);
 	    }
 	    
-	    selectedPods = client.getSelectedPods(new Label[]{l});
+	    selectedPods = client.queryPods(new Label[]{l});
         assertEquals(0, selectedPods.length);
         
         Label ll = new Label();
         ll.setName("nirmal2");
-        selectedPods = client.getSelectedPods(new Label[]{l, ll});
+        selectedPods = client.queryPods(new Label[]{l, ll});
         assertEquals(0, selectedPods.length);
         
-        selectedPods = client.getSelectedPods(new Label[]{});
+        selectedPods = client.queryPods(new Label[]{});
         assertEquals(0, selectedPods.length);
 	}
 	
@@ -219,7 +219,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         
         assertEquals(1, client.getAllReplicationControllers().length);
         
-        Pod[] pods = client.getSelectedPods(new Label[]{l1});
+        Pod[] pods = client.queryPods(new Label[]{l1});
         assertEquals(replicas, pods.length);
         
         // test incorrect replica count
@@ -236,7 +236,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         
         Thread.sleep(10000);
         
-        pods = client.getSelectedPods(new Label[]{l1});
+        pods = client.queryPods(new Label[]{l1});
         assertEquals(replicas, pods.length);
         
         client.deleteReplicationController(id);

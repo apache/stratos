@@ -21,7 +21,7 @@ package org.apache.stratos.manager.deploy.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.LoadbalancerConfig;
 import org.apache.stratos.common.Properties;
@@ -74,7 +74,7 @@ public class ServiceDeploymentManager {
         try {
             cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(type);
 
-        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             String message = type + " is not a valid cartridgeSubscription type. Please try again with a valid cartridgeSubscription type.";
             log.error(message);
             throw new ADCException(message, e);

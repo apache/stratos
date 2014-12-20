@@ -108,7 +108,6 @@ public class CloudControllerUtil {
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
         cartridge.setServiceGroup(config.getServiceGroup());
-        cartridge.setDeployerType(config.getDeployerType());
         org.apache.stratos.common.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {

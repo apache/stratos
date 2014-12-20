@@ -18,16 +18,9 @@
  */
 package org.apache.stratos.manager.deploy.cartridge;
 
-import org.apache.stratos.common.constants.StratosConstants;
-
-
 public class CartridgeDeploymentManager {
 
-	public static CartridgeDeployer getDeploymentManager(String deployerType){
-		if(deployerType != null && StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(deployerType)) {
-			return new DockerCartridgeDeployer();
-		} else {
-			return new DefaultCartridgeDeployer();
-		} 
-	}
+    public static CartridgeDeployer getDeploymentManager() {
+        return new DefaultCartridgeDeployer();
+    }
 }

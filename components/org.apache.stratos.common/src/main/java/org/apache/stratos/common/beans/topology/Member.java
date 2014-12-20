@@ -27,6 +27,8 @@ public class Member {
 
     private String serviceName;
     private String clusterId;
+    private String instanceId;
+    private String clusterInstanceId;
     private String networkPartitionId;
     private String partitionId;
     private String memberId;
@@ -35,15 +37,6 @@ public class Member {
     private String lbClusterId;
     private String memberPublicIp;
     private List<PropertyBean> property;
-    
-    @Override
-    public String toString() {
-        return "Member [serviceName=" + getServiceName() + ", clusterId=" + getClusterId() + ", networkPartitionId="
-                + getNetworkPartitionId() + ", partitionId=" + getPartitionId() + ", memberId=" + getMemberId() + ", status=" + getStatus()
-                + ", memberIp=" + getMemberIp() + ", lbClusterId=" + getLbClusterId() + ", memberPublicIp=" + getMemberPublicIp()
-                + ", property=" + getProperty() + "]";
-    }
-
 
     public String getServiceName() {
         return serviceName;
@@ -123,5 +116,37 @@ public class Member {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
+
+    public void setClusterInstanceId(String clusterInstanceId) {
+        this.clusterInstanceId = clusterInstanceId;
+    }
+
+    @Override
+    public String toString() {
+        return "Member [serviceName=" + getServiceName()
+                + ", clusterId=" + getClusterId()
+                + ", memberId=" + getMemberId()
+                + ", instanceId=" + getInstanceId()
+                + ", clusterInstanceId=" + getClusterInstanceId()
+                + ", networkPartitionId=" + getNetworkPartitionId()
+                + ", partitionId=" + getPartitionId()
+                + ", status=" + getStatus()
+                + ", memberIp=" + getMemberIp()
+                + ", memberPublicIp=" + getMemberPublicIp()
+                + ", lbClusterId=" + getLbClusterId()
+                + ", property=" + getProperty() + "]";
     }
 }

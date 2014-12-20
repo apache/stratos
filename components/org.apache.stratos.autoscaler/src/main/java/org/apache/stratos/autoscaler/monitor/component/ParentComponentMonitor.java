@@ -684,11 +684,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
 
     protected synchronized void startMonitor(ParentComponentMonitor parent,
-                                             ApplicationChildContext context, List<String> instanceId) {
+                                             ApplicationChildContext context, List<String> instanceIds) {
 
         if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
             pendingMonitorsList.add(context.getId());
-            executorService.submit(new MonitorAdder(parent, context, this.appId, instanceId));
+            executorService.submit(new MonitorAdder(parent, context, this.appId, instanceIds));
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Monitor Adder has been added: [cluster] %s ", context.getId()));
             }
@@ -775,14 +775,14 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         private ApplicationChildContext context;
         private ParentComponentMonitor parent;
         private String appId;
-        private List<String> instanceId;
+        private List<String> instanceIds;
 
         public MonitorAdder(ParentComponentMonitor parent, ApplicationChildContext context,
-                            String appId, List<String> instanceId) {
+                            String appId, List<String> instanceIds) {
             this.parent = parent;
             this.context = context;
             this.appId = appId;
-            this.instanceId = instanceId;
+            this.instanceIds = instanceIds;
         }
 
         public void run() {
@@ -801,7 +801,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                             + context.getId());
                 }
                 try {
-                    monitor = MonitorFactory.getMonitor(parent, context, appId, instanceId);
+                    monitor = MonitorFactory.getMonitor(parent, context, appId, instanceIds);
                 } catch (DependencyBuilderException e) {
                     String msg = "Monitor creation failed for: " + context.getId();
                     log.warn(msg, e);

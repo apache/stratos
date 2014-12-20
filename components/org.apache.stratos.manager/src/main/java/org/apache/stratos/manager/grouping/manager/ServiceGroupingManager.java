@@ -19,7 +19,7 @@
 
 package org.apache.stratos.manager.grouping.manager;
 
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.InvalidServiceGroupException;
 import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
@@ -38,7 +38,7 @@ public class ServiceGroupingManager {
     }
 
     public void deployServiceGroupDefinition(ServiceGroupDefinition serviceGroupDefinition) throws InvalidServiceGroupException,
-            CloudControllerServiceUnregisteredCartridgeExceptionException, ServiceGroupDefinitioException, ADCException {
+            CloudControllerServiceCartridgeNotFoundExceptionException, ServiceGroupDefinitioException, ADCException {
 
         serviceGroupDeployer.deployServiceGroupDefinition(serviceGroupDefinition);
     }

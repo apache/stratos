@@ -37,7 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
@@ -324,7 +324,7 @@ public class ApplicationManagementUtil {
         try {
             CloudControllerServiceClient.getServiceClient().register(domain, cartridgeType, payload.toString(), tenantRange,
                     hostName, properties, autoscalingPoliyName, deploymentPolicyName, persistence );
-        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             String msg = "Exception is occurred in register service operation. Reason :" + e.getMessage();
             log.error(msg, e);
             throw new UnregisteredCartridgeException("Not a registered cartridge " + cartridgeType, cartridgeType, e);

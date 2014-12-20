@@ -21,9 +21,7 @@ package org.apache.stratos.cloud.controller.iaases.mock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.mock.config.MockIaasConfig;
 import org.apache.stratos.cloud.controller.iaases.mock.statistics.generator.MockHealthStatisticsGenerator;
@@ -105,19 +103,20 @@ public class MockIaasService {
         }
     }
 
-    public NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext) {
+    public MemberContext createInstance(MemberContext memberContext) {
         synchronized (MockIaasService.class) {
             // Create mock member instance
-            MockMemberContext mockMemberContext = new MockMemberContext(clusterContext.getCartridgeType(),
-                    clusterContext.getClusterId(), memberContext.getMemberId(), memberContext.getNetworkPartitionId(),
-                    memberContext.getPartition().getId(), memberContext.getInstanceId());
+            MockMemberContext mockMemberContext = new MockMemberContext(memberContext.getCartridgeType(),
+                    memberContext.getClusterId(), memberContext.getMemberId(), memberContext.getInstanceId(),
+                    memberContext.getClusterInstanceId(), memberContext.getNetworkPartitionId(),
+                    memberContext.getPartition().getId());
+
             MockMember mockMember = new MockMember(mockMemberContext);
             addMemberToMap(mockMember);
             mockMemberExecutorService.submit(mockMember);
 
-            // Prepare node metadata
-            MockNodeMetadata nodeMetadata = new MockNodeMetadata();
-            nodeMetadata.setId(UUID.randomUUID().toString());
+            // Generate instance id
+            memberContext.setInstanceId(UUID.randomUUID().toString());
 
             // Persist changes
             persistInRegistry();
@@ -125,7 +124,7 @@ public class MockIaasService {
             String serviceName = mockMemberContext.getServiceName();
             MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
 
-            return nodeMetadata;
+            return memberContext;
         }
     }
 
@@ -149,11 +148,11 @@ public class MockIaasService {
     }
 
     private ConcurrentHashMap<String, Map<String, MockMember>> readFromRegistry() {
-        return (ConcurrentHashMap<String, Map<String, MockMember>>) RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
+        return (ConcurrentHashMap<String, Map<String, MockMember>>)
+                RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
     }
 
-    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
-                                  String cartridgeType, NodeMetadata node) {
+    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
         // Allocate mock ip addresses
         memberContext.setPrivateIpAddress(MockIPAddressPool.getInstance().getNextPrivateIpAddress());
         memberContext.setPublicIpAddress(MockIPAddressPool.getInstance().getNextPublicIpAddress());

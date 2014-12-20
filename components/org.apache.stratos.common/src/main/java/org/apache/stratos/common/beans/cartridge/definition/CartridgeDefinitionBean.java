@@ -20,7 +20,6 @@
 package org.apache.stratos.common.beans.cartridge.definition;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
 import java.util.List;
 
 @XmlRootElement(name = "cartridgeDefinitionBean")
@@ -46,7 +45,6 @@ public class CartridgeDefinitionBean {
     private String defaultDeploymentPolicy;
     private String serviceGroup;
     private ContainerBean container;
-    private String deployerType;
     private List<PropertyBean> property;
     private List<String> exportingProperties;
 
@@ -251,13 +249,5 @@ public class CartridgeDefinitionBean {
 
     public void setContainer(ContainerBean container) {
         this.container = container;
-    }
-
-    public String getDeployerType() {
-        return deployerType;
-    }
-
-    public void setDeployerType(String deployerType) {
-        this.deployerType = deployerType;
     }
 }

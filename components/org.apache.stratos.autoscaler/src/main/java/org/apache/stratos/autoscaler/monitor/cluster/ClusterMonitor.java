@@ -859,14 +859,15 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     public void handleMemberActivatedEvent(
             MemberActivatedEvent memberActivatedEvent) {
 
-        String instanceId = memberActivatedEvent.getInstanceId();
         String clusterId = memberActivatedEvent.getClusterId();
+        String clusterInstanceId = memberActivatedEvent.getClusterInstanceId();
+        String memberId = memberActivatedEvent.getMemberId();
         String networkPartitionId = memberActivatedEvent.getNetworkPartitionId();
         String partitionId = memberActivatedEvent.getPartitionId();
-        String memberId = memberActivatedEvent.getMemberId();
-        ClusterInstanceContext networkPartitionCtxt = getClusterInstanceContext(networkPartitionId, instanceId);
+
+        ClusterInstanceContext clusterInstanceContext = getClusterInstanceContext(networkPartitionId, clusterInstanceId);
         ClusterLevelPartitionContext clusterLevelPartitionContext;
-        clusterLevelPartitionContext = networkPartitionCtxt.getPartitionCtxt(partitionId);
+        clusterLevelPartitionContext = clusterInstanceContext.getPartitionCtxt(partitionId);
         clusterLevelPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
         if (log.isDebugEnabled()) {
             log.debug(String.format("Member stat context has been added successfully: "
@@ -874,7 +875,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         }
         clusterLevelPartitionContext.movePendingMemberToActiveMembers(memberId);
         ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().process(
-                ClusterStatusActiveProcessor.class.getName(), clusterId, instanceId);
+                ClusterStatusActiveProcessor.class.getName(), clusterId, clusterInstanceId);
     }
 
     @Override
@@ -1117,12 +1118,11 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         return ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts().values();
     }
 
-    public void createClusterInstance(List<String> parentInstanceIds, Cluster cluster)
+    public void createClusterInstances(List<String> parentInstanceIds, Cluster cluster)
             throws PolicyValidationException, PartitionValidationException {
         for (String parentInstanceId : parentInstanceIds) {
             createInstance(parentInstanceId, cluster);
         }
-
     }
 
     public boolean createInstanceOnDemand(String instanceId) {

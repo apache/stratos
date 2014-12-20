@@ -19,10 +19,12 @@
 
 package org.apache.stratos.cloud.controller.services.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
+import org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
@@ -40,13 +42,10 @@ public class InstanceCreator implements Runnable {
 
     private MemberContext memberContext;
     private IaasProvider iaasProvider;
-    private String cartridgeType;
 
-    public InstanceCreator(MemberContext memberContext, IaasProvider iaasProvider,
-                           String cartridgeType) {
+    public InstanceCreator(MemberContext memberContext, IaasProvider iaasProvider) {
         this.memberContext = memberContext;
         this.iaasProvider = iaasProvider;
-        this.cartridgeType = cartridgeType;
     }
 
     @Override
@@ -61,28 +60,36 @@ public class InstanceCreator implements Runnable {
             Iaas iaas = iaasProvider.getIaas();
 
             // Create instance
-            NodeMetadata node = createInstance(iaas, clusterContext, memberContext);
+            memberContext = createInstance(iaas, memberContext);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Instance is starting up: [cartridge-type] %s [cluster-id] %s [instance-id] %s"
+                        , memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getInstanceId()));
+            }
 
             // Attach volumes
             attachVolumes(iaas, clusterContext, memberContext);
 
             // Allocate IP address
-            iaas.allocateIpAddress(clusterId, memberContext, partition, cartridgeType, node);
+            iaas.allocateIpAddress(clusterId, memberContext, partition);
 
 
             // Update topology
-            TopologyBuilder.handleMemberSpawned(cartridgeType, clusterId,
-                    partition.getId(), memberContext.getPrivateIpAddress(), memberContext.getPublicIpAddress(),
-                    memberContext);
+            TopologyBuilder.handleMemberSpawned(memberContext);
 
             // Publish instance creation statistics to BAM
-            StatisticsDataPublisher.publish(memberContext.getMemberId(),
+            StatisticsDataPublisher.publish(
+                    memberContext.getMemberId(),
                     memberContext.getPartition().getId(),
                     memberContext.getNetworkPartitionId(),
                     memberContext.getClusterId(),
-                    cartridgeType,
+                    memberContext.getCartridgeType(),
                     MemberStatus.Created.toString(),
-                    node);
+                    memberContext.getInstanceMetadata());
+        } catch (Exception e) {
+            String message = String.format("Could not start instance: [cartridge-type] %s [cluster-id] %s",
+                    memberContext.getCartridgeType(), memberContext.getClusterId());
+            log.error(message, e);
         } finally {
             if(lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
@@ -90,45 +97,40 @@ public class InstanceCreator implements Runnable {
         }
     }
 
-    private NodeMetadata createInstance(Iaas iaas, ClusterContext clusterContext, MemberContext memberContext) {
-        NodeMetadata node = iaas.createInstance(clusterContext, memberContext);
+    private MemberContext createInstance(Iaas iaas, MemberContext memberContext) throws CartridgeNotFoundException {
+        memberContext = iaas.createInstance(memberContext);
 
-        // node id
-        String nodeId = node.getId();
-        if (nodeId == null) {
-            String msg = "Node id of the starting instance is null\n" + memberContext.toString();
+        // Validate node id
+        String instanceId = memberContext.getInstanceId();
+        if (StringUtils.isBlank(instanceId)) {
+            String msg = "Instance id of the starting instance is null\n" + memberContext.toString();
             log.error(msg);
             throw new IllegalStateException(msg);
         }
 
-        memberContext.setNodeId(nodeId);
+        // Update member context and persist changes
         CloudControllerContext.getInstance().updateMemberContext(memberContext);
         CloudControllerContext.getInstance().persist();
 
         if (log.isDebugEnabled()) {
-            log.debug("Instance created: [node-metadata] " + node.toString());
+            log.debug("Instance created: [member-context] " + memberContext.toString());
         }
-        return node;
+        return memberContext;
     }
 
     public void attachVolumes(Iaas iaas, ClusterContext clusterContext, MemberContext memberContext) {
         // attach volumes
         if (clusterContext.isVolumeRequired()) {
             // remove region prefix
-            String nodeId = memberContext.getNodeId();
-            String instanceId = nodeId.indexOf('/') != -1 ? nodeId
-                    .substring(nodeId.indexOf('/') + 1, nodeId.length())
-                    : nodeId;
-            memberContext.setInstanceId(instanceId);
             if (clusterContext.getVolumes() != null) {
                 for (Volume volume : clusterContext.getVolumes()) {
                     try {
-                        iaas.attachVolume(instanceId, volume.getId(), volume.getDevice());
+                        iaas.attachVolume(memberContext.getInstanceId(), volume.getId(), volume.getDevice());
                     } catch (Exception e) {
                         // continue without throwing an exception, since
                         // there is an instance already running
                         log.error("Attaching volume to instance [ "
-                                + instanceId + " ] failed!", e);
+                                + memberContext.getInstanceId() + " ] failed!", e);
                     }
                 }
             }

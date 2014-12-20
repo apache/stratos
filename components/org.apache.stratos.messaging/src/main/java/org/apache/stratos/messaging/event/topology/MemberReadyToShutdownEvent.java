@@ -26,24 +26,24 @@ import java.util.Properties;
 public class MemberReadyToShutdownEvent extends TopologyEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;
+    private final String clusterInstanceId;
+    private final String memberId;
+    private final String instanceId;
     private final String networkPartitionId;
     private final String partitionId;
-    private final String memberId;
     private MemberStatus status;
     private Properties properties;
     private String groupId;
-    private String instanceId;
 
-    public MemberReadyToShutdownEvent(String serviceName, String clusterId,
-                                      String networkPartitionId, String partitionId,
-                                      String memberId, String instanceId) {
+    public MemberReadyToShutdownEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
+                                      String instanceId, String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.networkPartitionId = networkPartitionId;
-        this.partitionId = partitionId;
+        this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
         this.instanceId = instanceId;
-
+        this.networkPartitionId = networkPartitionId;
+        this.partitionId = partitionId;
     }
 
     public String getInstanceId() {
@@ -93,4 +93,8 @@ public class MemberReadyToShutdownEvent extends TopologyEvent implements Seriali
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
 }

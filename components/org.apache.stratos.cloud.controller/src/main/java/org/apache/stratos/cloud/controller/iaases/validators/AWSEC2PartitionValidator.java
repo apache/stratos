@@ -36,7 +36,7 @@ import java.util.Properties;
  *
  *
  */
-public class AWSEC2PartitionValidator extends IaasBasedPartitionValidator {
+public class AWSEC2PartitionValidator implements PartitionValidator {
     
     private static final Log log = LogFactory.getLog(AWSEC2PartitionValidator.class);
     private IaasProvider iaasProvider;

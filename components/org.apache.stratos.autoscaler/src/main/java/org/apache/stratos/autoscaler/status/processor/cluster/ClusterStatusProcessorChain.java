@@ -47,8 +47,5 @@ public class ClusterStatusProcessorChain extends StatusProcessorChain {
             throw new RuntimeException("Message processor chain is not initialized");
         }
         return root.process(type, clusterId, instanceId);
-
     }
-
-
 }

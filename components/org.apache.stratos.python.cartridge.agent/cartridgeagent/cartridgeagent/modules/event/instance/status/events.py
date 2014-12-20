@@ -19,18 +19,21 @@ import json
 
 
 class InstanceActivatedEvent:
-    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id, instance_id):
+    def __init__(self, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
+                 network_partition_id, partition_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
         """ :type : str  """
-        self.networkPartitionId = network_partition_id
-        """ :type : str  """
-        self.partitionId = parition_id
+        self.clusterInstanceId = cluster_instance_id
         """ :type : str  """
         self.memberId = member_id
         """ :type : str  """
         self.instanceId = instance_id
+        """ :type : str  """
+        self.networkPartitionId = network_partition_id
+        """ :type : str  """
+        self.partitionId = partition_id
         """ :type : str  """
 
     def to_json(self):
@@ -38,39 +41,43 @@ class InstanceActivatedEvent:
 
 
 class InstanceStartedEvent:
-    def __init__(self, service_name, cluster_id, network_partition_id, parition_id, member_id,instance_id):
+    def __init__(self, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
+                 network_partition_id, partition_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
         """ :type : str  """
-        self.networkPartitionId = network_partition_id
-        """ :type : str  """
-        self.partitionId = parition_id
+        self.clusterInstanceId = cluster_instance_id
         """ :type : str  """
         self.memberId = member_id
         """ :type : str  """
         self.instanceId = instance_id
         """ :type : str  """
-
+        self.networkPartitionId = network_partition_id
+        """ :type : str  """
+        self.partitionId = partition_id
+        """ :type : str  """
 
     def to_json(self):
         return to_json(self)
 
 
 class InstanceMaintenanceModeEvent:
-
-    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id, instance_id):
+    def __init__(self, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
+                 network_partition_id, partition_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
         """ :type : str  """
-        self.networkPartitionId = network_partition_id
-        """ :type : str  """
-        self.partitionId = partition_id
+        self.clusterInstanceId = cluster_instance_id
         """ :type : str  """
         self.memberId = member_id
         """ :type : str  """
         self.instanceId = instance_id
+        """ :type : str  """
+        self.networkPartitionId = network_partition_id
+        """ :type : str  """
+        self.partitionId = partition_id
         """ :type : str  """
 
     def to_json(self):
@@ -78,19 +85,21 @@ class InstanceMaintenanceModeEvent:
 
 
 class InstanceReadyToShutdownEvent:
-
-    def __init__(self, service_name, cluster_id, network_partition_id, partition_id, member_id, instance_id):
+    def __init__(self, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
+                 network_partition_id, partition_id):
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
         """ :type : str  """
-        self.networkPartitionId = network_partition_id
-        """ :type : str  """
-        self.partitionId = partition_id
+        self.clusterInstanceId = cluster_instance_id
         """ :type : str  """
         self.memberId = member_id
         """ :type : str  """
         self.instanceId = instance_id
+        """ :type : str  """
+        self.networkPartitionId = network_partition_id
+        """ :type : str  """
+        self.partitionId = partition_id
         """ :type : str  """
 
     def to_json(self):

@@ -43,10 +43,11 @@ public class MockMemberEventPublisher {
         InstanceStartedEvent event = new InstanceStartedEvent(
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
-                mockMemberContext.getNetworkPartitionId(),
-                mockMemberContext.getPartitionId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId());
+                mockMemberContext.getInstanceId(),
+                mockMemberContext.getClusterInstanceId(),
+                mockMemberContext.getNetworkPartitionId(),
+                mockMemberContext.getPartitionId());
         String topic = Util.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool
                 .getPublisher(topic);
@@ -63,10 +64,11 @@ public class MockMemberEventPublisher {
         InstanceActivatedEvent event = new InstanceActivatedEvent(
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
-                mockMemberContext.getNetworkPartitionId(),
-                mockMemberContext.getPartitionId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId());
+                mockMemberContext.getInstanceId(),
+                mockMemberContext.getClusterInstanceId(),
+                mockMemberContext.getNetworkPartitionId(),
+                mockMemberContext.getPartitionId());
 
         // Event publisher connection will
         String topic = Util.getMessageTopicName(event);
@@ -85,10 +87,11 @@ public class MockMemberEventPublisher {
         InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
-                mockMemberContext.getNetworkPartitionId(),
-                mockMemberContext.getPartitionId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId());
+                mockMemberContext.getInstanceId(),
+                mockMemberContext.getClusterInstanceId(),
+                mockMemberContext.getNetworkPartitionId(),
+                mockMemberContext.getPartitionId());
         String topic = Util.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool
                 .getPublisher(topic);
@@ -107,10 +110,11 @@ public class MockMemberEventPublisher {
         InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
-                mockMemberContext.getNetworkPartitionId(),
-                mockMemberContext.getPartitionId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId());
+                mockMemberContext.getInstanceId(),
+                mockMemberContext.getClusterInstanceId(),
+                mockMemberContext.getNetworkPartitionId(),
+                mockMemberContext.getPartitionId());
         String topic = Util.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);

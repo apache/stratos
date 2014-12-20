@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
@@ -137,7 +136,6 @@ public class RuleTasksDelegator {
         //FIXME to not parse for algo when partition is chosen by the parent
 
         if(partitionAlgorithm == null) {
-
             //Send one after another as default
             partitionAlgorithm = Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID;
         }
@@ -145,10 +143,8 @@ public class RuleTasksDelegator {
             log.debug(String.format("Retrieving partition algorithm [Partition algorithm]: ", partitionAlgorithm));
         }
         if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
-
             autoscaleAlgorithm = new RoundRobin();
         } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
-
             autoscaleAlgorithm = new OneAfterAnother();
         } else {
             if (log.isErrorEnabled()) {
@@ -159,9 +155,7 @@ public class RuleTasksDelegator {
     }
 
     public void delegateInstanceCleanup(String memberId) {
-
         try {
-
             // send the instance notification event.
             InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForMember(memberId);
             log.info("Instance clean up event sent for [member] " + memberId);
@@ -171,131 +165,51 @@ public class RuleTasksDelegator {
         }
     }
 
-    public void delegateStartContainers(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, boolean isPrimary) {
+    /**
+     * Invoked from drools to start an instance.
+     * @param clusterMonitorPartitionContext Cluster monitor partition context
+     * @param clusterId Cluster id
+     * @param clusterInstanceId Instance id
+     * @param isPrimary Is a primary member
+     */
+    public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId,
+                              String clusterInstanceId, boolean isPrimary) {
 
         try {
-
             String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
-//            NetworkPartitionLbHolder lbHolder =
-//                    PartitionManager.getInstance()
-//                            .getNetworkPartitionLbHolder(nwPartitionId);
-//            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
-            //Calculate accumulation of minimum counts of all the partition of current network partition
+
+            // Calculate accumulation of minimum counts of all the partition of current network partition
             int minimumCountOfNetworkPartition = 0;
-            ClusterMonitor vmClusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            ClusterContext clusterContext = (ClusterContext) vmClusterMonitor.getClusterContext();
-            ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
+            ClusterMonitor clusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+            ClusterContext clusterContext = (ClusterContext) clusterMonitor.getClusterContext();
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
-                                getInstanceContext(instanceId);
+                            getInstanceContext(clusterInstanceId);
             minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
-            
-            
-            MemberContext[] memberContexts =
+
+            MemberContext memberContext =
                     CloudControllerClient.getInstance()
-                            .startContainers(clusterMonitorPartitionContext.getPartition(),
+                            .startInstance(clusterMonitorPartitionContext.getPartition(),
                                     clusterId,
-                                    instanceId,
-                                    clusterMonitorPartitionContext.getNetworkPartitionId(),
+                                    clusterInstanceId, clusterMonitorPartitionContext.getNetworkPartitionId(),
                                     isPrimary,
                                     minimumCountOfNetworkPartition);
-            if (null != memberContexts) {
-                for (MemberContext memberContext : memberContexts) {
-                    if (null != memberContext) {
-                        clusterMonitorPartitionContext.addPendingMember(memberContext);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
-                                    memberContext.getPartition().getId()));
-                        }
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Returned member context is null, did not add any pending members");
-                        }
-                    }
-                }
-            } else {
+            if (memberContext != null) {
+                clusterMonitorPartitionContext.addPendingMember(memberContext);
                 if (log.isDebugEnabled()) {
-                    log.debug("Returned member context is null, did not add to pending members");
+                    log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
+                            memberContext.getPartition().getId()));
                 }
-            }
 
-        } catch (Throwable e) {
-            String message = "Cannot spawn an instance";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
-    }
-    
-    public void delegateSpawn(ClusterLevelPartitionContext clusterMonitorPartitionContext, String clusterId, String instanceId, boolean isPrimary) {
-
-        try {
-
-            String nwPartitionId = clusterMonitorPartitionContext.getNetworkPartitionId();
-//            NetworkPartitionLbHolder lbHolder =
-//                    PartitionManager.getInstance()
-//                            .getNetworkPartitionLbHolder(nwPartitionId);
-//            String lbClusterId = getLbClusterId(lbRefType, clusterMonitorPartitionContext, lbHolder);
-            //Calculate accumulation of minimum counts of all the partition of current network partition
-            int minimumCountOfNetworkPartition = 0;
-            ClusterMonitor vmClusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
-            ClusterContext clusterContext = (ClusterContext) vmClusterMonitor.getClusterContext();
-            ClusterLevelNetworkPartitionContext  clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
-            ClusterInstanceContext clusterInstanceContext =
-                    (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
-                            getInstanceContext(instanceId);
-            minimumCountOfNetworkPartition = clusterInstanceContext.getMinInstanceCount();
-            
-            if (vmClusterMonitor.getCluster().isKubernetesCluster()) {
-                MemberContext[] memberContexts =
-                        CloudControllerClient.getInstance()
-                                .startContainers(clusterMonitorPartitionContext.getPartition(),
-                                        clusterId,
-                                        instanceId,
-                                        clusterMonitorPartitionContext.getNetworkPartitionId(),
-                                        isPrimary,
-                                        minimumCountOfNetworkPartition);
-                if (null != memberContexts) {
-                    for (MemberContext memberContext : memberContexts) {
-                        if (null != memberContext) {
-                            clusterMonitorPartitionContext.addPendingMember(memberContext);
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
-                                        memberContext.getPartition().getId()));
-                            }
-                        } else {
-                            if (log.isDebugEnabled()) {
-                                log.debug("Returned member context is null, did not add any pending members");
-                            }
-                        }
-                    }
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Returned member context is null, did not add to pending members");
-                    }
-                }
             } else {
-                
-                MemberContext memberContext =
-                        CloudControllerClient.getInstance()
-                                .spawnAnInstance(clusterMonitorPartitionContext.getPartition(),
-                                        clusterId,
-                                        clusterMonitorPartitionContext.getNetworkPartitionId(),
-                                        instanceId,
-                                        isPrimary,
-                                        minimumCountOfNetworkPartition);
-                if (memberContext != null) {
-                    clusterMonitorPartitionContext.addPendingMember(memberContext);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Pending member added, [member] %s [partition] %s", memberContext.getMemberId(),
-                                memberContext.getPartition().getId()));
-                    }
-
-                } else if (log.isDebugEnabled()) {
-                    log.debug("Returned member context is null, did not add to pending members");
+                if (log.isErrorEnabled()) {
+                    log.error("Member context returned from cloud controller is null");
                 }
             }
         } catch (Throwable e) {
-            String message = "Cannot spawn an instance";
+            String message = String.format("Could not start instance: [cluster-id] %s [instance-id] %s",
+                    clusterId, clusterInstanceId);
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -381,15 +295,6 @@ public class RuleTasksDelegator {
             }
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
-        }
-    }
-
-    public void delegateTerminateContainer(String memberId) {
-        try {
-            CloudControllerClient ccClient = CloudControllerClient.getInstance();
-            ccClient.terminateContainer(memberId);
-        } catch (TerminationException e) {
-            log.error("Cannot delete container ", e);
         }
     }
 

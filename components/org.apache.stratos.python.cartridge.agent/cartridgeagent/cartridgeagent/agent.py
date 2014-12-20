@@ -55,19 +55,15 @@ class CartridgeAgent(threading.Thread):
             mb_port)
 
         self.__tenant_context_initialized = False
-
         self.log_publish_manager = None
-
         self.terminated = False
-
         self.log = LogFactory().get_log(__name__)
-
         self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def run(self):
         self.log.info("Starting Cartridge Agent...")
 
-        #Check if required prpoerties are set
+        #Check if required properties are set
         self.validate_required_properties()
 
         #Start instance notifier listener thread
@@ -81,7 +77,7 @@ class CartridgeAgent(threading.Thread):
 
         #wait for intance spawned event
         while not self.cartridge_agent_config.initialized:
-            self.log.debug("Waiting for Cartridge Agent to be initialized...")
+            self.log.debug("Waiting for cartridge agent to be initialized...")
             time.sleep(1)
 
         #Execute instance started shell script
@@ -203,7 +199,7 @@ class CartridgeAgent(threading.Thread):
         self.__topology_event_subscriber.register_handler("InstanceSpawnedEvent", self.on_instance_spawned)
 
         self.__topology_event_subscriber.start()
-        self.log.info("Cartridge Agent topology receiver thread started")
+        self.log.info("Cartridge agent topology receiver thread started")
 
     def on_instance_spawned(self, msg):
         self.log.debug("Instance spawned event received: %r" % msg.payload)

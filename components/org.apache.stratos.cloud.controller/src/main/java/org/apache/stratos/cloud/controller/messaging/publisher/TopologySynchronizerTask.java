@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.messaging.topology;
+package org.apache.stratos.cloud.controller.messaging.publisher;
 
 import java.util.Map;
 
@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.wso2.carbon.ntask.core.Task;
 
 public class TopologySynchronizerTask implements Task{

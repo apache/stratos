@@ -36,25 +36,28 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     private final String serviceName;
     private final String clusterId;
+    private final String clusterInstanceId;
+    private final String memberId;
+    private final String instanceId;
     private final String networkPartitionId;
     private final String partitionId;
-    private final String memberId;
+
     // Key: Port.proxy
     private Map<Integer, Port> portMap;
     private String memberIp;
     private String groupId;
     private String applicationId;
     private String memberPublicIp;
-    private String instanceId;
 
-    public MemberActivatedEvent(String serviceName, String clusterId, String networkPartitionId,
-                                String partitionId, String memberId, String instanceId) {
+    public MemberActivatedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
+                                String instanceId, String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.networkPartitionId = networkPartitionId;
-        this.partitionId = partitionId;
+        this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
         this.instanceId = instanceId;
+        this.networkPartitionId = networkPartitionId;
+        this.partitionId = partitionId;
         this.portMap = new HashMap<Integer, Port>();
     }
 
@@ -141,5 +144,9 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     public String getInstanceId() {
         return instanceId;
+    }
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 }

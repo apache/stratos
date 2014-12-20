@@ -32,8 +32,8 @@ import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.iaases.validators.IaasBasedPartitionValidator;
-import org.apache.stratos.cloud.controller.iaases.validators.KubernetesBasedPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.validators.KubernetesPartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
@@ -98,14 +98,14 @@ public class CloudControllerServiceUtil {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
 
-            IaasBasedPartitionValidator validator = (IaasBasedPartitionValidator) iaas.getPartitionValidator();
+            PartitionValidator validator = iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);
             iaasProvider = validator.validate(partitionId, partitionProperties);
             return iaasProvider;
 
         } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
             // if this is a docker based Partition
-            KubernetesBasedPartitionValidator validator = new KubernetesBasedPartitionValidator();
+            KubernetesPartitionValidator validator = new KubernetesPartitionValidator();
             validator.validate(partitionId, partitionProperties);
             return null;
 

@@ -27,21 +27,22 @@ import java.io.Serializable;
 public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements Serializable {
     private final String serviceName;
     private final String clusterId;
+    private final String memberId;
+    private final String instanceId;
+    private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
-    private final String memberId;
     private String groupId;
-    private String instanceId;
 
-    public InstanceReadyToShutdownEvent(String serviceName, String clusterId,
-                                        String networkPartitionId, String partitionId,
-                                        String memberId, String instanceId) {
+    public InstanceReadyToShutdownEvent(String serviceName, String clusterId, String memberId, String instanceId,
+                                        String clusterInstanceId, String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.networkPartitionId = networkPartitionId;
-        this.partitionId = partitionId;
         this.memberId = memberId;
         this.instanceId = instanceId;
+        this.clusterInstanceId = clusterInstanceId;
+        this.networkPartitionId = networkPartitionId;
+        this.partitionId = partitionId;
     }
 
     public String getServiceName() {
@@ -77,5 +78,7 @@ public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements
     }
 
 
-
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
 }

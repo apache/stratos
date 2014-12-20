@@ -22,9 +22,12 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.wso2.carbon.base.ServerConfiguration;
@@ -56,7 +59,7 @@ public class StatisticsDataPublisher {
                                String clusterId,
                                String serviceName,
                                String status,
-                               NodeMetadata metadata) {
+                               InstanceMetadata metadata) {
         if(!CloudControllerConfig.getInstance().isBAMDataPublisherEnabled()){
             return;
         }
@@ -73,7 +76,6 @@ public class StatisticsDataPublisher {
                 return;
             }
         }
-
 
         MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
         String cartridgeType = memberContext.getCartridgeType();
@@ -98,14 +100,14 @@ public class StatisticsDataPublisher {
 
         if(metadata != null) {
             payload.add(metadata.getHostname());
-            payload.add(metadata.getHardware().getHypervisor());
-            payload.add(String.valueOf(metadata.getHardware().getRam()));
+            payload.add(metadata.getHypervisor());
+            payload.add(String.valueOf(metadata.getRam()));
             payload.add(metadata.getImageId());
             payload.add(metadata.getLoginPort());
-            payload.add(metadata.getOperatingSystem().getName());
-            payload.add(metadata.getOperatingSystem().getVersion());
-            payload.add(metadata.getOperatingSystem().getArch());
-            payload.add(String.valueOf(metadata.getOperatingSystem().is64Bit()));
+            payload.add(metadata.getOperatingSystemName());
+            payload.add(metadata.getOperatingSystemVersion());
+            payload.add(metadata.getOperatingSystemArchitecture());
+            payload.add(String.valueOf(metadata.isOperatingSystem64bit()));
         } else {
             payload.add("");
             payload.add("");

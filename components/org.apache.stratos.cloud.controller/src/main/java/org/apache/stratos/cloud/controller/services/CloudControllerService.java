@@ -69,7 +69,7 @@ public interface CloudControllerService {
      * @return
      * @throws InvalidServiceGroupException
      */
-    public ServiceGroup getServiceGroup (String groupName) throws InvalidServiceGroupException;
+    public ServiceGroup getServiceGroup(String groupName) throws InvalidServiceGroupException;
 
     /**
      * Get service group sub group
@@ -77,7 +77,7 @@ public interface CloudControllerService {
      * @return
      * @throws InvalidServiceGroupException
      */
-    public String[] getServiceGroupSubGroups (String groupName) throws InvalidServiceGroupException;
+    public String[] getServiceGroupSubGroups(String groupName) throws InvalidServiceGroupException;
 
     /**
      * Get cartridges of a service group
@@ -85,7 +85,7 @@ public interface CloudControllerService {
      * @return
      * @throws InvalidServiceGroupException
      */
-    public String[] getServiceGroupCartridges (String groupName) throws InvalidServiceGroupException;
+    public String[] getServiceGroupCartridges(String groupName) throws InvalidServiceGroupException;
 
     /**
      * Get service group dependencies
@@ -93,7 +93,7 @@ public interface CloudControllerService {
      * @return
      * @throws InvalidServiceGroupException
      */
-    public Dependencies getServiceGroupDependencies (String groupName) throws InvalidServiceGroupException;
+    public Dependencies getServiceGroupDependencies(String groupName) throws InvalidServiceGroupException;
 
     /**
      * Validate a given {@link Partition} for basic property existence.
@@ -123,31 +123,24 @@ public interface CloudControllerService {
      * @param registrant information about the new subscription.
      * @return whether the registration is successful or not.
      *
-     * @throws UnregisteredCartridgeException
+     * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException
      *             when the cartridge type requested by this service is
      *             not a registered one.
      */
-    boolean registerService(Registrant registrant) throws UnregisteredCartridgeException;
+    boolean registerService(Registrant registrant) throws CartridgeNotFoundException;
 
     /**
-     * Calling this method will result in an instance startup, which is belong
-     * to the provided Cluster ID. Also note that the instance that is starting up
-     * belongs to the group whose name is derived from its Cluster ID, replacing <i>.</i>
-     * by a hyphen (<i>-</i>).
-     * @param member Context with cluster id, partition etc.
-     * @return updated {@link MemberContext}
-     * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
-     * @throws InvalidIaasProviderException if the iaas requested is not valid.
+     * Start instances with the given instance contexts. Instances startup process will run in background and
+     * this method will return with the relevant member contexts.
+     * @param instanceContexts An array of instance contexts
+     * @return member contexts
+     * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException
+     * if the requested Cartridge type is not a registered one.
+     * @throws org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException
+     * if the iaas requested is not valid.
      */
-    MemberContext startInstance(MemberContext member) throws UnregisteredCartridgeException, InvalidIaasProviderException;
-    
-    /**
-     * Create a container cluster.
-     * @param {@link ContainerClusterContext} Context with cluster id, and host cluster details. 
-     * @return a list of {@link MemberContext}s correspond to each Pod created.
-     * @throws UnregisteredCartridgeException if the requested Cartridge type is not a registered one.
-     */
-    MemberContext[] startContainers(ContainerClusterContext clusterContext) throws UnregisteredCartridgeException;
+    MemberContext[] startInstances(InstanceContext[] instanceContexts) throws CartridgeNotFoundException,
+            InvalidIaasProviderException;
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.
@@ -167,31 +160,6 @@ public interface CloudControllerService {
      * @return whether an instance terminated successfully or not.
      */
     void terminateInstances(String clusterId) throws InvalidClusterException;
-    
-    /**
-     * Terminate all containers of the given cluster.
-     * @param clusterId id of the subjected cluster.
-     * @return terminated {@link MemberContext}s
-     * @throws InvalidClusterException
-     */
-    MemberContext[] terminateContainers(String clusterId) throws InvalidClusterException;
-    
-    /**
-     * Terminate a given member/Kubernetes Pod.
-     * @param memberId member/Pod id to be terminated.
-     * @return terminated {@link MemberContext}
-     * @throws MemberTerminationFailedException
-     */
-    MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException;
-    
-    /**
-     * Update the Kubernetes controller created for the given cluster with the specified number of replicas.
-     * @param clusterId id of the subjected cluster.
-     * @param replicas total number of replicas to be set to the controller.
-     * @return newly created Members if any / terminated {@link MemberContext} in scale down scenario.
-     * @throws InvalidClusterException
-     */
-    MemberContext[] updateContainers(String clusterId, int replicas) throws UnregisteredCartridgeException;
 
     /**
      * Update the topology with current cluster status.
@@ -201,13 +169,6 @@ public interface CloudControllerService {
      * @param status total number of replicas to be set to the controller.
      */
     void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status);
-    
-    /**
-     * Unregister a docker service identified by the given cluster id.
-     * @param clusterId service cluster id.
-     * @throws UnregisteredClusterException if the service cluster requested is not a registered one.
-     */
-    void unregisterDockerService(String clusterId) throws UnregisteredClusterException;
     
     /**
      * Unregister the service cluster identified by the given cluster id.
@@ -223,9 +184,9 @@ public interface CloudControllerService {
      * @param cartridgeType
      *            type of the cartridge.
      * @return {@link org.apache.stratos.cloud.controller.domain.CartridgeInfo} of the given cartridge type or <code>null</code>.
-     * @throws UnregisteredCartridgeException if there is no registered cartridge with this type.
+     * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered cartridge with this type.
      */
-    CartridgeInfo getCartridgeInfo(String cartridgeType) throws UnregisteredCartridgeException;
+    CartridgeInfo getCartridgeInfo(String cartridgeType) throws CartridgeNotFoundException;
 
     /**
      * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.domain.Cartridge}s
@@ -262,7 +223,7 @@ public interface CloudControllerService {
      * @param instanceId instance id
      * @throws ClusterInstanceCreationException if an y error occurs in cluster instance creation
      */
-    public void createClusterInstance (String serviceType, String clusterId, String alias,
+    public void createClusterInstance(String serviceType, String clusterId, String alias,
                                        String instanceId, String partitionId,
                                        String networkPartitionId) throws
             ClusterInstanceCreationException;

@@ -49,7 +49,7 @@ public interface KubernetesAPIClientInterface {
 	 * @return Pods selected Pods by executing the label query.
 	 * @throws KubernetesClientException
 	 */
-	public Pod[] getSelectedPods(Label[] label) throws KubernetesClientException;
+	public Pod[] queryPods(Label[] label) throws KubernetesClientException;
 	
 	/**
 	 * Create a new Pod

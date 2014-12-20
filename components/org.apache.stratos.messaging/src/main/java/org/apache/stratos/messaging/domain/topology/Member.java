@@ -37,9 +37,12 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
 
     private final String serviceName;
     private final String clusterId;
+    private final String memberId;
+    private final String instanceId;
+    private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
-    private final String memberId;
+
     // member initiated time
     private final long initTime;
     // Key: Port.proxy
@@ -52,12 +55,14 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     private Properties properties;
     private String lbClusterId;
     // instance id to use if snapshot wise group scaling is enabled
-    private String instanceId;
     private LifeCycleStateManager<MemberStatus> memberStateManager;
 
-    public Member(String serviceName, String clusterId, String networkPartitionId, String partitionId, String memberId, long initTime) {
+    public Member(String serviceName, String clusterId, String memberId, String instanceId, String clusterInstanceId,
+                  String networkPartitionId, String partitionId, long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        this.instanceId = instanceId;
+        this.clusterInstanceId = clusterInstanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.memberId = memberId;
@@ -175,20 +180,30 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         this.memberPublicIp = memberPublicIp;
     }
 
-    @Override
-    public String toString() {
-        return "Member [serviceName=" + serviceName + ", clusterId=" + clusterId + ", networkPartitionId="
-                + networkPartitionId + ", partitionId=" + partitionId + ", memberId=" + memberId + ", initTime=" + initTime + ", portMap="
-                + portMap + ", memberPublicIp=" + memberPublicIp + ", status=" + getStatus() + ", memberIp=" + memberIp
-                + ", properties=" + properties + ", lbClusterId=" + lbClusterId + "]";
-    }
-
     public String getInstanceId() {
         return instanceId;
     }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
+
+    @Override
+    public String toString() {
+        return "Member [serviceName=" + getServiceName()
+                + ", clusterId=" + getClusterId()
+                + ", memberId=" + getMemberId()
+                + ", instanceId=" + getInstanceId()
+                + ", clusterInstanceId=" + getClusterInstanceId()
+                + ", networkPartitionId=" + getNetworkPartitionId()
+                + ", partitionId=" + getPartitionId()
+                + ", initTime=" + getInitTime()
+                + ", portMap=" + getPorts()
+                + ", memberPublicIp=" + getMemberPublicIp()
+                + ", status=" + getStatus()
+                + ", memberIp=" + getMemberIp()
+                + ", lbClusterId=" + getLbClusterId()
+                + ", properties=" + getProperties() + "]";
     }
 }
 

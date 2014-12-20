@@ -71,7 +71,9 @@ public class CartridgeAgentConfiguration {
     private String superTenantRepositoryPath;
     private String tenantRepositoryPath;
     private String kubernetesClusterId;
-        
+    private String instanceId;
+    private String clusterInstanceId;
+
 
     private CartridgeAgentConfiguration() {
         parameters = loadParametersFile();
@@ -582,6 +584,22 @@ public class CartridgeAgentConfiguration {
 	public String getKubernetesClusterId() {
 		return kubernetesClusterId;
 	}
-    
-    
+
+
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
+
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
+
+    public void setClusterInstanceId(String clusterInstanceId) {
+        this.clusterInstanceId = clusterInstanceId;
+    }
 }

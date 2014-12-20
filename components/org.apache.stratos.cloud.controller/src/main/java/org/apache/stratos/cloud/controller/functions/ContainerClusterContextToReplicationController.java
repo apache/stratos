@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.functions;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Container;
@@ -38,18 +39,18 @@ import com.google.common.base.Function;
  * {@link ReplicationController} Object.
  */
 public class ContainerClusterContextToReplicationController implements
-        Function<ContainerClusterContext, ReplicationController> {
+        Function<MemberContext, ReplicationController> {
 
     @Override
-    public ReplicationController apply(ContainerClusterContext memberContext) {
+    public ReplicationController apply(MemberContext memberContext) {
 
         String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
-        ReplicationController contr = new ReplicationController();
-        contr.setId(clusterContext.getClusterId());
-        contr.setKind("ReplicationController");
-        contr.setApiVersion("v1beta1");
+        ReplicationController replicationController = new ReplicationController();
+        replicationController.setId(clusterContext.getClusterId());
+        replicationController.setKind("ReplicationController");
+        replicationController.setApiVersion("v1beta1");
         State desiredState = new State();
         String minReplicas = CloudControllerUtil.getProperty(clusterContext.getProperties(),
                 StratosConstants.KUBERNETES_MIN_REPLICAS);
@@ -76,13 +77,13 @@ public class ContainerClusterContextToReplicationController implements
         podTemplate.setLabels(l1);
 
         desiredState.setPodTemplate(podTemplate);
-        contr.setDesiredState(desiredState);
+        replicationController.setDesiredState(desiredState);
 
         Label l2 = new Label();
         l2.setName(clusterContext.getClusterId());
-        contr.setLabels(l2);
+        replicationController.setLabels(l2);
 
-        return contr;
+        return replicationController;
     }
 
 }

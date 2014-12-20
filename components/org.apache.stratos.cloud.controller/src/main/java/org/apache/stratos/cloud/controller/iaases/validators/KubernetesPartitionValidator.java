@@ -23,17 +23,24 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesGroupException;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
 
 /**
- * Kubernetes Partition Validator
+ * Kubernetes partition validator
  */
-public class KubernetesBasedPartitionValidator implements PartitionValidator {
+public class KubernetesPartitionValidator implements PartitionValidator {
     
-    private static final Log log = LogFactory.getLog(KubernetesBasedPartitionValidator.class);
+    private static final Log log = LogFactory.getLog(KubernetesPartitionValidator.class);
+
+    private IaasProvider iaasProvider;
+
+    @Override
+    public void setIaasProvider(IaasProvider iaasProvider) {
+        this.iaasProvider = iaasProvider;
+    }
 
     /**
      * Validate the given properties for its existent in this partition.
@@ -43,25 +50,23 @@ public class KubernetesBasedPartitionValidator implements PartitionValidator {
      * @return cloned and modified {@link IaasProvider} which maps to the given partition.
      * @throws InvalidPartitionException if at least one property is evaluated to be invalid.
      */
-    public KubernetesGroup validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
 
         if (properties.containsKey(StratosConstants.KUBERNETES_CLUSTER_ID)) {
             String kubernetesClusterId = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
             try {
-                KubernetesGroup kubGroup = CloudControllerContext.getInstance().getKubernetesGroup(kubernetesClusterId);
-                return kubGroup;
+                CloudControllerContext.getInstance().getKubernetesGroup(kubernetesClusterId);
+                return iaasProvider;
             } catch (NonExistingKubernetesGroupException e) {
-                String msg = "Invalid Partition Detected : " + partitionId + ". Cause: " + e.getMessage();
-                log.error(msg, e);
-                throw new InvalidPartitionException(msg, e);
+                String message = "Kubernetes partition is not valid: [partition-id] " + partitionId;
+                log.error(message, e);
+                throw new InvalidPartitionException(message, e);
             }
         }
 
-        String msg =
-                "Invalid Partition Detected : " + partitionId + ". Cause: Essential "
-                        + StratosConstants.KUBERNETES_CLUSTER_ID + " property not found.";
-        log.error(msg);
-        throw new InvalidPartitionException(msg);
-
+        String message = "Kubernetes partition is not valid: [partition-id] " + partitionId + ", property not found: "
+                        + StratosConstants.KUBERNETES_CLUSTER_ID;
+        log.error(message);
+        throw new InvalidPartitionException(message);
     }
 }

@@ -43,11 +43,15 @@ class CartridgeAgentConfiguration:
             """ :type : str  """
             self.cluster_id = None
             """ :type : str  """
+            self.cluster_instance_id = None
+            """ :type : str  """
+            self.member_id = None
+            """ :type : str  """
+            self.instance_id = None
+            """ :type : str  """
             self.network_partition_id = None
             """ :type : str  """
             self.partition_id = None
-            """ :type : str  """
-            self.member_id = None
             """ :type : str  """
             self.cartridge_key = None
             """ :type : str  """
@@ -93,8 +97,6 @@ class CartridgeAgentConfiguration:
             """ :type : str  """
             self.is_primary = False
             """ :type : bool  """
-            self.instance_id = None
-            """ :type : str  """
 
             self.payload_params = {}
             self.__read_conf_file()
@@ -118,14 +120,15 @@ class CartridgeAgentConfiguration:
 
                 self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
                 self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
+                self.cluster_instance_id= self.read_property(cartridgeagentconstants.CLUSTER_INSTANCE_ID)
+                self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID)
+                self.instance_id= self.read_property(cartridgeagentconstants.INSTANCE_ID)
                 self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID, False)
                 self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID, False)
-                self.member_id = self.get_member_id(cartridgeagentconstants.MEMBER_ID)
                 self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
                 self.app_path = self.read_property(cartridgeagentconstants.APP_PATH, False)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
-                self.instance_id= self.read_property(cartridgeagentconstants.INSTANCE_ID)
 
                 try:
                     self.log_file_paths = str(
@@ -227,10 +230,11 @@ class CartridgeAgentConfiguration:
 
             self.log.debug("service-name: %r" % self.service_name)
             self.log.debug("cluster-id: %r" % self.cluster_id)
-            self.log.debug(
-                "network-partition-id: %r" % self.network_partition_id)
-            self.log.debug("partition-id: %r" % self.partition_id)
+            self.log.debug("cluster-instance-id: %r" % self.cluster_instance_id)
             self.log.debug("member-id: %r" % self.member_id)
+            self.log.debug("instance-id: %r" % self.instance_id)
+            self.log.debug("network-partition-id: %r" % self.network_partition_id)
+            self.log.debug("partition-id: %r" % self.partition_id)
             self.log.debug("cartridge-key: %r" % self.cartridge_key)
             self.log.debug("app-path: %r" % self.app_path)
             self.log.debug("repo-url: %r" % self.repo_url)

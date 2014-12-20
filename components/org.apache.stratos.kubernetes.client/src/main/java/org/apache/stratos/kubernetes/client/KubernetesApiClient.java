@@ -230,7 +230,6 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 
 		try {
-			
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
 			String content = gson.toJson(controller);
@@ -264,7 +263,6 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 					+ controller;
 			log.error(msg, e);
 			throw new KubernetesClientException(msg, e);
-
 		}
 	}
 
@@ -471,21 +469,20 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
     @Override
-    public Pod[] getSelectedPods(Label[] label) throws KubernetesClientException {
+    public Pod[] queryPods(Label[] label) throws KubernetesClientException {
         
         try {
             String labelQuery = getLabelQuery(label);
             URI uri = new URIBuilder(baseURL + "pods").addParameter("labels", labelQuery).build();
-            KubernetesResponse res = restClient.doGet(uri);
+            KubernetesResponse response = restClient.doGet(uri);
             
-            handleNullResponse("Pod retrieval failed.", res);
+            handleNullResponse("Pod retrieval failed, kubernetes api response is null", response);
             
-            if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
+            if (response.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
                 return new Pod[0];
             }
             
-            String content = res.getContent();
-            
+            String content = response.getContent();
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
             PodList podList = gson.fromJson(content, PodList.class);
@@ -493,7 +490,6 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return new Pod[0];
             }
             return podList.getItems();
-            
         } catch (Exception e) {
             String msg = "Error while retrieving Pods.";
             log.error(msg, e);
@@ -512,9 +508,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     private void handleNullResponse(String message, KubernetesResponse res)
             throws KubernetesClientException {
         if (res == null) {
-            log.error(message+ " Null response received.");
+            log.error(message+ " Null response received");
             throw new KubernetesClientException(message);
         }
     }
-	
 }

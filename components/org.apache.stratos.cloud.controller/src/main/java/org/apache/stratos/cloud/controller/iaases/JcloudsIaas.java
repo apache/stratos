@@ -99,12 +99,11 @@ public abstract class JcloudsIaas extends Iaas {
     }
 
     @Override
-    public NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext) {
-        NodeMetadata node = null;
+    public MemberContext createInstance(MemberContext memberContext) {
         // generate the group id from domain name and sub domain name.
         // Should have lower-case ASCII letters, numbers, or dashes.
         // Should have a length between 3-15
-        String clusterId = clusterContext.getClusterId();
+        String clusterId = memberContext.getClusterId();
         String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
         String group = str.replaceAll("[^a-z0-9-]", "");
 
@@ -120,37 +119,60 @@ public abstract class JcloudsIaas extends Iaas {
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("Cloud Controller is delegating request to start an instance for "
-                        + memberContext + " to Jclouds layer.");
+                log.debug("Cloud controller is delegating request to start an instance for "
+                        + memberContext + " to jclouds");
             }
             // create and start a node
-            Set<? extends NodeMetadata> nodes = computeService.createNodesInGroup(group, 1, template);
-            node = nodes.iterator().next();
+            Set<? extends NodeMetadata> nodeMetadataSet = computeService.createNodesInGroup(group, 1, template);
+            NodeMetadata nodeMetadata = nodeMetadataSet.iterator().next();
             if (log.isDebugEnabled()) {
-                log.debug("Cloud Controller received a response for the request to start "
+                log.debug("Cloud controller received a response for the request to start "
                         + memberContext + " from Jclouds layer.");
             }
 
-            if (node == null) {
+            if (nodeMetadata == null) {
                 String msg = "Null response received for instance start-up request to Jclouds.\n"
                         + memberContext.toString();
                 log.error(msg);
                 throw new IllegalStateException(msg);
             }
+            memberContext.setInstanceId(nodeMetadata.getId());
+            memberContext.setInstanceMetadata(createInstanceMetadata(nodeMetadata));
         } catch (Exception e) {
             String msg = "Failed to start an instance. " + memberContext.toString() + " Cause: " + e.getMessage();
             log.error(msg, e);
             throw new IllegalStateException(msg, e);
         }
-        return node;
+        return memberContext;
     }
 
-    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
-                                  String cartridgeType, NodeMetadata node) {
+    protected InstanceMetadata createInstanceMetadata(NodeMetadata nodeMetadata) {
+        InstanceMetadata instanceMetadata = new InstanceMetadata();
+        instanceMetadata.setHostname(nodeMetadata.getHostname());
+        instanceMetadata.setImageId(nodeMetadata.getImageId());
+        instanceMetadata.setLoginPort(nodeMetadata.getLoginPort());
+        instanceMetadata.setHypervisor(nodeMetadata.getHardware().getHypervisor());
+        instanceMetadata.setRam(nodeMetadata.getHardware().getRam());
+        instanceMetadata.setOperatingSystemName(nodeMetadata.getOperatingSystem().getName());
+        instanceMetadata.setOperatingSystemVersion(nodeMetadata.getOperatingSystem().getVersion());
+        instanceMetadata.setOperatingSystem64bit(nodeMetadata.getOperatingSystem().is64Bit());
+        return instanceMetadata;
+    }
+
+    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("IP allocation process started for " + memberContext);
             }
+
+            ComputeService computeService = getIaasProvider().getComputeService();
+            NodeMetadata nodeMetadata = computeService.getNodeMetadata(memberContext.getInstanceId());
+            if(nodeMetadata == null) {
+                String message = "Node metadata not found: [node-id] " + memberContext.getInstanceId();
+                log.error(message);
+                throw new CloudControllerException(message);
+            }
+
             String autoAssignIpProp = getIaasProvider().getProperty(CloudControllerConstants.AUTO_ASSIGN_IP_PROPERTY);
             String preDefinedIp = getIaasProvider().getProperty(CloudControllerConstants.FLOATING_IP_PROPERTY);
             String publicIp = "";
@@ -165,7 +187,7 @@ public abstract class JcloudsIaas extends Iaas {
                         if (log.isDebugEnabled()) {
                             log.debug("CloudControllerServiceImpl:IpAllocator:preDefinedIp: invoking associatePredefinedAddress" + preDefinedIp);
                         }
-                        ip = associatePredefinedAddress(node, preDefinedIp);
+                        ip = associatePredefinedAddress(nodeMetadata, preDefinedIp);
 
                         if (ip == null || "".equals(ip) || !preDefinedIp.equals(ip)) {
                             // throw exception and stop instance creation
@@ -174,7 +196,7 @@ public abstract class JcloudsIaas extends Iaas {
                                     " - terminating node:" + memberContext.toString();
                             log.error(msg);
                             // terminate instance
-                            destroyNode(node.getId(), memberContext);
+                            destroyNode(nodeMetadata.getId(), memberContext);
                             throw new CloudControllerException(msg);
                         }
                     } else {
@@ -182,7 +204,7 @@ public abstract class JcloudsIaas extends Iaas {
                                 " - terminating node:" + memberContext.toString();
                         log.error(msg);
                         // terminate instance
-                        destroyNode(node.getId(), memberContext);
+                        destroyNode(nodeMetadata.getId(), memberContext);
                         throw new CloudControllerException(msg);
                     }
 
@@ -192,7 +214,7 @@ public abstract class JcloudsIaas extends Iaas {
                                 + "selecting available one from pool");
                     }
                     // allocate an IP address - manual IP assigning mode
-                    ip = associateAddress(node);
+                    ip = associateAddress(nodeMetadata);
 
                     if (ip != null) {
                         memberContext.setAllocatedIpAddress(ip);
@@ -213,15 +235,15 @@ public abstract class JcloudsIaas extends Iaas {
                 }
 
                 // build the node with the new ip
-                node = NodeMetadataBuilder.fromNodeMetadata(node)
+                nodeMetadata = NodeMetadataBuilder.fromNodeMetadata(nodeMetadata)
                         .publicAddresses(ImmutableSet.of(ip)).build();
             }
 
 
             // public ip
-            if (node.getPublicAddresses() != null &&
-                    node.getPublicAddresses().iterator().hasNext()) {
-                ip = node.getPublicAddresses().iterator().next();
+            if (nodeMetadata.getPublicAddresses() != null &&
+                    nodeMetadata.getPublicAddresses().iterator().hasNext()) {
+                ip = nodeMetadata.getPublicAddresses().iterator().next();
                 publicIp = ip;
                 memberContext.setPublicIpAddress(ip);
                 if (log.isDebugEnabled()) {
@@ -233,9 +255,9 @@ public abstract class JcloudsIaas extends Iaas {
             }
 
             // private IP
-            if (node.getPrivateAddresses() != null &&
-                    node.getPrivateAddresses().iterator().hasNext()) {
-                ip = node.getPrivateAddresses().iterator().next();
+            if (nodeMetadata.getPrivateAddresses() != null &&
+                    nodeMetadata.getPrivateAddresses().iterator().hasNext()) {
+                ip = nodeMetadata.getPrivateAddresses().iterator().next();
                 memberContext.setPrivateIpAddress(ip);
                 if (log.isDebugEnabled()) {
                     log.debug("Retrieving Private IP Address. " + memberContext.toString());
@@ -264,7 +286,7 @@ public abstract class JcloudsIaas extends Iaas {
     public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
         String memberId = memberContext.getMemberId();
         String cartridgeType = memberContext.getCartridgeType();
-        String nodeId = memberContext.getNodeId();
+        String nodeId = memberContext.getInstanceId();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
 
         if(log.isInfoEnabled()) {
@@ -338,5 +360,10 @@ public abstract class JcloudsIaas extends Iaas {
                 }
             }
         }
+    }
+
+    public NodeMetadata findNodeMetadata(String nodeId) {
+        ComputeService computeService = getIaasProvider().getComputeService();
+        return computeService.getNodeMetadata(nodeId);
     }
 }

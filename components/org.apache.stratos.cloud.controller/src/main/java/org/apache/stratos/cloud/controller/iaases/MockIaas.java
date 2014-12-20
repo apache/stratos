@@ -19,14 +19,12 @@
 
 package org.apache.stratos.cloud.controller.iaases;
 
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.mock.MockIaasService;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
-import org.jclouds.compute.domain.NodeMetadata;
 
 /**
  * Mock IaaS client for invoking mock IaaS service.
@@ -42,8 +40,8 @@ public class MockIaas extends Iaas {
     }
 
     @Override
-    public NodeMetadata createInstance(ClusterContext clusterContext, MemberContext memberContext) {
-        return MockIaasService.getInstance().createInstance(clusterContext, memberContext);
+    public MemberContext createInstance(MemberContext memberContext) {
+        return MockIaasService.getInstance().createInstance(memberContext);
     }
 
     @Override
@@ -97,9 +95,8 @@ public class MockIaas extends Iaas {
     }
 
     @Override
-    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition,
-                                  String cartridgeType, NodeMetadata node) {
-        MockIaasService.getInstance().allocateIpAddress(clusterId, memberContext, partition, cartridgeType, node);
+    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
+        MockIaasService.getInstance().allocateIpAddress(clusterId, memberContext, partition);
     }
 
     @Override

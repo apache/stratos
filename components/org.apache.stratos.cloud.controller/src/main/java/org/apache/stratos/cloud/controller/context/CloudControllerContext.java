@@ -561,13 +561,13 @@ public class CloudControllerContext implements Serializable {
 
     public KubernetesGroup getKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException {
         if (StringUtils.isEmpty(groupId)) {
-            throw new NonExistingKubernetesGroupException("Cannot find for empty group id");
+            throw new NonExistingKubernetesGroupException("Kubernetes group id is empty");
         }
         KubernetesGroup kubernetesGroup = kubernetesGroupsMap.get(groupId);
         if (kubernetesGroup != null) {
             return kubernetesGroup;
         }
-        throw new NonExistingKubernetesGroupException("Kubernetes group not found for id: " + groupId);
+        throw new NonExistingKubernetesGroupException("Kubernetes group not found: [group-id]: " + groupId);
     }
 
     public KubernetesGroup getKubernetesGroupContainingHost(String hostId) throws NonExistingKubernetesGroupException {

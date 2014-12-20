@@ -32,8 +32,9 @@ import java.util.Properties;
 /**
  * Docker partition validator definition.
  */
-public class DockerPartitionValidator extends IaasBasedPartitionValidator {
-    private static final Log log = LogFactory.getLog(DockerPartitionValidator.class);
+public class DockerPartitionValidator implements PartitionValidator {
+
+	private static final Log log = LogFactory.getLog(DockerPartitionValidator.class);
 
     private IaasProvider iaasProvider;
 

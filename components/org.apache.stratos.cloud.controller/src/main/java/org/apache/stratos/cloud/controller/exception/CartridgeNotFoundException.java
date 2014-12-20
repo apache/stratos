@@ -18,17 +18,17 @@
  */
 package org.apache.stratos.cloud.controller.exception;
 
-public class UnregisteredCartridgeException extends Exception {
+public class CartridgeNotFoundException extends Exception {
     
     private static final long serialVersionUID = -6326227079367867222L;
 	private String message;
 
-    public UnregisteredCartridgeException(String msg) {
+    public CartridgeNotFoundException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
     
-    public UnregisteredCartridgeException(String msg, Exception ex) {
+    public CartridgeNotFoundException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }

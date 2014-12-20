@@ -426,18 +426,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getAutoScalingPolicies">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoScalingPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="serviceGroupExist">
                 <xs:complexType>
                     <xs:sequence>
@@ -449,6 +437,18 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoScalingPolicies">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoScalingPoliciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>

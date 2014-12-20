@@ -108,7 +108,7 @@ public class CloudControllerServiceClient {
                             String payload, String tenantRange,
                             String hostName, Properties properties,
                             String autoscalorPolicyName, String deploymentPolicyName, Persistence persistence) throws RemoteException,
-                            CloudControllerServiceUnregisteredCartridgeExceptionException {		
+                            CloudControllerServiceCartridgeNotFoundExceptionException {
 	    Registrant registrant = new Registrant();
 	    registrant.setClusterId(clusterId);
 	    registrant.setCartridgeType(cartridgeType);
@@ -133,7 +133,7 @@ public class CloudControllerServiceClient {
 	}
 
 	public CartridgeInfo getCartridgeInfo(String cartridgeType) throws RemoteException, 
-	CloudControllerServiceUnregisteredCartridgeExceptionException {
+	CloudControllerServiceCartridgeNotFoundExceptionException {
 		return stub.getCartridgeInfo(cartridgeType);
 	}
 	

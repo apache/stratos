@@ -477,7 +477,6 @@ public class ApplicationBuilder {
                                                                 String parentId,
                                                                 String networkPartitionId,
                                                                 String partitionId) {
-        GroupInstance groupInstance = null;
         ApplicationHolder.acquireWriteLock();
         try {
             if (log.isDebugEnabled()) {
@@ -490,14 +489,14 @@ public class ApplicationBuilder {
             if (application == null) {
                 log.warn(String.format("Application %s does not exist",
                         appId));
-                return groupInstance;
+                return null;
             }
 
             Group group = application.getGroupRecursively(groupId);
             if (group == null) {
                 log.warn(String.format("Group %s does not exist when creating group",
                         groupId));
-                return groupInstance;
+                return null;
             }
 
             GroupStatus status = GroupStatus.Created;
@@ -514,6 +513,7 @@ public class ApplicationBuilder {
 
             if (!group.containsInstanceContext(instanceId)) {
                 //setting the status, persist and publish
+                GroupInstance groupInstance = null;
                 groupInstance = new GroupInstance(groupId, instanceId);
                 groupInstance.setParentId(parentId);
                 groupInstance.setPartitionId(partitionId);
@@ -523,6 +523,7 @@ public class ApplicationBuilder {
                 //updateGroupMonitor(appId, groupId, status);
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceCreatedEvent(appId, groupId, groupInstance);
+                return groupInstance;
             } else {
                 log.warn("Group Instance Context already exists: [group-id] " + groupId +
                         " [Group-Instance-Id] " + instanceId);
@@ -530,9 +531,7 @@ public class ApplicationBuilder {
         } finally {
             ApplicationHolder.releaseWriteLock();
         }
-
-
-        return groupInstance;
+        return null;
     }
 
 

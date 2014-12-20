@@ -27,11 +27,15 @@ class MemberActivatedEvent:
         """ :type : str  """
         self.cluster_id = None
         """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.instance_id = None
+        """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
         self.partition_id = None
-        """ :type : str  """
-        self.member_id = None
         """ :type : str  """
         self.port_map = {}
         """ :type : dict[str, Port]  """
@@ -57,9 +61,11 @@ class MemberActivatedEvent:
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
         #instance.port_map = json_obj["portMap"] if "portMap" in json_obj else {}
         instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None
 
@@ -78,11 +84,15 @@ class MemberTerminatedEvent:
         """ :type : str  """
         self.cluster_id = None
         """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.instance_id = None
+        """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
         self.partition_id = None
-        """ :type : str  """
-        self.member_id = None
         """ :type : str  """
         self.properties = {}
         """ :type : dict[str, str]  """
@@ -94,9 +104,11 @@ class MemberTerminatedEvent:
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
         instance.properties = json_obj["properties"] if "properties" in json_obj else None
 
         return instance
@@ -109,11 +121,15 @@ class MemberSuspendedEvent:
         """ :type : str  """
         self.cluster_id = None
         """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.instance_id = None
+        """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
         self.partition_id = None
-        """ :type : str  """
-        self.member_id = None
         """ :type : str  """
 
     @staticmethod
@@ -123,9 +139,11 @@ class MemberSuspendedEvent:
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
 
         return instance
 
@@ -215,11 +233,15 @@ class MemberStartedEvent:
         """ :type : str  """
         self.cluster_id = None
         """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.instance_id = None
+        """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
         self.partition_id = None
-        """ :type : str  """
-        self.member_id = None
         """ :type : str  """
         self.status = None
         """ :type : str  """
@@ -233,9 +255,11 @@ class MemberStartedEvent:
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
         instance.properties = json_obj["properties"] if "properties" in json_obj else None
 
         return instance
@@ -248,11 +272,15 @@ class InstanceSpawnedEvent:
         """ :type : str  """
         self.cluster_id = None
         """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.instance_id = None
+        """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
         self.partition_id = None
-        """ :type : str  """
-        self.member_id = None
         """ :type : str  """
         self.lb_cluster_id = None
         """ :type : str  """
@@ -270,9 +298,11 @@ class InstanceSpawnedEvent:
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
+        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
         instance.lb_cluster_id = json_obj["lbClusterId"] if "lbClusterId" in json_obj else None
         instance.member_public_ip = json_obj["memberPublicIp"] if "memberPublicIp" in json_obj else None
         instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None

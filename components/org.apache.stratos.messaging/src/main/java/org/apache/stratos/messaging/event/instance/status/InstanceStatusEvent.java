@@ -28,4 +28,6 @@ import java.io.Serializable;
  */
 public abstract class InstanceStatusEvent extends Event implements Serializable {
     private static final long serialVersionUID = -4790128084271867615L;
+
+
 }

@@ -22,6 +22,7 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
 import org.apache.stratos.cloud.controller.domain.KubernetesClusterContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Selector;
@@ -33,10 +34,10 @@ import com.google.common.base.Function;
  * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
  * {@link Service} Object.
  */
-public class ContainerClusterContextToKubernetesService implements Function<ContainerClusterContext, Service> {
+public class ContainerClusterContextToKubernetesService implements Function<MemberContext, Service> {
 
     @Override
-    public Service apply(ContainerClusterContext memberContext) {
+    public Service apply(MemberContext memberContext) {
 
         String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);

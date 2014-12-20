@@ -31,7 +31,7 @@ import org.apache.stratos.cloud.controller.domain.IaasProvider;
  * The VCloud {@link PartitionValidator} implementation.
  *
  */
-public class VCloudPartitionValidator extends IaasBasedPartitionValidator {
+public class VCloudPartitionValidator implements PartitionValidator {
     
     @SuppressWarnings("unused")
 	private static final Log log = LogFactory.getLog(VCloudPartitionValidator.class);

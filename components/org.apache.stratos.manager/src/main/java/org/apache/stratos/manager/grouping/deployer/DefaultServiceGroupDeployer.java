@@ -26,7 +26,7 @@ import org.apache.stratos.autoscaler.stub.AutoScalerServiceAutoScalerExceptionEx
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidServiceGroupExceptionException;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceUnregisteredCartridgeExceptionException;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
 import org.apache.stratos.manager.exception.ADCException;
@@ -113,7 +113,7 @@ public class DefaultServiceGroupDeployer implements ServiceGroupDeployer {
                     }
                 } catch (RemoteException e) {
                     throw new ADCException(e);
-                } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+                } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
                     throw new ADCException(e);
                 }
             }

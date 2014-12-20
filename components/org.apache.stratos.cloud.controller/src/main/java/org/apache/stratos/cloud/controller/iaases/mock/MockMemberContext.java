@@ -28,18 +28,20 @@ public class MockMemberContext implements Serializable {
     private final String serviceName;
     private final String clusterId;
     private final String memberId;
+    private final String instanceId;
+    private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
-    private final String instanceId;
 
-    public MockMemberContext(String serviceName, String clusterId, String memberId,
-                             String networkPartitionId, String partitionId, String instanceId) {
+    public MockMemberContext(String serviceName, String clusterId, String memberId, String instanceId,
+                             String clusterInstanceId, String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
+        this.instanceId = instanceId;
+        this.clusterInstanceId = clusterInstanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
-        this.instanceId = instanceId;
     }
 
     public String getServiceName() {
@@ -54,15 +56,19 @@ public class MockMemberContext implements Serializable {
         return memberId;
     }
 
+    public String getInstanceId() {
+        return instanceId;
+    }
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
+
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
 
     public String getPartitionId() {
         return partitionId;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
     }
 }

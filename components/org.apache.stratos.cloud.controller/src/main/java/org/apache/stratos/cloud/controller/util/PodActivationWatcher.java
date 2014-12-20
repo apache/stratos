@@ -23,25 +23,27 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.model.Pod;
 
 /**
- * Checks whether a container is active and update the {@link org.apache.stratos.cloud.controller.context.CloudControllerContext}.
+ * Checks whether a container is active and update the
+ * {@link org.apache.stratos.cloud.controller.context.CloudControllerContext}.
  */
 public class PodActivationWatcher implements Runnable {
 
-    private static final Log LOG = LogFactory
-            .getLog(PodActivationWatcher.class);
+    private static final Log log = LogFactory.getLog(PodActivationWatcher.class);
+
+    private static final String POD_STATE_RUNNING = "Running";
+
     private String podId;
-    private MemberContext ctxt;
+    private MemberContext memberContext;
     private KubernetesApiClient kubApi;
     
-    public PodActivationWatcher(String podId, MemberContext ctxt, KubernetesApiClient kubApi) {
+    public PodActivationWatcher(String podId, MemberContext memberContext, KubernetesApiClient kubApi) {
         this.podId = podId;
-        this.ctxt = ctxt;
+        this.memberContext = memberContext;
         this.kubApi = kubApi;
     }
 
@@ -50,30 +52,27 @@ public class PodActivationWatcher implements Runnable {
         try {
             CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
             Pod pod = kubApi.getPod(podId);
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("PodActivationWatcher running : "+pod.getCurrentState().getStatus());
+            if (log.isDebugEnabled()) {
+                log.debug("Pod activation watcher running: [status] " + pod.getCurrentState().getStatus());
             }
-            if ("Running".equals(pod.getCurrentState().getStatus()) && ctxt.getPublicIpAddress() == null) {
+            if (POD_STATE_RUNNING.equals(pod.getCurrentState().getStatus()) && memberContext.getPublicIpAddress() == null) {
                 String hostIP = pod.getCurrentState().getHost();
-                ctxt.setPublicIpAddress(hostIP);
-                ctxt.setPrivateIpAddress(hostIP);
-                cloudControllerContext.addMemberContext(ctxt);
+                memberContext.setPublicIpAddress(hostIP);
+                memberContext.setPrivateIpAddress(hostIP);
+                cloudControllerContext.addMemberContext(memberContext);
+
                 // trigger topology
-                TopologyBuilder.handleMemberSpawned(ctxt.getCartridgeType(), ctxt.getClusterId(), 
-                        null, hostIP, hostIP, ctxt);
-                
+                TopologyBuilder.handleMemberSpawned(memberContext);
                 cloudControllerContext.persist();
             }
             
         } catch (Exception e) {
             // not logging exception intentionally
-            LOG.error("Container Activation Watcher Failed.. Cause: "+e.getMessage());
+            log.error("Container activation watcher failed: " + e.getMessage());
             
-            if (LOG.isDebugEnabled()) {
-                LOG.debug(e);
+            if (log.isDebugEnabled()) {
+                log.debug(e);
             }
         }
-        
     }
-    
 }

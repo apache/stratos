@@ -24,10 +24,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
-import org.apache.stratos.cloud.controller.domain.PortMapping;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -39,15 +36,15 @@ import org.apache.stratos.kubernetes.client.model.Port;
 import com.google.common.base.Function;
 
 /**
- * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
+ * Is responsible for converting a MemberContext object to a Kubernetes
  * {@link Container} Object.
  */
-public class ContainerClusterContextToKubernetesContainer implements Function<ContainerClusterContext, Container> {
+public class ContainerClusterContextToKubernetesContainer implements Function<MemberContext, Container> {
 
     private static final Log log = LogFactory.getLog(ContainerClusterContextToKubernetesContainer.class);
 
     @Override
-    public Container apply(ContainerClusterContext memberContext) {
+    public Container apply(MemberContext memberContext) {
         String clusterId = memberContext.getClusterId();
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
@@ -93,7 +90,7 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Co
         return portList.toArray(ports);
     }
 
-    private EnvironmentVariable[] getEnvironmentVars(ContainerClusterContext memberCtxt, ClusterContext ctxt) {
+    private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, ClusterContext ctxt) {
 
         String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
                 StratosConstants.KUBERNETES_CLUSTER_ID);

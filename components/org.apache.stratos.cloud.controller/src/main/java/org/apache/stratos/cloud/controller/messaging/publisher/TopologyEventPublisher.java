@@ -17,7 +17,7 @@
 * under the License.
 */
 
-package org.apache.stratos.cloud.controller.messaging.topology;
+package org.apache.stratos.cloud.controller.messaging.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +67,7 @@ public class TopologyEventPublisher {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format(
-                        "Publishing service created event: [service] %s",
+                        "Publishing service created event: [service-name] %s",
                         cartridge.getType()));
             }
             publishEvent(serviceCreatedEvent);
@@ -80,7 +80,7 @@ public class TopologyEventPublisher {
             serviceRemovedEvent = new ServiceRemovedEvent(cartridge.getType());
             if (log.isInfoEnabled()) {
                 log.info(String.format(
-                        "Publishing service removed event: [service] %s",
+                        "Publishing service removed event: [service-name] %s",
                         serviceRemovedEvent.getServiceName()));
             }
             publishEvent(serviceRemovedEvent);
@@ -93,7 +93,7 @@ public class TopologyEventPublisher {
                                                                     clusterId, instanceId);
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing cluster reset event: " + clusterId);
+            log.info("Publishing cluster reset event: [cluster-id] " + clusterId);
         }
         publishEvent(clusterResetEvent);
     }
@@ -102,7 +102,7 @@ public class TopologyEventPublisher {
         ClusterCreatedEvent clusterCreatedEvent = new ClusterCreatedEvent(cluster);
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing cluster created event: " + cluster.getClusterId());
+            log.info("Publishing cluster created event: [cluster-id] " + cluster.getClusterId());
         }
         publishEvent(clusterCreatedEvent);
     }
@@ -110,7 +110,7 @@ public class TopologyEventPublisher {
     public static void sendApplicationClustersCreated(String appId, List<Cluster> clusters) {
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application Clusters Created event for Application: " + appId);
+            log.info("Publishing application clusters created event: [application-id] " + appId);
         }
 
         publishEvent(new ApplicationClustersCreatedEvent(clusters, appId));
@@ -119,7 +119,7 @@ public class TopologyEventPublisher {
     public static void sendApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusters) {
 
         if (log.isInfoEnabled()) {
-            log.info("Publishing Application Clusters removed event for Application: " + appId);
+            log.info("Publishing application clusters removed event: [application-id] " + appId);
         }
 
         publishEvent(new ApplicationClustersRemovedEvent(clusters, appId));
@@ -130,50 +130,51 @@ public class TopologyEventPublisher {
                 ctxt.getCartridgeType(), ctxt.getClusterId(), deploymentPolicy, ctxt.isLbCluster());
         if (log.isInfoEnabled()) {
             log.info(String
-                    .format("Publishing cluster removed event: [service] %s [cluster] %s",
+                    .format("Publishing cluster removed event: [service-name] %s [cluster-id] %s",
                             ctxt.getCartridgeType(), ctxt.getClusterId()));
         }
         publishEvent(clusterRemovedEvent);
 
     }
 
-    public static void sendInstanceSpawnedEvent(String serviceName,
-                                                String clusterId, String networkPartitionId, String partitionId,
-                                                String memberId, String lbClusterId, String publicIp,
-                                                String privateIp, MemberContext context) {
+    public static void sendInstanceSpawnedEvent(MemberContext memberContext) {
 
-        long initTime = context.getInitTime();
         InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(
-                serviceName, clusterId, networkPartitionId, partitionId,
-                memberId, initTime, context.getInstanceId());
-        instanceSpawnedEvent.setLbClusterId(lbClusterId);
-        instanceSpawnedEvent.setMemberIp(privateIp);
-        instanceSpawnedEvent.setMemberPublicIp(publicIp);
+                memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(), memberContext.getMemberId(),
+                memberContext.getInstanceId(),
+                memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getInitTime());
+
+        instanceSpawnedEvent.setLbClusterId(memberContext.getLbClusterId());
+        instanceSpawnedEvent.setMemberIp(memberContext.getPrivateIpAddress());
+        instanceSpawnedEvent.setMemberPublicIp(memberContext.getPublicIpAddress());
         instanceSpawnedEvent.setProperties(CloudControllerUtil
-                .toJavaUtilProperties(context.getProperties()));
-        log.info(String.format("Publishing instance spawned event: [service] %s [cluster] %s " +
-                " [instance-id] %s [network-partition] %s  [partition] %s " +
-                "[member]%s [lb-cluster-id] %s",
-                serviceName, clusterId, context.getInstanceId(), networkPartitionId, partitionId,
-                memberId, lbClusterId));
+                .toJavaUtilProperties(memberContext.getProperties()));
+
+        log.info(String.format("Publishing instance spawned event: [service-name] %s [cluster-id] %s " +
+                "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
+                        "[partition-id] %s [lb-cluster-id] %s",
+                memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
+                memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
+                memberContext.getPartition().getId(), memberContext.getLbClusterId()));
         publishEvent(instanceSpawnedEvent);
     }
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {
         MemberStartedEvent memberStartedEventTopology = new MemberStartedEvent(instanceStartedEvent.getServiceName(),
-                instanceStartedEvent.getClusterId(), instanceStartedEvent.getNetworkPartitionId(),
-                instanceStartedEvent.getPartitionId(), instanceStartedEvent.getMemberId(),
-                instanceStartedEvent.getInstanceId());
+                instanceStartedEvent.getClusterId(), instanceStartedEvent.getClusterInstanceId(),
+                instanceStartedEvent.getMemberId(), instanceStartedEvent.getInstanceId(), instanceStartedEvent.getNetworkPartitionId(), instanceStartedEvent.getPartitionId()
+        );
         if (log.isInfoEnabled()) {
             log.info(String
-                    .format("Publishing member started event: [service] %s [cluster] %s [instance-id] %s " +
-                                    "[network-partition] %s [partition] %s [member] %s",
+                    .format("Publishing member started event: [service-name] %s [cluster-id] %s [cluster-instance-id] %s " +
+                                    "[member-id] %s [instance-id] %s [network-partition-id] %s [partition-id] %s",
                             instanceStartedEvent.getServiceName(),
                             instanceStartedEvent.getClusterId(),
+                            instanceStartedEvent.getClusterInstanceId(),
+                            instanceStartedEvent.getMemberId(),
                             instanceStartedEvent.getInstanceId(),
                             instanceStartedEvent.getNetworkPartitionId(),
-                            instanceStartedEvent.getPartitionId(),
-                            instanceStartedEvent.getMemberId()));
+                            instanceStartedEvent.getPartitionId()));
         }
         publishEvent(memberStartedEventTopology);
     }
@@ -182,30 +183,31 @@ public class TopologyEventPublisher {
             MemberActivatedEvent memberActivatedEvent) {
         if (log.isInfoEnabled()) {
             log.info(String
-                    .format("Publishing member activated event: [service] %s [cluster] %s " +
-                                    "[instance-id] %s [network-partition] %s [partition] %s [member] %s",
+                    .format("Publishing member activated event: [service-name] %s [cluster-id] %s [cluster-instance-id] %s " +
+                                    "[member-id] %s [instance-id] %s [network-partition-id] %s [partition-id] %s",
                             memberActivatedEvent.getServiceName(),
                             memberActivatedEvent.getClusterId(),
+                            memberActivatedEvent.getClusterInstanceId(),
+                            memberActivatedEvent.getMemberId(),
                             memberActivatedEvent.getInstanceId(),
                             memberActivatedEvent.getNetworkPartitionId(),
-                            memberActivatedEvent.getPartitionId(),
-                            memberActivatedEvent.getMemberId()));
+                            memberActivatedEvent.getPartitionId()));
         }
         publishEvent(memberActivatedEvent);
     }
 
     public static void sendMemberReadyToShutdownEvent(MemberReadyToShutdownEvent memberReadyToShutdownEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing member Ready to shut down event: [service] %s " +
-                            " [instance-id] %s [cluster] %s [network-partition] %s [partition] %s " +
-                            "[member] %s [groupId] %s",
-                                        memberReadyToShutdownEvent.getServiceName(),
-                                        memberReadyToShutdownEvent.getClusterId(),
-                                        memberReadyToShutdownEvent.getInstanceId(),
-                                        memberReadyToShutdownEvent.getNetworkPartitionId(),
-                                        memberReadyToShutdownEvent.getPartitionId(),
-                                        memberReadyToShutdownEvent.getMemberId(),
-                                        memberReadyToShutdownEvent.getGroupId()));
+            log.info(String.format("Publishing member ready to shut down event: [service-name] %s [cluster-id] %s " +
+                            "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
+                            "[partition-id] %s",
+                    memberReadyToShutdownEvent.getServiceName(),
+                    memberReadyToShutdownEvent.getClusterId(),
+                    memberReadyToShutdownEvent.getClusterInstanceId(),
+                    memberReadyToShutdownEvent.getMemberId(),
+                    memberReadyToShutdownEvent.getInstanceId(),
+                    memberReadyToShutdownEvent.getNetworkPartitionId(),
+                    memberReadyToShutdownEvent.getPartitionId()));
         }
         // grouping
         memberReadyToShutdownEvent.setGroupId(memberReadyToShutdownEvent.getGroupId());
@@ -214,15 +216,15 @@ public class TopologyEventPublisher {
 
     public static void sendMemberMaintenanceModeEvent(MemberMaintenanceModeEvent memberMaintenanceModeEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing Maintenance mode event: [service] %s [cluster] %s " +
-                            " [instance-id] %s [network-partition] %s [partition] %s [member] %s " +
-                            "[groupId] %s", memberMaintenanceModeEvent.getServiceName(),
-                                            memberMaintenanceModeEvent.getClusterId(),
-                                            memberMaintenanceModeEvent.getInstanceId(),
-                                            memberMaintenanceModeEvent.getNetworkPartitionId(),
-                                            memberMaintenanceModeEvent.getPartitionId(),
-                                            memberMaintenanceModeEvent.getMemberId(),
-                                            memberMaintenanceModeEvent.getGroupId()));
+            log.info(String.format("Publishing member in maintenance mode event: [service-name] %s [cluster-id] %s [cluster-instance-id] %s " +
+                            "[member-id] %s [instance-id] %s [network-partition-id] %s [partition-id] %s",
+                    memberMaintenanceModeEvent.getServiceName(),
+                    memberMaintenanceModeEvent.getClusterId(),
+                    memberMaintenanceModeEvent.getClusterInstanceId(),
+                    memberMaintenanceModeEvent.getMemberId(),
+                    memberMaintenanceModeEvent.getInstanceId(),
+                    memberMaintenanceModeEvent.getNetworkPartitionId(),
+                    memberMaintenanceModeEvent.getPartitionId()));
         }
 
         publishEvent(memberMaintenanceModeEvent);
@@ -230,8 +232,8 @@ public class TopologyEventPublisher {
 
     public static void sendClusterActivatedEvent(ClusterInstanceActivatedEvent clusterActivatedEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster activated event: [service] %s [cluster] %s " +
-                            " [instance-id] %s [appId] %s",
+            log.info(String.format("Publishing cluster activated event: [service-name] %s [cluster-id] %s " +
+                            " [instance-id] %s [application-id] %s",
                     clusterActivatedEvent.getServiceName(),
                     clusterActivatedEvent.getClusterId(),
                     clusterActivatedEvent.getInstanceId(),
@@ -242,8 +244,8 @@ public class TopologyEventPublisher {
 
     public static void sendClusterInactivateEvent(ClusterInstanceInactivateEvent clusterInactiveEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster inactive event: [service] %s [cluster] %s " +
-                            "[instance-id] %s [appId] %s",
+            log.info(String.format("Publishing cluster inactive event: [service-name] %s [cluster-id] %s " +
+                            "[instance-id] %s [application-id] %s",
                     clusterInactiveEvent.getServiceName(), clusterInactiveEvent.getClusterId(),
                     clusterInactiveEvent.getInstanceId(), clusterInactiveEvent.getAppId()));
         }
@@ -252,8 +254,8 @@ public class TopologyEventPublisher {
 
     public static void sendClusterInstanceCreatedEvent(ClusterInstanceCreatedEvent clusterInstanceCreatedEvent) {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing cluster Instance Created event: [service] %s [cluster] %s " +
-                            " in [network partition] %s [instance-id] %s",
+            log.info(String.format("Publishing cluster instance created event: [service-name] %s [cluster-id] %s " +
+                            " in [network-partition-id] %s [instance-id] %s",
                     clusterInstanceCreatedEvent.getServiceName(), clusterInstanceCreatedEvent.getClusterId(),
                     clusterInstanceCreatedEvent.getNetworkPartitionId(),
                     clusterInstanceCreatedEvent.getClusterInstance().getInstanceId()));
@@ -262,21 +264,21 @@ public class TopologyEventPublisher {
     }
 
 
-    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String networkPartitionId,
-                                                 String partitionId, String memberId,
-                                                 Properties properties, String groupId, String instanceId) {
+    public static void sendMemberTerminatedEvent(String serviceName, String clusterId, String memberId,
+                                                 String instanceId, String clusterInstanceId,
+                                                 String networkPartitionId, String partitionId, Properties properties,
+                                                 String groupId) {
         MemberTerminatedEvent memberTerminatedEvent = new MemberTerminatedEvent(serviceName, clusterId,
-                networkPartitionId, partitionId, memberId, instanceId);
+                memberId, instanceId, clusterInstanceId, networkPartitionId, partitionId);
         memberTerminatedEvent.setProperties(properties);
         memberTerminatedEvent.setGroupId(groupId);
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing member terminated event: [service] %s [cluster] %s " +
-                            " [instance-id] %s [network-partition] %s [partition] %s [member] %s " +
-                            "[groupId] %s", serviceName, clusterId, instanceId, networkPartitionId,
-                    partitionId, memberId, groupId));
+            log.info(String.format("Publishing member terminated event: [service-name] %s [cluster-id] %s " +
+                            "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
+                            "[partition-id] %s [group-id] %s", serviceName, clusterId, clusterInstanceId, memberId,
+                    instanceId, networkPartitionId, partitionId, groupId));
         }
-
         publishEvent(memberTerminatedEvent);
     }
 
@@ -292,7 +294,7 @@ public class TopologyEventPublisher {
     public static void sendClusterTerminatingEvent(ClusterInstanceTerminatingEvent clusterTerminatingEvent) {
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing Cluster terminating event: [appId] %s [cluster id] %s" +
+            log.info(String.format("Publishing Cluster terminating event: [application-id] %s [cluster id] %s" +
                             " [instance-id] %s ",
                     clusterTerminatingEvent.getAppId(), clusterTerminatingEvent.getClusterId(),
                     clusterTerminatingEvent.getInstanceId()));
@@ -304,7 +306,7 @@ public class TopologyEventPublisher {
     public static void sendClusterTerminatedEvent(ClusterInstanceTerminatedEvent clusterTerminatedEvent) {
 
         if (log.isInfoEnabled()) {
-            log.info(String.format("Publishing Cluster terminated event: [appId] %s [cluster id] %s" +
+            log.info(String.format("Publishing Cluster terminated event: [application-id] %s [cluster id] %s" +
                             " [instance-id] %s ",
                     clusterTerminatedEvent.getAppId(), clusterTerminatedEvent.getClusterId(),
                     clusterTerminatedEvent.getInstanceId()));

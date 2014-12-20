@@ -31,6 +31,7 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 
     private final String serviceName;
     private final String clusterId;
+    private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
@@ -40,15 +41,15 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private String instanceId;
 
 
-    public MemberStartedEvent(String serviceName, String clusterId, String networkPartitionId,
-                              String partitionId, String memberId, String instanceId) {
+    public MemberStartedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId, String instanceId, String networkPartitionId,
+                              String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.networkPartitionId = networkPartitionId;
-        this.partitionId = partitionId;
+        this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
         this.instanceId = instanceId;
-
+        this.networkPartitionId = networkPartitionId;
+        this.partitionId = partitionId;
     }
 
     public String getInstanceId() {
@@ -98,4 +99,8 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
 	}
+
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
+    }
 }

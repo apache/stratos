@@ -22,11 +22,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
+import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
@@ -392,18 +393,20 @@ public class TopologyBuilder {
         TopologyEventPublisher.sendClusterRemovedEvent(ctxt, deploymentPolicy);
     }
 
-	public static void handleMemberSpawned(String serviceName,
-			String clusterId, String partitionId,
-			String privateIp, String publicIp, MemberContext context) {
+	public static void handleMemberSpawned(MemberContext memberContext) {
 		// adding the new member to the cluster after it is successfully started
 		// in IaaS.
 		Topology topology = TopologyManager.getTopology();
-		Service service = topology.getService(serviceName);
-		Cluster cluster = service.getCluster(clusterId);
-		String memberId = context.getMemberId();
-		String networkPartitionId = context.getNetworkPartitionId();
-		String lbClusterId = context.getLbClusterId();
-		long initTime = context.getInitTime();
+		Service service = topology.getService(memberContext.getCartridgeType());
+        String clusterId = memberContext.getClusterId();
+        Cluster cluster = service.getCluster(clusterId);
+		String memberId = memberContext.getMemberId();
+        String instanceId = memberContext.getInstanceId();
+        String clusterInstanceId = memberContext.getClusterInstanceId();
+		String networkPartitionId = memberContext.getNetworkPartitionId();
+        String partitionId = memberContext.getPartition().getId();
+		String lbClusterId = memberContext.getLbClusterId();
+		long initTime = memberContext.getInitTime();
 
 		if (cluster.memberExists(memberId)) {
 			log.warn(String.format("Member %s already exists", memberId));
@@ -412,23 +415,22 @@ public class TopologyBuilder {
 
 		try {
 			TopologyManager.acquireWriteLock();
-			Member member = new Member(serviceName, clusterId,
-					networkPartitionId, partitionId, memberId, initTime);
+			Member member = new Member(service.getServiceName(), clusterId, memberId, instanceId, clusterInstanceId,
+					networkPartitionId, partitionId, initTime);
 			member.setStatus(MemberStatus.Created);
-            member.setInstanceId(context.getInstanceId());
-			member.setMemberIp(privateIp);
+			member.setMemberIp(memberContext.getPrivateIpAddress());
 			member.setLbClusterId(lbClusterId);
-			member.setMemberPublicIp(publicIp);
-			member.setProperties(CloudControllerUtil.toJavaUtilProperties(context.getProperties()));
+			member.setMemberPublicIp(memberContext.getPublicIpAddress());
+			member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
             try {
 
-                Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(serviceName);
+                Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(service.getServiceName());
                 List<PortMapping> portMappings = cartridge.getPortMappings();
                 Port port;
                 if(cluster.isKubernetesCluster()){
                     // Update port mappings with generated service proxy port
                     // TODO: Need to properly fix with the latest Kubernetes version
-                    String serviceHostPortStr = CloudControllerUtil.getProperty(context.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                    String serviceHostPortStr = CloudControllerUtil.getProperty(memberContext.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
                     if(StringUtils.isEmpty(serviceHostPortStr)) {
                         log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
                     }
@@ -464,9 +466,7 @@ public class TopologyBuilder {
 			TopologyManager.releaseWriteLock();
 		}
 		
-		TopologyEventPublisher.sendInstanceSpawnedEvent(serviceName, clusterId,
-				networkPartitionId, partitionId, memberId, lbClusterId,
-				publicIp, privateIp, context);
+		TopologyEventPublisher.sendInstanceSpawnedEvent(memberContext);
 	}
     
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
@@ -547,12 +547,12 @@ public class TopologyBuilder {
         }
 
         MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent(
-                                                        instanceActivatedEvent.getServiceName(),
-                                                        instanceActivatedEvent.getClusterId(),
-                                                        instanceActivatedEvent.getNetworkPartitionId(),
-                                                        instanceActivatedEvent.getPartitionId(),
-                                                        instanceActivatedEvent.getMemberId(),
-                                                        instanceActivatedEvent.getInstanceId());
+                instanceActivatedEvent.getServiceName(),
+                instanceActivatedEvent.getClusterId(),
+                instanceActivatedEvent.getClusterInstanceId(), instanceActivatedEvent.getMemberId(),
+                instanceActivatedEvent.getInstanceId(),
+                instanceActivatedEvent.getNetworkPartitionId(),
+                instanceActivatedEvent.getPartitionId());
 
         // grouping - set grouid
         //TODO
@@ -627,12 +627,12 @@ public class TopologyBuilder {
             return;
         }
         MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
-                                                                instanceReadyToShutdownEvent.getServiceName(),
-                                                                instanceReadyToShutdownEvent.getClusterId(),
-                                                                instanceReadyToShutdownEvent.getNetworkPartitionId(),
-                                                                instanceReadyToShutdownEvent.getPartitionId(),
-                                                                instanceReadyToShutdownEvent.getMemberId(),
-                                                                instanceReadyToShutdownEvent.getInstanceId());
+                instanceReadyToShutdownEvent.getServiceName(),
+                instanceReadyToShutdownEvent.getClusterId(),
+                instanceReadyToShutdownEvent.getClusterInstanceId(), instanceReadyToShutdownEvent.getMemberId(),
+                instanceReadyToShutdownEvent.getInstanceId(),
+                instanceReadyToShutdownEvent.getNetworkPartitionId(),
+                instanceReadyToShutdownEvent.getPartitionId());
         try {
             TopologyManager.acquireWriteLock();
 
@@ -687,12 +687,12 @@ public class TopologyBuilder {
 
 
         MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
-                                                                instanceMaintenanceModeEvent.getServiceName(),
-                                                                instanceMaintenanceModeEvent.getClusterId(),
-                                                                instanceMaintenanceModeEvent.getNetworkPartitionId(),
-                                                                instanceMaintenanceModeEvent.getPartitionId(),
-                                                                instanceMaintenanceModeEvent.getMemberId(),
-                                                                instanceMaintenanceModeEvent.getInstanceId());
+                instanceMaintenanceModeEvent.getServiceName(),
+                instanceMaintenanceModeEvent.getClusterId(),
+                instanceMaintenanceModeEvent.getClusterInstanceId(), instanceMaintenanceModeEvent.getMemberId(),
+                instanceMaintenanceModeEvent.getInstanceId(),
+                instanceMaintenanceModeEvent.getNetworkPartitionId(),
+                instanceMaintenanceModeEvent.getPartitionId());
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
@@ -746,6 +746,7 @@ public class TopologyBuilder {
 			return;
 		}
         String instanceId = member.getInstanceId();
+        String clusterInstanceId = member.getClusterInstanceId();
 
         try {
             TopologyManager.acquireWriteLock();
@@ -757,8 +758,9 @@ public class TopologyBuilder {
         }
         /* @TODO leftover from grouping_poc*/
         String groupAlias = null;
-        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, networkPartitionId,
-                partitionId, memberId, properties, groupAlias, instanceId);
+        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, memberId, instanceId,
+                clusterInstanceId, networkPartitionId,
+                partitionId, properties, groupAlias);
     }
 
     public static void handleMemberSuspended() {

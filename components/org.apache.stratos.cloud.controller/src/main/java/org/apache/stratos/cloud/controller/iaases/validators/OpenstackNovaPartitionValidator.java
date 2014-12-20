@@ -36,9 +36,10 @@ import java.util.Properties;
  *
  *
  */
-public class OpenstackNovaPartitionValidator extends IaasBasedPartitionValidator {
+public class OpenstackNovaPartitionValidator implements PartitionValidator {
     
     private static final Log log = LogFactory.getLog(OpenstackNovaPartitionValidator.class);
+
     private IaasProvider iaasProvider;
     private Iaas iaas;
 

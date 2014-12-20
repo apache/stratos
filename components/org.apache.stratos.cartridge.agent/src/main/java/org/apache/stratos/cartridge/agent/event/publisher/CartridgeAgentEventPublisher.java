@@ -51,9 +51,11 @@ public class CartridgeAgentEventPublisher {
 			InstanceStartedEvent event = new InstanceStartedEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
+					CartridgeAgentConfiguration.getInstance().getMemberId(),
+					CartridgeAgentConfiguration.getInstance().getInstanceId(),
+					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
+					CartridgeAgentConfiguration.getInstance().getPartitionId());
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
@@ -78,9 +80,11 @@ public class CartridgeAgentEventPublisher {
 			InstanceActivatedEvent event = new InstanceActivatedEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
+					CartridgeAgentConfiguration.getInstance().getMemberId(),
+					CartridgeAgentConfiguration.getInstance().getInstanceId(),
+					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
+					CartridgeAgentConfiguration.getInstance().getPartitionId());
 
 			// Event publisher connection will
 			String topic = Util.getMessageTopicName(event);
@@ -115,9 +119,11 @@ public class CartridgeAgentEventPublisher {
 			InstanceReadyToShutdownEvent event = new InstanceReadyToShutdownEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
+					CartridgeAgentConfiguration.getInstance().getMemberId(),
+					CartridgeAgentConfiguration.getInstance().getInstanceId(),
+					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
+					CartridgeAgentConfiguration.getInstance().getPartitionId());
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
@@ -141,9 +147,11 @@ public class CartridgeAgentEventPublisher {
 			InstanceMaintenanceModeEvent event = new InstanceMaintenanceModeEvent(
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
+					CartridgeAgentConfiguration.getInstance().getMemberId(),
+					CartridgeAgentConfiguration.getInstance().getInstanceId(),
+					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(), null);
+					CartridgeAgentConfiguration.getInstance().getPartitionId());
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
