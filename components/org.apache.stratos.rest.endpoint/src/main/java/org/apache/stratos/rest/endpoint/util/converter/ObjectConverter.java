@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.partition.Partition;
@@ -1373,39 +1374,57 @@ public class ObjectConverter {
     }
 
 
-    public static ApplicationBean convertApplicationToApplicationBean(Application application) {
+    public static ApplicationInfoBean convertApplicationToApplicationBean(Application application) {
         if (application == null) {
             return null;
         }
 
-        ApplicationBean applicationBean = new ApplicationBean();
+        ApplicationInfoBean applicationBean = new ApplicationInfoBean();
         applicationBean.setId(application.getUniqueIdentifier());
         applicationBean.setName(application.getName());
         applicationBean.setDescription(application.getDescription());
         applicationBean.setTenantDomain(application.getTenantDomain());
         applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
-        applicationBean.setInstances(convertApplicationInstancesToInstances(application));
+        //applicationBean.set(convertApplicationToApplicationInstanceBean(application));
         return applicationBean;
     }
 
-    private static List<Instance> convertApplicationInstancesToInstances(
-            Application application) {
-    	List<Instance> applicationInstanceList = new ArrayList<Instance>();
-    	Collection<ApplicationInstance> applicationInstancesInTopology = 
-    			application.getInstanceIdToInstanceContextMap().values();
-    	
-    	if(applicationInstancesInTopology != null) {
-    		for (ApplicationInstance applicationInstance : applicationInstancesInTopology) {
-    			Instance instance = new Instance();
-    			instance.setInstanceId(applicationInstance.getInstanceId());
-    			instance.setStatus(applicationInstance.getStatus().toString());
-    			applicationInstanceList.add(instance);
-            }
-    	}
-	    return applicationInstanceList;
+    public static ApplicationInfoBean convertApplicationToApplicationInstanceBean(Application application) {
+        if (application == null) {
+            return null;
+        }
+
+        ApplicationInfoBean applicationBean = new
+                ApplicationInfoBean();
+        applicationBean.setId(application.getUniqueIdentifier());
+        applicationBean.setName(application.getName());
+        applicationBean.setDescription(application.getDescription());
+        applicationBean.setTenantDomain(application.getTenantDomain());
+        applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
+        applicationBean.setApplicationInstances(convertApplicationInstancesToApplicationInstances(application));
+        return applicationBean;
     }
 
-	public static GroupBean convertGroupToGroupBean(Group group) {
+    private static List<ApplicationInstanceBean> convertApplicationInstancesToApplicationInstances(
+            Application application) {
+        List<ApplicationInstanceBean> applicationInstanceList = new ArrayList<ApplicationInstanceBean>();
+        Collection<ApplicationInstance> applicationInstancesInTopology =
+                application.getInstanceIdToInstanceContextMap().values();
+
+        if (applicationInstancesInTopology != null) {
+            for (ApplicationInstance applicationInstance : applicationInstancesInTopology) {
+                ApplicationInstanceBean instance = new ApplicationInstanceBean();
+                instance.setInstanceId(applicationInstance.getInstanceId());
+                instance.setApplicationId(application.getUniqueIdentifier());
+                instance.setParentInstanceId(applicationInstance.getParentId());
+                instance.setStatus(applicationInstance.getStatus().toString());
+                applicationInstanceList.add(instance);
+            }
+        }
+        return applicationInstanceList;
+    }
+
+    public static GroupBean convertGroupToGroupBean(Group group) {
         if (group == null) {
             return null;
         }
@@ -1417,7 +1436,46 @@ public class ObjectConverter {
         return groupBean;
     }
 
-	private static List<Instance> convertGroupInstancesToInstances(Group group) {
+    public static List<GroupInstanceBean> convertGroupToGroupInstancesBean(String instanceId, Group group) {
+        if (group == null) {
+            return null;
+        }
+
+        List<GroupInstanceBean> groupInstanceBeans = new ArrayList<GroupInstanceBean>();
+        if (group.getInstanceContexts(instanceId) != null) {
+            GroupInstance groupInstance = group.getInstanceContexts(instanceId);
+            GroupInstanceBean groupInstanceBean = new GroupInstanceBean();
+            groupInstanceBean.setParentInstanceId(instanceId);
+            groupInstanceBean.setInstanceId(groupInstance.getInstanceId());
+            groupInstanceBean.setStatus(groupInstance.getStatus().toString());
+            groupInstanceBean.setGroupId(group.getUniqueIdentifier());
+            /*for(Group group1 : group.getGroups()) {
+                groupInstanceBean.setGroupInstances(convertGroupToGroupInstancesBean(
+                        groupInstance.getInstanceId(), group1));
+            }*/
+            groupInstanceBeans.add(groupInstanceBean);
+
+        } else {
+            List<org.apache.stratos.messaging.domain.instance.Instance> groupInstances =
+                    group.getInstanceContextsWithParentId(instanceId);
+            for (org.apache.stratos.messaging.domain.instance.Instance groupInstance : groupInstances) {
+                GroupInstanceBean groupInstanceBean = new GroupInstanceBean();
+                groupInstanceBean.setParentInstanceId(instanceId);
+                groupInstanceBean.setInstanceId(groupInstance.getInstanceId());
+                groupInstanceBean.setStatus(((GroupInstance) groupInstance).getStatus().toString());
+                groupInstanceBean.setGroupId(group.getUniqueIdentifier());
+                /*for(Group group1 : group.getGroups()) {
+                    groupInstanceBean.setGroupInstances(convertGroupToGroupInstancesBean(
+                            groupInstance.getInstanceId(), group1));
+                }*/
+                groupInstanceBeans.add(groupInstanceBean);
+            }
+        }
+
+        return groupInstanceBeans;
+    }
+
+    private static List<Instance> convertGroupInstancesToInstances(Group group) {
 	    List<Instance> instanceList = new ArrayList<Instance>();
 	    Collection<GroupInstance> instancesInTopology = group.getInstanceIdToInstanceContextMap().values();
 	    if(instancesInTopology != null) {

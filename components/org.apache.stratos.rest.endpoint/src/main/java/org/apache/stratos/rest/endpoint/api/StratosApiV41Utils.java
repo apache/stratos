@@ -402,7 +402,7 @@ public class StratosApiV41Utils {
             String message = e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
-        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             String message = e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
@@ -880,7 +880,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException(e);
         } catch (ADCException e) {
             throw new RestAPIException(e);
-        } catch (CloudControllerServiceUnregisteredCartridgeExceptionException e) {
+        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
             throw new RestAPIException(e);
         }
 
