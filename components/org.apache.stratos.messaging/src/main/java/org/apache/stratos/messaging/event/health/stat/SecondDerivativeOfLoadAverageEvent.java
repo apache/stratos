@@ -28,13 +28,13 @@ public class SecondDerivativeOfLoadAverageEvent extends Event {
 
     private final String networkPartitionId;
     private final String clusterId;
-    private final String instanceId;
+    private final String clusterInstanceId;
     private final float value;
 
-    public SecondDerivativeOfLoadAverageEvent(String networkPartitionId, String clusterId, String instanceId, float value) {
+    public SecondDerivativeOfLoadAverageEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float value) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
-        this.instanceId = instanceId;
+        this.clusterInstanceId = clusterInstanceId;
         this.value = value;
     }
 
@@ -51,7 +51,7 @@ public class SecondDerivativeOfLoadAverageEvent extends Event {
         return networkPartitionId;
     }
 
-    public String getInstanceId() {
-        return instanceId;
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 }

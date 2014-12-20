@@ -26,17 +26,16 @@ import org.apache.stratos.messaging.event.Event;
  */
 public class SecondDerivativeOfRequestsInFlightEvent extends Event {
     private final String clusterId;
-    private final String instanceId;
+    private final String clusterInstanceId;
     private final String networkPartitionId;
     private final float value;
 
-    public SecondDerivativeOfRequestsInFlightEvent(String clusterId, String instanceId, String networkPartitionId, float value) {
+    public SecondDerivativeOfRequestsInFlightEvent(String clusterId, String clusterInstanceId, String networkPartitionId, float value) {
         this.clusterId = clusterId;
-        this.instanceId = instanceId;
+        this.clusterInstanceId = clusterInstanceId;
         this.networkPartitionId = networkPartitionId;
         this.value = value;
     }
-
 
     public String getClusterId() {
         return clusterId;
@@ -50,7 +49,7 @@ public class SecondDerivativeOfRequestsInFlightEvent extends Event {
         return networkPartitionId;
     }
 
-    public String getInstanceId() {
-        return instanceId;
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 }

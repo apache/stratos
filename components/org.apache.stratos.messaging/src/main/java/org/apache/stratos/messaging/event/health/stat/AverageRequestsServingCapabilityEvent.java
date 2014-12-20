@@ -7,15 +7,14 @@ import org.apache.stratos.messaging.event.Event;
 public class AverageRequestsServingCapabilityEvent extends  Event{
     private final String networkPartitionId;
     private final String clusterId;
+    private final String clusterInstanceId;
     private final float value;
-    private final String instanceId;
 
-    public AverageRequestsServingCapabilityEvent(String networkPartitionId, String clusterId, float value, String instanceId) {
+    public AverageRequestsServingCapabilityEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float value) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
+        this.clusterInstanceId = clusterInstanceId;
         this.value = value;
-
-        this.instanceId = instanceId;
     }
     public String getClusterId() {
         return clusterId;
@@ -29,8 +28,7 @@ public class AverageRequestsServingCapabilityEvent extends  Event{
         return networkPartitionId;
     }
 
-
-    public String getInstanceId() {
-        return instanceId;
+    public String getClusterInstanceId() {
+        return clusterInstanceId;
     }
 }

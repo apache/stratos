@@ -31,7 +31,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="active_instances_count" type="double"/>
              <property name="in_flight_request_count" type="double"/>
@@ -48,7 +48,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
@@ -63,7 +63,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="instances_count" type="double"/>
              <property name="count" type="double"/>
@@ -80,7 +80,7 @@
         </correlationData>
         <payloadData>
             <property name="cluster_id" type="String"/>
-            <property name="instance_id" type="String"/>
+            <property name="cluster_instance_id" type="String"/>
             <property name="network_partition_id" type="String"/>
             <property name="average_served_count" type="double"/>
         </payloadData>
@@ -95,7 +95,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="count" type="double"/>
          </payloadData>
@@ -112,7 +112,7 @@
          </correlationData>
          <payloadData>
 	         <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String" />
              <property name="partition_id" type="String" />
@@ -130,7 +130,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="average_load_average" type="double"/>
          </payloadData>
@@ -145,7 +145,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="average_memory_consumption" type="double"/>
          </payloadData>
@@ -160,7 +160,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="gradient_load_average" type="double"/>
          </payloadData>
@@ -175,7 +175,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="gradient_memory_consumption" type="double"/>
          </payloadData>
@@ -190,7 +190,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="second_derivative_memory_consumption" type="double"/>
          </payloadData>
@@ -205,7 +205,7 @@
          </correlationData>
          <payloadData>
 	     <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="second_derivative_load_average" type="double"/>
          </payloadData>
@@ -220,7 +220,7 @@
          </correlationData>
          <payloadData>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_id" type="String"/>
              <property name="partition_id" type="String"/>
@@ -239,7 +239,7 @@
          <payloadData>
              <property name="member_id" type="String" />
              <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_average_load_average" type="double"/>
          </payloadData>
@@ -255,7 +255,7 @@
          <payloadData>
              <property name="member_id" type="String"/>
              <property name="cluster_id" type="String"/>
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_average_memory_consumption" type="double"/>
          </payloadData>
@@ -271,7 +271,7 @@
          <payloadData>
              <property name="member_id" type="String" />
              <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_gradient_load_average" type="double"/>
          </payloadData>
@@ -287,7 +287,7 @@
          <payloadData>
              <property name="member_id" type="String" />
              <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_gradient_memory_consumption" type="double"/>
          </payloadData>
@@ -303,7 +303,7 @@
          <payloadData>
              <property name="member_id" type="String" />
              <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_second_derivative_memory_consumption" type="double"/>
          </payloadData>
@@ -319,7 +319,7 @@
          <payloadData>
              <property name="member_id" type="String" />
              <property name="cluster_id" type="String" />
-             <property name="instance_id" type="String"/>
+             <property name="cluster_instance_id" type="String"/>
              <property name="network_partition_id" type="String"/>
              <property name="member_second_derivative_load_average" type="double"/>
          </payloadData>

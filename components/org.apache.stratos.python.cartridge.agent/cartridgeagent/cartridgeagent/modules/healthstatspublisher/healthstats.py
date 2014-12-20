@@ -125,7 +125,7 @@ class HealthStatisticsPublisher:
 
 
         stream_def.add_payloaddata_attribute("cluster_id", StreamDefinition.STRING)
-        stream_def.add_payloaddata_attribute("instance_id", StreamDefinition.STRING)
+        stream_def.add_payloaddata_attribute("cluster_instance_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("network_partition_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("member_id", StreamDefinition.STRING)
         stream_def.add_payloaddata_attribute("partition_id", StreamDefinition.STRING)
@@ -142,7 +142,7 @@ class HealthStatisticsPublisher:
 
         event = ThriftEvent()
         event.payloadData.append(self.cartridge_agent_config.cluster_id)
-        event.payloadData.append(self.cartridge_agent_config.instance_id)
+        event.payloadData.append(self.cartridge_agent_config.cluster_instance_id)
         event.payloadData.append(self.cartridge_agent_config.network_partition_id)
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)
@@ -160,7 +160,7 @@ class HealthStatisticsPublisher:
 
         event = ThriftEvent()
         event.payloadData.append(self.cartridge_agent_config.cluster_id)
-        event.payloadData.append(self.cartridge_agent_config.instance_id)
+        event.payloadData.append(self.cartridge_agent_config.cluster_instance_id)
         event.payloadData.append(self.cartridge_agent_config.network_partition_id)
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)

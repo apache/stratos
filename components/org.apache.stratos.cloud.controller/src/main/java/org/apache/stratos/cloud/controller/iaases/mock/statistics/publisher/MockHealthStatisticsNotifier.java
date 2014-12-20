@@ -63,7 +63,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
             }
             statsPublisher.publish(
                     mockMemberContext.getClusterId(),
-                    mockMemberContext.getInstanceId(),
+                    mockMemberContext.getClusterInstanceId(),
                     mockMemberContext.getNetworkPartitionId(),
                     mockMemberContext.getMemberId(),
                     mockMemberContext.getPartitionId(),
@@ -87,7 +87,7 @@ public class MockHealthStatisticsNotifier implements Runnable {
             }
             statsPublisher.publish(
                     mockMemberContext.getClusterId(),
-                    mockMemberContext.getInstanceId(),
+                    mockMemberContext.getClusterInstanceId(),
                     mockMemberContext.getNetworkPartitionId(),
                     mockMemberContext.getMemberId(),
                     mockMemberContext.getPartitionId(),
