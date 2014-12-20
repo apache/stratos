@@ -54,7 +54,9 @@ public class TenantEventPublisher implements TenantMgtListener {
 			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 			eventPublisher.publish(event);
 		} catch (Exception e) {
-			log.error("Could not publish tenant created event", e);
+			log.error(String.format("Could not publish tenant created event [tenant-id] %d [tenant-domain] %s ",
+			                        tenantInfo.getTenantId(),
+			                        tenantInfo.getTenantDomain()), e);
 		}
 	}
 
@@ -72,7 +74,9 @@ public class TenantEventPublisher implements TenantMgtListener {
 			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 			eventPublisher.publish(event);
 		} catch (Exception e) {
-			log.error("Could not publish tenant updated event");
+			log.error(String.format("Could not publish tenant updated event:[tenant-id] %d [tenant-domain] %s ",
+			                        tenantInfo.getTenantId(),
+			                        tenantInfo.getTenantDomain()), e);
 		}
 	}
 
@@ -87,7 +91,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 			eventPublisher.publish(event);
 		} catch (Exception e) {
-			log.error("Could not publish tenant removed event");
+			log.error(String.format("Could not publish tenant removed event [tenant-id] %d", tenantId),e);
 		}
 	}
 

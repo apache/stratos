@@ -50,7 +50,7 @@ class InstanceStatusEventMessageListener implements MessageListener {
             messageQueue.add(message);
 
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error("Instance status message receive got failed", e);
         }
     }
 }
