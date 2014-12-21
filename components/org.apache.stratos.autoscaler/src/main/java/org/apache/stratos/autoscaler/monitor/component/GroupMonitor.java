@@ -133,7 +133,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                                 //couldn't create new instance. Hence notifying the parent
                                                 MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
                                                         networkPartitionContext.getId(),
-                                                        instanceContext.getId(),
+                                                        instanceContext.getParentInstanceId(),
                                                         appId);
                                             }
                                         } else {
