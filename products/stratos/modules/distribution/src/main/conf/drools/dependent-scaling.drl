@@ -58,16 +58,30 @@ dialect "mvel"
             while(count != additionalInstances  && partitionsAvailable){
 
                 ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
-                if(partitionContext != null){
+                if(partitionContext != null) {
 
-                    log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                    log.debug("[scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                    log.info("[dependency-scale][scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                    log.debug("[dependency-scale][scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
                     delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
                     count++;
                 } else {
 
                     partitionsAvailable = false;
                 }
+            }
+            if(!partitionsAvailable) {
+                if(clusterInstanceContext.isInGroupScalingEnabledSubtree()){
+                    delegator.delegateScalingOverMaxNotification(clusterId,
+                                                    clusterInstanceContext.getNetworkPartitionId(),
+                                                    clusterInstanceContext.getId());
+                    log.info("[dependency-scale][dependent-max-notification] partition is not
+                    available for [scale-up]. Hence notifying the parent for group scaling" );
+                } else {
+                    log.warn("[dependency-scale][dependent-max-notification] partition is not
+                                    available for [scale-up]. All resources are exhausted.
+                                    Please enable group-scaling for further scaleup" );
+                }
+
             }
         } else if (scaleDown) {
 
@@ -81,31 +95,31 @@ dialect "mvel"
                 boolean foundAValue = false;
                 ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleDownPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                 if(partitionContext != null){
-                    log.info("[scale-down] Partition available to scale down, hence trying to terminate an instance to scale down!" );
-                    log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                    log.info("[dependency-scale][scale-down] Partition available to scale down, hence trying to terminate an instance to scale down!" );
+                    log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
 
                     for(MemberStatsContext memberStatsContext: partitionContext.getMemberStatsContexts().values()){
 
 						if( !primaryMembers.contains(memberStatsContext.getMemberId()) ) {
 
                             LoadAverage loadAverage = memberStatsContext.getLoadAverage();
-                            log.debug("[scale-down] " + " [cluster] "
+                            log.debug("[dependency-scale][scale-down] " + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Load average: " + loadAverage);
 
                             MemoryConsumption memoryConsumption = memberStatsContext.getMemoryConsumption();
-                            log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                            log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Memory consumption: " + memoryConsumption);
 
                             double predictedCpu = delegator.getPredictedValueForNextMinute(loadAverage.getAverage(),loadAverage.getGradient(),loadAverage.getSecondDerivative(), 1);
-                            log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                            log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted CPU: " + predictedCpu);
 
                             double predictedMemoryConsumption = delegator.getPredictedValueForNextMinute(memoryConsumption.getAverage(),memoryConsumption.getGradient(),memoryConsumption.getSecondDerivative(), 1);
-                            log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                            log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Predicted memory consumption: " + predictedMemoryConsumption);
 
                             double overallLoad = (predictedCpu + predictedMemoryConsumption) / 2;
-                            log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                            log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
                                 + clusterId + " [member] " + memberStatsContext.getMemberId() + " Overall load: " + overallLoad);
 
                             if(!foundAValue){
@@ -122,8 +136,8 @@ dialect "mvel"
 
                     }
                     if(selectedMemberStatsContext != null) {
-                        log.info("[scale-down] Trying to terminating an instace to scale down!" );
-                        log.debug("[scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
+                        log.info("[dependency-scale][scale-down] Trying to terminating an instace to scale down!" );
+                        log.debug("[dependency-scale][scale-down] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] "
                             + clusterId + " Member with lowest overall load: " + selectedMemberStatsContext.getMemberId());
 
                         delegator.delegateTerminate(partitionContext, selectedMemberStatsContext.getMemberId());
