@@ -20,13 +20,9 @@ package org.apache.stratos.autoscaler.context.group;
 
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.partition.GroupLevelPartitionContext;
-import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingOverMaxEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This will hold the group instance related info
