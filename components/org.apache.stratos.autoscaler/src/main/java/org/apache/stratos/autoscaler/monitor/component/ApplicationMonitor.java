@@ -96,23 +96,29 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
                         if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
-                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty() &&
-                                    networkPartitionContext.getPendingInstancesCount() > 0) {
-                                //handling the application bursting only when there are no pending instances found
-                                try {
-                                    if (log.isInfoEnabled()) {
-                                        log.info("Handling application busting, " +
-                                                "since resources are exhausted in " +
-                                                "this application instance ");
-                                    }
-                                    createInstanceOnBurstingForApplication();
-                                } catch (TopologyInConsistentException e) {
-                                    log.error("Error while bursting the application", e);
-                                } catch (PolicyValidationException e) {
-                                    log.error("Error while bursting the application", e);
-                                } catch (MonitorNotFoundException e) {
-                                    log.error("Error while bursting the application", e);
-                                }
+                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
+                               if(networkPartitionContext.getPendingInstancesCount() == 0) {
+                                   //handling the application bursting only when there are no pending instances found
+                                   try {
+                                       if (log.isInfoEnabled()) {
+                                           log.info("Handling application busting, " +
+                                                   "since resources are exhausted in " +
+                                                   "this application instance ");
+                                       }
+                                       createInstanceOnBurstingForApplication();
+                                   } catch (TopologyInConsistentException e) {
+                                       log.error("Error while bursting the application", e);
+                                   } catch (PolicyValidationException e) {
+                                       log.error("Error while bursting the application", e);
+                                   } catch (MonitorNotFoundException e) {
+                                       log.error("Error while bursting the application", e);
+                                   }
+                               } else {
+                                   if(log.isDebugEnabled()) {
+                                       log.debug("Pending Application instance found. " +
+                                               "Hence waiting for it to become active");
+                                   }
+                               }
 
                             } else {
                                 handleDependentScaling(instanceContext, networkPartitionContext);
@@ -303,6 +309,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         instanceContext = new ApplicationInstanceContext(instanceId);
         //adding the created App InstanceContext to ApplicationLevelNetworkPartitionContext
         context.addInstanceContext(instanceContext);
+        context.addPendingInstance(instanceContext);
 
         //adding to instance map
         this.instanceIdToInstanceMap.put(instanceId, instance);

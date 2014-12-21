@@ -22,10 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This will keep track of network partition level information.
@@ -47,6 +44,9 @@ public abstract class NetworkPartitionContext {
     protected NetworkPartitionContext(String id) {
         this.id = id;
         instanceIdToInstanceContextMap = new HashMap<String, InstanceContext>();
+        pendingInstances = new ArrayList<InstanceContext>();
+        activeInstances = new ArrayList<InstanceContext>();
+        terminatingPending = new ArrayList<InstanceContext>();
 
     }
 

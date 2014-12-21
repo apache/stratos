@@ -146,7 +146,8 @@ public class ApplicationBuilder {
         if (applicationInstance.isStateTransitionValid(status)) {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, instanceId);
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
+                    instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceActivatedEvent(appId, instanceId);
         } else {
@@ -176,7 +177,8 @@ public class ApplicationBuilder {
         if (applicationInstance.isStateTransitionValid(status)) {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, instanceId);
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
+                                    instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
         } else {
@@ -248,7 +250,8 @@ public class ApplicationBuilder {
             if (applicationInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 applicationInstance.setStatus(status);
-                updateApplicationMonitor(appId, status, instanceId);
+                updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
+                                        instanceId);
                 ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
                         getAppMonitor(appId);
                 applicationMonitor.getNetworkPartitionContext(applicationInstance.
@@ -319,7 +322,8 @@ public class ApplicationBuilder {
                 if (context1.isStateTransitionValid(status)) {
                     //setting the status, persist and publish
                     application.setStatus(status, context1.getInstanceId());
-                    updateApplicationMonitor(appId, status, context1.getInstanceId());
+                    updateApplicationMonitor(appId, status, context1.getNetworkPartitionId(),
+                                            context1.getInstanceId());
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, context1.getInstanceId());
                 } else {
@@ -630,12 +634,23 @@ public class ApplicationBuilder {
         }
     }
 
-    private static void updateApplicationMonitor(String appId, ApplicationStatus status, String instanceId) {
+    private static void updateApplicationMonitor(String appId, ApplicationStatus status,
+                                                 String networkPartitionId, String instanceId) {
         //Updating the Application Monitor
         ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().getAppMonitor(appId);
         if (applicationMonitor != null) {
-            if (status == ApplicationStatus.Terminating) {
+            if(status == ApplicationStatus.Active) {
+                applicationMonitor.getNetworkPartitionContext(networkPartitionId).
+                        movePendingInstanceToActiveInstances(instanceId);
+            } else if(status == ApplicationStatus.Terminating) {
                 applicationMonitor.setTerminating(true);
+                NetworkPartitionContext context = applicationMonitor.
+                        getNetworkPartitionContext(networkPartitionId);
+                if(context.getActiveInstance(instanceId) != null) {
+                    context.moveActiveInstanceToTerminationPendingInstances(instanceId);
+                } else if(context.getPendingInstance(instanceId) != null) {
+                    context.movePendingInstanceToTerminationPendingInstances(instanceId);
+                }
             }
             applicationMonitor.setStatus(status, instanceId);
         } else {
@@ -660,8 +675,6 @@ public class ApplicationBuilder {
                 } else if(context.getPendingInstance(instanceId) != null) {
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-
-
             }
             monitor.setStatus(status, instanceId, parentInstanceId);
         } else {
