@@ -627,16 +627,18 @@ public class ObjectConverter {
             memberBean.setLbClusterId(member.getLbClusterId());
             memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
             memberBean.setPartitionId(member.getPartitionId());
-            if (member.getMemberIp() == null) {
-                memberBean.setMemberIp("NULL");
+            if (member.getDefaultPrivateIP() == null) {
+                memberBean.setDefaultPrivateIP("NULL");
             } else {
-                memberBean.setMemberIp(member.getMemberIp());
+                memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
             }
-            if (member.getMemberPublicIp() == null) {
-                memberBean.setMemberPublicIp("NULL");
+            if (member.getDefaultPublicIP() == null) {
+                memberBean.setDefaultPublicIP("NULL");
             } else {
-                memberBean.setMemberPublicIp(member.getMemberPublicIp());
+                memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
             }
+            memberBean.setMemberPrivateIPs(member.getMemberPrivateIPs());
+            memberBean.setMemberPublicIPs(member.getMemberPublicIPs());
             memberBean.setStatus(member.getStatus().toString());
             memberBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(member.getProperties()));
             clusterBean.getMember().add(memberBean);
@@ -672,16 +674,18 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
-                if (member.getMemberIp() == null) {
-                    memberBean.setMemberIp("NULL");
+                if (member.getDefaultPrivateIP() == null) {
+                    memberBean.setDefaultPrivateIP("NULL");
                 } else {
-                    memberBean.setMemberIp(member.getMemberIp());
+                    memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 }
-                if (member.getMemberPublicIp() == null) {
-                    memberBean.setMemberPublicIp("NULL");
+                if (member.getDefaultPublicIP() == null) {
+                    memberBean.setDefaultPublicIP("NULL");
                 } else {
-                    memberBean.setMemberPublicIp(member.getMemberPublicIp());
+                    memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
                 }
+                memberBean.setMemberPrivateIPs(member.getMemberPrivateIPs());
+                memberBean.setMemberPublicIPs(member.getMemberPublicIPs());
                 memberBean.setServiceName(member.getServiceName());
                 memberBean.setStatus(member.getStatus().toString());
                 memberBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(member.getProperties()));

@@ -418,9 +418,15 @@ public class TopologyBuilder {
 			Member member = new Member(service.getServiceName(), clusterId, memberId, instanceId, clusterInstanceId,
 					networkPartitionId, partitionId, initTime);
 			member.setStatus(MemberStatus.Created);
-			member.setMemberIp(memberContext.getPrivateIpAddress());
+			member.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
+	        if (memberContext.getPrivateIPs() != null) {
+	        	member.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
+	        }
 			member.setLbClusterId(lbClusterId);
-			member.setMemberPublicIp(memberContext.getPublicIpAddress());
+			member.setDefaultPublicIP(memberContext.getDefaultPublicIP());
+	        if (memberContext.getPublicIPs() != null) {
+	        	member.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
+	        }
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
             try {
 
@@ -581,8 +587,10 @@ public class TopologyBuilder {
                     memberActivatedEvent.addPort(port);
                 }
 
-                memberActivatedEvent.setMemberIp(member.getMemberIp());
-                memberActivatedEvent.setMemberPublicIp(member.getMemberPublicIp());
+                memberActivatedEvent.setDefaultPrivateIP(member.getDefaultPrivateIP());
+                memberActivatedEvent.setMemberPrivateIPs(member.getMemberPrivateIPs());
+                memberActivatedEvent.setDefaultPublicIP(member.getDefaultPublicIP());
+                memberActivatedEvent.setMemberPublicIPs(member.getMemberPublicIPs());
                 TopologyManager.updateTopology(topology);
 
                 TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);

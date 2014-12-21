@@ -126,7 +126,7 @@ public class LoadBalancerConfigurationTest {
             String memberId = "m1";
             Member m1 = cluster1.getMember(memberId);
             Assert.assertNotNull(String.format("%s, member not found: [member] %s", validationError, memberId), m1);
-            Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getMemberIp());
+            Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getDefaultPrivateIP());
 
             int proxyPort = 80;
             Port m1Http = m1.getPort(proxyPort);

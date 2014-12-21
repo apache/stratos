@@ -20,6 +20,7 @@ package org.apache.stratos.messaging.event.topology;
 
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Properties;
 
 
@@ -39,8 +40,10 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     private final long initTime;
     private String lbClusterId;
-    private String memberPublicIp;
-    private String memberIp;
+    private List<String> memberPublicIPs;
+    private String defaultPublicIP;
+    private List<String> memberPrivateIPs;
+    private String defaultPrivateIP;
     private Properties properties;
 
 
@@ -92,20 +95,36 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
         this.lbClusterId = lbClusterId;
     }
 
-	public String getMemberPublicIp() {
-		return memberPublicIp;
+	public String getDefaultPublicIP() {
+		return defaultPublicIP;
 	}
 
-	public void setMemberPublicIp(String memberPublicIp) {
-		this.memberPublicIp = memberPublicIp;
+	public void setDefaultPublicIP(String defaultPublicIP) {
+		this.defaultPublicIP = defaultPublicIP;
+	}
+	
+	public List<String> getMemberPublicIPs() {
+		return memberPublicIPs;
+	}
+	
+	public void setMemberPublicIPs(List<String> memberPublicIPs) {
+		this.memberPublicIPs = memberPublicIPs;
 	}
 
-	public String getMemberIp() {
-		return memberIp;
+	public String getDefaultPrivateIP() {
+		return defaultPrivateIP;
 	}
 
-	public void setMemberIp(String memberIp) {
-		this.memberIp = memberIp;
+	public void setDefaultPrivateIP(String defaultPrivateIP) {
+		this.defaultPrivateIP = defaultPrivateIP;
+	}
+	
+	public List<String> getMemberPrivateIPs() {
+		return memberPrivateIPs;
+	}
+	
+	public void setMemberPrivateIPs(List<String> memberPrivateIPs) {
+		this.memberPrivateIPs = memberPrivateIPs;
 	}
 
     public Properties getProperties() {

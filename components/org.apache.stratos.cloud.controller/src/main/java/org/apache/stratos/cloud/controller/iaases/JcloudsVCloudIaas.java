@@ -38,6 +38,7 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class JcloudsVCloudIaas extends JcloudsIaas {
 
@@ -189,10 +190,10 @@ public class JcloudsVCloudIaas extends JcloudsIaas {
 	}
 
 	@Override
-	public String associateAddress(NodeMetadata node) {
+	public List<String> associateAddresses(NodeMetadata node) {
 
 		// TODO
-		return "";
+		return null;
 
 	}
 

@@ -477,8 +477,10 @@ public class LoadBalancerConfiguration {
                                     memberId, "1", Constants.STATIC_NETWORK_PARTITION, Constants.STATIC_PARTITION, initTime);
                             String ip = memberNode.getProperty(Constants.CONF_PROPERTY_IP);
                             validateRequiredPropertyInNode(Constants.CONF_PROPERTY_IP, ip, String.format("member %s", memberId));
-
-                            member.setMemberIp(ip);
+                            List<String> memberPrivateIPs = new ArrayList<String>();
+                            memberPrivateIPs.add(ip);
+                            member.setMemberPrivateIPs(memberPrivateIPs);
+                            member.setDefaultPrivateIP(ip);
                             Node portsNode = memberNode.findChildNodeByName(Constants.CONF_ELEMENT_PORTS);
                             validateRequiredNode(portsNode, Constants.CONF_ELEMENT_PORTS, String.format("member %s", memberId));
 

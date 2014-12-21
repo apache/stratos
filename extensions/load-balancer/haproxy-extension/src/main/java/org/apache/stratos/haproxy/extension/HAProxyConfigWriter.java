@@ -179,7 +179,7 @@ public class HAProxyConfigWriter {
                     for (Member member : cluster.getMembers()) {
                         if (member.getNetworkPartitionId().equals(HAProxyContext.getInstance().getNetworkPartitionId())) {
                             backEndHttp.append("\tserver ").append(member.getMemberId()).append(" ")
-                                    .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
+                                    .append(member.getDefaultPrivateIP()).append(":").append(port.getValue()).append(NEW_LINE);
                         }
                     }
                     backEndHttp.append(NEW_LINE);
@@ -202,7 +202,7 @@ public class HAProxyConfigWriter {
                     for (Member member : cluster.getMembers()) {
                         if (member.getNetworkPartitionId().equals(HAProxyContext.getInstance().getNetworkPartitionId())) {
                             backEndHttps.append("\tserver ").append(member.getMemberId()).append(" ")
-                                    .append(member.getMemberIp()).append(":").append(port.getValue()).append(NEW_LINE);
+                                    .append(member.getDefaultPrivateIP()).append(":").append(port.getValue()).append(NEW_LINE);
                         }
                     }
                     backEndHttps.append(NEW_LINE);

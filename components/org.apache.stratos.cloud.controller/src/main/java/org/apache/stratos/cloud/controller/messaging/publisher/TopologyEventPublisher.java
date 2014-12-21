@@ -38,6 +38,7 @@ import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -145,8 +146,14 @@ public class TopologyEventPublisher {
                 memberContext.getNetworkPartitionId(), memberContext.getPartition().getId(), memberContext.getInitTime());
 
         instanceSpawnedEvent.setLbClusterId(memberContext.getLbClusterId());
-        instanceSpawnedEvent.setMemberIp(memberContext.getPrivateIpAddress());
-        instanceSpawnedEvent.setMemberPublicIp(memberContext.getPublicIpAddress());
+        instanceSpawnedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
+        if (memberContext.getPrivateIPs() != null) {
+        	instanceSpawnedEvent.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
+        }
+        instanceSpawnedEvent.setDefaultPublicIP(memberContext.getDefaultPublicIP());
+        if (memberContext.getPublicIPs() != null) {
+        	instanceSpawnedEvent.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
+        }
         instanceSpawnedEvent.setProperties(CloudControllerUtil
                 .toJavaUtilProperties(memberContext.getProperties()));
 

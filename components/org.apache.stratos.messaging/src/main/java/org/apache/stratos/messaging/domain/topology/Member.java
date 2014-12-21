@@ -48,9 +48,11 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     // Key: Port.proxy
     @XmlJavaTypeAdapter(MapAdapter.class)
     private final Map<Integer, Port> portMap;
-    private String memberPublicIp;
+    private List<String> memberPublicIPs;
+    private String defaultPublicIP;
     //private MemberStatus status;
-    private String memberIp;
+    private List<String> memberPrivateIPs;
+    private String defaultPrivateIP;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private String lbClusterId;
@@ -148,12 +150,20 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         this.properties = properties;
     }
 
-    public String getMemberIp() {
-        return memberIp;
+    public String getDefaultPrivateIP() {
+        return defaultPrivateIP;
     }
 
-    public void setMemberIp(String memberIp) {
-        this.memberIp = memberIp;
+    public void setDefaultPrivateIP(String defaultPrivateIP) {
+        this.defaultPrivateIP = defaultPrivateIP;
+    }
+    
+    public List<String> getMemberPrivateIPs() {
+    	return memberPrivateIPs;
+    }
+    
+    public void setMemberPrivateIPs(List<String> memberPrivateIPs) {
+    	this.memberPrivateIPs = memberPrivateIPs;
     }
 
     public String getPartitionId() {
@@ -172,12 +182,20 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         return networkPartitionId;
     }
 
-    public String getMemberPublicIp() {
-        return memberPublicIp;
+    public String getDefaultPublicIP() {
+        return defaultPublicIP;
     }
 
-    public void setMemberPublicIp(String memberPublicIp) {
-        this.memberPublicIp = memberPublicIp;
+    public void setDefaultPublicIP(String defaultPublicIP) {
+        this.defaultPublicIP = defaultPublicIP;
+    }
+    
+    public List<String> getMemberPublicIPs() {
+    	return memberPublicIPs;
+    }
+    
+    public void setMemberPublicIPs(List<String> memberPublicIPs) {
+    	this.memberPublicIPs = memberPublicIPs;
     }
 
     public String getInstanceId() {
@@ -199,9 +217,11 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
                 + ", partitionId=" + getPartitionId()
                 + ", initTime=" + getInitTime()
                 + ", portMap=" + getPorts()
-                + ", memberPublicIp=" + getMemberPublicIp()
+                + ", defaultPublicIP=" + getDefaultPublicIP()
+                + ", memberPublicIPs=" + memberPublicIPs.toString()
                 + ", status=" + getStatus()
-                + ", memberIp=" + getMemberIp()
+                + ", defaultPrivateIP=" + getDefaultPrivateIP()
+                + ", memberPrivateIPs=" + memberPrivateIPs.toString()
                 + ", lbClusterId=" + getLbClusterId()
                 + ", properties=" + getProperties() + "]";
     }

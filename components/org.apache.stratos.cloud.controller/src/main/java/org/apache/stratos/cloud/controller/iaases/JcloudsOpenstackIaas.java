@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.iaases;
 
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 
@@ -223,9 +224,9 @@ public class JcloudsOpenstackIaas extends JcloudsIaas {
 	}
 
 	@Override
-	public synchronized String associateAddress(NodeMetadata node) {
+	public synchronized List<String> associateAddresses(NodeMetadata node) {
 		//TODO return the list of IP addresses once the topology changes is done
-		return openstackNetworkingApi.associateAddresses(node).iterator().next();
+		return openstackNetworkingApi.associateAddresses(node);
 	}
 	
 	@Override

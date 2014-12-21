@@ -98,7 +98,7 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
         }
 
         // Validate event properties
-        if ((event.getMemberIp() == null) || event.getMemberIp().isEmpty()) {
+        if ((event.getDefaultPrivateIP() == null) || event.getDefaultPrivateIP().isEmpty()) {
             throw new RuntimeException(String.format("No ip address found in member activated event: [service] %s [cluster] %s [member] %s",
                     event.getServiceName(),
                     event.getClusterId(),
@@ -159,7 +159,8 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
 
             // Apply changes to the topology
             member.addPorts(event.getPorts());
-            member.setMemberIp(event.getMemberIp());
+            member.setDefaultPrivateIP(event.getDefaultPrivateIP());
+            member.setMemberPrivateIPs(event.getMemberPrivateIPs());
             if (!member.isStateTransitionValid(MemberStatus.Activated)) {
                 log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
             }

@@ -154,8 +154,8 @@ public class MockIaasService {
 
     public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
         // Allocate mock ip addresses
-        memberContext.setPrivateIpAddress(MockIPAddressPool.getInstance().getNextPrivateIpAddress());
-        memberContext.setPublicIpAddress(MockIPAddressPool.getInstance().getNextPublicIpAddress());
+        memberContext.setDefaultPrivateIP(MockIPAddressPool.getInstance().getNextPrivateIpAddress());
+        memberContext.setDefaultPublicIP(MockIPAddressPool.getInstance().getNextPublicIpAddress());
     }
 
     public void releaseAddress(String ip) {

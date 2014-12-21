@@ -27,8 +27,10 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.domain.Location;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
@@ -206,7 +208,7 @@ public class JcloudsCloudStackIaas extends JcloudsIaas {
      * So  this method will find the IP that has been assigned to the vm and return it.
      */
     @Override
-    public String associateAddress(NodeMetadata node) {
+    public List<String> associateAddresses(NodeMetadata node) {
 
         IaasProvider iaasInfo = getIaasProvider();
         ComputeServiceContext context = iaasInfo.getComputeService().getContext();
@@ -240,7 +242,10 @@ public class JcloudsCloudStackIaas extends JcloudsIaas {
             throw new CloudControllerException(msg);
         }
 
-        return ip;
+        List<String> associatedIPs = new ArrayList<String>();
+        associatedIPs.add(ip);
+        
+        return associatedIPs;
     }
 
     @Override

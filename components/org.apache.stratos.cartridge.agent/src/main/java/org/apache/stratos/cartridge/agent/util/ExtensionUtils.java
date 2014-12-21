@@ -127,7 +127,7 @@ public class ExtensionUtils {
                 Collection<Member> memberCollection = cluster.getMembers();
                 for (Member member : memberCollection) {
                     if (member.getClusterId().equals(lbClusterId)) {
-                        return new String[]{member.getMemberIp(), member.getMemberPublicIp()};
+                        return new String[]{member.getDefaultPrivateIP(), member.getDefaultPublicIP()};
                     }
                 }
             }

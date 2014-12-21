@@ -214,10 +214,10 @@ public class JcloudsGCEIaas extends JcloudsIaas {
 	}
 
 	@Override
-	public String associateAddress(NodeMetadata node) {
+	public List<String> associateAddresses(NodeMetadata node) {
 
 		// TODO
-		return "";
+		return null;
 
 	}
 

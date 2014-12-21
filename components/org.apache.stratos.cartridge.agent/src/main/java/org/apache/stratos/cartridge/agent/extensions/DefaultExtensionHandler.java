@@ -254,7 +254,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         // check whether member activated event is received from the same cluster, lbcluster or service group
         if (ExtensionUtils.isRelevantMemberEvent(memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), lbClusterId)) {
             Map<String, String> env = new HashMap<String, String>();
-            env.put("STRATOS_MEMBER_ACTIVATED_MEMBER_IP", memberActivatedEvent.getMemberIp());
+            env.put("STRATOS_MEMBER_ACTIVATED_MEMBER_IP", memberActivatedEvent.getDefaultPrivateIP());
             env.put("STRATOS_MEMBER_ACTIVATED_MEMBER_ID", memberActivatedEvent.getMemberId());
             env.put("STRATOS_MEMBER_ACTIVATED_CLUSTER_ID", memberActivatedEvent.getClusterId());
             env.put("STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID", lbClusterId);
@@ -291,7 +291,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 }
                 boolean hasWKIpChanged = true;
                 for (Member m : this.wkMembers) {
-                    if (m.getMemberIp().equals(memberActivatedEvent.getMemberIp())) {
+                    if (m.getDefaultPrivateIP().equals(memberActivatedEvent.getDefaultPrivateIP())) {
                         hasWKIpChanged = false;
                     }
                 }
@@ -422,7 +422,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
             Collection<Member> members = cluster.getMembers();
             Map<String, String> env = new HashMap<String, String>();
-            env.put("STRATOS_MEMBER_TERMINATED_MEMBER_IP", terminatedMember.getMemberIp());
+            env.put("STRATOS_MEMBER_TERMINATED_MEMBER_IP", terminatedMember.getDefaultPrivateIP());
             env.put("STRATOS_MEMBER_TERMINATED_MEMBER_ID", memberTerminatedEvent.getMemberId());
             env.put("STRATOS_MEMBER_TERMINATED_CLUSTER_ID", memberTerminatedEvent.getClusterId());
             env.put("STRATOS_MEMBER_TERMINATED_LB_CLUSTER_ID", lbClusterId);
@@ -480,7 +480,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 memberSuspendedEvent.getClusterId(), lbClusterId)) {
             Collection<Member> members = cluster.getMembers();
             Map<String, String> env = new HashMap<String, String>();
-            env.put("STRATOS_MEMBER_SUSPENDED_MEMBER_IP", suspendedMember.getMemberIp());
+            env.put("STRATOS_MEMBER_SUSPENDED_MEMBER_IP", suspendedMember.getDefaultPrivateIP());
             env.put("STRATOS_MEMBER_SUSPENDED_MEMBER_ID", memberSuspendedEvent.getMemberId());
             env.put("STRATOS_MEMBER_SUSPENDED_CLUSTER_ID", memberSuspendedEvent.getClusterId());
             env.put("STRATOS_MEMBER_SUSPENDED_LB_CLUSTER_ID", lbClusterId);
@@ -536,7 +536,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 memberStartedEvent.getClusterId(), lbClusterId)) {
             Collection<Member> members = cluster.getMembers();
             Map<String, String> env = new HashMap<String, String>();
-            env.put("STRATOS_MEMBER_STARTED_MEMBER_IP", startedMember.getMemberIp());
+            env.put("STRATOS_MEMBER_STARTED_MEMBER_IP", startedMember.getDefaultPrivateIP());
             env.put("STRATOS_MEMBER_STARTED_MEMBER_ID", memberStartedEvent.getMemberId());
             env.put("STRATOS_MEMBER_STARTED_CLUSTER_ID", memberStartedEvent.getClusterId());
             env.put("STRATOS_MEMBER_STARTED_LB_CLUSTER_ID", lbClusterId);
@@ -594,9 +594,9 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                     return false;
                 }
                 Member apistoreMember = apistoreMemberList.get(0);
-                envParameters.put("STRATOS_WK_APISTORE_MEMBER_IP", apistoreMember.getMemberIp());
+                envParameters.put("STRATOS_WK_APISTORE_MEMBER_IP", apistoreMember.getDefaultPrivateIP());
                 if (log.isDebugEnabled()) {
-                    log.debug("STRATOS_WK_APISTORE_MEMBER_IP: " + apistoreMember.getMemberIp());
+                    log.debug("STRATOS_WK_APISTORE_MEMBER_IP: " + apistoreMember.getDefaultPrivateIP());
                 }
 
                 List<Member> publisherMemberList = new ArrayList<Member>();
@@ -613,9 +613,9 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                     return false;
                 }
                 Member publisherMember = publisherMemberList.get(0);
-                envParameters.put("STRATOS_WK_PUBLISHER_MEMBER_IP", publisherMember.getMemberIp());
+                envParameters.put("STRATOS_WK_PUBLISHER_MEMBER_IP", publisherMember.getDefaultPrivateIP());
                 if (log.isDebugEnabled()) {
-                    log.debug("STRATOS_WK_PUBLISHER_MEMBER_IP: " + publisherMember.getMemberIp());
+                    log.debug("STRATOS_WK_PUBLISHER_MEMBER_IP: " + publisherMember.getDefaultPrivateIP());
                 }
 
                 return true;
@@ -668,16 +668,16 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                     wkMembers.add(member);
                     this.wkMembers.add(member);
                     if (log.isDebugEnabled()) {
-                        log.debug("Found WKA: STRATOS_WK_MEMBER_IP: " + member.getMemberIp());
+                        log.debug("Found WKA: STRATOS_WK_MEMBER_IP: " + member.getDefaultPrivateIP());
                     }
                 }
             }
             if (wkMembers.size() >= minCount) {
                 int idx = 0;
                 for (Member member : wkMembers) {
-                    envParameters.put("STRATOS_WK_MEMBER_" + idx + "_IP", member.getMemberIp());
+                    envParameters.put("STRATOS_WK_MEMBER_" + idx + "_IP", member.getDefaultPrivateIP());
                     if (log.isDebugEnabled()) {
-                        log.debug("STRATOS_WK_MEMBER_" + idx + "_IP: " + member.getMemberIp());
+                        log.debug("STRATOS_WK_MEMBER_" + idx + "_IP: " + member.getDefaultPrivateIP());
                     }
                     idx++;
                 }
@@ -757,9 +757,9 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 minManagerInstancesAvailable = true;
                 int idx = 0;
                 for (Member member : managerWkaMembers) {
-                    envParameters.put("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP", member.getMemberIp());
+                    envParameters.put("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP", member.getDefaultPrivateIP());
                     if (log.isDebugEnabled()) {
-                        log.debug("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP: " + member.getMemberIp());
+                        log.debug("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP: " + member.getDefaultPrivateIP());
                     }
                     idx++;
                 }
@@ -833,9 +833,9 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 minWorkerInstancesAvailable = true;
                 int idx = 0;
                 for (Member member : workerWkaMembers) {
-                    envParameters.put("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP", member.getMemberIp());
+                    envParameters.put("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP", member.getDefaultPrivateIP());
                     if (log.isDebugEnabled()) {
-                        log.debug("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP: " + member.getMemberIp());
+                        log.debug("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP: " + member.getDefaultPrivateIP());
                     }
                     idx++;
                 }

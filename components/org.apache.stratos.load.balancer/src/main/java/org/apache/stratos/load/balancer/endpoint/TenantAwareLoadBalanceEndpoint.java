@@ -412,29 +412,29 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         if (LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
             if (LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
                 // Return member's public IP address
-                if (StringUtils.isBlank(member.getMemberPublicIp())) {
+                if (StringUtils.isBlank(member.getDefaultPublicIP())) {
                     if (log.isErrorEnabled()) {
                         log.error(String.format("Member public IP address not found: [member] %s", member.getMemberId()));
                     }
                     throwSynapseException(synCtx, 500, "Internal server error");
                 }
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getMemberPublicIp()));
+                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPublicIP()));
                 }
-                return member.getMemberPublicIp();
+                return member.getDefaultPublicIP();
             }
         }
         // Return member's private IP address
-        if (StringUtils.isBlank(member.getMemberIp())) {
+        if (StringUtils.isBlank(member.getDefaultPrivateIP())) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Member IP address not found: [member] %s", member.getMemberId()));
             }
             throwSynapseException(synCtx, 500, "Internal server error");
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getMemberIp()));
+            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPrivateIP()));
         }
-        return member.getMemberIp();
+        return member.getDefaultPrivateIP();
     }
 
     /**

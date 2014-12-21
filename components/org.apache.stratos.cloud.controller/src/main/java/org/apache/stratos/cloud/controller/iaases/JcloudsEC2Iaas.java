@@ -262,7 +262,7 @@ public class JcloudsEC2Iaas extends JcloudsIaas {
 	}
 
 	@Override
-	public synchronized String associateAddress(NodeMetadata node) {
+	public synchronized List<String> associateAddresses(NodeMetadata node) {
 
 		IaasProvider iaasInfo = getIaasProvider();
 		
@@ -328,7 +328,9 @@ public class JcloudsEC2Iaas extends JcloudsIaas {
 		log.debug("Successfully associated an IP address " + ip
 				+ " for node with id: " + node.getId());
 
-		return ip;
+		List<String> associatedIPs = new ArrayList<String>();
+		associatedIPs.add(ip);
+		return associatedIPs;
 
 	}
 	

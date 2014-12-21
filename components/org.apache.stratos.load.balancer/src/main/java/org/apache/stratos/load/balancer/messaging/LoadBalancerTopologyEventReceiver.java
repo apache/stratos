@@ -364,39 +364,39 @@ public class LoadBalancerTopologyEventReceiver {
             }
         }
 
-        if (StringUtils.isNotBlank(member.getMemberIp())) {
-            LoadBalancerContext.getInstance().getMemberIpHostnameMap().put(member.getMemberIp(), hostname);
+        if (StringUtils.isNotBlank(member.getDefaultPrivateIP())) {
+            LoadBalancerContext.getInstance().getMemberIpHostnameMap().put(member.getDefaultPrivateIP(), hostname);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member private ip added to member-ip -> hostname map: [service] %s [cluster] " +
                                 "%s [member] %s [private-ip] %s", member.getServiceName(), member.getClusterId(),
-                        member.getMemberId(), member.getMemberIp()
+                        member.getMemberId(), member.getDefaultPrivateIP()
                 ));
             }
         }
-        if (StringUtils.isNotBlank(member.getMemberPublicIp())) {
-            LoadBalancerContext.getInstance().getMemberIpHostnameMap().put(member.getMemberPublicIp(), hostname);
+        if (StringUtils.isNotBlank(member.getDefaultPublicIP())) {
+            LoadBalancerContext.getInstance().getMemberIpHostnameMap().put(member.getDefaultPublicIP(), hostname);
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member public ip added to member-ip -> hostname map: [service] %s [cluster] " +
                                 "%s [member] %s [public-ip] %s", member.getServiceName(), member.getClusterId(),
-                        member.getMemberId(), member.getMemberPublicIp()
+                        member.getMemberId(), member.getDefaultPublicIP()
                 ));
             }
         }
     }
 
     private void removeMemberIpsFromMemberIpHostnameMap(Member member) {
-        if (StringUtils.isNotBlank(member.getMemberIp())) {
-            LoadBalancerContext.getInstance().getMemberIpHostnameMap().remove(member.getMemberIp());
+        if (StringUtils.isNotBlank(member.getDefaultPrivateIP())) {
+            LoadBalancerContext.getInstance().getMemberIpHostnameMap().remove(member.getDefaultPrivateIP());
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member private ip removed from member-ip -> hostname map: [private-ip] %s",
-                        member.getMemberIp()));
+                        member.getDefaultPrivateIP()));
             }
         }
-        if (StringUtils.isNotBlank(member.getMemberPublicIp())) {
-            LoadBalancerContext.getInstance().getMemberIpHostnameMap().remove(member.getMemberPublicIp());
+        if (StringUtils.isNotBlank(member.getDefaultPublicIP())) {
+            LoadBalancerContext.getInstance().getMemberIpHostnameMap().remove(member.getDefaultPublicIP());
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member public ip removed from member-ip -> hostname map: [public-ip] %s",
-                        member.getMemberPublicIp()));
+                        member.getDefaultPublicIP()));
             }
         }
     }

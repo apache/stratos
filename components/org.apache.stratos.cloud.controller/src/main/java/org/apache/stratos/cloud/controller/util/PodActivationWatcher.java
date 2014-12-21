@@ -55,10 +55,12 @@ public class PodActivationWatcher implements Runnable {
             if (log.isDebugEnabled()) {
                 log.debug("Pod activation watcher running: [status] " + pod.getCurrentState().getStatus());
             }
-            if (POD_STATE_RUNNING.equals(pod.getCurrentState().getStatus()) && memberContext.getPublicIpAddress() == null) {
+            if (POD_STATE_RUNNING.equals(pod.getCurrentState().getStatus()) && memberContext.getPublicIPs() == null) {
                 String hostIP = pod.getCurrentState().getHost();
-                memberContext.setPublicIpAddress(hostIP);
-                memberContext.setPrivateIpAddress(hostIP);
+                memberContext.setDefaultPublicIP(hostIP);
+                memberContext.setDefaultPrivateIP(hostIP);
+                memberContext.setPublicIPs(new String[]{hostIP});
+                memberContext.setPrivateIPs(new String[]{hostIP});
                 cloudControllerContext.addMemberContext(memberContext);
 
                 // trigger topology

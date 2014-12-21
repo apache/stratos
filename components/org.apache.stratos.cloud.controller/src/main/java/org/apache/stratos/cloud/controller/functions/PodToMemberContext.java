@@ -36,8 +36,10 @@ public class PodToMemberContext implements Function<Pod, MemberContext> {
         }
         MemberContext memberContext = new MemberContext();
         memberContext.setMemberId(pod.getId());
-        memberContext.setPrivateIpAddress(pod.getCurrentState().getHostIP());
-        memberContext.setPublicIpAddress(pod.getCurrentState().getHostIP());
+        memberContext.setDefaultPrivateIP(pod.getCurrentState().getHostIP());
+        memberContext.setPrivateIPs(new String[]{pod.getCurrentState().getHostIP()});
+        memberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
+        memberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
         memberContext.setInitTime(System.currentTimeMillis());
         
         return memberContext;

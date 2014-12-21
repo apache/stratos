@@ -34,6 +34,7 @@ import org.jclouds.compute.domain.Image;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -63,7 +64,7 @@ public class JcloudsDockerIaas extends JcloudsIaas {
     }
 
     @Override
-    public String associateAddress(NodeMetadata node) {
+    public List<String> associateAddresses(NodeMetadata node) {
         log.warn("Not implemented: DockerIaas.associateAddress()");
         return null;
     }

@@ -40,6 +40,7 @@ import org.wso2.carbon.databridge.commons.StreamDefinition;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -120,9 +121,9 @@ public class StatisticsDataPublisher {
             payload.add("");
         }
 
-        payload.add(handleNull(memberContext.getPrivateIpAddress()));
-        payload.add(handleNull(memberContext.getPublicIpAddress()));
-        payload.add(handleNull(memberContext.getAllocatedIpAddress()));
+        payload.add(handleNull(Arrays.toString(memberContext.getPrivateIPs())));
+        payload.add(handleNull(Arrays.toString(memberContext.getPublicIPs())));
+        payload.add(handleNull(Arrays.toString(memberContext.getAllocatedIPs())));
 
         Event event = new Event();
         event.setPayloadData(payload.toArray());

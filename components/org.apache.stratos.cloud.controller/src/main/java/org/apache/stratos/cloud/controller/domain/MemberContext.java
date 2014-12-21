@@ -22,6 +22,7 @@ import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Holds information about a Member.
@@ -44,12 +45,16 @@ public class MemberContext implements Serializable {
 
     // Partition this member is in
     private Partition partition;
-    // Private ip address
-    private String privateIpAddress;
-    // Public ip address
-    private String publicIpAddress;
-    // Manually allocated ip
-    private String allocatedIpAddress;
+    // Default private ip address
+    private String defaultPrivateIP;
+    // Private ips
+    private String[] privateIPs;
+    // Default public ip address
+    private String defaultPublicIP;
+    // Public ips
+    private String[] publicIPs;
+    // Manually allocated ips
+    private String[] allocatedIPs;
     // Member initiated time
     private long initTime;
     // LB cluster id of this member
@@ -113,28 +118,44 @@ public class MemberContext implements Serializable {
         this.partition = partition;
     }
 
-    public String getPublicIpAddress() {
-        return publicIpAddress;
+    public String getDefaultPublicIP() {
+        return defaultPublicIP;
     }
 
-    public void setPublicIpAddress(String publicIpAddress) {
-        this.publicIpAddress = publicIpAddress;
+    public void setDefaultPublicIP(String defaultPublicIP) {
+        this.defaultPublicIP = defaultPublicIP;
+    }
+    
+    public String[] getPublicIPs() {
+        return publicIPs;
     }
 
-    public String getPrivateIpAddress() {
-        return privateIpAddress;
+    public void setPublicIPs(String[] publicIPs) {
+        this.publicIPs = publicIPs;
     }
 
-    public void setPrivateIpAddress(String privateIpAddress) {
-        this.privateIpAddress = privateIpAddress;
+    public String getDefaultPrivateIP() {
+        return defaultPrivateIP;
     }
 
-    public String getAllocatedIpAddress() {
-        return allocatedIpAddress;
+    public void setDefaultPrivateIP(String defaultPrivateIP) {
+        this.defaultPrivateIP = defaultPrivateIP;
+    }
+    
+    public String[] getPrivateIPs() {
+        return privateIPs;
     }
 
-    public void setAllocatedIpAddress(String allocatedIpAddress) {
-        this.allocatedIpAddress = allocatedIpAddress;
+    public void setPrivateIPs(String[] privateIPs) {
+        this.privateIPs = privateIPs;
+    }
+
+    public String[] getAllocatedIPs() {
+        return allocatedIPs;
+    }
+
+    public void setAllocatedIPs(String[] allocatedIPs) {
+        this.allocatedIPs = allocatedIPs;
     }
 
     public long getInitTime() {
@@ -252,9 +273,10 @@ public class MemberContext implements Serializable {
     public String toString() {
         return "MemberContext [memberId=" + memberId + ", instanceId=" + instanceId
                 + ", clusterId=" + clusterId + ", partition=" + partition
-                + ", cartridgeType=" + cartridgeType + ", privateIpAddress=" + privateIpAddress
-                + ", publicIpAddress=" + publicIpAddress + ", allocatedIpAddress="
-                + allocatedIpAddress + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId
+                + ", cartridgeType=" + cartridgeType + ", defaultPrivateIP=" + defaultPrivateIP
+                + ", defaultPublicIP=" + defaultPublicIP + ", allocatedIPs=" + Arrays.toString(allocatedIPs) 
+                + ", publicIPs=" + Arrays.toString(publicIPs) + ", privateIPs=" + Arrays.toString(privateIPs) 
+                + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId
                 + ", networkPartitionId=" + networkPartitionId + ", instanceMetadata=" + instanceMetadata +
                 ", properties=" + properties + "]";
     }

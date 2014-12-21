@@ -133,8 +133,10 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId(),
                     event.getInstanceId(), event.getClusterInstanceId(), event.getNetworkPartitionId(),
                     event.getPartitionId(), event.getInitTime());
-            member.setMemberPublicIp(event.getMemberPublicIp());
-            member.setMemberIp(event.getMemberIp());
+            member.setDefaultPublicIP(event.getDefaultPublicIP());
+            member.setMemberPublicIPs(event.getMemberPublicIPs());
+            member.setDefaultPrivateIP(event.getDefaultPrivateIP());
+            member.setMemberPrivateIPs(event.getMemberPrivateIPs());
             member.setLbClusterId(event.getLbClusterId());
             member.setProperties(event.getProperties());
             cluster.addMember(member);
