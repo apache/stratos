@@ -96,8 +96,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         //stopping the monitoring when the group is inactive/Terminating/Terminated
                         if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
-                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
-                                //handling the application bursting
+                            if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty() &&
+                                    networkPartitionContext.getPendingInstancesCount() > 0) {
+                                //handling the application bursting only when there are no pending instances found
                                 try {
                                     if (log.isInfoEnabled()) {
                                         log.info("Handling application busting, " +

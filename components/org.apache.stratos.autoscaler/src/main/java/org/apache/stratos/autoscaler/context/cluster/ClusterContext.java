@@ -283,7 +283,8 @@ public class ClusterContext extends AbstractClusterContext {
         clusterLevelPartitionContext.setProperties(cluster.getProperties());
 
         //add members to partition Context
-        addMembersFromTopology(cluster, partition, clusterLevelPartitionContext);
+        addMembersFromTopology(cluster, partition, clusterLevelPartitionContext,
+                clusterInstanceContext.getId());
 
         //adding it to the monitors context
         clusterInstanceContext.addPartitionCtxt(clusterLevelPartitionContext);
@@ -305,10 +306,12 @@ public class ClusterContext extends AbstractClusterContext {
 
     private void addMembersFromTopology(Cluster cluster,
                                         org.apache.stratos.cloud.controller.stub.domain.Partition partition,
-                                        ClusterLevelPartitionContext clusterLevelPartitionContext) {
+                                        ClusterLevelPartitionContext clusterLevelPartitionContext,
+                                        String ClusterInstanceId) {
         for (Member member : cluster.getMembers()) {
             String memberId = member.getMemberId();
-            if (member.getPartitionId().equalsIgnoreCase(partition.getId())) {
+            if (member.getPartitionId().equalsIgnoreCase(partition.getId()) &&
+                    member.getClusterInstanceId().equals(ClusterInstanceId)) {
                 MemberContext memberContext = new MemberContext();
                 memberContext.setClusterId(member.getClusterId());
                 memberContext.setMemberId(memberId);

@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -458,7 +459,8 @@ public class ApplicationBuilder {
             if (groupInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 groupInstance.setStatus(status);
-                updateGroupMonitor(appId, groupId, status, instanceId, groupInstance.getParentId());
+                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
+                        instanceId, groupInstance.getParentId());
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceActivatedEvent(appId, groupId, instanceId);
             } else {
@@ -563,7 +565,8 @@ public class ApplicationBuilder {
             if (groupInstance.isStateTransitionValid(status)) {
                 //setting the status, persist and publish
                 groupInstance.setStatus(status);
-                updateGroupMonitor(appId, groupId, status, instanceId, groupInstance.getParentId());
+                updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
+                        instanceId, groupInstance.getParentId());
                 ApplicationHolder.persistApplication(application);
                 ApplicationsEventPublisher.sendGroupInstanceInactivateEvent(appId, groupId, instanceId);
             } else {
@@ -608,7 +611,8 @@ public class ApplicationBuilder {
                 if (groupInstance.isStateTransitionValid(status)) {
                     //setting the status, persist and publish
                     groupInstance.setStatus(status);
-                    updateGroupMonitor(appId, groupId, status, instanceId, groupInstance.getParentId());
+                    updateGroupMonitor(appId, groupId, status, groupInstance.getNetworkPartitionId(),
+                            instanceId, groupInstance.getParentId());
                     ApplicationHolder.persistApplication(application);
                     ApplicationsEventPublisher.sendGroupInstanceTerminatingEvent(appId, groupId, instanceId);
                 } else {
@@ -641,9 +645,24 @@ public class ApplicationBuilder {
     }
 
     private static void updateGroupMonitor(String appId, String groupId,
-                                           GroupStatus status, String instanceId, String parentInstanceId) {
+                                           GroupStatus status, String networkPartitionId,
+                                           String instanceId, String parentInstanceId) {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
+            if(status == GroupStatus.Active) {
+                monitor.getNetworkPartitionContext(networkPartitionId).
+                        movePendingInstanceToActiveInstances(instanceId);
+            } else if(status == GroupStatus.Terminating) {
+                NetworkPartitionContext context = monitor.
+                        getNetworkPartitionContext(networkPartitionId);
+                if(context.getActiveInstance(instanceId) != null) {
+                    context.moveActiveInstanceToTerminationPendingInstances(instanceId);
+                } else if(context.getPendingInstance(instanceId) != null) {
+                    context.movePendingInstanceToTerminationPendingInstances(instanceId);
+                }
+
+
+            }
             monitor.setStatus(status, instanceId, parentInstanceId);
         } else {
             log.warn("Group monitor cannot be found: [group-id] " + groupId +

@@ -116,8 +116,10 @@ public class GroupMonitor extends ParentComponentMonitor {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                 if(!hasScalingDependents) {
-                                    //handling the group scaling
-                                    if (groupScalingEnabled) {
+                                    //handling the group scaling and if pending instances found,
+                                    // reject the max
+                                    if (groupScalingEnabled &&
+                                            networkPartitionContext.getPendingInstancesCount() > 0) {
                                         //one of the child is loaded and max out.
                                         // Hence creating new group instance
                                         if(log.isDebugEnabled()) {
@@ -511,6 +513,7 @@ public class GroupMonitor extends ParentComponentMonitor {
 
         groupInstanceContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
         groupLevelNetworkPartitionContext.addInstanceContext(groupInstanceContext);
+        groupLevelNetworkPartitionContext.addPendingInstance(groupInstanceContext);
 
         if (log.isInfoEnabled()) {
             log.info("Group [Instance context] " + instanceId +
