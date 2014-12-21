@@ -407,8 +407,12 @@ public class CloudControllerContext implements Serializable {
         return clusterIdToMemberContextListMap.get(clusterId);
     }
 
-    public void addClusterContext(ClusterContext ctxt) {
-        clusterIdToContextMap.put(ctxt.getClusterId(), ctxt);
+    public void addClusterContext(ClusterContext clusterContext) {
+        clusterIdToContextMap.put(clusterContext.getClusterId(), clusterContext);
+    }
+
+    public void updateClusterContext(ClusterContext clusterContext) {
+        clusterIdToContextMap.put(clusterContext.getClusterId(), clusterContext);
     }
 
     public ClusterContext getClusterContext(String clusterId) {

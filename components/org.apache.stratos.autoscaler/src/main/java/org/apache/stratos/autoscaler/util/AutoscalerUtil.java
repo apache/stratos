@@ -327,7 +327,7 @@ public class AutoscalerUtil {
                 if ((property != null) && (property.getValue() != null)) {
                     org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
                     newProperty.setName(property.getName());
-                    newProperty.setValue(String.valueOf(property.getValue()));
+                    newProperty.setValue(property.getValue());
                     stubProps.addProperties(newProperty);
                 }
             }

@@ -19,9 +19,11 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.kubernetes.client.model.Service;
 
 /**
  * Holds runtime data of a Cluster.
@@ -44,6 +46,7 @@ public class ClusterContext implements Serializable{
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
     private long timeoutInMillis;
     private Properties properties;
+    private List<Service> kubernetesServices;
 
     public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
     		boolean isLbCluster, Properties properties) {
@@ -128,6 +131,15 @@ public class ClusterContext implements Serializable{
 	public void setProperties(Properties properties) {
 		this.properties = properties;
 	}
+
+    public List<Service> getKubernetesServices() {
+        return kubernetesServices;
+    }
+
+    public void setKubernetesServices(List<Service> kubernetesServices) {
+        this.kubernetesServices = kubernetesServices;
+    }
+
 	
 	/*public void addProperty(String key, int value) {
 		this.properties.put(key, value);

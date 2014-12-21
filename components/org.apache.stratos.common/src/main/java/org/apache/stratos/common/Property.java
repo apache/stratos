@@ -28,12 +28,12 @@ public class Property implements Serializable, Cloneable {
     private static final long serialVersionUID = -2191782657999410197L;
 
     private String name;
-    private Object value;
+    private String value;
 
     public Property() {
     }
 
-    public Property(String name, Object value) {
+    public Property(String name, String value) {
         this.setName(name);
         this.setValue(value);
     }
@@ -46,11 +46,11 @@ public class Property implements Serializable, Cloneable {
         this.name = name;
     }
 
-    public Object getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Object value) {
+    public void setValue(String value) {
         this.value = value;
     }
 

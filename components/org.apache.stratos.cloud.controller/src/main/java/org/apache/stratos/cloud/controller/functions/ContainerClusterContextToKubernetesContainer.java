@@ -71,10 +71,10 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
 
         for (PortMapping portMapping : cartridge.getPortMappings()) {
             Port p = new Port();
-            p.setContainerPort(Integer.parseInt(portMapping.getPort()));
+            p.setName(p.getProtocol() + p.getContainerPort());
             // In kubernetes transport protocol always be 'tcp'
             p.setProtocol("tcp");
-            p.setName(p.getProtocol() + p.getContainerPort());
+            p.setContainerPort(Integer.parseInt(portMapping.getPort()));
             portList.add(p);
         }
         return portList.toArray(ports);
@@ -85,29 +85,27 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
                 StratosConstants.KUBERNETES_CLUSTER_ID);
 
         List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
-        if (memberContext.getProperties() != null) {
-            Properties properties = memberContext.getProperties();
-            if (properties != null) {
-                // Set dynamic payload
-                List<NameValuePair> payload = (List<NameValuePair>) properties.getProperty(
-                        StratosConstants.DYNAMIC_PAYLOAD);
-                if(payload != null) {
-                    for(NameValuePair parameter : payload) {
-                        addToEnvironmentVariables(environmentVariables, parameter.getName(), parameter.getValue());
-                    }
-                }
-                // Set member string properties as payload parameters
-                for (Property property : properties.getProperties()) {
-                    if(property.getValue() instanceof String) {
-                        addToEnvironmentVariables(environmentVariables, property.getName(),
-                                String.valueOf(property.getValue()));
-                    }
-                }
+
+        // Set dynamic payload
+        List<NameValuePair> payload = memberContext.getDynamicPayload();
+        if (payload != null) {
+            for (NameValuePair parameter : payload) {
+                addToEnvironmentVariables(environmentVariables, parameter.getName(), parameter.getValue());
             }
-            // Set kubernetes cluster id
-            addToEnvironmentVariables(environmentVariables, StratosConstants.KUBERNETES_CLUSTER_ID,
-                    kubernetesClusterId);
         }
+
+        // Set member properties
+        Properties properties = memberContext.getProperties();
+        if (properties != null) {
+            for (Property property : properties.getProperties()) {
+                addToEnvironmentVariables(environmentVariables, property.getName(),
+                        property.getValue());
+            }
+        }
+
+        // Set kubernetes cluster id
+        addToEnvironmentVariables(environmentVariables, StratosConstants.KUBERNETES_CLUSTER_ID,
+                kubernetesClusterId);
 
         EnvironmentVariable[] array = new EnvironmentVariable[environmentVariables.size()];
         return environmentVariables.toArray(array);

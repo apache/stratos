@@ -20,11 +20,11 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
-/**
- *
- *
- */
-public class Selector {
+import java.io.Serializable;
+
+public class Selector implements Serializable {
+
+	private static final long serialVersionUID = 8384843252305848574L;
 
 	private String name;
 

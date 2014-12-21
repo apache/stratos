@@ -20,6 +20,7 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -30,7 +31,9 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement
-public class Service {
+public class Service implements Serializable {
+
+	private static final long serialVersionUID = 7766915353839414993L;
 
 	private String kind;
 	private String id;

@@ -33,6 +33,8 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Port;
+import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -432,31 +434,33 @@ public class TopologyBuilder {
                 Port port;
                 if(cluster.isKubernetesCluster()){
                     // Update port mappings with generated service proxy port
-                    // TODO: Need to properly fix with the latest Kubernetes version
-                    String serviceHostPortStr = CloudControllerUtil.getProperty(memberContext.getProperties(), StratosConstants.KUBERNETES_SERVICES);
-                    if(StringUtils.isEmpty(serviceHostPortStr)) {
-                        log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
-                    }
-                    // Adding ports to the member
-                    if (StringUtils.isNotEmpty(serviceHostPortStr)) {
-                        for (PortMapping portMapping : portMappings) {
-                            port = new Port(portMapping.getProtocol(),
-                                    Integer.parseInt(serviceHostPortStr),
-                                    Integer.parseInt(portMapping.getProxyPort()));
-                            member.addPort(port);
+                    ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+                    if(clusterContext == null) {
+                        log.warn("Cluster context not found, could not add member ports: [cluster-id] " + clusterId);
+                    } else {
+                        List<org.apache.stratos.kubernetes.client.model.Service> services =
+                                clusterContext.getKubernetesServices();
+                        if(services == null) {
+                            log.warn("Kubernetes services not found in cluster context, could not add member ports: " +
+                                    "[cluster-id] " + clusterId);
+                        } else {
+                            // Adding ports to the member
+                            for (PortMapping portMapping : portMappings) {
+                                port = new Port(portMapping.getProtocol(),
+                                        findServicePort(clusterId, services, portMapping),
+                                        Integer.parseInt(portMapping.getProxyPort()));
+                                member.addPort(port);
+                            }
                         }
                     }
 
                 } else {
-
                     // Adding ports to the member
                     for (PortMapping portMapping : portMappings) {
-
                         port = new Port(portMapping.getProtocol(),
                                 Integer.parseInt(portMapping.getPort()),
                                 Integer.parseInt(portMapping.getProxyPort()));
                         member.addPort(port);
-
                     }
                 }
 
@@ -471,7 +475,19 @@ public class TopologyBuilder {
 		
 		TopologyEventPublisher.sendInstanceSpawnedEvent(memberContext);
 	}
-    
+
+    private static int findServicePort(String clusterId,
+                                       List<org.apache.stratos.kubernetes.client.model.Service> services,
+                                       PortMapping portMapping) {
+        for(org.apache.stratos.kubernetes.client.model.Service service : services) {
+            if(service.getContainerPort().equals(portMapping.getPort())) {
+                return service.getPort();
+            }
+        }
+        throw new RuntimeException("Kubernetes service port not found: [cluster-id] " + clusterId + " [port] "
+                + portMapping.getPort());
+    }
+
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(instanceStartedEvent.getServiceName());

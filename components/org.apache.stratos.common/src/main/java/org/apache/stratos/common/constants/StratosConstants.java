@@ -147,23 +147,14 @@ public class StratosConstants {
 
     // Kubernetes related constants
     public static final String KUBERNETES_CLUSTER_ID = "KUBERNETES_CLUSTER_ID";
-    public static final String KUBERNETES_DEPLOYER_TYPE = "kubernetes";
-    public static final String KUBERNETES_MASTER_IP = "KUBERNETES_MASTER_IP";
     public static final String KUBERNETES_MASTER_PORT = "KUBERNETES_MASTER_PORT";
     public static final String KUBERNETES_MASTER_DEFAULT_PORT = "8080";
-    public static final String KUBERNETES_MIN_REPLICAS = "KUBERNETES_REPLICAS_MIN";
-    public static final String KUBERNETES_MAX_REPLICAS = "KUBERNETES_REPLICAS_MAX";
-    public static final String KUBERNETES_PORT_RANGE = "KUBERNETES_PORT_RANGE";
-    public static final String KUBERNETES_SERVICES = "KUBERNETES_SERVICES";
-    
+
     //drools related constants
     public static final String DROOLS_DIR_NAME = "drools";
-    public static final String CONTAINER_SCALE_CHECK_DROOL_FILE = "container-scaling.drl";
     public static final String VM_SCALE_CHECK_DROOL_FILE = "scaling.drl";
     public static final String DEPENDENT_SCALE_CHECK_DROOL_FILE = "dependent-scaling.drl";
-    public static final String CONTAINER_MIN_CHECK_DROOL_FILE = "container-mincheck.drl";
     public static final String VM_MIN_CHECK_DROOL_FILE = "mincheck.drl";
-    public static final String CONTAINER_OBSOLETE_CHECK_DROOL_FILE = "container-obsoletecheck.drl";
     public static final String VM_OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
     
@@ -173,8 +164,6 @@ public class StratosConstants {
     // Autoscaler member timeout constants
     public static final String PENDING_VM_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.vm.pendingMemberExpiryTimeout";
     public static final String OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.vm.obsoletedMemberExpiryTimeout";
-    public static final String PENDING_CONTAINER_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.container.pendingMemberExpiryTimeout";
-    public static final String OBSOLETED_CONTAINER_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.container.obsoletedMemberExpiryTimeout";
 
 	public static final String FILTER_VALUE_SEPARATOR = ",";
 	public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";
@@ -187,9 +176,7 @@ public class StratosConstants {
 	public static final String DEFAULT_LOAD_BALANCER = "default.load.balancer";
 	public static final String NO_LOAD_BALANCER = "no.load.balancer";
 	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
-	public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
 
     public static final long HAZELCAST_INSTANCE_INIT_TIMEOUT = 300000; // 5 min
-    public static final String DYNAMIC_PAYLOAD = "DYNAMIC_PAYLOAD";
 }
 

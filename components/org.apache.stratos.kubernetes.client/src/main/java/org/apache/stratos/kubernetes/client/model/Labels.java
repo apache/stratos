@@ -20,10 +20,14 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import java.io.Serializable;
+
 /**
  * Labels can contain a list of key/value pairs. Currently we are only using one key/value pair: name/value.
  */
-public class Labels {
+public class Labels implements Serializable {
+
+	private static final long serialVersionUID = -9019445613544931617L;
 
 	private String name;
 

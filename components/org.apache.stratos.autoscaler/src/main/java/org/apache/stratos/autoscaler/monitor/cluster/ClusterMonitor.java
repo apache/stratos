@@ -176,7 +176,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         if (props != null && props.getProperties() != null) {
             for (Property prop : props.getProperties()) {
                 if (prop.getName().equals("PRIMARY")) {
-                    if (Boolean.parseBoolean(String.valueOf(prop.getValue()))) {
+                    if (Boolean.parseBoolean(prop.getValue())) {
                         log.debug("Adding member id [" + memberContext.getMemberId() + "] " +
                                 "member instance id [" + memberContext.getInstanceId() + "] as a primary member");
                         return true;

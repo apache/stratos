@@ -20,9 +20,11 @@ package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.beans.NameValuePair;
 
 import java.io.Serializable;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Holds information about a Member.
@@ -69,6 +71,7 @@ public class MemberContext implements Serializable {
     private InstanceMetadata instanceMetadata;
     // Properties
     private Properties properties;
+    private List<NameValuePair> dynamicPayload;
 
     public MemberContext(String id, String clusterId, Partition partition) {
         this.memberId = id;
@@ -269,13 +272,21 @@ public class MemberContext implements Serializable {
         return clusterInstanceId;
     }
 
+    public void setDynamicPayload(List<NameValuePair> dynamicPayload) {
+        this.dynamicPayload = dynamicPayload;
+    }
+
+    public List<NameValuePair> getDynamicPayload() {
+        return dynamicPayload;
+    }
+
     @Override
     public String toString() {
         return "MemberContext [memberId=" + memberId + ", instanceId=" + instanceId
                 + ", clusterId=" + clusterId + ", partition=" + partition
                 + ", cartridgeType=" + cartridgeType + ", defaultPrivateIP=" + defaultPrivateIP
-                + ", defaultPublicIP=" + defaultPublicIP + ", allocatedIPs=" + Arrays.toString(allocatedIPs) 
-                + ", publicIPs=" + Arrays.toString(publicIPs) + ", privateIPs=" + Arrays.toString(privateIPs) 
+                + ", defaultPublicIP=" + defaultPublicIP + ", allocatedIPs=" + Arrays.toString(allocatedIPs)
+                + ", publicIPs=" + Arrays.toString(publicIPs) + ", privateIPs=" + Arrays.toString(privateIPs)
                 + ", initTime=" + initTime + ", lbClusterId=" + lbClusterId
                 + ", networkPartitionId=" + networkPartitionId + ", instanceMetadata=" + instanceMetadata +
                 ", properties=" + properties + "]";

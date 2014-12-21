@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax27="http://common.stratos.apache.org/xsd" xmlns:ax25="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax21="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax214="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://api.autoscaler.stratos.apache.org" xmlns:ax27="http://common.stratos.apache.org/xsd" xmlns:ax25="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax21="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax214="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://api.autoscaler.stratos.apache.org">
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="AutoscalePolicy">
@@ -8,15 +8,15 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="instanceRoundingFactor" type="xs:float"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax23:LoadThresholds"/>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax21:LoadThresholds"/>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax23:LoadAverageThresholds"/>
-                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax23:MemoryConsumptionThresholds"/>
-                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax23:RequestsInFlightThresholds"/>
+                    <xs:element minOccurs="0" name="loadAverage" nillable="true" type="ax21:LoadAverageThresholds"/>
+                    <xs:element minOccurs="0" name="memoryConsumption" nillable="true" type="ax21:MemoryConsumptionThresholds"/>
+                    <xs:element minOccurs="0" name="requestsInFlight" nillable="true" type="ax21:RequestsInFlightThresholds"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadAverageThresholds">
@@ -200,9 +200,9 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax24="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax22="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://common.stratos.apache.org/xsd" xmlns:ax218="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax223="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"/>
+        <xs:schema xmlns:ax24="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax22="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://common.stratos.apache.org/xsd" xmlns:ax218="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax223="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax211="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://api.autoscaler.stratos.apache.org">
             <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://application.exception.autoscaler.stratos.apache.org/xsd"/>
@@ -211,17 +211,29 @@
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
             <xs:import namespace="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd"/>
             <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"/>
+            <xs:element name="getAutoScalingPolicies">
+                <xs:complexType>
+                    <xs:sequence/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoScalingPoliciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax21:AutoscalePolicy"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="AutoScalerServiceInvalidPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax21:InvalidPolicyException"/>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax21:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -235,7 +247,7 @@
             <xs:element name="updateAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax21:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -270,7 +282,7 @@
             <xs:element name="getAutoscalingPolicyResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax21:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -437,18 +449,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoScalingPolicies">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoScalingPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
