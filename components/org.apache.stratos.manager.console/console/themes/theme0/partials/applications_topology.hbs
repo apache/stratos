@@ -24,10 +24,8 @@
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
-    //var topologydata = {{{topology_data}}};
-
-    var topologydata = {"applicationInstances":[{"applicationId":"app_group_v1","groupInstances":[{"clusterInstances":[{"alias":"tom2group6","clusterId":"tom2group6.tomcat2.domain","hostNames":["tom2group6.isuruh.lk"],"instanceId":"mygroup6-1","member":[{"clusterId":"tom2group6.tomcat2.domain","memberId":"tom2group6.tomcat2.domainbdf9cc84-7a2a-4e35-b899-19b7ef4c49be","memberIp":"10.0.0.1","memberPublicIp":"20.0.0.1","networkPartitionId":"openstack_R1","partitionId":"P1","property":[{"name":"PRIMARY","value":false},{"name":"MIN_COUNT","value":1}],"serviceName":"tomcat2","status":"Activated"}],"parentInstanceId":"mygroup6-1","serviceName":"tomcat2","status":"Active","tenantRange":"*"}],"groupId":"mygroup6","instanceId":"mygroup6-1","parentInstanceId":"app_group_v1-1","status":"Active"},{"clusterInstances":[{"alias":"tom2group6","clusterId":"tom2group6.tomcat2.domain","hostNames":["tom2group6.isuruh.lk"],"instanceId":"mygroup6-2","member":[{"clusterId":"tom2group6.tomcat2.domain","memberId":"tom2group6.tomcat2.domain6ddee85f-ce49-4409-b1f1-05adaef55c68","memberIp":"10.0.0.2","memberPublicIp":"20.0.0.2","networkPartitionId":"openstack_R1","partitionId":"P1","property":[{"name":"PRIMARY","value":false},{"name":"MIN_COUNT","value":1}],"serviceName":"tomcat2","status":"Activated"}],"parentInstanceId":"mygroup6-2","serviceName":"tomcat2","status":"Active","tenantRange":"*"}],"groupId":"mygroup6","instanceId":"mygroup6-2","parentInstanceId":"app_group_v1-1","status":"Active"}],"instanceId":"app_group_v1-1","status":"Active"}],"id":"app_group_v1","tenantAdminUsername":"admin","tenantDomain":"carbon.super"};
-//create JSON from topology
+    var topologydata = {{{topology_data}}};
+    //create JSON from topology
     function genTree(data){
         var rawout = [];
 
@@ -55,9 +53,14 @@ $(document).ready(function () {
             for(var prop in items){
                 if (items.hasOwnProperty(prop)) {
                     var cur_name = items[prop].clusterId,
+                            alias = items[prop].alias,
+                            hostNames = items[prop].hostNames.toString(),
+                            serviceName = items[prop].serviceName,
                             status = items[prop].status;
-                    var type = 'cluster';
-                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+                    var type = 'clusters';
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
+                        "alias":alias, "hostNames": hostNames, "serviceName": serviceName
+                    });
                     clustermembers(items[prop].member, collector, cur_name)
                 }
             }
@@ -84,9 +87,16 @@ $(document).ready(function () {
             for(var prop in items){
                 if (items.hasOwnProperty(prop)) {
                     var cur_name = items[prop].memberId,
+                            defaultPrivateIP = items[prop].defaultPrivateIP,
+                            defaultPublicIP = items[prop].defaultPublicIP,
+                            networkPartitionId = items[prop].networkPartitionId,
+                            partitionId = items[prop].partitionId,
                             status = items[prop].status;
-                    var type = 'member';
-                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+                    var type = 'members';
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
+                        "defaultPrivateIP":defaultPrivateIP, "defaultPublicIP":defaultPublicIP,
+                        "networkPartitionId":networkPartitionId, "partitionId":partitionId
+                    });
                 }
             }
         }
@@ -183,18 +193,28 @@ $(document).ready(function () {
                             .duration(200)
                             .style("opacity", .9);
 
-                    if (d.type == 'cluster') {
+                    if (d.type == 'clusters') {
                         div.html(
-                                        "<strong>Cluster ID: </strong>" + d.clusterId + "<br/>" +
-                                        "<strong>Is Lb Cluster: </strong>" + d.isLbCluster
+                                        "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
+                                        "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
+                                        "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
+                                        "<strong>Status: </strong>" + d.status
                         ).style("left", (d3.event.pageX) + "px")
                                 .style("top", (d3.event.pageY - 28) + "px");
-                    } else if (d.type == 'member') {
+                    } else if (d.type == 'members') {
                         div.html(
-                                        "<strong>Cluster Id: </strong>" + d.clusterId + "<br/>" +
+                                        "<strong>Member Id: </strong>" + d.name + "<br/>" +
+                                        "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
+                                        "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
+                                        "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
                                         "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
-                                        "<strong>Member Id: </strong>" + d.memberId + "<br/>" +
-                                        "<strong>Member Public Ip: </strong>" + d.memberPublicIp
+                                        "<strong>Status: </strong>" + d.status
+                        ).style("left", (d3.event.pageX) + "px")
+                                .style("top", (d3.event.pageY - 28) + "px");
+                    } else if (d.type == 'groups') {
+                        div.html(
+                                        "<strong>Group Id: </strong>" + d.name + "<br/>" +
+                                        "<strong>Status: </strong>" + d.status
                         ).style("left", (d3.event.pageX) + "px")
                                 .style("top", (d3.event.pageY - 28) + "px");
                     } else {
@@ -217,13 +237,15 @@ $(document).ready(function () {
                 .attr("width", 30)
                 .attr("height", 30)
                 .style("fill", function (d) {
-                    if (d.type == 'cluster') {
-                        return "#e74c3c";
-                    } else if (d.type == 'groups') {
-                        return "#2ecc71";
-                    } else if (d.type == 'member') {
-                        return "#9b59b6";
-                    } else {
+                    if (d.status == 'Active' || d.status == 'Activated') {
+                        return "#1abc9c";
+                    } else if (d.status == 'Created') {
+                        return "#e67e22";
+                    } else if (d.status == 'Inactive') {
+                        return "#7f8c8d";
+                    } else if (d.status == 'Terminated') {
+                        return "#c0392b";
+                    }else{
                         return "#1abc9c";
                     }
                 });
@@ -231,11 +253,11 @@ $(document).ready(function () {
         nodeEnter.append("image")
                 .attr("xlink:href",
                 function (d) {
-                    if (d.type == 'cluster') {
+                    if (d.type == 'clusters') {
                         return "../../../themes/theme0/images/topology/cluster.png";
                     } else if (d.type == 'groups') {
                         return "../../../themes/theme0/images/topology/group.png";
-                    } else if (d.type == 'member') {
+                    } else if (d.type == 'members') {
                         return "../../../themes/theme0/images/topology/member.png";
                     } else {
                         return "../../../themes/theme0/images/topology/application.png";
@@ -255,7 +277,7 @@ $(document).ready(function () {
                 .attr("dy", ".35em")
                 .attr("text-anchor", "middle")
                 .text(function (d) {
-                    if(d.type == 'member'){
+                    if(d.type == 'members'){
                        return '';
                     }else{
                         return d.name;
