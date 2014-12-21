@@ -337,12 +337,16 @@ class Member:
         self.port_map = {}
         """ :type : dict[str, Port]  """
 
-        self.member_public_ip = None
+        self.member_public_ips = None
         """ :type : str  """
+        self.member_default_public_ip = None
+        """ :type : str """
         self.status = None
         """ :type : str  """
-        self.member_ip = None
+        self.member_private_ips = None
         """ :type : str  """
+        self.member_default_private_ip = None
+        """ :type : str """
         self.properties = {}
         """ :type : dict[str, str]  """
         self.lb_cluster_id = None

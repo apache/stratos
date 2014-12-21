@@ -39,7 +39,7 @@ class MemberActivatedEvent:
         """ :type : str  """
         self.port_map = {}
         """ :type : dict[str, Port]  """
-        self.member_ip = None
+        self.member_private_ips = None
         """ :type : str  """
 
     def get_port(self, proxy_port):
@@ -67,7 +67,10 @@ class MemberActivatedEvent:
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         #instance.port_map = json_obj["portMap"] if "portMap" in json_obj else {}
-        instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None
+        instance.member_private_ips = json_obj["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
+        instance.member_public_ips = json_obj["memberPublicIPs"] if "memberPublicIPs" in json_obj else None
+        instance.member_default_public_ip = json_obj["defaultPublicIP"] if "defaultPublicIP" in json_obj else None
+        instance.member_default_private_ip = json_obj["defaultPrivateIP"] if "defaultPrivateIP" in json_obj else None
 
         for port_proxy in json_obj["portMap"]:
             port_str = json_obj["portMap"][port_proxy]
@@ -203,9 +206,9 @@ class CompleteTopologyEvent:
                         mm_partition_id = member_str["partitionId"] if "partitionId" in member_str else None
 
                         member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id, mm_partition_id, member_id)
-                        member_obj.member_public_ip = member_str["memberPublicIp"] if "memberPublicIp" in member_str else None
+                        member_obj.member_public_ips = member_str["memberPublicIPs"] if "memberPublicIPs" in member_str else None
                         member_obj.status = member_str["status"] if "status" in member_str else None
-                        member_obj.member_ip = member_str["memberIp"]
+                        member_obj.member_private_ips = member_str["memberPrivateIPs"]
                         member_obj.properties = member_str["properties"]
                         member_obj.lb_cluster_id = member_str["lbClusterId"] if "lbClusterId" in member_str else None
                         member_obj.json_str = member_str
@@ -284,9 +287,9 @@ class InstanceSpawnedEvent:
         """ :type : str  """
         self.lb_cluster_id = None
         """ :type : str  """
-        self.member_public_ip = None
+        self.member_public_ips = None
         """ :type : str  """
-        self.member_ip = None
+        self.member_private_ips = None
         """ :type : str  """
         self.properties = {}
         """ :type : dict[str, str]  """
@@ -304,8 +307,10 @@ class InstanceSpawnedEvent:
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.lb_cluster_id = json_obj["lbClusterId"] if "lbClusterId" in json_obj else None
-        instance.member_public_ip = json_obj["memberPublicIp"] if "memberPublicIp" in json_obj else None
-        instance.member_ip = json_obj["memberIp"] if "memberIp" in json_obj else None
+        instance.member_private_ips = json_obj["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
+        instance.member_public_ips = json_obj["memberPublicIPs"] if "memberPublicIPs" in json_obj else None
+        instance.member_default_public_ip = json_obj["defaultPublicIP"] if "defaultPublicIP" in json_obj else None
+        instance.member_default_private_ip = json_obj["defaultPrivateIP"] if "defaultPrivateIP" in json_obj else None
         instance.properties = json_obj["properties"]
 
         return instance

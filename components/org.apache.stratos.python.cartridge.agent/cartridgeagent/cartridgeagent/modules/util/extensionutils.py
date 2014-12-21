@@ -463,7 +463,7 @@ def get_lb_member_ip(lb_cluster_id):
             members = cluster.get_members()
             for member in members:
                 if member.cluster_id == lb_cluster_id:
-                    return [member.member_ip, member.member_public_ip]
+                    return [member.member_default_private_ip, member.member_default_public_ip]
 
     return None
 

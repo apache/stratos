@@ -153,7 +153,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         if extensionutils.is_relevant_member_event(member_activated_event.service_name,
                                                    member_activated_event.cluster_id, lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": str(member_activated_event.member_ip),
+            env_params = {"STRATOS_MEMBER_ACTIVATED_MEMBER_IP": str(member_activated_event.member_default_private_ip),
                           "STRATOS_MEMBER_ACTIVATED_MEMBER_ID": str(member_activated_event.member_id),
                           "STRATOS_MEMBER_ACTIVATED_CLUSTER_ID": str(member_activated_event.cluster_id),
                           "STRATOS_MEMBER_ACTIVATED_LB_CLUSTER_ID": str(lb_cluster_id),
@@ -190,7 +190,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                 has_wk_ip_changed = True
                 for wk_member in self.wk_members:
-                    if wk_member.member_ip == member_activated_event.member_ip:
+                    if wk_member.member_default_private_ip == member_activated_event.member_default_private_ip:
                         has_wk_ip_changed = False
 
                 self.log.debug(" hasWKIpChanged %r" + has_wk_ip_changed)
@@ -291,7 +291,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 member_terminated_event.cluster_id,
                 lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_TERMINATED_MEMBER_IP": terminated_member.member_ip,
+            env_params = {"STRATOS_MEMBER_TERMINATED_MEMBER_IP": terminated_member.member_default_private_ip,
                           "STRATOS_MEMBER_TERMINATED_MEMBER_ID": member_terminated_event.member_id,
                           "STRATOS_MEMBER_TERMINATED_CLUSTER_ID": member_terminated_event.cluster_id,
                           "STRATOS_MEMBER_TERMINATED_LB_CLUSTER_ID": lb_cluster_id,
@@ -340,7 +340,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 member_suspended_event.cluster_id,
                 lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_SUSPENDED_MEMBER_IP": member_suspended_event.member_ip,
+            env_params = {"STRATOS_MEMBER_SUSPENDED_MEMBER_IP": member_suspended_event.member_default_private_ip,
                           "STRATOS_MEMBER_SUSPENDED_MEMBER_ID": member_suspended_event.member_id,
                           "STRATOS_MEMBER_SUSPENDED_CLUSTER_ID": member_suspended_event.cluster_id,
                           "STRATOS_MEMBER_SUSPENDED_LB_CLUSTER_ID": lb_cluster_id,
@@ -389,7 +389,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 member_started_event.cluster_id,
                 lb_cluster_id):
 
-            env_params = {"STRATOS_MEMBER_STARTED_MEMBER_IP": started_member.member_ip,
+            env_params = {"STRATOS_MEMBER_STARTED_MEMBER_IP": started_member.member_default_private_ip,
                           "STRATOS_MEMBER_STARTED_MEMBER_ID": member_started_event.member_id,
                           "STRATOS_MEMBER_STARTED_CLUSTER_ID": member_started_event.cluster_id,
                           "STRATOS_MEMBER_STARTED_LB_CLUSTER_ID": lb_cluster_id,
@@ -554,8 +554,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                     return False
 
                 apistore_member = apistore_member_list[0]
-                env_params["STRATOS_WK_APISTORE_MEMBER_IP"] = apistore_member.member_ip
-                self.log.debug("STRATOS_WK_APISTORE_MEMBER_IP: %r" % apistore_member.member_ip)
+                env_params["STRATOS_WK_APISTORE_MEMBER_IP"] = apistore_member.member_default_private_ip
+                self.log.debug("STRATOS_WK_APISTORE_MEMBER_IP: %r" % apistore_member.member_default_private_ip)
 
                 publisher_member_list = []
                 for member in publisher_cluster_collection[0].get_members():
@@ -567,8 +567,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                     self.log.debug("API Publisher members not yet created")
 
                 publisher_member = publisher_member_list[0]
-                env_params["STRATOS_WK_PUBLISHER_MEMBER_IP"] = publisher_member.member_ip
-                self.log.debug("STRATOS_WK_PUBLISHER_MEMBER_IP: %r" % publisher_member.member_ip)
+                env_params["STRATOS_WK_PUBLISHER_MEMBER_IP"] = publisher_member.member_default_private_ip
+                self.log.debug("STRATOS_WK_PUBLISHER_MEMBER_IP: %r" % publisher_member.member_default_private_ip)
 
                 return True
 
@@ -613,13 +613,13 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
                     wk_members.append(member)
                     self.wk_members.append(member)
-                    self.log.debug("Found WKA: STRATOS_WK_MEMBER_IP: " + member.member_ip)
+                    self.log.debug("Found WKA: STRATOS_WK_MEMBER_IP: " + member.member_default_private_ip)
 
             if len(wk_members) >= min_count:
                 idx = 0
                 for member in wk_members:
-                    env_params["STRATOS_WK_MEMBER_" + idx + "_IP"] = member.member_ip
-                    self.log.debug("STRATOS_WK_MEMBER_" + idx + "_IP:" + member.member_ip)
+                    env_params["STRATOS_WK_MEMBER_" + idx + "_IP"] = member.member_default_private_ip
+                    self.log.debug("STRATOS_WK_MEMBER_" + idx + "_IP:" + member.member_default_private_ip)
 
                     idx += 1
 
@@ -687,8 +687,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             min_manager_instances_available = True
             idx = 0
             for member in manager_wka_members:
-                env_params["STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP"] = member.member_ip
-                self.log.debug("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP: " + member.member_ip)
+                env_params["STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP"] = member.member_default_private_ip
+                self.log.debug("STRATOS_WK_MANAGER_MEMBER_" + idx + "_IP: " + member.member_default_private_ip)
                 idx += 1
 
             env_params["STRATOS_WK_MANAGER_MEMBER_COUNT"] = int(manager_min_instance_count)
@@ -748,8 +748,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             min_worker_instances_available = True
             idx = 0
             for member in worker_wka_members:
-                env_params["STRATOS_WK_WORKER_MEMBER_" + idx + "_IP"] = member.member_ip
-                self.log.debug("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP: " + member.member_ip)
+                env_params["STRATOS_WK_WORKER_MEMBER_" + idx + "_IP"] = member.member_default_private_ip
+                self.log.debug("STRATOS_WK_WORKER_MEMBER_" + idx + "_IP: " + member.member_default_private_ip)
                 idx += 1
 
             env_params["STRATOS_WK_WORKER_MEMBER_COUNT"] = int(worker_min_instance_count)
