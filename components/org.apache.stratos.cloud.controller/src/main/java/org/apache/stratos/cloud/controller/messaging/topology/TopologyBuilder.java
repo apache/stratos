@@ -155,7 +155,6 @@ public class TopologyBuilder {
 
         try {
             Topology topology = TopologyManager.getTopology();
-
             for (Cluster cluster : appClusters) {
                 Service service = topology.getService(cluster.getServiceName());
                 if (service == null) {
@@ -168,13 +167,10 @@ public class TopologyBuilder {
             }
 
             TopologyManager.updateTopology(topology);
-
         } finally {
             TopologyManager.releaseWriteLock();
         }
-
         TopologyEventPublisher.sendApplicationClustersCreated(appId, appClusters);
-
     }
 
     public static void handleApplicationClustersRemoved(String appId, Set<ClusterDataHolder> clusterData) {
@@ -397,7 +393,8 @@ public class TopologyBuilder {
 		// adding the new member to the cluster after it is successfully started
 		// in IaaS.
 		Topology topology = TopologyManager.getTopology();
-		Service service = topology.getService(memberContext.getCartridgeType());
+
+        Service service = topology.getService(memberContext.getCartridgeType());
         String clusterId = memberContext.getClusterId();
         Cluster cluster = service.getCluster(clusterId);
 		String memberId = memberContext.getMemberId();
@@ -436,7 +433,7 @@ public class TopologyBuilder {
                 if(cluster.isKubernetesCluster()){
                     // Update port mappings with generated service proxy port
                     // TODO: Need to properly fix with the latest Kubernetes version
-                    String serviceHostPortStr = CloudControllerUtil.getProperty(memberContext.getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
+                    String serviceHostPortStr = CloudControllerUtil.getProperty(memberContext.getProperties(), StratosConstants.KUBERNETES_SERVICES);
                     if(StringUtils.isEmpty(serviceHostPortStr)) {
                         log.warn("Kubernetes service host port not found for member: [member-id] " + memberId);
                     }

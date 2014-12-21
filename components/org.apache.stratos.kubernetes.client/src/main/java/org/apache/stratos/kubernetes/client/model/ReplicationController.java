@@ -21,6 +21,8 @@
 package org.apache.stratos.kubernetes.client.model;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -35,42 +37,53 @@ public class ReplicationController {
 	private String creationTimestamp;
 	private String selfLink;
 	private String apiVersion;
-	private Label labels;
+	private Labels labels;
 	private State desiredState;
-	
+
 	public String getKind() {
 		return kind;
 	}
+
 	public void setKind(String kind) {
 		this.kind = kind;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getCreationTimestamp() {
 		return creationTimestamp;
 	}
+
 	public void setCreationTimestamp(String creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
+
 	public String getSelfLink() {
 		return selfLink;
 	}
+
 	public void setSelfLink(String selfLink) {
 		this.selfLink = selfLink;
 	}
-	public Label getLabels() {
+
+	public Labels getLabels() {
 		return labels;
 	}
-	public void setLabels(Label labels) {
+
+	public void setLabels(Labels labels) {
 		this.labels = labels;
 	}
+
 	public State getDesiredState() {
 		return desiredState;
 	}
+
 	public void setDesiredState(State desiredState) {
 		this.desiredState = desiredState;
 	}
@@ -78,15 +91,19 @@ public class ReplicationController {
 	public String getApiVersion() {
 		return apiVersion;
 	}
+
 	public void setApiVersion(String apiVersion) {
 		this.apiVersion = apiVersion;
 	}
+
 	public int getResourceVersion() {
 		return resourceVersion;
 	}
+
 	public void setResourceVersion(int resourceVersion) {
 		this.resourceVersion = resourceVersion;
 	}
+
 	@Override
 	public String toString() {
 		return "ReplicationController [kind=" + kind + ", id=" + id

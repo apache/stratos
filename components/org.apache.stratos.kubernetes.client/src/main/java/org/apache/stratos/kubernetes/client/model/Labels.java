@@ -20,7 +20,10 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
-public class Label {
+/**
+ * Labels can contain a list of key/value pairs. Currently we are only using one key/value pair: name/value.
+ */
+public class Labels {
 
 	private String name;
 
@@ -36,5 +39,4 @@ public class Label {
 	public String toString() {
 		return "Label [name=" + name + "]";
 	}
-	
 }

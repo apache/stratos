@@ -109,7 +109,7 @@ public abstract class CartridgeMgtBehaviour implements Serializable {
                         if ("DEPLOYMENT".equals(payloadParamSubstring)) {
                             isDeploymentParam = true;
                         }
-                        payloadData.add(payloadParamSubstring, property.getValue());
+                        payloadData.add(payloadParamSubstring, String.valueOf(property.getValue()));
                     }
                 }
             }

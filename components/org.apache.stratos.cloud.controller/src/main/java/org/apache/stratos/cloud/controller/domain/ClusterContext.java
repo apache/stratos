@@ -78,6 +78,13 @@ public class ClusterContext implements Serializable{
         return hostName;
     }
 
+    public String findContainerHostName() {
+        if (hostName.indexOf('.') != -1) {
+            hostName = hostName.replace('.', '-');
+        }
+        return hostName;
+    }
+
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }

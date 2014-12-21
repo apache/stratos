@@ -39,7 +39,6 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.drools.reteoo.PartitionManager;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
@@ -50,7 +49,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.FileHandler;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent"
@@ -136,7 +134,7 @@ public class AutoscalerServerComponent {
 			Iterator<KubernetesGroup> kubernetesGroupIterator = kubernetesGroupList.iterator();
 			while (kubernetesGroupIterator.hasNext()) {
 				KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
-				KubernetesManager.getInstance().addNewKubernetesGroup(kubernetesGroup);
+				KubernetesManager.getInstance().addKubernetesGroup(kubernetesGroup);
 			}
 
 			//starting the processor chain

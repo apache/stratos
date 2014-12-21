@@ -41,80 +41,104 @@ public class Pod {
 	private String status;
 	private String message;
 	private String code;
-	private Label labels;
+	private Labels labels;
 	
 	public String getKind() {
 		return kind;
 	}
+
 	public void setKind(String kind) {
 		this.kind = kind;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getCreationTimestamp() {
 		return creationTimestamp;
 	}
+
 	public void setCreationTimestamp(String creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
+
 	public String getSelfLink() {
 		return selfLink;
 	}
+
 	public void setSelfLink(String selfLink) {
 		this.selfLink = selfLink;
 	}
+
 	public State getDesiredState() {
 		return desiredState;
 	}
-	public void setDesiredState(State desiredState) {
+
+	public void setState(State desiredState) {
 		this.desiredState = desiredState;
 	}
+
 	public State getCurrentState() {
 		return currentState;
 	}
+
 	public void setCurrentState(State currentState) {
 		this.currentState = currentState;
 	}
+
 	public String getResourceVersion() {
 		return resourceVersion;
 	}
+
 	public void setResourceVersion(String resourceVersion) {
 		this.resourceVersion = resourceVersion;
 	}
+
 	public String getApiVersion() {
 		return apiVersion;
 	}
+
 	public void setApiVersion(String apiVersion) {
 		this.apiVersion = apiVersion;
 	}
-	public Label getLabels() {
+
+	public Labels getLabels() {
 		return labels;
 	}
-	public void setLabels(Label labels) {
+
+	public void setLabels(Labels labels) {
 		this.labels = labels;
 	}
+
 	public String getStatus() {
 		return status;
 	}
+
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 	public String getMessage() {
 		return message;
 	}
+
 	public void setMessage(String message) {
 		this.message = message;
 	}
+
 	public String getCode() {
 		return code;
 	}
+
 	public void setCode(String code) {
 		this.code = code;
 	}
+
 	@Override
 	public String toString() {
 		return "Pod [kind=" + kind + ", id=" + id + ", creationTimestamp="
@@ -148,6 +172,4 @@ public class Pod {
             return false;
         return true;
     }
-	
-	
 }

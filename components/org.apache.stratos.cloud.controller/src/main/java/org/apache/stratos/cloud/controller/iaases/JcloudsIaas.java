@@ -102,7 +102,7 @@ public abstract class JcloudsIaas extends Iaas {
     }
 
     @Override
-    public MemberContext createInstance(MemberContext memberContext) {
+    public MemberContext startInstance(MemberContext memberContext) {
         // generate the group id from domain name and sub domain name.
         // Should have lower-case ASCII letters, numbers, or dashes.
         // Should have a length between 3-15
@@ -279,7 +279,8 @@ public abstract class JcloudsIaas extends Iaas {
         }
     }
 
-    public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
+    public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException,
+            InvalidMemberException {
         String memberId = memberContext.getMemberId();
         String cartridgeType = memberContext.getCartridgeType();
         String nodeId = memberContext.getInstanceId();

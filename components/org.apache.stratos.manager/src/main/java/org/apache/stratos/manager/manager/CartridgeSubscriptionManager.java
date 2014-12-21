@@ -342,7 +342,7 @@ public class CartridgeSubscriptionManager {
 					continue;
 				}
 				if (prop.getName().equals(CartridgeConstants.LB_CLUSTER_ID)) {
-					return prop.getValue();
+					return String.valueOf(prop.getValue());
 				}
 			}
 		}
@@ -493,7 +493,8 @@ public class CartridgeSubscriptionManager {
             for(Property property : subscriptionData.getProperties().getProperties()){
                 if (property.getName().startsWith(CartridgeConstants.CUSTOM_PAYLOAD_PARAM_NAME_PREFIX)) {
                     String payloadParamName = property.getName();
-                    cartridgeSubscription.getPayloadData().add(payloadParamName.substring(payloadParamName.indexOf(".") + 1), property.getValue());
+                    cartridgeSubscription.getPayloadData().add(payloadParamName.substring(
+                            payloadParamName.indexOf(".") + 1), String.valueOf(property.getValue()));
                 }
             }
         }

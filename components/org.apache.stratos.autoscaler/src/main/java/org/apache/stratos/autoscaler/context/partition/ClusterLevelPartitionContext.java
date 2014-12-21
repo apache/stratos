@@ -145,7 +145,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         }
         synchronized (pendingMembers) {
             for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext(); ) {
-                MemberContext pendingMember = (MemberContext) iterator.next();
+                MemberContext pendingMember = iterator.next();
                 if (id.equals(pendingMember.getMemberId())) {
                     iterator.remove();
                     return true;
@@ -653,7 +653,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                 Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, MemberContext> pairs = iterator.next();
-                    MemberContext obsoleteMember = (MemberContext) pairs.getValue();
+                    MemberContext obsoleteMember = pairs.getValue();
                     if (obsoleteMember == null) {
                         continue;
                     }

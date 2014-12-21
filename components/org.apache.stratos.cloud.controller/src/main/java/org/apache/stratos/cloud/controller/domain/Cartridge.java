@@ -127,7 +127,7 @@ public class Cartridge implements Serializable{
     
     public void addIaasProviders(Map<String, IaasProvider> map) {
         for (Iterator<String> iterator = map.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
+            String key = iterator.next();
             IaasProvider value = map.get(key);
             
             partitionToIaasProvider.put(key, value);

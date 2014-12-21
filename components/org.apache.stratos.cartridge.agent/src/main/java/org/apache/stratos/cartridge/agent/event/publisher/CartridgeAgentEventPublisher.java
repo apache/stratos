@@ -56,6 +56,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
+
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);

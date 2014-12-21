@@ -177,7 +177,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         }
         synchronized (pendingInstances) {
             for (Iterator<Instance> iterator = pendingInstances.iterator(); iterator.hasNext(); ) {
-                Instance pendingInstance = (Instance) iterator.next();
+                Instance pendingInstance = iterator.next();
                 if (id.equals(pendingInstance.getInstanceId())) {
                     iterator.remove();
                     return true;

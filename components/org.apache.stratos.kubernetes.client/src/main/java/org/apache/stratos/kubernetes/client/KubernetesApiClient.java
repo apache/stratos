@@ -267,78 +267,80 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
 	@Override
-	public void updateReplicationController(String controllerId, int replicas)
+	public void updateReplicationController(ReplicationController replicationController)
 			throws KubernetesClientException {
 
-		// gets the current controller
-        ReplicationController controller = getReplicationController(controllerId);
-		
 		try {
-			// update the number of replicas
-			controller.getDesiredState().setReplicas(replicas);
-			
 			GsonBuilder gsonBuilder = new GsonBuilder();
 			Gson gson = gsonBuilder.create();
-			String content = gson.toJson(controller);
+			String content = gson.toJson(replicationController);
 			if (log.isDebugEnabled()) {
-				log.debug("UpdateReplicationController Request Body : "
+				log.debug("Update kubernetes replication controller request body: "
 						+ content);
 			}
 			
-			URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
+			URI uri = new URIBuilder(baseURL+"replicationControllers/"+replicationController.getId()).build();
 			KubernetesResponse res = restClient.doPut(uri, content);
 			
-			handleNullResponse("Replication Controller ["+controllerId+"] update failed.", res);
+			handleNullResponse("Could not update kubernetes replication controller: [replication-controller-id] " +
+					replicationController.getId(), res);
 
 			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED
 					&& res.getStatusCode() != HttpStatus.SC_OK) {
-				String msg = "Replication Controller [" + controller
-						+ "] update failed. Error: "
-						+ res.getReason();
-				log.error(msg);
-				throw new KubernetesClientException(msg);
+				String message = "Could not update kubernetes replication controller: [replication-controller-id] " +
+						replicationController.getId() + ": " + res.getReason();
+				log.error(message);
+				throw new KubernetesClientException(message);
 			}
 
 		} catch (KubernetesClientException e) {
+			String message = "Could not update kubernetes replication controller: [replication-controller-id] " +
+					replicationController.getId();
+			log.error(message, e);
 			throw e;
 		} catch (Exception e) {
-			String msg = "Error while updating Replication Controller: "
-					+ controller;
-			log.error(msg, e);
-			throw new KubernetesClientException(msg, e);
-
+			String message = "Could not update kubernetes replication controller: [replication-controller-id] " +
+					replicationController.getId();
+			log.error(message, e);
+			throw new KubernetesClientException(message, e);
 		}
 	}
 	
 	@Override
-	public void deleteReplicationController(String controllerId)
+	public void deleteReplicationController(String replicationControllerId)
 			throws KubernetesClientException {
 		
 		try {
-		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+controllerId).build();
+		    URI uri = new URIBuilder(baseURL+"replicationControllers/"+ replicationControllerId).build();
 			KubernetesResponse res = restClient.doDelete(uri);
             
-			handleNullResponse("Replication Controller ["+controllerId+"] deletion failed.", res);
+			handleNullResponse("Could not delete kubernetes replication controller: [replication-controller-id] " +
+					replicationControllerId, res);
 			
             if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-            	String msg = "Replication Controller ["+controllerId+"] doesn't exist.";
-				log.error(msg);
-				throw new KubernetesClientException(msg);
+            	String message = "Replication controller does not exist: [replicateion-controller-id] "
+						+ replicationControllerId;
+				log.error(message);
+				throw new KubernetesClientException(message);
             }
             
 			if (res.getStatusCode() != HttpStatus.SC_ACCEPTED && 
 					res.getStatusCode() != HttpStatus.SC_OK) {
-				String msg = "Replication Controller ["+controllerId+"] deletion failed. Error: "+
-						res.getReason();
-				log.error(msg);
-				throw new KubernetesClientException(msg);
+				String message = "Could not delete kubernetes replication controller: [replication-controller-id] " +
+						replicationControllerId + ": " + res.getReason();
+				log.error(message);
+				throw new KubernetesClientException(message);
 			}
 		} catch (KubernetesClientException e) {
+			String message = "Could not delete kubernetes replication controller: [replication-controller-id] " +
+					replicationControllerId;
+			log.error(message, e);
 			throw e;
 		} catch (Exception e) {
-			String msg = "Error while deleting Replication Controller with Controller ID: "+controllerId;
-			log.error(msg, e);
-			throw new KubernetesClientException(msg, e);
+			String message = "Could not delete kubernetes replication controller: [replication-controller-id] " +
+					replicationControllerId;
+			log.error(message, e);
+			throw new KubernetesClientException(message, e);
 		}
 	}
 
@@ -440,7 +442,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 			throws KubernetesClientException {
 
 		try {
-		    URI uri = new URIBuilder(baseURL+"services/"+serviceId).build();
+		    URI uri = new URIBuilder(baseURL + "services/" + serviceId).build();
 			KubernetesResponse res = restClient.doDelete(uri);
 			
 			handleNullResponse("Service ["+serviceId+"] deletion failed.", res);
@@ -469,10 +471,10 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 	}
 
     @Override
-    public Pod[] queryPods(Label[] label) throws KubernetesClientException {
+    public Pod[] queryPods(Labels[] labels) throws KubernetesClientException {
         
         try {
-            String labelQuery = getLabelQuery(label);
+            String labelQuery = getLabelQuery(labels);
             URI uri = new URIBuilder(baseURL + "pods").addParameter("labels", labelQuery).build();
             KubernetesResponse response = restClient.doGet(uri);
             
@@ -497,9 +499,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         }
     }
 
-    private String getLabelQuery(Label[] label) {
+    private String getLabelQuery(Labels[] labels) {
         String query = "";
-        for (Label l : label) {
+        for (Labels l : labels) {
             query = query.concat("name="+l.getName()+",");
         }
         return query.endsWith(",") ? query.substring(0, query.length()-1) : query;

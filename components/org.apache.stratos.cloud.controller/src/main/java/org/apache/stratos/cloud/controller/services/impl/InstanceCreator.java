@@ -29,7 +29,6 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.jclouds.compute.domain.NodeMetadata;
 
 import java.util.concurrent.locks.Lock;
 
@@ -98,7 +97,7 @@ public class InstanceCreator implements Runnable {
     }
 
     private MemberContext createInstance(Iaas iaas, MemberContext memberContext) throws CartridgeNotFoundException {
-        memberContext = iaas.createInstance(memberContext);
+        memberContext = iaas.startInstance(memberContext);
 
         // Validate node id
         String instanceId = memberContext.getInstanceId();

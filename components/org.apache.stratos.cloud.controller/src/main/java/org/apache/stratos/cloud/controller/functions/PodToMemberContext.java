@@ -26,23 +26,19 @@ import com.google.common.base.Function;
  * Is responsible for converting a {@link Pod} object to a
  * {@link MemberContext} Object.
  */
-public class PodToMemberContext implements Function<Pod, MemberContext> {
-
-    @Override
-    public MemberContext apply(Pod pod) {
-
-        if (pod == null) {
-            return null;
-        }
-        MemberContext memberContext = new MemberContext();
-        memberContext.setMemberId(pod.getId());
-        memberContext.setDefaultPrivateIP(pod.getCurrentState().getHostIP());
-        memberContext.setPrivateIPs(new String[]{pod.getCurrentState().getHostIP()});
-        memberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
-        memberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
-        memberContext.setInitTime(System.currentTimeMillis());
-        
-        return memberContext;
-    }
-
-}
+//public class PodToMemberContext implements Function<Pod, MemberContext> {
+//
+//    @Override
+//    public MemberContext apply(Pod pod) {
+//        if (pod == null) {
+//            return null;
+//        }
+//        MemberContext memberContext = new MemberContext();
+//        memberContext.setInstanceId(pod.getId());
+//        memberContext.setPrivateIpAddress(pod.getCurrentState().getHostIP());
+//        memberContext.setPublicIpAddress(pod.getCurrentState().getHostIP());
+//        memberContext.setInitTime(System.currentTimeMillis());
+//
+//        return memberContext;
+//    }
+//}

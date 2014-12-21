@@ -397,7 +397,7 @@ public class JcloudsOpenstackIaas extends JcloudsIaas {
 
         IaasProvider iaasInfo = getIaasProvider();
         String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-        ComputeServiceContext context = iaasInfo.getComputeService().getContext();;
+        ComputeServiceContext context = iaasInfo.getComputeService().getContext();
         NovaApi novaApi = context.unwrapApi(NovaApi.class);
         VolumeApi volumeApi = novaApi.getVolumeExtensionForZone(region).get();
         Volume.Status volumeStatus = this.getVolumeStatus(volumeApi, volumeId);

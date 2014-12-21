@@ -16,48 +16,37 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.functions;
-
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
-import org.apache.stratos.cloud.controller.domain.KubernetesClusterContext;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
-import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.kubernetes.client.model.Selector;
-import org.apache.stratos.kubernetes.client.model.Service;
-
-import com.google.common.base.Function;
-
-/**
- * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
- * {@link Service} Object.
- */
-public class ContainerClusterContextToKubernetesService implements Function<MemberContext, Service> {
-
-    @Override
-    public Service apply(MemberContext memberContext) {
-
-        String clusterId = memberContext.getClusterId();
-        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-
-        String kubernetesClusterId = CloudControllerUtil.getProperty(
-                clusterContext.getProperties(), StratosConstants.KUBERNETES_CLUSTER_ID);
-        KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance()
-                .getKubernetesClusterContext(kubernetesClusterId);
-
-        Service service = new Service();
-        service.setApiVersion("v1beta1");
-        service.setId(CloudControllerUtil.getCompatibleId(clusterId));
-        service.setKind("Service");
-        int hostPort = kubClusterContext.getAnAvailableHostPort();
-        service.setPort(hostPort);
-        Selector selector = new Selector();
-        selector.setName(clusterId);
-        service.setSelector(selector);
-
-        return service;
-    }
-
-}
+//package org.apache.stratos.cloud.controller.functions;
+//
+//import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+//import org.apache.stratos.cloud.controller.domain.ClusterContext;
+//import org.apache.stratos.cloud.controller.domain.ContainerClusterContext;
+//import org.apache.stratos.cloud.controller.domain.KubernetesClusterContext;
+//import org.apache.stratos.cloud.controller.domain.MemberContext;
+//import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+//import org.apache.stratos.common.constants.StratosConstants;
+//import org.apache.stratos.kubernetes.client.model.Selector;
+//import org.apache.stratos.kubernetes.client.model.Service;
+//
+//import com.google.common.base.Function;
+//
+///**
+// * Is responsible for converting a {@link ContainerClusterContext} object to a Kubernetes
+// * {@link Service} Object.
+// */
+//public class ContainerClusterContextToKubernetesService implements Function<ClusterContext, Service> {
+//
+//    @Override
+//    public Service apply(ClusterContext clusterContext) {
+//
+//        String clusterId = clusterContext.getClusterId();
+//        String kubernetesClusterId = CloudControllerUtil.getProperty(
+//                clusterContext.getProperties(), StratosConstants.KUBERNETES_CLUSTER_ID);
+//        KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance()
+//                .getKubernetesClusterContext(kubernetesClusterId);
+//
+//
+//
+//        return service;
+//    }
+//}

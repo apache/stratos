@@ -111,7 +111,7 @@ public class CloudControllerUtil {
         org.apache.stratos.common.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
-                cartridge.addProperty(prop.getName(), prop.getValue());
+                cartridge.addProperty(prop.getName(), String.valueOf(prop.getValue()));
             }
         }
         
@@ -178,7 +178,7 @@ public class CloudControllerUtil {
                     org.apache.stratos.common.Properties props1 = iaasConfig.getProperties();
                     if (props1 != null) {
                         for (Property prop : props1.getProperties()) {
-                            iaasProvider.addProperty(prop.getName(), prop.getValue());
+                            iaasProvider.addProperty(prop.getName(), String.valueOf(prop.getValue()));
                         }
                     }
                     
@@ -261,7 +261,7 @@ public class CloudControllerUtil {
     public static String getProperty(Properties properties, String key, String defaultValue) {
         if (key != null && properties != null) {
             for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
-                Entry<Object, Object> type = (Entry<Object, Object>) iterator.next();
+                Entry<Object, Object> type = iterator.next();
                 String propName = type.getKey().toString();
                 String propValue = type.getValue().toString();
                 if (key.equals(propName)) {

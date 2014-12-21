@@ -383,7 +383,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 org.apache.stratos.common.Properties properties = memberContext.getProperties();
                 if (properties != null) {
                     for (Property prop : properties.getProperties()) {
-                        addToPayload(payload, prop.getName(), prop.getValue());
+                        addToPayload(payload, prop.getName(), String.valueOf(prop.getValue()));
                     }
                 }
             }

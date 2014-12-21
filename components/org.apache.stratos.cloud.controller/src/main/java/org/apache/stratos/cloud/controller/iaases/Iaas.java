@@ -54,7 +54,7 @@ public abstract class Iaas {
      * @param memberContext
      * @return updated memberContext
      */
-    public abstract MemberContext createInstance(MemberContext memberContext) throws CartridgeNotFoundException;
+    public abstract MemberContext startInstance(MemberContext memberContext) throws CartridgeNotFoundException;
 
     /**
      * This will deallocate/release the given IP address back to pool.
@@ -155,5 +155,5 @@ public abstract class Iaas {
      * @throws InvalidCartridgeTypeException
      * @throws InvalidMemberException
      */
-    public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException;
+    public abstract void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException, MemberTerminationFailedException;
 }

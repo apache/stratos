@@ -45,11 +45,11 @@ public interface KubernetesAPIClientInterface {
 	
 	/**
 	 * Run a label query and retrieve a sub set of Pods.
-	 * @param label of labels for the label query
+	 * @param labels of labels for the label query
 	 * @return Pods selected Pods by executing the label query.
 	 * @throws KubernetesClientException
 	 */
-	public Pod[] queryPods(Label[] label) throws KubernetesClientException;
+	public Pod[] queryPods(Labels[] labels) throws KubernetesClientException;
 	
 	/**
 	 * Create a new Pod
@@ -84,25 +84,24 @@ public interface KubernetesAPIClientInterface {
 	
 	/**
 	 * Create a new Replication Controller
-	 * @param controller controller to be created
+	 * @param replicationController replication controller to be created
 	 * @throws KubernetesClientException
 	 */
-	public void createReplicationController(ReplicationController controller) throws KubernetesClientException;
+	public void createReplicationController(ReplicationController replicationController) throws KubernetesClientException;
 	
 	/**
 	 * Update a Replication Controller (update the number of replicas).
-	 * @param controllerId id of the controller to be updated
-	 * @param replicas update the replicas count of the current controller.
+	 * @param replicationController replication controller to be updated
 	 * @throws KubernetesClientException
 	 */
-	public void updateReplicationController(String controllerId, int replicas) throws KubernetesClientException;
+	public void updateReplicationController(ReplicationController replicationController) throws KubernetesClientException;
 	
 	/**
 	 * Delete a Replication Controller.
-	 * @param controllerId controller id controller id to be deleted.
+	 * @param replicationControllerId controller id controller id to be deleted.
 	 * @throws KubernetesClientException
 	 */
-	public void deleteReplicationController(String controllerId) throws KubernetesClientException;
+	public void deleteReplicationController(String replicationControllerId) throws KubernetesClientException;
 	
 	/* Services API */
 	

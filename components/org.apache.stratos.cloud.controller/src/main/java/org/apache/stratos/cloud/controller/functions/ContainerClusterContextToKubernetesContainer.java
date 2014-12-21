@@ -49,29 +49,20 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
         ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
 
         Container container = new Container();
-        container.setName(getCompatibleName(clusterContext.getHostName()));
+        container.setName(clusterContext.findContainerHostName());
 
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
-
         if (cartridge == null) {
-            log.error("Cannot find a Cartridge of type : " + clusterContext.getCartridgeType());
-            return null;
+            String message = "Could not find cartridge: [cartridge-type] " + clusterContext.getCartridgeType();
+            log.error(message);
+            throw new RuntimeException(message);
         }
 
         container.setImage(cartridge.getContainer().getImageName());
-
         container.setPorts(getPorts(clusterContext, cartridge));
-
         container.setEnv(getEnvironmentVars(memberContext, clusterContext));
 
         return container;
-    }
-
-    private String getCompatibleName(String hostName) {
-        if (hostName.indexOf('.') != -1) {
-            hostName = hostName.replace('.', '-');
-        }
-        return hostName;
     }
 
     private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
@@ -91,7 +82,6 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
     }
 
     private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, ClusterContext ctxt) {
-
         String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
                 StratosConstants.KUBERNETES_CLUSTER_ID);
 
@@ -102,19 +92,16 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
             Properties props1 = memberCtxt.getProperties();
             if (props1 != null) {
                 for (Property prop : props1.getProperties()) {
-                    addToEnvironment(envVars, prop.getName(), prop.getValue());
+                    addToEnvironment(envVars, prop.getName(), String.valueOf(prop.getValue()));
                 }
             }
         }
 
         EnvironmentVariable[] vars = new EnvironmentVariable[envVars.size()];
-
         return envVars.toArray(vars);
-
     }
 
     private void addToEnvironment(List<EnvironmentVariable> envVars, String payload) {
-
         if (payload != null) {
             String[] entries = payload.split(",");
             for (String entry : entries) {
@@ -128,11 +115,9 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
     }
 
     private void addToEnvironment(List<EnvironmentVariable> envVars, String name, String value) {
-
         EnvironmentVariable var = new EnvironmentVariable();
         var.setName(name);
         var.setValue(value);
         envVars.add(var);
     }
-
 }

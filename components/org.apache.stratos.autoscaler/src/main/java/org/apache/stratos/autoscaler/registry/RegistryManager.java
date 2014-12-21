@@ -275,7 +275,7 @@ public class RegistryManager {
 
             String applicationResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
                     AutoScalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationId;
-            return (ApplicationContext) getApplicationContextByResourcePath(applicationResourcePath);
+            return getApplicationContextByResourcePath(applicationResourcePath);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }

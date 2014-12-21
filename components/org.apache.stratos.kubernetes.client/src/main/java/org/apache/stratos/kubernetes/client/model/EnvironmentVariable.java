@@ -42,6 +42,4 @@ public class EnvironmentVariable {
 	public String toString() {
 		return "EnvironmentVariable [name=" + name + ", value=" + value + "]";
 	}
-	
-	
 }

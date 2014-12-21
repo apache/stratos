@@ -158,9 +158,9 @@ public class KubernetesManager {
 
 
     /**
-     * Register a new KubernetesGroup in AutoScaler.
+     * Register a KubernetesGroup in AutoScaler.
      */
-    public synchronized boolean addNewKubernetesGroup(KubernetesGroup kubernetesGroup)
+    public synchronized boolean addKubernetesGroup(KubernetesGroup kubernetesGroup)
             throws InvalidKubernetesGroupException {
 
         if (kubernetesGroup == null) {

@@ -276,7 +276,7 @@ public class JcloudsEC2Iaas extends JcloudsIaas {
 
 		// first try to find an unassigned IP.
 		ArrayList<PublicIpInstanceIdPair> unassignedIps = Lists
-				.newArrayList(Iterables.filter(elasticIPAddressApi.describeAddressesInRegion(region, new String[0]),
+				.newArrayList(Iterables.filter(elasticIPAddressApi.describeAddressesInRegion(region),
 						new Predicate<PublicIpInstanceIdPair>() {
 
 							@Override
@@ -419,8 +419,8 @@ public class JcloudsEC2Iaas extends JcloudsIaas {
         		getAvailabilityZoneAndRegionApiForRegion(region).get();
         
         Set<AvailabilityZoneInfo> availabilityZones =
-                                                      zoneRegionApi.describeAvailabilityZonesInRegion(region,
-                                                              new DescribeAvailabilityZonesOptions[0]);
+                                                      zoneRegionApi.describeAvailabilityZonesInRegion(region
+													  );
         for (AvailabilityZoneInfo zoneInfo : availabilityZones) {
             String configuredZone = zoneInfo.getZone();
             if (zone.equalsIgnoreCase(configuredZone)) {

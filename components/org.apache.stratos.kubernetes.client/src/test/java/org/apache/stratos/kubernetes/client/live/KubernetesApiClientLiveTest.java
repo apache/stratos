@@ -20,27 +20,18 @@
  */
 package org.apache.stratos.kubernetes.client.live;
 
-import java.net.InetAddress;
-import java.net.URL;
-
 import junit.framework.TestCase;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.Container;
-import org.apache.stratos.kubernetes.client.model.Label;
-import org.apache.stratos.kubernetes.client.model.Manifest;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Port;
-import org.apache.stratos.kubernetes.client.model.ReplicationController;
-import org.apache.stratos.kubernetes.client.model.Selector;
-import org.apache.stratos.kubernetes.client.model.Service;
-import org.apache.stratos.kubernetes.client.model.State;
+import org.apache.stratos.kubernetes.client.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+
+import java.net.InetAddress;
+import java.net.URL;
 
 @Category(org.apache.stratos.kubernetes.client.LiveTests.class)
 public class KubernetesApiClientLiveTest extends TestCase{
@@ -74,7 +65,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         pod.setApiVersion("v1beta1");
         pod.setId(podId);
         pod.setKind("Pod");
-        Label l = new Label();
+        Labels l = new Labels();
         l.setName("nirmal");
         pod.setLabels(l);
         State desiredState = new State();
@@ -88,9 +79,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
         p.setContainerPort(8379);
         p.setHostPort(8379);
         c.setPorts(new Port[] { p });
-        m.setContainers(new Container[] { c });
+        m.addContainer(c);
         desiredState.setManifest(m);
-        pod.setDesiredState(desiredState);
+        pod.setState(desiredState);
         if (log.isDebugEnabled()) {
             log.debug("Creating a Pod "+pod);
         }
@@ -134,7 +125,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         }
 	    assertEquals(true, match);
 	    
-	    Pod[] selectedPods = client.queryPods(new Label[]{l});
+	    Pod[] selectedPods = client.queryPods(new Labels[]{l});
 	    assertEquals(1, selectedPods.length);
 	    
 	    if (log.isDebugEnabled()) {
@@ -154,15 +145,15 @@ public class KubernetesApiClientLiveTest extends TestCase{
 	        assertEquals(true, e instanceof KubernetesClientException);
 	    }
 	    
-	    selectedPods = client.queryPods(new Label[]{l});
+	    selectedPods = client.queryPods(new Labels[]{l});
         assertEquals(0, selectedPods.length);
         
-        Label ll = new Label();
+        Labels ll = new Labels();
         ll.setName("nirmal2");
-        selectedPods = client.queryPods(new Label[]{l, ll});
+        selectedPods = client.queryPods(new Labels[]{l, ll});
         assertEquals(0, selectedPods.length);
         
-        selectedPods = client.queryPods(new Label[]{});
+        selectedPods = client.queryPods(new Labels[]{});
         assertEquals(0, selectedPods.length);
 	}
 	
@@ -192,16 +183,16 @@ public class KubernetesApiClientLiveTest extends TestCase{
         Port p = new Port();
         p.setContainerPort(80);
         container.setPorts(new Port[] { p });
-        manifest.setContainers(new Container[] { container });
+        manifest.addContainer(container);
         podState.setManifest(manifest);
-        podTemplate.setDesiredState(podState);
-        Label l1 = new Label();
+        podTemplate.setState(podState);
+        Labels l1 = new Labels();
         l1.setName("nirmal");
         podTemplate.setLabels(l1);
 
         desiredState.setPodTemplate(podTemplate);
         contr.setDesiredState(desiredState);
-        Label l2 = new Label();
+        Labels l2 = new Labels();
         l2.setName("nirmal");
         contr.setLabels(l2);
         if (log.isDebugEnabled()) {
@@ -219,24 +210,28 @@ public class KubernetesApiClientLiveTest extends TestCase{
         
         assertEquals(1, client.getAllReplicationControllers().length);
         
-        Pod[] pods = client.queryPods(new Label[]{l1});
+        Pod[] pods = client.queryPods(new Labels[]{l1});
         assertEquals(replicas, pods.length);
         
         // test incorrect replica count
         replicas = -1;
         try {
-            client.updateReplicationController(id, replicas);
+            ReplicationController replicationController = client.getReplicationController(id);
+            replicationController.getDesiredState().setReplicas(replicas);
+            client.updateReplicationController(replicationController);
         } catch (Exception e) {
             assertEquals(true, e instanceof KubernetesClientException);
             assertEquals(true, e.getMessage().contains("update failed"));
         }
         
         replicas = 0;
-        client.updateReplicationController(id, replicas);
-        
+        ReplicationController replicationController = client.getReplicationController(id);
+        replicationController.getDesiredState().setReplicas(replicas);
+        client.updateReplicationController(replicationController);
+
         Thread.sleep(10000);
         
-        pods = client.queryPods(new Label[]{l1});
+        pods = client.queryPods(new Labels[]{l1});
         assertEquals(replicas, pods.length);
         
         client.deleteReplicationController(id);
@@ -264,7 +259,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
         }
         
         try {
-            client.updateReplicationController(bogusContrId, 3);
+            replicationController = client.getReplicationController(bogusContrId);
+            replicationController.getDesiredState().setReplicas(3);
+            client.updateReplicationController(replicationController);
         } catch (Exception e) {
             assertEquals(true, e instanceof KubernetesClientException);
             assertEquals("Replication Controller ["+bogusContrId+"] doesn't exist.", e.getMessage());
@@ -291,7 +288,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
 	    String publicIp = address.getHostAddress();
 	    serv.setPublicIPs(new String[]{publicIp});
 	    
-	    Label l = new Label();
+	    Labels l = new Labels();
 	    l.setName("nirmal");
 	    
 	    serv.setLabels(l);

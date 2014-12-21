@@ -40,7 +40,7 @@ public class MockIaas extends Iaas {
     }
 
     @Override
-    public MemberContext createInstance(MemberContext memberContext) {
+    public MemberContext startInstance(MemberContext memberContext) {
         return MockIaasService.getInstance().createInstance(memberContext);
     }
 

@@ -43,10 +43,8 @@ public class ApplicationClusterContext {
     // properties
     private Properties properties;
 
-
     public ApplicationClusterContext() {
     }
-
 
     public String getClusterId() {
         return clusterId;
@@ -139,5 +137,4 @@ public class ApplicationClusterContext {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
-
 }

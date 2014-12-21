@@ -41,81 +41,102 @@ public class Service {
 	private String containerPort;
 	private Selector selector;
 	private String apiVersion;
-	private Label labels;
+	private Labels labels;
 	private String[] publicIPs;
 	
 	public String getKind() {
 		return kind;
 	}
+
 	public void setKind(String kind) {
 		this.kind = kind;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getCreationTimestamp() {
 		return creationTimestamp;
 	}
+
 	public void setCreationTimestamp(String creationTimestamp) {
 		this.creationTimestamp = creationTimestamp;
 	}
+
 	public String getSelfLink() {
 		return selfLink;
 	}
+
 	public void setSelfLink(String selfLink) {
 		this.selfLink = selfLink;
 	}
+
 	public String getApiVersion() {
 		return apiVersion;
 	}
+
 	public void setApiVersion(String apiVersion) {
 		this.apiVersion = apiVersion;
 	}
-	public Label getLabels() {
+
+	public Labels getLabels() {
 		return labels;
 	}
-	public void setLabels(Label labels) {
+
+	public void setLabels(Labels labels) {
 		this.labels = labels;
 	}
+
 	public String getName() {
 		return name;
 	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
+
 	public int getPort() {
 		return port;
 	}
+
 	public void setPort(int port) {
 		this.port = port;
 	}
+
 	public String getContainerPort() {
 		return containerPort;
 	}
+
 	public void setContainerPort(String containerPort) {
 		this.containerPort = containerPort;
 	}
+
 	public Selector getSelector() {
 		return selector;
 	}
+
 	public void setSelector(Selector selector) {
 		this.selector = selector;
 	}
+
 	public String[] getPublicIPs() {
 	    return publicIPs;
 	}
+
 	public void setPublicIPs(String[] publicIPs) {
 	    this.publicIPs = publicIPs;
 	}
-    @Override
+
+	@Override
     public String toString() {
         return "Service [kind=" + kind + ", id=" + id + ", creationTimestamp=" + creationTimestamp + ", selfLink="
                 + selfLink + ", name=" + name + ", port=" + port + ", containerPort=" + containerPort + ", selector="
                 + selector + ", apiVersion=" + apiVersion + ", labels=" + labels + ", publicIPs="
                 + Arrays.toString(publicIPs) + "]";
     }
-
 }

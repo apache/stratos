@@ -23,7 +23,7 @@ package org.apache.stratos.kubernetes.client.unit;
 import junit.framework.TestCase;
 
 import org.apache.stratos.kubernetes.client.model.Container;
-import org.apache.stratos.kubernetes.client.model.Label;
+import org.apache.stratos.kubernetes.client.model.Labels;
 import org.apache.stratos.kubernetes.client.model.Manifest;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Port;
@@ -53,7 +53,7 @@ public class PodUnitTest extends TestCase{
         pod.setResourceVersion(apiVersion);
         String kind = "Pod";
         pod.setKind(kind);
-        Label l = new Label();
+        Labels l = new Labels();
         l.setName("nirmal");
         pod.setLabels(l);
         State desiredState = new State();
@@ -67,9 +67,9 @@ public class PodUnitTest extends TestCase{
         p.setContainerPort(8379);
         p.setHostPort(8379);
         c.setPorts(new Port[] { p });
-        m.setContainers(new Container[] { c });
+        m.addContainer(c);
         desiredState.setManifest(m);
-        pod.setDesiredState(desiredState);
+        pod.setState(desiredState);
         State currentState = desiredState;
         pod.setCurrentState(currentState);
         

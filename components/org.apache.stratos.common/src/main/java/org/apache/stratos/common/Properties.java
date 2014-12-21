@@ -54,6 +54,15 @@ public class Properties implements Serializable {
         }
     }
 
+    public Property getProperty(String name) {
+        for(Property property : properties) {
+            if(property.getName().equals(name)) {
+                return property;
+            }
+        }
+        return null;
+    }
+
     public void setProperties(Property[] properties) {
         this.properties = new ArrayList<Property>();
         Collections.addAll(this.properties, properties.clone());

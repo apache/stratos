@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
@@ -44,16 +45,16 @@ public class KubernetesClusterContext implements Serializable {
     private String masterIp;
     private String masterPort;
     // available list of ports
-    private List<Integer> availableHostPorts;
+    private List<Integer> servicePorts;
     // kubernetes client API instance
     private transient KubernetesApiClient kubApi;
     
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
-    	availableHostPorts = new ArrayList<Integer>();
+    	servicePorts = new ArrayList<Integer>();
+        this.lowerPort = lowerPort;
     	this.upperPort = upperPort;
-    	this.lowerPort = lowerPort;
-    	// populate the ports
-        populatePorts(lowerPort, upperPort);
+    	// Generate the ports
+        generateServicePorts(lowerPort, upperPort);
     	this.kubernetesClusterId = id;
     	this.masterIp = masterIp;
     	this.masterPort = masterPort;
@@ -68,35 +69,36 @@ public class KubernetesClusterContext implements Serializable {
 	public String getKubernetesClusterId() {
 		return kubernetesClusterId;
 	}
+
 	public void setKubernetesClusterId(String kubernetesClusterId) {
 		this.kubernetesClusterId = kubernetesClusterId;
 	}
 
-	public List<Integer> getAvailableHostPorts() {
-		return availableHostPorts;
+	public List<Integer> getServicePorts() {
+		return servicePorts;
 	}
 
-	public void setAvailableHostPorts(List<Integer> availableHostPorts) {
-		this.availableHostPorts = availableHostPorts;
+	public void setServicePorts(List<Integer> servicePorts) {
+		this.servicePorts = servicePorts;
 	}
 	
-	public int getAnAvailableHostPort() {
-	    if (availableHostPorts.isEmpty()) {
+	public int getNextServicePort() {
+	    if (servicePorts.isEmpty()) {
 	        return -1;
 	    }
-		return availableHostPorts.remove(0);
+		return servicePorts.remove(0);
 	}
 	
-	public void deallocateHostPort (int port) {
-		if (!availableHostPorts.contains(port)) {
-			availableHostPorts.add(port);
+	public void deallocatePort(int port) {
+		if (!servicePorts.contains(port)) {
+			servicePorts.add(port);
+            // TODO Sort elements
 		}
 	}
 
-	private void populatePorts(int i, int j) {
-
-		for (int x = i; x < j; x++) {
-			availableHostPorts.add(x);
+	private void generateServicePorts(int lowerPort, int upperPort) {
+		for (int port = lowerPort; port <= upperPort; port++) {
+			servicePorts.add(port);
 		}
 	}
 
@@ -139,7 +141,7 @@ public class KubernetesClusterContext implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((availableHostPorts == null) ? 0 : availableHostPorts.hashCode());
+        result = prime * result + ((servicePorts == null) ? 0 : servicePorts.hashCode());
         result = prime * result + ((kubernetesClusterId == null) ? 0 : kubernetesClusterId.hashCode());
         result = prime * result + lowerPort;
         result = prime * result + ((masterIp == null) ? 0 : masterIp.hashCode());
@@ -157,10 +159,10 @@ public class KubernetesClusterContext implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         KubernetesClusterContext other = (KubernetesClusterContext) obj;
-        if (availableHostPorts == null) {
-            if (other.availableHostPorts != null)
+        if (servicePorts == null) {
+            if (other.servicePorts != null)
                 return false;
-        } else if (!availableHostPorts.equals(other.availableHostPorts))
+        } else if (!servicePorts.equals(other.servicePorts))
             return false;
         if (kubernetesClusterId == null) {
             if (other.kubernetesClusterId != null)

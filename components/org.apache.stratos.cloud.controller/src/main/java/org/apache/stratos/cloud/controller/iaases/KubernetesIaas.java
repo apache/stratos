@@ -19,7 +19,6 @@
 
 package org.apache.stratos.cloud.controller.iaases;
 
-import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,9 +26,7 @@ import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToKubernetesService;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
-import org.apache.stratos.cloud.controller.functions.PodToMemberContext;
 import org.apache.stratos.cloud.controller.iaases.validators.KubernetesPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
@@ -41,13 +38,9 @@ import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.PortRange;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.Label;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.ReplicationController;
-import org.apache.stratos.kubernetes.client.model.Service;
+import org.apache.stratos.kubernetes.client.model.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 
@@ -57,6 +50,7 @@ import java.util.concurrent.locks.Lock;
 public class KubernetesIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
+    private static final long POD_CREATION_TIMEOUT = 60000; // 1 min
 
     private PartitionValidator partitionValidator;
 
@@ -71,9 +65,8 @@ public class KubernetesIaas extends Iaas {
     }
 
     @Override
-    public MemberContext createInstance(MemberContext memberContext) throws CartridgeNotFoundException {
-        memberContext = startContainer(memberContext);
-        return memberContext;
+    public MemberContext startInstance(MemberContext memberContext) throws CartridgeNotFoundException {
+        return startContainer(memberContext);
     }
 
     @Override
@@ -83,17 +76,20 @@ public class KubernetesIaas extends Iaas {
 
     @Override
     public boolean isValidRegion(String region) throws InvalidRegionException {
-        return false;
+        // No regions in kubernetes cluster
+        return true;
     }
 
     @Override
     public boolean isValidZone(String region, String zone) throws InvalidZoneException, InvalidRegionException {
-        return false;
+        // No zones in kubernetes cluster
+        return true;
     }
 
     @Override
     public boolean isValidHost(String zone, String host) throws InvalidHostException {
-        return false;
+        // No zones in kubernetes cluster
+        return true;
     }
 
     @Override
@@ -133,12 +129,13 @@ public class KubernetesIaas extends Iaas {
 
     @Override
     public void setDynamicPayload(byte[] payload) {
-
+          // Payload is passed via environment
     }
 
     @Override
-    public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException, InvalidMemberException {
-
+    public void terminateInstance(MemberContext memberContext) throws InvalidCartridgeTypeException,
+            InvalidMemberException, MemberTerminationFailedException {
+        terminateContainer(memberContext.getMemberId());
     }
 
     public MemberContext startContainer(MemberContext memberContext)
@@ -154,22 +151,25 @@ public class KubernetesIaas extends Iaas {
 
             // Validate cluster id
             String clusterId = memberContext.getClusterId();
-            handleNullObject(clusterId, "Could not start containers, cluster id is null in member context.");
+            String memberId = memberContext.getMemberId();
+            handleNullObject(clusterId, "Could not start containers, cluster id is null in member context");
 
             // Validate cluster context
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             handleNullObject(clusterContext, "Could not start containers, cluster context not found: [cluster-id] "
-                    + clusterId);
+                    + clusterId + " [member-id] " + memberId);
 
             // Validate partition
             Partition partition = memberContext.getPartition();
-            handleNullObject(partition, "Could not start containers, partition not found in member context.");
+            handleNullObject(partition, "Could not start containers, partition not found in member context: " +
+                    "[cluster-id] " + clusterId + " [member-id] " + memberId);
 
             // Validate cartridge
             String cartridgeType = clusterContext.getCartridgeType();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if (cartridge == null) {
-                String msg = "Could not start containers, cartridge not found: [cartridge-type] " + cartridgeType;
+                String msg = "Could not start containers, cartridge not found: [cartridge-type] " + cartridgeType + " " +
+                        "[cluster-id] " + clusterId + " [member-id] " + memberId;
                 log.error(msg);
                 throw new CartridgeNotFoundException(msg);
             }
@@ -179,123 +179,83 @@ public class KubernetesIaas extends Iaas {
                         partition.getProperties(),
                         partition.toString());
 
-                KubernetesGroup kubernetesGroup =
-                        CloudControllerContext.getInstance().getKubernetesGroup(kubernetesClusterId);
+                KubernetesGroup kubernetesGroup = CloudControllerContext.getInstance().
+                        getKubernetesGroup(kubernetesClusterId);
                 handleNullObject(kubernetesGroup, "Could not start container, kubernetes group not found: " +
-                        "[kubernetes-cluster-id] " + kubernetesClusterId);
+                        "[kubernetes-cluster-id] " + kubernetesClusterId + " [cluster-id] " + clusterId +
+                        " [member-id] " + memberId);
 
+                // Prepare kubernetes context
                 String kubernetesMasterIp = kubernetesGroup.getKubernetesMaster().getHostIpAddress();
                 PortRange kubernetesPortRange = kubernetesGroup.getPortRange();
-
-                // optional
                 String kubernetesMasterPort = CloudControllerUtil.getProperty(
                         kubernetesGroup.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
                         StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
-
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
-                        kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getLower(), kubernetesPortRange.getUpper());
+                        kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getLower(),
+                        kubernetesPortRange.getUpper());
+
+                // Get kubernetes API
                 KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
 
+                // Create replication controller
+                createReplicationController(memberContext, clusterId, kubernetesApi);
 
-                // first let's create a replication controller.
-                ContainerClusterContextToReplicationController controllerFunction = new ContainerClusterContextToReplicationController();
-                ReplicationController controller = controllerFunction.apply(memberContext);
-                if (log.isDebugEnabled()) {
-                    log.debug("Cloud Controller is delegating request to start a replication controller " + controller +
-                            " for " + memberContext + " to Kubernetes layer.");
-                }
-                kubernetesApi.createReplicationController(controller);
+                // Create proxy services for port mappings
+                List<Service> services = createProxyServices(clusterContext, kubClusterContext, kubernetesApi);
 
-                if (log.isDebugEnabled()) {
-                    log.debug("Cloud Controller successfully started the controller "
-                            + controller + " via Kubernetes layer.");
-                }
-
-                // secondly let's create a kubernetes service proxy to load balance these containers
-                ContainerClusterContextToKubernetesService serviceFunction = new ContainerClusterContextToKubernetesService();
-                Service service = serviceFunction.apply(memberContext);
-
-                if(kubernetesApi.getService(service.getId()) == null) {
+                // Wait for pod to be created
+                Pod[] pods = waitForPodToBeCreated(memberContext, kubernetesApi);
+                if (pods.length != 1) {
                     if (log.isDebugEnabled()) {
-                        log.debug("Delegating request to start a kubernetes service " + service +
-                                " for member " + memberContext.getMemberId());
-                    }
-                    kubernetesApi.createService(service);
-                }
-
-                // set host port and update
-                Property allocatedServiceHostPortProp = new Property();
-                allocatedServiceHostPortProp.setName(StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-                allocatedServiceHostPortProp.setValue(String.valueOf(service.getPort()));
-                clusterContext.getProperties().addProperty(allocatedServiceHostPortProp);
-                CloudControllerContext.getInstance().addClusterContext(clusterContext);
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Successfully started the kubernetes service: "
-                            + controller);
-                }
-
-                // create a label query
-                Label label = new Label();
-                label.setName(clusterId);
-                // execute the label query
-                Pod[] newlyCreatedPods = new Pod[0];
-                int expectedCount = 1;
-
-                for (int i = 0; i < expectedCount; i++) {
-                    newlyCreatedPods = kubernetesApi.queryPods(new Label[]{label});
-                    if (log.isDebugEnabled()) {
-                        log.debug("Pods Count: " + newlyCreatedPods.length + " for cluster: " + clusterId);
-                    }
-                    if (newlyCreatedPods.length == expectedCount) {
-                        break;
-                    }
-                    Thread.sleep(10000);
-                }
-
-                if (newlyCreatedPods.length == 0) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Pods are not created for cluster : %s, hence deleting the service", clusterId));
+                        log.debug(String.format("Pod did not create within %d sec, hence deleting the service: " +
+                                "[cluster-id] %s [member-id] %s", ((int)POD_CREATION_TIMEOUT/1000), clusterId, memberId));
                     }
                     terminateContainers(clusterId);
                     return null;
                 }
-
+                Pod pod = pods[0];
                 if (log.isDebugEnabled()) {
-                    log.debug(String.format("Pods created : %s for cluster : %s", newlyCreatedPods.length, clusterId));
+                    log.debug(String.format("Pod created: [cluster-id] %s [member-id] %s [pod-id] %s",
+                            clusterId, memberId, pod.getId()));
                 }
 
-                List<MemberContext> memberContexts = new ArrayList<MemberContext>();
+                // Create member context
+                MemberContext newMemberContext = new MemberContext();
+                newMemberContext.setCartridgeType(cartridgeType);
+                newMemberContext.setClusterId(clusterId);
+                newMemberContext.setMemberId(memberContext.getMemberId());
+                newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
+                newMemberContext.setInitTime(memberContext.getInitTime());
+                newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
+                newMemberContext.setPartition(memberContext.getPartition());
+                newMemberContext.setInitTime(System.currentTimeMillis());
+                newMemberContext.setInstanceId(pod.getId());
+                newMemberContext.setPrivateIpAddress(pod.getCurrentState().getHostIP());
+                newMemberContext.setPublicIpAddress(pod.getCurrentState().getHostIP());
+                newMemberContext.setProperties(memberContext.getProperties());
 
-                PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
-                // generate Member Contexts
-                for (Pod pod : newlyCreatedPods) {
-                    MemberContext context = podToMemberContextFunc.apply(pod);
-                    context.setCartridgeType(cartridgeType);
-                    context.setClusterId(clusterId);
+                Property servicesProperty = new Property();
+                servicesProperty.setName(StratosConstants.KUBERNETES_SERVICES);
+                servicesProperty.setValue(services);
+                newMemberContext.getProperties().addProperty(servicesProperty);
 
-                    context.setProperties(CloudControllerUtil.addProperty(context.getProperties(),
-                            StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                            String.valueOf(service.getPort())));
+                CloudControllerContext.getInstance().addMemberContext(newMemberContext);
 
-                    CloudControllerContext.getInstance().addMemberContext(context);
-
-                    // wait till Pod status turns to running and send member spawned.
-                    ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Cloud Controller is starting the instance start up thread.");
-                    }
-                    CloudControllerContext.getInstance().addScheduledFutureJob(context.getMemberId(),
-                            exec.schedule(new PodActivationWatcher(pod.getId(), context, kubernetesApi), 5000));
-                    memberContexts.add(context);
+                // wait till pod status turns to running and send member spawned.
+                ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
+                if (log.isDebugEnabled()) {
+                    log.debug("Cloud Controller is starting the instance start up thread.");
                 }
+                CloudControllerContext.getInstance().addScheduledFutureJob(newMemberContext.getMemberId(),
+                        exec.schedule(new PodActivationWatcher(pod.getId(), newMemberContext, kubernetesApi), 5000));
 
                 // persist in registry
                 CloudControllerContext.getInstance().persist();
+                log.info("Container started successfully: [cluster-id] " + clusterId + " [member-id] " +
+                        memberContext.getMemberId());
 
-                log.info("Kubernetes entities are successfully starting up: " + memberContexts);
-
-                return memberContext;
+                return newMemberContext;
             } catch (Exception e) {
                 String msg = "Could not start container: " + memberContext.toString() + " Cause: " + e.getMessage();
                 log.error(msg, e);
@@ -308,26 +268,106 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
-    public void unregisterDockerService(String clusterId)
-            throws UnregisteredClusterException {
-        Lock lock = null;
-        try {
-            lock = CloudControllerContext.getInstance().acquireClusterContextWriteLock();
-            // terminate all kubernetes units
-            try {
-                terminateContainers(clusterId);
-            } catch (InvalidClusterException e) {
-                String msg = "Docker instance termination fails for cluster: " + clusterId;
-                log.error(msg, e);
-                throw new UnregisteredClusterException(msg, e);
+    private Pod[] waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi) throws KubernetesClientException, InterruptedException {
+        Labels labels = new Labels();
+        labels.setName(memberContext.getMemberId());
+        Pod[] pods = new Pod[0];
+        long startTime = System.currentTimeMillis();
+        while (pods.length == 1) {
+            pods = kubernetesApi.queryPods(new Labels[]{labels});
+            if (log.isDebugEnabled()) {
+                log.debug("Member pod: [member-id] " + memberContext.getMemberId() + " [count] " + pods.length);
             }
-            // send cluster removal notifications and update the state
-            //onClusterRemoval(clusterId);
-        } finally {
-            if (lock != null) {
-                CloudControllerContext.getInstance().releaseWriteLock(lock);
+            if ((System.currentTimeMillis() - startTime) > POD_CREATION_TIMEOUT) {
+                break;
+            }
+            Thread.sleep(5000);
+        }
+        return pods;
+    }
+
+    /**
+     * Create new replication controller for the cluster and generate environment variables using member context.
+     * @param memberContext
+     * @param clusterId
+     * @param kubernetesApi
+     * @throws KubernetesClientException
+     */
+    private ReplicationController createReplicationController(MemberContext memberContext, String clusterId, KubernetesApiClient kubernetesApi) throws KubernetesClientException {
+        if (log.isDebugEnabled()) {
+            log.debug("Creating kubernetes replication controller: [cluster-id] " + clusterId);
+        }
+        ContainerClusterContextToReplicationController controllerFunction = new ContainerClusterContextToReplicationController();
+        ReplicationController replicationController = controllerFunction.apply(memberContext);
+        kubernetesApi.createReplicationController(replicationController);
+        if (log.isDebugEnabled()) {
+            log.debug("Kubernetes replication controller successfully created: [cluster-id] " + clusterId);
+        }
+        return replicationController;
+    }
+
+    /**
+     * Create proxy services for the cluster
+     * @param clusterContext
+     * @param kubernetesClusterContext
+     * @param kubernetesApi
+     * @return
+     * @throws KubernetesClientException
+     */
+    private List<Service> createProxyServices(ClusterContext clusterContext,
+                                              KubernetesClusterContext kubernetesClusterContext,
+                                              KubernetesApiClient kubernetesApi) throws KubernetesClientException {
+        List<Service> services = new ArrayList<Service>();
+
+        String clusterId = clusterContext.getClusterId();
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
+        if(cartridge == null) {
+            String message = "Could not create kubernetes services, cartridge not found: [cartridge-type] " +
+                    clusterContext.getCartridgeType();
+            log.error(message);
+            throw new RuntimeException(message);
+        }
+        List<PortMapping> portMappings = cartridge.getPortMappings();
+        for(PortMapping portMapping : portMappings) {
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Creating kubernetes service: [cluster-id] %s [protocol] %s [port] %s ",
+                        clusterId, portMapping.getProtocol(), portMapping.getPort()));
+            }
+
+            Service service = new Service();
+            service.setId(prepareKubernetesServiceId(clusterId, portMapping));
+            service.setApiVersion("v1beta1");
+            service.setKind("Service");
+            int nextServicePort = kubernetesClusterContext.getNextServicePort();
+            if(nextServicePort == -1) {
+                throw new RuntimeException("Service port not found");
+            }
+            service.setPort(nextServicePort);
+            Selector selector = new Selector();
+            selector.setName(clusterId);
+            service.setSelector(selector);
+
+            kubernetesApi.createService(service);
+            services.add(service);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [protocol] %s " +
+                                "[port] %s [proxy-port] %s", clusterId, portMapping.getProtocol(),
+                        portMapping.getPort(), service.getPort()));
             }
         }
+        // Set service port and update
+        Property servicePortProperty = new Property();
+        servicePortProperty.setName(StratosConstants.KUBERNETES_SERVICES);
+        servicePortProperty.setValue(services);
+        clusterContext.getProperties().addProperty(servicePortProperty);
+        CloudControllerContext.getInstance().addClusterContext(clusterContext);
+
+        return services;
+    }
+
+    private String prepareKubernetesServiceId(String clusterId, PortMapping portMapping) {
+        return String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
     }
 
     public MemberContext[] terminateContainers(String clusterId)
@@ -336,271 +376,117 @@ public class KubernetesIaas extends Iaas {
         try {
             lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
 
-            ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(ctxt, "Kubernetes units temrination failed. Invalid cluster id. " + clusterId);
+            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+            handleNullObject(clusterContext, "Could not terminate containers, cluster not found: [cluster-id] " + clusterId);
 
-            String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
+            String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
                     StratosConstants.KUBERNETES_CLUSTER_ID);
-            handleNullObject(kubernetesClusterId, "Kubernetes units termination failed. Cannot find '" +
-                    StratosConstants.KUBERNETES_CLUSTER_ID + "'. " + ctxt);
+            handleNullObject(kubernetesClusterId, "Could not terminate containers, kubernetes cluster id not found: " +
+                    "[cluster-id] " + clusterId);
 
             KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-            handleNullObject(kubClusterContext, "Kubernetes units termination failed. Cannot find a matching Kubernetes Cluster for cluster id: "
-                    + kubernetesClusterId);
+            handleNullObject(kubClusterContext, "Could not terminate containers, kubernetes cluster not found: " +
+                    "[kubernetes-cluster-id] " + kubernetesClusterId);
 
             KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-            // delete the service
-            try {
-                kubApi.deleteService(CloudControllerUtil.getCompatibleId(clusterId));
-            } catch (KubernetesClientException e) {
-                // we're not going to throw this error, but proceed with other deletions
-                log.error("Failed to delete Kubernetes service with id: " + clusterId, e);
+
+            // Remove the services
+            Property servicesProperty = clusterContext.getProperties().getProperty(StratosConstants.KUBERNETES_SERVICES);
+            if (servicesProperty != null) {
+                List<Service> services = (List<Service>) servicesProperty.getValue();
+                for (Service service : services) {
+                    try {
+                        kubApi.deleteService(service.getId());
+                        int allocatedPort = service.getPort();
+                        kubClusterContext.deallocatePort(allocatedPort);
+                    } catch (KubernetesClientException e) {
+                        log.error("Could not remove kubernetes service: [cluster-id] " + clusterId, e);
+                    }
+                }
             }
 
-            // set replicas=0 for the replication controller
-            try {
-                kubApi.updateReplicationController(clusterId, 0);
-            } catch (KubernetesClientException e) {
-                // we're not going to throw this error, but proceed with other deletions
-                log.error("Failed to update Kubernetes Controller with id: " + clusterId, e);
+            List<MemberContext> memberContextsRemoved = new ArrayList<MemberContext>();
+            List<MemberContext> memberContexts = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
+            for(MemberContext memberContext : memberContexts) {
+                try {
+                    MemberContext memberContextRemoved = terminateContainer(memberContext.getMemberId());
+                    memberContextsRemoved.add(memberContextRemoved);
+                } catch (MemberTerminationFailedException e) {
+                    String message = "Could not terminate container: [member-id] " + memberContext.getMemberId();
+                    log.error(message);
+                }
             }
 
-            // delete pods forcefully
+            // persist
+            CloudControllerContext.getInstance().persist();
+            return memberContextsRemoved.toArray(new MemberContext[memberContextsRemoved.size()]);
+        } finally {
+            if (lock != null) {
+                CloudControllerContext.getInstance().releaseWriteLock(lock);
+            }
+        }
+    }
+
+    /**
+     * Terminate a container by member id
+     * @param memberId
+     * @return
+     * @throws MemberTerminationFailedException
+     */
+    public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
+        Lock lock = null;
+        try {
+            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
+            handleNullObject(memberId, "Could not terminate container, member id is null");
+
+            MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
+            handleNullObject(memberContext, "Could not terminate container, member context not found: [member-id] " + memberId);
+
+            String clusterId = memberContext.getClusterId();
+            handleNullObject(clusterId, "Could not terminate container, cluster id is null: [member-id] " + memberId);
+
+            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+            handleNullObject(clusterContext, String.format("Could not terminate container, cluster context not found: " +
+                    "[cluster-id] %s [member-id] %s", clusterId, memberId));
+
+            String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
+                    StratosConstants.KUBERNETES_CLUSTER_ID);
+            handleNullObject(kubernetesClusterId, String.format("Could not terminate container, kubernetes cluster " +
+                    "context id is null: [cluster-id] %s [member-id] %s", clusterId, memberId));
+
+            KubernetesClusterContext kubernetesClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+            handleNullObject(kubernetesClusterContext, String.format("Could not terminate container, kubernetes cluster " +
+                    "context not found: [cluster-id] %s [member-id] %s", clusterId, memberId));
+            KubernetesApiClient kubApi = kubernetesClusterContext.getKubApi();
+
+            // Remove the pod forcefully
             try {
-                // create a label query
-                Label l = new Label();
-                l.setName(clusterId);
+                Labels l = new Labels();
+                l.setName(memberId);
                 // execute the label query
-                Pod[] pods = kubApi.queryPods(new Label[]{l});
-
+                Pod[] pods = kubApi.queryPods(new Labels[]{l});
                 for (Pod pod : pods) {
                     try {
                         // delete pods forcefully
                         kubApi.deletePod(pod.getId());
                     } catch (KubernetesClientException ignore) {
                         // we can't do nothing here
-                        log.warn(String.format("Failed to delete Pod [%s] forcefully!", pod.getId()));
+                        log.warn(String.format("Could not delete pod: [pod-id] %s", pod.getId()));
                     }
                 }
             } catch (KubernetesClientException e) {
                 // we're not going to throw this error, but proceed with other deletions
-                log.error("Failed to delete pods forcefully for cluster: " + clusterId, e);
+                log.error("Could not delete pods of cluster: [cluster-id] " + clusterId, e);
             }
 
-            // delete the replication controller.
+            // Remove the replication controller
             try {
-                kubApi.deleteReplicationController(clusterId);
-            } catch (KubernetesClientException e) {
-                String msg = "Failed to delete Kubernetes Controller with id: " + clusterId;
-                log.error(msg, e);
-                throw new InvalidClusterException(msg, e);
-            }
-
-            String allocatedPort = CloudControllerUtil.getProperty(ctxt.getProperties(),
-                    StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-
-            if (allocatedPort != null) {
-                kubClusterContext.deallocateHostPort(Integer
-                        .parseInt(allocatedPort));
-            } else {
-                log.warn("Host port dealloacation failed due to a missing property: "
-                        + StratosConstants.ALLOCATED_SERVICE_HOST_PORT);
-            }
-
-            List<MemberContext> membersToBeRemoved = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
-
-            for (MemberContext memberContext : membersToBeRemoved) {
-                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberContext);
-            }
-
-            // persist
-            CloudControllerContext.getInstance().persist();
-            return membersToBeRemoved.toArray(new MemberContext[0]);
-        } finally {
-            if (lock != null) {
-                CloudControllerContext.getInstance().releaseWriteLock(lock);
-            }
-        }
-    }
-
-    public MemberContext[] updateContainers(String clusterId, int containerCount)
-            throws CartridgeNotFoundException {
-        Lock lock = null;
-        try {
-            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-
-            if (log.isDebugEnabled()) {
-                log.debug("CloudControllerServiceImpl:updateContainers for cluster : " + clusterId);
-            }
-
-            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(clusterContext, "Container update failed. Invalid cluster id. " + clusterId);
-
-            String cartridgeType = clusterContext.getCartridgeType();
-            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
-
-            if (cartridge == null) {
-                String msg = "Container update failed. No matching Cartridge found [type] " + cartridgeType
-                                + ". [cluster id] " + clusterId;
-                log.error(msg);
-                throw new CartridgeNotFoundException(msg);
-            }
-
-            try {
-                String kubernetesClusterId = readProperty(StratosConstants.KUBERNETES_CLUSTER_ID,
-                        clusterContext.getProperties(), clusterContext.toString());
-                KubernetesClusterContext kubClusterContext =
-                        CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-
-                if (kubClusterContext == null) {
-                    String msg = "Instance startup failed. No matching Kubernetes context found for [id] " +
-                            kubernetesClusterId + " [cluster id] " + clusterId;
-                    log.error(msg);
-                    throw new CartridgeNotFoundException(msg);
-                }
-
-                KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-                // create a label query
-                Label label = new Label();
-                label.setName(clusterId);
-
-                // get the current pods - useful when scale down
-                Pod[] pods = kubApi.queryPods(new Label[]{label});
-
-                // update the replication controller - cluster id = replication controller id
-                if (log.isDebugEnabled()) {
-                    log.debug("Cloud Controller is delegating request to update a replication controller " + clusterId +
-                            " to Kubernetes layer.");
-                }
-
-                kubApi.updateReplicationController(clusterId, containerCount);
-
-                if (log.isDebugEnabled()) {
-                    log.debug("Cloud Controller successfully updated the controller "
-                            + clusterId + " via Kubernetes layer.");
-                }
-
-                // execute the label query
-                Pod[] selectedPods = new Pod[0];
-
-                // wait replicas*5s time in the worst case ; best case = 0s
-                for (int i = 0; i < (containerCount * pods.length + 1); i++) {
-                    selectedPods = kubApi.queryPods(new Label[]{label});
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("Pods count: " + selectedPods.length + " for cluster: " + clusterId);
-                    }
-                    if (selectedPods.length == containerCount) {
-                        break;
-                    }
-                    Thread.sleep(10000);
-                }
-
-                if (log.isDebugEnabled()) {
-
-                    log.debug(String.format("Pods created : %s for cluster : %s", selectedPods.length, clusterId));
-                }
-
-                List<MemberContext> memberContexts = new ArrayList<MemberContext>();
-
-                PodToMemberContext podToMemberContextFunc = new PodToMemberContext();
-                // generate Member Contexts
-                for (Pod pod : selectedPods) {
-                    MemberContext context;
-                    // if member context does not exist -> a new member (scale up)
-                    if ((context = CloudControllerContext.getInstance().getMemberContextOfMemberId(pod.getId())) == null) {
-
-                        context = podToMemberContextFunc.apply(pod);
-                        context.setCartridgeType(cartridgeType);
-                        context.setClusterId(clusterId);
-
-                        context.setProperties(CloudControllerUtil.addProperty(context
-                                        .getProperties(), StratosConstants.ALLOCATED_SERVICE_HOST_PORT,
-                                CloudControllerUtil.getProperty(clusterContext.getProperties(),
-                                        StratosConstants.ALLOCATED_SERVICE_HOST_PORT)));
-
-                        // wait till Pod status turns to running and send member spawned.
-                        ScheduledThreadExecutor exec = ScheduledThreadExecutor.getInstance();
-                        if (log.isDebugEnabled()) {
-                            log.debug("Cloud Controller is starting the instance start up thread.");
-                        }
-                        CloudControllerContext.getInstance().addScheduledFutureJob(context.getMemberId(), exec.schedule(new PodActivationWatcher(pod.getId(), context, kubApi), 5000));
-
-                        memberContexts.add(context);
-
-                    }
-                    // publish data
-                    // TODO
-//                CartridgeInstanceDataPublisher.publish(context.getMemberId(), null, null, context.getClusterId(), cartridgeType, MemberStatus.Created.toString(), node);
-
-                }
-
-                if (memberContexts.isEmpty()) {
-                    // terminated members
-                    @SuppressWarnings("unchecked")
-                    List<Pod> difference = ListUtils.subtract(Arrays.asList(pods), Arrays.asList(selectedPods));
-                    for (Pod pod : difference) {
-                        if (pod != null) {
-                            MemberContext context = CloudControllerContext.getInstance().getMemberContextOfMemberId(pod.getId());
-                            CloudControllerServiceUtil.executeMemberTerminationPostProcess(context);
-                            memberContexts.add(context);
-                        }
-                    }
-                }
-
-
-                // persist in registry
-                CloudControllerContext.getInstance().persist();
-
-                log.info("Kubernetes entities are successfully starting up. " + memberContexts);
-                return memberContexts.toArray(new MemberContext[0]);
-
-            } catch (Exception e) {
-                String msg = "Failed to update containers belong to cluster " + clusterId + ". Cause: " + e.getMessage();
-                log.error(msg, e);
-                throw new IllegalStateException(msg, e);
-            }
-        } finally {
-            if (lock != null) {
-                CloudControllerContext.getInstance().releaseWriteLock(lock);
-            }
-        }
-    }
-
-    public MemberContext terminateContainer(String memberId) throws MemberTerminationFailedException {
-        Lock lock = null;
-        try {
-            lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
-            handleNullObject(memberId, "Failed to terminate member. Invalid Member id. [member-id] " + memberId);
-            MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-            handleNullObject(memberContext, "Failed to terminate member. Member id not found. [member-id] " + memberId);
-
-            String clusterId = memberContext.getClusterId();
-            handleNullObject(clusterId, "Failed to terminate member. Cluster id is null. [member-id] " + memberId);
-
-            ClusterContext ctxt = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(ctxt, String.format("Failed to terminate member [member-id] %s. Invalid cluster id %s ", memberId, clusterId));
-
-            String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
-                    StratosConstants.KUBERNETES_CLUSTER_ID);
-
-            handleNullObject(kubernetesClusterId, String.format("Failed to terminate member [member-id] %s. Cannot find '" +
-                    StratosConstants.KUBERNETES_CLUSTER_ID + "' in [cluster context] %s ", memberId, ctxt));
-
-            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-            handleNullObject(kubClusterContext, String.format("Failed to terminate member [member-id] %s. Cannot find a matching Kubernetes Cluster in [cluster context] %s ", memberId, ctxt));
-            KubernetesApiClient kubApi = kubClusterContext.getKubApi();
-            // delete the Pod
-            try {
-                // member id = pod id
-                kubApi.deletePod(memberId);
+                kubApi.deleteReplicationController(memberContext.getMemberId());
                 MemberContext memberToBeRemoved = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
                 CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberToBeRemoved);
-
                 return memberToBeRemoved;
-
             } catch (KubernetesClientException e) {
-                String msg = String.format("Failed to terminate member: [member-id] %s", memberId);
+                String msg = String.format("Failed to terminate member: [cluster-id] %s [member-id] %s", clusterId, memberId);
                 log.error(msg, e);
                 throw new MemberTerminationFailedException(msg, e);
             }
@@ -614,30 +500,21 @@ public class KubernetesIaas extends Iaas {
     private KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId, String kubernetesMasterIp,
                                                                  String kubernetesMasterPort, int upperPort, int lowerPort) {
 
-        KubernetesClusterContext origCtxt =
-                CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
-        KubernetesClusterContext newCtxt =
-                new KubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp,
-                        kubernetesMasterPort, upperPort, lowerPort);
-
-        if (origCtxt == null) {
-            CloudControllerContext.getInstance().addKubernetesClusterContext(newCtxt);
-            return newCtxt;
+        KubernetesClusterContext kubernetesClusterContext = CloudControllerContext.getInstance().
+                getKubernetesClusterContext(kubernetesClusterId);
+        if (kubernetesClusterContext != null) {
+            return kubernetesClusterContext;
         }
 
-        if (!origCtxt.equals(newCtxt)) {
-            // if for some reason master IP etc. have changed
-            newCtxt.setAvailableHostPorts(origCtxt.getAvailableHostPorts());
-            CloudControllerContext.getInstance().addKubernetesClusterContext(newCtxt);
-            return newCtxt;
-        } else {
-            return origCtxt;
-        }
+        kubernetesClusterContext = new KubernetesClusterContext(kubernetesClusterId, kubernetesMasterIp,
+                kubernetesMasterPort, lowerPort, upperPort);
+        CloudControllerContext.getInstance().addKubernetesClusterContext(kubernetesClusterContext);
+        return kubernetesClusterContext;
     }
 
     private String readProperty(String property, org.apache.stratos.common.Properties properties, String object) {
         String propVal = CloudControllerUtil.getProperty(properties, property);
-        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property + " in " + object);
+        handleNullObject(propVal, "Property validation failed. Could not find property: '" + property + " in " + object);
         return propVal;
 
     }

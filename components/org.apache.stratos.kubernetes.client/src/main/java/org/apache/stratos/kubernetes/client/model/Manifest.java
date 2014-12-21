@@ -20,7 +20,9 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -33,38 +35,51 @@ public class Manifest {
 
 	private String version;
 	private String id;
-	private Container[] containers;
-	private Volume[] volumes;
-	
+	private List<Container> containers;
+	private List<Volume> volumes;
+
+	public Manifest() {
+		containers = new ArrayList<Container>();
+		volumes = new ArrayList<Volume>();
+	}
+
 	public String getVersion() {
 		return version;
 	}
+
 	public void setVersion(String version) {
 		this.version = version;
 	}
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
-	public Container[] getContainers() {
+
+	public List<Container> getContainers() {
 		return containers;
 	}
-	public void setContainers(Container[] containers) {
-		this.containers = ArrayUtils.clone(containers);
+
+	public void addContainer(Container container) {
+		containers.add(container);
 	}
-	public Volume[] getVolumes() {
+
+	public List<Volume> getVolumes() {
 		return volumes;
 	}
-	public void setVolumes(Volume[] volumes) {
-		this.volumes = ArrayUtils.clone(volumes);
+
+	public void addVolume(Volume volume) {
+		volumes.add(volume);
 	}
+
 	@Override
 	public String toString() {
 		return "Manifest [version=" + version + ", id=" + id + ", containers="
-				+ Arrays.toString(containers) + ", volumes="
-				+ Arrays.toString(volumes) + "]";
+				+ containers + ", volumes="
+				+ volumes + "]";
 	}
 	
 }

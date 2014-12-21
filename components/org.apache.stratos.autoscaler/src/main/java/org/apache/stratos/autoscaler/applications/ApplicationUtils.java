@@ -227,7 +227,7 @@ public class ApplicationUtils {
                         if ("DEPLOYMENT".equals(payloadParamSubstring)) {
                             isDeploymentParam = true;
                         }
-                        payloadData.add(payloadParamSubstring, propertyEntry.getValue());
+                        payloadData.add(payloadParamSubstring, String.valueOf(propertyEntry.getValue()));
                     }
                 }
             }
@@ -239,7 +239,7 @@ public class ApplicationUtils {
 				if (property.getName().startsWith("payload_parameter.")) {
                     String payloadParamName = property.getName();
                     String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
-                    payloadData.add(payloadParamSubstring, property.getValue());
+                    payloadData.add(payloadParamSubstring, String.valueOf(property.getValue()));
 				}
 			}
 		}
