@@ -5,93 +5,96 @@
         </div>
     </div>
 
-        <div class='container' id='content'>
-            <div class='row'>
-                <div class='container text-center form-toolbar'>
-                    <div class='col-md-2'>
-                       <button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button>
-                    </div>
-                    <div class='col-md-10'>
-                        <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''>Refresh </button>
-                    </div>
+    <div class='container' id='content'>
+        <div class='row'>
+            <div class='container text-center form-toolbar'>
+                <div class='col-md-2'>
+                    <button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button>
+                </div>
+                <div class='col-md-10'>
+                    <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''>Refresh </button>
                 </div>
             </div>
-            <div class="application-topology">
-
-            </div>
         </div>
+        <div class="application-topology">
+
+        </div>
+    </div>
 
 </div>
 <script type="text/javascript">
 $(document).ready(function () {
-    var topologydata = {{{topology_data}}};
-//create JSON from topology
-    function genTree(data) {
+    //var topologydata = {{{topology_data}}};
 
+    var topologydata = {"applicationInstances":[{"applicationId":"app_group_v1","groupInstances":[{"clusterInstances":[{"alias":"tom2group6","clusterId":"tom2group6.tomcat2.domain","hostNames":["tom2group6.isuruh.lk"],"instanceId":"mygroup6-1","member":[{"clusterId":"tom2group6.tomcat2.domain","memberId":"tom2group6.tomcat2.domainbdf9cc84-7a2a-4e35-b899-19b7ef4c49be","memberIp":"10.0.0.1","memberPublicIp":"20.0.0.1","networkPartitionId":"openstack_R1","partitionId":"P1","property":[{"name":"PRIMARY","value":false},{"name":"MIN_COUNT","value":1}],"serviceName":"tomcat2","status":"Activated"}],"parentInstanceId":"mygroup6-1","serviceName":"tomcat2","status":"Active","tenantRange":"*"}],"groupId":"mygroup6","instanceId":"mygroup6-1","parentInstanceId":"app_group_v1-1","status":"Active"},{"clusterInstances":[{"alias":"tom2group6","clusterId":"tom2group6.tomcat2.domain","hostNames":["tom2group6.isuruh.lk"],"instanceId":"mygroup6-2","member":[{"clusterId":"tom2group6.tomcat2.domain","memberId":"tom2group6.tomcat2.domain6ddee85f-ce49-4409-b1f1-05adaef55c68","memberIp":"10.0.0.2","memberPublicIp":"20.0.0.2","networkPartitionId":"openstack_R1","partitionId":"P1","property":[{"name":"PRIMARY","value":false},{"name":"MIN_COUNT","value":1}],"serviceName":"tomcat2","status":"Activated"}],"parentInstanceId":"mygroup6-2","serviceName":"tomcat2","status":"Active","tenantRange":"*"}],"groupId":"mygroup6","instanceId":"mygroup6-2","parentInstanceId":"app_group_v1-1","status":"Active"}],"instanceId":"app_group_v1-1","status":"Active"}],"id":"app_group_v1","tenantAdminUsername":"admin","tenantDomain":"carbon.super"};
+//create JSON from topology
+    function genTree(data){
         var rawout = [];
 
-        var rootnode = {};
+        var rootnode ={};
         rootnode.name = data.id;
         rootnode.parent = null;
         //create initial root node
         rawout.push(rootnode);
 
-        //use to get cluster nodes
-        function secondorylevelclusters(item, collector, parent) {
-            for (var prop in item) {
-                if (item.hasOwnProperty(prop)) {
-                    var cur_name = item[prop].serviceName,
-                            clusterId = item[prop].clusterId,
-                            type = 'cluster',
-                            isLbCluster = item[prop].isLbCluster;
-                    rawout.push({"name": clusterId, "parent": parent, "clusterId": clusterId, "type": type,
-                        "isLbCluster": isLbCluster
-                    });
-                    clustermembers(item[prop].member, rawout, clusterId)
+        //application instances
+        function applicationInstances(items, collector, parent){
+            for(var prop in items){
+                if (items.hasOwnProperty(prop)) {
+                    var cur_name = items[prop].instanceId,
+                            status = items[prop].status;
+                    rawout.push({"name": cur_name, "parent": parent, "status": status});
+
+                    clusterInstances(items[prop].clusterInstances, collector, cur_name);
+                    groupInstances(items[prop].groupInstances, collector, cur_name)
                 }
             }
         }
 
-        //use to get member nodes on cluster
-        function clustermembers(item, collector, parent) {
-            for (var prop in item) {
-                if (item.hasOwnProperty(prop)) {
-                    var cur_name = item[prop].memberIp,
-                            clusterId = item[prop].clusterId,
-                            type = 'member',
-                            memberId = item[prop].memberId,
-                            status = item[prop].status,
-                            memberPublicIp = item[prop].memberPublicIp,
-                            partitionId = item[prop].partitionId;
-                    rawout.push({"name": cur_name, "parent": parent, "clusterId": clusterId, "type": type,
-                        "memberId": memberId, "status": status, "memberPublicIp": memberPublicIp,
-                        "partitionId": partitionId
-                    });
+        function clusterInstances(items, collector, parent){
+            for(var prop in items){
+                if (items.hasOwnProperty(prop)) {
+                    var cur_name = items[prop].clusterId,
+                            status = items[prop].status;
+                    var type = 'cluster';
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+                    clustermembers(items[prop].member, collector, cur_name)
                 }
-
             }
-
         }
 
-        function secondarylevelgroups(item, collector, parent) {
-            for (var prop in item) {
-                if (item.hasOwnProperty(prop)) {
-                    var cur_name = item[prop].alias;
+        function groupInstances(items, collector, parent){
+            for(var prop in items){
+                if (items.hasOwnProperty(prop)) {
+                    var cur_name = items[prop].groupId,
+                            status = items[prop].status;
                     var type = 'groups';
-                    rawout.push({"name": cur_name, "parent": parent, "type": type});
-                    if (item[prop].hasOwnProperty('subGroups')) {
-                        secondarylevelgroups(item[prop].subGroups, rawout, cur_name);
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+
+                    clusterInstances(items[prop].clusterInstances, collector, cur_name);
+                    if(items[prop].hasOwnProperty('groupInstances')){
+                        groupInstances(items[prop].groupInstances, collector, cur_name)
                     }
-                    secondorylevelclusters(item[prop].clusters, rawout, cur_name);
 
                 }
             }
         }
 
-        secondorylevelclusters(data.clusters, rawout, data.id);
-        secondarylevelgroups(data.groups, rawout, data.id);
-        return rawout;
+        function clustermembers(items, collector, parent){
+            for(var prop in items){
+                if (items.hasOwnProperty(prop)) {
+                    var cur_name = items[prop].memberId,
+                            status = items[prop].status;
+                    var type = 'member';
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+                }
+            }
+        }
 
+        //getting execution logic
+        applicationInstances(data.applicationInstances, rawout, data.id);
+
+        return rawout;
     }
 
 
@@ -252,7 +255,12 @@ $(document).ready(function () {
                 .attr("dy", ".35em")
                 .attr("text-anchor", "middle")
                 .text(function (d) {
-                    return d.name;
+                    if(d.type == 'member'){
+                       return '';
+                    }else{
+                        return d.name;
+                    }
+
                 })
                 .style("fill-opacity", 1);
 
