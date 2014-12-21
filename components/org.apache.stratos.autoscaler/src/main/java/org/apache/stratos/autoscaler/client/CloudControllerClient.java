@@ -244,17 +244,17 @@ public class CloudControllerClient {
                                                        Set<ApplicationClusterContext> appClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
                                         new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
-        for(ApplicationClusterContext context : appClusterContexts) {
+        for(ApplicationClusterContext applicationClusterContext : appClusterContexts) {
             org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
-            dto.setClusterId(context.getClusterId());
-            dto.setAutoscalePolicyName(context.getAutoscalePolicyName());
-            dto.setDeploymentPolicyName(context.getDeploymentPolicyName());
-            dto.setCartridgeType(context.getCartridgeType());
-            dto.setHostName(context.getHostName());
-            dto.setTenantRange(context.getTenantRange());
-            dto.setTextPayload(context.getTextPayload());
-            dto.setLbCluster(context.isLbCluster());
-            dto.setProperties(AutoscalerUtil.toStubProperties(context.getProperties()));
+            dto.setClusterId(applicationClusterContext.getClusterId());
+            dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
+            dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
+            dto.setCartridgeType(applicationClusterContext.getCartridgeType());
+            dto.setHostName(applicationClusterContext.getHostName());
+            dto.setTenantRange(applicationClusterContext.getTenantRange());
+            dto.setTextPayload(applicationClusterContext.getTextPayload());
+            dto.setLbCluster(applicationClusterContext.isLbCluster());
+            dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
             contextDTOs.add(dto);
         }
 

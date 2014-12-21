@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceU
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.beans.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.kubernetes.PortRange;
@@ -51,16 +52,45 @@ public class KubernetesIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
     private static final long POD_CREATION_TIMEOUT = 60000; // 1 min
+    public static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
+    public static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
 
     private PartitionValidator partitionValidator;
+    private List<NameValuePair> payload;
 
     public KubernetesIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         partitionValidator = new KubernetesPartitionValidator();
+        payload = new ArrayList<NameValuePair>();
     }
 
     @Override
     public void initialize() {
+    }
+
+    @Override
+    public void setDynamicPayload(byte[] payloadByteArray) {
+        // Clear existing payload parameters
+        payload.clear();
+
+        if(payloadByteArray != null) {
+            String payloadString = new String(payloadByteArray);
+            String[] parameterArray = payloadString.split(PAYLOAD_PARAMETER_SEPARATOR);
+            if(parameterArray != null) {
+                for(String parameter : parameterArray) {
+                    if(parameter != null) {
+                        String[] nameValueArray = parameter.split(PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR);
+                        if ((nameValueArray != null) && (nameValueArray.length == 2)) {
+                            NameValuePair nameValuePair = new NameValuePair(nameValueArray[0], nameValueArray[1]);
+                            payload.add(nameValuePair);
+                        }
+                    }
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug("Dynamic payload is set: " + payload.toString());
+                }
+            }
+        }
     }
 
     @Override
@@ -132,6 +162,7 @@ public class KubernetesIaas extends Iaas {
                 String kubernetesMasterPort = CloudControllerUtil.getProperty(
                         kubernetesGroup.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
                         StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
+
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
                         kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getLower(),
                         kubernetesPortRange.getUpper());
@@ -240,11 +271,18 @@ public class KubernetesIaas extends Iaas {
      * @param kubernetesApi
      * @throws KubernetesClientException
      */
-    private ReplicationController createReplicationController(MemberContext memberContext, String clusterId, KubernetesApiClient kubernetesApi) throws KubernetesClientException {
+    private ReplicationController createReplicationController(MemberContext memberContext, String clusterId,
+                                                              KubernetesApiClient kubernetesApi)
+            throws KubernetesClientException {
         if (log.isDebugEnabled()) {
             log.debug("Creating kubernetes replication controller: [cluster-id] " + clusterId);
         }
-        ContainerClusterContextToReplicationController controllerFunction = new ContainerClusterContextToReplicationController();
+        // Add dynamic payload to the member context
+        memberContext.getProperties().addProperty(new Property(StratosConstants.DYNAMIC_PAYLOAD, payload));
+        ContainerClusterContextToReplicationController controllerFunction =
+                new ContainerClusterContextToReplicationController();
+
+        // Create replication controller
         ReplicationController replicationController = controllerFunction.apply(memberContext);
         kubernetesApi.createReplicationController(replicationController);
         if (log.isDebugEnabled()) {
@@ -254,7 +292,7 @@ public class KubernetesIaas extends Iaas {
     }
 
     /**
-     * Create proxy services for the cluster
+     * Create proxy services for the cluster and add them to the cluster context.
      * @param clusterContext
      * @param kubernetesClusterContext
      * @param kubernetesApi
@@ -313,10 +351,22 @@ public class KubernetesIaas extends Iaas {
         return services;
     }
 
+    /**
+     * Prepare kubernetes service id using clusterId, port protocol and port.
+     * @param clusterId
+     * @param portMapping
+     * @return
+     */
     private String prepareKubernetesServiceId(String clusterId, PortMapping portMapping) {
         return String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
     }
 
+    /**
+     * Terminate all the containers belong to a cluster by cluster id.
+     * @param clusterId
+     * @return
+     * @throws InvalidClusterException
+     */
     public MemberContext[] terminateContainers(String clusterId)
             throws InvalidClusterException {
         Lock lock = null;
@@ -444,6 +494,15 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
+    /**
+     * Get kubernetes cluster context
+     * @param kubernetesClusterId
+     * @param kubernetesMasterIp
+     * @param kubernetesMasterPort
+     * @param upperPort
+     * @param lowerPort
+     * @return
+     */
     private KubernetesClusterContext getKubernetesClusterContext(String kubernetesClusterId, String kubernetesMasterIp,
                                                                  String kubernetesMasterPort, int upperPort, int lowerPort) {
 
@@ -524,10 +583,5 @@ public class KubernetesIaas extends Iaas {
     @Override
     public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
 
-    }
-
-    @Override
-    public void setDynamicPayload(byte[] payload) {
-        // Payload is passed via environment
     }
 }

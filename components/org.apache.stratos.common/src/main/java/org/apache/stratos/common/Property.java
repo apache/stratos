@@ -33,7 +33,7 @@ public class Property implements Serializable, Cloneable {
     public Property() {
     }
 
-    public Property(String name, String value) {
+    public Property(String name, Object value) {
         this.setName(name);
         this.setValue(value);
     }

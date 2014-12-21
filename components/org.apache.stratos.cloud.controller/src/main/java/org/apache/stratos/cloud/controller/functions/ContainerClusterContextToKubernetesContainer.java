@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.beans.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.Container;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
@@ -59,13 +60,12 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
         }
 
         container.setImage(cartridge.getContainer().getImageName());
-        container.setPorts(getPorts(clusterContext, cartridge));
-        container.setEnv(getEnvironmentVars(memberContext, clusterContext));
-
+        container.setPorts(getPorts(cartridge));
+        container.setEnv(getEnvironmentVariables(memberContext, clusterContext));
         return container;
     }
 
-    private Port[] getPorts(ClusterContext ctxt, Cartridge cartridge) {
+    private Port[] getPorts(Cartridge cartridge) {
         Port[] ports = new Port[cartridge.getPortMappings().size()];
         List<Port> portList = new ArrayList<Port>();
 
@@ -77,28 +77,40 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
             p.setName(p.getProtocol() + p.getContainerPort());
             portList.add(p);
         }
-
         return portList.toArray(ports);
     }
 
-    private EnvironmentVariable[] getEnvironmentVars(MemberContext memberCtxt, ClusterContext ctxt) {
-        String kubernetesClusterId = CloudControllerUtil.getProperty(ctxt.getProperties(),
+    private EnvironmentVariable[] getEnvironmentVariables(MemberContext memberContext, ClusterContext clusterContext) {
+        String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
                 StratosConstants.KUBERNETES_CLUSTER_ID);
 
-        List<EnvironmentVariable> envVars = new ArrayList<EnvironmentVariable>();
-        addToEnvironment(envVars, ctxt.getPayload());
-        addToEnvironment(envVars, StratosConstants.KUBERNETES_CLUSTER_ID, kubernetesClusterId);
-        if (memberCtxt.getProperties() != null) {
-            Properties props1 = memberCtxt.getProperties();
-            if (props1 != null) {
-                for (Property prop : props1.getProperties()) {
-                    addToEnvironment(envVars, prop.getName(), String.valueOf(prop.getValue()));
+        List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
+        if (memberContext.getProperties() != null) {
+            Properties properties = memberContext.getProperties();
+            if (properties != null) {
+                // Set dynamic payload
+                List<NameValuePair> payload = (List<NameValuePair>) properties.getProperty(
+                        StratosConstants.DYNAMIC_PAYLOAD);
+                if(payload != null) {
+                    for(NameValuePair parameter : payload) {
+                        addToEnvironmentVariables(environmentVariables, parameter.getName(), parameter.getValue());
+                    }
+                }
+                // Set member string properties as payload parameters
+                for (Property property : properties.getProperties()) {
+                    if(property.getValue() instanceof String) {
+                        addToEnvironmentVariables(environmentVariables, property.getName(),
+                                String.valueOf(property.getValue()));
+                    }
                 }
             }
+            // Set kubernetes cluster id
+            addToEnvironmentVariables(environmentVariables, StratosConstants.KUBERNETES_CLUSTER_ID,
+                    kubernetesClusterId);
         }
 
-        EnvironmentVariable[] vars = new EnvironmentVariable[envVars.size()];
-        return envVars.toArray(vars);
+        EnvironmentVariable[] array = new EnvironmentVariable[environmentVariables.size()];
+        return environmentVariables.toArray(array);
     }
 
     private void addToEnvironment(List<EnvironmentVariable> envVars, String payload) {
@@ -109,12 +121,12 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
                 if (var.length != 2) {
                     continue;
                 }
-                addToEnvironment(envVars, var[0], var[1]);
+                addToEnvironmentVariables(envVars, var[0], var[1]);
             }
         }
     }
 
-    private void addToEnvironment(List<EnvironmentVariable> envVars, String name, String value) {
+    private void addToEnvironmentVariables(List<EnvironmentVariable> envVars, String name, String value) {
         EnvironmentVariable var = new EnvironmentVariable();
         var.setName(name);
         var.setValue(value);

@@ -190,5 +190,6 @@ public class StratosConstants {
 	public static final String LOAD_BALANCED_SERVICE_TYPE = "load.balanced.service.type";
 
     public static final long HAZELCAST_INSTANCE_INIT_TIMEOUT = 300000; // 5 min
+    public static final String DYNAMIC_PAYLOAD = "DYNAMIC_PAYLOAD";
 }
 

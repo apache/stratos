@@ -532,13 +532,13 @@ public class ObjectConverter {
     }
 
     private static PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property stubProperty) {
-        if(stubProperty == null) {
+        if ((stubProperty == null) || (!(stubProperty.getValue() instanceof String))) {
             return null;
         }
 
         PropertyBean propertyBean = new PropertyBean();
         propertyBean.setName(stubProperty.getName());
-        propertyBean.setValue(stubProperty.getValue());
+        propertyBean.setValue(String.valueOf(stubProperty.getValue()));
         return propertyBean;
     }
 
@@ -1088,12 +1088,13 @@ public class ObjectConverter {
     }
 
     private static PropertyBean convertAsStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property propertyE) {
-        if (propertyE == null) {
+        if ((propertyE == null) || (!(propertyE.getValue() instanceof String))) {
             return null;
         }
+
         PropertyBean propertyBean = new PropertyBean();
         propertyBean.setName(propertyE.getName());
-        propertyBean.setValue(propertyE.getValue());
+        propertyBean.setValue(String.valueOf(propertyE.getValue()));
         return propertyBean;
     }
     
@@ -1272,11 +1273,11 @@ public class ObjectConverter {
                 new ArrayList<org.apache.stratos.manager.composite.application.beans.PropertyBean>();
         if((properties != null) && (properties.getProperties() != null)) {
             for (org.apache.stratos.autoscaler.stub.Property property : properties.getProperties()) {
-                if(property != null) {
+                if((property != null) && (property.getValue() instanceof String)) {
                     org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean =
                             new org.apache.stratos.manager.composite.application.beans.PropertyBean();
                     propertyBean.setName(property.getName());
-                    propertyBean.setValue(property.getValue());
+                    propertyBean.setValue(String.valueOf(property.getValue()));
                     propertyBeanList.add(propertyBean);
                 }
             }

@@ -379,6 +379,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
             addToPayload(payload, "NETWORK_PARTITION_ID", memberContext.getNetworkPartitionId());
             addToPayload(payload, "PARTITION_ID", partitionId);
+
             if (memberContext.getProperties() != null) {
                 org.apache.stratos.common.Properties properties = memberContext.getProperties();
                 if (properties != null) {
@@ -390,17 +391,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Iaas iaas = iaasProvider.getIaas();
             if (clusterContext.isVolumeRequired()) {
-                if (clusterContext.getVolumes() != null) {
-                    for (Volume volume : clusterContext.getVolumes()) {
-                        if (volume.getId() == null) {
-                            // Create a new volume
-                            createVolumeAndSetInClusterContext(volume, iaasProvider);
-                        }
-                    }
-                }
-            }
-
-            if (clusterContext.isVolumeRequired()) {
                 addToPayload(payload, PERSISTENCE_MAPPING, getPersistencePayload(clusterContext, iaas).toString());
             }
 
@@ -410,6 +400,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             iaasProvider.setPayload(payload.toString().getBytes());
             iaas.setDynamicPayload(iaasProvider.getPayload());
+
+            if (clusterContext.isVolumeRequired()) {
+                if (clusterContext.getVolumes() != null) {
+                    for (Volume volume : clusterContext.getVolumes()) {
+                        if (volume.getId() == null) {
+                            // Create a new volume
+                            createVolumeAndSetInClusterContext(volume, iaasProvider);
+                        }
+                    }
+                }
+            }
 
             // Start instance in a new thread
             ThreadExecutor exec = ThreadExecutor.getInstance();
