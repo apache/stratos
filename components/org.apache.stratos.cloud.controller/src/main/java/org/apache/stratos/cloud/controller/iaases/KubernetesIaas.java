@@ -61,7 +61,6 @@ public class KubernetesIaas extends Iaas {
 
     @Override
     public void initialize() {
-
     }
 
     @Override
@@ -70,66 +69,8 @@ public class KubernetesIaas extends Iaas {
     }
 
     @Override
-    public void releaseAddress(String ip) {
-
-    }
-
-    @Override
-    public boolean isValidRegion(String region) throws InvalidRegionException {
-        // No regions in kubernetes cluster
-        return true;
-    }
-
-    @Override
-    public boolean isValidZone(String region, String zone) throws InvalidZoneException, InvalidRegionException {
-        // No zones in kubernetes cluster
-        return true;
-    }
-
-    @Override
-    public boolean isValidHost(String zone, String host) throws InvalidHostException {
-        // No zones in kubernetes cluster
-        return true;
-    }
-
-    @Override
     public PartitionValidator getPartitionValidator() {
         return partitionValidator;
-    }
-
-    @Override
-    public String createVolume(int sizeGB, String snapshotId) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String attachVolume(String instanceId, String volumeId, String deviceName) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void detachVolume(String instanceId, String volumeId) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void deleteVolume(String volumeId) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public String getIaasDevice(String device) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
-
-    }
-
-    @Override
-    public void setDynamicPayload(byte[] payload) {
-          // Payload is passed via environment
     }
 
     @Override
@@ -221,19 +162,7 @@ public class KubernetesIaas extends Iaas {
                 }
 
                 // Create member context
-                MemberContext newMemberContext = new MemberContext();
-                newMemberContext.setCartridgeType(cartridgeType);
-                newMemberContext.setClusterId(clusterId);
-                newMemberContext.setMemberId(memberContext.getMemberId());
-                newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
-                newMemberContext.setInitTime(memberContext.getInitTime());
-                newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
-                newMemberContext.setPartition(memberContext.getPartition());
-                newMemberContext.setInitTime(System.currentTimeMillis());
-                newMemberContext.setInstanceId(pod.getId());
-                newMemberContext.setPrivateIpAddress(pod.getCurrentState().getHostIP());
-                newMemberContext.setPublicIpAddress(pod.getCurrentState().getHostIP());
-                newMemberContext.setProperties(memberContext.getProperties());
+                MemberContext newMemberContext = createNewMemberContext(memberContext, pod);
 
                 Property servicesProperty = new Property();
                 servicesProperty.setName(StratosConstants.KUBERNETES_SERVICES);
@@ -266,6 +195,24 @@ public class KubernetesIaas extends Iaas {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
+    }
+
+    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod) {
+        MemberContext newMemberContext = new MemberContext();
+        newMemberContext.setCartridgeType(memberContext.getCartridgeType());
+        newMemberContext.setClusterId(memberContext.getClusterId());
+        newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
+        newMemberContext.setMemberId(memberContext.getMemberId());
+        newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
+        newMemberContext.setPartition(memberContext.getPartition());
+        newMemberContext.setInstanceId(pod.getId());
+        newMemberContext.setDefaultPrivateIP(pod.getCurrentState().getHostIP());
+        newMemberContext.setPrivateIPs(new String[]{pod.getCurrentState().getHostIP()});
+        newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
+        newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
+        newMemberContext.setInitTime(System.currentTimeMillis());
+        newMemberContext.setProperties(memberContext.getProperties());
+        return newMemberContext;
     }
 
     private Pod[] waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi) throws KubernetesClientException, InterruptedException {
@@ -524,5 +471,63 @@ public class KubernetesIaas extends Iaas {
             log.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
+    }
+
+    @Override
+    public void releaseAddress(String ip) {
+
+    }
+
+    @Override
+    public boolean isValidRegion(String region) throws InvalidRegionException {
+        // No regions in kubernetes cluster
+        return true;
+    }
+
+    @Override
+    public boolean isValidZone(String region, String zone) throws InvalidZoneException, InvalidRegionException {
+        // No zones in kubernetes cluster
+        return true;
+    }
+
+    @Override
+    public boolean isValidHost(String zone, String host) throws InvalidHostException {
+        // No zones in kubernetes cluster
+        return true;
+    }
+
+    @Override
+    public String createVolume(int sizeGB, String snapshotId) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String attachVolume(String instanceId, String volumeId, String deviceName) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void detachVolume(String instanceId, String volumeId) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void deleteVolume(String volumeId) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public String getIaasDevice(String device) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
+
+    }
+
+    @Override
+    public void setDynamicPayload(byte[] payload) {
+        // Payload is passed via environment
     }
 }
