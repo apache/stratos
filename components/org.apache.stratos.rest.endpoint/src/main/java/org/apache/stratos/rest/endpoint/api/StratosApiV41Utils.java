@@ -98,8 +98,9 @@ public class StratosApiV41Utils {
     public static void addCartridge(CartridgeDefinitionBean cartridgeDefinitionBean, ConfigurationContext ctxt,
                                        String userName, String tenantDomain) throws RestAPIException {
 
-        log.info(String.format("Starting to deploy a cartridge: [type] %s " , cartridgeDefinitionBean.getType()));
-
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Starting to add cartridge: [cartridge-type] %s ", cartridgeDefinitionBean.getType()));
+        }
         CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
             throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
@@ -112,7 +113,9 @@ public class StratosApiV41Utils {
         } catch (ADCException e) {
             throw new RestAPIException(e);
         }
-        log.info(String.format("Successfully deployed cartridge: [cartridge-type] %s " , cartridgeDefinitionBean.getType()));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Successfully added cartridge: [cartridge-type] %s ", cartridgeDefinitionBean.getType()));
+        }
     }
 
     public static void removeCartridge(String cartridgeType) throws RestAPIException {
@@ -124,16 +127,16 @@ public class StratosApiV41Utils {
             try {
                 cartridgeInfo = cloudControllerServiceClient.getCartridgeInfo(cartridgeType);
             } catch (RemoteException e) {
-                log.error(String.format("Could not find cartridge: [type] %s ", cartridgeType));
+                log.error(String.format("Could not find cartridge: [cartridge-type] %s ", cartridgeType));
                 throw new RestAPIException(e);
 
             } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-                log.error(String.format("Could not find cartridge: [type]  %s " , cartridgeType));
+                log.error(String.format("Could not find cartridge: [cartridge-type]  %s " , cartridgeType));
                 throw new RestAPIException(e);
             }
 
             if (cartridgeInfo == null) {
-                String errorMsg = String.format("Could not find cartridge: [type] %s ", cartridgeType);
+                String errorMsg = String.format("Could not find cartridge: [cartridge-type] %s ", cartridgeType);
                 log.error(errorMsg);
                 throw new RestAPIException(errorMsg);
             }
@@ -543,7 +546,7 @@ public class StratosApiV41Utils {
 
     public static void addAutoscalingPolicy(AutoscalePolicy autoscalePolicyBean) throws RestAPIException {
 
-        log.info(String.format("Deploying autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
+        log.info(String.format("Adding autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
 
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {

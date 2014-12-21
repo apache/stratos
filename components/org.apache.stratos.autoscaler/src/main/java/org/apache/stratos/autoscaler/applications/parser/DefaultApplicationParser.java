@@ -277,9 +277,9 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         }
 
-
-        log.info("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
-
+        if(log.isDebugEnabled()) {
+            log.debug("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
+        }
         return application;
     }
 
