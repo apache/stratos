@@ -41,8 +41,9 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingBeyondLimitEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
@@ -287,17 +288,17 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     }
 
     @Override
-    public void onChildScalingOverMaxEvent(ScalingBeyondLimitEvent scalingBeyondLimitEvent) {
+    public void onChildScalingOverMaxEvent(ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent) {
         if (log.isDebugEnabled()) {
             log.debug("Child Scaling max out event received to [group]: " + this.getId()
-                    + ", [network partition]: " + scalingBeyondLimitEvent.getNetworkPartitionId()
-                    + ", [event] " + scalingBeyondLimitEvent.getId() + ", " +
-                    "[group instance] " + scalingBeyondLimitEvent.getInstanceId());
+                    + ", [network partition]: " + scalingUpBeyondMaxEvent.getNetworkPartitionId()
+                    + ", [event] " + scalingUpBeyondMaxEvent.getId() + ", " +
+                    "[group instance] " + scalingUpBeyondMaxEvent.getInstanceId());
         }
         //adding the scaling over max event to group instance Context
-        String networkPartitionId = scalingBeyondLimitEvent.getNetworkPartitionId();
-        String instanceId = scalingBeyondLimitEvent.getInstanceId();
-        String id = scalingBeyondLimitEvent.getId();
+        String networkPartitionId = scalingUpBeyondMaxEvent.getNetworkPartitionId();
+        String instanceId = scalingUpBeyondMaxEvent.getInstanceId();
+        String id = scalingUpBeyondMaxEvent.getId();
         NetworkPartitionContext networkPartitionContext =
                 this.networkPartitionCtxts.get(networkPartitionId);
         if (networkPartitionContext != null) {
@@ -306,9 +307,9 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             if (instanceContext != null) {
                 if (instanceContext.containsScalingEvent(id)) {
                     instanceContext.removeScalingOverMaxEvent(id);
-                    instanceContext.addScalingOverMaxEvent(scalingBeyondLimitEvent);
+                    instanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
                 } else {
-                    instanceContext.addScalingOverMaxEvent(scalingBeyondLimitEvent);
+                    instanceContext.addScalingOverMaxEvent(scalingUpBeyondMaxEvent);
                 }
             }
         }
@@ -770,6 +771,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     public Set<ScalingDependentList> getScalingDependencies() {
         return scalingDependencies;
     }
+
+    public abstract void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent);
 
     private class MonitorAdder implements Runnable {
         private ApplicationChildContext context;

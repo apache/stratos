@@ -66,18 +66,18 @@ public class MonitorStatusEventBuilder {
                                                  String appId) {
 
         //Send notifications to parent of the cluster monitor
-        ScalingBeyondLimitEvent scalingBeyondLimitEvent = new ScalingBeyondLimitEvent(appId, networkPartitionId,
+        ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent = new ScalingUpBeyondMaxEvent(appId, networkPartitionId,
                                                             instanceId) ;
-        notifyParent(parent, scalingBeyondLimitEvent);
+        notifyParent(parent, scalingUpBeyondMaxEvent);
     }
 
     public static void handleScalingDownBeyondMinEvent(ParentComponentMonitor parent, String networkPartitionId,
                                                        String instanceId, String appId) {
 
         //Send notifications to parent of the cluster monitor
-        ScalingBeyondLimitEvent scalingBeyondLimitEvent = new ScalingBeyondLimitEvent(appId, networkPartitionId,
+        ScalingDownBeyondMinEvent scalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(appId, networkPartitionId,
                 instanceId) ;
-        notifyParent(parent, scalingBeyondLimitEvent);
+        notifyParent(parent, scalingDownBeyondMinEvent);
     }
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
         parent.onChildStatusEvent(statusEvent);
@@ -117,8 +117,12 @@ public class MonitorStatusEventBuilder {
         parent.onChildScalingEvent(scalingEvent);
     }
 
-    private static void notifyParent(ParentComponentMonitor parent, ScalingBeyondLimitEvent scalingBeyondLimitEvent) {
-        parent.onChildScalingOverMaxEvent(scalingBeyondLimitEvent);
+    private static void notifyParent(ParentComponentMonitor parent, ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
+        parent.onChildScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+    }
+
+    private static void notifyParent(ParentComponentMonitor parent, ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent) {
+        parent.onChildScalingOverMaxEvent(scalingUpBeyondMaxEvent);
     }
 
     public static void notifyChildren (ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {

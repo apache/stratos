@@ -37,7 +37,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingBeyondLimitEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
@@ -385,7 +385,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     }
 
     @Override
-    public void onChildScalingOverMaxEvent(ScalingBeyondLimitEvent scalingBeyondLimitEvent) {
+    public void onChildScalingOverMaxEvent(ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent) {
 
     }
 

@@ -37,7 +37,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.GroupStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingBeyondLimitEvent;
+import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
@@ -164,7 +164,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 }
                                 //Resetting the max events
                                 instanceContext.setIdToScalingOverMaxEvent(
-                                        new HashMap<String, ScalingBeyondLimitEvent>());
+                                        new HashMap<String, ScalingUpBeyondMaxEvent>());
                             } else {
                                 handleDependentScaling(instanceContext, networkPartitionContext);
                             }
