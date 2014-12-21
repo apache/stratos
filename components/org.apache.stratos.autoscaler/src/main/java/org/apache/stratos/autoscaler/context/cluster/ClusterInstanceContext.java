@@ -104,7 +104,7 @@ public class ClusterInstanceContext extends InstanceContext {
 
     public ClusterLevelPartitionContext[] getPartitionCtxtsAsAnArray() {
 
-        return partitionCtxts.toArray(new ClusterLevelPartitionContext[0]);
+        return partitionCtxts.toArray(new ClusterLevelPartitionContext[partitionCtxts.size()]);
     }
 
     public boolean partitionCtxtAvailable(String partitionId) {
