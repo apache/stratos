@@ -50,22 +50,29 @@ dialect "mvel"
 	then
 
         if(scaleUp) {
-
-            int additionalInstances = roundedRequiredInstanceCount - clusterInstanceContext.getNonTerminatedMemberCount();
+            int clusterMaxMembers = clusterInstanceContext.getMaxInstanceCount();
+            int currentMemberCount = clusterInstanceContext.getNonTerminatedMemberCount();
+            int additionalInstances = roundedRequiredInstanceCount - currentMemberCount;
             int count = 0;
             boolean partitionsAvailable = true;
 
-            while(count != additionalInstances  && partitionsAvailable){
+            log.debug("[dependent-scale] is running for [cluster] " + clusterId +
+            " [cluster-instance] " + clusterInstanceContext.getId() + " max member count is: " +
+                clusterMaxMembers + " current member count is: " + currentMemberCount);
 
-                ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
-                if(partitionContext != null) {
+            while(count != additionalInstances  && partitionsAvailable) {
+                if(currentMemberCount < clusterMaxMembers) {
+                    ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                    if(partitionContext != null) {
 
-                    log.info("[dependency-scale][scale-up] Partition available, hence trying to spawn an instance to scale up!" );
-                    log.debug("[dependency-scale][scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
-                    delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
-                    count++;
+                        log.info("[dependency-scale][scale-up] Partition available, hence trying to spawn an instance to scale up!" );
+                        log.debug("[dependency-scale][scale-up] " + " [partition] " + partitionContext.getPartitionId() + " [cluster] " + clusterId );
+                        delegator.delegateSpawn(partitionContext, clusterId, clusterInstanceContext.getId(), isPrimary);
+                        count++;
+                    } else {
+                        partitionsAvailable = false;
+                    }
                 } else {
-
                     partitionsAvailable = false;
                 }
             }
