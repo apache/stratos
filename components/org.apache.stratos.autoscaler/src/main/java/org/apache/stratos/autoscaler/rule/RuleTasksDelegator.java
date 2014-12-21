@@ -118,22 +118,25 @@ public class RuleTasksDelegator {
         return min;
     }
 
-    public int getMaxNumberOfInstancesRequired(int numberOfInstancesReuquiredBasedOnRif, int numberOfInstancesReuquiredBasedOnMemoryConsumption, boolean mcReset, int numberOfInstancesReuquiredBasedOnLoadAverage, boolean laReset) {
+    public int getMaxNumberOfInstancesRequired(int numberOfInstancesRequiredBasedOnRif,
+                                               int numberOfInstancesRequiredBasedOnMemoryConsumption,
+                                               boolean mcReset, int numberOfInstancesReuquiredBasedOnLoadAverage,
+                                               boolean laReset) {
         int numberOfInstances = 0;
 
         int rifBasedRequiredInstances = 0;
         int mcBasedRequiredInstances = 0;
         int laBasedRequiredInstances = 0;
         if (arspiIsSet) {
-            rifBasedRequiredInstances = numberOfInstancesReuquiredBasedOnRif;
+            rifBasedRequiredInstances = numberOfInstancesRequiredBasedOnRif;
         }
         if (mcReset) {
-            mcBasedRequiredInstances = numberOfInstancesReuquiredBasedOnMemoryConsumption;
+            mcBasedRequiredInstances = numberOfInstancesRequiredBasedOnMemoryConsumption;
         }
         if (laReset) {
             laBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
         }
-        numberOfInstances = Math.max(Math.max(numberOfInstancesReuquiredBasedOnMemoryConsumption, numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesReuquiredBasedOnRif);
+        numberOfInstances = Math.max(Math.max(numberOfInstancesRequiredBasedOnMemoryConsumption, numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesRequiredBasedOnRif);
         return numberOfInstances;
     }
 
