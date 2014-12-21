@@ -403,7 +403,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 getChildPolicy(groupId);
 
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
-        if (this.networkPartitionCtxts.containsKey(parentInstanceContext)) {
+        if (this.networkPartitionCtxts.containsKey(networkPartitionId)) {
             groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
                     get(networkPartitionId);
         } else {
