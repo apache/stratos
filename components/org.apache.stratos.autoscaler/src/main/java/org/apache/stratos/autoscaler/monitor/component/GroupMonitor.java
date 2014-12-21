@@ -115,35 +115,49 @@ public class GroupMonitor extends ParentComponentMonitor {
                         if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
-                                //handling the group scaling
-                                if (groupScalingEnabled) {
-                                    //one of the child is loaded and max out.
-                                    // Hence creating new group instance
-                                    if(log.isDebugEnabled()) {
-                                        log.debug("Handling group scaling for the [group] " + id +
-                                                "upon a max out event from " +
-                                                "the children");
-                                    }
-                                    boolean createOnDemand = createInstanceOnDemand(instanceContext.
-                                            getParentInstanceId());
-                                    if (!createOnDemand) {
-                                        //couldn't create new instance. Hence notifying the parent
+                                if(!hasScalingDependents) {
+                                    //handling the group scaling
+                                    if (groupScalingEnabled) {
+                                        //one of the child is loaded and max out.
+                                        // Hence creating new group instance
+                                        if(log.isDebugEnabled()) {
+                                            log.debug("Handling group scaling for the [group] " + id +
+                                                    "upon a max out event from " +
+                                                    "the children");
+                                        }
+                                        boolean createOnDemand = createInstanceOnDemand(instanceContext.
+                                                getParentInstanceId());
+                                        if (!createOnDemand) {
+                                            //couldn't create new instance. Hence notifying the parent
+                                            MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
+                                                    networkPartitionContext.getId(),
+                                                    instanceContext.getId(),
+                                                    appId);
+                                        } else {
+                                            //Resetting the max events
+                                            instanceContext.setIdToScalingOverMaxEvent(
+                                                    new HashMap<String, ScalingOverMaxEvent>());
+                                        }
+                                    } else {
+                                        //notifying the parent if no group scaling enabled here
                                         MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
                                                 networkPartitionContext.getId(),
                                                 instanceContext.getId(),
                                                 appId);
-                                    } else {
-                                        //Resetting the max events
-                                        instanceContext.setIdToScalingOverMaxEvent(
-                                                new HashMap<String, ScalingOverMaxEvent>());
                                     }
                                 } else {
-                                    //notifying the parent if no group scaling enabled here
+                                    //has scaling dependents. Should notify the parent
+                                    if(log.isDebugEnabled()) {
+                                        log.debug("This [Group] " + id + " [scale-up] dependencies. " +
+                                                "Hence notifying the [parent] " + parent.getId() );
+                                    }
+                                    //notifying the parent when scale dependents found
                                     MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
                                             networkPartitionContext.getId(),
                                             instanceContext.getId(),
                                             appId);
                                 }
+
                             } else {
                                 handleDependentScaling(instanceContext, networkPartitionContext);
                             }
