@@ -147,7 +147,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                         //notifying the parent if no group scaling enabled here
                                         MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
                                                 networkPartitionContext.getId(),
-                                                instanceContext.getId(),
+                                                instanceContext.getParentInstanceId(),
                                                 appId);
                                     }
                                 } else {
@@ -159,7 +159,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                     //notifying the parent when scale dependents found
                                     MonitorStatusEventBuilder.handleScalingOverMaxEvent(parent,
                                             networkPartitionContext.getId(),
-                                            instanceContext.getId(),
+                                            instanceContext.getParentInstanceId(),
                                             appId);
                                 }
                                 //Resetting the max events
