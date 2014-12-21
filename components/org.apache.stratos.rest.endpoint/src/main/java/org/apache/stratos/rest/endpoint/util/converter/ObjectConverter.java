@@ -383,7 +383,7 @@ public class ObjectConverter {
                 && deploymentPolicyBean.getApplicationPolicy().getNetworkPartition() != null
                 && !deploymentPolicyBean.getApplicationPolicy().getNetworkPartition().isEmpty()) {
             deploymentPolicy
-                    .setApplicationLevelNetworkPartitions(convertToCCPartitionGroup(deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
+                    .setApplicationLevelNetworkPartitions(convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
         }
 
         if (deploymentPolicyBean.getChildPolicies() != null && !deploymentPolicyBean.getChildPolicies().isEmpty()) {
@@ -541,7 +541,9 @@ public class ObjectConverter {
         return propertyBean;
     }
 
-    private static org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] convertToCCPartitionGroup(List<ApplicationLevelNetworkPartition> networkPartitionBeans) {
+    private static org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
+        convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(
+            List<ApplicationLevelNetworkPartition> networkPartitionBeans) {
 
         org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
                 appNWPartitions = new
@@ -551,10 +553,14 @@ public class ObjectConverter {
         for (int i = 0; i < networkPartitionBeans.size(); i++) {
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition appNWPartition = new
                     org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition();
-            appNWPartition.setId(networkPartitionBeans.get(i).getId());
-            appNWPartition.setActiveByDefault(networkPartitionBeans.get(i).isActiveByDefault());
-            if (networkPartitionBeans.get(i).getPartitions() != null && !networkPartitionBeans.get(i).getPartitions().isEmpty()) {
-                appNWPartition.setPartitions(convertToCCPartitionPojos(networkPartitionBeans.get(i).getPartitions()));
+
+            ApplicationLevelNetworkPartition networkPartition = networkPartitionBeans.get(i);
+
+            appNWPartition.setId(networkPartition.getId());
+            appNWPartition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
+            appNWPartition.setActiveByDefault(networkPartition.isActiveByDefault());
+            if (networkPartition.getPartitions() != null && !networkPartition.getPartitions().isEmpty()) {
+                appNWPartition.setPartitions(convertToCCPartitionPojos(networkPartition.getPartitions()));
             }
 
             appNWPartitions[i] = appNWPartition;
@@ -880,6 +886,7 @@ public class ObjectConverter {
         }
 
         networkPartitionBean.setId(stubApplicationLevelNetworkPartition.getId());
+        networkPartitionBean.setKubernetesClusterId(stubApplicationLevelNetworkPartition.getKubernetesClusterId());
         networkPartitionBean.setActiveByDefault(stubApplicationLevelNetworkPartition.getActiveByDefault());
 
         //FIXME update with new deployment policy pattern

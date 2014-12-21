@@ -28,7 +28,9 @@ import java.util.Arrays;
 public class ApplicationLevelNetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
+
     private String id;
+    private String kubernetesClusterId;
     private boolean activeByDefault;
     private Partition[] partitions;
 
@@ -79,5 +81,13 @@ public class ApplicationLevelNetworkPartition implements Serializable {
             }
         }
         return null;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
     }
 }
