@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesGroupException;
+import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesClusterException;
 import org.apache.stratos.common.constants.StratosConstants;
 
 /**
@@ -55,9 +55,9 @@ public class KubernetesPartitionValidator implements PartitionValidator {
         if (properties.containsKey(StratosConstants.KUBERNETES_CLUSTER_ID)) {
             String kubernetesClusterId = properties.getProperty(StratosConstants.KUBERNETES_CLUSTER_ID);
             try {
-                CloudControllerContext.getInstance().getKubernetesGroup(kubernetesClusterId);
+                CloudControllerContext.getInstance().getKubernetesCluster(kubernetesClusterId);
                 return iaasProvider;
-            } catch (NonExistingKubernetesGroupException e) {
+            } catch (NonExistingKubernetesClusterException e) {
                 String message = "Kubernetes partition is not valid: [partition-id] " + partitionId;
                 log.error(message, e);
                 throw new InvalidPartitionException(message, e);

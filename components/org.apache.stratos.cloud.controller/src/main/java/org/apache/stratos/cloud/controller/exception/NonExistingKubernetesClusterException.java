@@ -22,22 +22,22 @@
 package org.apache.stratos.cloud.controller.exception;
 
 /**
- * Exception class for handling invalid Kubernetes Group
+ * Exception class for handling non-existing Kubernetes cluster
  */
-public class InvalidKubernetesGroupException extends Exception {
+public class NonExistingKubernetesClusterException extends Exception {
 
     private String message;
 
-    public InvalidKubernetesGroupException(String message, Exception exception){
+    public NonExistingKubernetesClusterException(String message, Exception exception){
         super(message, exception);
         this.message = message;
     }
 
-    public InvalidKubernetesGroupException(Exception exception){
+    public NonExistingKubernetesClusterException(Exception exception){
         super(exception);
     }
 
-    public InvalidKubernetesGroupException(String msg){
+    public NonExistingKubernetesClusterException(String msg){
         super(msg);
         this.message = msg;
     }

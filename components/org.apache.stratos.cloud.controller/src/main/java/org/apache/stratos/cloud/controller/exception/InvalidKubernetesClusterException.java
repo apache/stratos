@@ -19,25 +19,25 @@
  *
 */
 
-package org.apache.stratos.autoscaler.exception.kubernetes;
+package org.apache.stratos.cloud.controller.exception;
 
 /**
- * Exception class for handling invalid Kubernetes Group
+ * Exception class for handling invalid Kubernetes cluster
  */
-public class InvalidKubernetesGroupException extends Exception {
+public class InvalidKubernetesClusterException extends Exception {
 
     private String message;
 
-    public InvalidKubernetesGroupException(String message, Exception exception){
+    public InvalidKubernetesClusterException(String message, Exception exception){
         super(message, exception);
         this.message = message;
     }
 
-    public InvalidKubernetesGroupException(Exception exception){
+    public InvalidKubernetesClusterException(Exception exception){
         super(exception);
     }
 
-    public InvalidKubernetesGroupException(String msg){
+    public InvalidKubernetesClusterException(String msg){
         super(msg);
         this.message = msg;
     }

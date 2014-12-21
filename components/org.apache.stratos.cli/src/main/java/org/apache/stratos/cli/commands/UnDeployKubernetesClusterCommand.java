@@ -29,23 +29,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Un-deploy kubernetes group command.
+ * Un-deploy kubernetes cluster command.
  */
-public class UnDeployKubernetesGroupCommand implements Command<StratosCommandContext> {
+public class UnDeployKubernetesClusterCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UnDeployKubernetesGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(UnDeployKubernetesClusterCommand.class);
 
-    public UnDeployKubernetesGroupCommand() {
+    public UnDeployKubernetesClusterCommand() {
     }
 
     @Override
     public String getName() {
-        return "undeploy-kubernetes-group";
+        return "undeploy-kubernetes-cluster";
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy kubernetes group";
+        return "Undeploy kubernetes cluster";
     }
 
     @Override

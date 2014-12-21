@@ -21,23 +21,19 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.kubernetes.KubernetesManager;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -127,14 +123,6 @@ public class AutoscalerServerComponent {
 			while (depPolicyIterator.hasNext()) {
 				DeploymentPolicy depPolicy = depPolicyIterator.next();
 				PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
-			}
-
-			// Adding KubernetesGroups stored in registry to the information model
-			List<KubernetesGroup> kubernetesGroupList = RegistryManager.getInstance().retrieveKubernetesGroups();
-			Iterator<KubernetesGroup> kubernetesGroupIterator = kubernetesGroupList.iterator();
-			while (kubernetesGroupIterator.hasNext()) {
-				KubernetesGroup kubernetesGroup = kubernetesGroupIterator.next();
-				KubernetesManager.getInstance().addKubernetesGroup(kubernetesGroup);
 			}
 
 			//starting the processor chain

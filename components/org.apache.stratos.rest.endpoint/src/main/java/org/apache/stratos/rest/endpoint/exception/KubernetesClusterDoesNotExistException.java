@@ -21,37 +21,37 @@ package org.apache.stratos.rest.endpoint.exception;
 
 import javax.ws.rs.core.Response;
 
-public class KubernetesGroupDoesNotExistException extends Exception {
+public class KubernetesClusterDoesNotExistException extends Exception {
     private String message;
     private Response.Status httpStatusCode;
 
-    public KubernetesGroupDoesNotExistException() {
+    public KubernetesClusterDoesNotExistException() {
         super();
     }
 
-    public KubernetesGroupDoesNotExistException(String message, Throwable cause) {
+    public KubernetesClusterDoesNotExistException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public KubernetesGroupDoesNotExistException(Response.Status httpStatusCode, String message, Throwable cause) {
+    public KubernetesClusterDoesNotExistException(Response.Status httpStatusCode, String message, Throwable cause) {
         super(message, cause);
         this.message = message;
         this.httpStatusCode = httpStatusCode;
     }
 
-    public KubernetesGroupDoesNotExistException(String message) {
+    public KubernetesClusterDoesNotExistException(String message) {
         super(message);
         this.message = message;
     }
 
-    public KubernetesGroupDoesNotExistException(Response.Status httpStatusCode, String message) {
+    public KubernetesClusterDoesNotExistException(Response.Status httpStatusCode, String message) {
         super(message);
         this.message = message;
         this.httpStatusCode = httpStatusCode;
     }
 
-    public KubernetesGroupDoesNotExistException(Throwable cause) {
+    public KubernetesClusterDoesNotExistException(Throwable cause) {
         super(cause);
     }
 

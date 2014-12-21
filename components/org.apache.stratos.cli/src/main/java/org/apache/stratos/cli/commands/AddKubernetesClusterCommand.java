@@ -32,30 +32,30 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Deploy kubernetes group command.
+ * Deploy kubernetes cluster command.
  */
-public class AddKubernetesGroupCommand implements Command<StratosCommandContext> {
+public class AddKubernetesClusterCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddKubernetesGroupCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(AddKubernetesClusterCommand.class);
 
     private Options options;
 
-    public AddKubernetesGroupCommand() {
+    public AddKubernetesClusterCommand() {
         options = new Options();
         Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Kubernetes group resource path");
+                "Kubernetes cluster resource path");
         option.setArgName("resource path");
         options.addOption(option);
     }
 
     @Override
     public String getName() {
-        return "add-kubernetes-group";
+        return "add-kubernetes-cluster";
     }
 
     @Override
     public String getDescription() {
-        return "Add kubernetes group";
+        return "Add kubernetes cluster";
     }
 
     @Override

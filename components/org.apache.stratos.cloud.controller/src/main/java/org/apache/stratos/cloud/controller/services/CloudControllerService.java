@@ -20,9 +20,9 @@ package org.apache.stratos.cloud.controller.services;
 
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.KubernetesHost;
-import org.apache.stratos.common.kubernetes.KubernetesMaster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 
 /**
@@ -229,48 +229,48 @@ public interface CloudControllerService {
             ClusterInstanceCreationException;
     
     /**
-     * Retrieves registered Kubernetes Groups.
+     * Retrieves registered Kubernetes clusters.
      */
-    public KubernetesGroup[] getKubernetesGroups();
+    public KubernetesCluster[] getKubernetesClusters();
 
     /**
-     * Retrieves Kubernetes Group for given Kubernetes Group ID.
+     * Retrieves Kubernetes cluster for given Kubernetes cluster ID.
      *
-     * @param kubernetesGroupId
+     * @param kubernetesClusterId
      */
-    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException;
 
     /**
-     * Retrieves Kubernetes Master for given Kubernetes Group ID.
+     * Retrieves Kubernetes Master for given Kubernetes cluster ID.
      *
-     * @param kubernetesGroupId
+     * @param kubernetesClusterId
      */
-    public KubernetesMaster getMasterForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+    public KubernetesMaster getMasterForKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException;
 
     /**
-     * Retrieves Kubernetes Hosts for given Kubernetes Group ID.
+     * Retrieves Kubernetes Hosts for given Kubernetes cluster ID.
      *
-     * @param kubernetesGroupId
+     * @param kubernetesClusterId
      */
-    public KubernetesHost[] getHostsForKubernetesGroup(String kubernetesGroupId) throws NonExistingKubernetesGroupException;
+    public KubernetesHost[] getHostsForKubernetesCluster(String kubernetesClusterId) throws NonExistingKubernetesClusterException;
 
     /**
      * Register a Kubernetes cluster.
      *
-     * @param kubernetesGroup
-     * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesGroupException
+     * @param kubernetesCluster
+     * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterException
      */
-    public boolean addKubernetesGroup(KubernetesGroup kubernetesGroup) throws InvalidKubernetesGroupException;
+    public boolean addKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException;
 
     /**
-     * Add a Kubernetes host to a Kubernetes Group.
+     * Add a Kubernetes host to a Kubernetes cluster.
      *
      * @param groupId
      * @param kubernetesHost
      * @throws org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException
      */
     public boolean addKubernetesHost(String groupId, KubernetesHost kubernetesHost) throws
-            InvalidKubernetesHostException, NonExistingKubernetesGroupException;
+            InvalidKubernetesHostException, NonExistingKubernetesClusterException;
 
     /**
      * Update a Kubernetes host.
@@ -285,9 +285,9 @@ public interface CloudControllerService {
      * Remove a Kubernetes host.
      *
      * @param groupId
-     * @throws NonExistingKubernetesGroupException
+     * @throws NonExistingKubernetesClusterException
      */
-    public boolean removeKubernetesGroup(String groupId) throws NonExistingKubernetesGroupException;
+    public boolean removeKubernetesCluster(String groupId) throws NonExistingKubernetesClusterException;
 
     /**
      * Update a Kubernetes host.
@@ -298,7 +298,7 @@ public interface CloudControllerService {
     public boolean removeKubernetesHost(String hostId) throws NonExistingKubernetesHostException;
 
     /**
-     * Update a Kubernetes Master in a Kubernetes Group.
+     * Update a Kubernetes Master in a Kubernetes cluster.
      *
      * @param kubernetesMaster
      * @throws NonExistingKubernetesMasterException

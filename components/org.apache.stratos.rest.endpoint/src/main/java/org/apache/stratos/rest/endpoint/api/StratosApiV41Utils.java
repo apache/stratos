@@ -69,7 +69,7 @@ import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionB
 import org.apache.stratos.common.beans.cartridge.definition.PersistenceBean;
 import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
 import org.apache.stratos.common.beans.cartridge.definition.VolumeBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
@@ -1262,20 +1262,20 @@ public class StratosApiV41Utils {
 
     // Util methods for Kubernetes clusters
     
-    public static boolean addKubernetesGroup(KubernetesGroup kubernetesGroupBean) throws RestAPIException {
+    public static boolean addKubernetesCluster(KubernetesCluster kubernetesClusterBean) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
-            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup kubernetesGroup =
-                    ObjectConverter.convertToCCKubernetesGroupPojo(kubernetesGroupBean);
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster =
+                    ObjectConverter.convertToCCKubernetesClusterPojo(kubernetesClusterBean);
 
             try {
-                return cloudControllerServiceClient.deployKubernetesGroup(kubernetesGroup);
+                return cloudControllerServiceClient.deployKubernetesCluster(kubernetesCluster);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceInvalidKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getInvalidKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceInvalidKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getInvalidKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1283,16 +1283,16 @@ public class StratosApiV41Utils {
         return false;
     }
 
-    public static boolean addKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHostBean)
+    public static boolean addKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHostBean)
             throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
-            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
                     ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
 
             try {
-                return cloudControllerServiceClient.deployKubernetesHost(kubernetesGroupId, kubernetesHost);
+                return cloudControllerServiceClient.deployKubernetesHost(kubernetesClusterId, kubernetesHost);
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
@@ -1300,8 +1300,8 @@ public class StratosApiV41Utils {
                 String message = e.getFaultMessage().getInvalidKubernetesHostException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1313,7 +1313,7 @@ public class StratosApiV41Utils {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
-            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster kubernetesMaster =
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster kubernetesMaster =
                     ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMasterBean);
 
             try {
@@ -1334,14 +1334,14 @@ public class StratosApiV41Utils {
         return false;
     }
 
-    public static KubernetesGroup[] getAvailableKubernetesGroups() throws RestAPIException {
+    public static KubernetesCluster[] getAvailableKubernetesClusters() throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup[]
-                        kubernetesGroups = cloudControllerServiceClient.getAvailableKubernetesGroups();
-                return ObjectConverter.convertStubKubernetesGroupsToKubernetesGroups(kubernetesGroups);
+                org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[]
+                        kubernetesClusters = cloudControllerServiceClient.getAvailableKubernetesClusters();
+                return ObjectConverter.convertStubKubernetesClustersToKubernetesClusters(kubernetesClusters);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
@@ -1351,20 +1351,20 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    public static KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
+    public static KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup
-                        kubernetesGroup = cloudControllerServiceClient.getKubernetesGroup(kubernetesGroupId);
-                return ObjectConverter.convertStubKubernetesGroupToKubernetesGroup(kubernetesGroup);
+                org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
+                        kubernetesCluster = cloudControllerServiceClient.getKubernetesCluster(kubernetesClusterId);
+                return ObjectConverter.convertStubKubernetesClusterToKubernetesCluster(kubernetesCluster);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1372,18 +1372,18 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    public static boolean removeKubernetesGroup(String kubernetesGroupId) throws RestAPIException {
+    public static boolean removeKubernetesCluster(String kubernetesClusterId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                return cloudControllerServiceClient.undeployKubernetesGroup(kubernetesGroupId);
+                return cloudControllerServiceClient.undeployKubernetesCluster(kubernetesClusterId);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1410,13 +1410,13 @@ public class StratosApiV41Utils {
         return false;
     }
 
-    public static KubernetesHost[] getKubernetesHosts(String kubernetesGroupId) throws RestAPIException {
+    public static KubernetesHost[] getKubernetesHosts(String kubernetesClusterId) throws RestAPIException {
 
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[]
-                        kubernetesHosts = cloudControllerServiceClient.getKubernetesHosts(kubernetesGroupId);
+                org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
+                        kubernetesHosts = cloudControllerServiceClient.getKubernetesHosts(kubernetesClusterId);
 
                 List<KubernetesHost> arrayList = ObjectConverter.convertStubKubernetesHostsToKubernetesHosts(kubernetesHosts);
                 KubernetesHost[] array = new KubernetesHost[arrayList.size()];
@@ -1425,8 +1425,8 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1434,19 +1434,19 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    public static KubernetesMaster getKubernetesMaster(String kubernetesGroupId) throws RestAPIException {
+    public static KubernetesMaster getKubernetesMaster(String kubernetesClusterId) throws RestAPIException {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
             try {
-                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster
-                        kubernetesMaster = cloudControllerServiceClient.getKubernetesMaster(kubernetesGroupId);
+                org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
+                        kubernetesMaster = cloudControllerServiceClient.getKubernetesMaster(kubernetesClusterId);
                 return ObjectConverter.convertStubKubernetesMasterToKubernetesMaster(kubernetesMaster);
 
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (CloudControllerServiceNonExistingKubernetesGroupExceptionException e) {
-                String message = e.getFaultMessage().getNonExistingKubernetesGroupException().getMessage();
+            } catch (CloudControllerServiceNonExistingKubernetesClusterExceptionException e) {
+                String message = e.getFaultMessage().getNonExistingKubernetesClusterException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             }
@@ -1457,7 +1457,7 @@ public class StratosApiV41Utils {
     public static boolean updateKubernetesHost(KubernetesHost kubernetesHostBean) throws RestAPIException {
         CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
         if (cloudControllerServiceClient != null) {
-            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost =
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost =
                     ObjectConverter.convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
             try {
                 return cloudControllerServiceClient.updateKubernetesHost(kubernetesHost);

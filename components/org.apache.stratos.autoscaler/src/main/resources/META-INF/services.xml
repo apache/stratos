@@ -63,7 +63,7 @@
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/partition</parameter>
         </operation>
 
-        <operation name="addKubernetesGroup">
+        <operation name="addKubernetesCluster">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
         </operation>
 
@@ -79,7 +79,7 @@
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
         </operation>
 
-        <operation name="removeKubernetesGroup">
+        <operation name="removeKubernetesCluster">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
         </operation>
 
@@ -87,15 +87,15 @@
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/kubernetes</parameter>
         </operation>
 
-        <operation name="getAllKubernetesGroups">
+        <operation name="getAllKubernetesClusters">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
         </operation>
 
-        <operation name="getHostsForKubernetesGroup">
+        <operation name="getHostsForKubernetesCluster">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
         </operation>
 
-        <operation name="getMasterForKubernetesGroup">
+        <operation name="getMasterForKubernetesCluster">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
         </operation>
     </service>

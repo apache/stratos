@@ -27,7 +27,6 @@ import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.partition.Partition;
@@ -36,7 +35,7 @@ import org.apache.stratos.common.beans.autoscaler.policy.deployment.ApplicationP
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.*;
 import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.kubernetes.PortRange;
@@ -933,30 +932,31 @@ public class ObjectConverter {
         return serviceDefinitionBeans;
     }
 
-    public static org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup convertToCCKubernetesGroupPojo(KubernetesGroup kubernetesGroupBean) {
+    public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
+        convertToCCKubernetesClusterPojo(KubernetesCluster kubernetesClusterBean) {
 
-        org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup kubernetesGroup = new
-                org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup();
+        org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster = new
+                org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
 
-        kubernetesGroup.setGroupId(kubernetesGroupBean.getGroupId());
-        kubernetesGroup.setDescription(kubernetesGroupBean.getDescription());
-        kubernetesGroup.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(kubernetesGroupBean.getKubernetesMaster()));
-        kubernetesGroup.setPortRange(convertPortRangeToStubPortRange(kubernetesGroupBean.getPortRange()));
-        kubernetesGroup.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesGroupBean.getKubernetesHosts()));
-        kubernetesGroup.setProperties((convertPropertyBeansToCCStubProperties(kubernetesGroupBean.getProperty())));
+        kubernetesCluster.setClusterId(kubernetesClusterBean.getClusterId());
+        kubernetesCluster.setDescription(kubernetesClusterBean.getDescription());
+        kubernetesCluster.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(kubernetesClusterBean.getKubernetesMaster()));
+        kubernetesCluster.setPortRange(convertPortRangeToStubPortRange(kubernetesClusterBean.getPortRange()));
+        kubernetesCluster.setKubernetesHosts(convertToASKubernetesHostsPojo(kubernetesClusterBean.getKubernetesHosts()));
+        kubernetesCluster.setProperties((convertPropertyBeansToCCStubProperties(kubernetesClusterBean.getProperty())));
 
-        return kubernetesGroup;
+        return kubernetesCluster;
     }
 
-    private static org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[]
+    private static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
         convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
 
         if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
             return null;
         }
         int kubernetesHostCount = kubernetesHosts.size();
-        org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[]
-                kubernetesHostsArr = new org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[kubernetesHostCount];
+        org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
+                kubernetesHostsArr = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[kubernetesHostCount];
         for (int i = 0; i < kubernetesHostCount; i++) {
             KubernetesHost kubernetesHostBean = kubernetesHosts.get(i);
             kubernetesHostsArr[i] = convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
@@ -965,28 +965,28 @@ public class ObjectConverter {
     }
 
 
-    private static org.apache.stratos.cloud.controller.stub.kubernetes.PortRange
+    private static org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange
         convertPortRangeToStubPortRange(PortRange portRangeBean) {
 
         if (portRangeBean == null) {
             return null;
         }
-        org.apache.stratos.cloud.controller.stub.kubernetes.PortRange
-                portRange = new org.apache.stratos.cloud.controller.stub.kubernetes.PortRange();
+        org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange
+                portRange = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange();
         portRange.setLower(portRangeBean.getLower());
         portRange.setUpper(portRangeBean.getUpper());
         return portRange;
     }
 
-    public static org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost
+    public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost
         convertKubernetesHostToStubKubernetesHost(KubernetesHost kubernetesHostBean) {
 
         if (kubernetesHostBean == null) {
             return null;
         }
 
-        org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost
-                kubernetesHost = new org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost();
+        org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost
+                kubernetesHost = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost();
         kubernetesHost.setHostId(kubernetesHostBean.getHostId());
         kubernetesHost.setHostIpAddress(kubernetesHostBean.getHostIpAddress());
         kubernetesHost.setHostname(kubernetesHostBean.getHostname());
@@ -995,15 +995,15 @@ public class ObjectConverter {
         return kubernetesHost;
     }
 
-    public static org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster
+    public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
         convertStubKubernetesMasterToKubernetesMaster(KubernetesMaster kubernetesMasterBean) {
 
         if (kubernetesMasterBean == null) {
             return null;
         }
 
-        org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster
-                kubernetesMaster = new org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster();
+        org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
+                kubernetesMaster = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster();
         kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
         kubernetesMaster.setHostIpAddress(kubernetesMasterBean.getHostIpAddress());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
@@ -1013,33 +1013,33 @@ public class ObjectConverter {
         return kubernetesMaster;
     }
 
-    public static KubernetesGroup[] convertStubKubernetesGroupsToKubernetesGroups(org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup[] kubernetesGroups) {
+    public static KubernetesCluster[] convertStubKubernetesClustersToKubernetesClusters(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[] kubernetesClusters) {
 
-        if (kubernetesGroups == null) {
+        if (kubernetesClusters == null) {
             return null;
         }
-        KubernetesGroup[] kubernetesGroupsBean = new KubernetesGroup[kubernetesGroups.length];
-        for (int i = 0; i < kubernetesGroups.length; i++) {
-            kubernetesGroupsBean[i] = convertStubKubernetesGroupToKubernetesGroup(kubernetesGroups[i]);
+        KubernetesCluster[] kubernetesClustersBean = new KubernetesCluster[kubernetesClusters.length];
+        for (int i = 0; i < kubernetesClusters.length; i++) {
+            kubernetesClustersBean[i] = convertStubKubernetesClusterToKubernetesCluster(kubernetesClusters[i]);
         }
-        return kubernetesGroupsBean;
+        return kubernetesClustersBean;
     }
 
-    public static KubernetesGroup convertStubKubernetesGroupToKubernetesGroup(org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup kubernetesGroup) {
-        if (kubernetesGroup == null) {
+    public static KubernetesCluster convertStubKubernetesClusterToKubernetesCluster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster) {
+        if (kubernetesCluster == null) {
             return null;
         }
-        KubernetesGroup kubernetesGroupBean = new KubernetesGroup();
-        kubernetesGroupBean.setGroupId(kubernetesGroup.getGroupId());
-        kubernetesGroupBean.setDescription(kubernetesGroup.getDescription());
-        kubernetesGroupBean.setPortRange(convertStubPortRangeToPortRange(kubernetesGroup.getPortRange()));
-        kubernetesGroupBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(kubernetesGroup.getKubernetesHosts()));
-        kubernetesGroupBean.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(kubernetesGroup.getKubernetesMaster()));
-        kubernetesGroupBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesGroup.getProperties()));
-        return kubernetesGroupBean;
+        KubernetesCluster kubernetesClusterBean = new KubernetesCluster();
+        kubernetesClusterBean.setClusterId(kubernetesCluster.getClusterId());
+        kubernetesClusterBean.setDescription(kubernetesCluster.getDescription());
+        kubernetesClusterBean.setPortRange(convertStubPortRangeToPortRange(kubernetesCluster.getPortRange()));
+        kubernetesClusterBean.setKubernetesHosts(convertStubKubernetesHostsToKubernetesHosts(kubernetesCluster.getKubernetesHosts()));
+        kubernetesClusterBean.setKubernetesMaster(convertStubKubernetesMasterToKubernetesMaster(kubernetesCluster.getKubernetesMaster()));
+        kubernetesClusterBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesCluster.getProperties()));
+        return kubernetesClusterBean;
     }
 
-    public static KubernetesMaster convertStubKubernetesMasterToKubernetesMaster(org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster kubernetesMaster) {
+    public static KubernetesMaster convertStubKubernetesMasterToKubernetesMaster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster kubernetesMaster) {
         if (kubernetesMaster == null) {
             return null;
         }
@@ -1052,7 +1052,7 @@ public class ObjectConverter {
         return kubernetesMasterBean;
     }
 
-    public static List<KubernetesHost> convertStubKubernetesHostsToKubernetesHosts(org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost[] kubernetesHosts) {
+    public static List<KubernetesHost> convertStubKubernetesHostsToKubernetesHosts(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[] kubernetesHosts) {
         if (kubernetesHosts == null) {
             return null;
         }
@@ -1064,7 +1064,7 @@ public class ObjectConverter {
     }
 
     private static KubernetesHost convertStubKubernetesHostToKubernetesHost(
-            org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost kubernetesHost) {
+            org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost) {
         if (kubernetesHost == null) {
             return null;
         }
@@ -1108,7 +1108,7 @@ public class ObjectConverter {
         return propertyBean;
     }
 
-    private static PortRange convertStubPortRangeToPortRange(org.apache.stratos.cloud.controller.stub.kubernetes.PortRange portRange) {
+    private static PortRange convertStubPortRangeToPortRange(org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange portRange) {
         if (portRange == null) {
             return null;
         }

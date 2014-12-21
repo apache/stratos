@@ -141,10 +141,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 		command = new SyncCommand();
 		commands.put(command.getName(), command);
 
-        command = new AddKubernetesGroupCommand();
+        command = new AddKubernetesClusterCommand();
         commands.put(command.getName(), command);
 
-        command = new ListKubernetesGroupsCommand();
+        command = new ListKubernetesClustersCommand();
         commands.put(command.getName(), command);
 
         command = new ListKubernetesHostsCommand();
@@ -153,7 +153,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddKubernetesHostCommand();
         commands.put(command.getName(), command);
 
-        command = new UnDeployKubernetesGroupCommand();
+        command = new UnDeployKubernetesClusterCommand();
         commands.put(command.getName(), command);
 
         command = new UndeployKubernetesHostCommand();

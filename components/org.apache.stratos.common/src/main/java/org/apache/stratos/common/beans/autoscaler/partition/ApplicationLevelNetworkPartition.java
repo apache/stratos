@@ -26,6 +26,7 @@ import java.util.List;
 public class ApplicationLevelNetworkPartition {
 
     private String id;
+    private String kubernetesClusterId;
     private boolean activeByDefault;
     private List<Partition> partitions;
 
@@ -35,6 +36,14 @@ public class ApplicationLevelNetworkPartition {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
     }
 
     public boolean isActiveByDefault() {

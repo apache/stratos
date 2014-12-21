@@ -26,6 +26,7 @@ import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.functions.ContainerClusterContextToReplicationController;
 import org.apache.stratos.cloud.controller.iaases.validators.KubernetesPartitionValidator;
@@ -35,8 +36,8 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
 import org.apache.stratos.common.beans.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
-import org.apache.stratos.common.kubernetes.PortRange;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.PortRange;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.*;
@@ -151,17 +152,17 @@ public class KubernetesIaas extends Iaas {
                         partition.getProperties(),
                         partition.toString());
 
-                KubernetesGroup kubernetesGroup = CloudControllerContext.getInstance().
-                        getKubernetesGroup(kubernetesClusterId);
-                handleNullObject(kubernetesGroup, "Could not start container, kubernetes group not found: " +
+                KubernetesCluster kubernetesCluster = CloudControllerContext.getInstance().
+                        getKubernetesCluster(kubernetesClusterId);
+                handleNullObject(kubernetesCluster, "Could not start container, kubernetes cluster not found: " +
                         "[kubernetes-cluster-id] " + kubernetesClusterId + " [cluster-id] " + clusterId +
                         " [member-id] " + memberId);
 
                 // Prepare kubernetes context
-                String kubernetesMasterIp = kubernetesGroup.getKubernetesMaster().getHostIpAddress();
-                PortRange kubernetesPortRange = kubernetesGroup.getPortRange();
+                String kubernetesMasterIp = kubernetesCluster.getKubernetesMaster().getHostIpAddress();
+                PortRange kubernetesPortRange = kubernetesCluster.getPortRange();
                 String kubernetesMasterPort = CloudControllerUtil.getProperty(
-                        kubernetesGroup.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
+                        kubernetesCluster.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
                         StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
 
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,

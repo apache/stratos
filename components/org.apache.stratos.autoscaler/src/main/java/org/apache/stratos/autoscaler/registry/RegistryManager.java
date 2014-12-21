@@ -34,7 +34,6 @@ import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
-import org.apache.stratos.common.kubernetes.KubernetesGroup;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
@@ -572,53 +571,4 @@ public class RegistryManager {
         }
 
     }
-
-    public void persistKubernetesGroup(KubernetesGroup kubernetesGroup) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.KUBERNETES_RESOURCE
-                + "/" + kubernetesGroup.getGroupId();
-        persist(kubernetesGroup, resourcePath);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("KubernetesGroup written to registry: [id] %s ", kubernetesGroup.getGroupId()));
-        }
-    }
-
-    public List<KubernetesGroup> retrieveKubernetesGroups() {
-        List<KubernetesGroup> kubernetesGroupList = new ArrayList<KubernetesGroup>();
-        RegistryManager registryManager = RegistryManager.getInstance();
-        String[] kubernetesGroupResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.KUBERNETES_RESOURCE);
-
-        if (kubernetesGroupResourceList != null) {
-            KubernetesGroup kubernetesGroup;
-            for (String resourcePath : kubernetesGroupResourceList) {
-                Object serializedObj = registryManager.retrieve(resourcePath);
-                if (serializedObj != null) {
-                    try {
-                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof KubernetesGroup) {
-                            kubernetesGroup = (KubernetesGroup) dataObj;
-                            if (log.isDebugEnabled()) {
-                                log.debug(kubernetesGroup.toString());
-                            }
-                            kubernetesGroupList.add(kubernetesGroup);
-                        } else {
-                            return null;
-                        }
-                    } catch (Exception e) {
-                        String msg = "Unable to retrieve data from Registry. Hence, any historical Kubernetes groups deployments will not get reflected.";
-                        log.warn(msg, e);
-                    }
-                }
-            }
-        }
-        return kubernetesGroupList;
-    }
-
-    public void removeKubernetesGroup(KubernetesGroup kubernetesGroup) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.KUBERNETES_RESOURCE + "/" + kubernetesGroup.getGroupId();
-        this.delete(resourcePath);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Kubernetes group deleted from registry: [id] %s", kubernetesGroup.getGroupId()));
-        }
-    }
-
 }

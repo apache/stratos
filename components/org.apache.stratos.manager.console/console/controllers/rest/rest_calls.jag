@@ -59,8 +59,8 @@ RESTCalls = new function(){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
-    this.deployKubernetesGroupDefinition = function(groupDefinition){
-        return this.send("POST","/kubernetesClusters",groupDefinition);
+    this.deployKubernetesClusterDefinition = function(clusterDefinition){
+        return this.send("POST","/kubernetesClusters",clusterDefinition);
     };
 
     this.deployGroupDefinition = function(groupDefinition){
@@ -100,7 +100,7 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/policy/deployment",{});
     };
 
-    this.getKubernetesGroups = function(){
+    this.getKubernetesClusters = function(){
         return this.sendReceive("GET","/kubernetesClusters",{});
     };
 

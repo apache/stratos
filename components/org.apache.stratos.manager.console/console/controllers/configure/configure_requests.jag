@@ -37,7 +37,7 @@ try {
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
         case "docker":
-            formSubmit = util.RESTCalls.deployKubernetesGroupDefinition(formPayload);
+            formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
             break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });

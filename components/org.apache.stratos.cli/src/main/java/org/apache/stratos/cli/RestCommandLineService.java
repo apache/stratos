@@ -41,7 +41,7 @@ import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePoli
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.manager.composite.application.beans.ApplicationDefinition;
@@ -765,28 +765,28 @@ public class RestCommandLineService {
         try {
             Type listType = new TypeToken<ArrayList<KubernetesHost>>() {
             }.getType();
-            List<KubernetesGroup> list = (List<KubernetesGroup>) restClient.
+            List<KubernetesCluster> list = (List<KubernetesCluster>) restClient.
                     listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, listType, "kubernetes cluster");
             if ((list != null) && (list.size() > 0)) {
-                RowMapper<KubernetesGroup> partitionMapper = new RowMapper<KubernetesGroup>() {
-                    public String[] getData(KubernetesGroup kubernetesGroup) {
+                RowMapper<KubernetesCluster> partitionMapper = new RowMapper<KubernetesCluster>() {
+                    public String[] getData(KubernetesCluster kubernetesCluster) {
                         String[] data = new String[2];
-                        data[0] = kubernetesGroup.getGroupId();
-                        data[1] = kubernetesGroup.getDescription();
+                        data[0] = kubernetesCluster.getClusterId();
+                        data[1] = kubernetesCluster.getDescription();
                         return data;
                     }
                 };
 
-                KubernetesGroup[] array = new KubernetesGroup[list.size()];
+                KubernetesCluster[] array = new KubernetesCluster[list.size()];
                 array = list.toArray(array);
-                System.out.println("Kubernetes groups found:");
+                System.out.println("Kubernetes clusters found:");
                 CliUtils.printTable(array, partitionMapper, "Group ID", "Description");
             } else {
-                System.out.println("No kubernetes groups found");
+                System.out.println("No kubernetes clusters found");
                 return;
             }
         } catch (Exception e) {
-            String message = "Could not list kubernetes groups";
+            String message = "Could not list kubernetes clusters";
             printError(message, e);
         }
     }

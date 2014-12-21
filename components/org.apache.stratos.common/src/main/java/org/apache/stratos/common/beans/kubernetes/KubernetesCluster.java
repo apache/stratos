@@ -25,21 +25,21 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 @XmlRootElement
-public class KubernetesGroup {
+public class KubernetesCluster {
 
-    private String groupId;
+    private String clusterId;
     private String description;
     private List<KubernetesHost> kubernetesHosts;
     private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private List<PropertyBean> property;
 
-    public String getGroupId() {
-        return groupId;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public List<KubernetesHost> getKubernetesHosts() {

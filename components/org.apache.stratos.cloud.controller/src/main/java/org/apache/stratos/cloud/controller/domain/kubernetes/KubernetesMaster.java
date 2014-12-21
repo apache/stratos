@@ -19,7 +19,7 @@
  *
 */
 
-package org.apache.stratos.common.kubernetes;
+package org.apache.stratos.cloud.controller.domain.kubernetes;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

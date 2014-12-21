@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.common.kubernetes;
+package org.apache.stratos.cloud.controller.domain.kubernetes;
 
 import org.apache.stratos.common.Properties;
 
@@ -25,24 +25,25 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
- * The model class for KubernetesGroup definition.
+ * The model class for KubernetesCluster definition.
  */
-public class KubernetesGroup implements Serializable {
+public class KubernetesCluster implements Serializable {
 
     private static final long serialVersionUID = 3210149484906093132L;
-    private String groupId;
+
+    private String clusterId;
     private KubernetesHost[] kubernetesHosts;
     private KubernetesMaster kubernetesMaster;
     private PortRange portRange;
     private String description;
     private Properties properties = new Properties();
 
-    public String getGroupId() {
-        return groupId;
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public void setGroupId(String groupId) {
-        this.groupId = groupId;
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
     }
 
     public KubernetesHost[] getKubernetesHosts() {
@@ -90,7 +91,7 @@ public class KubernetesGroup implements Serializable {
     }
 
     public String toString() {
-        return "KubernetesGroup [groupId=" + groupId +
+        return "KubernetesCluster [groupId=" + clusterId +
                 " , kubernetesHosts=" + Arrays.toString(kubernetesHosts) +
                 " , kubernetesMaster=" + kubernetesMaster +
                 " , portRange=" + portRange +
@@ -106,49 +107,49 @@ public class KubernetesGroup implements Serializable {
         if (this == anObject) {
             return true;
         }
-        if (!(anObject instanceof KubernetesGroup)) {
+        if (!(anObject instanceof KubernetesCluster)) {
             return false;
         }
-        KubernetesGroup kubernetesGroupObj = (KubernetesGroup) anObject;
-        if (this.groupId == null || kubernetesGroupObj.getGroupId() == null) {
+        KubernetesCluster kubernetesClusterObj = (KubernetesCluster) anObject;
+        if (this.clusterId == null || kubernetesClusterObj.getClusterId() == null) {
             return false;
-        } else if (!this.groupId.equals(kubernetesGroupObj.getGroupId())) {
+        } else if (!this.clusterId.equals(kubernetesClusterObj.getClusterId())) {
             return false;
         }
 
-        if (this.portRange == null || kubernetesGroupObj.getPortRange() == null) {
+        if (this.portRange == null || kubernetesClusterObj.getPortRange() == null) {
             return false;
-        } else if (!this.portRange.equals(kubernetesGroupObj.getPortRange())) {
+        } else if (!this.portRange.equals(kubernetesClusterObj.getPortRange())) {
             return false;
         }
 
         if (this.properties == null) {
-            if (kubernetesGroupObj.getProperties() != null) {
+            if (kubernetesClusterObj.getProperties() != null) {
                 return false;
             }
-        } else if (!this.properties.equals(kubernetesGroupObj.getProperties())) {
+        } else if (!this.properties.equals(kubernetesClusterObj.getProperties())) {
             return false;
         }
 
         if (this.description == null) {
-            if (kubernetesGroupObj.description != null) {
+            if (kubernetesClusterObj.description != null) {
                 return false;
             }
-        } else if (!this.description.equals(kubernetesGroupObj.getDescription())) {
+        } else if (!this.description.equals(kubernetesClusterObj.getDescription())) {
             return false;
         }
 
-        if (this.kubernetesMaster == null || kubernetesGroupObj.getKubernetesMaster() == null) {
+        if (this.kubernetesMaster == null || kubernetesClusterObj.getKubernetesMaster() == null) {
             return false;
-        } else if (!this.kubernetesMaster.equals(kubernetesGroupObj.getKubernetesMaster())) {
+        } else if (!this.kubernetesMaster.equals(kubernetesClusterObj.getKubernetesMaster())) {
             return false;
         }
 
         if (this.getKubernetesHosts() == null) {
-            if (kubernetesGroupObj.getKubernetesHosts() != null) {
+            if (kubernetesClusterObj.getKubernetesHosts() != null) {
                 return false;
             }
-        } else if (!Arrays.equals(this.kubernetesHosts, kubernetesGroupObj.getKubernetesHosts())) {
+        } else if (!Arrays.equals(this.kubernetesHosts, kubernetesClusterObj.getKubernetesHosts())) {
             return false;
         }
 
@@ -160,7 +161,7 @@ public class KubernetesGroup implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((this.portRange == null) ? 0 : this.portRange.hashCode());
-        result = prime * result + ((this.groupId == null) ? 0 : this.groupId.hashCode());
+        result = prime * result + ((this.clusterId == null) ? 0 : this.clusterId.hashCode());
         result = prime * result + ((this.description == null) ? 0 : this.description.hashCode());
         result = prime * result + ((this.kubernetesMaster == null) ? 0 : this.kubernetesMaster.hashCode());
         result = prime * result + ((this.kubernetesHosts == null) ? 0 : Arrays.hashCode(this.kubernetesHosts));

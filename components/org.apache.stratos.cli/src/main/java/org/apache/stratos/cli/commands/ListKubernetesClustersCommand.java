@@ -28,19 +28,19 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ListKubernetesGroupsCommand implements Command<StratosCommandContext> {
+public class ListKubernetesClustersCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListKubernetesGroupsCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListKubernetesClustersCommand.class);
 
-	public ListKubernetesGroupsCommand() {
+	public ListKubernetesClustersCommand() {
 	}
 
 	public String getName() {
-		return "list-kubernetes-groups";
+		return "list-kubernetes-clusters";
 	}
 
 	public String getDescription() {
-		return "List kubernetes groups";
+		return "List kubernetes clusters";
 	}
 
 	public String getArgumentSyntax() {

@@ -18,16 +18,14 @@
  */
 package org.apache.stratos.rest.endpoint.api;
 
-import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.StratosApiResponse;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesGroup;
+import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
@@ -1372,7 +1370,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Deploy kubernetes host cluster.
      *
-     * @param kubernetesGroup the kubernetes group
+     * @param kubernetesCluster the kubernetes cluster
      * @return the response
      * @throws RestAPIException the rest api exception
      */
@@ -1381,10 +1379,10 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    public Response addKubernetesHostCluster(KubernetesGroup kubernetesGroup) throws RestAPIException {
+    public Response addKubernetesHostCluster(KubernetesCluster kubernetesCluster) throws RestAPIException {
 
-        StratosApiV41Utils.addKubernetesGroup(kubernetesGroup);
-        URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesGroup.getGroupId()).build();
+        StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
+        URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
         return Response.created(url).build();
     }
 
@@ -1459,7 +1457,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/kubernetes")
     public Response getKubernetesHostClusters() throws RestAPIException {
-        return Response.ok().entity(StratosApiV41Utils.getAvailableKubernetesGroups()).build();
+        return Response.ok().entity(StratosApiV41Utils.getAvailableKubernetesClusters()).build();
     }
 
     /**
@@ -1476,7 +1474,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/kubernetes")
     public Response getKubernetesHostCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
-            return Response.ok().entity(StratosApiV41Utils.getKubernetesGroup(kubernetesClusterId)).build();
+            return Response.ok().entity(StratosApiV41Utils.getKubernetesCluster(kubernetesClusterId)).build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -1536,7 +1534,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
     public Response removeKubernetesHostCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
         try {
-            StratosApiV41Utils.removeKubernetesGroup(kubernetesClusterId);
+            StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }

@@ -26,9 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
-import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesGroup;
-import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesHost;
-import org.apache.stratos.cloud.controller.stub.kubernetes.KubernetesMaster;
+import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost;
+import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.manager.internal.DataHolder;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -147,16 +147,16 @@ public class CloudControllerServiceClient {
         return stub.getClusterContext(clusterId);
     }
     
-    public boolean deployKubernetesGroup(KubernetesGroup kubernetesGroup) throws RemoteException,
-            CloudControllerServiceInvalidKubernetesGroupExceptionException {
-        return stub.addKubernetesGroup(kubernetesGroup);
+    public boolean deployKubernetesCluster(KubernetesCluster kubernetesCluster) throws RemoteException,
+            CloudControllerServiceInvalidKubernetesClusterExceptionException {
+        return stub.addKubernetesCluster(kubernetesCluster);
     }
 
-    public boolean deployKubernetesHost(String kubernetesGroupId, KubernetesHost kubernetesHost)
+    public boolean deployKubernetesHost(String kubernetesClusterId, KubernetesHost kubernetesHost)
             throws RemoteException, CloudControllerServiceInvalidKubernetesHostExceptionException,
-            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
 
-        return stub.addKubernetesHost(kubernetesGroupId, kubernetesHost);
+        return stub.addKubernetesHost(kubernetesClusterId, kubernetesHost);
     }
 
     public boolean updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RemoteException,
@@ -165,18 +165,18 @@ public class CloudControllerServiceClient {
         return stub.updateKubernetesMaster(kubernetesMaster);
     }
 
-    public KubernetesGroup[] getAvailableKubernetesGroups() throws RemoteException {
-        return stub.getKubernetesGroups();
+    public KubernetesCluster[] getAvailableKubernetesClusters() throws RemoteException {
+        return stub.getKubernetesClusters();
     }
 
-    public KubernetesGroup getKubernetesGroup(String kubernetesGroupId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getKubernetesGroup(kubernetesGroupId);
+    public KubernetesCluster getKubernetesCluster(String kubernetesClusterId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+        return stub.getKubernetesCluster(kubernetesClusterId);
     }
 
-    public boolean undeployKubernetesGroup(String kubernetesGroupId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.removeKubernetesGroup(kubernetesGroupId);
+    public boolean undeployKubernetesCluster(String kubernetesClusterId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+        return stub.removeKubernetesCluster(kubernetesClusterId);
     }
 
     public boolean undeployKubernetesHost(String kubernetesHostId) throws RemoteException,
@@ -184,14 +184,14 @@ public class CloudControllerServiceClient {
         return stub.removeKubernetesHost(kubernetesHostId);
     }
 
-    public KubernetesHost[] getKubernetesHosts(String kubernetesGroupId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getHostsForKubernetesGroup(kubernetesGroupId);
+    public KubernetesHost[] getKubernetesHosts(String kubernetesClusterId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+        return stub.getHostsForKubernetesCluster(kubernetesClusterId);
     }
 
-    public KubernetesMaster getKubernetesMaster(String kubernetesGroupId) throws RemoteException,
-            CloudControllerServiceNonExistingKubernetesGroupExceptionException {
-        return stub.getMasterForKubernetesGroup(kubernetesGroupId);
+    public KubernetesMaster getKubernetesMaster(String kubernetesClusterId) throws RemoteException,
+            CloudControllerServiceNonExistingKubernetesClusterExceptionException {
+        return stub.getMasterForKubernetesCluster(kubernetesClusterId);
     }
 
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws RemoteException,

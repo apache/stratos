@@ -21,37 +21,37 @@ package org.apache.stratos.rest.endpoint.exception;
 
 import javax.ws.rs.core.Response;
 
-public class KubernetesGroupAlreadyExistException extends RestAPIException {
+public class KubernetesClusterAlreadyExistException extends RestAPIException {
     private String message;
     private Response.Status httpStatusCode;
 
-    public KubernetesGroupAlreadyExistException() {
+    public KubernetesClusterAlreadyExistException() {
         super();
     }
 
-    public KubernetesGroupAlreadyExistException(String message, Throwable cause) {
+    public KubernetesClusterAlreadyExistException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public KubernetesGroupAlreadyExistException(Response.Status httpStatusCode, String message, Throwable cause) {
+    public KubernetesClusterAlreadyExistException(Response.Status httpStatusCode, String message, Throwable cause) {
         super(message, cause);
         this.message = message;
         this.httpStatusCode = httpStatusCode;
     }
 
-    public KubernetesGroupAlreadyExistException(String message) {
+    public KubernetesClusterAlreadyExistException(String message) {
         super(message);
         this.message = message;
     }
 
-    public KubernetesGroupAlreadyExistException(Response.Status httpStatusCode, String message) {
+    public KubernetesClusterAlreadyExistException(Response.Status httpStatusCode, String message) {
         super(message);
         this.message = message;
         this.httpStatusCode = httpStatusCode;
     }
 
-    public KubernetesGroupAlreadyExistException(Throwable cause) {
+    public KubernetesClusterAlreadyExistException(Throwable cause) {
         super(cause);
     }
 

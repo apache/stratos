@@ -22,22 +22,22 @@
 package org.apache.stratos.autoscaler.exception.kubernetes;
 
 /**
- * Exception class for handling non-existing Kubernetes Group
+ * Exception class for handling invalid Kubernetes cluster
  */
-public class NonExistingKubernetesGroupException extends Exception {
+public class InvalidKubernetesClusterException extends Exception {
 
     private String message;
 
-    public NonExistingKubernetesGroupException(String message, Exception exception){
+    public InvalidKubernetesClusterException(String message, Exception exception){
         super(message, exception);
         this.message = message;
     }
 
-    public NonExistingKubernetesGroupException(Exception exception){
+    public InvalidKubernetesClusterException(Exception exception){
         super(exception);
     }
 
-    public NonExistingKubernetesGroupException(String msg){
+    public InvalidKubernetesClusterException(String msg){
         super(msg);
         this.message = msg;
     }
