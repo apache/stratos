@@ -434,6 +434,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
         memberContext.setPartition(instanceContext.getPartition());
         memberContext.setProperties(instanceContext.getProperties());
+        memberContext.setInitTime(System.currentTimeMillis());
         return memberContext;
     }
 

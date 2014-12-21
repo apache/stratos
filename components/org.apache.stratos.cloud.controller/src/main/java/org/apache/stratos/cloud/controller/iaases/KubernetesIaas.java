@@ -238,7 +238,7 @@ public class KubernetesIaas extends Iaas {
         newMemberContext.setPrivateIPs(new String[]{pod.getCurrentState().getHostIP()});
         newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
         newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
-        newMemberContext.setInitTime(System.currentTimeMillis());
+        newMemberContext.setInitTime(memberContext.getInitTime());
         newMemberContext.setProperties(memberContext.getProperties());
         return newMemberContext;
     }
