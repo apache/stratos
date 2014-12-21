@@ -454,6 +454,12 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                 this.id);
     }
 
+    public void sendScalingDownBeyondMinEvent(String networkPartitionId, String instanceId) {
+
+        MonitorStatusEventBuilder.handleScalingDownBeyondMinEvent(this.parent, networkPartitionId, instanceId,
+                this.id);
+    }
+
     @Override
     public void handleGradientOfLoadAverageEvent(
             GradientOfLoadAverageEvent gradientOfLoadAverageEvent) {

@@ -254,6 +254,19 @@ public class RuleTasksDelegator {
         }
     }
 
+    public void delegateScalingDownBeyondMinNotification(String clusterId, String networkPartitionId, String instanceId) {
+        if(log.isDebugEnabled()) {
+            log.debug("Scaling down lower min notification is going to the [parentInstance] " + instanceId);
+        }
+        //Notify parent for checking scaling dependencies
+        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        if (abstractClusterMonitor instanceof ClusterMonitor) {
+
+            ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
+            clusterMonitor.sendScalingDownBeyondMinEvent(networkPartitionId, instanceId);
+        }
+    }
+
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
         log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
                 clusterMonitorPartitionContext.getPartitionId() + " ], NW Partition [ " +

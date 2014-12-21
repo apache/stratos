@@ -71,6 +71,14 @@ public class MonitorStatusEventBuilder {
         notifyParent(parent, scalingBeyondLimitEvent);
     }
 
+    public static void handleScalingDownBeyondMinEvent(ParentComponentMonitor parent, String networkPartitionId,
+                                                       String instanceId, String appId) {
+
+        //Send notifications to parent of the cluster monitor
+        ScalingBeyondLimitEvent scalingBeyondLimitEvent = new ScalingBeyondLimitEvent(appId, networkPartitionId,
+                instanceId) ;
+        notifyParent(parent, scalingBeyondLimitEvent);
+    }
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
         parent.onChildStatusEvent(statusEvent);
     }
