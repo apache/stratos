@@ -665,7 +665,7 @@ public class ObjectConverter {
         clusterInstanceBean.setHostNames(new ArrayList<String>());
 
         for (org.apache.stratos.messaging.domain.topology.Member member : cluster.getMembers()) {
-            if (member.getInstanceId().equals(instanceId)) {
+            if (member.getClusterInstanceId().equals(instanceId)) {
                 Member memberBean = new Member();
                 memberBean.setClusterId(member.getClusterId());
                 memberBean.setLbClusterId(member.getLbClusterId());
