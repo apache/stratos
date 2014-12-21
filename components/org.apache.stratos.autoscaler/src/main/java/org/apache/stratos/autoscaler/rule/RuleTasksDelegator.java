@@ -85,27 +85,26 @@ public class RuleTasksDelegator {
 
     public int getNumberOfInstancesRequiredBasedOnMemoryConsumption(float threshold, double predictedValue,
                                                                     int max, int min) {
-        /*double numberOfAdditionalInstancesRequired = 0;
+        double numberOfAdditionalInstancesRequired = 0;
         if(predictedValue != threshold) {
 
             float scalingRange = 100 - threshold;
             int instanceRange = max - min;
 
-            if(instanceRange >= 0){
+            if(instanceRange != 0){
 
                 float gradient = scalingRange / instanceRange;
                 numberOfAdditionalInstancesRequired = (predictedValue - threshold) / gradient;
+            } else {
+
+                if(predictedValue > threshold) {
+                    return max + 1;
+                } else {
+                    return min - 1;
+                }
             }
         }
-        return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);*/
-
-        double numberOfInstances;
-        if(threshold != 0) {
-
-            numberOfInstances = (min * predictedValue) / threshold;
-            return (int) Math.ceil(numberOfInstances);
-        }
-        return min;
+        return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);
     }
 
     public int getNumberOfInstancesRequiredBasedOnLoadAverage(float threshold, double predictedValue, int min) {
