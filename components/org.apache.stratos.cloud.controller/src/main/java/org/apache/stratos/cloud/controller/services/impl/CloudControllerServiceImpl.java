@@ -1107,7 +1107,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info("Deploying new Kubernetes cluster: " + kubernetesCluster);
+                log.info("Adding kubernetes cluster: " + kubernetesCluster);
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1144,7 +1144,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info("Deploying new Kubernetes Host: " + kubernetesHost + " for Kubernetes cluster id: " + kubernetesClusterId);
+                log.info(String.format("Adding kubernetes host for kubernetes cluster: [kubernetes-cluster-id] %s " +
+                        "[hostname] %s", kubernetesClusterId, kubernetesHost.getHostname()));
             }
             CloudControllerUtil.validateKubernetesHost(kubernetesHost);
 
@@ -1155,7 +1156,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 kubernetesHostArrayList = new ArrayList<KubernetesHost>();
             } else {
                 if (CloudControllerContext.getInstance().kubernetesHostExists(kubernetesHost.getHostId())) {
-                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [id] " + kubernetesHost.getHostId());
+                    throw new InvalidKubernetesHostException("Kubernetes host already exists: [hostnae] " +
+                            kubernetesHost.getHostId());
                 }
                 kubernetesHostArrayList = new
                         ArrayList<KubernetesHost>(Arrays.asList(kubernetesClusterStored.getKubernetesHosts()));
