@@ -22,6 +22,7 @@ package org.apache.stratos.cloud.controller.iaases.validators;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
@@ -44,7 +45,7 @@ public class DockerPartitionValidator implements PartitionValidator {
     }
 
     @Override
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
     	// in Docker case currently we only update the custom properties passed via Partitions, and
     	// no validation done as of now.
     	IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);

@@ -91,28 +91,24 @@ public class CloudControllerServiceUtil {
     
     public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
         String provider = partition.getProvider();
-        String partitionId = partition.getId();
         Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
 
         if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
-
             PartitionValidator validator = iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);
-            iaasProvider = validator.validate(partitionId, partitionProperties);
+            iaasProvider = validator.validate(partition, partitionProperties);
             return iaasProvider;
 
         } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
             // if this is a docker based Partition
             KubernetesPartitionValidator validator = new KubernetesPartitionValidator();
-            validator.validate(partitionId, partitionProperties);
+            validator.validate(partition, partitionProperties);
             return null;
 
         } else {
-
-            String msg =
-                    "Invalid Partition - " + partition.toString() + ". Cause: Cannot identify as a valid partition.";
+            String msg = "Invalid partition found: [partition-id] " + partition.getId();
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }

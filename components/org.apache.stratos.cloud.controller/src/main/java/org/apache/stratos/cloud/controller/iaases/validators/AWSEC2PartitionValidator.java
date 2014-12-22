@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.iaases.validators;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
@@ -43,7 +44,7 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
     private Iaas iaas;
 
     @Override
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         // validate the existence of the region and zone properties.
         try {
             if (properties.containsKey(Scope.region.toString())) {
@@ -51,17 +52,15 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
-                    String msg =
-                                 "Invalid Partition Detected : " + partitionId +
-                                         " - Cause: Invalid Region: " + region;
-                    log.error(msg);
-                    throw new InvalidPartitionException(msg);
+                    String message = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
+                                         " [region] " + region;
+                    log.error(message);
+                    throw new InvalidPartitionException(message);
                 } 
                 
                 iaas.isValidRegion(region);
                 
                 IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
-                
                 Iaas updatedIaas = CloudControllerServiceUtil.buildIaas(updatedIaasProvider);
                 updatedIaas.setIaasProvider(updatedIaasProvider);
                 
@@ -74,7 +73,6 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                 } 
                 
                 updateOtherProperties(updatedIaasProvider, properties);
-                
                 return updatedIaasProvider;
                 
             } else {
@@ -82,11 +80,10 @@ public class AWSEC2PartitionValidator implements PartitionValidator {
                 return iaasProvider;
             }
         } catch (Exception ex) {
-            String msg = "Invalid Partition Detected : "+partitionId+". Cause: "+ex.getMessage();
-            log.error(msg, ex);
-            throw new InvalidPartitionException(msg, ex);
+            String message = "Invalid partition detected: [partition-id] " + partition.getId();
+            log.error(message, ex);
+            throw new InvalidPartitionException(message, ex);
         }
-        
     }
 
     private void updateOtherProperties(IaasProvider updatedIaasProvider,

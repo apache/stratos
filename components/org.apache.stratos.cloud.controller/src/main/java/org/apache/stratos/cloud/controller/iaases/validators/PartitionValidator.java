@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.iaases.validators;
 
 import java.util.Properties;
 
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 
@@ -38,10 +39,10 @@ public interface PartitionValidator {
     /**
      * Validate the given properties for its existent in this partition.
      * 
-     * @param partitionId partition id.
+     * @param partition partition.
      * @param properties set of properties to be validated.
      * @return cloned and modified {@link IaasProvider} which maps to the given partition.
      * @throws InvalidPartitionException if at least one property is evaluated to be invalid.
      */
-    public abstract IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException;
+    public abstract IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException;
 }

@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
@@ -40,7 +41,7 @@ public class VCloudPartitionValidator implements PartitionValidator {
 	private Iaas iaas;
 
     @Override
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         //TODO: implement real validation logic 
         return iaasProvider;
        

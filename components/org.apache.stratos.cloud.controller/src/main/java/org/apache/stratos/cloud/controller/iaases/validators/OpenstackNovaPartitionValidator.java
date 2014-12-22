@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.iaases.validators;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
@@ -44,7 +45,7 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
     private Iaas iaas;
 
     @Override
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
         try {
             // validate the existence of the zone and hosts properties.
             if (properties.containsKey(Scope.region.toString())) {
@@ -52,9 +53,8 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                 
                 if (iaasProvider.getImage() != null && !iaasProvider.getImage().contains(region)) {
 
-                    String msg =
-                                 "Invalid Partition Detected : " + partitionId +
-                                         " - Cause: Invalid Region: " + region;
+                    String msg = "Invalid partition detected, invalid region: [partition-id] " + partition.getId() +
+                                         " [region] " + region;
                     log.error(msg);
                     throw new InvalidPartitionException(msg);
                 } 
@@ -75,17 +75,15 @@ public class OpenstackNovaPartitionValidator implements PartitionValidator {
                 } 
                 
                 updateOtherProperties(updatedIaasProvider, properties);
-                
                 return updatedIaasProvider;
-                
             } else {
 
                 return iaasProvider;
             }
-        } catch (Exception ex) {
-            String msg = "Invalid Partition Detected : "+partitionId+". Cause: "+ex.getMessage();
-            log.error(msg, ex);
-            throw new InvalidPartitionException(msg, ex);
+        } catch (Exception e) {
+            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
+            log.error(msg, e);
+            throw new InvalidPartitionException(msg, e);
         }
     }
     

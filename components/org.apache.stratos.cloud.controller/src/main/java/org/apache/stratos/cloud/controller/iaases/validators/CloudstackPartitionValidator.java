@@ -2,6 +2,7 @@ package org.apache.stratos.cloud.controller.iaases.validators;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
@@ -26,7 +27,7 @@ public class CloudstackPartitionValidator implements PartitionValidator {
     }
 
     @Override
-    public IaasProvider validate(String partitionId, Properties properties) throws InvalidPartitionException {
+    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
 
         try {
             IaasProvider updatedIaasProvider = new IaasProvider(iaasProvider);
@@ -41,10 +42,10 @@ public class CloudstackPartitionValidator implements PartitionValidator {
                 updatedIaas.setIaasProvider(updatedIaasProvider);
             }
 
-        } catch (Exception ex) {
-            String msg = "Invalid Partition Detected : "+partitionId+". Cause: "+ex.getMessage();
-            log.error(msg, ex);
-            throw new InvalidPartitionException(msg, ex);
+        } catch (Exception e) {
+            String msg = "Invalid partition detected: [partition-id] " + partition.getId() + e.getMessage();
+            log.error(msg, e);
+            throw new InvalidPartitionException(msg, e);
         }
         return iaasProvider;
     }
