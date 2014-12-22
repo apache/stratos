@@ -12,7 +12,7 @@
                     <button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button>
                 </div>
                 <div class='col-md-10'>
-                    <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''>Refresh </button>
+                    <button class='btn btn-info btn-lg pull-right' type='button' id='refresh' data-form=''>Refresh </button>
                 </div>
             </div>
         </div>
@@ -104,70 +104,65 @@ $(document).ready(function () {
         //getting execution logic
         applicationInstances(data.applicationInstances, rawout, data.id);
 
-        return rawout;
+        //generate tree from raw data
+        var data = rawout;
+        //data mapping with d3js tree
+        var dataMap = data.reduce(function (map, node) {
+            map[node.name] = node;
+            return map;
+        }, {});
+        var treeData = [];
+        data.forEach(function (node) {
+            // add to parent
+            var parent = dataMap[node.parent];
+            if (parent) {
+                // create child array if it doesn't exist
+                (parent.children || (parent.children = []))
+                    // add node to child array
+                        .push(node);
+            } else {
+                // parent is null or missing
+                treeData.push(node);
+            }
+        });
+
+        return treeData[0];
     }
-
-
-//generate tree from raw data
-    var data = genTree(topologydata);
-    //data mapping with d3js tree
-    var dataMap = data.reduce(function (map, node) {
-        map[node.name] = node;
-        return map;
-    }, {});
-    var treeData = [];
-    data.forEach(function (node) {
-        // add to parent
-        var parent = dataMap[node.parent];
-        if (parent) {
-            // create child array if it doesn't exist
-            (parent.children || (parent.children = []))
-                // add node to child array
-                    .push(node);
-        } else {
-            // parent is null or missing
-            treeData.push(node);
-        }
-    });
-
-// ************** Generate the tree diagram	 *****************
-    var margin = {top: 40, right: 120, bottom: 20, left: 120},
-            width = 960 - margin.right - margin.left,
-            height = 900 - margin.top - margin.bottom;
-
-    var i = 0;
-
-    var tree = d3.layout.tree()
-            .separation(function(a, b) { return ((a.parent == root) && (b.parent == root)) ? 5 : 4; })
-            .size([height+100, width]);
-
-    var diagonal = d3.svg.diagonal()
-            .projection(function (d) {
-                return [d.x, d.y];
-            });
-    function redraw() {
-        svg.attr("transform",
-                        "translate(" + d3.event.translate + ")"
-                        + " scale(" + d3.event.scale + ")");
-    }
-
-    var svg = d3.select(".application-topology").append("svg")
-            .attr("width", width + margin.right + margin.left)
-            .attr("height", height + margin.top + margin.bottom)
-            .call(d3.behavior.zoom().on("zoom", redraw))
-            .append("g");
-
-    var i = 0;
-    duration = 750;
-
-    root = treeData[0];
-
-    update(root);
 
     function update(source) {
 
+        // ************** Generate the tree diagram	 *****************
+        var margin = {top: 40, right: 120, bottom: 20, left: 120},
+                width = 960 - margin.right - margin.left,
+                height = 900 - margin.top - margin.bottom;
+
+        var i = 0;
+
+        var tree = d3.layout.tree()
+                .separation(function(a, b) { return ((a.parent == source) && (b.parent == source)) ? 5 : 4; })
+                .size([height+100, width]);
+
+        var diagonal = d3.svg.diagonal()
+                .projection(function (d) {
+                    return [d.x, d.y];
+                });
+        function redraw() {
+            svg.attr("transform",
+                            "translate(" + d3.event.translate + ")"
+                            + " scale(" + d3.event.scale + ")");
+        }
+
+        var svg = d3.select(".application-topology").append("svg")
+                .attr("width", width + margin.right + margin.left)
+                .attr("height", height + margin.top + margin.bottom)
+                .call(d3.behavior.zoom().on("zoom", redraw))
+                .append("g");
+
+        var i = 0;
+        duration = 750;
+
         // Compute the new tree layout.
-        var nodes = tree.nodes(root).reverse(),
+        var nodes = tree.nodes(source).reverse(),
                 links = tree.links(nodes);
 
         // Normalize for fixed-depth.
@@ -195,6 +190,7 @@ $(document).ready(function () {
 
                     if (d.type == 'clusters') {
                         div.html(
+                                        "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
                                         "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
                                         "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
                                         "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
@@ -277,8 +273,10 @@ $(document).ready(function () {
                 .attr("dy", ".35em")
                 .attr("text-anchor", "middle")
                 .text(function (d) {
-                    if(d.type == 'members'){
-                       return '';
+                    if(d.type == 'members') {
+                        return '';
+                    }else if(d.type == 'clusters'){
+                        return d.alias;
                     }else{
                         return d.name;
                     }
@@ -303,6 +301,33 @@ $(document).ready(function () {
                 .attr("d", diagonal);
 
     }
+
+    //initial generation with deafult call
+    update(genTree(topologydata));
+
+    $('#refresh').click(function(){
+        //get ajax call
+        $(".application-topology").html('<i class="fa fa-spinner fa-spin fa-4x"></i>');
+        var formtype = 'applicationtopology';
+        var applicationId = "{{appName}}";
+
+        $.ajax({
+            type: "GET",
+            url: caramel.context + "/controllers/applications/application_getrequests.jag",
+            dataType: 'json',
+            data: { "formtype": formtype, "appId":applicationId },
+            success: function (data) {
+                if (data.status == 'error') {
+                    var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                    $(".application-topology").html('');
+                } else {
+                    $(".application-topology").html('');
+                    update(genTree(data));
+                }
+            }
+        })
+    });
+
 
 });
 </script>
