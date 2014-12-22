@@ -37,12 +37,18 @@ import java.util.UUID;
  */
 public class Util {
 	private static final Log log = LogFactory.getLog(Util.class);
-	public static final int BEGIN_INDEX = 35;
-	public static final String TENANT_RANGE_DELIMITER = "-";
-	public static final String AVERAGE_PING_INTERVAL_PROPERTY = "stratos.messaging.averagePingInterval";
-	public static final String FAILOVER_PING_INTERVAL_PROPERTY = "stratos.messaging.failoverPingInterval";
-	public static final int DEFAULT_AVERAGE_PING_INTERVAL = 1000;
-	public static final int DEFAULT_FAILOVER_PING_INTERVAL = 30000;
+	private static final int START_INDEX = 0;
+	private static final int MESSAGING_BEGIN_INDEX = 35;
+	private static final String SLASH = "/";
+	private static final String DOT = ".";
+	private static final String ORG_APACHE_STRATOS_MESSAGING_EVENT_PACKAGE = "org.apache.stratos.messaging.event.";
+	private static final String HYPHEN_MINUS = "-";
+	private static final String EMPTY_SPACE = "";
+	private static final String TENANT_RANGE_DELIMITER = "-";
+	private static final String AVERAGE_PING_INTERVAL_PROPERTY = "stratos.messaging.averagePingInterval";
+	private static final String FAILOVER_PING_INTERVAL_PROPERTY = "stratos.messaging.failoverPingInterval";
+	private static final int DEFAULT_AVERAGE_PING_INTERVAL = 1000;
+	private static final int DEFAULT_FAILOVER_PING_INTERVAL = 30000;
 
 	// Time interval between each ping message sent to topic.
 	private static int averagePingInterval;
@@ -212,7 +218,7 @@ public class Util {
 	 * @return String topic name of the event
 	 */
 	public static String getMessageTopicName(Event event) {
-		return event.getClass().getName().substring(BEGIN_INDEX).replace(".", "/");
+		return event.getClass().getName().substring(MESSAGING_BEGIN_INDEX).replace(DOT, SLASH);
 	}
 
 	/**
@@ -222,7 +228,7 @@ public class Util {
 	 * @return String Event name for topic
 	 */
 	public static String getEventNameForTopic(String topic) {
-		return "org.apache.stratos.messaging.event.".concat(topic.replace("/", "."));
+		return ORG_APACHE_STRATOS_MESSAGING_EVENT_PACKAGE.concat(topic.replace(SLASH, DOT));
 	}
 
 	/**
@@ -232,7 +238,7 @@ public class Util {
 	 * @return Random String
 	 */
 	public static String getRandomString(int len) {
-		return UUID.randomUUID().toString().replace("-", "").substring(0, len);
+		return UUID.randomUUID().toString().replace(HYPHEN_MINUS, EMPTY_SPACE).substring(START_INDEX, len);
 	}
 
 }
