@@ -395,7 +395,8 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
         log.info("Parent scaling event received to [cluster]: " + this.getClusterId()
                     + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
+                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
+                    + ", [factor]" + scalingEvent.getFactor());
 
 
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
