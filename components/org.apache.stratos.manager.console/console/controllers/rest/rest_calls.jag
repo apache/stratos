@@ -76,7 +76,7 @@ RESTCalls = new function(){
     };
 
     this.undeployApplication = function(applicationId){
-        return this.send("DELETE","applications/"+applicationId+"/runtime",{});
+        return this.send("DELETE","applications/"+applicationId+"/undeploy",{});
     };
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
