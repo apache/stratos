@@ -71,7 +71,6 @@ public class CartridgeConfig implements Serializable {
     
     private String serviceGroup;
     
-    private Container container;
     private String[] exportingProperties;
 
     private String deployerType;
@@ -298,14 +297,6 @@ public class CartridgeConfig implements Serializable {
     public void setExportingProperties(String[] exportingProperties) {
         this.exportingProperties = exportingProperties;
     }
-
-	public Container getContainer() {
-		return container;
-	}
-
-	public void setContainer(Container container) {
-		this.container = container;
-	}
 
 	public String getDeployerType() {
 		return deployerType;

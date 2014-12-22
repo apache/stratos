@@ -190,11 +190,6 @@ public class CloudControllerUtil {
                 }
             }
         }
-        
-        // populate container
-        if(config.getContainer() != null) {
-        	cartridge.setContainer(config.getContainer());
-        }
 
         if(config.getExportingProperties() != null){
             cartridge.setExportingProperties(config.getExportingProperties());

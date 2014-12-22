@@ -87,21 +87,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new InvalidCartridgeDefinitionException(msg, e);
         }
 
-        List<IaasProvider> iaasProviders = cartridge.getIaases();
-
-        // TODO: Fix kubernetes config
-//        if (!StratosConstants.KUBERNETES_DEPLOYER_TYPE.equals(cartridge.getDeployerType())) {
-//            if (iaasProviders == null || iaasProviders.isEmpty()) {
-//                String msg = "Invalid cartridge definition, iaas providers not found: [cartridge-type] " + cartridgeConfig.getType();
-//                log.error(msg);
-//                throw new InvalidCartridgeDefinitionException(msg);
-//            }
-//
-//            for (IaasProvider iaasProvider : iaasProviders) {
-//                CloudControllerServiceUtil.buildIaas(iaasProvider);
-//            }
-//        }
-
         // TODO transaction begins
         String cartridgeType = cartridge.getType();
         // Undeploy if already deployed
