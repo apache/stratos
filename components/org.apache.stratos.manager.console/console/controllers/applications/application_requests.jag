@@ -25,7 +25,7 @@ var log = new Log("apachestratos.configure_request"),
         formtype = request.getParameter('formtype'),
         applicationId = request.getParameter('appId'),
         formSubmit;
-log.info(formPayload)
+
 //add login validator for pages
 include('/controllers/login/validator.jag');
 
