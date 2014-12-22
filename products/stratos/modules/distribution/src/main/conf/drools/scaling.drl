@@ -72,18 +72,18 @@ dialect "mvel"
         eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
 	
-        rifUpperLimit : Float() from  loadThresholds.getRequestsInFlightThreshold()
+        rifThreshold : Float() from  loadThresholds.getRequestsInFlightThreshold()
 
         rifAverage : Float() from  clusterInstanceContext.getAverageRequestsInFlight()
         rifGradient : Float() from  clusterInstanceContext.getRequestsInFlightGradient()
         rifSecondDerivative : Float() from  clusterInstanceContext.getRequestsInFlightSecondDerivative()
 	    rifPredictedValue : Double() from delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
-        mcUpperLimit : Float() from  loadThresholds.getMemoryConsumptionThreshold()
+        mcThreshold : Float() from  loadThresholds.getMemoryConsumptionThreshold()
 
         mcPredictedValue : Double() from delegator.getMemoryConsumptionPredictedValue(clusterInstanceContext)
 
-        laUpperLimit : Float() from  loadThresholds.getLoadAverageThreshold()
+        laThreshold : Float() from  loadThresholds.getLoadAverageThreshold()
 
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
@@ -92,8 +92,8 @@ dialect "mvel"
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
         numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
-        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcUpperLimit, mcPredictedValue, clusterInstanceContext.getActiveMemberCount())
-        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laUpperLimit, laPredictedValue, clusterInstanceContext.getActiveMemberCount())
+        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, clusterInstanceContext.getActiveMemberCount())
+        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laThreshold, laPredictedValue, clusterInstanceContext.getActiveMemberCount())
 
         numberOfRequiredInstances : Integer() from delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
 
@@ -104,13 +104,13 @@ dialect "mvel"
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF Resetted?: " + rifReset))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF predicted value: " + rifPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF upper limit: " + rifUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " RIF threshold: " + rifThreshold))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC predicted value: " + mcPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC upper limit: " + mcUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " MC threshold: " + mcThreshold))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA predicted value: " + laPredictedValue))
-        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA upper limit: " + laUpperLimit))
+        eval(log.debug("[scaling] " + " [cluster] " + clusterId + " LA threshold: " + laThreshold))
 
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-up action: " + scaleUp))
         eval(log.debug("[scaling] " + " [cluster] " + clusterId + " Scale-down action: " + scaleDown))
