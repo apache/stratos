@@ -190,11 +190,6 @@ public class GroupMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
-    @Override
-    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
-
-    }
-
     /**
      * Will set the status of the monitor based on Topology Group status/child status like scaling
      *

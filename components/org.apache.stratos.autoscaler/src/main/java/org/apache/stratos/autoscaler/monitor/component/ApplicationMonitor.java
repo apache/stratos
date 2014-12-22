@@ -130,12 +130,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
-    @Override
-    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
-
-    }
-
-
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
      *
