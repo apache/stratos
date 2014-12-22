@@ -341,7 +341,7 @@ public class ObjectConverter {
             if (autoscalePolicyBean.getLoadThresholds().getLoadAverage() != null) {
 
                 //set load average information
-                loadThresholds.setMemoryConsumptionThreshold(
+                loadThresholds.setLoadAverageThreshold(
                         autoscalePolicyBean.getLoadThresholds().getLoadAverage().getThreshold());
             }
             if (autoscalePolicyBean.getLoadThresholds().getRequestsInFlight() != null) {
@@ -353,7 +353,9 @@ public class ObjectConverter {
             if (autoscalePolicyBean.getLoadThresholds().getMemoryConsumption() != null) {
 
                 //set memory consumption information
-                loadThresholds.setMemoryConsumptionThreshold(autoscalePolicyBean.getLoadThresholds().getMemoryConsumption().getThreshold());
+                loadThresholds.setMemoryConsumptionThreshold(
+                        autoscalePolicyBean.getLoadThresholds().
+                                getMemoryConsumption().getThreshold());
             }
 
             autoscalePolicy.setLoadThresholds(loadThresholds);
