@@ -286,11 +286,28 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     @Override
     public void undeployApplication(String applicationId) {
-        ApplicationBuilder.handleApplicationUndeployed(applicationId);
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Starting to undeploy application: [application-id] " + applicationId);
+            }
 
-        ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
-        applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
-        AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+            ApplicationBuilder.handleApplicationUndeployed(applicationId);
+
+            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
+            AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+
+            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(applicationId);
+            PolicyManager.getInstance().removeDeploymentPolicy(deploymentPolicy);
+
+            if (log.isInfoEnabled()) {
+                log.info("Application undeployed successfully: [application-id] " + applicationId);
+            }
+        } catch (Exception e) {
+            String message = "Could not undeploy application: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
     }
 
     @Override

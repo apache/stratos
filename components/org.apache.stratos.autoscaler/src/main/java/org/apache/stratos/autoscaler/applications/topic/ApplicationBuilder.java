@@ -299,37 +299,37 @@ public class ApplicationBuilder {
         }
     }
 
-    public static boolean handleApplicationUndeployed(String appId) {
+    public static boolean handleApplicationUndeployed(String applicationId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application terminating event: [application-id] " + appId);
+            log.debug("Handling application terminating event: [application-id] " + applicationId);
         }
         Set<ClusterDataHolder> clusterData;
         ApplicationHolder.acquireWriteLock();
         try {
             Applications applications = ApplicationHolder.getApplications();
-            Application application = applications.getApplication(appId);
+            Application application = applications.getApplication(applicationId);
             //update the status of the Group
             if (application == null) {
-                log.warn(String.format("Application does not exist: [application-id] %s",
-                        appId));
+                log.warn(String.format("Application does not exist: [application-id] %s", applicationId));
                 return false;
             }
             clusterData = application.getClusterDataRecursively();
-            Collection<ApplicationInstance> context = application.
+            Collection<ApplicationInstance> applicationInstances = application.
                     getInstanceIdToInstanceContextMap().values();
             ApplicationStatus status = ApplicationStatus.Terminating;
-            for (ApplicationInstance context1 : context) {
-                if (context1.isStateTransitionValid(status)) {
+            for (ApplicationInstance applicationInstance : applicationInstances) {
+                if (applicationInstance.isStateTransitionValid(status)) {
                     //setting the status, persist and publish
-                    application.setStatus(status, context1.getInstanceId());
-                    updateApplicationMonitor(appId, status, context1.getNetworkPartitionId(),
-                                            context1.getInstanceId());
+                    application.setStatus(status, applicationInstance.getInstanceId());
+                    updateApplicationMonitor(applicationId, status, applicationInstance.getNetworkPartitionId(),
+                                            applicationInstance.getInstanceId());
                     ApplicationHolder.persistApplication(application);
-                    ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(appId, context1.getInstanceId());
+                    ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(applicationId,
+                            applicationInstance.getInstanceId());
                 } else {
                     log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
-                                    " [instance-id] %s [current-status] %s [status-requested] %s", appId,
-                            context1.getInstanceId() + context1.getStatus(), status));
+                                    " [instance-id] %s [current-status] %s [status-requested] %s", applicationId,
+                            applicationInstance.getInstanceId() + applicationInstance.getStatus(), status));
                 }
             }
         } finally {
@@ -348,7 +348,7 @@ public class ApplicationBuilder {
                         Cluster cluster = service.getCluster(aClusterData.getClusterId());
                         if (cluster != null) {
                             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
-                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId,
+                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(applicationId,
                                         aClusterData.getServiceType(),
                                         aClusterData.getClusterId(),
                                         instance.getInstanceId());

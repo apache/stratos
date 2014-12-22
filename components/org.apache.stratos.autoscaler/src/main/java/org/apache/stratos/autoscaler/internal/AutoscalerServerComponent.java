@@ -122,7 +122,7 @@ public class AutoscalerServerComponent {
 			Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
 			while (depPolicyIterator.hasNext()) {
 				DeploymentPolicy depPolicy = depPolicyIterator.next();
-				PolicyManager.getInstance().addDeploymentPolicyToInformationModel(depPolicy);
+				PolicyManager.getInstance().addDeploymentPolicy(depPolicy);
 			}
 
 			//starting the processor chain

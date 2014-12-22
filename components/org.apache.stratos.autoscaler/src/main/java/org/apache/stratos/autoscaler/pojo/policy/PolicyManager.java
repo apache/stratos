@@ -21,19 +21,16 @@ package org.apache.stratos.autoscaler.pojo.policy;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 //import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 
 /**
  * Manager class for the purpose of managing Autoscale/Deployment policy definitions.
@@ -90,13 +87,32 @@ public class PolicyManager {
         return true;
     }
 
-    // Add the deployment policy to information model and persist.
+    /**
+     * Add deployment policy to in memory map and persist.
+     * @param policy
+     * @throws InvalidPolicyException
+     */
     public void addDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
-        addDeploymentPolicyToInformationModel(policy);
+        addDeploymentPolicyToPolicyListMap(policy);
         RegistryManager.getInstance().persistDeploymentPolicy(policy);
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Deployment policy is added successfully: [application-id] %s",
+                    policy.getApplicationId()));
+        }
+    }
+
+    /**
+     * Remove deployment policy from in memory map and registry.
+     * @param policy
+     * @throws InvalidPolicyException
+     */
+    public void removeDeploymentPolicy(DeploymentPolicy policy) {
+        removeDeploymentPolicyFromMap(policy.getApplicationId());
+        RegistryManager.getInstance().removeDeploymentPolicy(policy);
+
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Deployment policy is removed successfully: [application-id] %s",
                     policy.getApplicationId()));
         }
     }
@@ -160,20 +176,25 @@ public class PolicyManager {
         return autoscalePolicyListMap.get(id);
     }
 
-    // Add the deployment policy to As in memmory information model. Does not persist.
-    public void addDeploymentPolicyToInformationModel(DeploymentPolicy policy) throws InvalidPolicyException {
+    private void addDeploymentPolicyToPolicyListMap(DeploymentPolicy policy) throws InvalidPolicyException {
         if (StringUtils.isEmpty(policy.getApplicationId())) {
-            throw new RuntimeException("Application id is not defined in deployment policy");
+            throw new RuntimeException("Application id is not found in the deployment policy");
         }
         if (!deploymentPolicyListMap.containsKey(policy.getApplicationId())) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding deployment policy: " + policy.getApplicationId());
+                log.debug("Adding deployment policy: [application-id] " + policy.getApplicationId());
             }
             deploymentPolicyListMap.put(policy.getApplicationId(), policy);
         } else {
-        	String errMsg = "Specified deployment policy [" + policy.getApplicationId()+ "] already exists";
+        	String errMsg = "Deployment policy already exists: [application-id] " + policy.getApplicationId();
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
+        }
+    }
+
+    private void removeDeploymentPolicyFromMap(String applicationId) {
+        if(deploymentPolicyListMap.containsKey(applicationId)) {
+            deploymentPolicyListMap.remove(applicationId);
         }
     }
 
