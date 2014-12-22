@@ -395,7 +395,7 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @POST
-    @Path("/application/{applicationId}/deploy")
+    @Path("/applications/{applicationId}/deploy")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
