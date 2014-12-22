@@ -118,5 +118,4 @@ public class CloudControllerServiceUtil {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;
     }
-    
 }
