@@ -1060,35 +1060,32 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                     // need to terminate active, pending and obsolete members
                     //FIXME to traverse concurrent
                     // active members
-                    List<String> activeMembers = new ArrayList<String>();
+                    List<String> activeMemberIdList = new ArrayList<String>();
                     Iterator<MemberContext> iterator = partitionContext.getActiveMembers().listIterator();
                     while (iterator.hasNext()) {
                         MemberContext activeMemberCtxt = iterator.next();
-                        activeMembers.add(activeMemberCtxt.getMemberId());
+                        activeMemberIdList.add(activeMemberCtxt.getMemberId());
 
                     }
-                    for (String memberId : activeMembers) {
+                    for (String memberId : activeMemberIdList) {
                         log.info("Sending instance cleanup event for the active member: [member-id] " + memberId);
                         partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-                        InstanceNotificationPublisher.getInstance().
-                                sendInstanceCleanupEventForMember(memberId);
+                        InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForMember(memberId);
                     }
-                    Iterator<MemberContext> pendingIterator = partitionContext.getPendingMembers().listIterator();
 
-                    List<String> pendingMembers = new ArrayList<String>();
+                    Iterator<MemberContext> pendingIterator = partitionContext.getPendingMembers().listIterator();
+                    List<String> pendingMemberIdList = new ArrayList<String>();
                     while (pendingIterator.hasNext()) {
                         MemberContext activeMemberCtxt = pendingIterator.next();
-                        pendingMembers.add(activeMemberCtxt.getMemberId());
+                        pendingMemberIdList.add(activeMemberCtxt.getMemberId());
 
                     }
-                    for (String memberId : pendingMembers) {
-                        MemberContext pendingMemberCtxt = pendingIterator.next();
+                    for (String memberId : pendingMemberIdList) {
                         // pending members
-                        String memeberId = pendingMemberCtxt.getMemberId();
                         if (log.isDebugEnabled()) {
-                            log.debug("Moving pending member [member id] " + memeberId + " to obsolete list");
+                            log.debug("Moving pending member [member id] " + memberId + " to obsolete list");
                         }
-                        partitionContext.movePendingMemberToObsoleteMembers(memeberId);
+                        partitionContext.movePendingMemberToObsoleteMembers(memberId);
                     }
                     if(partitionContext.getTotalMemberCount() == 0) {
                         allMovedToObsolete = allMovedToObsolete && true;
