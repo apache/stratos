@@ -23,7 +23,7 @@ var log = new Log("apachestratos.configure_request"),
         util = require('/controllers/rest/rest_calls.jag'),
         formPayload = request.getParameter('formPayload'),
         formtype = request.getParameter('formtype'),
-        applicationId = request.getParameter('appId'),
+        applicationId = request.getParameter('applicationId'),
         formSubmit;
 
 //add login validator for pages
@@ -42,6 +42,9 @@ try {
             break;
         case "deleteapplication":
             formSubmit = util.RESTCalls.deleteApplication(formPayload);
+            break;
+        case "undeployapplication":
+            formSubmit = util.RESTCalls.undeployApplication(applicationId);
             break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
