@@ -72,18 +72,18 @@ dialect "mvel"
         eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
 	
-        rifUpperLimit : Float() from  loadThresholds.getRequestsInFlight().getUpperLimit()
+        rifUpperLimit : Float() from  loadThresholds.getRequestsInFlightThreshold()
 
         rifAverage : Float() from  clusterInstanceContext.getAverageRequestsInFlight()
         rifGradient : Float() from  clusterInstanceContext.getRequestsInFlightGradient()
         rifSecondDerivative : Float() from  clusterInstanceContext.getRequestsInFlightSecondDerivative()
 	    rifPredictedValue : Double() from delegator.getPredictedValueForNextMinute(rifAverage, rifGradient, rifSecondDerivative, 1)
 
-        mcUpperLimit : Float() from  loadThresholds.getMemoryConsumption().getUpperLimit()
+        mcUpperLimit : Float() from  loadThresholds.getMemoryConsumptionThreshold()
 
         mcPredictedValue : Double() from delegator.getMemoryConsumptionPredictedValue(clusterInstanceContext)
 
-        laUpperLimit : Float() from  loadThresholds.getLoadAverage().getUpperLimit()
+        laUpperLimit : Float() from  loadThresholds.getLoadAverageThreshold()
 
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
