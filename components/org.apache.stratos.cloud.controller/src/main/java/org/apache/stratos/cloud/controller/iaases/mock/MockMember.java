@@ -89,7 +89,8 @@ public class MockMember implements Runnable, Serializable {
             protected void onEvent(Event event) {
                 InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent) event;
                 if (mockMemberContext.getClusterId().equals(instanceCleanupClusterEvent.getClusterId()) &&
-                        mockMemberContext.getInstanceId().equals(instanceCleanupClusterEvent.getInstanceId())) {
+                        mockMemberContext.getClusterInstanceId().equals(
+                                instanceCleanupClusterEvent.getClusterInstanceId())) {
                     handleMemberTermination();
                 }
             }

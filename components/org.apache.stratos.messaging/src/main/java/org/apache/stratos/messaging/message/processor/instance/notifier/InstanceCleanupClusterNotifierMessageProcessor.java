@@ -37,7 +37,8 @@ public class InstanceCleanupClusterNotifierMessageProcessor extends MessageProce
     public boolean process(String type, String message, Object object) {
         if (InstanceCleanupClusterEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            InstanceCleanupClusterEvent event = (InstanceCleanupClusterEvent) Util.jsonToObject(message, InstanceCleanupClusterEvent.class);
+            InstanceCleanupClusterEvent event = (InstanceCleanupClusterEvent) Util.
+                    jsonToObject(message, InstanceCleanupClusterEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);
