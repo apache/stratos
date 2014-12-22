@@ -618,7 +618,6 @@
                             </tasks>
                         </configuration>
                     </execution>
-<!--
                     <execution>
                         <id>clean_target</id>
                         <phase>install</phase>
@@ -638,7 +637,6 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-	-->
                 </executions>
             </plugin>
         </plugins>
