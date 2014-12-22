@@ -59,7 +59,20 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
             throw new RuntimeException(message);
         }
 
-        container.setImage(cartridge.getContainer().getImageName());
+        Partition partition = memberContext.getPartition();
+        if(partition == null) {
+            String message = "Partition not found in member context: [member-id] " + memberContext.getMemberId();
+            log.error(message);
+            throw new RuntimeException(message);
+        }
+
+        IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partition.getId());
+        if(iaasProvider == null) {
+            String message = "Could not find iaas provider: [partition-id] " + partition.getId();
+            log.error(message);
+            throw new RuntimeException(message);
+        }
+        container.setImage(iaasProvider.getImage());
         container.setPorts(getPorts(cartridge));
         container.setEnv(getEnvironmentVariables(memberContext, clusterContext));
         return container;
