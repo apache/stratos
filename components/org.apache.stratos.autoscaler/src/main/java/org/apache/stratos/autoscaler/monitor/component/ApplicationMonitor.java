@@ -442,7 +442,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
     @Override
     public void destroy() {
-        //TODO to wipe out the drools
+        stopScheduler();
     }
 
     @Override
