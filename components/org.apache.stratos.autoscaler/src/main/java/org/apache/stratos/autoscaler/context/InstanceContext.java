@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.context;
 
+import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 
@@ -34,14 +35,18 @@ public abstract class InstanceContext {
 
     //key=id of the child, value=ScalingEvent
     private Map<String, ScalingEvent> idToScalingEvent;
-    //key=id of the child, value=MaxOutScalingEvent
+    //key=id of the child, value=ScalingUpBeyondMaxEvent
     private Map<String, ScalingUpBeyondMaxEvent> idToScalingOverMaxEvent;
+    //key=id of the child, value=ScalingDownBeyondMinEvent
+    private Map<String, ScalingDownBeyondMinEvent> idToScalingDownBeyondMinEvent;
 
 
     public InstanceContext(String id) {
         this.id = id;
         setIdToScalingEvent(new HashMap<String, ScalingEvent>());
         setIdToScalingOverMaxEvent(new HashMap<String, ScalingUpBeyondMaxEvent>());
+        setIdToScalingDownBeyondMinEvent(new HashMap<String, ScalingDownBeyondMinEvent>());
+
     }
 
     public String getId() {
@@ -76,6 +81,14 @@ public abstract class InstanceContext {
         this.idToScalingOverMaxEvent = idToScalingOverMaxEvent;
     }
 
+    public Map<String, ScalingDownBeyondMinEvent> getIdToScalingDownBeyondMinEvent() {
+        return idToScalingDownBeyondMinEvent;
+    }
+
+    public void setIdToScalingDownBeyondMinEvent(Map<String, ScalingDownBeyondMinEvent> idToScalingDownBeyondMinEvent) {
+        this.idToScalingDownBeyondMinEvent = idToScalingDownBeyondMinEvent;
+    }
+
     public void removeScalingEvent(String id) {
         this.idToScalingEvent.remove(id);
     }
@@ -98,6 +111,18 @@ public abstract class InstanceContext {
 
     public void addScalingOverMaxEvent(ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent) {
         this.idToScalingOverMaxEvent.put(scalingUpBeyondMaxEvent.getId(), scalingUpBeyondMaxEvent);
+    }
+
+    public ScalingDownBeyondMinEvent getScalingDownBeyondMinEvent(String id) {
+        return this.idToScalingDownBeyondMinEvent.get(id);
+    }
+
+    public void removeScalingDownBeyondMinEvent(String id) {
+        this.idToScalingDownBeyondMinEvent.remove(id);
+    }
+
+    public void addScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
+        this.idToScalingDownBeyondMinEvent.put(scalingDownBeyondMinEvent.getId(), scalingDownBeyondMinEvent);
     }
 
     public boolean containsScalingEvent(String id) {
