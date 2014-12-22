@@ -160,10 +160,23 @@ public class GroupMonitor extends ParentComponentMonitor {
         //all the children sent the scale down only, it will try to scale down
         if (allChildrenScaleDown) {
             if (hasScalingDependents) {
-                //Parent has to handle this scale down as by dependent scale down
-                ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(this.id,
-                        nwPartitionContext.getId(), instanceContext.getParentInstanceId());
-                this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
+                if (nwPartitionContext.getNonTerminatedInstancesCount() >
+                        ((GroupLevelNetworkPartitionContext)
+                                nwPartitionContext).getMinInstanceCount() ) {
+                    //Will scale down based on dependent manner
+                    float minInstances = ((GroupLevelNetworkPartitionContext)
+                            nwPartitionContext).getMinInstanceCount();
+                    float factor = (nwPartitionContext.getNonTerminatedInstancesCount() - 1)/minInstances;
+                    ScalingEvent scalingEvent = new ScalingEvent(this.id, nwPartitionContext.getId(),
+                                                        instanceContext.getId(),factor);
+                    this.parent.onChildScalingEvent(scalingEvent);
+                } else {
+                    //Parent has to handle this scale down as by dependent scale down
+                    ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(this.id,
+                            nwPartitionContext.getId(), instanceContext.getParentInstanceId());
+                    this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
+                }
+
             } else {
                 if (groupScalingEnabled) {
                     if (nwPartitionContext.getNonTerminatedInstancesCount() >
@@ -425,10 +438,29 @@ public class GroupMonitor extends ParentComponentMonitor {
         //Parent notification always brings up new group instances in order to keep the ratio.
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         final String parentInstanceId = scalingEvent.getInstanceId();
-
         final NetworkPartitionContext networkPartitionContext = this.networkPartitionCtxts.
                 get(networkPartitionId);
-        createGroupInstanceOnScaling(networkPartitionContext, parentInstanceId);
+
+        float factor = scalingEvent.getFactor();
+        int currentInstances = networkPartitionContext.getNonTerminatedInstancesCount();
+        float requiredInstances = factor * ((GroupLevelNetworkPartitionContext)
+                                networkPartitionContext).getMinInstanceCount();
+        float additionalInstances = requiredInstances - currentInstances;
+        if(additionalInstances >= 1) {
+            createGroupInstanceOnScaling(networkPartitionContext, parentInstanceId);
+        } else {
+            //have to scale down
+            if(networkPartitionContext.getPendingInstancesCount() != 0) {
+                ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
+                        networkPartitionContext.getPendingInstances().get(0).getId());
+
+            } else {
+                List<InstanceContext> activeInstances = networkPartitionContext.getActiveInstances();
+                ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
+                        activeInstances.get(activeInstances.size() - 1).toString());
+            }
+        }
+
 
     }
 
