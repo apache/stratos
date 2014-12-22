@@ -61,11 +61,11 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "upperLimit": {
+                        "threshold": {
                             "type":"number",
-                            "id": "root/loadThresholds/requestsInFlight/upperLimit",
-                            "title": "Upper Limit",
-                            "name": "Upper Limit",
+                            "id": "root/loadThresholds/requestsInFlight/threshold",
+                            "title": "Threshold",
+                            "name": "Threshold",
                             "default":30,
                             "format": "number",
                             "required":false
@@ -83,11 +83,11 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "upperLimit": {
+                        "threshold": {
                             "type":"number",
-                            "id": "root/loadThresholds/memoryConsumption/upperLimit",
-                            "title": "Upper Limit",
-                            "name": "Upper Limit",
+                            "id": "root/loadThresholds/memoryConsumption/threshold",
+                            "title": "Threshold",
+                            "name": "Threshold",
                             "default":80,
                             "format": "number",
                             "required":false
@@ -105,11 +105,11 @@
                         "collapsed": false
                     },
                     "properties":{
-                        "upperLimit": {
+                        "threshold": {
                             "type":"number",
-                            "id": "root/loadThresholds/loadAverage/upperLimit",
-                            "title": "Upper Limit",
-                            "name": "Upper Limit",
+                            "id": "root/loadThresholds/loadAverage/threshold",
+                            "title": "Threshold",
+                            "name": "Threshold",
                             "default":100,
                             "format": "number",
                             "required":false

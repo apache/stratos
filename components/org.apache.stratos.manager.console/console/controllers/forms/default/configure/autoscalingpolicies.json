@@ -5,13 +5,13 @@
     "instanceRoundingFactor": 0.2,
     "loadThresholds": {
         "requestsInFlight": {
-            "upperLimit": 30
+            "threshold": 30
         },
         "memoryConsumption": {
-            "upperLimit": 80
+            "threshold": 80
         },
         "loadAverage": {
-            "upperLimit": 100
+            "threshold": 100
         }
     }
 }
