@@ -772,13 +772,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         return scalingDependencies;
     }
 
-    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent){
-
-        String networkPartitionId = scalingDownBeyondMinEvent.getNetworkPartitionId();
-        String instanceId = scalingDownBeyondMinEvent.getInstanceId();
-        getNetworkPartitionContext(networkPartitionId).getInstanceContext(instanceId).
-                addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
-    }
+    public abstract void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent);
 
     private class MonitorAdder implements Runnable {
         private ApplicationChildContext context;

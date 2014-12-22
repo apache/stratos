@@ -130,6 +130,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
+    @Override
+    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
+
+        String networkPartitionId = scalingDownBeyondMinEvent.getNetworkPartitionId();
+        String instanceId = scalingDownBeyondMinEvent.getInstanceId();
+        getNetworkPartitionContext(networkPartitionId).getInstanceContext(instanceId).
+                addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+    }
+
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
      *

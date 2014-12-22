@@ -47,10 +47,7 @@ import org.apache.stratos.messaging.domain.instance.Instance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -175,7 +172,11 @@ public class GroupMonitor extends ParentComponentMonitor {
                                 //Resetting the max events
                                 instanceContext.setIdToScalingOverMaxEvent(
                                         new HashMap<String, ScalingUpBeyondMaxEvent>());
+                            } else if(!instanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()){
+
+                                handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
                             } else {
+
                                 handleDependentScaling(instanceContext, networkPartitionContext);
                             }
                         }
@@ -188,6 +189,28 @@ public class GroupMonitor extends ParentComponentMonitor {
             }
         };
         monitoringRunnable.run();
+    }
+
+    @Override
+    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
+
+        if(groupScalingEnabled){
+
+            String networkPartitionId = scalingDownBeyondMinEvent.getNetworkPartitionId();
+            String instanceId = scalingDownBeyondMinEvent.getInstanceId();
+            getNetworkPartitionContext(networkPartitionId).getInstanceContext(instanceId).
+                    addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+        } else {
+
+            ScalingDownBeyondMinEvent newScalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(this.id,
+                    scalingDownBeyondMinEvent.getNetworkPartitionId(), scalingDownBeyondMinEvent.getInstanceId());
+            this.parent.onChildScalingDownBeyondMinEvent(newScalingDownBeyondMinEvent);
+        }
+    }
+
+    private void handleScalingDownBeyondMin(InstanceContext instanceContext, NetworkPartitionContext nwPartitionContext) {
+
+        //TODO implement action on scaling down the group instances
     }
 
     /**
