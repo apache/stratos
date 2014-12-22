@@ -46,13 +46,6 @@
             ]
         }
     ],
-    "loadBalancer":{
-        "type":"lb",
-        "property":{
-            "name":"default.load.balancer",
-            "value":"true"
-        }
-    },
     "persistence": {
         "isRequired": "true",
         "volume" : [

@@ -294,42 +294,6 @@
 
 
         },
-        "loadBalancer": {
-            "type": "object",
-            "id": "root/loadBalancer",
-            "title": "Load Balancer",
-            "name": "Load Balancer",
-            "required": ["type", "property"],
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "id": "root/loadBalancer/type",
-                    "title": "Type",
-                    "name": "Type",
-                    "default": "lb"
-                },
-                "property": {
-                    "type": "object",
-                    "id": "root/loadBalancer/property",
-                    "title": "Property",
-                    "name": "Property",
-                    "required": ["name", "value"],
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "id": "root/loadBalancer/property/name",
-                            "default": "default.load.balancer"
-                        },
-                        "value": {
-                            "type": "string",
-                            "id": "root/loadBalancer/property/value",
-                            "default": "true"
-                        }
-                    }
-                }
-
-            }
-        },
         "persistence": {
             "type": "object",
             "id": "root/persistence",
