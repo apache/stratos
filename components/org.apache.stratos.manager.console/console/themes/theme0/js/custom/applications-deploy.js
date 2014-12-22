@@ -217,7 +217,7 @@ $(document).ready(function(){
             type: "POST",
             url: caramel.context + "/controllers/applications/application_requests.jag",
             dataType: 'json',
-            data: { "formPayload": deployjson, "formtype": formtype, "appId":applicationId },
+            data: { "formPayload": deployjson, "formtype": formtype, "applicationId":applicationId },
             success: function (data) {
                 if (data.status == 'error') {
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
