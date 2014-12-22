@@ -115,7 +115,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         return applicationClusterContexts;
     }
 
-   
+
 	private Map<String, SubscribableInfoContext> getSubscribableInfo(GroupContext[] groupContexts) throws
     		ApplicationDefinitionException {
 		if(groupContexts != null) {
@@ -125,19 +125,19 @@ public class DefaultApplicationParser implements ApplicationParser {
 			} else {
 				CartridgeContext[] cartridgeContexts = groupContext.getCartridgeContexts();
 				for (CartridgeContext cartridgeContext : cartridgeContexts) {
-					
+
 					 if (StringUtils.isEmpty(cartridgeContext.getSubscribableInfoContext().getAlias()) ||
 		                        !ApplicationUtils.isAliasValid(cartridgeContext.getSubscribableInfoContext().getAlias())) {
-		                    handleError("Invalid alias specified for Subscribable Information Obj: [ " + 
+		                    handleError("Invalid alias specified for Subscribable Information Obj: [ " +
 		                        cartridgeContext.getSubscribableInfoContext().getAlias() + " ]");
 		                }
-	                
+
 					// check if a group is already defined under the same alias
 	                if(subscribableInformation.get(cartridgeContext.getSubscribableInfoContext().getAlias()) != null) {
 	                    // a group with same alias already exists, can't continue
 	                    handleError("A Subscribable Info obj with alias " + cartridgeContext.getSubscribableInfoContext().getAlias() + " already exists");
 	                }
-					subscribableInformation.put(cartridgeContext.getSubscribableInfoContext().getAlias(), 
+					subscribableInformation.put(cartridgeContext.getSubscribableInfoContext().getAlias(),
 							cartridgeContext.getSubscribableInfoContext());
 					if (log.isDebugEnabled()) {
 	                    log.debug("Added Subcribables Info obj [ " +
@@ -149,7 +149,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 		}
 		return subscribableInformation;
 	}
-    
+
     /**
      * Extract Subscription Information from the Application Definition
      *
@@ -190,9 +190,9 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         if (appCtxt.getComponents() != null) {
             // get top level Subscribables
-            if (appCtxt.getComponents().getCartridgeContexts() != null) {                
+            if (appCtxt.getComponents().getCartridgeContexts() != null) {
                 clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
-                        application.getKey(), null, Arrays.asList(appCtxt.getComponents().getCartridgeContexts()));                
+                        application.getKey(), null, Arrays.asList(appCtxt.getComponents().getCartridgeContexts()));
                 application.setClusterData(clusterDataMap);
             }
 
@@ -284,38 +284,38 @@ public class DefaultApplicationParser implements ApplicationParser {
         return application;
     }
 
-    
+
     /**
-     * 
+     *
      * Parse Subscription Information
-     * 
+     *
      * @param appId Application id
      * @param tenantId Tenant id of tenant which deployed the Application
      * @param key Generated key for the Application
      * @param groupName Group name (if relevant)
      * @param cartridgeContextList cartridgeContextList
      * @return Map [subscription alias -> ClusterDataHolder]
-     * 
+     *
      * @throws ApplicationDefinitionException
      */
     private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions(
     		String appId, int tenantId, String key, String groupName,
             List<CartridgeContext> cartridgeContextList) throws ApplicationDefinitionException {
-    	
+
     	 Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
 
     	 for (CartridgeContext cartridgeContext : cartridgeContextList) {
-	        
+
     		 String cartridgeType = cartridgeContext.getType();
     		 String subscriptionAlias = cartridgeContext.getSubscribableInfoContext().getAlias();
-    		 
+
     		 // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
              CartridgeInfo cartridgeInfo =  getCartridge(cartridgeType);
              if (cartridgeInfo == null) {
                  handleError("No deployed Cartridge found with type [ " + cartridgeType +
                          " ] for Composite Application");
              }
-    		 
+
     		// get hostname and cluster id
              ClusterInformation clusterInfo;
              assert cartridgeInfo != null;
@@ -331,8 +331,8 @@ public class DefaultApplicationParser implements ApplicationParser {
              // create and collect this cluster's information
              ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                      key, tenantId, cartridgeContext.getSubscribableInfoContext().getRepoUrl(), subscriptionAlias,
-                     clusterId, hostname, cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false, 
-                     cartridgeContext.getSubscribableInfoContext().getDependencyAliases(), 
+                     clusterId, hostname, cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false,
+                     cartridgeContext.getSubscribableInfoContext().getDependencyAliases(),
                      cartridgeContext.getSubscribableInfoContext().getProperties());
 
              appClusterCtxt.setAutoscalePolicyName(cartridgeContext.getSubscribableInfoContext().getAutoscalingPolicy());
@@ -345,7 +345,7 @@ public class DefaultApplicationParser implements ApplicationParser {
              clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
              clusterDataMap.put(subscriptionAlias, clusterDataHolder);
         }
-    	 
+
 
          return clusterDataMap;
     }
@@ -386,7 +386,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         Map<String, Group> groupAliasToGroup = new HashMap<String, Group>();
-        
+
         for (GroupContext groupCtxt : groupCtxts) {
         	ServiceGroup serviceGroup  = getServiceGroup(groupCtxt.getName());
             if(serviceGroup == null) {
@@ -496,7 +496,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             Map<String, Group> nestedGroups = new HashMap<String, Group>();
             // check sub groups
             for (GroupContext subGroupCtxt : groupCtxt.getGroupContexts()) {
-                // get the complete Group Definition                
+                // get the complete Group Definition
 				if (subGroupCtxt != null) {
                     for(ServiceGroup nestedServiceGroup : serviceGroup.getGroups()) {
                         if(nestedServiceGroup.getName().equals(subGroupCtxt.getName())) {
@@ -531,7 +531,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (nestedServiceGroup == null) {
             handleError("Service Group Definition not found for name " + serviceGroupName);
         }
-        
+
         if (log.isDebugEnabled()) {
         	log.debug("parsing application ... getStartupOrderForGroup: " + serviceGroupName);
         }
@@ -542,7 +542,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             	log.debug("parsing application ... getStartupOrderForGroup: dependencies != null " );
             }
             if (nestedServiceGroup.getDependencies().getStartupOrders() != null) {
-            	
+
             	String [] startupOrders = nestedServiceGroup.getDependencies().getStartupOrders();
             	if (log.isDebugEnabled()) {
                 	log.debug("parsing application ... getStartupOrderForGroup: startupOrders != null # of: " +  startupOrders.length);
@@ -631,12 +631,12 @@ public class DefaultApplicationParser implements ApplicationParser {
         ServiceGroup nestedGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 
         if (nestedGroup == null) {
-            handleError("Service Group Definition not found for name " + serviceGroupName);        	
+            handleError("Service Group Definition not found for name " + serviceGroupName);
         }
 
         return nestedGroup.isGroupscalingEnabled();
     }
-    
+
     private ServiceGroup getNestedServiceGroup (String serviceGroupName, ServiceGroup serviceGroup) {
     	if(serviceGroup.getName().equals(serviceGroupName)) {
     		return serviceGroup;
@@ -647,7 +647,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
     	}
     	return null;
-    	
+
     }
 
     /**
@@ -669,7 +669,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
     }
 
-    
+
     /**
      * Creates a ApplicationClusterContext object to keep information related to a Cluster in this Application
      *

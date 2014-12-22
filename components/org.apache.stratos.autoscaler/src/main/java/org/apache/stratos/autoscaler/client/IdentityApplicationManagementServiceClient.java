@@ -176,6 +176,12 @@ public class IdentityApplicationManagementServiceClient {
         return accessToken;
     }
 
+    public void removeApplication(String appName) throws RemoteException, IdentityApplicationManagementServiceIdentityApplicationManagementException {
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Removing application %s", appName));
+        }
+        stub.deleteApplication(appName);
+    }
 
     private String getIdToken(String compositeAppId, String consumerKey, String consumerSecret) throws OAuthSystemException, OAuthProblemException {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();

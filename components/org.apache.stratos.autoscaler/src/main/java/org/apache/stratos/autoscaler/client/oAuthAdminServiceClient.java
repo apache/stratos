@@ -101,4 +101,11 @@ public class oAuthAdminServiceClient {
         return stub.getOAuthApplicationDataByAppName(name);
     }
 
+    public void removeOauthApplication(String appName) throws RemoteException, OAuthAdminServiceException {
+        if(log.isDebugEnabled()){
+            log.debug(String.format("Removing oAuth application %s", appName));
+        }
+        stub.removeOAuthApplicationData(appName);
+    }
+
 }

@@ -296,6 +296,22 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     @Override
     public void deleteApplication(String applicationId) {
         AutoscalerContext.getInstance().removeApplicationContext(applicationId);
+        //TODO oAuth application/service provider deletion is removed since app name is random. It should be equal to
+        // name of the composite application.
+        /*
+        try {
+            oAuthAdminServiceClient.getServiceClient().removeOauthApplication(applicationId);
+            IdentityApplicationManagementServiceClient.getServiceClient().removeApplication(applicationId);
+        } catch (RemoteException e) {
+           log.error(String.format("Error ocured while deleting oAuth application %s", applicationId), e);
+            throw new AutoScalerException(e);
+        } catch (OAuthAdminServiceException e) {
+            log.error(String.format("Error ocured while deleting oAuth application %s", applicationId), e);
+            throw new AutoScalerException(e);
+        } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
+            e.printStackTrace();
+        }
+        */
         if(log.isInfoEnabled()) {
             log.info(String.format("Application deleted successfully: [application-id] ",
                     applicationId));
