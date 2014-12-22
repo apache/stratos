@@ -1171,14 +1171,17 @@ public class StratosApiV41Utils {
     private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
                                                                     Application application) {
         Collection<Group> groups = application.getGroups();
-        for (Group group : groups) {
-            List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.convertGroupToGroupInstancesBean(
-                                                applicationInstanceBean.getInstanceId(), group);
-            for(GroupInstanceBean groupInstanceBean : groupInstanceBeans) {
-                setSubGroupInstances(group, groupInstanceBean);
-                applicationInstanceBean.getGroupInstances().add(groupInstanceBean);
+        if(groups != null && !groups.isEmpty()) {
+            for (Group group : groups) {
+                List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.convertGroupToGroupInstancesBean(
+                        applicationInstanceBean.getInstanceId(), group);
+                for(GroupInstanceBean groupInstanceBean : groupInstanceBeans) {
+                    setSubGroupInstances(group, groupInstanceBean);
+                    applicationInstanceBean.getGroupInstances().add(groupInstanceBean);
+                }
             }
         }
+
     }
 
     private static void addClustersToApplicationBean(ApplicationBean applicationBean, Application application) {
@@ -1197,32 +1200,38 @@ public class StratosApiV41Utils {
             ApplicationInstanceBean applicationInstanceBean,
             Application application) {
         Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
-        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
-            ClusterDataHolder clusterDataHolder = entry.getValue();
-            String clusterId = clusterDataHolder.getClusterId();
-            String serviceType = clusterDataHolder.getServiceType();
-            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            applicationInstanceBean.getClusterInstances().add(ObjectConverter.
-                    convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
-                            topLevelCluster, entry.getKey()));
+        if(topLevelClusterDataMap != null) {
+            for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
+                ClusterDataHolder clusterDataHolder = entry.getValue();
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceType = clusterDataHolder.getServiceType();
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                applicationInstanceBean.getClusterInstances().add(ObjectConverter.
+                        convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
+                                topLevelCluster, entry.getKey()));
+            }
         }
+
     }
 
     private static void addClustersInstancesToGroupInstanceBean(
             GroupInstanceBean groupInstanceBean,
             Group group) {
         Map<String, ClusterDataHolder> topLevelClusterDataMap = group.getClusterDataMap();
-        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
-            ClusterDataHolder clusterDataHolder = entry.getValue();
-            String clusterId = clusterDataHolder.getClusterId();
-            String serviceType = clusterDataHolder.getServiceType();
-            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-            groupInstanceBean.getClusterInstances().add(ObjectConverter.
-                    convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
-                            topLevelCluster, entry.getKey()));
+        if(topLevelClusterDataMap != null && !topLevelClusterDataMap.isEmpty()) {
+            for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
+                ClusterDataHolder clusterDataHolder = entry.getValue();
+                String clusterId = clusterDataHolder.getClusterId();
+                String serviceType = clusterDataHolder.getServiceType();
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                groupInstanceBean.getClusterInstances().add(ObjectConverter.
+                        convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
+                                topLevelCluster, entry.getKey()));
+            }
         }
+
     }
 
 
@@ -1239,16 +1248,19 @@ public class StratosApiV41Utils {
     private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
         Collection<Group> subgroups = group.getGroups();
         addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
-        for (Group subGroup : subgroups) {
-            List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.
-                    convertGroupToGroupInstancesBean(groupInstanceBean.getInstanceId(),
-                            subGroup);
-            for(GroupInstanceBean groupInstanceBean1 : groupInstanceBeans) {
-                setSubGroupInstances(subGroup, groupInstanceBean1);
-                groupInstanceBean.getGroupInstances().add(groupInstanceBean1);
-            }
+        if(subgroups != null && !subgroups.isEmpty()) {
+            for (Group subGroup : subgroups) {
+                List<GroupInstanceBean> groupInstanceBeans = ObjectConverter.
+                        convertGroupToGroupInstancesBean(groupInstanceBean.getInstanceId(),
+                                subGroup);
+                for(GroupInstanceBean groupInstanceBean1 : groupInstanceBeans) {
+                    setSubGroupInstances(subGroup, groupInstanceBean1);
+                    groupInstanceBean.getGroupInstances().add(groupInstanceBean1);
+                }
 
+            }
         }
+
     }
 
     private static void addClustersToGroupBean(Group group, GroupBean groupBean) {
