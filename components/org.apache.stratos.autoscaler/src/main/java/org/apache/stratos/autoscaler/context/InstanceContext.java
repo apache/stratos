@@ -24,6 +24,7 @@ import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This will hold the instances related info.
@@ -43,9 +44,9 @@ public abstract class InstanceContext {
 
     public InstanceContext(String id) {
         this.id = id;
-        setIdToScalingEvent(new HashMap<String, ScalingEvent>());
-        setIdToScalingOverMaxEvent(new HashMap<String, ScalingUpBeyondMaxEvent>());
-        setIdToScalingDownBeyondMinEvent(new HashMap<String, ScalingDownBeyondMinEvent>());
+        setIdToScalingEvent(new ConcurrentHashMap<String, ScalingEvent>());
+        setIdToScalingOverMaxEvent(new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
+        setIdToScalingDownBeyondMinEvent(new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
 
     }
 

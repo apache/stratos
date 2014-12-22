@@ -31,10 +31,7 @@ import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundExcept
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
-import org.apache.stratos.autoscaler.monitor.events.ApplicationStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.MonitorStatusEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
-import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
+import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
@@ -48,6 +45,7 @@ import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ApplicationMonitor is to control the child monitors
@@ -96,7 +94,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                //handling the scaling max out of the children
-                                handleScalingMaxOut(networkPartitionContext);
+                                handleScalingMaxOut(instanceContext, networkPartitionContext);
 
                             } else if(!instanceContext.getIdToScalingEvent().isEmpty()) {
                                 //handling the dependent scaling for application
@@ -114,7 +112,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
-    private void handleScalingMaxOut(NetworkPartitionContext networkPartitionContext) {
+    private void handleScalingMaxOut(InstanceContext instanceContext,
+                                     NetworkPartitionContext networkPartitionContext) {
         if (networkPartitionContext.getPendingInstancesCount() == 0) {
             //handling the application bursting only when there are no pending instances found
             try {
@@ -137,6 +136,10 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         "Hence waiting for it to become active");
             }
         }
+        //Resetting the values
+        instanceContext.setIdToScalingOverMaxEvent(
+                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
+
     }
 
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
@@ -161,7 +164,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
         //Resetting the events
         instanceContext.setIdToScalingDownBeyondMinEvent(
-                new HashMap<String, ScalingDownBeyondMinEvent>());
+                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
 
     }
 

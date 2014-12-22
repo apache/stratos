@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -112,7 +113,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
                                 //handling the max out of the children
-                                handleScalingMaxOut(networkPartitionContext, instanceContext);
+                                handleScalingMaxOut(instanceContext, networkPartitionContext);
 
                             } else if (!instanceContext.getIdToScalingEvent().isEmpty()) {
                                 //handling the dependent scaling
@@ -130,8 +131,8 @@ public class GroupMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
-    private void handleScalingMaxOut(NetworkPartitionContext networkPartitionContext,
-                                     InstanceContext instanceContext) {
+    private void handleScalingMaxOut(InstanceContext instanceContext,
+                                     NetworkPartitionContext networkPartitionContext) {
         if (!hasScalingDependents) {
             //handling the group scaling and if pending instances found,
             // reject the max
@@ -142,7 +143,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
         //Resetting the max events
         instanceContext.setIdToScalingOverMaxEvent(
-                new HashMap<String, ScalingUpBeyondMaxEvent>());
+                new ConcurrentHashMap<String, ScalingUpBeyondMaxEvent>());
     }
 
     private void handleScalingDownBeyondMin(InstanceContext instanceContext,
@@ -197,7 +198,7 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
         //Resetting the events
         instanceContext.setIdToScalingDownBeyondMinEvent(
-                new HashMap<String, ScalingDownBeyondMinEvent>());
+                new ConcurrentHashMap<String, ScalingDownBeyondMinEvent>());
     }
 
     private void createGroupInstanceOnScaling(final NetworkPartitionContext networkPartitionContext,

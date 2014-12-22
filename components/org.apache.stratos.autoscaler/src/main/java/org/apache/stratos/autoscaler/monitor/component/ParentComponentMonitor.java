@@ -640,7 +640,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             }
         }
         //Resetting the events
-        instanceContext.setIdToScalingEvent(new HashMap<String, ScalingEvent>());
+        instanceContext.setIdToScalingEvent(new ConcurrentHashMap<String, ScalingEvent>());
     }
 
     // move to inactive monitors list to use in the Terminated event
