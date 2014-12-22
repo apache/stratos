@@ -222,4 +222,22 @@ public abstract class NetworkPartitionContext {
     public void setTerminatingPending(List<InstanceContext> terminatingPending) {
         this.terminatingPending = terminatingPending;
     }
+
+    public boolean removeTerminationPendingInstance(String instanceId) {
+        if (id == null) {
+            return false;
+        }
+        synchronized (pendingInstances) {
+            for (Iterator<InstanceContext> iterator = pendingInstances.iterator(); iterator.hasNext(); ) {
+                InstanceContext pendingInstance = iterator.next();
+                if (id.equals(pendingInstance.getId())) {
+                    iterator.remove();
+                    return true;
+                }
+
+            }
+        }
+        return false;
+    }
+
 }
