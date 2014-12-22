@@ -75,6 +75,10 @@ RESTCalls = new function(){
         return this.send("DELETE","/applications/" + applicationId,{});
     };
 
+    this.undeployApplication = function(applicationId){
+        return this.send("DELETE","applications/"+applicationId+"/runtime",{});
+    };
+
     this.subscribeToCartridge = function(cartridgeBeanInfo){
         return this.sendReceive("POST","/cartridge/subscribe", cartridgeBeanInfo);
     };
