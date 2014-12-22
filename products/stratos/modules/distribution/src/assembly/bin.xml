@@ -53,6 +53,7 @@
 
 		<exclude>**/repository/conf/log4j.properties</exclude>
   		<exclude>**/repository/conf/data-bridge/**</exclude>
+  		<exclude>**/repository/resources/security/client-truststore.jks</exclude>
             </excludes>
         </fileSet>
 	<!-- Copying p2 profile and osgi bundles-->
@@ -678,6 +679,12 @@
             <source>src/main/conf/security/application-authentication.xml</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/security/</outputDirectory>
             <filtered>true</filtered>
+            <fileMode>600</fileMode>
+        </file>
+        <file>
+            <source>src/main/conf/security/client-truststore.jks</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/resources/security/</outputDirectory>
+            <filtered>false</filtered>
             <fileMode>600</fileMode>
         </file>
         <file>
