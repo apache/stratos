@@ -83,26 +83,28 @@ public class RuleTasksDelegator {
         return (int) Math.ceil(numberOfInstances);
     }
 
-    public int getNumberOfInstancesRequiredBasedOnMemoryConsumption(float threshold, double predictedValue, int min) {
+    public int getNumberOfInstancesRequiredBasedOnMemoryConsumption(float threshold, double predictedValue,
+                                                                    int activeInstanceCount) {
 
         double numberOfInstances;
         if(threshold != 0) {
 
-            numberOfInstances = (min * predictedValue) / threshold;
+            numberOfInstances = (activeInstanceCount * predictedValue) / threshold;
             return (int) Math.ceil(numberOfInstances);
         }
-        return min;
+        return activeInstanceCount;
     }
 
-    public int getNumberOfInstancesRequiredBasedOnLoadAverage(float threshold, double predictedValue, int min) {
+    public int getNumberOfInstancesRequiredBasedOnLoadAverage(float threshold, double predictedValue,
+                                                              int activeInstanceCount) {
 
         double numberOfInstances;
         if(threshold != 0) {
 
-            numberOfInstances = (min * predictedValue) / threshold;
+            numberOfInstances = (activeInstanceCount * predictedValue) / threshold;
             return (int) Math.ceil(numberOfInstances);
         }
-        return min;
+        return activeInstanceCount;
     }
 
     public int getMaxNumberOfInstancesRequired(int numberOfInstancesRequiredBasedOnRif,
