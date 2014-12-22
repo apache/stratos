@@ -326,12 +326,11 @@ public class RestCommandLineService {
             if(cartridge.getIaasProvider() != null) {
                 RowMapper<IaasProviderBean> cartridgeMapper = new RowMapper<IaasProviderBean>() {
                     public String[] getData(IaasProviderBean row) {
-                        String[] data = new String[5];
+                        String[] data = new String[4];
                         data[0] = row.getProvider();
                         data[1] = row.getType();
                         data[2] = row.getName();
                         data[3] = row.getImageId();
-                        data[4] = String.valueOf(row.getMaxInstanceLimit());
                         return data;
                     }
                 };
@@ -342,8 +341,7 @@ public class RestCommandLineService {
                 System.out.println("-------------------------------------");
                 System.out.println("IaaS Providers: ");
                 System.out.println("-------------------------------------");
-                CliUtils.printTable(iaasProviders, cartridgeMapper, "Provider", "Type", "Name", "Image ID",
-                        "Max Instance Limit");
+                CliUtils.printTable(iaasProviders, cartridgeMapper, "Provider", "Type", "Name", "Image ID");
             }
             System.out.println("-------------------------------------");
         } catch (Exception e) {

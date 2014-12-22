@@ -56,10 +56,14 @@
         <iaasProvider type="kubernetes" name="Kubernetes">
             <className>org.apache.stratos.cloud.controller.iaases.KubernetesIaas</className>
             <provider>kubernetes</provider>
+            <identity svns:secretAlias="cloud.controller.kubernetes.identity">identity</identity>
+            <credential svns:secretAlias="cloud.controller.kubernetes.credential">credential</credential>
         </iaasProvider>
         <iaasProvider type="mock" name="Mock">
             <className>org.apache.stratos.cloud.controller.iaases.MockIaas</className>
             <provider>mock</provider>
+            <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
+            <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
         </iaasProvider>
 	</iaasProviders>
 </cloudController>

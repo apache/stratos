@@ -153,7 +153,6 @@ public class ObjectConverter {
             IaasConfig iaasConfig = new IaasConfig();
             iaasConfig.setType(iaasProviderBeansArray[i].getType());
             iaasConfig.setImageId(iaasProviderBeansArray[i].getImageId());
-            iaasConfig.setMaxInstanceLimit(iaasProviderBeansArray[i].getMaxInstanceLimit());
             iaasConfig.setName(iaasProviderBeansArray[i].getName());
             iaasConfig.setClassName(iaasProviderBeansArray[i].getClassName());
             iaasConfig.setCredential(iaasProviderBeansArray[i].getCredential());
@@ -219,22 +218,26 @@ public class ObjectConverter {
     
     public static org.apache.stratos.cloud.controller.stub.Properties convertPropertyBeansToCCStubProperties(
             List<PropertyBean> propertyBeans) {
-
-        //convert to an array
-        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
-        propertyBeans.toArray(propertyBeansArray);
-        org.apache.stratos.cloud.controller.stub.Property[] propertyArray = new org.apache.stratos.cloud.controller.stub.Property[propertyBeansArray.length];
-
-        for (int j = 0; j < propertyBeansArray.length; j++) {
-            org.apache.stratos.cloud.controller.stub.Property property = new org.apache.stratos.cloud.controller.stub.Property();
-            property.setName(propertyBeansArray[j].getName());
-            property.setValue(propertyBeansArray[j].getValue());
-            propertyArray[j] = property;
+        if (propertyBeans == null) {
+            return null;
         }
 
-        org.apache.stratos.cloud.controller.stub.Properties properties = new org.apache.stratos.cloud.controller.stub.Properties();
-        properties.setProperties(propertyArray);
-        return properties;
+        List<org.apache.stratos.cloud.controller.stub.Property> stubPropertiesList =
+                new ArrayList<org.apache.stratos.cloud.controller.stub.Property>();
+
+        for (PropertyBean propertyBean : propertyBeans) {
+            org.apache.stratos.cloud.controller.stub.Property stubProperty = new org.apache.stratos.cloud.controller.stub.Property();
+            stubProperty.setName(propertyBean.getName());
+            stubProperty.setValue(propertyBean.getValue());
+            stubPropertiesList.add(stubProperty);
+        }
+
+        org.apache.stratos.cloud.controller.stub.Properties stubProperties = new org.apache.stratos.cloud.controller.stub.Properties();
+        org.apache.stratos.cloud.controller.stub.Property[] stubPropertiesArray =
+                stubPropertiesList.toArray(new org.apache.stratos.cloud.controller.stub.Property[stubPropertiesList.size()]);
+        stubProperties.setProperties(stubPropertiesArray);
+
+        return stubProperties;
     }
 
 

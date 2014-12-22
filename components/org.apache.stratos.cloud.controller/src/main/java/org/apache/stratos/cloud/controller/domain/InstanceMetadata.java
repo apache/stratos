@@ -19,10 +19,15 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
+import java.io.Serializable;
+
 /**
  * Instance metadata.
  */
-public class InstanceMetadata {
+public class InstanceMetadata implements Serializable {
+
+    private static final long serialVersionUID = 2121193151475197625L;
+
     private String hostname;
     private String hypervisor;
     private int ram;

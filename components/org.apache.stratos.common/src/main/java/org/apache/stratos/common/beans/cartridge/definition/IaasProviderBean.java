@@ -29,7 +29,6 @@ public class IaasProviderBean {
     private String name;
     private String className;
     private String imageId;
-    private int maxInstanceLimit;
     private String provider;
     private String identity;
     private String credential;
@@ -70,14 +69,6 @@ public class IaasProviderBean {
 
     public void setImageId(String imageId) {
         this.imageId = imageId;
-    }
-
-    public int getMaxInstanceLimit() {
-        return maxInstanceLimit;
-    }
-
-    public void setMaxInstanceLimit(int maxInstanceLimit) {
-        this.maxInstanceLimit = maxInstanceLimit;
     }
 
     public String getProvider() {
@@ -142,7 +133,7 @@ public class IaasProviderBean {
 
     public String toString () {
         return " [ Type: " + getType() + ", Name: " + getName() + ", Class Name: " + getClassName() + ", Image Id: " + getImageId() +
-                ", Max Instance Limit: " + getMaxInstanceLimit() + ", Provider: " + getProvider() + ", Identity: " + getIdentity() +
+                ", Provider: " + getProvider() + ", Identity: " + getIdentity() +
                 ", Credentials: " + getCredential() + ", Properties: " + getIaasPropertiesString() + ", Network Interfaces: " +
                 getNetworkInterfacesString() + " ] ";
     }

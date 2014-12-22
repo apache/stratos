@@ -44,8 +44,6 @@ public class IaasConfig implements Serializable {
    
     private String imageId;
 
-    private int maxInstanceLimit;
-
     private Properties properties;
     
     private NetworkInterfaces networkInterfaces;
@@ -120,14 +118,6 @@ public class IaasConfig implements Serializable {
         this.imageId = imageId;
     }
 
-    public int getMaxInstanceLimit() {
-        return maxInstanceLimit;
-    }
-
-    public void setMaxInstanceLimit(int maxInstanceLimit) {
-        this.maxInstanceLimit = maxInstanceLimit;
-    }
-
     public Properties getProperties() {
         return properties;
     }
@@ -139,7 +129,7 @@ public class IaasConfig implements Serializable {
     public String toString () {
 
         return " [ Type: " + type + ", Name: " + name + ", Class Name: " + className + ", Image Id: " + imageId +
-                ", Max Instance Limit: " + maxInstanceLimit + ", Provider: " + provider + ", Identity: " + identity +
+                ", Provider: " + provider + ", Identity: " + identity +
                 ", Credentials: " + credential + ", Properties: " + getIaasProperties() + " ] ";
     }
 
