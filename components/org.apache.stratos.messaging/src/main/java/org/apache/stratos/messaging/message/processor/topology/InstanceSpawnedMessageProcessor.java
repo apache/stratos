@@ -142,8 +142,8 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             cluster.addMember(member);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Member created: [service] %s [cluster] %s [member] %s " +
-                                "[instance] %s [hierarchy-instance] %s",
+                log.info(String.format("Member created: [service-name] %s [cluster-id] %s [member-id] %s " +
+                                "[cluster-instance-id] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId(),
