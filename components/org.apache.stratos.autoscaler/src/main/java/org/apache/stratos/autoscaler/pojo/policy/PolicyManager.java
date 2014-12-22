@@ -255,7 +255,7 @@ public class PolicyManager {
 
 	/**
 	 * Get deployment policy by application id
-	 * @param appId Application ID
+	 * @param appId application ID
 	 * @return
 	 */
     public DeploymentPolicy getDeploymentPolicyByApplication(String appId) {
@@ -267,7 +267,8 @@ public class PolicyManager {
         return null;
     }
 
-	/**y id by application id
+	/**
+	 * Get deployment policy id by application id
 	 * @param appId Application ID
 	 * @return
 	 */
