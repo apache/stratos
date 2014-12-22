@@ -1179,7 +1179,6 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                     this.notifyParentMonitor(clusterInstance.getStatus(),
                             clusterInstance.getInstanceId());
                 }
-                
                 if (this.hasMonitoringStarted().compareAndSet(false, true)) {
                     this.startScheduler();
                     log.info("Monitoring task for Cluster Monitor with cluster id " +
