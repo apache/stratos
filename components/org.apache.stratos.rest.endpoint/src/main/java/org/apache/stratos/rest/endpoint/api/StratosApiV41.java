@@ -426,7 +426,7 @@ public class StratosApiV41 extends AbstractApi {
      * @return the response
      * @throws RestAPIException the rest api exception
      */
-    @DELETE
+    @POST
     @Path("/applications/{applicationId}/undeploy")
     @Produces("application/json")
     @Consumes("application/json")
