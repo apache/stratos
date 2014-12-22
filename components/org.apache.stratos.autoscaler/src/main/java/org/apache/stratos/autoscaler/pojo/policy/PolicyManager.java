@@ -19,21 +19,21 @@
 
 package org.apache.stratos.autoscaler.pojo.policy;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.InvalidPartitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
+
+import java.util.HashMap;
+import java.util.Map;
+
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 
 /**
  * Manager class for the purpose of managing Autoscale/Deployment policy definitions.
@@ -253,6 +253,11 @@ public class PolicyManager {
         return deploymentPolicyListMap.get(id);
     }
 
+	/**
+	 * Get deployment policy by application id
+	 * @param appId Application ID
+	 * @return
+	 */
     public DeploymentPolicy getDeploymentPolicyByApplication(String appId) {
         for(DeploymentPolicy deploymentPolicy : deploymentPolicyListMap.values()) {
             if(deploymentPolicy.getApplicationId().equals(appId)) {
@@ -262,6 +267,10 @@ public class PolicyManager {
         return null;
     }
 
+	/**y id by application id
+	 * @param appId Application ID
+	 * @return
+	 */
     public String getDeploymentPolicyIdByApplication(String appId) {
         for(Map.Entry<String, DeploymentPolicy> entry : deploymentPolicyListMap.entrySet()) {
             if(entry.getValue().getApplicationId().equals(appId)) {
