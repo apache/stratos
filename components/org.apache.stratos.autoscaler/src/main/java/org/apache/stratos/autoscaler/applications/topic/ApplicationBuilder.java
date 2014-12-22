@@ -188,6 +188,37 @@ public class ApplicationBuilder {
         }
     }
 
+    public static void handleApplicationInstanceTerminatingEvent(String appId, String instanceId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Handling application Terminating event: [application-id] " + appId +
+                    " [instance] " + instanceId);
+        }
+
+        Applications applications = ApplicationHolder.getApplications();
+        Application application = applications.getApplication(appId);
+        //update the status of the Group
+        if (application == null) {
+            log.warn(String.format("Application does not exist: [application-id] %s",
+                    appId));
+            return;
+        }
+
+        ApplicationStatus status = ApplicationStatus.Terminating;
+        ApplicationInstance applicationInstance = application.getInstanceContexts(instanceId);
+        if (applicationInstance.isStateTransitionValid(status)) {
+            //setting the status, persist and publish
+            application.setStatus(status, instanceId);
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
+                    instanceId);
+            ApplicationHolder.persistApplication(application);
+            ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
+        } else {
+            log.warn(String.format("Application state transition is not valid: [application-id] %s " +
+                            " [instance-id] %s [current-status] %s [status-requested] %s",
+                    appId, instanceId, applicationInstance.getStatus(), status));
+        }
+    }
+
     public static void handleApplicationRemoval(String appId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application unDeployment for [application-id] " + appId);
@@ -316,21 +347,9 @@ public class ApplicationBuilder {
             clusterData = application.getClusterDataRecursively();
             Collection<ApplicationInstance> applicationInstances = application.
                     getInstanceIdToInstanceContextMap().values();
-            ApplicationStatus status = ApplicationStatus.Terminating;
-            for (ApplicationInstance applicationInstance : applicationInstances) {
-                if (applicationInstance.isStateTransitionValid(status)) {
-                    //setting the status, persist and publish
-                    application.setStatus(status, applicationInstance.getInstanceId());
-                    updateApplicationMonitor(applicationId, status, applicationInstance.getNetworkPartitionId(),
-                                            applicationInstance.getInstanceId());
-                    ApplicationHolder.persistApplication(application);
-                    ApplicationsEventPublisher.sendApplicationInstanceTerminatingEvent(applicationId,
-                            applicationInstance.getInstanceId());
-                } else {
-                    log.warn(String.format("Application Instance state transition is not valid: [application-id] %s " +
-                                    " [instance-id] %s [current-status] %s [status-requested] %s", applicationId,
-                            applicationInstance.getInstanceId() + applicationInstance.getStatus(), status));
-                }
+
+            for (ApplicationInstance instance : applicationInstances) {
+                handleApplicationInstanceTerminatingEvent(applicationId, instance.getInstanceId());
             }
         } finally {
             ApplicationHolder.releaseWriteLock();

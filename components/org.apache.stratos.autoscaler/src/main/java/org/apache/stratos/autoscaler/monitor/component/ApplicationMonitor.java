@@ -95,32 +95,16 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                         if (instance.getStatus().getCode() <= GroupStatus.Active.getCode()) {
                             //Gives priority to scaling max out rather than dependency scaling
                             if (!instanceContext.getIdToScalingOverMaxEvent().isEmpty()) {
-                               if(networkPartitionContext.getPendingInstancesCount() == 0) {
-                                   //handling the application bursting only when there are no pending instances found
-                                   try {
-                                       if (log.isInfoEnabled()) {
-                                           log.info("Handling application busting, " +
-                                                   "since resources are exhausted in " +
-                                                   "this application instance ");
-                                       }
-                                       createInstanceOnBurstingForApplication();
-                                   } catch (TopologyInConsistentException e) {
-                                       log.error("Error while bursting the application", e);
-                                   } catch (PolicyValidationException e) {
-                                       log.error("Error while bursting the application", e);
-                                   } catch (MonitorNotFoundException e) {
-                                       log.error("Error while bursting the application", e);
-                                   }
-                               } else {
-                                   if(log.isDebugEnabled()) {
-                                       log.debug("Pending Application instance found. " +
-                                               "Hence waiting for it to become active");
-                                   }
-                               }
+                               //handling the scaling max out of the children
+                                handleScalingMaxOut(networkPartitionContext);
 
-                            } else {
+                            } else if(!instanceContext.getIdToScalingEvent().isEmpty()) {
+                                //handling the dependent scaling for application
                                 handleDependentScaling(instanceContext, networkPartitionContext);
 
+                            } else if(!instanceContext.getIdToScalingDownBeyondMinEvent().isEmpty()) {
+                                //handling the scale down of the application
+                                handleScalingDownBeyondMin(instanceContext, networkPartitionContext);
                             }
                         }
                     }
@@ -130,14 +114,57 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         monitoringRunnable.run();
     }
 
-    @Override
-    public void onChildScalingDownBeyondMinEvent(ScalingDownBeyondMinEvent scalingDownBeyondMinEvent) {
-
-        String networkPartitionId = scalingDownBeyondMinEvent.getNetworkPartitionId();
-        String instanceId = scalingDownBeyondMinEvent.getInstanceId();
-        getNetworkPartitionContext(networkPartitionId).getInstanceContext(instanceId).
-                addScalingDownBeyondMinEvent(scalingDownBeyondMinEvent);
+    private void handleScalingMaxOut(NetworkPartitionContext networkPartitionContext) {
+        if (networkPartitionContext.getPendingInstancesCount() == 0) {
+            //handling the application bursting only when there are no pending instances found
+            try {
+                if (log.isInfoEnabled()) {
+                    log.info("Handling application busting, " +
+                            "since resources are exhausted in " +
+                            "this application instance ");
+                }
+                handleApplicationBursting();
+            } catch (TopologyInConsistentException e) {
+                log.error("Error while bursting the application", e);
+            } catch (PolicyValidationException e) {
+                log.error("Error while bursting the application", e);
+            } catch (MonitorNotFoundException e) {
+                log.error("Error while bursting the application", e);
+            }
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Pending Application instance found. " +
+                        "Hence waiting for it to become active");
+            }
+        }
     }
+
+    private void handleScalingDownBeyondMin(InstanceContext instanceContext,
+                                            NetworkPartitionContext nwPartitionContext) {
+        //Traverse through all the children to see whether all have sent the scale down
+        boolean allChildrenScaleDown = false;
+        for (Monitor monitor : this.aliasToActiveMonitorsMap.values()) {
+            if (instanceContext.getScalingDownBeyondMinEvent(monitor.getId()) == null) {
+                allChildrenScaleDown = false;
+                break;
+            } else {
+                allChildrenScaleDown = true;
+            }
+        }
+
+        //all the children sent the scale down only, it will try to scale down
+        if (allChildrenScaleDown) {
+            //Check whether this app monitor has bursted application
+            ApplicationBuilder.handleApplicationInstanceTerminatingEvent(this.appId,
+                    instanceContext.getId());
+        }
+
+        //Resetting the events
+        instanceContext.setIdToScalingDownBeyondMinEvent(
+                new HashMap<String, ScalingDownBeyondMinEvent>());
+
+    }
+
 
     /**
      * Find the group monitor by traversing recursively in the hierarchical monitors.
@@ -325,7 +352,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         return instanceId;
     }
 
-    public void createInstanceOnBurstingForApplication() throws TopologyInConsistentException,
+    public void handleApplicationBursting() throws TopologyInConsistentException,
             PolicyValidationException,
             MonitorNotFoundException {
         Application application = ApplicationHolder.getApplications().getApplication(appId);
