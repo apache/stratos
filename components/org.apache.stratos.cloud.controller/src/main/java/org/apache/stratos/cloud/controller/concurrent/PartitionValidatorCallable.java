@@ -57,5 +57,4 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
 
         return updatedIaasProvider;
     }
-
 }

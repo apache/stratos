@@ -93,19 +93,19 @@ public class CloudControllerServiceUtil {
         String provider = partition.getProvider();
         Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
 
-        if (iaasProvider != null) {
+        if (CloudControllerConstants.KUBERNETES_PARTITION_PROVIDER.equals(provider)) {
+            // if this is a kubernetes based Partition
+            KubernetesPartitionValidator validator = new KubernetesPartitionValidator();
+            validator.validate(partition, partitionProperties);
+            return iaasProvider;
+
+        } else if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
             PartitionValidator validator = iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);
             iaasProvider = validator.validate(partition, partitionProperties);
             return iaasProvider;
-
-        } else if (CloudControllerConstants.DOCKER_PARTITION_PROVIDER.equals(provider)) {
-            // if this is a docker based Partition
-            KubernetesPartitionValidator validator = new KubernetesPartitionValidator();
-            validator.validate(partition, partitionProperties);
-            return null;
 
         } else {
             String msg = "Invalid partition found: [partition-id] " + partition.getId();

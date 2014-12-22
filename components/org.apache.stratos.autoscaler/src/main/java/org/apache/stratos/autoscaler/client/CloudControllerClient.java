@@ -116,20 +116,25 @@ public class CloudControllerClient {
                 new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
 
         for(int i = 0; i < partitions.length; i++) {
-            partitions1[i] = convertTOCCPartition(partitions[i]);
+            partitions1[i] = convertASPartitionTOCCPartition(partitions[i]);
         }
         return partitions1;
     }
 
-    private org.apache.stratos.cloud.controller.stub.domain.Partition convertTOCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
-        org.apache.stratos.cloud.controller.stub.domain.Partition partition1 = new
+    private org.apache.stratos.cloud.controller.stub.domain.Partition
+        convertASPartitionTOCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
+
+        org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
 
-        partition1.setId(partition.getId());
-        partition1.setProvider(partition.getProvider());
-        partition1.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
+        ccPartition.setId(partition.getId());
+        ccPartition.setProvider(partition.getProvider());
+        ccPartition.setDescription(partition.getDescription());
+        ccPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
+        ccPartition.setIsPublic(partition.getIsPublic());
+        ccPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
-        return partition1;
+        return ccPartition;
     }
 
     /*
