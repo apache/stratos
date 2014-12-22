@@ -24,18 +24,16 @@ public class InstanceMaintenanceModeEvent extends InstanceStatusEvent implements
     private final String serviceName;
     private final String clusterId;
     private final String memberId;
-    private final String instanceId;
     private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
     private String groupId;
 
-    public InstanceMaintenanceModeEvent(String serviceName, String clusterId, String memberId, String instanceId,
+    public InstanceMaintenanceModeEvent(String serviceName, String clusterId, String memberId,
                                         String clusterInstanceId, String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
-        this.instanceId = instanceId;
         this.clusterInstanceId = clusterInstanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
@@ -68,11 +66,6 @@ public class InstanceMaintenanceModeEvent extends InstanceStatusEvent implements
     public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
-
-    public String getInstanceId() {
-    return instanceId;
-}
-
 
     public String getClusterInstanceId() {
         return clusterInstanceId;

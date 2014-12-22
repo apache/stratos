@@ -1,5 +1,3 @@
-package org.apache.stratos.cartridge.agent.event.publisher;
-
 /*
  * 
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -19,6 +17,8 @@ package org.apache.stratos.cartridge.agent.event.publisher;
  * specific language governing permissions and limitations
  * under the License.
  */
+
+package org.apache.stratos.cartridge.agent.event.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -52,7 +52,6 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
@@ -121,7 +120,6 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
@@ -149,7 +147,6 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());

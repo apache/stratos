@@ -44,7 +44,6 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId(),
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());
@@ -88,7 +87,6 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId(),
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());
@@ -111,7 +109,6 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
                 mockMemberContext.getMemberId(),
-                mockMemberContext.getInstanceId(),
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());

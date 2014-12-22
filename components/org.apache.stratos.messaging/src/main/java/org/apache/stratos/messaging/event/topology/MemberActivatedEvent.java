@@ -38,7 +38,6 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private final String clusterId;
     private final String clusterInstanceId;
     private final String memberId;
-    private final String instanceId;
     private final String networkPartitionId;
     private final String partitionId;
 
@@ -52,12 +51,11 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     private String defaultPublicIP;
 
     public MemberActivatedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
-                                String instanceId, String networkPartitionId, String partitionId) {
+                                String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
-        this.instanceId = instanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
         this.portMap = new HashMap<Integer, Port>();
@@ -158,10 +156,6 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
 
     public void setDefaultPublicIP(String defaultPublicIP) {
         this.defaultPublicIP = defaultPublicIP;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
     }
 
     public String getClusterInstanceId() {

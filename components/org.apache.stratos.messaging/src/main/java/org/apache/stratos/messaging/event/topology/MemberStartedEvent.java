@@ -38,22 +38,15 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
     private MemberStatus status;
     private Properties properties;
     private String groupId;
-    private String instanceId;
 
-
-    public MemberStartedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId, String instanceId, String networkPartitionId,
-                              String partitionId) {
+    public MemberStartedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
+                              String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
-        this.instanceId = instanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
     }
 
     public String getServiceName() {

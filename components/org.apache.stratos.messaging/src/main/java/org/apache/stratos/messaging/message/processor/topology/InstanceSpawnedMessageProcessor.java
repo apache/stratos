@@ -131,7 +131,7 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
 
             // Apply changes to the topology
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId(),
-                    event.getInstanceId(), event.getClusterInstanceId(), event.getNetworkPartitionId(),
+                    event.getClusterInstanceId(), event.getNetworkPartitionId(),
                     event.getPartitionId(), event.getInitTime());
             member.setDefaultPublicIP(event.getDefaultPublicIP());
             member.setMemberPublicIPs(event.getMemberPublicIPs());
@@ -147,7 +147,6 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId(),
-                        event.getInstanceId(),
                         event.getClusterInstanceId()));
             }
         }

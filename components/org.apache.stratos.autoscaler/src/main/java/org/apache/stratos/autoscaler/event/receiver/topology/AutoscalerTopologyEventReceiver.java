@@ -242,7 +242,7 @@ public class AutoscalerTopologyEventReceiver {
                 log.info("[ClusterTerminatingEvent] Received: " + event.getClass());
                 ClusterInstanceTerminatingEvent clusterTerminatingEvent = (ClusterInstanceTerminatingEvent) event;
                 String clusterId = clusterTerminatingEvent.getClusterId();
-                String instanceId = clusterTerminatingEvent.getInstanceId();
+                String clusterInstanceId = clusterTerminatingEvent.getInstanceId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
                 AbstractClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
@@ -253,22 +253,22 @@ public class AutoscalerTopologyEventReceiver {
                     }
                     // if monitor does not exist, send cluster terminated event
                     ClusterStatusEventPublisher.sendClusterTerminatedEvent(clusterTerminatingEvent.getAppId(),
-                            clusterTerminatingEvent.getServiceName(), clusterId, instanceId);
+                            clusterTerminatingEvent.getServiceName(), clusterId, clusterInstanceId);
                     return;
                 }
                 //changing the status in the monitor, will notify its parent monitor
-                ClusterInstance clusterInstance = (ClusterInstance) monitor.getInstance(instanceId);
+                ClusterInstance clusterInstance = (ClusterInstance) monitor.getInstance(clusterInstanceId);
                 if (clusterInstance.getCurrentState() == ClusterStatus.Active) {
                     // terminated gracefully
-                    monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
+                    monitor.notifyParentMonitor(ClusterStatus.Terminating, clusterInstanceId);
                     InstanceNotificationPublisher.getInstance().
-                            sendInstanceCleanupEventForCluster(clusterId, instanceId);
+                            sendInstanceCleanupEventForCluster(clusterId, clusterInstanceId);
                 } else {
-                    monitor.notifyParentMonitor(ClusterStatus.Terminating, instanceId);
-                    monitor.terminateAllMembers(instanceId, clusterInstance.getNetworkPartitionId());
+                    monitor.notifyParentMonitor(ClusterStatus.Terminating, clusterInstanceId);
+                    monitor.terminateAllMembers(clusterInstanceId, clusterInstance.getNetworkPartitionId());
                 }
                 ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().
-                        process("", clusterId, instanceId);
+                        process("", clusterId, clusterInstanceId);
             }
         });
 

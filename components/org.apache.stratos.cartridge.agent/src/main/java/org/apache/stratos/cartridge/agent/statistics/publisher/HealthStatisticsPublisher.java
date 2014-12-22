@@ -46,6 +46,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             // Payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
+            payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
             payloadData.add(new Attribute("network_partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("member_id", AttributeType.STRING));
             payloadData.add(new Attribute("partition_id", AttributeType.STRING));
@@ -65,13 +66,14 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
     /**
      * Publish health statistics to cep.
      * @param clusterId
+     * @param clusterInstanceId
      * @param networkPartitionId
      * @param memberId
      * @param partitionId
      * @param health
      * @param value
      */
-    public void publish(String clusterId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
+    public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
@@ -79,6 +81,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
         List<Object> payload = new ArrayList<Object>();
         // Payload values
         payload.add(clusterId);
+        payload.add(clusterInstanceId);
         payload.add(networkPartitionId);
         payload.add(memberId);
         payload.add(partitionId);

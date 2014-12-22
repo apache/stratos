@@ -110,6 +110,7 @@ public class HealthStatisticsNotifier implements Runnable {
                         }
                         statsPublisher.publish(
                                 CartridgeAgentConfiguration.getInstance().getClusterId(),
+                                CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
                                 CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
                                 CartridgeAgentConfiguration.getInstance().getMemberId(),
                                 CartridgeAgentConfiguration.getInstance().getPartitionId(),
@@ -122,6 +123,7 @@ public class HealthStatisticsNotifier implements Runnable {
                         }
                         statsPublisher.publish(
                                 CartridgeAgentConfiguration.getInstance().getClusterId(),
+                                CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
                                 CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
                                 CartridgeAgentConfiguration.getInstance().getMemberId(),
                                 CartridgeAgentConfiguration.getInstance().getPartitionId(),

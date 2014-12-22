@@ -203,8 +203,11 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             ApplicationBuilder.handleApplicationCreated(application, applicationParser.getApplicationClusterContexts());
 
             try {
-                validateDeploymentPolicy(deploymentPolicy);
+                // Update kubernetes cluster ids
                 updateKubernetesClusterIds(deploymentPolicy);
+                // Validate deployment policy via cloud controller
+                validateDeploymentPolicy(deploymentPolicy);
+                // Add deployment policy
                 PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
                 applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);

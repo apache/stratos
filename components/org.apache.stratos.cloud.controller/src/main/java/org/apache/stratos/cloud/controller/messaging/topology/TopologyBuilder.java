@@ -414,7 +414,7 @@ public class TopologyBuilder {
 
 		try {
 			TopologyManager.acquireWriteLock();
-			Member member = new Member(service.getServiceName(), clusterId, memberId, instanceId, clusterInstanceId,
+			Member member = new Member(service.getServiceName(), clusterId, memberId, clusterInstanceId,
 					networkPartitionId, partitionId, initTime);
 			member.setStatus(MemberStatus.Created);
 			member.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
@@ -568,8 +568,8 @@ public class TopologyBuilder {
         MemberActivatedEvent memberActivatedEvent = new MemberActivatedEvent(
                 instanceActivatedEvent.getServiceName(),
                 instanceActivatedEvent.getClusterId(),
-                instanceActivatedEvent.getClusterInstanceId(), instanceActivatedEvent.getMemberId(),
-                instanceActivatedEvent.getInstanceId(),
+                instanceActivatedEvent.getClusterInstanceId(),
+                instanceActivatedEvent.getMemberId(),
                 instanceActivatedEvent.getNetworkPartitionId(),
                 instanceActivatedEvent.getPartitionId());
 
@@ -650,8 +650,8 @@ public class TopologyBuilder {
         MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
                 instanceReadyToShutdownEvent.getServiceName(),
                 instanceReadyToShutdownEvent.getClusterId(),
-                instanceReadyToShutdownEvent.getClusterInstanceId(), instanceReadyToShutdownEvent.getMemberId(),
-                instanceReadyToShutdownEvent.getInstanceId(),
+                instanceReadyToShutdownEvent.getClusterInstanceId(),
+                instanceReadyToShutdownEvent.getMemberId(),
                 instanceReadyToShutdownEvent.getNetworkPartitionId(),
                 instanceReadyToShutdownEvent.getPartitionId());
         try {
@@ -710,8 +710,8 @@ public class TopologyBuilder {
         MemberMaintenanceModeEvent memberMaintenanceModeEvent = new MemberMaintenanceModeEvent(
                 instanceMaintenanceModeEvent.getServiceName(),
                 instanceMaintenanceModeEvent.getClusterId(),
-                instanceMaintenanceModeEvent.getClusterInstanceId(), instanceMaintenanceModeEvent.getMemberId(),
-                instanceMaintenanceModeEvent.getInstanceId(),
+                instanceMaintenanceModeEvent.getClusterInstanceId(),
+                instanceMaintenanceModeEvent.getMemberId(),
                 instanceMaintenanceModeEvent.getNetworkPartitionId(),
                 instanceMaintenanceModeEvent.getPartitionId());
         try {
@@ -766,7 +766,7 @@ public class TopologyBuilder {
 					memberId));
 			return;
 		}
-        String instanceId = member.getInstanceId();
+
         String clusterInstanceId = member.getClusterInstanceId();
 
         try {
@@ -779,7 +779,7 @@ public class TopologyBuilder {
         }
         /* @TODO leftover from grouping_poc*/
         String groupAlias = null;
-        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, memberId, instanceId,
+        TopologyEventPublisher.sendMemberTerminatedEvent(serviceName, clusterId, memberId,
                 clusterInstanceId, networkPartitionId,
                 partitionId, properties, groupAlias);
     }

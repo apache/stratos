@@ -72,7 +72,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
         if(log.isInfoEnabled()) {
-            log.info("Starting to add cartridge: [type] " + cartridgeConfig.getType());
+            log.info("Starting to add cartridge: [cartridge-type] " + cartridgeConfig.getType());
         }
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());
@@ -126,7 +126,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         // transaction ends
 
         if(log.isInfoEnabled()) {
-            log.info("Successfully added cartridge: [type] " + cartridgeType);
+            log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
         }
     }
 
@@ -141,13 +141,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 continue;
             }
             String partitionId = entry.getKey();
-            IaasProvider oldIaasProvider = entry.getValue();
-            if (newIaasProviders.contains(oldIaasProvider)) {
+            IaasProvider iaasProvider = entry.getValue();
+            if (newIaasProviders.contains(iaasProvider)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Copying a partition from the Cartridge that is undeployed, to the new Cartridge. "
-                            + "[partition id] : " + partitionId + " [cartridge type] " + destCartridge.getType());
+                    log.debug("Copying partition from the cartridge that is undeployed, to the new cartridge: "
+                            + "[partition-id] " + partitionId + " [cartridge-type] " + destCartridge.getType());
                 }
-                destCartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(oldIaasProvider)));
+                destCartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(iaasProvider)));
             }
         }
     }
@@ -355,8 +355,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
         if (iaasProvider == null) {
             String msg = String.format("Could not start instance, " +
-                    "IaaS provider not found in cartridge %s for partition %s." +
-                    "Only following partitions are found: %s ", cartridgeType, partitionId,
+                    "IaaS provider not found in cartridge %s for partition %s, " +
+                    "partitions found: %s ", cartridgeType, partitionId,
                     cartridge.getPartitionToIaasProvider().keySet().toString());
             log.error(msg);
             throw new InvalidIaasProviderException(msg);
@@ -600,7 +600,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     member.getServiceName(),
                     member.getClusterId(),
                     member.getClusterInstanceId(), member.getMemberId(),
-                    member.getInstanceId(),
                     member.getNetworkPartitionId(),
                     member.getPartitionId());
 
@@ -716,7 +715,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             return CloudControllerUtil.toCartridgeInfo(cartridge);
         }
 
-        String msg = "Could not find cartridge: [type] " + cartridgeType;
+        String msg = "Could not find cartridge: [cartridge-type] " + cartridgeType;
         log.error(msg);
         throw new CartridgeNotFoundException(msg);
     }
@@ -733,7 +732,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         if (cartridge == null) {
             String msg =
-                    "Service unregistration failed. No matching cartridge found: [type] " + cartridgeType;
+                    "Service unregistration failed. No matching cartridge found: [cartridge-type] " + cartridgeType;
             log.error(msg);
             throw new UnregisteredClusterException(msg);
         }
@@ -921,11 +920,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     CloudControllerContext.getInstance().addToCartridgeTypeToPartitionIdMap(cartridgeType, partitionId);
 
                     if (log.isDebugEnabled()) {
-                        log.debug("Partition " + partitionId + " added to the cache against cartridge type: " + cartridgeType);
+                        log.debug("Partition " + partitionId + " added to the cache against cartridge: " +
+                                "[cartridge-type]" + cartridgeType);
                     }
                 } catch (Exception e) {
-                    log.error(e.getMessage(), e);
-                    throw new InvalidPartitionException(e.getMessage(), e);
+                    String message = "Could not cache partitions against the cartridge: [cartridge-type] " + cartridgeType;
+                    log.error(message, e);
+                    throw new InvalidPartitionException(message, e);
                 }
             }
 

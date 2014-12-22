@@ -29,7 +29,6 @@ public class MemberMaintenanceModeEvent extends TopologyEvent implements Seriali
     private final String clusterId;
     private final String clusterInstanceId;
     private final String memberId;
-    private final String instanceId;
     private final String networkPartitionId;
     private final String partitionId;
     private MemberStatus status;
@@ -37,18 +36,13 @@ public class MemberMaintenanceModeEvent extends TopologyEvent implements Seriali
     private String groupId;
 
     public MemberMaintenanceModeEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
-                                      String instanceId, String networkPartitionId, String partitionId) {
+                                      String networkPartitionId, String partitionId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
-        this.instanceId = instanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
-    }
-
-    public String getInstanceId() {
-        return instanceId;
     }
 
     public String getServiceName() {

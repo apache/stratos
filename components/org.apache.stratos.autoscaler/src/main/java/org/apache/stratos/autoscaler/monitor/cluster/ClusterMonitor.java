@@ -891,9 +891,9 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         String networkPartitionId = maintenanceModeEvent.getNetworkPartitionId();
         String partitionId = maintenanceModeEvent.getPartitionId();
         String memberId = maintenanceModeEvent.getMemberId();
-        String instanceId = maintenanceModeEvent.getInstanceId();
+        String clusterInstanceId = maintenanceModeEvent.getClusterInstanceId();
         ClusterInstanceContext networkPartitionCtxt = getClusterInstanceContext(networkPartitionId,
-                instanceId);
+                clusterInstanceId);
         ClusterLevelPartitionContext clusterMonitorPartitionContext = networkPartitionCtxt.
                 getPartitionCtxt(partitionId);
         clusterMonitorPartitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
@@ -909,8 +909,8 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
         ClusterInstanceContext nwPartitionCtxt;
         String networkPartitionId = memberReadyToShutdownEvent.getNetworkPartitionId();
-        String instanceId = memberReadyToShutdownEvent.getInstanceId();
-        nwPartitionCtxt = getClusterInstanceContext(networkPartitionId, instanceId);
+        String clusterInstanceId = memberReadyToShutdownEvent.getClusterInstanceId();
+        nwPartitionCtxt = getClusterInstanceContext(networkPartitionId, clusterInstanceId);
 
         // start a new member in the same Partition
         String memberId = memberReadyToShutdownEvent.getMemberId();
@@ -954,10 +954,10 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         String networkPartitionId = memberTerminatedEvent.getNetworkPartitionId();
         String memberId = memberTerminatedEvent.getMemberId();
         String clusterId = memberTerminatedEvent.getClusterId();
-        String instanceId = memberTerminatedEvent.getInstanceId();
+        String clusterInstanceId = memberTerminatedEvent.getClusterInstanceId();
         String partitionId = memberTerminatedEvent.getPartitionId();
         ClusterInstanceContext clusterLevelNetworkPartitionContext = getClusterInstanceContext(
-                networkPartitionId, instanceId);
+                networkPartitionId, clusterInstanceId);
         ClusterLevelPartitionContext clusterMonitorPartitionContext =
                 clusterLevelNetworkPartitionContext.getPartitionCtxt(partitionId);
         clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
@@ -989,7 +989,7 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         }
         //Checking whether the cluster state can be changed either from in_active to created/terminating to terminated
         ServiceReferenceHolder.getInstance().getClusterStatusProcessorChain().process(
-                ClusterStatusTerminatedProcessor.class.getName(), clusterId, instanceId);
+                ClusterStatusTerminatedProcessor.class.getName(), clusterId, clusterInstanceId);
     }
 
     @Override

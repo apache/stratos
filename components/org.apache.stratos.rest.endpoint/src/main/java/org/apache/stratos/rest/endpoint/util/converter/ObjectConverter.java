@@ -386,7 +386,9 @@ public class ObjectConverter {
                 && deploymentPolicyBean.getApplicationPolicy().getNetworkPartition() != null
                 && !deploymentPolicyBean.getApplicationPolicy().getNetworkPartition().isEmpty()) {
             deploymentPolicy
-                    .setApplicationLevelNetworkPartitions(convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
+                    .setApplicationLevelNetworkPartitions(
+                            convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(
+                                    deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
         }
 
         if (deploymentPolicyBean.getChildPolicies() != null && !deploymentPolicyBean.getChildPolicies().isEmpty()) {
@@ -630,7 +632,6 @@ public class ObjectConverter {
             memberBean.setServiceName(member.getServiceName());
             memberBean.setClusterId(member.getClusterId());
             memberBean.setMemberId(member.getMemberId());
-            memberBean.setInstanceId(member.getInstanceId());
             memberBean.setClusterInstanceId(member.getClusterInstanceId());
 
             memberBean.setLbClusterId(member.getLbClusterId());

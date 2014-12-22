@@ -38,7 +38,6 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     private final String serviceName;
     private final String clusterId;
     private final String memberId;
-    private final String instanceId;
     private final String clusterInstanceId;
     private final String networkPartitionId;
     private final String partitionId;
@@ -59,11 +58,10 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     // instance id to use if snapshot wise group scaling is enabled
     private LifeCycleStateManager<MemberStatus> memberStateManager;
 
-    public Member(String serviceName, String clusterId, String memberId, String instanceId, String clusterInstanceId,
+    public Member(String serviceName, String clusterId, String memberId, String clusterInstanceId,
                   String networkPartitionId, String partitionId, long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
-        this.instanceId = instanceId;
         this.clusterInstanceId = clusterInstanceId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
@@ -198,10 +196,6 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     	this.memberPublicIPs = memberPublicIPs;
     }
 
-    public String getInstanceId() {
-        return instanceId;
-    }
-
     public String getClusterInstanceId() {
         return clusterInstanceId;
     }
@@ -211,7 +205,6 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         return "Member [serviceName=" + getServiceName()
                 + ", clusterId=" + getClusterId()
                 + ", memberId=" + getMemberId()
-                + ", instanceId=" + getInstanceId()
                 + ", clusterInstanceId=" + getClusterInstanceId()
                 + ", networkPartitionId=" + getNetworkPartitionId()
                 + ", partitionId=" + getPartitionId()

@@ -27,7 +27,6 @@ public class Member {
 
     private String serviceName;
     private String clusterId;
-    private String instanceId;
     private String clusterInstanceId;
     private String networkPartitionId;
     private String partitionId;
@@ -136,14 +135,6 @@ public class Member {
         this.property = property;
     }
 
-    public String getInstanceId() {
-        return instanceId;
-    }
-
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
-
     public String getClusterInstanceId() {
         return clusterInstanceId;
     }
@@ -157,7 +148,6 @@ public class Member {
         return "Member [serviceName=" + getServiceName()
                 + ", clusterId=" + getClusterId()
                 + ", memberId=" + getMemberId()
-                + ", instanceId=" + getInstanceId()
                 + ", clusterInstanceId=" + getClusterInstanceId()
                 + ", networkPartitionId=" + getNetworkPartitionId()
                 + ", partitionId=" + getPartitionId()
