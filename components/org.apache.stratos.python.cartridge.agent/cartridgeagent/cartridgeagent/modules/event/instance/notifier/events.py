@@ -54,16 +54,19 @@ class ArtifactUpdatedEvent:
 
 
 class InstanceCleanupClusterEvent:
-    def __init__(self, cluster_id):
+    def __init__(self, cluster_id, cluster_instance_id):
         self.cluster_id = cluster_id
+        """ :type : str  """
+        self.cluster_instance_id = cluster_instance_id
         """ :type : str  """
 
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
-        c_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance_cluster_id = json_obj["instanceClusterId"] if "clusterId" in json_obj else None
 
-        return InstanceCleanupClusterEvent(c_id)
+        return InstanceCleanupClusterEvent(cluster_id, instance_cluster_id)
 
 
 class InstanceCleanupMemberEvent:
