@@ -354,7 +354,7 @@
         noty({
             layout: 'bottomRight',
             type: 'warning',
-            text: 'Are you sure you want to delete application: '+$(this).attr("id"),
+            text: 'Are you sure you want to delete application: <strong>'+$(this).attr("id") + "</strong> ?",
             buttons: [
                 {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
                     var formtype = 'deleteapplication';
@@ -365,6 +365,49 @@
                         url: caramel.context + "/controllers/applications/application_requests.jag",
                         dataType: 'json',
                         data: { "formPayload": payload, "formtype": formtype },
+                        success: function (data) {
+                            if (data.status == 'error') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                            } else if (data.status == 'warning') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                            } else {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                            }
+                            window.setTimeout(function(){
+                                location.reload();
+                            }, 1000);
+                        }
+                    }).always(function () {
+
+                    });
+
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+    });
+
+    $('.general-table').on('click', '.hover-undeploy', function (event) {
+
+        var payload =$(this).attr("id");
+        noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text: 'Are you sure you want to undeploy application: <strong>'+$(this).attr("id") + "</strong> ?",
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    var formtype = 'undeployapplication';
+                    $noty.close();
+
+                    $.ajax({
+                        type: "POST",
+                        url: caramel.context + "/controllers/applications/application_requests.jag",
+                        dataType: 'json',
+                        data: { "applicationId": payload, "formtype": formtype },
                         success: function (data) {
                             if (data.status == 'error') {
                                 var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
