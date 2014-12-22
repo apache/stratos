@@ -341,30 +341,19 @@ public class ObjectConverter {
             if (autoscalePolicyBean.getLoadThresholds().getLoadAverage() != null) {
 
                 //set load average information
-                org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds loadAverage = new
-                        org.apache.stratos.autoscaler.stub.autoscale.policy.LoadAverageThresholds();
-                loadAverage.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getLoadAverage().getThreshold());
-                //set load average
-                loadThresholds.setLoadAverage(loadAverage);
+                loadThresholds.setMemoryConsumptionThreshold(
+                        autoscalePolicyBean.getLoadThresholds().getLoadAverage().getThreshold());
             }
             if (autoscalePolicyBean.getLoadThresholds().getRequestsInFlight() != null) {
 
-                org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds requestsInFlight = new
-                        org.apache.stratos.autoscaler.stub.autoscale.policy.RequestsInFlightThresholds();
                 //set request in flight information
-                requestsInFlight.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getRequestsInFlight().getThreshold());
-                //set request in flight
-                loadThresholds.setRequestsInFlight(requestsInFlight);
+                loadThresholds.setRequestsInFlightThreshold(
+                        autoscalePolicyBean.getLoadThresholds().getRequestsInFlight().getThreshold());
             }
             if (autoscalePolicyBean.getLoadThresholds().getMemoryConsumption() != null) {
 
-                org.apache.stratos.autoscaler.stub.autoscale.policy.MemoryConsumptionThresholds memoryConsumption = new
-                        org.apache.stratos.autoscaler.stub.autoscale.policy.MemoryConsumptionThresholds();
-
                 //set memory consumption information
-                memoryConsumption.setUpperLimit(autoscalePolicyBean.getLoadThresholds().getMemoryConsumption().getThreshold());
-                //set memory consumption
-                loadThresholds.setMemoryConsumption(memoryConsumption);
+                loadThresholds.setMemoryConsumptionThreshold(autoscalePolicyBean.getLoadThresholds().getMemoryConsumption().getThreshold());
             }
 
             autoscalePolicy.setLoadThresholds(loadThresholds);
@@ -863,19 +852,19 @@ public class ObjectConverter {
                                                                                      loadThresholds) {
 
         LoadThresholds loadThresholdBean = new LoadThresholds();
-        if (loadThresholds.getLoadAverage() != null) {
+        if (loadThresholds.getLoadAverageThreshold() != 0) {
             LoadAverageThresholds loadAverage = new LoadAverageThresholds();
-            loadAverage.setThreshold(loadThresholds.getLoadAverage().getUpperLimit());
+            loadAverage.setThreshold(loadThresholds.getLoadAverageThreshold());
             loadThresholdBean.setLoadAverage(loadAverage);
         }
-        if (loadThresholds.getMemoryConsumption() != null) {
+        if (loadThresholds.getMemoryConsumptionThreshold() != 0) {
             MemoryConsumptionThresholds memoryConsumption = new MemoryConsumptionThresholds();
-            memoryConsumption.setThreshold(loadThresholds.getMemoryConsumption().getUpperLimit());
+            memoryConsumption.setThreshold(loadThresholds.getMemoryConsumptionThreshold());
             loadThresholdBean.setMemoryConsumption(memoryConsumption);
         }
-        if (loadThresholds.getRequestsInFlight() != null) {
+        if (loadThresholds.getRequestsInFlightThreshold() != 0) {
             RequestsInFlightThresholds requestsInFlight = new RequestsInFlightThresholds();
-            requestsInFlight.setThreshold(loadThresholds.getRequestsInFlight().getUpperLimit());
+            requestsInFlight.setThreshold(loadThresholds.getRequestsInFlightThreshold());
             loadThresholdBean.setRequestsInFlight(requestsInFlight);
         }
 
