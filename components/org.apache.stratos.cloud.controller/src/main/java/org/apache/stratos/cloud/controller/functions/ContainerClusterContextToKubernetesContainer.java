@@ -84,7 +84,7 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
 
         for (PortMapping portMapping : cartridge.getPortMappings()) {
             Port p = new Port();
-            p.setName(p.getProtocol() + p.getContainerPort());
+            p.setName(p.getProtocol() + "-" + p.getContainerPort());
             // In kubernetes transport protocol always be 'tcp'
             p.setProtocol("tcp");
             p.setContainerPort(Integer.parseInt(portMapping.getPort()));
@@ -119,6 +119,11 @@ public class ContainerClusterContextToKubernetesContainer implements Function<Me
         // Set kubernetes cluster id
         addToEnvironmentVariables(environmentVariables, StratosConstants.KUBERNETES_CLUSTER_ID,
                 kubernetesClusterId);
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Environment variables: [cluster-id] %s [member-id] %s [variables] %s",
+                    memberContext.getClusterId(), memberContext.getMemberId(), environmentVariables.toString()));
+        }
 
         EnvironmentVariable[] array = new EnvironmentVariable[environmentVariables.size()];
         return environmentVariables.toArray(array);

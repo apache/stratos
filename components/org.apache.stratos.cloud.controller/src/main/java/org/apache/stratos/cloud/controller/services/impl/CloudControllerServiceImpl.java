@@ -1094,7 +1094,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             lock = CloudControllerContext.getInstance().acquireKubernetesClusterWriteLock();
 
             if (log.isInfoEnabled()) {
-                log.info("Adding kubernetes cluster: " + kubernetesCluster);
+                log.info(String.format("Adding kubernetes cluster: [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getClusterId()));
             }
             CloudControllerUtil.validateKubernetesCluster(kubernetesCluster);
 
@@ -1103,8 +1104,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes cluster added successfully: [id] %s, [description] %s",
-                        kubernetesCluster.getClusterId(), kubernetesCluster.getDescription()));
+                log.info(String.format("Kubernetes cluster added successfully: [kubernetes-cluster-id] %s",
+                        kubernetesCluster.getClusterId()));
             }
             return true;
         } catch (Exception e) {

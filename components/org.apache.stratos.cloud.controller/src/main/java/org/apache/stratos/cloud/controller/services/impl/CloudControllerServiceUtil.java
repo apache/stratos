@@ -90,20 +90,12 @@ public class CloudControllerServiceUtil {
     }
     
     public static IaasProvider validatePartitionAndGetIaasProvider(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
-        String provider = partition.getProvider();
-        Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
-
-        if (CloudControllerConstants.KUBERNETES_PARTITION_PROVIDER.equals(provider)) {
-            // if this is a kubernetes based Partition
-            KubernetesPartitionValidator validator = new KubernetesPartitionValidator();
-            validator.validate(partition, partitionProperties);
-            return iaasProvider;
-
-        } else if (iaasProvider != null) {
+        if (iaasProvider != null) {
             // if this is a IaaS based partition
             Iaas iaas = iaasProvider.getIaas();
             PartitionValidator validator = iaas.getPartitionValidator();
             validator.setIaasProvider(iaasProvider);
+            Properties partitionProperties = CloudControllerUtil.toJavaUtilProperties(partition.getProperties());
             iaasProvider = validator.validate(partition, partitionProperties);
             return iaasProvider;
 

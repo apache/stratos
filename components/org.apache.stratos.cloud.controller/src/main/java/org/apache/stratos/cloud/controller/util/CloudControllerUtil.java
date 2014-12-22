@@ -392,8 +392,10 @@ public class CloudControllerUtil {
                 kubernetesCluster.getPortRange().getLower() > CloudControllerConstants.PORT_RANGE_MAX ||
                 kubernetesCluster.getPortRange().getLower() < CloudControllerConstants.PORT_RANGE_MIN ||
                 kubernetesCluster.getPortRange().getUpper() < kubernetesCluster.getPortRange().getLower()) {
-            throw new InvalidKubernetesClusterException("Port range is invalid " +
-                    "for the Kubernetes cluster [id]" + kubernetesCluster.getClusterId());
+            throw new InvalidKubernetesClusterException("Port range is invalid in kubernetes cluster " +
+                    "[kubenetes-cluster-id] " + kubernetesCluster.getClusterId() + " " +
+                    " [valid-min] " + CloudControllerConstants.PORT_RANGE_MIN + " [valid-max] " +
+                    CloudControllerConstants.PORT_RANGE_MAX);
         }
         try {
             validateKubernetesMaster(kubernetesCluster.getKubernetesMaster());

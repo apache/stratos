@@ -53,7 +53,7 @@ import java.util.concurrent.locks.Lock;
 public class KubernetesIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
-    private static final long POD_CREATION_TIMEOUT = 60000; // 1 min
+    private static final long POD_CREATION_TIMEOUT = 120000; // 1 min
     public static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     public static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
 
@@ -163,31 +163,36 @@ public class KubernetesIaas extends Iaas {
                         StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
 
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
-                        kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getLower(),
-                        kubernetesPortRange.getUpper());
+                        kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getUpper(),
+                        kubernetesPortRange.getLower());
 
                 // Get kubernetes API
                 KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
-
-                // Create replication controller
-                createReplicationController(memberContext, clusterId, kubernetesApi);
 
                 // Create proxy services for port mappings
                 List<Service> services = createProxyServices(clusterContext, kubClusterContext, kubernetesApi);
                 clusterContext.setKubernetesServices(services);
                 CloudControllerContext.getInstance().updateClusterContext(clusterContext);
 
+                // Create replication controller
+                createReplicationController(memberContext, clusterId, kubernetesApi);
+
                 // Wait for pod to be created
-                Pod[] pods = waitForPodToBeCreated(memberContext, kubernetesApi);
-                if (pods.length != 1) {
+                List<Pod> pods = waitForPodToBeCreated(memberContext, kubernetesApi);
+                if (pods.size() != 1) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Pod did not create within %d sec, hence deleting the service: " +
                                 "[cluster-id] %s [member-id] %s", ((int)POD_CREATION_TIMEOUT/1000), clusterId, memberId));
                     }
-                    terminateContainers(clusterId);
-                    return null;
+                    try {
+                        terminateContainers(clusterId);
+                    } catch (Exception e) {
+                        String message = "Could not terminate containers which were partially created";
+                        log.error(message, e);
+                        throw new RuntimeException(message, e);
+                    }
                 }
-                Pod pod = pods[0];
+                Pod pod = pods.get(0);
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Pod created: [cluster-id] %s [member-id] %s [pod-id] %s",
                             clusterId, memberId, pod.getId()));
@@ -212,7 +217,8 @@ public class KubernetesIaas extends Iaas {
 
                 return newMemberContext;
             } catch (Exception e) {
-                String msg = "Could not start container: " + memberContext.toString() + " Cause: " + e.getMessage();
+                String msg = String.format("Could not start container: [cartridge-type] %s [member-id] %s",
+                        memberContext.getCartridgeType(), memberContext.getMemberId());
                 log.error(msg, e);
                 throw new IllegalStateException(msg, e);
             }
@@ -241,22 +247,29 @@ public class KubernetesIaas extends Iaas {
         return newMemberContext;
     }
 
-    private Pod[] waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi) throws KubernetesClientException, InterruptedException {
+    private List<Pod> waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi) throws KubernetesClientException, InterruptedException {
         Labels labels = new Labels();
-        labels.setName(memberContext.getMemberId());
-        Pod[] pods = new Pod[0];
+        labels.setName(memberContext.getClusterId());
+        List<Pod> podList = new ArrayList<Pod>();
         long startTime = System.currentTimeMillis();
-        while (pods.length == 1) {
-            pods = kubernetesApi.queryPods(new Labels[]{labels});
+        while (podList.size() == 0) {
+            Pod[] pods = kubernetesApi.queryPods(new Labels[]{labels});
+            if((pods != null) && (pods.length > 0)){
+                for(Pod pod : pods) {
+                    if(pod != null) {
+                        podList.add(pod);
+                    }
+                }
+            }
             if (log.isDebugEnabled()) {
-                log.debug("Member pod: [member-id] " + memberContext.getMemberId() + " [count] " + pods.length);
+                log.debug("Member pod: [member-id] " + memberContext.getMemberId() + " [count] " + podList.size());
             }
             if ((System.currentTimeMillis() - startTime) > POD_CREATION_TIMEOUT) {
                 break;
             }
             Thread.sleep(5000);
         }
-        return pods;
+        return podList;
     }
 
     /**
@@ -281,8 +294,8 @@ public class KubernetesIaas extends Iaas {
         // Create replication controller
         ReplicationController replicationController = controllerFunction.apply(memberContext);
         kubernetesApi.createReplicationController(replicationController);
-        if (log.isDebugEnabled()) {
-            log.debug("Kubernetes replication controller successfully created: [cluster-id] " + clusterId);
+        if (log.isInfoEnabled()) {
+            log.info("Kubernetes replication controller successfully created: [cluster-id] " + clusterId);
         }
         return replicationController;
     }
@@ -311,22 +324,27 @@ public class KubernetesIaas extends Iaas {
 
         List<PortMapping> portMappings = cartridge.getPortMappings();
         for(PortMapping portMapping : portMappings) {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Creating kubernetes service: [cluster-id] %s [protocol] %s [port] %s ",
-                        clusterId, portMapping.getProtocol(), portMapping.getPort()));
-            }
-
+            String serviceId = prepareKubernetesServiceId(clusterId, portMapping);
             int nextServicePort = kubernetesClusterContext.getNextServicePort();
             if(nextServicePort == -1) {
-                throw new RuntimeException("Service port not found");
+                throw new RuntimeException(String.format("Could not generate service port: [cluster-id] %s ",
+                        clusterContext.getClusterId()));
+            }
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Creating kubernetes service: [cluster-id] %s [service-id] %s " +
+                                "[protocol] %s [service-port] %d [container-port] %s [proxy-port] %s", clusterId,
+                        serviceId, portMapping.getProtocol(), nextServicePort, portMapping.getPort(),
+                        portMapping.getProxyPort()));
             }
 
             Service service = new Service();
-            service.setId(prepareKubernetesServiceId(clusterId, portMapping));
+            service.setId(serviceId);
             service.setApiVersion("v1beta1");
             service.setKind("Service");
             service.setPort(nextServicePort);
             service.setContainerPort(portMapping.getPort());
+
             Selector selector = new Selector();
             selector.setName(clusterId);
             service.setSelector(selector);
@@ -335,9 +353,10 @@ public class KubernetesIaas extends Iaas {
             services.add(service);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [protocol] %s " +
-                                "[port] %s [proxy-port] %s", clusterId, portMapping.getProtocol(),
-                        portMapping.getPort(), service.getPort()));
+                log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [service-id] %s " +
+                                "[protocol] %s [service-port] %d [container-port] %s [proxy-port] %s", clusterId,
+                        service.getId(), portMapping.getProtocol(), service.getPort(), portMapping.getPort(),
+                        portMapping.getProxyPort()));
             }
         }
         return services;
@@ -345,12 +364,15 @@ public class KubernetesIaas extends Iaas {
 
     /**
      * Prepare kubernetes service id using clusterId, port protocol and port.
-     * @param clusterId
      * @param portMapping
      * @return
      */
     private String prepareKubernetesServiceId(String clusterId, PortMapping portMapping) {
-        return String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
+        String serviceId = String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
+        if(serviceId.contains(".")) {
+            serviceId = serviceId.replace(".", "-");
+        }
+        return serviceId;
     }
 
     /**
