@@ -56,6 +56,8 @@ public class MonitorStatusEventBuilder {
                                                  String networkPartitionId, String instanceId, float factor,
                                                  String id) {
 
+        log.info(String.format("Scaling event to the parent, [id] %s, [network Partition Id] %s, [instance id] %s, " +
+                "[factor] %s", id, networkPartitionId, instanceId, factor));
         //Send notifications to parent of the cluster monitor
         ScalingEvent scalingEvent = new ScalingEvent(id, networkPartitionId, instanceId, factor) ;
         notifyParent(parent, scalingEvent);

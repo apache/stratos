@@ -392,11 +392,11 @@ public class ClusterMonitor extends AbstractClusterMonitor {
     @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
 
-        if (log.isDebugEnabled()) {
-            log.debug("Parent scaling event received to [cluster]: " + this.getClusterId()
+
+        log.info("Parent scaling event received to [cluster]: " + this.getClusterId()
                     + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
                     + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-        }
+
 
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
         ClusterContext vmClusterContext = (ClusterContext) clusterContext;
