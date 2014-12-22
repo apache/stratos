@@ -1178,12 +1178,12 @@ public class ClusterMonitor extends AbstractClusterMonitor {
                 if (!stateChanged && clusterInstance.getStatus() != ClusterStatus.Created) {
                     this.notifyParentMonitor(clusterInstance.getStatus(),
                             clusterInstance.getInstanceId());
-
-                    if (this.hasMonitoringStarted().compareAndSet(false, true)) {
-                        this.startScheduler();
-                        log.info("Monitoring task for Cluster Monitor with cluster id " +
-                                cluster.getClusterId() + " started successfully");
-                    }
+                }
+                
+                if (this.hasMonitoringStarted().compareAndSet(false, true)) {
+                    this.startScheduler();
+                    log.info("Monitoring task for Cluster Monitor with cluster id " +
+                            cluster.getClusterId() + " started successfully");
                 }
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
