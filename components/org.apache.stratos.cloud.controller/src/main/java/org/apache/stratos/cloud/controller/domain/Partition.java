@@ -39,6 +39,7 @@ public class Partition implements Serializable{
     private String id;
     private String description;
     private boolean isPublic;
+    private String kubernetesClusterId;
 
 
     /**
@@ -176,4 +177,11 @@ public class Partition implements Serializable{
         return this.id.hashCode();
     }
 
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
+    }
 }

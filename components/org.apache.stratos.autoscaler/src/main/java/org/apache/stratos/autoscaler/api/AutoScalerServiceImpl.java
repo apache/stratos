@@ -71,7 +71,6 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 
-
     public AutoscalePolicy[] getAutoScalingPolicies() {
         return PolicyManager.getInstance().getAutoscalePolicyList();
     }
@@ -192,7 +191,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
     }
 
     @Override
-    public boolean deployApplication(String applicationId, DeploymentPolicy policy) throws ApplicationDefinitionException {
+    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws ApplicationDefinitionException {
         try {
             ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
             if (applicationContext == null) {
@@ -204,23 +203,22 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             ApplicationBuilder.handleApplicationCreated(application, applicationParser.getApplicationClusterContexts());
 
             try {
-                PolicyManager.getInstance().addDeploymentPolicy(policy);
+                validateDeploymentPolicy(deploymentPolicy);
+                updateKubernetesClusterIds(deploymentPolicy);
+                PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
                 applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             } catch (InvalidPolicyException e) {
-                String message = "Deployment policy is not valid: [application-id] " + policy.getApplicationId();
+                String message = "Deployment policy is not valid: [application-id] " + deploymentPolicy.getApplicationId();
                 log.error(message, e);
                 throw new RuntimeException(message, e);
             }
 
-            //Need to start the application Monitor after validation of the deployment policies.
-            //FIXME add validation
-            validateDeploymentPolicy(policy);
             //Check whether all the clusters are there
             boolean allClusterInitialized = false;
             try {
                 ApplicationHolder.acquireReadLock();
-                application = ApplicationHolder.getApplications().getApplication(policy.getApplicationId());
+                application = ApplicationHolder.getApplications().getApplication(deploymentPolicy.getApplicationId());
                 if (application != null) {
                     allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
                 }
@@ -250,6 +248,36 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             String message = "Application deployment failed";
             log.error(message, e);
             throw new RuntimeException(message, e);
+        }
+    }
+
+    /**
+     * Overwrite partition's kubernetes cluster ids with network partition's kubernetes cluster ids.
+     * @param deploymentPolicy
+     */
+    private void updateKubernetesClusterIds(DeploymentPolicy deploymentPolicy) {
+        ApplicationLevelNetworkPartition[] networkPartitions =
+                deploymentPolicy.getApplicationLevelNetworkPartitions();
+        if(networkPartitions != null) {
+            for(ApplicationLevelNetworkPartition networkPartition : networkPartitions) {
+                if(StringUtils.isNotBlank(networkPartition.getKubernetesClusterId())) {
+                    Partition[] partitions = networkPartition.getPartitions();
+                    if(partitions != null) {
+                        for(Partition partition : partitions) {
+                            if(partition != null) {
+                                if(log.isInfoEnabled()) {
+                                    log.info(String.format("Overwriting partition's kubernetes cluster id: " +
+                                                    "[application-id] %s [network-partition-id] %s [partition-id] %s " +
+                                                    "[kubernetes-cluster-id] %s",
+                                            deploymentPolicy.getApplicationId(), networkPartition.getId(),
+                                            partition.getId(), networkPartition.getKubernetesClusterId()));
+                                }
+                                partition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

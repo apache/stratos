@@ -341,13 +341,15 @@ public class ClusterContext extends AbstractClusterContext {
     }
 
     private org.apache.stratos.cloud.controller.stub.domain.Partition convertTOCCPartition(Partition partition) {
-        org.apache.stratos.cloud.controller.stub.domain.Partition partition1 = new
+        org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
 
-        partition1.setId(partition.getId());
-        partition1.setProvider(partition.getProvider());
-        partition1.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
+        ccPartition.setId(partition.getId());
+        ccPartition.setProvider(partition.getProvider());
+        ccPartition.setDescription(partition.getDescription());
+        ccPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
+        ccPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
-        return partition1;
+        return ccPartition;
     }
 }

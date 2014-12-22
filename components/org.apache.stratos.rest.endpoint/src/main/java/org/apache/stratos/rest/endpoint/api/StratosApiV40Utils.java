@@ -175,7 +175,7 @@ public class StratosApiV40Utils {
         if (autoscalerServiceClient != null) {
 
            /* FIXME add 4040 org.apache.stratos.cloud.controller.stub.domain.Partition partition =
-                    PojoConverter.convertToCCPartitionPojo(partitionBean);*/
+                    PojoConverter.convertStubPartitionToPartition(partitionBean);*/
 
 //            try {
 //                autoscalerServiceClient.deployPartition(partition);

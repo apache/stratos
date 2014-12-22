@@ -113,7 +113,8 @@ public interface AutoScalerServiceInterface {
      * @param deploymentPolicyId
      * @return
      */
-    public org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId);
+    public org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition[]
+        getNetworkPartitions(String deploymentPolicyId);
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor

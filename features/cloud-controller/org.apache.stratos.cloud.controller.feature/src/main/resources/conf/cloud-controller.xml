@@ -53,11 +53,13 @@
 			<property name="X" value="x" />
 			<property name="Y" value="y" />
 		</iaasProvider -->
+        <iaasProvider type="kubernetes" name="Kubernetes">
+            <className>org.apache.stratos.cloud.controller.iaases.KubernetesIaas</className>
+            <provider>kubernetes</provider>
+        </iaasProvider>
         <iaasProvider type="mock" name="Mock">
             <className>org.apache.stratos.cloud.controller.iaases.MockIaas</className>
             <provider>mock</provider>
-            <identity svns:secretAlias="cloud.controller.docker.identity">identity</identity>
-            <credential svns:secretAlias="cloud.controller.docker.credential">credential</credential>
         </iaasProvider>
 	</iaasProviders>
 </cloudController>

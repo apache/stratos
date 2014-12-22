@@ -32,10 +32,11 @@ public class Partition implements Serializable {
      * provider should match with an IaasProvider type.
      */
     private String provider;
-    private Properties properties = new Properties();
     private String id;
     private String description;
     private boolean isPublic;
+    private String kubernetesClusterId;
+    private Properties properties = new Properties();
 
     /**
      * Gets the value of the id property.
@@ -137,5 +138,13 @@ public class Partition implements Serializable {
     @Override
     public int hashCode() {
         return this.id.hashCode();
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
     }
 }

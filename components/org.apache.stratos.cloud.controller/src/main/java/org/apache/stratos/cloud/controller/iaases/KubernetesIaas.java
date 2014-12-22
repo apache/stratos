@@ -148,10 +148,7 @@ public class KubernetesIaas extends Iaas {
             }
 
             try {
-                String kubernetesClusterId = readProperty(StratosConstants.KUBERNETES_CLUSTER_ID,
-                        partition.getProperties(),
-                        partition.toString());
-
+                String kubernetesClusterId = partition.getKubernetesClusterId();
                 KubernetesCluster kubernetesCluster = CloudControllerContext.getInstance().
                         getKubernetesCluster(kubernetesClusterId);
                 handleNullObject(kubernetesCluster, "Could not start container, kubernetes cluster not found: " +

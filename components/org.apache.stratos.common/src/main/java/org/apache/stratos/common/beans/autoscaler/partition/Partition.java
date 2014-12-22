@@ -31,6 +31,7 @@ public class Partition {
     private String description;
     private boolean isPublic;
     private String provider;
+    private String kubernetesClusterId;
     private List<PropertyBean> property;
 
     public String getId() {
@@ -75,5 +76,13 @@ public class Partition {
 
     public void setProperty(List<PropertyBean> property) {
         this.property = property;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
     }
 }

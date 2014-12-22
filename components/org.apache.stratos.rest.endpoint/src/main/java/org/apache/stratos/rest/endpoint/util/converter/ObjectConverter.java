@@ -300,22 +300,22 @@ public class ObjectConverter {
         return floatingNetworks;
     }
 
-    public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertToCCPartitionPojo
-            (Partition partitionBean) {
+    public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertStubPartitionToPartition
+            (Partition partition) {
 
-        org.apache.stratos.autoscaler.stub.deployment.partition.Partition partition = new
+        org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition = new
                 org.apache.stratos.autoscaler.stub.deployment.partition.Partition();
 
-        partition.setId(partitionBean.getId());
-        partition.setDescription(partitionBean.getDescription());
-        partition.setIsPublic(partitionBean.isPublic());
-        partition.setProvider(partitionBean.getProvider());
+        stubPartition.setId(partition.getId());
+        stubPartition.setDescription(partition.getDescription());
+        stubPartition.setIsPublic(partition.isPublic());
+        stubPartition.setProvider(partition.getProvider());
+        stubPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
 
-        if (partitionBean.getProperty() != null && !partitionBean.getProperty().isEmpty()) {
-            partition.setProperties(convertProperyBeansToStubProperties(partitionBean.getProperty()));
+        if (partition.getProperty() != null && !partition.getProperty().isEmpty()) {
+            stubPartition.setProperties(convertProperyBeansToStubProperties(partition.getProperty()));
         }
-
-        return partition;
+        return stubPartition;
     }
 
     public static org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy convertToCCAutoscalerPojo(AutoscalePolicy
@@ -518,6 +518,7 @@ public class ObjectConverter {
         partition.setPublic(stubPartition.getIsPublic());
         partition.setDescription(stubPartition.getDescription());
         partition.setProvider(stubPartition.getProvider());
+        partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if(stubPartition.getProperties() != null) {
             List<PropertyBean> propertyBeanList = new ArrayList<PropertyBean>();
             for(org.apache.stratos.autoscaler.stub.Property stubProperty : stubPartition.getProperties().getProperties()) {
@@ -711,7 +712,7 @@ public class ObjectConverter {
         org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] partitions =
                 new org.apache.stratos.autoscaler.stub.deployment.partition.Partition[partitionList.size()];
         for (int i = 0; i < partitionList.size(); i++) {
-            partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
+            partitions[i] = convertStubPartitionToPartition(partitionList.get(i));
         }
 
         return partitions;
