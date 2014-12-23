@@ -1,8 +1,0 @@
-{
-    "hosts": [
-        {
-            "host_name": "ubuntu",
-            "service": "compute"
-        }
-    ]
-}
