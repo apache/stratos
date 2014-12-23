@@ -370,8 +370,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     @Override
     public int getActiveInstanceCount() {
-
-        return getNonTerminatedMemberCount();
+        return this.activeMembers.size();
     }
 
     public Map<String, MemberStatsContext> getMemberStatsContexts() {
