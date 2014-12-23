@@ -52,7 +52,7 @@ $(document).ready(function () {
         function clusterInstances(items, collector, parent){
             for(var prop in items){
                 if (items.hasOwnProperty(prop)) {
-                    var cur_name = items[prop].clusterId,
+                    var cur_name = items[prop].clusterId + items[prop].instanceId,
                             alias = items[prop].alias,
                             hostNames = items[prop].hostNames.toString(),
                             serviceName = items[prop].serviceName,
@@ -69,10 +69,14 @@ $(document).ready(function () {
         function groupInstances(items, collector, parent){
             for(var prop in items){
                 if (items.hasOwnProperty(prop)) {
-                    var cur_name = items[prop].groupId,
+                    var cur_name = items[prop].groupId + items[prop].instanceId,
+                            instanceId = items[prop].instanceId,
+                            groupId = items[prop].groupId,
                             status = items[prop].status;
                     var type = 'groups';
-                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
+                    rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
+                        "groupId":groupId, "instanceId":instanceId
+                        });
 
                     clusterInstances(items[prop].clusterInstances, collector, cur_name);
                     if(items[prop].hasOwnProperty('groupInstances')){
@@ -209,7 +213,7 @@ $(document).ready(function () {
                                 .style("top", (d3.event.pageY - 28) + "px");
                     } else if (d.type == 'groups') {
                         div.html(
-                                        "<strong>Group Id: </strong>" + d.name + "<br/>" +
+                                        "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
                                         "<strong>Status: </strong>" + d.status
                         ).style("left", (d3.event.pageX) + "px")
                                 .style("top", (d3.event.pageY - 28) + "px");
@@ -275,8 +279,10 @@ $(document).ready(function () {
                 .text(function (d) {
                     if(d.type == 'members') {
                         return '';
-                    }else if(d.type == 'clusters'){
+                    }else if(d.type == 'clusters') {
                         return d.alias;
+                    }else if(d.type == 'groups'){
+                        return d.groupId;
                     }else{
                         return d.name;
                     }
