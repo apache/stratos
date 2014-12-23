@@ -221,7 +221,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
             client.updateReplicationController(replicationController);
         } catch (Exception e) {
             assertEquals(true, e instanceof KubernetesClientException);
-            assertEquals(true, e.getMessage().contains("update failed"));
+            assertEquals(true, e.getMessage().contains("Could not update kubernetes replication controller"));
         }
         
         replicas = 0;
@@ -229,7 +229,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         replicationController.getDesiredState().setReplicas(replicas);
         client.updateReplicationController(replicationController);
 
-        Thread.sleep(10000);
+        Thread.sleep(30000);
         
         pods = client.queryPods(new Labels[]{l1});
         assertEquals(replicas, pods.length);
@@ -271,7 +271,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
             client.deleteReplicationController(bogusContrId);
         } catch (Exception e) {
             assertEquals(true, e instanceof KubernetesClientException);
-            assertEquals("Replication Controller ["+bogusContrId+"] doesn't exist.", e.getMessage());
+            assertEquals("Replication controller does not exist: [replication-controller-id] "+bogusContrId, e.getMessage());
         }
 	}
 	
