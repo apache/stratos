@@ -318,7 +318,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 					replicationControllerId, res);
 			
             if (res.getStatusCode() == HttpStatus.SC_NOT_FOUND) {
-            	String message = "Replication controller does not exist: [replicateion-controller-id] "
+            	String message = "Replication controller does not exist: [replication-controller-id] "
 						+ replicationControllerId;
 				log.error(message);
 				throw new KubernetesClientException(message);
