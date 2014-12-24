@@ -144,7 +144,11 @@
             <artifactId>openstack-keystone</artifactId>
             <version>${jclouds.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>openstack-neutron</artifactId>
+            <version>${jclouds.stratos.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.jclouds</groupId>
             <artifactId>jclouds-scriptbuilder</artifactId>
