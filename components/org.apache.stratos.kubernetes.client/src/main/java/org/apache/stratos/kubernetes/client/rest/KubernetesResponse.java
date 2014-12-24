@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -16,41 +15,75 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
  */
+
 package org.apache.stratos.kubernetes.client.rest;
 
 /**
- * Holds the data extracted from a HttpResponse.
+ * Kubernetes response.
  */
 public class KubernetesResponse {
+    private String kind;
+    private String creationTimestamp;
+    private String selfLink;
+    private String apiVersion;
+    private String status;
+    private String message;
+    private int code;
 
-	private int statusCode;
-	private String content;
-	private String reason;
-	
-    public int getStatusCode() {
-        return statusCode;
-    }
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-    public String getContent() {
-        return content;
-    }
-    public void setContent(String content) {
-        this.content = content;
-    }
-    public String getReason() {
-        return reason;
-    }
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-    @Override
-    public String toString() {
-        return "KubernetesResponse [statusCode=" + statusCode + ", content=" + content
-                + ", reason=" + reason + "]";
+    public String getKind() {
+        return kind;
     }
 
+    public void setKind(String kind) {
+        this.kind = kind;
+    }
+
+    public String getCreationTimestamp() {
+        return creationTimestamp;
+    }
+
+    public void setCreationTimestamp(String creationTimestamp) {
+        this.creationTimestamp = creationTimestamp;
+    }
+
+    public String getSelfLink() {
+        return selfLink;
+    }
+
+    public void setSelfLink(String selfLink) {
+        this.selfLink = selfLink;
+    }
+
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+    public void setApiVersion(String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
 }

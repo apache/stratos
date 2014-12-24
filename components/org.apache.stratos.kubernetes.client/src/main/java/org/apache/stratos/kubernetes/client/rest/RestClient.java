@@ -51,7 +51,7 @@ public class RestClient {
      * @return The HttpResponse
      * @throws Exception if any errors occur when executing the request
      */
-    public KubernetesResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
+    public HttpResponse doPost(URI resourcePath, String jsonParamString) throws Exception{
         HttpPost postRequest = null;
         try {
             postRequest = new HttpPost(resourcePath);
@@ -74,7 +74,7 @@ public class RestClient {
      * @throws org.apache.http.client.ClientProtocolException and IOException
      *             if any errors occur when executing the request
      */
-    public KubernetesResponse doGet(URI resourcePath) throws Exception{
+    public HttpResponse doGet(URI resourcePath) throws Exception{
         HttpGet getRequest = null;
         try {
             getRequest = new HttpGet(resourcePath);
@@ -86,7 +86,7 @@ public class RestClient {
         }
     }
     
-    public KubernetesResponse doDelete(URI resourcePath) throws Exception {
+    public HttpResponse doDelete(URI resourcePath) throws Exception {
         HttpDelete httpDelete = null;
         try {
             httpDelete = new HttpDelete(resourcePath);
@@ -98,7 +98,7 @@ public class RestClient {
         }
     }
 
-    public KubernetesResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
+    public HttpResponse doPut(URI resourcePath, String jsonParamString) throws Exception {
 
         HttpPut putRequest = null;
 		try {

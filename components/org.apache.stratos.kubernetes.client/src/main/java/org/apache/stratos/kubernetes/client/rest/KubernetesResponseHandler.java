@@ -20,10 +20,13 @@
  */
 package org.apache.stratos.kubernetes.client.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
@@ -33,20 +36,20 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Handles a HttpResponse and returns a {@link KubernetesResponse}
+ * Handles a HttpResponse and returns a {@link HttpResponse}
  */
-public class KubernetesResponseHandler implements ResponseHandler<KubernetesResponse>{
+public class KubernetesResponseHandler implements ResponseHandler<HttpResponse>{
     private static final Log log = LogFactory.getLog(KubernetesResponseHandler.class);
 
     @Override
-    public KubernetesResponse handleResponse(HttpResponse response) throws ClientProtocolException,
+    public HttpResponse handleResponse(org.apache.http.HttpResponse response) throws ClientProtocolException,
             IOException {
         StatusLine statusLine = response.getStatusLine();
         HttpEntity entity = response.getEntity();
         if (entity == null) {
             throw new ClientProtocolException("Response contains no content");
         }
-        
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(
                 (response.getEntity().getContent())));
 
@@ -56,16 +59,41 @@ public class KubernetesResponseHandler implements ResponseHandler<KubernetesResp
         while ((output = reader.readLine()) != null) {
             result += output;
         }
-        
-        KubernetesResponse kubResponse = new KubernetesResponse();
-        kubResponse.setStatusCode(statusLine.getStatusCode());
-        kubResponse.setContent(result);
-        kubResponse.setReason(statusLine.getReasonPhrase());
-        
-        if (log.isDebugEnabled()) {
-            log.debug("Extracted Kubernetes Response: "+kubResponse.toString());
+
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatusCode(statusLine.getStatusCode());
+        httpResponse.setContent(result);
+        if(StringUtils.isNotBlank(result) && (isJson(result))) {
+            httpResponse.setKubernetesResponse(parseKubernetesResponse(result));
         }
-        
-        return kubResponse;
+        httpResponse.setReason(statusLine.getReasonPhrase());
+
+        if (log.isDebugEnabled()) {
+            log.debug("Extracted Kubernetes Response: "+httpResponse.toString());
+        }
+
+        return httpResponse;
+    }
+
+    private boolean isJson(String content) {
+        try {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            gson.fromJson(content, Object.class);
+            return true;
+        } catch (JsonSyntaxException ignore) {
+            return false;
+        }
+    }
+
+    private KubernetesResponse parseKubernetesResponse(String result) {
+        try {
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+            return gson.fromJson(result, KubernetesResponse.class);
+        } catch (Exception e) {
+            log.error("Could not parse kubernetes api response", e);
+            return null;
+        }
     }
 }
