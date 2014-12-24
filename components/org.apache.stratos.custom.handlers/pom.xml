@@ -11,8 +11,8 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.custom.handlers</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Custome Handlers</name>
-    <description>Custome Handlers</description>
+    <name>Apache Stratos - Custom Handlers</name>
+    <description>Custom Handlers</description>
     <url>http://apache.org</url>
     <dependencies>
         <dependency>
