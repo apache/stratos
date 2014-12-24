@@ -79,7 +79,7 @@ public class Pod {
 		return desiredState;
 	}
 
-	public void setState(State desiredState) {
+	public void setDesiredState(State desiredState) {
 		this.desiredState = desiredState;
 	}
 

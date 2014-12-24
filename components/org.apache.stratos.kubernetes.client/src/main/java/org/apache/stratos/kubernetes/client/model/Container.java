@@ -20,7 +20,9 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -31,9 +33,13 @@ public class Container {
 	private String workingDir;
 	private String[] command;
 	private VolumeMount[] volumeMounts;
-	private Port[] ports;
+	private List<Port> ports;
 	private EnvironmentVariable[] env;
-	
+
+	public Container() {
+		ports = new ArrayList<Port>();
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -74,12 +80,16 @@ public class Container {
 		this.volumeMounts = ArrayUtils.clone(volumeMounts);
 	}
 
-	public Port[] getPorts() {
+	public List<Port> getPorts() {
 		return ports;
 	}
 
-	public void setPorts(Port[] ports) {
-		this.ports = ArrayUtils.clone(ports);
+	public void addPort(Port port) {
+		this.ports.add(port);
+	}
+
+	public void setPorts(List<Port> ports) {
+		this.ports = ports;
 	}
 
 	public EnvironmentVariable[] getEnv() {
@@ -95,7 +105,7 @@ public class Container {
 		return "Container [name=" + name + ", image=" + image + ", workingDir="
 				+ workingDir + ", command=" + Arrays.toString(command)
 				+ ", volumeMounts=" + Arrays.toString(volumeMounts)
-				+ ", ports=" + Arrays.toString(ports) + ", env="
+				+ ", ports=" + ports + ", env="
 				+ Arrays.toString(env) + "]";
 	}
 }
