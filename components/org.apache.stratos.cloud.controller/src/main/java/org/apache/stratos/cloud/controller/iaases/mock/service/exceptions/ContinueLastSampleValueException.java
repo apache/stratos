@@ -17,29 +17,20 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.iaases.mock;
-
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-
-import java.util.Properties;
+package org.apache.stratos.cloud.controller.iaases.mock.service.exceptions;
 
 /**
- * Mock partition validator.
+ * Thrown when statistics pattern mode is set to continue and pattern reaches
+ * the last sample value.
  */
-public class MockPartitionValidator implements PartitionValidator {
+public class ContinueLastSampleValueException extends Exception {
+    private int lastSampleValue;
 
-    private IaasProvider iaasProvider;
-
-    @Override
-    public void setIaasProvider(IaasProvider iaasProvider) {
-        this.iaasProvider = iaasProvider;
+    public ContinueLastSampleValueException(int lastSampleValue) {
+        this.lastSampleValue = lastSampleValue;
     }
 
-    @Override
-    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        return iaasProvider;
+    public int getLastSampleValue() {
+        return lastSampleValue;
     }
 }

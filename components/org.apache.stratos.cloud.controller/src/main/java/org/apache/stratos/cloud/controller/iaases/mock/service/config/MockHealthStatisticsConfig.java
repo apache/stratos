@@ -17,29 +17,28 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.iaases.mock;
+package org.apache.stratos.cloud.controller.iaases.mock.service.config;
 
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.mock.service.statistics.generator.MockHealthStatisticsPattern;
 
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Mock partition validator.
+ * Mock health statistics configuration.
  */
-public class MockPartitionValidator implements PartitionValidator {
+public class MockHealthStatisticsConfig {
+    List<MockHealthStatisticsPattern> statisticsPatternList;
 
-    private IaasProvider iaasProvider;
-
-    @Override
-    public void setIaasProvider(IaasProvider iaasProvider) {
-        this.iaasProvider = iaasProvider;
+    public MockHealthStatisticsConfig() {
+        statisticsPatternList = new ArrayList<MockHealthStatisticsPattern>();
     }
 
-    @Override
-    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        return iaasProvider;
+    public void addStatisticsPattern(MockHealthStatisticsPattern statisticsPattern) {
+        statisticsPatternList.add(statisticsPattern);
+    }
+
+    public List<MockHealthStatisticsPattern> getStatisticsPatterns() {
+        return statisticsPatternList;
     }
 }

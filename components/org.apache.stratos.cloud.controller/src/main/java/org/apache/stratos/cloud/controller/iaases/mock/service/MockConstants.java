@@ -17,29 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.iaases.mock;
-
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-
-import java.util.Properties;
+package org.apache.stratos.cloud.controller.iaases.mock.service;
 
 /**
- * Mock partition validator.
+ * Mock constant definitions.
  */
-public class MockPartitionValidator implements PartitionValidator {
-
-    private IaasProvider iaasProvider;
-
-    @Override
-    public void setIaasProvider(IaasProvider iaasProvider) {
-        this.iaasProvider = iaasProvider;
-    }
-
-    @Override
-    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        return iaasProvider;
-    }
+public class MockConstants {
+    public static final int MAX_MOCK_MEMBER_COUNT = 100;
 }

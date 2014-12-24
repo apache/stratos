@@ -42,7 +42,7 @@
 		same property over and over again. -->
 	<iaasProviders>
 		<!-- iaasProvider type="openstack" name="Openstack">
-            <className>org.apache.stratos.cloud.controller.iaases.JcloudsOpenstackIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas</className>
 			<provider>openstack-nova</provider>
 			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
 			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
@@ -54,7 +54,7 @@
 			<property name="Y" value="y" />
 		</iaasProvider -->
         <!-- iaasProvider type="ec2" name="Amazon EC2">
-            <className>org.apache.stratos.cloud.controller.iaases.JcloudsEC2Iaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.ec2.EC2Iaas</className>
             <provider>aws-ec2</provider>
             <identity svns:secretAlias="cloud.controller.ec2.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.ec2.credential">credential</credential>
@@ -65,13 +65,13 @@
             <property name="keyPair" value="keypair-name"/>
         </iaasProvider -->
         <iaasProvider type="kubernetes" name="Kubernetes">
-            <className>org.apache.stratos.cloud.controller.iaases.KubernetesIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.kubernetes.KubernetesIaas</className>
             <provider>kubernetes</provider>
             <identity svns:secretAlias="cloud.controller.kubernetes.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.kubernetes.credential">credential</credential>
         </iaasProvider>
         <iaasProvider type="mock" name="Mock">
-            <className>org.apache.stratos.cloud.controller.iaases.MockIaas</className>
+            <className>org.apache.stratos.cloud.controller.iaases.mock.MockIaas</className>
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>

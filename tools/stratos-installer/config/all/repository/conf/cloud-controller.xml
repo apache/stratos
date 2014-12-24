@@ -16,14 +16,14 @@
   #  KIND, either express or implied.  See the License for the
   #  specific language governing permissions and limitations
   #  under the License.
-  --> 
+  -->
 <cloudController xmlns:svns="http://org.wso2.securevault/configuration">
 
 	<svns:secureVault
 		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
 
     	<dataPublisher enable="false">
-		<!-- BAM Server Info - default values are 'admin' and 'admin' 
+		<!-- BAM Server Info - default values are 'admin' and 'admin'
 			 Optional element. -->
 		<bamServer>
             		<!-- BAM server URL should be specified in carbon.xml -->
@@ -43,14 +43,14 @@
 
     	<topologySync enable="true">
 		<property name="cron" value="1 * * * * ? *" />
-	</topologySync>	
+	</topologySync>
 
-        <!-- Specify the properties that are common to an IaaS here. This element 
-                is not necessary [0..1]. But you can use this section to avoid specifying 
+        <!-- Specify the properties that are common to an IaaS here. This element
+                is not necessary [0..1]. But you can use this section to avoid specifying
                 same property over and over again. -->
 	<iaasProviders>
         	<EC2_PROVIDER_STARTiaasProvider type="ec2" name="ec2 specific details">
-                	<className>org.apache.stratos.cloud.controller.iaases.JcloudsEC2Iaas</className>
+                	<className>org.apache.stratos.cloud.controller.iaases.ec2.EC2Iaas</className>
                         <provider>aws-ec2</provider>
                         <identity svns:secretAlias="cloud.controller.ec2.identity">EC2_IDENTITY</identity>
                         <credential svns:secretAlias="cloud.controller.ec2.credential">EC2_CREDENTIAL</credential>
@@ -61,33 +61,33 @@
                         <property name="keyPair" value="EC2_KEYPAIR"/>
                 </iaasProviderEC2_PROVIDER_END>
                 <OPENSTACK_PROVIDER_STARTiaasProvider type="openstack" name="openstack specific details">
-            		<className>org.apache.stratos.cloud.controller.iaases.JcloudsOpenstackIaas</className>
+            		<className>org.apache.stratos.cloud.controller.iaases.openstack.OpenstackIaas</className>
                         <provider>openstack-nova</provider>
                         <identity svns:secretAlias="cloud.controller.openstack.identity">OPENSTACK_IDENTITY</identity>
                         <credential svns:secretAlias="cloud.controller.openstack.credential">OPENSTACK_CREDENTIAL</credential>
                         <property name="jclouds.endpoint" value="OPENSTACK_ENDPOINT" />
-            		<property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
+            		    <property name="jclouds.openstack-nova.auto-create-floating-ips" value="false"/>
                         <property name="jclouds.api-version" value="2.0/" />
-			<property name="openstack.networking.provider" value="OPENSTACK_NETWORKING_PROVIDER" />
+			            <property name="openstack.networking.provider" value="OPENSTACK_NETWORKING_PROVIDER" />
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
                         <property name="securityGroups" value="OPENSTACK_SECURITY_GROUPS"/>
                         <property name="keyPair" value="OPENSTACK_KEYPAIR"/>
-        	</iaasProviderOPENSTACK_PROVIDER_END>
+        	    </iaasProviderOPENSTACK_PROVIDER_END>
                 <VCLOUD_PROVIDER_STARTiaasProvider type="vcloud" name="VMware vCloud specific details">
-                        <className>org.apache.stratos.cloud.controller.iaases.JcloudsVCloudIaas</className>
+                        <className>org.apache.stratos.cloud.controller.iaases.vcloud.VCloudIaas</className>
                         <provider>vcloud</provider>
                         <identity svns:secretAlias="cloud.controller.vcloud.identity">VCLOUD_IDENTITY</identity>
                         <credential svns:secretAlias="cloud.controller.vcloud.credential">VCLOUD_CREDENTIAL</credential>
                         <property name="jclouds.endpoint" value="VCLOUD_ENDPOINT" />
                         <property name="jclouds.vcloud.version.schema" value="1.5" />
                         <property name="jclouds.api-version" value="1.5" />
-			<property name="autoAssignIp" value="true" />
+			            <property name="autoAssignIp" value="true" />
                         <property name="X" value="x" />
                         <property name="Y" value="y" />
                 </iaasProviderVCLOUD_PROVIDER_END>
                 <GCE_PROVIDER_STARTiaasProvider type="gce" name="GCE specific details">
-                        <className>org.apache.stratos.cloud.controller.iaases.JcloudsGCEIaas</className>
+                        <className>org.apache.stratos.cloud.controller.iaases.gce.GCEIaas</className>
                         <provider>google-compute-engine</provider>
                         <identity svns:secretAlias="cloud.controller.gce.identity">GCE_IDENTITY</identity>
                         <credential svns:secretAlias="cloud.controller.gce.credential">GCE_CREDENTIAL</credential>

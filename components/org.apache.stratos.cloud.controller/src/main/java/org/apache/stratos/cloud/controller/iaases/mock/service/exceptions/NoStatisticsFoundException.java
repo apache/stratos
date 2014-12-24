@@ -17,29 +17,10 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.iaases.mock;
-
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-
-import java.util.Properties;
+package org.apache.stratos.cloud.controller.iaases.mock.service.exceptions;
 
 /**
- * Mock partition validator.
+ * No statistics found exception.
  */
-public class MockPartitionValidator implements PartitionValidator {
-
-    private IaasProvider iaasProvider;
-
-    @Override
-    public void setIaasProvider(IaasProvider iaasProvider) {
-        this.iaasProvider = iaasProvider;
-    }
-
-    @Override
-    public IaasProvider validate(Partition partition, Properties properties) throws InvalidPartitionException {
-        return iaasProvider;
-    }
+public class NoStatisticsFoundException extends Exception {
 }

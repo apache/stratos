@@ -20,7 +20,6 @@ package org.apache.stratos.cloud.controller.iaases;
 
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.*;
-import org.apache.stratos.cloud.controller.iaases.validators.PartitionValidator;
 
 /**
  * All IaaSes that are going to support by Cloud Controller, should extend this abstract class.
