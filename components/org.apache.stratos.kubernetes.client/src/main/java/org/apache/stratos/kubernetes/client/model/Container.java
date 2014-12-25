@@ -34,6 +34,7 @@ public class Container {
 	private String[] command;
 	private VolumeMount[] volumeMounts;
 	private List<Port> ports;
+	private String imagePullPolicy;
 	private EnvironmentVariable[] env;
 
 	public Container() {
@@ -107,5 +108,13 @@ public class Container {
 				+ ", volumeMounts=" + Arrays.toString(volumeMounts)
 				+ ", ports=" + ports + ", env="
 				+ Arrays.toString(env) + "]";
+	}
+
+	public String getImagePullPolicy() {
+		return imagePullPolicy;
+	}
+
+	public void setImagePullPolicy(String imagePullPolicy) {
+		this.imagePullPolicy = imagePullPolicy;
 	}
 }

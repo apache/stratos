@@ -40,7 +40,9 @@ import java.util.List;
 
 /**
  * Notes:
- * - Pull the docker image before running the live test
+ * Initially it would take some time to pull the docker image and create a pod.
+ * As a result live test would fail when running for the first time on a fresh
+ * kubernetes cluster.
  */
 @Category(org.apache.stratos.kubernetes.client.LiveTests.class)
 public class KubernetesApiClientLiveTest extends TestCase{
@@ -51,7 +53,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
     private static final int SERVICE_PORT = 4500;
     private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
     private static final String DEFAULT_DOCKER_IMAGE =  "gurpartap/redis";
-    private static final int POD_ACTIVATION_WAIT_TIME = 15000; // 15 seconds
+    private static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
 
     private KubernetesApiClient client;
     private String dockerImage;

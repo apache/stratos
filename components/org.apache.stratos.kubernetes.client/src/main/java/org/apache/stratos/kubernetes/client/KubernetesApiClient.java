@@ -77,6 +77,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         containerTemplate.setName(podName);
         containerTemplate.setImage(dockerImage);
         containerTemplate.setPorts(convertIntPortListToPortList(containerPorts));
+        containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
 
         manifest.addContainer(containerTemplate);
         desiredState.setManifest(manifest);
@@ -321,6 +322,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             Container containerTemplate = new Container();
             containerTemplate.setName(replicationControllerName);
             containerTemplate.setImage(dockerImage);
+            containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
             if(environmentVariables != null) {
                 containerTemplate.setEnv(environmentVariables);
             }

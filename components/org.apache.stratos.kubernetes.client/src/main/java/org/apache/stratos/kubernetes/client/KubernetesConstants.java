@@ -29,4 +29,5 @@ public class KubernetesConstants {
     public static final String KIND_SERVICE = "Service";
     public static final String KIND_REPLICATION_CONTROLLER = "ReplicationController";
     public static final String KIND_POD = "Pod";
+    public static final String POLICY_PULL_IF_NOT_PRESENT = "PullIfNotPresent";
 }
