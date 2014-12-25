@@ -62,7 +62,7 @@ public class PolicyManager {
     // Add the policy to information model and persist.
     public boolean addAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Starting to add autoscaling policy: [id] %s", policy.getId()));
+            log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
         }
         if(StringUtils.isEmpty(policy.getId())){
             throw new AutoScalerException("Autoscaling policy id cannot be empty");

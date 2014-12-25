@@ -72,7 +72,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
         if(log.isInfoEnabled()) {
-            log.info("Starting to add cartridge: [cartridge-type] " + cartridgeConfig.getType());
+            log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
         }
         if (log.isDebugEnabled()) {
             log.debug("Cartridge definition: " + cartridgeConfig.toString());

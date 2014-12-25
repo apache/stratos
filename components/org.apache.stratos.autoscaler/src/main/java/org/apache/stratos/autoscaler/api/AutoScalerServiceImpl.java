@@ -165,7 +165,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             throws ApplicationDefinitionException {
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Starting to add application: [application-id] %s",
+            log.info(String.format("Adding application: [application-id] %s",
                     applicationContext.getApplicationId()));
         }
 
@@ -360,7 +360,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
         }
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Starting to add service group: [group-name] %s", servicegroup.getName()));
+            log.info(String.format("Adding service group: [group-name] %s", servicegroup.getName()));
         }
         String groupName = servicegroup.getName();
         if (RegistryManager.getInstance().serviceGroupExist(groupName)) {

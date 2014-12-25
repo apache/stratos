@@ -99,7 +99,7 @@ public class StratosApiV41Utils {
                                        String userName, String tenantDomain) throws RestAPIException {
 
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Starting to add cartridge: [cartridge-type] %s ", cartridgeDefinitionBean.getType()));
+            log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinitionBean.getType()));
         }
         CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinitionBean);
         if (cartridgeConfig == null) {
