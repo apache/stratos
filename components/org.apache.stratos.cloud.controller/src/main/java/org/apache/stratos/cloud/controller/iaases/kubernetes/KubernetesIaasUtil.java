@@ -73,9 +73,7 @@ public class KubernetesIaasUtil {
     public static EnvironmentVariable[] prepareEnvironmentVariables(ClusterContext clusterContext,
                                                                      MemberContext memberContext) {
 
-        String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
-                StratosConstants.KUBERNETES_CLUSTER_ID);
-
+        String kubernetesClusterId = clusterContext.getKubernetesClusterId();
         List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
 
         // Set dynamic payload

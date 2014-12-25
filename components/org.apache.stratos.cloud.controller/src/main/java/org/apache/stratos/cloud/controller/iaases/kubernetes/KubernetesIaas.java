@@ -159,6 +159,7 @@ public class KubernetesIaas extends Iaas {
 
             try {
                 String kubernetesClusterId = partition.getKubernetesClusterId();
+                clusterContext.setKubernetesClusterId(kubernetesClusterId);
                 KubernetesCluster kubernetesCluster = CloudControllerContext.getInstance().
                         getKubernetesCluster(kubernetesClusterId);
                 handleNullObject(kubernetesCluster, "Could not start container, kubernetes cluster not found: " +
@@ -414,14 +415,15 @@ public class KubernetesIaas extends Iaas {
             lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
 
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(clusterContext, "Could not terminate containers, cluster not found: [cluster-id] " + clusterId);
+            handleNullObject(clusterContext, "Could not terminate containers, cluster not found: [cluster-id] "
+                    + clusterId);
 
-            String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
-                    StratosConstants.KUBERNETES_CLUSTER_ID);
+            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
             handleNullObject(kubernetesClusterId, "Could not terminate containers, kubernetes cluster id not found: " +
                     "[cluster-id] " + clusterId);
 
-            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().getKubernetesClusterContext(kubernetesClusterId);
+            KubernetesClusterContext kubClusterContext = CloudControllerContext.getInstance().
+                    getKubernetesClusterContext(kubernetesClusterId);
             handleNullObject(kubClusterContext, "Could not terminate containers, kubernetes cluster not found: " +
                     "[kubernetes-cluster-id] " + kubernetesClusterId);
 
@@ -485,8 +487,7 @@ public class KubernetesIaas extends Iaas {
             handleNullObject(clusterContext, String.format("Could not terminate container, cluster context not found: " +
                     "[cluster-id] %s [member-id] %s", clusterId, memberId));
 
-            String kubernetesClusterId = CloudControllerUtil.getProperty(clusterContext.getProperties(),
-                    StratosConstants.KUBERNETES_CLUSTER_ID);
+            String kubernetesClusterId = clusterContext.getKubernetesClusterId();
             handleNullObject(kubernetesClusterId, String.format("Could not terminate container, kubernetes cluster " +
                     "context id is null: [cluster-id] %s [member-id] %s", clusterId, memberId));
 

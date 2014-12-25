@@ -47,6 +47,7 @@ public class ClusterContext implements Serializable{
     private long timeoutInMillis;
     private Properties properties;
     private List<Service> kubernetesServices;
+    private String kubernetesClusterId;
 
     public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
     		boolean isLbCluster, Properties properties) {
@@ -140,12 +141,11 @@ public class ClusterContext implements Serializable{
         this.kubernetesServices = kubernetesServices;
     }
 
-	
-	/*public void addProperty(String key, int value) {
-		this.properties.put(key, value);
-	}
-	
-	public void addProperty(String key, String value) {
-		this.properties.put(key, value);
-	}*/
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
 }

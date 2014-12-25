@@ -354,15 +354,6 @@ public class TopologyBuilder {
         }*/
     }
 
-
-    private static void setKubernetesCluster(Cluster cluster) {  
-    	boolean isKubernetesCluster = (cluster.getProperties().getProperty(StratosConstants.KUBERNETES_CLUSTER_ID) != null);
-		if (log.isDebugEnabled()) {
-			log.debug(" Kubernetes Cluster ["+ isKubernetesCluster + "] ");
-		}
-		cluster.setKubernetesCluster(isKubernetesCluster);		
-	}
-
 	public static void handleClusterRemoved(ClusterContext ctxt) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(ctxt.getCartridgeType());
