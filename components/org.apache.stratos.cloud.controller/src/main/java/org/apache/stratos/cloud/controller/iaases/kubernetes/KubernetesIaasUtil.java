@@ -61,11 +61,7 @@ public class KubernetesIaasUtil {
      * @return
      */
     public static String prepareKubernetesServiceId(String clusterId, PortMapping portMapping) {
-        String serviceId = String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
-        if(serviceId.contains(".")) {
-            serviceId = serviceId.replace(".", "-");
-        }
-        return serviceId;
+        return String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
     }
 
     /**

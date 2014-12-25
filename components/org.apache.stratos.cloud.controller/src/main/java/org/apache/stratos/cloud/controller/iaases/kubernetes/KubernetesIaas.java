@@ -321,8 +321,8 @@ public class KubernetesIaas extends Iaas {
         memberContext.setDynamicPayload(payload);
 
         // Create replication controller
-        String replicationControllerId = memberContext.getMemberId();
-        String replicationControllerName = memberContext.getMemberId();
+        String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
+        String replicationControllerName = replicationControllerId;
         String dockerImage = iaasProvider.getImage();
         List<Integer> containerPorts = KubernetesIaasUtil.prepareCartridgePorts(cartridge);
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
@@ -361,7 +361,8 @@ public class KubernetesIaas extends Iaas {
 
         List<PortMapping> portMappings = cartridge.getPortMappings();
         for(PortMapping portMapping : portMappings) {
-            String serviceId = KubernetesIaasUtil.prepareKubernetesServiceId(clusterId, portMapping);
+            String serviceId = KubernetesIaasUtil.prepareKubernetesServiceId(
+                    CloudControllerUtil.replaceDotsWithDash(clusterId), portMapping);
             int nextServicePort = kubernetesClusterContext.getNextServicePort();
             if(nextServicePort == -1) {
                 throw new RuntimeException(String.format("Could not generate service port: [cluster-id] %s ",

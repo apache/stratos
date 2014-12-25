@@ -357,11 +357,11 @@ public class CloudControllerUtil {
 		return "[" +partitionStr+ "]";
 	}
 	
-	public static String getCompatibleId(String clusterId) {
-		if (clusterId.indexOf('.') != -1) {
-			clusterId = clusterId.replace('.', '-');
+	public static String replaceDotsWithDash(String id) {
+		if (id.indexOf('.') != -1) {
+			id = id.replace('.', '-');
 		}
-		return clusterId;
+		return id;
 	}
 	
 	public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
