@@ -119,9 +119,21 @@ dialect "mvel"
 
 	    log.debug("[scaling] Number of required instances based on stats: " + numberOfRequiredInstances + " [active instances count] " + activeInstancesCount + " [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId);
 
+        int nonTerminatedMemberCount = clusterInstanceContext.getNonTerminatedMemberCount();
         if(scaleUp){
-            if (clusterInstanceContext.getNonTerminatedMemberCount() < clusterInstanceContext.getMaxInstanceCount()) {
-                int additionalInstances = numberOfRequiredInstances - activeInstancesCount ;
+
+            int clusterMaxMembers = clusterInstanceContext.getMaxInstanceCount();
+            if (nonTerminatedMemberCount < clusterMaxMembers) {
+
+                int additionalInstances = 0;
+                if(clusterMaxMembers < numberOfRequiredInstances){
+
+                    additionalInstances = clusterMaxMembers - nonTerminatedMemberCount;
+                } else {
+
+                    additionalInstances = numberOfRequiredInstances - nonTerminatedMemberCount;
+                }
+
                 clusterInstanceContext.resetScaleDownRequestsCount();
 
                 log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
@@ -153,12 +165,12 @@ dialect "mvel"
                 log.info("[scale-up] Max is reached, hence not scaling up cluster monitor itself and
                         notifying to parent for possible group scaling or app bursting.
                         [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
-                        " [max] " + clusterInstanceContext.getMaxInstanceCount());
+                        " [max] " + clusterMaxMembers);
                 delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
             }
         } else if(scaleDown){
 
-            if(clusterInstanceContext.getNonTerminatedMemberCount() > clusterInstanceContext.getMinInstanceCount){
+            if(nonTerminatedMemberCount > clusterInstanceContext.getMinInstanceCount){
 
                 log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
                 if(clusterInstanceContext.getScaleDownRequestsCount() > 2 ){
