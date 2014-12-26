@@ -33,6 +33,7 @@ import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.cloud.controller.util.PodActivationWatcher;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.beans.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
@@ -56,6 +57,7 @@ public class KubernetesIaas extends Iaas {
     private static final long POD_CREATION_TIMEOUT = 120000; // 2 min
     private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
+    private static final String PAYLOAD_PARAMETER_PREFIX = "payload_parameter.";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
@@ -172,6 +174,19 @@ public class KubernetesIaas extends Iaas {
                 String kubernetesMasterPort = CloudControllerUtil.getProperty(
                         kubernetesCluster.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
                         StratosConstants.KUBERNETES_MASTER_DEFAULT_PORT);
+
+                // Add kubernetes cluster payload parameters to payload
+                if((kubernetesCluster.getProperties() != null) &&
+                        (kubernetesCluster.getProperties().getProperties() != null)) {
+                    for(Property property : kubernetesCluster.getProperties().getProperties()) {
+                        if(property != null) {
+                            if(property.getName().startsWith(PAYLOAD_PARAMETER_PREFIX)) {
+                                String name = property.getName().replace(PAYLOAD_PARAMETER_PREFIX, "");
+                                payload.add(new NameValuePair(name, property.getValue()));
+                            }
+                        }
+                    }
+                }
 
                 KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
                         kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getUpper(),
