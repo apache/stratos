@@ -43,25 +43,42 @@ dialect "mvel"
         clusterInstanceContext : ClusterInstanceContext ()
         autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
 
+        nonTerminatedMembers : Integer() from clusterInstanceContext.getNonTerminatedMemberCount()
+
         eval(log.debug("Running dependent scaling rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId()))
-        scaleUp : Boolean() from (clusterInstanceContext.getNonTerminatedMemberCount() < roundedRequiredInstanceCount )
-        scaleDown : Boolean() from (clusterInstanceContext.getNonTerminatedMemberCount() > roundedRequiredInstanceCount )
+        scaleUp : Boolean() from (nonTerminatedMembers < roundedRequiredInstanceCount )
+        scaleDown : Boolean() from (nonTerminatedMembers > roundedRequiredInstanceCount )
 
 	then
 
         if(scaleUp) {
+
             int clusterMaxMembers = clusterInstanceContext.getMaxInstanceCount();
-            int currentMemberCount = clusterInstanceContext.getNonTerminatedMemberCount();
-            int additionalInstances = roundedRequiredInstanceCount - currentMemberCount;
-            int count = 0;
-            boolean partitionsAvailable = true;
+            if (nonTerminatedMembers < clusterInstanceContext.getMaxInstanceCount()) {
 
-            log.debug("[dependent-scale] is running for [cluster] " + clusterId +
-            " [cluster-instance] " + clusterInstanceContext.getId() + " max member count is: " +
-                clusterMaxMembers + " current member count is: " + currentMemberCount);
+                int additionalInstances = 0;
+                if(clusterInstanceContext.getMaxInstanceCount() < roundedRequiredInstanceCount){
 
-            while(count != additionalInstances  && partitionsAvailable) {
-                if(currentMemberCount < clusterMaxMembers) {
+                    additionalInstances = clusterInstanceContext.getMaxInstanceCount() - nonTerminatedMembers;
+                } else {
+
+                    additionalInstances = roundedRequiredInstanceCount - nonTerminatedMembers;
+                    log.info("[scale-up] Required member count based on dependecy scaling is higher than max, hence
+                            notifying to parent for possible group scaling or app bursting.
+                            [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
+                            " [max] " + clusterMaxMembers);
+                    delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
+                }
+
+                int count = 0;
+                boolean partitionsAvailable = true;
+
+                log.debug("[dependent-scale] is running for [cluster] " + clusterId +
+                " [cluster-instance] " + clusterInstanceContext.getId() + " max member count is: " +
+                    clusterMaxMembers + " current member count is: " + nonTerminatedMembers);
+
+                while(count != additionalInstances  && partitionsAvailable) {
+
                     ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                     if(partitionContext != null) {
 
@@ -72,27 +89,33 @@ dialect "mvel"
                     } else {
                         partitionsAvailable = false;
                     }
-                } else {
-                    partitionsAvailable = false;
-                }
-            }
-            if(!partitionsAvailable) {
-                if(clusterInstanceContext.isInGroupScalingEnabledSubtree()){
-                    delegator.delegateScalingOverMaxNotification(clusterId,
-                                                    clusterInstanceContext.getNetworkPartitionId(),
-                                                    clusterInstanceContext.getId());
-                    log.info("[dependency-scale][dependent-max-notification] partition is not
-                    available for [scale-up]. Hence notifying the parent for group scaling" );
-                } else {
-                    log.warn("[dependency-scale][dependent-max-notification] partition is not
-                                    available for [scale-up]. All resources are exhausted.
-                                    Please enable group-scaling for further scaleup" );
                 }
 
+                if(!partitionsAvailable) {
+                    if(clusterInstanceContext.isInGroupScalingEnabledSubtree()){
+                        delegator.delegateScalingOverMaxNotification(clusterId,
+                                                        clusterInstanceContext.getNetworkPartitionId(),
+                                                        clusterInstanceContext.getId());
+                        log.info("[dependency-scale][dependent-max-notification] partition is not
+                        available for [scale-up]. Hence notifying the parent for group scaling" );
+                    } else {
+                        log.warn("[dependency-scale][dependent-max-notification] partition is not
+                                        available for [scale-up]. All resources are exhausted.
+                                        Please enable group-scaling for further scaleup" );
+                    }
+
+                }
+            } else {
+
+                 log.info("[scale-up] Trying to scale up over max, hence not scaling up cluster itself and
+                         notifying to parent for possible group scaling or app bursting.
+                         [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
+                         " [max] " + clusterMaxMembers);
+                 delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
             }
         } else if (scaleDown) {
 
-            int redundantInstances = clusterInstanceContext.getNonTerminatedMemberCount() - roundedRequiredInstanceCount;
+            int redundantInstances = nonTerminatedMembers - roundedRequiredInstanceCount;
 
             int count = 0;
 
