@@ -92,8 +92,8 @@ dialect "mvel"
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
         numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
-        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, clusterInstanceContext.getActiveMemberCount())
-        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laThreshold, laPredictedValue, clusterInstanceContext.getActiveMemberCount())
+        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, activeInstancesCount)
+        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laThreshold, laPredictedValue, activeInstancesCount)
 
         numberOfRequiredInstances : Integer() from delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
 
@@ -119,19 +119,24 @@ dialect "mvel"
 
 	    log.debug("[scaling] Number of required instances based on stats: " + numberOfRequiredInstances + " [active instances count] " + activeInstancesCount + " [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId);
 
-        int nonTerminatedMemberCount = clusterInstanceContext.getNonTerminatedMemberCount();
+        int nonTerminatedMembers = clusterInstanceContext.getNonTerminatedMemberCount();
         if(scaleUp){
 
             int clusterMaxMembers = clusterInstanceContext.getMaxInstanceCount();
-            if (nonTerminatedMemberCount < clusterMaxMembers) {
+            if (nonTerminatedMembers < clusterMaxMembers) {
 
                 int additionalInstances = 0;
                 if(clusterMaxMembers < numberOfRequiredInstances){
 
-                    additionalInstances = clusterMaxMembers - nonTerminatedMemberCount;
+                    additionalInstances = clusterMaxMembers - nonTerminatedMembers;
+                    log.info("[scale-up] Required member count based on stat based scaling is higher than max, hence
+                            notifying to parent for possible group scaling or app bursting.
+                            [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
+                            " [max] " + clusterMaxMembers);
+                    delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
                 } else {
 
-                    additionalInstances = numberOfRequiredInstances - nonTerminatedMemberCount;
+                    additionalInstances = numberOfRequiredInstances - nonTerminatedMembers;
                 }
 
                 clusterInstanceContext.resetScaleDownRequestsCount();
@@ -162,7 +167,7 @@ dialect "mvel"
                     }
                 }
             } else {
-                log.info("[scale-up] Max is reached, hence not scaling up cluster monitor itself and
+                log.info("[scale-up] Trying to scale up over max, hence not scaling up cluster itself and
                         notifying to parent for possible group scaling or app bursting.
                         [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
                         " [max] " + clusterMaxMembers);
@@ -170,7 +175,7 @@ dialect "mvel"
             }
         } else if(scaleDown){
 
-            if(nonTerminatedMemberCount > clusterInstanceContext.getMinInstanceCount){
+            if(nonTerminatedMembers > clusterInstanceContext.getMinInstanceCount){
 
                 log.debug("[scale-down] Decided to Scale down [cluster] " + clusterId);
                 if(clusterInstanceContext.getScaleDownRequestsCount() > 2 ){
