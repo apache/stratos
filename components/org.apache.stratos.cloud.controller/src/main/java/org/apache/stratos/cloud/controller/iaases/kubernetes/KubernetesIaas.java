@@ -228,7 +228,8 @@ public class KubernetesIaas extends Iaas {
                 }
 
                 // Create member context
-                MemberContext newMemberContext = createNewMemberContext(memberContext, pod);
+                String memberIp = kubernetesMasterIp;
+                MemberContext newMemberContext = createNewMemberContext(memberContext, pod, memberIp);
                 CloudControllerContext.getInstance().addMemberContext(newMemberContext);
 
                 // wait till pod status turns to running and send member spawned.
@@ -258,7 +259,7 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
-    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod) {
+    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod, String memberIp) {
         MemberContext newMemberContext = new MemberContext();
         newMemberContext.setCartridgeType(memberContext.getCartridgeType());
         newMemberContext.setClusterId(memberContext.getClusterId());
@@ -267,10 +268,10 @@ public class KubernetesIaas extends Iaas {
         newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
         newMemberContext.setPartition(memberContext.getPartition());
         newMemberContext.setInstanceId(pod.getId());
-        newMemberContext.setDefaultPrivateIP(pod.getCurrentState().getHostIP());
-        newMemberContext.setPrivateIPs(new String[]{pod.getCurrentState().getHostIP()});
-        newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
-        newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
+        newMemberContext.setDefaultPrivateIP(memberIp);
+        newMemberContext.setPrivateIPs(new String[]{memberIp});
+        newMemberContext.setDefaultPublicIP(memberIp);
+        newMemberContext.setPublicIPs(new String[]{memberIp});
         newMemberContext.setInitTime(memberContext.getInitTime());
         newMemberContext.setProperties(memberContext.getProperties());
         return newMemberContext;
