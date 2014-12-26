@@ -191,16 +191,19 @@ public class KubernetesIaas extends Iaas {
                 // Wait for pod to be created
                 List<Pod> pods = waitForPodToBeCreated(memberContext, kubernetesApi);
                 if (pods.size() != 1) {
+                    String message = String.format("Pod did not create within %d sec, hence removing " +
+                            "replication controller and service: [cluster-id] %s [member-id] %s",
+                            ((int)POD_CREATION_TIMEOUT/1000), clusterId, memberId);
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Pod did not create within %d sec, hence deleting the service: " +
-                                "[cluster-id] %s [member-id] %s", ((int)POD_CREATION_TIMEOUT/1000), clusterId, memberId));
+                        log.debug(message);
                     }
                     try {
                         terminateContainers(clusterId);
+                        throw new RuntimeException(message);
                     } catch (Exception e) {
-                        String message = "Could not terminate containers which were partially created";
-                        log.error(message, e);
-                        throw new RuntimeException(message, e);
+                        String errorMessage = "Could not terminate containers which were partially created";
+                        log.error(errorMessage, e);
+                        throw new RuntimeException(errorMessage, e);
                     }
                 }
                 Pod pod = pods.get(0);
@@ -258,12 +261,14 @@ public class KubernetesIaas extends Iaas {
         return newMemberContext;
     }
 
-    private List<Pod> waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi) throws KubernetesClientException, InterruptedException {
+    private List<Pod> waitForPodToBeCreated(MemberContext memberContext, KubernetesApiClient kubernetesApi)
+            throws KubernetesClientException, InterruptedException {
         Labels labels = new Labels();
-        labels.setName(memberContext.getClusterId());
+        labels.setName(CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId()));
         List<Pod> podList = new ArrayList<Pod>();
         long startTime = System.currentTimeMillis();
         while (podList.size() == 0) {
+            podList.clear();
             List<Pod> pods = kubernetesApi.queryPods(new Labels[]{labels});
             if((pods != null) && (pods.size() > 0)){
                 for(Pod pod : pods) {
@@ -445,13 +450,15 @@ public class KubernetesIaas extends Iaas {
 
             List<MemberContext> memberContextsRemoved = new ArrayList<MemberContext>();
             List<MemberContext> memberContexts = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
-            for(MemberContext memberContext : memberContexts) {
-                try {
-                    MemberContext memberContextRemoved = terminateContainer(memberContext.getMemberId());
-                    memberContextsRemoved.add(memberContextRemoved);
-                } catch (MemberTerminationFailedException e) {
-                    String message = "Could not terminate container: [member-id] " + memberContext.getMemberId();
-                    log.error(message);
+            if(memberContexts != null) {
+                for (MemberContext memberContext : memberContexts) {
+                    try {
+                        MemberContext memberContextRemoved = terminateContainer(memberContext.getMemberId());
+                        memberContextsRemoved.add(memberContextRemoved);
+                    } catch (MemberTerminationFailedException e) {
+                        String message = "Could not terminate container: [member-id] " + memberContext.getMemberId();
+                        log.error(message);
+                    }
                 }
             }
 
