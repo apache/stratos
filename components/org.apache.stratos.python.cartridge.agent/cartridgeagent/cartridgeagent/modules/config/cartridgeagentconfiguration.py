@@ -165,8 +165,8 @@ class CartridgeAgentConfiguration:
                     cartridgeagentconstants.LISTEN_ADDRESS, False)
 
                 try:
-                    int_repo_str = self.read_property(cartridgeagentconstants.PROVIDER)
-                    self.is_internal_repo = True if str(int_repo_str).strip().lower() == cartridgeagentconstants.INTERNAL else False
+                    int_repo_str = self.read_property(cartridgeagentconstants.INTERNAL)
+                    self.is_internal_repo = True if str(int_repo_str).strip().lower() == "true" else False
                 except ParameterNotFoundException:
                     self.log.info(" INTERNAL payload parameter is not found")
                     self.is_internal_repo = False

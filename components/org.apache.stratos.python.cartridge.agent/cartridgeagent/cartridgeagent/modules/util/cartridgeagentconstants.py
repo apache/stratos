@@ -55,7 +55,7 @@ AUTO_COMMIT = "auto.commit"
 AUTO_CHECKOUT = "auto.checkout"
 LISTEN_ADDRESS = "listen.address"
 PROVIDER = "PROVIDER"
-INTERNAL = "internal"
+INTERNAL = "INTERNAL"
 LB_PRIVATE_IP = "lb.private.ip"
 LB_PUBLIC_IP = "lb.public.ip"
 
