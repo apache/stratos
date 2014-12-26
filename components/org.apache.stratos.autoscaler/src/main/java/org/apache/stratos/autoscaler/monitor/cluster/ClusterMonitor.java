@@ -19,6 +19,7 @@
 package org.apache.stratos.autoscaler.monitor.cluster;
 
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
@@ -1108,11 +1109,17 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         return ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
     }
 
-    public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {
-        Map<String, ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
+    public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {Map<String, ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
                 ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
+        if(StringUtils.isBlank(networkPartitionId)) {
+            throw new RuntimeException("Network partition id is null");
+        }
         ClusterLevelNetworkPartitionContext networkPartitionContext =
                 clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
+        if(networkPartitionContext == null) {
+            throw new RuntimeException("Network partition context not found: [network-partition-id] " +
+            networkPartitionId);
+        }
         ClusterInstanceContext instanceContext = (ClusterInstanceContext) networkPartitionContext.
                                                         getInstanceContext(instanceId);
         return instanceContext;
