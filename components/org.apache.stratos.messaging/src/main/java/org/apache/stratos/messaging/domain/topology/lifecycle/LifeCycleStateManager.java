@@ -41,8 +41,11 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
         this.identifier = identifier;
         stateStack = new Stack<T>();
         stateStack.push(initialState);
-        log.info("Life Cycle State Manager started for Element [ " + identifier +
-                " ], initial state: " + initialState.toString());
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Lifecycle state manager initialized: [identifier] %s [state] %s",
+                    identifier, initialState.toString()));
+        }
     }
 
     /**
@@ -84,13 +87,13 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
             stateStack.push(nextState);
             stateChanged = true;
             if(log.isDebugEnabled()) {
-                log.debug("Element [" + identifier + "]'s lifecycle state changed from [" +
-                        getPreviousState() + "] to [" + getCurrentState() + "]");
+                log.debug(String.format("Lifecycle state changed: [identifier] %s [prev-state] %s [current-state] %s ",
+                        getIdentifier(), getPreviousState(), getCurrentState()));
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Element [" + identifier +"]'s lifecycle state has been " +
-                        "already updated to [" + nextState + "]");
+                log.debug(String.format("Lifecycle state already changed: [identifier] %s [prev-state] %s " +
+                                "[current-state] %s ", getIdentifier(), getPreviousState(), getCurrentState()));
             }
         }
         if (log.isDebugEnabled()) {
@@ -133,11 +136,11 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     private static <T extends LifeCycleState> void printStateTransitions (Stack<T> stateStack, String id) {
 
         // print all transitions till now
-        StringBuilder stateTransitions = new StringBuilder("Transitioned States for " + id + ":  [ START --> ");
+        StringBuilder stateTransitions = new StringBuilder("Transitioned states for " + id + ": [START]");
         for (T aStateStack : stateStack) {
-            stateTransitions.append(aStateStack).append(" --> ");
+            stateTransitions.append(aStateStack);
         }
-        stateTransitions.append(" END ]");
+        stateTransitions.append("[END]");
         log.debug(stateTransitions);
     }
 
