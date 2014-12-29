@@ -140,7 +140,7 @@ public interface CloudControllerService {
      * if the iaas requested is not valid.
      */
     MemberContext[] startInstances(InstanceContext[] instanceContexts) throws CartridgeNotFoundException,
-            InvalidIaasProviderException;
+            InvalidIaasProviderException, CloudControllerException;
     
     /**
      * Calling this method will result in termination of the instance with given member id in the given Partition.
@@ -149,7 +149,8 @@ public interface CloudControllerService {
      *            member ID of the instance to be terminated.
      * @return whether an instance terminated successfully or not.
      */
-    void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException;
+    void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException,
+            CloudControllerException;
 
     /**
      * Calling this method will result in termination of all instances belong

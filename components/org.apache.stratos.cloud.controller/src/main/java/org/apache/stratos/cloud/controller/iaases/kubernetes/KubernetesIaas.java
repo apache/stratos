@@ -22,7 +22,6 @@ package org.apache.stratos.cloud.controller.iaases.kubernetes;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.concurrent.ScheduledThreadExecutor;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
@@ -54,18 +53,27 @@ public class KubernetesIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
 
-    private static final long POD_ACTIVATION_TIMEOUT = 120000; // 2 min
+    private static final long DEFAULT_POD_ACTIVATION_TIMEOUT = 120000; // 2 min
     private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
     private static final String PAYLOAD_PARAMETER_PREFIX = "payload_parameter.";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
+    private Long podActivationTimeout;
 
     public KubernetesIaas(IaasProvider iaasProvider) {
         super(iaasProvider);
         partitionValidator = new KubernetesPartitionValidator();
         payload = new ArrayList<NameValuePair>();
+
+        podActivationTimeout = Long.getLong("stratos.pod.activation.timeout");
+        if(podActivationTimeout == null) {
+            podActivationTimeout = DEFAULT_POD_ACTIVATION_TIMEOUT;
+            if(log.isInfoEnabled()) {
+                log.info("Pod activation timeout was set: " + podActivationTimeout);
+            }
+        }
     }
 
     @Override
@@ -288,7 +296,7 @@ public class KubernetesIaas extends Iaas {
                 }
             }
 
-            if ((System.currentTimeMillis() - startTime) > POD_ACTIVATION_TIMEOUT) {
+            if ((System.currentTimeMillis() - startTime) > podActivationTimeout) {
                 break;
             }
             Thread.sleep(5000);
@@ -301,7 +309,7 @@ public class KubernetesIaas extends Iaas {
             message = String.format("Pod status did not change to running within %d sec, hence removing " +
                             "replication controller and pod: [cluster-id] %s [member-id] %s " +
                             "[replication-controller-id] %s [pod-id] %s",
-                    ((int) POD_ACTIVATION_TIMEOUT / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
+                    (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
                     replicationControllerId, podId);
             log.error(message);
             try {
@@ -314,7 +322,7 @@ public class KubernetesIaas extends Iaas {
             message = String.format("Pod did not create within %d sec, hence removing " +
                             "replication controller: [cluster-id] %s [member-id] %s " +
                             "[replication-controller-id] %s",
-                    ((int) POD_ACTIVATION_TIMEOUT / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
+                    (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
                     replicationControllerId);
             log.error(message);
             try {

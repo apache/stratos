@@ -219,6 +219,10 @@ public class CloudControllerClient {
             String message = e.getFaultMessage().getInvalidIaasProviderException().getMessage();
             log.error(message, e);
             throw new SpawningException(message, e);
+        } catch (CloudControllerServiceCloudControllerExceptionException e) {
+            String message = e.getMessage();
+            log.error(message, e);
+            throw new SpawningException(message, e);
         }
     }
 

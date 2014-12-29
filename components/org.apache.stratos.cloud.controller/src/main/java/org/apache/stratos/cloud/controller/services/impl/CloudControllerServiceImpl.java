@@ -293,7 +293,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public MemberContext[] startInstances(InstanceContext[] instanceContexts) throws CartridgeNotFoundException, InvalidIaasProviderException {
+    public MemberContext[] startInstances(InstanceContext[] instanceContexts)
+            throws CartridgeNotFoundException, InvalidIaasProviderException, CloudControllerException {
 
         handleNullObject(instanceContexts, "Instance start-up failed, member contexts is null");
 
@@ -309,45 +310,45 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     public MemberContext startInstance(InstanceContext instanceContext) throws
-            CartridgeNotFoundException, InvalidIaasProviderException {
-
-        // Validate instance context
-        handleNullObject(instanceContext, "Could not start instance, instance context is null");
-        if (log.isDebugEnabled()) {
-            log.debug("Starting up instance: " + instanceContext);
-        }
-
-        // Validate partition
-        Partition partition = instanceContext.getPartition();
-        handleNullObject(partition, "Could not start instance, partition is null");
-
-        // Validate cluster
-        String partitionId = partition.getId();
-        String clusterId = instanceContext.getClusterId();
-        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-        handleNullObject(clusterContext, "Could not start instance, cluster context not found: [cluster-id] " + clusterId);
-
-        // Validate cartridge
-        String cartridgeType = clusterContext.getCartridgeType();
-        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
-        if (cartridge == null) {
-            String msg = "Could not startup instance, cartridge not found: [cartridge-type] " + cartridgeType;
-            log.error(msg);
-            throw new CartridgeNotFoundException(msg);
-        }
-
-        // Validate iaas provider
-        IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
-        if (iaasProvider == null) {
-            String msg = String.format("Could not start instance, " +
-                    "IaaS provider not found in cartridge %s for partition %s, " +
-                    "partitions found: %s ", cartridgeType, partitionId,
-                    cartridge.getPartitionToIaasProvider().keySet().toString());
-            log.error(msg);
-            throw new InvalidIaasProviderException(msg);
-        }
+            CartridgeNotFoundException, InvalidIaasProviderException, CloudControllerException {
 
         try {
+            // Validate instance context
+            handleNullObject(instanceContext, "Could not start instance, instance context is null");
+            if (log.isDebugEnabled()) {
+                log.debug("Starting up instance: " + instanceContext);
+            }
+
+            // Validate partition
+            Partition partition = instanceContext.getPartition();
+            handleNullObject(partition, "Could not start instance, partition is null");
+
+            // Validate cluster
+            String partitionId = partition.getId();
+            String clusterId = instanceContext.getClusterId();
+            ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+            handleNullObject(clusterContext, "Could not start instance, cluster context not found: [cluster-id] " + clusterId);
+
+            // Validate cartridge
+            String cartridgeType = clusterContext.getCartridgeType();
+            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
+            if (cartridge == null) {
+                String msg = "Could not startup instance, cartridge not found: [cartridge-type] " + cartridgeType;
+                log.error(msg);
+                throw new CartridgeNotFoundException(msg);
+            }
+
+            // Validate iaas provider
+            IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
+            if (iaasProvider == null) {
+                String msg = String.format("Could not start instance, " +
+                                "IaaS provider not found in cartridge %s for partition %s, " +
+                                "partitions found: %s ", cartridgeType, partitionId,
+                        cartridge.getPartitionToIaasProvider().keySet().toString());
+                log.error(msg);
+                throw new InvalidIaasProviderException(msg);
+            }
+
             // Generate member ID
             String memberID = generateMemberId(clusterId);
 
@@ -408,7 +409,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         } catch (Exception e) {
             String msg = "Failed to start instance: " + instanceContext.toString();
             log.error(msg, e);
-            throw new IllegalStateException(msg, e);
+            throw new CloudControllerException(msg, e);
         }
     }
 
@@ -485,13 +486,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException {
+    public void terminateInstance(String memberId) throws InvalidMemberException,
+            InvalidCartridgeTypeException, CloudControllerException {
 
-        handleNullObject(memberId, "Member termination failed, member id is null.");
+        try {
+        handleNullObject(memberId, "Could not terminate instance, member id is null.");
 
         MemberContext memberContext = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
         if (memberContext == null) {
-            String msg = "Member termination failed, member context not found: [member-id] " + memberId;
+            String msg = "Could not terminate instance, member context not found: [member-id] " + memberId;
             log.error(msg);
             throw new InvalidMemberException(msg);
         }
@@ -499,7 +502,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (StringUtils.isBlank(memberContext.getInstanceId())) {
             if (log.isErrorEnabled()) {
                 log.error(String.format(
-                        "Member termination failed, instance id is blank: [member-id] %s " +
+                        "Could not terminate instance, instance id is blank: [member-id] %s " +
                                 ", removing member from topology...",
                         memberContext.getMemberId()));
             }
@@ -507,10 +510,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         // check if status == active, if true, then this is a termination on member faulty
-        Topology topology;
-        try {
-            TopologyManager.acquireWriteLock();
-            topology = TopologyManager.getTopology();
+        TopologyManager.acquireWriteLock();
+        Topology topology = TopologyManager.getTopology();
             org.apache.stratos.messaging.domain.topology.Service service = topology.getService(memberContext.getCartridgeType());
 
             if (service != null) {
@@ -542,6 +543,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             ThreadExecutor exec = ThreadExecutor.getInstance();
             exec.execute(new InstanceTerminator(memberContext));
+        } catch (InvalidMemberException e) {
+            String message = "Could not terminate instance: [member-id] " + memberId;
+            log.error(message, e);
+            throw e;
+        } catch (Exception e) {
+            String message = "Could not terminate instance: [member-id] " + memberId;
+            log.error(message, e);
+            throw new CloudControllerException(message, e);
         } finally {
             TopologyManager.releaseWriteLock();
         }
@@ -992,7 +1001,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private void handleNullObject(Object obj, String errorMsg) {
         if (obj == null) {
             log.error(errorMsg);
-            throw new IllegalArgumentException(errorMsg);
+            throw new CloudControllerException(errorMsg);
         }
     }
 
