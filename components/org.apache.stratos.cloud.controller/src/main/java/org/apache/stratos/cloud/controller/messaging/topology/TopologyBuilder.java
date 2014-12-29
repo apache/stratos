@@ -391,7 +391,6 @@ public class TopologyBuilder {
         String clusterId = memberContext.getClusterId();
         Cluster cluster = service.getCluster(clusterId);
 		String memberId = memberContext.getMemberId();
-        String instanceId = memberContext.getInstanceId();
         String clusterInstanceId = memberContext.getClusterInstanceId();
 		String networkPartitionId = memberContext.getNetworkPartitionId();
         String partitionId = memberContext.getPartition().getId();
