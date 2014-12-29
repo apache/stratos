@@ -106,7 +106,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 		//so we are checking the topology for the member existence
 		Member member = getMemberFromId(id);
 		if (null == member) {
-			log.debug("Member not found in the toplogy. Event rejected");
+			log.debug("Member not found in the topology. Event rejected");
 			return;
 		}
         if (StringUtils.isNotEmpty(id)) {

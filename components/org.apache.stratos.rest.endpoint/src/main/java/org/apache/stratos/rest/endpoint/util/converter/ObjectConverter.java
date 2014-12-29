@@ -108,20 +108,7 @@ public class ObjectConverter {
             String[] propertiesArray = propertiesList.toArray(new String[propertiesList.size()]);
             cartridgeConfig.setExportingProperties(propertiesArray);
         }
-
-        if (cartridgeDefinitionBean.getContainer() != null) {
-            cartridgeConfig.setContainer(convertContainerBeanToStubContainer(cartridgeDefinitionBean.getContainer()));
-        }
-
         return cartridgeConfig;
-    }
-
-    private static Container convertContainerBeanToStubContainer(ContainerBean containerBean) {
-        Container container = new Container();
-        container.setDockerFileRepo(containerBean.getDockerfileRepo());
-        container.setImageName(containerBean.getImageName());
-        //container.setProperties(convertPropertyBeansToStubProperties(containerBean.getProperty()));
-        return container;
     }
 
     private static PortMapping[] convertPortMappingBeansToStubPortMappings(List<PortMappingBean> portMappingBeans) {

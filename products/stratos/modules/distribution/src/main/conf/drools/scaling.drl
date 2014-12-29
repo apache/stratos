@@ -18,7 +18,6 @@
  */
 
 package org.apache.stratos.autoscaler
-//import org.netbeans.lib.cvsclient.commandLine.command.log.rule;
 
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
