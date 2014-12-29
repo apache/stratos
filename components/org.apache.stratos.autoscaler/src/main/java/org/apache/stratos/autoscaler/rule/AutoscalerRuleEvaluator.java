@@ -21,9 +21,6 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
-//import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
-//import org.apache.stratos.autoscaler.NetworkPartitionLbHolder;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.drools.KnowledgeBase;
 import org.drools.KnowledgeBaseFactory;
@@ -57,7 +54,7 @@ public class AutoscalerRuleEvaluator {
         knowledgeBases.put(drlFileName, readKnowledgeBase(drlFileName));
 
         if (log.isDebugEnabled()) {
-            log.debug("Drools file is parsed successfully : " + drlFileName);
+            log.debug("Drools file is parsed successfully: " + drlFileName);
         }
     }
     
@@ -70,7 +67,7 @@ public class AutoscalerRuleEvaluator {
         }
         ksession.fireAllRules();
         if(log.isDebugEnabled()){
-            log.debug(String.format("Rule executed for : %s ", obj));
+            log.debug(String.format("Rule executed for: %s ", obj));
         }
         return handle;
     }
@@ -93,7 +90,7 @@ public class AutoscalerRuleEvaluator {
             for (KnowledgeBuilderError error: errors) {
                 log.error(error.getMessage());
             }
-            throw new IllegalArgumentException("Could not parse knowledge.");
+            throw new IllegalArgumentException("Could not parse knowledge");
         }
         KnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());

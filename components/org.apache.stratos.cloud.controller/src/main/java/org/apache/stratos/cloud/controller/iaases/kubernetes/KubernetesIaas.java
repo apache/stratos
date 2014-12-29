@@ -218,8 +218,8 @@ public class KubernetesIaas extends Iaas {
 
                 // persist in registry
                 CloudControllerContext.getInstance().persist();
-                log.info("Container started successfully: [cluster-id] " + clusterId + " [member-id] " +
-                        memberContext.getMemberId());
+                log.info(String.format("Container started successfully: [cluster-id] %s [member-id] %s",
+                        newMemberContext.getClusterId(), newMemberContext.getMemberId()));
 
                 return newMemberContext;
             } catch (Exception e) {
@@ -246,8 +246,8 @@ public class KubernetesIaas extends Iaas {
         newMemberContext.setInstanceId(pod.getId());
         newMemberContext.setDefaultPrivateIP(pod.getCurrentState().getPodIP());
         newMemberContext.setPrivateIPs(new String[]{pod.getCurrentState().getPodIP()});
-        newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHostIP());
-        newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHostIP()});
+        newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHost());
+        newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHost()});
         newMemberContext.setInitTime(memberContext.getInitTime());
         newMemberContext.setProperties(memberContext.getProperties());
         return newMemberContext;

@@ -62,8 +62,11 @@ public class InstanceCreator implements Runnable {
             memberContext = createInstance(iaas, memberContext);
 
             if(log.isInfoEnabled()) {
-                log.info(String.format("Instance is starting up: [cartridge-type] %s [cluster-id] %s [instance-id] %s"
-                        , memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getInstanceId()));
+                log.info(String.format("Instance started successfully: [cartridge-type] %s [cluster-id] %s [instance-id] %s " +
+                                "[default-private-ip] %s [default-public-ip] %s",
+                        memberContext.getCartridgeType(), memberContext.getClusterId(),
+                        memberContext.getInstanceId(), memberContext.getDefaultPrivateIP(),
+                        memberContext.getDefaultPublicIP()));
             }
 
             // Attach volumes
@@ -71,7 +74,6 @@ public class InstanceCreator implements Runnable {
 
             // Allocate IP address
             iaas.allocateIpAddress(clusterId, memberContext, partition);
-
 
             // Update topology
             TopologyBuilder.handleMemberSpawned(memberContext);
