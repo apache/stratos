@@ -152,10 +152,10 @@ public class StratosConstants {
 
     //drools related constants
     public static final String DROOLS_DIR_NAME = "drools";
-    public static final String VM_SCALE_CHECK_DROOL_FILE = "scaling.drl";
+    public static final String SCALE_CHECK_DROOL_FILE = "scaling.drl";
     public static final String DEPENDENT_SCALE_CHECK_DROOL_FILE = "dependent-scaling.drl";
-    public static final String VM_MIN_CHECK_DROOL_FILE = "mincheck.drl";
-    public static final String VM_OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
+    public static final String MIN_CHECK_DROOL_FILE = "mincheck.drl";
+    public static final String OBSOLETE_CHECK_DROOL_FILE = "obsoletecheck.drl";
     public static final String MIN_COUNT = "MIN_COUNT";
     
     // Policy and definition related constants

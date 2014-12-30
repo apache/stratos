@@ -85,17 +85,17 @@ public class ClusterMonitor extends AbstractClusterMonitor {
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
-        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.SCALE_CHECK_DROOL_FILE);
+        autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.MIN_CHECK_DROOL_FILE);
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
 
         this.obsoleteCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_OBSOLETE_CHECK_DROOL_FILE);
+                StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
         this.scaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_SCALE_CHECK_DROOL_FILE);
+                StratosConstants.SCALE_CHECK_DROOL_FILE);
         this.minCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
-                StratosConstants.VM_MIN_CHECK_DROOL_FILE);
+                StratosConstants.MIN_CHECK_DROOL_FILE);
         this.dependentScaleCheckKnowledgeSession = autoscalerRuleEvaluator.getStatefulSession(
                 StratosConstants.DEPENDENT_SCALE_CHECK_DROOL_FILE);
     }
