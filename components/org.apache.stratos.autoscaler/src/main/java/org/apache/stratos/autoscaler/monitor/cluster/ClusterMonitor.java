@@ -102,10 +102,10 @@ public class ClusterMonitor extends AbstractClusterMonitor {
 
     private static void terminateMember(String memberId) {
         try {
-            CloudControllerClient.getInstance().terminate(memberId);
+            CloudControllerClient.getInstance().terminateInstance(memberId);
 
         } catch (TerminationException e) {
-            log.error("Unable to terminate member [member id ] " + memberId, e);
+            log.error("Unable to terminate member: [member-id] " + memberId, e);
         }
     }
 

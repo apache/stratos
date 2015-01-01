@@ -42,7 +42,8 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
     private ClusterInstanceActivatedProcessor clusterActivatedProcessor;
     private ClusterInstanceInactivateProcessor clusterInactivateProcessor;
     private ClusterRemovedMessageProcessor clusterRemovedMessageProcessor;
-    private InstanceSpawnedMessageProcessor instanceSpawnedMessageProcessor;
+    private MemberCreatedMessageProcessor memberCreatedMessageProcessor;
+    private MemberInitializedMessageProcessor memberInitializedMessageProcessor;
     private MemberStartedMessageProcessor memberStartedMessageProcessor;
     private MemberActivatedMessageProcessor memberActivatedMessageProcessor;
     private MemberReadyToShutdownMessageProcessor memberReadyToShutdownProcessor;
@@ -94,8 +95,11 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
         clusterTerminatingProcessor = new ClusterInstanceTerminatingProcessor();
         add(clusterTerminatingProcessor);
 
-        instanceSpawnedMessageProcessor = new InstanceSpawnedMessageProcessor();
-        add(instanceSpawnedMessageProcessor);
+        memberCreatedMessageProcessor = new MemberCreatedMessageProcessor();
+        add(memberCreatedMessageProcessor);
+
+        memberInitializedMessageProcessor = new MemberInitializedMessageProcessor();
+        add(memberInitializedMessageProcessor);
 
         memberStartedMessageProcessor = new MemberStartedMessageProcessor();
         add(memberStartedMessageProcessor);
@@ -143,8 +147,10 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterResetMessageProcessor.addEventListener(eventListener);
         } else if(eventListener instanceof ClusterInstanceTerminatingEventListener){
             clusterTerminatingProcessor.addEventListener(eventListener);
-        }else if (eventListener instanceof InstanceSpawnedEventListener) {
-            instanceSpawnedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof MemberCreatedEventListener) {
+            memberCreatedMessageProcessor.addEventListener(eventListener);
+        }  else if (eventListener instanceof MemberInitializedEventListener) {
+            memberInitializedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberActivatedEventListener) {
             memberActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberStartedEventListener) {

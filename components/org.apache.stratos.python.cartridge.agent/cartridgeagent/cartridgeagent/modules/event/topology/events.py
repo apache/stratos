@@ -268,7 +268,7 @@ class MemberStartedEvent:
         return instance
 
 
-class InstanceSpawnedEvent:
+class MemberCreatedEvent:
 
     def __init__(self):
         self.service_name = None
@@ -278,8 +278,6 @@ class InstanceSpawnedEvent:
         self.clusterInstanceId = None
         """ :type : str  """
         self.member_id = None
-        """ :type : str  """
-        self.instance_id = None
         """ :type : str  """
         self.network_partition_id = None
         """ :type : str  """
@@ -297,13 +295,57 @@ class InstanceSpawnedEvent:
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
-        instance = InstanceSpawnedEvent()
+        instance = MemberCreatedEvent()
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
         instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
         instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
-        instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
+        instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
+        instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
+        instance.lb_cluster_id = json_obj["lbClusterId"] if "lbClusterId" in json_obj else None
+        instance.member_private_ips = json_obj["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
+        instance.member_public_ips = json_obj["memberPublicIPs"] if "memberPublicIPs" in json_obj else None
+        instance.member_default_public_ip = json_obj["defaultPublicIP"] if "defaultPublicIP" in json_obj else None
+        instance.member_default_private_ip = json_obj["defaultPrivateIP"] if "defaultPrivateIP" in json_obj else None
+        instance.properties = json_obj["properties"]
+
+        return instance
+
+
+class MemberInitializedEvent:
+
+    def __init__(self):
+        self.service_name = None
+        """ :type : str  """
+        self.cluster_id = None
+        """ :type : str  """
+        self.clusterInstanceId = None
+        """ :type : str  """
+        self.member_id = None
+        """ :type : str  """
+        self.network_partition_id = None
+        """ :type : str  """
+        self.partition_id = None
+        """ :type : str  """
+        self.lb_cluster_id = None
+        """ :type : str  """
+        self.member_public_ips = None
+        """ :type : str  """
+        self.member_private_ips = None
+        """ :type : str  """
+        self.properties = {}
+        """ :type : dict[str, str]  """
+
+    @staticmethod
+    def create_from_json(json_str):
+        json_obj = json.loads(json_str)
+        instance = MemberCreatedEvent()
+
+        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
+        instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
+        instance.cluster_instance_id = json_obj["clusterInstanceId"] if "clusterInstanceId" in json_obj else None
+        instance.member_id = json_obj["memberId"] if "memberId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
         instance.lb_cluster_id = json_obj["lbClusterId"] if "lbClusterId" in json_obj else None

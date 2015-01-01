@@ -41,7 +41,7 @@ class AbstractExtensionHandler:
     def on_complete_topology_event(self, complete_topology_event):
         raise NotImplementedError
 
-    def on_instance_spawned_event(self, instance_spawned_event):
+    def on_member_created_event(self, instance_spawned_event):
         raise NotImplementedError
 
     def on_complete_tenant_event(self, complete_tenant_event):

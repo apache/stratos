@@ -21,6 +21,6 @@ package org.apache.stratos.messaging.listener.topology;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-public abstract class InstanceSpawnedEventListener extends EventListener {
+public abstract class MemberCreatedEventListener extends EventListener {
 
 }

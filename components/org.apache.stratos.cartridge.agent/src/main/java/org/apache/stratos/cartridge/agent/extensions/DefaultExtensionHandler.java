@@ -44,10 +44,7 @@ import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.wso2.andes.util.Serial;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
@@ -356,8 +353,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
 
     @Override
-
-    public void onInstanceSpawnedEvent(InstanceSpawnedEvent instanceSpawnedEvent) {
+    public void onMemberCreatedEvent(MemberCreatedEvent memberCreatedEvent) {
 
         // listen to this just to get updated faster about the member initialization
         if (log.isDebugEnabled()) {

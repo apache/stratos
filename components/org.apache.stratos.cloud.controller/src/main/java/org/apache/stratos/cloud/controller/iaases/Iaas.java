@@ -38,6 +38,10 @@ public abstract class Iaas {
         return iaasProvider;
     }
 
+    /**
+     * Set iaas provider.
+     * @param iaasProvider
+     */
     public void setIaasProvider(IaasProvider iaasProvider) {
         this.iaasProvider = iaasProvider;
     }
@@ -141,7 +145,13 @@ public abstract class Iaas {
      */
     public abstract String getIaasDevice(String device);
 
-    public abstract void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition);
+    /**
+     * Allocates ip addresses to member.
+     * @param clusterId
+     * @param memberContext
+     * @param partition
+     */
+    public abstract void allocateIpAddresses(String clusterId, MemberContext memberContext, Partition partition);
 
     /**
      * This method provides a way to set payload.

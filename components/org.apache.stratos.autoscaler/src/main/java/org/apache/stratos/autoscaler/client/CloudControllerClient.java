@@ -302,7 +302,7 @@ public class CloudControllerClient {
         }
     }
 
-    public synchronized void terminate(String memberId) throws TerminationException {
+    public synchronized void terminateInstance(String memberId) throws TerminationException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));

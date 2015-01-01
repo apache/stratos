@@ -58,10 +58,10 @@ public class InstanceCreator implements Runnable {
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             Iaas iaas = iaasProvider.getIaas();
 
-            // Create instance
-            memberContext = createInstance(iaas, memberContext);
+            // Start instance
+            memberContext = startInstance(iaas, memberContext);
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Instance started successfully: [cartridge-type] %s [cluster-id] %s [instance-id] %s " +
                                 "[default-private-ip] %s [default-public-ip] %s",
                         memberContext.getCartridgeType(), memberContext.getClusterId(),
@@ -72,11 +72,11 @@ public class InstanceCreator implements Runnable {
             // Attach volumes
             attachVolumes(iaas, clusterContext, memberContext);
 
-            // Allocate IP address
-            iaas.allocateIpAddress(clusterId, memberContext, partition);
+            // Allocate IP addresses
+            iaas.allocateIpAddresses(clusterId, memberContext, partition);
 
             // Update topology
-            TopologyBuilder.handleMemberSpawned(memberContext);
+            TopologyBuilder.handleMemberInitializedEvent(memberContext);
 
             // Publish instance creation statistics to BAM
             StatisticsDataPublisher.publish(
@@ -85,26 +85,27 @@ public class InstanceCreator implements Runnable {
                     memberContext.getNetworkPartitionId(),
                     memberContext.getClusterId(),
                     memberContext.getCartridgeType(),
-                    MemberStatus.Created.toString(),
+                    MemberStatus.Initialized.toString(),
                     memberContext.getInstanceMetadata());
         } catch (Exception e) {
             String message = String.format("Could not start instance: [cartridge-type] %s [cluster-id] %s",
                     memberContext.getCartridgeType(), memberContext.getClusterId());
             log.error(message, e);
         } finally {
-            if(lock != null) {
+            if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
         }
     }
 
-    private MemberContext createInstance(Iaas iaas, MemberContext memberContext) throws CartridgeNotFoundException {
+    private MemberContext startInstance(Iaas iaas, MemberContext memberContext) throws CartridgeNotFoundException {
         memberContext = iaas.startInstance(memberContext);
 
-        // Validate node id
+        // Validate instance id
         String instanceId = memberContext.getInstanceId();
         if (StringUtils.isBlank(instanceId)) {
-            String msg = "Instance id of the starting instance is null\n" + memberContext.toString();
+            String msg = String.format("Instance id not found in started member: [cartridge-type] %s [member-id] %s",
+                    memberContext.getCartridgeType(), memberContext.getMemberId());
             log.error(msg);
             throw new IllegalStateException(msg);
         }
@@ -113,9 +114,6 @@ public class InstanceCreator implements Runnable {
         CloudControllerContext.getInstance().updateMemberContext(memberContext);
         CloudControllerContext.getInstance().persist();
 
-        if (log.isDebugEnabled()) {
-            log.debug("Instance created: [member-context] " + memberContext.toString());
-        }
         return memberContext;
     }
 

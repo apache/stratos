@@ -291,7 +291,7 @@ public class RuleTasksDelegator {
 
     public void terminateObsoleteInstance(String memberId) {
         try {
-            CloudControllerClient.getInstance().terminate(memberId);
+            CloudControllerClient.getInstance().terminateInstance(memberId);
         } catch (Throwable e) {
             log.error("Cannot terminate instance", e);
         }

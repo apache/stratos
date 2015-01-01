@@ -96,7 +96,7 @@ public class MockIaas extends Iaas {
     }
 
     @Override
-    public void allocateIpAddress(String clusterId, MemberContext memberContext, Partition partition) {
+    public void allocateIpAddresses(String clusterId, MemberContext memberContext, Partition partition) {
         MockIaasService.getInstance().allocateIpAddress(clusterId, memberContext, partition);
     }
 

@@ -237,8 +237,10 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         extensionutils.execute_complete_topology_extension(env_params)
 
-    def on_instance_spawned_event(self, instance_spawned_event):
-        self.log.debug("Instance Spawned event received")
+    # Member initialized event is sent by cloud controller once volume attachment
+    # and ip address allocation is completed successfully
+    def on_member_initialized_event(self, member_initialized_event):
+        self.log.debug("Member initialized event received")
 
         service_name_in_payload = self.cartridge_agent_config.service_name
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id

@@ -25,9 +25,9 @@ import java.util.Properties;
 
 
 /**
- * This event is fired by Cloud Controller when a member is spawned by the IaaS in a given cluster.
+ * This event is fired by Cloud Controller when a member is created.
  */
-public class InstanceSpawnedEvent extends TopologyEvent implements Serializable {
+public class MemberCreatedEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 2672909702971355178L;
 
     private final String serviceName;
@@ -39,15 +39,11 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
 
     private final long initTime;
     private String lbClusterId;
-    private List<String> memberPublicIPs;
-    private String defaultPublicIP;
-    private List<String> memberPrivateIPs;
-    private String defaultPrivateIP;
     private Properties properties;
 
 
-    public InstanceSpawnedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
-                                String networkPartitionId, String partitionId, long initTime) {
+    public MemberCreatedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
+                              String networkPartitionId, String partitionId, long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
@@ -88,38 +84,6 @@ public class InstanceSpawnedEvent extends TopologyEvent implements Serializable 
     public void setLbClusterId(String lbClusterId) {
         this.lbClusterId = lbClusterId;
     }
-
-	public String getDefaultPublicIP() {
-		return defaultPublicIP;
-	}
-
-	public void setDefaultPublicIP(String defaultPublicIP) {
-		this.defaultPublicIP = defaultPublicIP;
-	}
-	
-	public List<String> getMemberPublicIPs() {
-		return memberPublicIPs;
-	}
-	
-	public void setMemberPublicIPs(List<String> memberPublicIPs) {
-		this.memberPublicIPs = memberPublicIPs;
-	}
-
-	public String getDefaultPrivateIP() {
-		return defaultPrivateIP;
-	}
-
-	public void setDefaultPrivateIP(String defaultPrivateIP) {
-		this.defaultPrivateIP = defaultPrivateIP;
-	}
-	
-	public List<String> getMemberPrivateIPs() {
-		return memberPrivateIPs;
-	}
-	
-	public void setMemberPrivateIPs(List<String> memberPrivateIPs) {
-		this.memberPrivateIPs = memberPrivateIPs;
-	}
 
     public Properties getProperties() {
         return properties;

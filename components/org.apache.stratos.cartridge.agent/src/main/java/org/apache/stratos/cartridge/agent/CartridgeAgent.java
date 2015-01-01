@@ -270,7 +270,7 @@ public class CartridgeAgent implements Runnable {
         
         TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
         
-        topologyEventReceiver.addEventListener(new InstanceSpawnedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
         	@Override
         	protected void onEvent(Event event) {
         		try {
@@ -281,13 +281,13 @@ public class CartridgeAgent implements Runnable {
         			}
         			TopologyManager.acquireReadLock();
         			if (log.isDebugEnabled()) {
-        				log.debug("Instance spawned event received");
+        				log.debug("Member created event received");
         			}
-        			InstanceSpawnedEvent instanceSpawnedEvent = (InstanceSpawnedEvent) event;
-        			extensionHandler.onInstanceSpawnedEvent(instanceSpawnedEvent);
+        			MemberCreatedEvent memberCreatedEvent = (MemberCreatedEvent) event;
+        			extensionHandler.onMemberCreatedEvent(memberCreatedEvent);
         		} catch (Exception e) {
         			if (log.isErrorEnabled()) {
-        				log.error("Error processing instance spawned event", e);
+        				log.error("Error processing member created event", e);
         			}
         		} finally {
         			TopologyManager.releaseReadLock();

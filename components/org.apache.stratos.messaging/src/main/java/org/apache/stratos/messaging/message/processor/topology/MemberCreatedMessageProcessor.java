@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.topology.InstanceSpawnedEvent;
+import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -29,9 +29,9 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.Util;
 
-public class InstanceSpawnedMessageProcessor extends MessageProcessor {
+public class MemberCreatedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(InstanceSpawnedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(MemberCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
     @Override
@@ -43,13 +43,13 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         Topology topology = (Topology) object;
 
-        if (InstanceSpawnedEvent.class.getName().equals(type)) {
+        if (MemberCreatedEvent.class.getName().equals(type)) {
             // Return if topology has not been initialized
             if (!topology.isInitialized())
                 return false;
 
             // Parse complete message and build event
-            InstanceSpawnedEvent event = (InstanceSpawnedEvent) Util.jsonToObject(message, InstanceSpawnedEvent.class);
+            MemberCreatedEvent event = (MemberCreatedEvent) Util.jsonToObject(message, MemberCreatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
@@ -69,7 +69,7 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (InstanceSpawnedEvent event,Topology topology){
+    private boolean doProcess (MemberCreatedEvent event,Topology topology){
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -133,10 +133,6 @@ public class InstanceSpawnedMessageProcessor extends MessageProcessor {
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId(),
                     event.getClusterInstanceId(), event.getNetworkPartitionId(),
                     event.getPartitionId(), event.getInitTime());
-            member.setDefaultPublicIP(event.getDefaultPublicIP());
-            member.setMemberPublicIPs(event.getMemberPublicIPs());
-            member.setDefaultPrivateIP(event.getDefaultPrivateIP());
-            member.setMemberPrivateIPs(event.getMemberPrivateIPs());
             member.setLbClusterId(event.getLbClusterId());
             member.setProperties(event.getProperties());
             cluster.addMember(member);

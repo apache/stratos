@@ -138,9 +138,9 @@ public class TopologyEventPublisher {
 
     }
 
-    public static void sendInstanceSpawnedEvent(MemberContext memberContext) {
+    public static void sendMemberCreatedEvent(MemberContext memberContext) {
 
-        InstanceSpawnedEvent instanceSpawnedEvent = new InstanceSpawnedEvent(
+        MemberCreatedEvent memberCreatedEvent = new MemberCreatedEvent(
                 memberContext.getCartridgeType(),
                 memberContext.getClusterId(),
                 memberContext.getClusterInstanceId(),
@@ -149,25 +149,48 @@ public class TopologyEventPublisher {
                 memberContext.getPartition().getId(),
                 memberContext.getInitTime());
 
-        instanceSpawnedEvent.setLbClusterId(memberContext.getLbClusterId());
-        instanceSpawnedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
-        if (memberContext.getPrivateIPs() != null) {
-        	instanceSpawnedEvent.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
-        }
-        instanceSpawnedEvent.setDefaultPublicIP(memberContext.getDefaultPublicIP());
-        if (memberContext.getPublicIPs() != null) {
-        	instanceSpawnedEvent.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
-        }
-        instanceSpawnedEvent.setProperties(CloudControllerUtil
+        memberCreatedEvent.setLbClusterId(memberContext.getLbClusterId());
+        memberCreatedEvent.setProperties(CloudControllerUtil
                 .toJavaUtilProperties(memberContext.getProperties()));
 
-        log.info(String.format("Publishing instance spawned event: [service-name] %s [cluster-id] %s " +
+        log.info(String.format("Publishing member created event: [service-name] %s [cluster-id] %s " +
+                        "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
+                        "[partition-id] %s [lb-cluster-id] %s",
+                memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
+                memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
+                memberContext.getPartition().getId(), memberContext.getLbClusterId()));
+        publishEvent(memberCreatedEvent);
+    }
+
+
+    public static void sendMemberInitializedEvent(MemberContext memberContext) {
+
+        MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
+                memberContext.getCartridgeType(),
+                memberContext.getClusterId(),
+                memberContext.getClusterInstanceId(),
+                memberContext.getMemberId(),
+                memberContext.getNetworkPartitionId(),
+                memberContext.getPartition().getId());
+
+        memberInitializedEvent.setDefaultPrivateIP(memberContext.getDefaultPrivateIP());
+        if (memberContext.getPrivateIPs() != null) {
+        	memberInitializedEvent.setMemberPrivateIPs(Arrays.asList(memberContext.getPrivateIPs()));
+        }
+        memberInitializedEvent.setDefaultPublicIP(memberContext.getDefaultPublicIP());
+        if (memberContext.getPublicIPs() != null) {
+        	memberInitializedEvent.setMemberPublicIPs(Arrays.asList(memberContext.getPublicIPs()));
+        }
+        memberInitializedEvent.setProperties(CloudControllerUtil
+                .toJavaUtilProperties(memberContext.getProperties()));
+
+        log.info(String.format("Publishing member initialized event: [service-name] %s [cluster-id] %s " +
                 "[cluster-instance-id] %s [member-id] %s [instance-id] %s [network-partition-id] %s " +
                         "[partition-id] %s [lb-cluster-id] %s",
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getClusterInstanceId(),
                 memberContext.getMemberId(), memberContext.getInstanceId(), memberContext.getNetworkPartitionId(),
                 memberContext.getPartition().getId(), memberContext.getLbClusterId()));
-        publishEvent(instanceSpawnedEvent);
+        publishEvent(memberInitializedEvent);
     }
 
     public static void sendMemberStartedEvent(InstanceStartedEvent instanceStartedEvent) {

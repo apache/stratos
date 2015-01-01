@@ -29,11 +29,9 @@ import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 
-import java.io.IOException;
-
 public interface ExtensionHandler {
 	
-	public void onInstanceSpawnedEvent(InstanceSpawnedEvent instanceSpawnedEvent);
+	public void onMemberCreatedEvent(MemberCreatedEvent memberCreatedEvent);
 	
     public void onInstanceStartedEvent();
 

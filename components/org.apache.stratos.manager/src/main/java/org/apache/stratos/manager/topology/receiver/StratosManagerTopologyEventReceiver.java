@@ -21,12 +21,7 @@ package org.apache.stratos.manager.topology.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.exception.ADCException;
-import org.apache.stratos.manager.exception.ApplicationSubscriptionException;
-import org.apache.stratos.manager.manager.CartridgeSubscriptionManager;
-import org.apache.stratos.manager.subscription.ApplicationSubscription;
 import org.apache.stratos.manager.topology.model.TopologyClusterInformationModel;
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
@@ -34,9 +29,7 @@ import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.wso2.carbon.context.PrivilegedCarbonContext;
 
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 public class StratosManagerTopologyEventReceiver implements Runnable {
@@ -130,22 +123,22 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
         
         
       //Instance Spawned event listner
-        topologyEventReceiver.addEventListener(new InstanceSpawnedEventListener() {
+        topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
 
             @Override
             protected void onEvent(Event event) {
 
-                log.info("[InstanceSpawnedEventListener] Received: " + event.getClass());
+                log.info("Member created event received: " + event.getClass());
 
-                InstanceSpawnedEvent instanceSpawnedEvent = (InstanceSpawnedEvent) event;
+                MemberCreatedEvent memberCreatedEvent = (MemberCreatedEvent) event;
 
-                String clusterDomain = instanceSpawnedEvent.getClusterId();
+                String clusterDomain = memberCreatedEvent.getClusterId();
 
-                String serviceType = instanceSpawnedEvent.getServiceName();
+                String serviceType = memberCreatedEvent.getServiceName();
                 //acquire read lock
                 //TopologyManager.acquireReadLock();
-                TopologyManager.acquireReadLockForCluster(instanceSpawnedEvent.getServiceName(),
-                        instanceSpawnedEvent.getClusterId());
+                TopologyManager.acquireReadLockForCluster(memberCreatedEvent.getServiceName(),
+                        memberCreatedEvent.getClusterId());
 
                 try {
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterDomain);
@@ -153,8 +146,8 @@ public class StratosManagerTopologyEventReceiver implements Runnable {
                 } finally {
                     //release read lock
                     //TopologyManager.releaseReadLock();
-                    TopologyManager.releaseReadLockForCluster(instanceSpawnedEvent.getServiceName(),
-                            instanceSpawnedEvent.getClusterId());
+                    TopologyManager.releaseReadLockForCluster(memberCreatedEvent.getServiceName(),
+                            memberCreatedEvent.getClusterId());
                 }
             }
         });

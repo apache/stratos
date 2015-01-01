@@ -405,6 +405,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.debug("Cloud Controller is starting the instance creator thread...");
             }
             exec.execute(new InstanceCreator(memberContext, iaasProvider));
+
+            TopologyBuilder.handleMemberCreatedEvent(memberContext);
             return memberContext;
         } catch (Exception e) {
             String msg = "Failed to start instance: " + instanceContext.toString();
@@ -639,7 +641,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         for (MemberContext memberContext : ctxts) {
             exec.execute(new InstanceTerminator(memberContext));
         }
-
     }
 
     @Override
