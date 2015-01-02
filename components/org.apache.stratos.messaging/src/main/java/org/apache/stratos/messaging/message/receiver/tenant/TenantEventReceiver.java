@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.Subscriber;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
@@ -33,7 +33,7 @@ public class TenantEventReceiver{
     private static final Log log = LogFactory.getLog(TenantEventReceiver.class);
     private TenantEventMessageDelegator messageDelegator;
     private TenantEventMessageListener messageListener;
-    private Subscriber subscriber;
+    private TopicSubscriber topicSubscriber;
     private boolean terminated;
 
     public TenantEventReceiver() {
@@ -50,9 +50,9 @@ public class TenantEventReceiver{
     public void execute() {
         try {
             // Start topic subscriber thread
-            subscriber = new Subscriber(Util.Topics.TENANT_TOPIC.getTopicName(), messageListener);
+            topicSubscriber = new TopicSubscriber(Util.Topics.TENANT_TOPIC.getTopicName(), messageListener);
 //            subscriber.setMessageListener(messageListener);
-            Thread subscriberThread = new Thread(subscriber);
+            Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {
                 log.debug("Tenant event message receiver thread started");
@@ -74,7 +74,7 @@ public class TenantEventReceiver{
     }
 
     public void terminate() {
-        subscriber.terminate();
+        topicSubscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }

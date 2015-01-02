@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicSubscriber;
 import org.apache.stratos.messaging.util.Util;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -30,10 +29,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
  * Any instance who needs to subscribe to a topic, should communicate with this
  * object.
  */
-public class Subscriber implements Runnable {
+public class TopicSubscriber implements Runnable {
 
-    private static final Log log = LogFactory.getLog(Subscriber.class);
-    private final TopicSubscriber topicSubscriber;
+    private static final Log log = LogFactory.getLog(TopicSubscriber.class);
+    private final org.apache.stratos.messaging.broker.connect.TopicSubscriber topicSubscriber;
 
 	private final String topicName;
 	private boolean subscribed;
@@ -41,7 +40,7 @@ public class Subscriber implements Runnable {
 	/**
 	 * @param topicName topic name of this subscriber instance.
 	 */
-	public Subscriber(String topicName, MessageListener messageListener) {
+	public TopicSubscriber(String topicName, MessageListener messageListener) {
 		this.topicName = topicName;
         this.topicSubscriber = new MqttTopicSubscriber(messageListener, topicName);
 

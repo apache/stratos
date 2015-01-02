@@ -84,7 +84,7 @@ public class InstanceStatusListener implements MessageListener {
                     if (cartridgeSubscription.getRepository() != null) {
                         InstanceNotificationPublisher publisher =
                                 new InstanceNotificationPublisher();
-                        publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
+                        publisher.sendArtifactUpdatedEvent(cartridgeSubscription.getRepository(),
                                 clusterId,
                                 String.valueOf(cartridgeSubscription.getSubscriber()
                                         .getTenantId()));

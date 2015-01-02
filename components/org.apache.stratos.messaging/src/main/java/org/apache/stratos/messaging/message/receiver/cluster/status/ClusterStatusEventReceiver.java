@@ -21,12 +21,11 @@ package org.apache.stratos.messaging.message.receiver.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.Subscriber;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 /**
  * A thread for receiving instance notifier information from message broker.
@@ -35,7 +34,7 @@ public class ClusterStatusEventReceiver{
     private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
     private final ClusterStatusEventMessageDelegator messageDelegator;
     private final ClusterStatusEventMessageListener messageListener;
-    private Subscriber subscriber;
+    private TopicSubscriber topicSubscriber;
     private boolean terminated;
 	private ExecutorService executorService;
 
@@ -53,8 +52,8 @@ public class ClusterStatusEventReceiver{
     public void execute() {
         try {
             // Start topic subscriber thread
-            subscriber = new Subscriber(Util.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
-            executorService.execute(subscriber);
+            topicSubscriber = new TopicSubscriber(Util.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
+            executorService.execute(topicSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
@@ -75,11 +74,11 @@ public class ClusterStatusEventReceiver{
     }
 
     public boolean isSubscribed() {
-        return ((subscriber != null) && (subscriber.isSubscribed()));
+        return ((topicSubscriber != null) && (topicSubscriber.isSubscribed()));
     }
 
     public void terminate() {
-        subscriber.terminate();
+        topicSubscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }

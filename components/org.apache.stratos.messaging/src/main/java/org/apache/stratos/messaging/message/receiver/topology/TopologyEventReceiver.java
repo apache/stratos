@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.Subscriber;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
@@ -35,7 +35,7 @@ public class TopologyEventReceiver {
     private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
     private TopologyEventMessageDelegator messageDelegator;
     private TopologyEventMessageListener messageListener;
-    private Subscriber subscriber;
+    private TopicSubscriber topicSubscriber;
 	private ExecutorService executorService;
     private boolean terminated;
 
@@ -53,9 +53,9 @@ public class TopologyEventReceiver {
 	public void execute() {
 		try {
 			// Start topic subscriber thread
-			subscriber = new Subscriber(Util.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
+			topicSubscriber = new TopicSubscriber(Util.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
 			// subscriber.setMessageListener(messageListener);
-			executorService.execute(subscriber);
+			executorService.execute(topicSubscriber);
 
 
             if (log.isDebugEnabled()) {
@@ -77,7 +77,7 @@ public class TopologyEventReceiver {
     }
 
     public void terminate() {
-        subscriber.terminate();
+        topicSubscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }

@@ -56,7 +56,7 @@ public class RepositoryNotification {
 	public void updateRepository(CartridgeSubscription cartridgeSubscription) {
 		if (cartridgeSubscription.getRepository() != null) {
 			InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
-			publisher.sendArtifactUpdateEvent(cartridgeSubscription.getRepository(),
+			publisher.sendArtifactUpdatedEvent(cartridgeSubscription.getRepository(),
 					String.valueOf(cartridgeSubscription.getCluster().getClusterDomain()),
 					String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
 

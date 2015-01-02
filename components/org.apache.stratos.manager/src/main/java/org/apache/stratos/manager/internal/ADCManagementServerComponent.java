@@ -18,7 +18,6 @@
  */
 package org.apache.stratos.manager.internal;
 
-import org.apache.axis2.util.threadpool.ThreadPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -31,7 +30,7 @@ import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyEventR
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.broker.subscribe.Subscriber;
+import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Util;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -97,8 +96,8 @@ public class ADCManagementServerComponent {
             if(log.isDebugEnabled()) {
                 log.debug("Starting instance status topic subscriber...");
             }
-            Subscriber subscriber = new Subscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), new InstanceStatusListener());
-       		executorService.execute(subscriber);
+            TopicSubscriber topicSubscriber = new TopicSubscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), new InstanceStatusListener());
+       		executorService.execute(topicSubscriber);
 
 
             RealmService realmService = DataHolder.getRealmService();
