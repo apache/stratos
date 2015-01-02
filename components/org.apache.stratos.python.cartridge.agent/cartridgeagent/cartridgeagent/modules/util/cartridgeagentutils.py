@@ -22,12 +22,11 @@ import time
 import socket
 import shutil
 
-#from log import LogFactory
+from log import LogFactory
+
+log = LogFactory().get_log(__name__)
 
 unpad = lambda s: s[0:-ord(s[-1])]
-
-#log = LogFactory().get_log(__name__)
-
 current_milli_time = lambda: int(round(time.time() * 1000))
 
 
@@ -103,22 +102,22 @@ def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
     if ports_check_timeout is None:
         ports_check_timeout = 1000 * 60 * 10
 
-    #log.debug("Port check timeout: %r" % ports_check_timeout)
+    log.debug("Port check timeout: %r" % ports_check_timeout)
 
     active = False
     start_time = current_milli_time()
     while not active:
-        #log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
+        log.info("Waiting for ports to be active: [ip] %r [ports] %r" % (ip_address, ports))
         active = check_ports_active(ip_address, ports)
         end_time = current_milli_time()
         duration = end_time - start_time
 
         if duration > ports_check_timeout:
+            log.info("Port check timeout reached: [ip] %r [ports] %r [timeout] %r" % (ip_address, ports, ports_check_timeout))
             return
 
         time.sleep(5)
-
-    #log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
+    log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
 
 
 def check_ports_active(ip_address, ports):

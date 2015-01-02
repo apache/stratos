@@ -172,7 +172,7 @@ class CompleteTopologyEvent:
                 service_str = topology_str["serviceMap"][service_name]
 
                 service_obj = Service(service_name, service_str["serviceType"])
-                service_obj.properties = service_str["properties"]
+                service_obj.properties = service_str["properties"] if "properties" in service_str else None
                 # add ports to port map
                 for port_proxy in service_str["portMap"]:
                     port_str = service_str["portMap"][port_proxy]
@@ -208,8 +208,8 @@ class CompleteTopologyEvent:
                         member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id, mm_partition_id, member_id)
                         member_obj.member_public_ips = member_str["memberPublicIPs"] if "memberPublicIPs" in member_str else None
                         member_obj.status = member_str["status"] if "status" in member_str else None
-                        member_obj.member_private_ips = member_str["memberPrivateIPs"]
-                        member_obj.properties = member_str["properties"]
+                        member_obj.member_private_ips = member_str["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
+                        member_obj.properties = member_str["properties"] if "properties" in member_str else None
                         member_obj.lb_cluster_id = member_str["lbClusterId"] if "lbClusterId" in member_str else None
                         member_obj.json_str = member_str
 

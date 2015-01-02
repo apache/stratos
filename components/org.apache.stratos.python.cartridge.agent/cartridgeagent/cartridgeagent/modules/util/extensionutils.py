@@ -333,7 +333,7 @@ def execute_volume_mount_extension(persistance_mappings_payload):
         output, errors = execute_command(command + " " + persistance_mappings_payload)
         log.debug("Volume mount script returned: %r" % output)
     except:
-        log.exception("Could not execute Volume mount extension")
+        log.error("Could not execute volume mount extension")
 
 
 def execute_cleanup_extension():

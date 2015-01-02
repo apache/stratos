@@ -34,11 +34,8 @@ class EventSubscriber(threading.Thread):
         self.log = LogFactory().get_log(__name__)
 
         self.__mb_client = None
-
         self.__topic = topic
-
         self.__subscribed = False
-
         self.__ip = ip
         self.__port = port
 
