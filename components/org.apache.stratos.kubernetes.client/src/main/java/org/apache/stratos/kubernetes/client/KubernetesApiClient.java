@@ -367,9 +367,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         for (int containerPort : containerPorts) {
             Port port = new Port();
             port.setContainerPort(containerPort);
-            // Not setting host port to avoid following issue:
+            // A known issue related to setting host port:
             // https://github.com/openshift/origin/issues/210
-            // port.setHostPort(containerPort);
+            port.setHostPort(containerPort);
             ports.add(port);
         }
         return ports;
