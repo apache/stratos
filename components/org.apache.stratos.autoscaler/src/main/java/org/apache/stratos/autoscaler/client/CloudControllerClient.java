@@ -325,6 +325,10 @@ public class CloudControllerClient {
             String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
             log.error(msg, e);
             throw new TerminationException(msg, e);
+        } catch (CloudControllerServiceCloudControllerExceptionException e) {
+            String msg = e.getMessage();
+            log.error(msg, e);
+            throw new TerminationException(msg, e);
         }
     }
 
