@@ -401,7 +401,7 @@ def add_payload_parameters(env_params):
     :return: Dictionary with updated parameters
     :rtype: dict[str, str]
     """
-    env_params["STRATOS_APP_PATH"] = cartridge_agent_config.app_path
+    env_params["STRATOS_APPLICATION_PATH"] = cartridge_agent_config.app_path
     env_params["STRATOS_PARAM_FILE_PATH"] = cartridge_agent_config.read_property(
         cartridgeagentconstants.PARAM_FILE_PATH, False)
     env_params["STRATOS_SERVICE_NAME"] = cartridge_agent_config.service_name

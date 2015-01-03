@@ -70,22 +70,29 @@ class AgentGitHandler:
             #has been previously cloned, this is not the subscription run
             subscribe_run = False
             if AgentGitHandler.is_valid_git_repository(repo_context):
-                AgentGitHandler.log.debug("Existing git repository detected for tenant %r, no clone required" % repo_info.tenant_id)
+                AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                 AgentGitHandler.pull(repo_context)
+                AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
             else:
                 if not os.listdir(repo_context.local_repo_path):
                     #empty dir, clone
+                    AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                     repo_context.repo = AgentGitHandler.clone(repo_info)
+                    AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                 else:
                     #not empty
                     if AgentGitHandler.sync_initial_local_artifacts(repo_context):
+                        AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                         AgentGitHandler.pull(repo_context)
+                        AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                     else:
                         repo_context = None
         else:
             #subscribing run.. need to clone
             subscribe_run = True
+            AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
             repo_context = AgentGitHandler.clone(repo_info)
+            AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
 
         return subscribe_run, repo_context
 
@@ -203,13 +210,16 @@ class AgentGitHandler:
         repo_context = None
         try:
             repo_context = AgentGitHandler.create_git_repo_context(repo_info)
-            #create the directory if it doesn't exist
-            if not os.path.isdir(repo_context.local_repo_path):
-                cartridgeagentutils.create_dir(repo_context.local_repo_path)
+
+            if os.path.isdir(repo_context.local_repo_path):
+                # delete local repo path if exists
+                cartridgeagentutils.delete_folder_tree(repo_context.local_repo_path)
+
+            # create local repo path
+            cartridgeagentutils.create_dir(repo_context.local_repo_path)
 
             #TODO: remove gittle stuff
-            #auth = AgentGitHandler.create_auth_configuration(repo_context)
-            auth = None
+            auth = AgentGitHandler.create_auth_configuration(repo_context)
 
             if auth is not None:
                 # authentication is required, use Gittle

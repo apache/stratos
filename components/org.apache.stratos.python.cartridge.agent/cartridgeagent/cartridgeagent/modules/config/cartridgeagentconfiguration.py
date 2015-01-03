@@ -128,7 +128,7 @@ class CartridgeAgentConfiguration:
                 self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID, False)
                 self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID, False)
                 self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
-                self.app_path = self.read_property(cartridgeagentconstants.APP_PATH, False)
+                self.app_path = self.read_property(cartridgeagentconstants.APPLICATION_PATH, False)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
 

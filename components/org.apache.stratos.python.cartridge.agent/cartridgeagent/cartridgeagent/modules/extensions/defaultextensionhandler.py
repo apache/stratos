@@ -61,9 +61,10 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         if (repo_url != "") and (cluster_id_payload is not None) and (cluster_id_payload == cluster_id_event):
             local_repo_path = self.cartridge_agent_config.app_path
 
-            secret = self.cartridge_agent_config.cartridge_key
-            #repoPassword = https://mb_ip:9443/stratosmetadataservice/app_id/alias/repoPassword
-            repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
+            repo_password = None
+            if(artifacts_updated_event.repo_password is not None):
+                secret = self.cartridge_agent_config.cartridge_key
+                repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
             repo_username = artifacts_updated_event.repo_username
             tenant_id = artifacts_updated_event.tenant_id
