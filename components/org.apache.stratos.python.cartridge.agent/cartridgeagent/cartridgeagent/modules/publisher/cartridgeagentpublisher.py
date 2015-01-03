@@ -42,6 +42,7 @@ def publish_instance_started_event():
     if not started:
         log.info("Publishing instance started event")
 
+        application_id = CartridgeAgentConfiguration().application_id
         service_name = CartridgeAgentConfiguration().service_name
         cluster_id = CartridgeAgentConfiguration().cluster_id
         member_id = CartridgeAgentConfiguration().member_id
@@ -50,7 +51,7 @@ def publish_instance_started_event():
         network_partition_id = CartridgeAgentConfiguration().network_partition_id
         partition_id = CartridgeAgentConfiguration().partition_id
 
-        instance_started_event = InstanceStartedEvent(service_name, cluster_id, cluster_instance_id, member_id,
+        instance_started_event = InstanceStartedEvent(application_id, service_name, cluster_id, cluster_instance_id, member_id,
                                                       instance_id, network_partition_id, partition_id)
         publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)

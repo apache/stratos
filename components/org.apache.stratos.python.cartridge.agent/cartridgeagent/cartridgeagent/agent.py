@@ -105,6 +105,8 @@ class CartridgeAgent(threading.Thread):
             self.log.info("No artifact repository found")
             CartridgeAgent.extension_handler.on_instance_activated_event()
             cartridgeagentpublisher.publish_instance_activated_event()
+        else:
+            self.log.info("Artifact repository found, waiting for artifact updated event to checkout artifacts: [repo_url] %s", repo_url)
 
         persistence_mappping_payload = self.cartridge_agent_config.persistence_mappings
         if persistence_mappping_payload is not None:

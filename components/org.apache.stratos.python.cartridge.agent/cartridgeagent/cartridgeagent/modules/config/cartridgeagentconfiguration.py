@@ -35,6 +35,8 @@ class CartridgeAgentConfiguration:
             self.properties = None
             """ :type : ConfigParser.SafeConfigParser """
 
+            self.application_id = None
+            """ :type : str """
             self.service_group = None
             """ :type : str  """
             self.is_clustered = False
@@ -118,6 +120,7 @@ class CartridgeAgentConfiguration:
                 # self.__isClustered = self.payload_params[
                 # cartridgeagentconstants.CLUSTERING] if cartridgeagentconstants.CLUSTERING in self.payload_params else None
 
+                self.application_id = self.read_property(cartridgeagentconstants.APPLICATION_ID)
                 self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
                 self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
                 self.cluster_instance_id= self.read_property(cartridgeagentconstants.CLUSTER_INSTANCE_ID)

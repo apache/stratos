@@ -41,8 +41,10 @@ class InstanceActivatedEvent:
 
 
 class InstanceStartedEvent:
-    def __init__(self, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
+    def __init__(self, application_id, service_name, cluster_id, cluster_instance_id, member_id, instance_id,
                  network_partition_id, partition_id):
+        self.applicationId = application_id
+        """ :type : str  """
         self.serviceName = service_name
         """ :type : str  """
         self.clusterId = cluster_id
