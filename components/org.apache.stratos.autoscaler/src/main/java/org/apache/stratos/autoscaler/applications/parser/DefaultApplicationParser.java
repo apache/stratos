@@ -240,11 +240,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         String alias;
         Properties properties = new Properties();
-        for (SubscribableInfoContext value : subscribableInfoCtxts.values()) {
-            alias = value.getAlias();
-            String username = value.getRepoUsername();
-            String password = value.getRepoPassword();
-            String repoUrl = value.getRepoUrl();
+        for (SubscribableInfoContext subscribableInfoContext : subscribableInfoCtxts.values()) {
+            alias = subscribableInfoContext.getAlias();
+            String username = subscribableInfoContext.getRepoUsername();
+            String password = subscribableInfoContext.getRepoPassword();
+            String repoUrl = subscribableInfoContext.getRepoUrl();
+
             List<Property> propertyList = new ArrayList<Property>();
             if (StringUtils.isNotEmpty(username)) {
                 Property property = new Property();
@@ -258,24 +259,21 @@ public class DefaultApplicationParser implements ApplicationParser {
                 Property property = new Property();
                 property.setName("REPO_PASSWORD");
                 property.setValue(encryptedPassword);
-                //properties.addProperties(property);
                 propertyList.add(property);
-
             }
 
             if (StringUtils.isNotEmpty(repoUrl)) {
                 Property property = new Property();
                 property.setName("REPO_URL");
                 property.setValue(repoUrl);
-                //properties.addProperties(property);
                 propertyList.add(property);
             }
+
             if(propertyList.size() > 0 ) {
                 Property[] properties1 = new Property[propertyList.size()];
                 properties.setProperties(propertyList.toArray(properties1));
                 this.addProperties(alias, properties);
             }
-
         }
 
         if(log.isDebugEnabled()) {

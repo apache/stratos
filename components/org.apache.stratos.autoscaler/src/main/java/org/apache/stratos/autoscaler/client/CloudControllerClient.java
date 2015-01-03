@@ -177,7 +177,7 @@ public class CloudControllerClient {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
             long expiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
             if (log.isDebugEnabled()) {
-                log.debug("Member Obsolete Expiry Time is set to: " + expiryTime);
+                log.debug("Member obsolete expiry time is set to: " + expiryTime);
             }
 
             InstanceContext instanceContext = new InstanceContext();

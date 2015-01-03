@@ -62,7 +62,7 @@ public class BasicPayloadData implements Serializable {
 
         payloadBuilder = new StringBuilder();
 
-        payloadBuilder.append("APP_ID=" + getAppId());
+        payloadBuilder.append("APPLICATION_ID=" + getAppId());
         payloadBuilder.append(",");
         payloadBuilder.append("GROUP_NAME=" + getGroupName());
         payloadBuilder.append(",");
@@ -82,17 +82,17 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_KEY=" + getSubscriptionKey());
         payloadBuilder.append(",");
-        //payloadBuilder.append("DEPLOYMENT=" + getDeployment());
-        //payloadBuilder.append(",");
-        //payloadBuilder.append("APP_PATH=" + getApplicationPath());
-        //payloadBuilder.append(",");
+        payloadBuilder.append("DEPLOYMENT=" + getDeployment());
+        payloadBuilder.append(",");
+        payloadBuilder.append("APPLICATION_PATH=" + getApplicationPath());
+        payloadBuilder.append(",");
         payloadBuilder.append("REPO_URL=" + getGitRepositoryUrl());
         payloadBuilder.append(",");
         payloadBuilder.append("PORTS=" + getPortMappings());
         payloadBuilder.append(",");
         payloadBuilder.append("PROVIDER=" + getProvider());
 
-        //Payload Data exposed as system variables
+        //Payload data exposed as system variables
         payloadBuilder.append(",");
         payloadBuilder.append("PUPPET_IP=" + System.getProperty("puppet.ip"));
         payloadBuilder.append(",");
@@ -103,13 +103,12 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append("PUPPET_ENV=" + System.getProperty("puppet.dns.available"));
         payloadBuilder.append(",");
         if(getDependencyAliasesPayloadString() != null){
-            payloadBuilder.append("DEPENDECNY_ALIASES=" + getDependencyAliasesPayloadString());
+            payloadBuilder.append("DEPENDENCY_ALIASES=" + getDependencyAliasesPayloadString());
         }
         payloadBuilder.append(",");
         if(getExportingPropertiesPayloadString() != null){
             payloadBuilder.append("EXPORTING_PROPERTIES=" + getExportingPropertiesPayloadString());
         }
-
     }
 
     public String getServiceName() {
