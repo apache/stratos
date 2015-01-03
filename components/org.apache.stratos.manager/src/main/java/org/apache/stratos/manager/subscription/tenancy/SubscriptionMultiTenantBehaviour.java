@@ -96,10 +96,10 @@ public class SubscriptionMultiTenantBehaviour extends SubscriptionTenancyBehavio
         if (repository != null) {
 
             // publish the ArtifactUpdated event
-            log.info(" Multitenant --> Publishing Artifact update event -- ");
-            log.info(" Values :  cluster id - " + cluster.getClusterDomain() + "  tenant - " + subscriber.getTenantId());
-            InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
-            publisher.sendArtifactUpdatedEvent(repository, cluster.getClusterDomain(), String.valueOf(subscriber.getTenantId()));
+            //log.info(" Multitenant --> Publishing Artifact update event -- ");
+            //log.info(" Values :  cluster id - " + cluster.getClusterDomain() + "  tenant - " + subscriber.getTenantId());
+            //InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
+            //publisher.publishArtifactUpdatedEvent(repository, cluster.getClusterDomain(), String.valueOf(subscriber.getTenantId()));
 
         } else {
             if(log.isDebugEnabled()) {

@@ -54,22 +54,26 @@ public class RepositoryNotification {
     }
     
 	public void updateRepository(CartridgeSubscription cartridgeSubscription) {
-		if (cartridgeSubscription.getRepository() != null) {
+		Repository repository = cartridgeSubscription.getRepository();
+		if (repository != null) {
 			InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
-			publisher.sendArtifactUpdatedEvent(cartridgeSubscription.getRepository(),
+			publisher.publishArtifactUpdatedEvent(
 					String.valueOf(cartridgeSubscription.getCluster().getClusterDomain()),
-					String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+					String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()),
+					repository.getUrl(),
+					repository.getUserName(),
+					repository.getPassword(),
+					repository.isCommitEnabled());
 
-			if (log.isDebugEnabled()) {
-				log.debug("Git pull request from " + cartridgeSubscription.getRepository()
-						+ "repository, for the tenant "
-						+ String.valueOf(cartridgeSubscription.getSubscriber().getTenantId()));
+			if (log.isInfoEnabled()) {
+				log.info(String.format("Artifact updated event published: %s [cartridge-type] %s " +
+								"%s [subscription-alias] %s [repo-url] %s",
+						cartridgeSubscription.getType(), cartridgeSubscription.getAlias(), repository.getUrl()));
 			}
-
 		} else {
-			if (log.isDebugEnabled()) {
-				log.debug("No repository found for subscription with alias: " + cartridgeSubscription.getAlias()
-						+ ", type: " + cartridgeSubscription.getType() + ". Not sending the Artifact Updated event");
+			if (log.isWarnEnabled()) {
+				log.warn("No repository found for subscription with alias: " + cartridgeSubscription.getAlias()
+						+ ", type: " + cartridgeSubscription.getType() + ". Not sending artifact updated event");
 			}
 		}
 	}

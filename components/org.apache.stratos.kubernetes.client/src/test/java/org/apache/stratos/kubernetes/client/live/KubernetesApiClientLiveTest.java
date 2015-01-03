@@ -75,7 +75,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
     }
 
     @AfterClass
-    public void cleanup() {
+    public void tearDown() {
         deleteReplicationControllers();
         deletePods();
         deleteServices();

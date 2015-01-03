@@ -49,6 +49,7 @@ public class CartridgeAgentEventPublisher {
 				log.info("Publishing instance started event");
 			}
 			InstanceStartedEvent event = new InstanceStartedEvent(
+					CartridgeAgentConfiguration.getInstance().getApplicationId(),
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
 					CartridgeAgentConfiguration.getInstance().getMemberId(),

@@ -367,7 +367,7 @@ public class CloudControllerContext implements Serializable {
         return memberContextList;
     }
 
-    public MemberContext removeMemberContext(String memberId, String clusterId) {
+    public MemberContext removeMemberContext(String clusterId, String memberId) {
         MemberContext removedMemberContext = memberIdToMemberContextMap.get(memberId);
         memberIdToMemberContextMap.remove(memberId);
 

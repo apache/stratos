@@ -33,14 +33,13 @@ import org.apache.stratos.kubernetes.client.model.Service;
 public class ClusterContext implements Serializable{
 
     private static final long serialVersionUID = 4830667953031229223L;
-    // cluster id
-    private String clusterId;
-    // cartridge type
-    private String cartridgeType;
-    // payload as a String
-    private String payload;
-    private String hostName;
-    private boolean isLbCluster;
+
+    private final String applicationId;
+    private final String clusterId;
+    private final String cartridgeType;
+    private final String payload;
+    private final String hostName;
+    private final boolean isLbCluster;
     private boolean isVolumeRequired;
     private Volume[] volumes;
     // timeout in milliseconds - this would be the per member time that CC waits before forcefully terminate instances on an unregistration.
@@ -49,58 +48,42 @@ public class ClusterContext implements Serializable{
     private List<Service> kubernetesServices;
     private String kubernetesClusterId;
 
-    public ClusterContext(String clusterId, String cartridgeType, String payload, String hostName, 
-    		boolean isLbCluster, Properties properties) {
-        this.clusterId = clusterId;
+    public ClusterContext(String applicationId, String cartridgeType, String clusterId, String payload, String hostName,
+                          boolean isLbCluster, Properties properties) {
+
+        this.applicationId = applicationId;
         this.cartridgeType = cartridgeType;
+        this.clusterId = clusterId;
         this.payload = payload;
-        this.setHostName(hostName);
+        this.hostName = hostName;
         this.isLbCluster = isLbCluster;
         this.setProperties(properties);
     }
-    
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
     public String getClusterId() {
         return clusterId;
     }
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
-    }
+
     public String getCartridgeType() {
         return cartridgeType;
     }
-    public void setCartridgeType(String cartridgeType) {
-        this.cartridgeType = cartridgeType;
-    }
+
     public String getPayload() {
         return payload;
-    }
-    public void setPayload(String payload) {
-        this.payload = payload;
     }
 
     public String getHostName() {
         return hostName;
     }
 
-    public String findContainerHostName() {
-        if (hostName.indexOf('.') != -1) {
-            hostName = hostName.replace('.', '-');
-        }
-        return hostName;
-    }
-
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
-
 	public boolean isLbCluster() {
 		return isLbCluster;
 	}
 
-	public void setLbCluster(boolean isLbCluster) {
-		this.isLbCluster = isLbCluster;
-	}
-	
 	public boolean isVolumeRequired() {
 		return isVolumeRequired;
 	}

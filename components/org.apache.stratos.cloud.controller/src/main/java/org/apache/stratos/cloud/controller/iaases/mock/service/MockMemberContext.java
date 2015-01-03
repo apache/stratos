@@ -25,6 +25,8 @@ import java.io.Serializable;
  * Mock member context.
  */
 public class MockMemberContext implements Serializable {
+
+    private final String applicationId;
     private final String serviceName;
     private final String clusterId;
     private final String memberId;
@@ -33,8 +35,9 @@ public class MockMemberContext implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
 
-    public MockMemberContext(String serviceName, String clusterId, String memberId, String instanceId,
+    public MockMemberContext(String applicationId, String serviceName, String clusterId, String memberId, String instanceId,
                              String clusterInstanceId, String networkPartitionId, String partitionId) {
+        this.applicationId = applicationId;
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.memberId = memberId;
@@ -70,5 +73,9 @@ public class MockMemberContext implements Serializable {
 
     public String getPartitionId() {
         return partitionId;
+    }
+
+    public String getApplicationId() {
+        return applicationId;
     }
 }

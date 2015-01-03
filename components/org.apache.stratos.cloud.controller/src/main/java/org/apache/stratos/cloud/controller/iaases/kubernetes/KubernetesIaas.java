@@ -242,11 +242,10 @@ public class KubernetesIaas extends Iaas {
     }
 
     private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod) {
-        MemberContext newMemberContext = new MemberContext();
-        newMemberContext.setCartridgeType(memberContext.getCartridgeType());
-        newMemberContext.setClusterId(memberContext.getClusterId());
+        MemberContext newMemberContext = new MemberContext(memberContext.getApplicationId(),
+                memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getMemberId());
+
         newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
-        newMemberContext.setMemberId(memberContext.getMemberId());
         newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
         newMemberContext.setPartition(memberContext.getPartition());
         newMemberContext.setInstanceId(pod.getId());
@@ -256,6 +255,7 @@ public class KubernetesIaas extends Iaas {
         newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHost()});
         newMemberContext.setInitTime(memberContext.getInitTime());
         newMemberContext.setProperties(memberContext.getProperties());
+
         return newMemberContext;
     }
 

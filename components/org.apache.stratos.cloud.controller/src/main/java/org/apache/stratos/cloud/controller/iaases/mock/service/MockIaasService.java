@@ -106,7 +106,8 @@ public class MockIaasService {
     public MemberContext createInstance(MemberContext memberContext) {
         synchronized (MockIaasService.class) {
             // Create mock member instance
-            MockMemberContext mockMemberContext = new MockMemberContext(memberContext.getCartridgeType(),
+            MockMemberContext mockMemberContext = new MockMemberContext(
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(),
                     memberContext.getClusterId(), memberContext.getMemberId(), memberContext.getInstanceId(),
                     memberContext.getClusterInstanceId(), memberContext.getNetworkPartitionId(),
                     memberContext.getPartition().getId());

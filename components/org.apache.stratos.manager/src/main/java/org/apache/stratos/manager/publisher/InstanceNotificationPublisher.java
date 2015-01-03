@@ -47,24 +47,25 @@ public class InstanceNotificationPublisher {
 
 	/**
 	 * Publishing the artifact update event to the instances
-	 * 
-	 * @param repository
+	 *
 	 * @param clusterId
 	 * @param tenantId
+	 * @param repoUrl
+	 * @param repoUsername
+	 * @param repoPassword
+	 * @param isCommitEnabled
 	 */
-	public void sendArtifactUpdatedEvent(Repository repository, String clusterId, String tenantId) {
+	public void publishArtifactUpdatedEvent(String clusterId, String tenantId, String repoUrl, String repoUsername,
+											String repoPassword, boolean isCommitEnabled) {
+
 		ArtifactUpdatedEvent artifactUpdateEvent = new ArtifactUpdatedEvent();
 		artifactUpdateEvent.setClusterId(clusterId);
-		artifactUpdateEvent.setRepoUserName(repository.getUserName());
-		artifactUpdateEvent.setRepoPassword(repository.getPassword());
-		artifactUpdateEvent.setRepoURL(repository.getUrl());
+		artifactUpdateEvent.setRepoUserName(repoUsername);
+		artifactUpdateEvent.setRepoPassword(repoPassword);
+		artifactUpdateEvent.setRepoURL(repoUrl);
 		artifactUpdateEvent.setTenantId(tenantId);
-		artifactUpdateEvent.setCommitEnabled(repository.isCommitEnabled());
+		artifactUpdateEvent.setCommitEnabled(isCommitEnabled);
 
-		log.info(String.format("Publishing artifact updated event: [cluster] %s "
-		                               + "[repo-URL] %s [repo-username] %s [tenant-id] %s",
-		                       clusterId,
-		                       repository.getUrl(), repository.getUserName(), tenantId));
 		publish(artifactUpdateEvent);
 	}
 

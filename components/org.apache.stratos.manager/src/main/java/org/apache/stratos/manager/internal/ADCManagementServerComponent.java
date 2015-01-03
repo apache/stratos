@@ -21,7 +21,7 @@ package org.apache.stratos.manager.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.manager.listener.InstanceStatusListener;
+import org.apache.stratos.manager.listener.StratosManagerInstanceStatusEventReceiver;
 import org.apache.stratos.manager.listener.TenantUserRoleCreator;
 import org.apache.stratos.manager.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.publisher.TenantSynchronizerTaskScheduler;
@@ -30,7 +30,6 @@ import org.apache.stratos.manager.topology.receiver.StratosManagerTopologyEventR
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.util.Util;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -69,7 +68,9 @@ public class ADCManagementServerComponent {
 	private static final Log log = LogFactory.getLog(ADCManagementServerComponent.class);
 	private static final String IDENTIFIER = "Stratos_manager";
 	private static final int THREAD_POOL_SIZE = 20;
-	private StratosManagerTopologyEventReceiver stratosManagerTopologyEventReceiver;
+
+    private StratosManagerTopologyEventReceiver topologyEventReceiver;
+    private StratosManagerInstanceStatusEventReceiver instanceStatusEventReceiver;
 	private ExecutorService executorService;
 
     protected void activate(ComponentContext componentContext) throws Exception {
@@ -92,13 +93,25 @@ public class ADCManagementServerComponent {
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantEventPublisher, null);
 
-            // Start instance status topic subscriber
             if(log.isDebugEnabled()) {
-                log.debug("Starting instance status topic subscriber...");
+                log.debug("Starting instance status event receiver...");
             }
-            TopicSubscriber topicSubscriber = new TopicSubscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), new InstanceStatusListener());
-       		executorService.execute(topicSubscriber);
+            instanceStatusEventReceiver = new StratosManagerInstanceStatusEventReceiver();
+            instanceStatusEventReceiver.setExecutorService(executorService);
+            instanceStatusEventReceiver.execute();
+            if(log.isInfoEnabled()) {
+                log.info("Instance status event receiver thread started");
+            }
 
+            if(log.isDebugEnabled()) {
+                log.debug("Starting topology event receiver...");
+            }
+            topologyEventReceiver = new StratosManagerTopologyEventReceiver();
+            topologyEventReceiver.setExecutorService(executorService);
+            executorService.execute(topologyEventReceiver);
+            if(log.isInfoEnabled()) {
+                log.info("Topology event receiver thread started");
+            }
 
             RealmService realmService = DataHolder.getRealmService();
             UserRealm realm = realmService.getBootstrapRealm();
@@ -111,38 +124,8 @@ public class ADCManagementServerComponent {
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantUserRoleCreator, null);
 
-            //initializing the topology event subscriber
-            /*TopicSubscriber topologyTopicSubscriber = new TopicSubscriber(Constants.TOPOLOGY_TOPIC);
-            topologyTopicSubscriber.setMessageListener(new TopologyEventListner());
-            Thread topologyTopicSubscriberThread = new Thread(topologyTopicSubscriber);
-            topologyTopicSubscriberThread.start();
-
-            //Starting Topology Receiver
-            TopologyReceiver topologyReceiver = new TopologyReceiver();
-            Thread topologyReceiverThread = new Thread(topologyReceiver);
-            topologyReceiverThread.start();*/
-
-
-            stratosManagerTopologyEventReceiver = new StratosManagerTopologyEventReceiver();
-			stratosManagerTopologyEventReceiver.setExecutorService(executorService);
-			executorService.execute(stratosManagerTopologyEventReceiver);
-
-            log.info("Topology receiver thread started");
-
             // retrieve persisted CartridgeSubscriptions
             new DataInsertionAndRetrievalManager().cachePersistedSubscriptions();
-            
-            //Grouping
-            /*
-            if (log.isDebugEnabled()) {
-            	log.debug("restoring composite applications ...");
-            }
-            new CompositeApplicationManager().restoreCompositeApplications ();
-            
-            if (log.isDebugEnabled()) {
-            	log.debug("done restoring composite applications ...");
-            }
-            */
 
             //Component activated successfully
             log.info("ADC management server component is activated");
@@ -212,6 +195,6 @@ public class ADCManagementServerComponent {
 
 	    executorService.shutdownNow();
         //terminate Stratos Manager Topology Receiver
-        stratosManagerTopologyEventReceiver.terminate();
+        topologyEventReceiver.terminate();
     }
 }

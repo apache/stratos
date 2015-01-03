@@ -41,6 +41,7 @@ public class MockMemberEventPublisher {
             log.info("Publishing instance started event");
         }
         InstanceStartedEvent event = new InstanceStartedEvent(
+                mockMemberContext.getApplicationId(),
                 mockMemberContext.getServiceName(),
                 mockMemberContext.getClusterId(),
                 mockMemberContext.getMemberId(),

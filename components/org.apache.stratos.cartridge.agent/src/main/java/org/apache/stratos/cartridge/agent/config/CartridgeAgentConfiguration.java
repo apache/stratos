@@ -73,6 +73,7 @@ public class CartridgeAgentConfiguration {
     private String kubernetesClusterId;
     private String instanceId;
     private String clusterInstanceId;
+    private String applicationId;
 
 
     private CartridgeAgentConfiguration() {
@@ -601,5 +602,9 @@ public class CartridgeAgentConfiguration {
 
     public void setClusterInstanceId(String clusterInstanceId) {
         this.clusterInstanceId = clusterInstanceId;
+    }
+
+    public String getApplicationId() {
+        return applicationId;
     }
 }

@@ -350,16 +350,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // Generate member ID
-            String memberID = generateMemberId(clusterId);
+            String memberId = generateMemberId(clusterId);
 
             // Create member context
-            MemberContext memberContext = createMemberContext(instanceContext);
-            memberContext.setMemberId(memberID);
-            memberContext.setCartridgeType(cartridgeType);
+            String applicationId = clusterContext.getApplicationId();
+            MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId, instanceContext);
 
             // Prepare payload
             StringBuilder payload = new StringBuilder(clusterContext.getPayload());
-            addToPayload(payload, "MEMBER_ID", memberID);
+            addToPayload(payload, "MEMBER_ID", memberId);
             addToPayload(payload, "INSTANCE_ID", memberContext.getInstanceId());
             addToPayload(payload, "CLUSTER_INSTANCE_ID", memberContext.getClusterInstanceId());
             addToPayload(payload, "LB_CLUSTER_ID", memberContext.getLbClusterId());
@@ -400,11 +399,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // Start instance in a new thread
-            ThreadExecutor exec = ThreadExecutor.getInstance();
+            ThreadExecutor threadExecutor = ThreadExecutor.getInstance();
             if (log.isDebugEnabled()) {
-                log.debug("Cloud Controller is starting the instance creator thread...");
+                log.debug("Starting the instance creator thread...");
             }
-            exec.execute(new InstanceCreator(memberContext, iaasProvider));
+            threadExecutor.execute(new InstanceCreator(memberContext, iaasProvider));
 
             TopologyBuilder.handleMemberCreatedEvent(memberContext);
             return memberContext;
@@ -415,16 +414,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    private MemberContext createMemberContext(InstanceContext instanceContext) {
-        MemberContext memberContext = new MemberContext();
-        memberContext.setCartridgeType(instanceContext.getCartridgeType());
-        memberContext.setClusterId(instanceContext.getClusterId());
+    private MemberContext createMemberContext(String applicationId, String cartridgeType, String memberId,
+                                              InstanceContext instanceContext) {
+        MemberContext memberContext = new MemberContext(
+                applicationId, cartridgeType, instanceContext.getClusterId(), memberId);
+
         memberContext.setClusterInstanceId(instanceContext.getClusterInstanceId());
         memberContext.setNetworkPartitionId(instanceContext.getNetworkPartitionId());
         memberContext.setPartition(instanceContext.getPartition());
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
         memberContext.setInitTime(System.currentTimeMillis());
+
         return memberContext;
     }
 
@@ -1023,31 +1024,28 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             List<Cluster> clusters = new ArrayList<Cluster>();
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
-                CloudControllerContext.getInstance().addClusterContext(new ClusterContext(appClusterCtxt.getClusterId(),
-                        appClusterCtxt.getCartridgeType(), appClusterCtxt.getTextPayload(),
-                        appClusterCtxt.getHostName(), appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties()));
-                // create Cluster objects
-                Cluster newCluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                ClusterContext clusterContext = new ClusterContext(
+                        appId, appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
+                        appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
+                        appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
+
+                CloudControllerContext.getInstance().addClusterContext(clusterContext);
+
+                // Create cluster object
+                Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
-                newCluster.setLbCluster(false);
-                newCluster.setTenantRange(appClusterCtxt.getTenantRange());
-                //newCluster.setStatus(ClusterStatus.Created, null);
-                newCluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
-                Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(appClusterCtxt.getCartridgeType());
-                // TODO: Fix kubernetes config
-//                if (cartridge.getDeployerType() != null &&
-//                        cartridge.getDeployerType().equals(StratosConstants.KUBERNETES_DEPLOYER_TYPE)) {
-//                    newCluster.setKubernetesCluster(true);
-//                }
+                cluster.setLbCluster(false);
+                cluster.setTenantRange(appClusterCtxt.getTenantRange());
+                cluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
+
                 if (appClusterCtxt.getProperties() != null) {
                     Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());
-                    newCluster.setProperties(properties);
+                    cluster.setProperties(properties);
                 }
 
-                clusters.add(newCluster);
+                clusters.add(cluster);
             }
             TopologyBuilder.handleApplicationClustersCreated(appId, clusters);
-
             CloudControllerContext.getInstance().persist();
         } finally {
             if (lock != null) {
