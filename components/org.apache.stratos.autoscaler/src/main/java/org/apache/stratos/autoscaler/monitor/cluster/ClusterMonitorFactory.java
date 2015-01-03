@@ -43,12 +43,12 @@ public class ClusterMonitorFactory {
             throws PolicyValidationException, PartitionValidationException {
 
         AbstractClusterMonitor clusterMonitor =
-                getVMClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
+                getClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
         return clusterMonitor;
     }
 
-    private static ClusterMonitor getVMClusterMonitor(Cluster cluster, boolean hasScalingDependents,
-                                                        boolean groupScalingEnabledSubtree)
+    private static ClusterMonitor getClusterMonitor(Cluster cluster, boolean hasScalingDependents,
+                                                    boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
         if (null == cluster) {
@@ -75,7 +75,7 @@ public class ClusterMonitorFactory {
         }
 
 
-        log.info("VMClusterMonitor created: " + clusterMonitor.toString());
+        log.info("ClusterMonitor created: " + clusterMonitor.toString());
         return clusterMonitor;
     }
 }
