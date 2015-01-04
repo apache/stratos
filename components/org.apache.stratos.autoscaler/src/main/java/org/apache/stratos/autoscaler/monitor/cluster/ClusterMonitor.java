@@ -22,13 +22,12 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
-import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
@@ -55,9 +54,7 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
-import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.applications.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
@@ -285,26 +282,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
     public void setAutoscalerRuleEvaluator(
             AutoscalerRuleEvaluator autoscalerRuleEvaluator) {
         this.autoscalerRuleEvaluator = autoscalerRuleEvaluator;
-    }
-
-    @Override
-    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
-        if (statusEvent.getStatus() == GroupStatus.Terminating ||
-                statusEvent.getStatus() == ApplicationStatus.Terminating) {
-            ClusterStatusEventPublisher.sendClusterTerminatingEvent(appId, this.getServiceId(),
-                    clusterId, statusEvent.getInstanceId());
-        } else if (statusEvent.getStatus() == ClusterStatus.Created ||
-                statusEvent.getStatus() == GroupStatus.Created) {
-            Application application = ApplicationHolder.getApplications().getApplication(this.appId);
-            Group group = application.getGroupRecursively(statusEvent.getId());
-            //TODO*****starting a new instance of this monitor
-            //createGroupInstance(group, statusEvent.getInstanceId());
-        }
-        // send the ClusterTerminating event
-//        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-//                ApplicationStatus.Terminating) {
-//
-//        }
     }
 
     public boolean isHasFaultyMember() {
@@ -660,20 +637,20 @@ public class ClusterMonitor extends Monitor implements Runnable {
     public void onChildStatusEvent(MonitorStatusEvent statusEvent) {
 
     }
-//
-//    @Override
-//    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
-//        String instanceId = statusEvent.getInstanceId();
-//        // send the ClusterTerminating event
-//        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
-//                ApplicationStatus.Terminating) {
-//            if (log.isInfoEnabled()) {
-//                log.info("Publishing Cluster terminating event for [application] " + appId +
-//                        " [cluster] " + this.getClusterId() + " [instance] " + instanceId);
-//            }
-//            ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
-//        }
-//    }
+
+    @Override
+    public void onParentStatusEvent(MonitorStatusEvent statusEvent) {
+        String instanceId = statusEvent.getInstanceId();
+        // send the ClusterTerminating event
+        if (statusEvent.getStatus() == GroupStatus.Terminating || statusEvent.getStatus() ==
+                ApplicationStatus.Terminating) {
+            if (log.isInfoEnabled()) {
+                log.info("Publishing Cluster terminating event for [application] " + appId +
+                        " [cluster] " + this.getClusterId() + " [instance] " + instanceId);
+            }
+            ClusterStatusEventPublisher.sendClusterTerminatingEvent(getAppId(), getServiceId(), getClusterId(), instanceId);
+        }
+    }
 
     @Override
     public void onChildScalingEvent(ScalingEvent scalingEvent) {
