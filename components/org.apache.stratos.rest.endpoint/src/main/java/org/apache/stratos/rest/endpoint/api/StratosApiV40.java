@@ -18,13 +18,12 @@
  */
 package org.apache.stratos.rest.endpoint.api;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.manager.domain.Cartridge;
+import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -39,8 +38,6 @@ import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPo
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
 import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
-import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
-import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
 import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
@@ -64,7 +61,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Stratos API v4.0 for Stratos 4.0.0 release.

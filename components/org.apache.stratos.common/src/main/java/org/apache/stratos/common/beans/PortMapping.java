@@ -16,44 +16,54 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.common.beans;
 
-package org.apache.stratos.manager.domain;
+import java.io.Serializable;
 
-public class PortMapping {
-	private int id;
-	private String type;
-	private String primaryPort;
+public class PortMapping implements Serializable{
+	
+    private static final long serialVersionUID = -5387564414633460306L;
+
+	private String protocol;
+	private String port;
 	private String proxyPort;
-
-	public int getId() {
-		return id;
+	
+	public PortMapping(){
 	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getPrimaryPort() {
-		return primaryPort;
-	}
-
-	public void setPrimaryPort(String primaryPort) {
-		this.primaryPort = primaryPort;
-	}
-
-	public String getProxyPort() {
-		return proxyPort;
-	}
-
-	public void setProxyPort(String proxyPort) {
+	
+	public PortMapping(String protocol, String port, String proxyPort){
+		this.protocol = protocol;
+		this.port = port;
 		this.proxyPort = proxyPort;
 	}
+
+	public String getProtocol() {
+    	return protocol;
+    }
+
+	public void setProtocol(String protocol) {
+    	this.protocol = protocol;
+    }
+
+	public String getPort() {
+    	return port;
+    }
+
+	public void setPort(String port) {
+    	this.port = port;
+    }
+
+	public String getProxyPort() {
+    	return proxyPort;
+    }
+
+	public void setProxyPort(String proxyPort) {
+    	this.proxyPort = proxyPort;
+    }
+
+    public String toString () {
+
+        return "Protocol: " + protocol + ", Port: " + port + ", Proxy Port: " + proxyPort;
+    }
+
 }

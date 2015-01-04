@@ -16,36 +16,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class RepositoryInformation implements Serializable {
+public class Persistence implements Serializable{
+	
+	private static final long serialVersionUID = 3455721979991902731L;
 
-	private static final long serialVersionUID = 1L;
+    private boolean persistanceRequired;
+	private Volume[] volumes;
 
-	private String repoURL;
-	private String[] refName;
+    public String toString () {
+        return "Persistence Required: " + isPersistanceRequired();
+    }
 
-	public String getRepoURL() {
-		return repoURL;
-	}
+    public boolean isPersistanceRequired() {
+        return persistanceRequired;
+    }
 
-	public void setRepoURL(String repoURL) {
-		this.repoURL = repoURL;
-	}
+    public void setPersistanceRequired(boolean persistanceRequired) {
+        this.persistanceRequired = persistanceRequired;
+    }
 
-	public String[] getRefName() {
-		return refName;
-	}
+    public Volume[] getVolumes() {
+        return volumes;
+    }
 
-	public void setRefName(String[] refName) {
-        if(refName == null) {
-            this.refName = new String[0];
+    public void setVolumes(Volume[] volumes) {
+        if(volumes == null) {
+            this.volumes = new Volume[0];
         } else {
-            this.refName = Arrays.copyOf(refName, refName.length);
+            this.volumes = Arrays.copyOf(volumes, volumes.length);
         }
-	}
-
+    }
 }

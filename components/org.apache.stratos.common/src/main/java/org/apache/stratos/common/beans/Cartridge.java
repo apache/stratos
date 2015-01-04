@@ -17,10 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
-
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
+package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;

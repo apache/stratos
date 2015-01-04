@@ -17,10 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+package org.apache.stratos.common.beans;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -30,14 +27,13 @@ public class ApplicationSubscription implements Serializable {
 
     private static final long serialVersionUID = 3380699449827682550L;
 
-    private static Log log = LogFactory.getLog(ApplicationSubscription.class);
-    private String appId;
+    private String applicationId;
     private Set<String> cartridgeSubscriptionAliases;
     private Set<String> groupSubscriptionAliases;
 
-    public ApplicationSubscription (String appId) {
+    public ApplicationSubscription (String applicationId) {
 
-        this.appId = appId;
+        this.applicationId = applicationId;
         cartridgeSubscriptionAliases = new HashSet<String>();
         groupSubscriptionAliases = new HashSet<String>();
     }
@@ -63,6 +59,6 @@ public class ApplicationSubscription implements Serializable {
     }
 
     public String getAppId() {
-        return appId;
+        return applicationId;
     }
 }

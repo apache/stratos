@@ -27,10 +27,12 @@ import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.partition.Partition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.*;
@@ -45,9 +47,7 @@ import org.apache.stratos.common.beans.kubernetes.PortRange;
 import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.manager.domain.*;
-import org.apache.stratos.manager.domain.DependencyDefinitions;
-import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
+import org.apache.stratos.common.beans.DependencyDefinitions;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
@@ -55,6 +55,7 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
@@ -1259,16 +1260,16 @@ public class ObjectConverter {
         return subscribableInfo;
     }
 
-    private static List<org.apache.stratos.manager.domain.PropertyBean>
+    private static List<org.apache.stratos.common.beans.PropertyBean>
         convertStubPropertiesToPropertyBeanList(org.apache.stratos.autoscaler.stub.Properties properties) {
 
-        List<org.apache.stratos.manager.domain.PropertyBean> propertyBeanList =
-                new ArrayList<org.apache.stratos.manager.domain.PropertyBean>();
+        List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList =
+                new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
         if((properties != null) && (properties.getProperties() != null)) {
             for (org.apache.stratos.autoscaler.stub.Property property : properties.getProperties()) {
                 if((property != null) && (property.getValue() instanceof String)) {
-                    org.apache.stratos.manager.domain.PropertyBean propertyBean =
-                            new org.apache.stratos.manager.domain.PropertyBean();
+                    org.apache.stratos.common.beans.PropertyBean propertyBean =
+                            new org.apache.stratos.common.beans.PropertyBean();
                     propertyBean.setName(property.getName());
                     propertyBean.setValue(String.valueOf(property.getValue()));
                     propertyBeanList.add(propertyBean);
@@ -1313,10 +1314,10 @@ public class ObjectConverter {
     }
 
 	private static org.apache.stratos.autoscaler.stub.Properties convertPropertyBeansToStubProperties(
-            List<org.apache.stratos.manager.domain.PropertyBean> property) {
+            List<org.apache.stratos.common.beans.PropertyBean> property) {
 		org.apache.stratos.autoscaler.stub.Properties prop = new org.apache.stratos.autoscaler.stub.Properties();
 		if (property != null) {
-			for (org.apache.stratos.manager.domain.PropertyBean propertyBean : property) {
+			for (org.apache.stratos.common.beans.PropertyBean propertyBean : property) {
 				org.apache.stratos.autoscaler.stub.Property p = new org.apache.stratos.autoscaler.stub.Property();
 				p.setName(propertyBean.getName());
 				p.setValue(propertyBean.getValue());
@@ -1532,11 +1533,11 @@ public class ObjectConverter {
         return carbonTenantInfoBean;
     }
 
-    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(ServiceGroupDefinition serviceGroupDefinition) throws ServiceGroupDefinitioException {
+    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(ServiceGroupDefinition serviceGroupDefinition) throws ServiceGroupDefinitionException {
         ServiceGroup servicegroup = new ServiceGroup();
 
         // implement conversion (mostly List -> Array)
-        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled);
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
         List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 
@@ -1640,16 +1641,44 @@ public class ObjectConverter {
      * 2. terminate-dependents
      * 3. terminate-all
      *
-     * @throws ServiceGroupDefinitioException if terminationBehavior is different to what is
+     * @throws ServiceGroupDefinitionException if terminationBehavior is different to what is
      *                                        listed above
      */
-    private static void validateTerminationBehavior(String terminationBehavior) throws ServiceGroupDefinitioException {
+    private static void validateTerminationBehavior(String terminationBehavior) throws ServiceGroupDefinitionException {
 
         if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
                 "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
-            throw new ServiceGroupDefinitioException("Invalid Termination Behaviour specified: [ " +
+            throw new ServiceGroupDefinitionException("Invalid Termination Behaviour specified: [ " +
                     terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
                     " 'terminate-all' ");
         }
+    }
+
+    public static org.apache.stratos.common.beans.Persistence convertStubPersistenceToPersistence(Persistence stubPersistence) {
+        org.apache.stratos.common.beans.Persistence persistence = new org.apache.stratos.common.beans.Persistence();
+        persistence.setPersistanceRequired(stubPersistence.getPersistanceRequired());
+        List<org.apache.stratos.common.beans.Volume> volumes = new ArrayList<org.apache.stratos.common.beans.Volume>();
+        for(org.apache.stratos.cloud.controller.stub.domain.Volume stubVolume : stubPersistence.getVolumes()) {
+            org.apache.stratos.common.beans.Volume volume = convertStubVolumeToVolume(stubVolume);
+            if(volume != null) {
+                volumes.add(volume);
+            }
+        }
+        org.apache.stratos.common.beans.Volume[] volumesArray = volumes.toArray(new org.apache.stratos.common.beans.Volume[volumes.size()]);
+        persistence.setVolumes(volumesArray);
+        return persistence;
+    }
+
+    private static org.apache.stratos.common.beans.Volume convertStubVolumeToVolume(Volume stubVolume) {
+        org.apache.stratos.common.beans.Volume volume = new org.apache.stratos.common.beans.Volume();
+        volume.setId(stubVolume.getId());
+        volume.setDevice(stubVolume.getDevice());
+        volume.setIaasType(stubVolume.getIaasType());
+        volume.setMappingPath(stubVolume.getMappingPath());
+        volume.setRemoveOntermination(stubVolume.getRemoveOntermination());
+        volume.setSnapshotId(stubVolume.getSnapshotId());
+        volume.setVolumeId(stubVolume.getVolumeId());
+        volume.setSize(stubVolume.getSize());
+        return volume;
     }
 }

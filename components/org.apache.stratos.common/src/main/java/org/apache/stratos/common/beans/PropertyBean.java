@@ -17,31 +17,33 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.exception;
+package org.apache.stratos.common.beans;
 
-public class InvalidServiceGroupException extends Exception {
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
-    private String message;
+@XmlRootElement(name = "property")
+public class PropertyBean implements Serializable {
 
-    public InvalidServiceGroupException () {
-        super();
+    private static final long serialVersionUID = 5756598782384376873L;
+
+	private String name;
+
+    private String value;
+
+    public String getName() {
+        return name;
     }
 
-    public InvalidServiceGroupException (String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public InvalidServiceGroupException (String message) {
-        super(message);
-        this.message = message;
+    public String getValue() {
+        return value;
     }
 
-    public InvalidServiceGroupException (Throwable cause) {
-        super(cause);
-    }
-
-    public String getMessage() {
-        return message;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

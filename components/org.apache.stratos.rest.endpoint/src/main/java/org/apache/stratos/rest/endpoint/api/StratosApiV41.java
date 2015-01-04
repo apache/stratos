@@ -30,12 +30,11 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
-import org.apache.stratos.common.beans.topology.Cluster;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.manager.domain.ApplicationDefinition;
-import org.apache.stratos.manager.domain.ApplicationSubscription;
-import org.apache.stratos.manager.domain.ServiceGroupDefinition;
+import org.apache.stratos.common.beans.ApplicationDefinition;
+import org.apache.stratos.common.beans.ApplicationSubscription;
+import org.apache.stratos.common.beans.ServiceGroupDefinition;
 import org.apache.stratos.manager.user.management.StratosUserManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
@@ -70,8 +69,6 @@ import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-
-import static javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * Stratos API v4.1 for Stratos 4.1.0 release.

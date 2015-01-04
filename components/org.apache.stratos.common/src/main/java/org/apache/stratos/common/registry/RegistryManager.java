@@ -29,6 +29,7 @@ import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.Serializable;
@@ -57,10 +58,11 @@ public class RegistryManager {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Persisting resource in registry: [resource-path] %s", resourcePath));
         }
-        Registry registry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
+
+        Registry registry = getRegistry();
 
         try {
-        	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
@@ -92,10 +94,7 @@ public class RegistryManager {
      */
     public synchronized Object read(String resourcePath) throws RegistryException {
         try {
-            Registry registry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
-            if(registry == null) {
-                return null;
-            }
+            Registry registry = getRegistry();
 
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
@@ -118,5 +117,9 @@ public class RegistryManager {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
+    }
+
+    private UserRegistry getRegistry() throws RegistryException {
+        return ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
     }
 }

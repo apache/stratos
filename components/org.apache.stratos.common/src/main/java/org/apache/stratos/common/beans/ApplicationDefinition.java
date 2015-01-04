@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import java.io.Serializable;
 import java.util.List;
@@ -36,7 +36,7 @@ public class ApplicationDefinition implements Serializable {
     private ComponentDefinition components;
     private String status;
     private List<PropertyBean> property;
-    
+
     public String getApplicationId() {
         return applicationId;
     }

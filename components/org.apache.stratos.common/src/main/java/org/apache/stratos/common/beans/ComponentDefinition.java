@@ -1,4 +1,4 @@
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import java.io.Serializable;
 import java.util.List;

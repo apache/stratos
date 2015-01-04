@@ -24,7 +24,8 @@ import java.util.Arrays;
 public class Persistence implements Serializable{
 	
 	private static final long serialVersionUID = 3455721979991902731L;
-	private boolean persistanceRequired;
+
+    private boolean persistanceRequired;
 	private Volume[] volumes;
 
     public String toString () {

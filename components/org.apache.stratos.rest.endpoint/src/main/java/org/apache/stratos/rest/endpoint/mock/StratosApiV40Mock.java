@@ -24,8 +24,7 @@ import java.net.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.manager.domain.Cartridge;
-import org.apache.stratos.manager.domain.SubscriptionInfo;
+import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.rest.endpoint.Utils;
@@ -127,8 +126,8 @@ public class StratosApiV40Mock {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public SubscriptionInfo subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException{
-          return MockContext.getInstance().subscribeToCartridge(cartridgeInfoBean);
+    public Response subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException{
+          throw new RuntimeException("Not implemented");
     }
 
 

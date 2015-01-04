@@ -17,7 +17,9 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
+
+import org.apache.stratos.common.beans.PropertyBean;
 
 import java.io.Serializable;
 import java.util.List;

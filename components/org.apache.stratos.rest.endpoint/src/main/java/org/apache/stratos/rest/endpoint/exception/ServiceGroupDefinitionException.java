@@ -17,33 +17,21 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.exception;
+package org.apache.stratos.rest.endpoint.exception;
 
-public class PersistenceManagerException extends Exception {
+public class ServiceGroupDefinitionException extends Exception {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2469193418622416944L;
 
-    private String message;
-
-    public PersistenceManagerException() {
+    public ServiceGroupDefinitionException() {
         super();
     }
 
-    public PersistenceManagerException(String message, Throwable cause) {
-        super(message, cause);
-        this.message = message;
-    }
-
-    public PersistenceManagerException(String message) {
+    public ServiceGroupDefinitionException(String message) {
         super(message);
-        this.message = message;
     }
 
-    public PersistenceManagerException(Throwable cause) {
-        super(cause);
-    }
-
-    public String getMessage() {
-        return message;
+    public ServiceGroupDefinitionException(String message, Throwable cause) {
+        super(message, cause);
     }
 }

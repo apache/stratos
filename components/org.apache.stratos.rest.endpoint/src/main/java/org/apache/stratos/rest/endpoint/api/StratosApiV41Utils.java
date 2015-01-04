@@ -35,6 +35,7 @@ import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.ApplicationBean;
 import org.apache.stratos.common.beans.GroupBean;
+import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
@@ -50,9 +51,9 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.domain.ApplicationDefinition;
-import org.apache.stratos.manager.domain.ApplicationSubscription;
-import org.apache.stratos.manager.domain.ServiceGroupDefinition;
+import org.apache.stratos.common.beans.ApplicationDefinition;
+import org.apache.stratos.common.beans.ApplicationSubscription;
+import org.apache.stratos.common.beans.ServiceGroupDefinition;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -831,7 +832,7 @@ public class StratosApiV41Utils {
 
         if (appDefinition.getProperty() != null) {
             org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
-            for (org.apache.stratos.manager.domain.PropertyBean propertyBean : appDefinition.getProperty()) {
+            for (PropertyBean propertyBean : appDefinition.getProperty()) {
                 org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
                 property.setName(propertyBean.getName());
                 property.setValue(propertyBean.getValue());

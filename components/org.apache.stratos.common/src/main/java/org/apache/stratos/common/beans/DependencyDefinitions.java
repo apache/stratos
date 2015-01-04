@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -26,15 +26,10 @@ import java.util.List;
 @XmlRootElement(name = "dependencies")
 public class DependencyDefinitions implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
     private List<String> startupOrders;
-
     private List<String> scalingDependants;
-
     private String terminationBehaviour;
 
     public String getTerminationBehaviour() {

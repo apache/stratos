@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
@@ -27,13 +27,9 @@ import java.util.List;
 public class ServiceGroupDefinition implements Serializable {
 
     private String name;
-
     private List<ServiceGroupDefinition> groups;
-
     private List<String> cartridges;
-
-    public boolean isGroupScalingEnabled;
-
+    private boolean isGroupScalingEnabled;
     private DependencyDefinitions dependencies;
 
     public String getName() {
@@ -66,5 +62,13 @@ public class ServiceGroupDefinition implements Serializable {
 
     public void setGroups(List<ServiceGroupDefinition> groups) {
         this.groups = groups;
+    }
+
+    public boolean isGroupScalingEnabled() {
+        return isGroupScalingEnabled;
+    }
+
+    public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
+        this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 }

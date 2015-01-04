@@ -31,7 +31,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCar
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.domain.Cartridge;
+import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -481,7 +481,7 @@ public class StratosApiV40Utils {
                     cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
                     //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
                     cartridge.setCartridgeAlias("-");
-                    cartridge.setPersistence(cartridgeInfo.getPersistence());
+                    cartridge.setPersistence(ObjectConverter.convertStubPersistenceToPersistence(cartridgeInfo.getPersistence()));
                     cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
 
                     if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {

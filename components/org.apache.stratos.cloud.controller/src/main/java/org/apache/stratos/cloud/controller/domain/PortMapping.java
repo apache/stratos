@@ -23,12 +23,12 @@ import java.io.Serializable;
 public class PortMapping implements Serializable{
 	
     private static final long serialVersionUID = -5387564414633460306L;
+
 	private String protocol;
 	private String port;
 	private String proxyPort;
 	
 	public PortMapping(){
-		
 	}
 	
 	public PortMapping(String protocol, String port, String proxyPort){

@@ -19,10 +19,8 @@
 package org.apache.stratos.rest.endpoint.mock;
 
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.manager.domain.Cartridge;
-import org.apache.stratos.manager.domain.SubscriptionInfo;
+import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.common.beans.UserInfoBean;
-import org.apache.stratos.common.beans.CartridgeInfoBean;
 import org.apache.stratos.common.beans.StratosApiResponse;
 import org.apache.stratos.common.beans.SubscriptionDomainRequest;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
@@ -255,64 +253,6 @@ public class MockContext {
 			p.addAll(subscribedCartridges.get(PUBLIC_DEFINITION).values());
     	
     	return p.toArray(new Cartridge[0]);
-    }
-
-    public SubscriptionInfo subscribeToCartridge(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException{
-        int tenantId = this.getTenantId();
-        String cartridgeType = cartridgeInfoBean.getCartridgeType();
-        String alias = cartridgeInfoBean.getAlias();
-        Cartridge subscribedCartridge=null;
-        
-        // retrieve the cartridge from single tenant cartridges
-        try{
-        	subscribedCartridge=getAvailableSingleTenantCartridgeInfo(cartridgeType);
-        }
-        catch(RestAPIException e){
-        	//ignore once
-        }
-        
-        // retrieve the cartridge from multitenant cartridges if not found
-        if(subscribedCartridge==null){
-        	try{
-            	subscribedCartridge=getAvailableMultiTenantCartridgeInfo(cartridgeType);
-            }
-            catch(RestAPIException e){
-            	throw new RestAPIException(Status.NO_CONTENT,"Cartridge not defined");
-            }
-        }
-               
-        if(subscribedCartridge!=null){
-            //Proper way is copy constructor
-            Cartridge copy = new Cartridge();
-            copy.setCartridgeType(subscribedCartridge.getCartridgeType());
-            copy.setDescription(subscribedCartridge.getDescription());
-            copy.setDisplayName(subscribedCartridge.getDisplayName());
-            copy.setMultiTenant(subscribedCartridge.isMultiTenant());
-            copy.setProvider(subscribedCartridge.getProvider());
-            copy.setVersion(subscribedCartridge.getVersion());
-            copy.setCartridgeAlias(alias);
-            copy.setHostName("dummy.stratos.com");
-            copy.setRepoURL("http://dummy.stratos.com/myrepo.git");
-
-            Map<String,Cartridge> subscriptions;
-            if(subscribedCartridges.containsKey(tenantId)){
-            	(subscribedCartridges.get(tenantId)).put(alias,copy);
-            }
-            else{
-            	subscriptions = new HashMap<String,Cartridge>();
-            	subscriptions.put(alias, copy);
-            	subscribedCartridges.put(tenantId, subscriptions);
-            }
-            
-            SubscriptionInfo subscriptionInfo = new SubscriptionInfo();
-            subscriptionInfo.setHostname(copy.getHostName());
-            subscriptionInfo.setRepositoryURL(copy.getRepoURL());
-
-            return subscriptionInfo;
-        }
-        
-        return new SubscriptionInfo();
-
     }
 
     public StratosApiResponse unsubscribe(String alias) throws RestAPIException{

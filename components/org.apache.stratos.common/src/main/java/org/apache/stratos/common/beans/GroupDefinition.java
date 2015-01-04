@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;

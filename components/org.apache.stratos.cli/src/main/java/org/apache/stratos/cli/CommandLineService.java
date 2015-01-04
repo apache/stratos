@@ -18,18 +18,6 @@
  */
 package org.apache.stratos.cli;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
@@ -37,29 +25,18 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.transport.http.HttpTransportProperties;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliUtils;
-import org.apache.stratos.cli.utils.RowMapper;
-import org.apache.stratos.manager.domain.PolicyDefinition;
-import org.apache.stratos.manager.domain.PolicyDefinition;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceADCExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceAlreadySubscribedExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceDomainMappingExistsExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceDuplicateCartridgeAliasExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceInvalidCartridgeAliasExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceInvalidRepositoryExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceNotSubscribedExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServicePolicyExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceRepositoryCredentialsRequiredExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceRepositoryRequiredExceptionException;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceRepositoryTransportExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceStub;
-import org.apache.stratos.manager.stub.ApplicationManagementServiceUnregisteredCartridgeExceptionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
+import javax.net.ssl.*;
+import java.rmi.RemoteException;
+import java.util.HashMap;
 
 public class CommandLineService {
 

@@ -44,7 +44,7 @@ import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
 import org.apache.stratos.common.beans.topology.Cluster;
-import org.apache.stratos.manager.domain.ApplicationDefinition;
+import org.apache.stratos.common.beans.ApplicationDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.common.beans;
 
 import java.io.Serializable;
 
