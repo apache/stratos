@@ -33,15 +33,15 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import java.rmi.RemoteException;
 
-public class oAuthAdminServiceClient {
+public class OAuthAdminServiceClient {
 
     public static final String GRANT_TYPE = "client-credentials";
-    private static final Log log = LogFactory.getLog(oAuthAdminServiceClient.class);
+    private static final Log log = LogFactory.getLog(OAuthAdminServiceClient.class);
     private static final String OAUTH_2_0 = "oauth-2.0";
-    private static oAuthAdminServiceClient serviceClient;
+    private static OAuthAdminServiceClient serviceClient;
     private final OAuthAdminServiceStub stub;
 
-    public oAuthAdminServiceClient(String epr) throws AxisFault {
+    public OAuthAdminServiceClient(String epr) throws AxisFault {
 
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         int autosclaerSocketTimeout   = conf.getInt("autoscaler.identity.clientTimeout", 180000);
@@ -71,15 +71,15 @@ public class oAuthAdminServiceClient {
         }
     }
 
-    public static oAuthAdminServiceClient getServiceClient() throws AxisFault {
+    public static OAuthAdminServiceClient getServiceClient() throws AxisFault {
         if (serviceClient == null) {
-            synchronized (oAuthAdminServiceClient.class) {
+            synchronized (OAuthAdminServiceClient.class) {
                 if (serviceClient == null) {
                     XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
                     String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
                     int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
                     String epr = "https://" + hostname + ":" + port + "/" + Constants.OAUTH_SERVICE_SFX;
-                    serviceClient = new oAuthAdminServiceClient(epr);
+                    serviceClient = new OAuthAdminServiceClient(epr);
                 }
             }
         }
@@ -107,5 +107,4 @@ public class oAuthAdminServiceClient {
         }
         stub.removeOAuthApplicationData(appName);
     }
-
 }

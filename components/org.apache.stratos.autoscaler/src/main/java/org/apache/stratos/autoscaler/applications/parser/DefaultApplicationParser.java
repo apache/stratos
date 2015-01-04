@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
-import org.apache.stratos.autoscaler.client.oAuthAdminServiceClient;
+import org.apache.stratos.autoscaler.client.OAuthAdminServiceClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
@@ -707,7 +707,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         String serviceProviderName = ouathAppName;
 
         try {
-            oAuthAdminServiceClient.getServiceClient().registerOauthApplication(ouathAppName);
+            OAuthAdminServiceClient.getServiceClient().registerOauthApplication(ouathAppName);
         } catch (RemoteException e) {
             throw new AutoScalerException(e);
         } catch (OAuthAdminServiceException e) {

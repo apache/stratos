@@ -100,7 +100,7 @@ public class IdentityApplicationManagementServiceClient {
         OAuthConsumerAppDTO oAuthApplication = null;
         String accessToken;
 
-        oAuthApplication = oAuthAdminServiceClient.getServiceClient().getOAuthApplication(appName);
+        oAuthApplication = OAuthAdminServiceClient.getServiceClient().getOAuthApplication(appName);
 
         if(oAuthApplication == null){
             return null;
