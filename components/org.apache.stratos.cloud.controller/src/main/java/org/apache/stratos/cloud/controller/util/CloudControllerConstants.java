@@ -260,9 +260,8 @@ public final class CloudControllerConstants {
 	/**
 	 * Persistence
 	 */
-	public static final String CLOUD_CONTROLLER_RESOURCE = "/cloud.controller";
-	public static final String DATA_RESOURCE = "/data";
-	public static final String TOPOLOGY_RESOURCE = "/topology";
+	public static final String DATA_RESOURCE = "/cloud.controller/data";
+	public static final String TOPOLOGY_RESOURCE = "/cloud.controller/topology";
 	public static final String AVAILABILITY_ZONE = "availabilityZone";
 	public static final String KEY_PAIR = "keyPair";
 	public static final String HOST = "host";

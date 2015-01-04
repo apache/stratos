@@ -19,13 +19,11 @@
  *
 */
 
-package org.apache.stratos.cloud.controller.registry;
+package org.apache.stratos.common.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
+import org.apache.stratos.common.internal.ServiceReferenceHolder;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;
@@ -41,39 +39,25 @@ import java.io.Serializable;
 public class RegistryManager {
     private final static Log log = LogFactory.getLog(RegistryManager.class);
 
-    private static class Holder {
-        static final RegistryManager instance = new RegistryManager();
-    }
+    private static final RegistryManager instance = new RegistryManager();
 
     public static RegistryManager getInstance() {
-        return Holder.instance;
+        return instance;
     }
     
     private RegistryManager() {
-        try {
-            Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
-            if ((registry != null) && (!registry.resourceExists(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE))) {
-                registry.put(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE, registry.newCollection());
-            }
-        } catch (RegistryException e) {
-            String msg = "Failed to create the registry resource " +
-                            CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE;
-            log.error(msg, e);
-            throw new CloudControllerException(msg, e);
-        }
     }
 
     /**
-     * Persist an object in the registry.
+     * Persist a serializable object in the registry with the given resource path.
      *
      * @param serializableObject object to be persisted.
      */
     public synchronized void persist(String resourcePath, Serializable serializableObject) throws RegistryException {
-        String absoluteResourcePath = CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath;
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Persisting resource in registry: [resource-path] %s", absoluteResourcePath));
+            log.debug(String.format("Persisting resource in registry: [resource-path] %s", resourcePath));
         }
-        Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
+        Registry registry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
 
         try {
         	PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
@@ -84,25 +68,31 @@ public class RegistryManager {
 
             Resource nodeResource = registry.newResource();
             nodeResource.setContent(Serializer.serializeToByteArray(serializableObject));
-            registry.put(absoluteResourcePath, nodeResource);
+            registry.put(resourcePath, nodeResource);
 
             registry.commitTransaction();
 
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Resource persisted successfully in registry: [resource-path] %s",
-                        absoluteResourcePath));
+                        resourcePath));
             }
         } catch (Exception e) {
-            String msg = "Failed to persist resource in registry: " + absoluteResourcePath;
+            String msg = "Failed to persist resource in registry: " + resourcePath;
             registry.rollbackTransaction();
             log.error(msg, e);
-            throw new CloudControllerException(msg, e);
+            throw new RegistryException(msg, e);
         }
     }
 
-    public synchronized Object read(String resourcePath) {
+    /**
+     * Returns an object stored in the given resource path.
+     * @param resourcePath
+     * @return
+     * @throws RegistryException
+     */
+    public synchronized Object read(String resourcePath) throws RegistryException {
         try {
-            Registry registry = ServiceReferenceHolder.getInstance().getRegistry();
+            Registry registry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
             if(registry == null) {
                 return null;
             }
@@ -110,7 +100,7 @@ public class RegistryManager {
             PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
         	ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
-            Resource resource = registry.get(CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath);
+            Resource resource = registry.get(resourcePath);
             Object content = resource.getContent();
             if (content != null) {
                 try {
@@ -122,13 +112,11 @@ public class RegistryManager {
             }
             return null;
         } catch (ResourceNotFoundException ignore) {
-            // this means, we've never persisted CC info in registry
             return null;
         } catch (RegistryException e) {
-            String msg = "Failed to read resource from registry: " +
-                    CloudControllerConstants.CLOUD_CONTROLLER_RESOURCE + resourcePath;
+            String msg = "Failed to read resource from registry: " + resourcePath;
             log.error(msg, e);
-            throw new CloudControllerException(msg, e);
+            throw new RegistryException(msg, e);
         }
     }
 }

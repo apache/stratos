@@ -27,7 +27,7 @@ import org.apache.stratos.cloud.controller.iaases.mock.MockPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.mock.service.config.MockIaasConfig;
 import org.apache.stratos.cloud.controller.iaases.mock.service.statistics.generator.MockHealthStatisticsGenerator;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.common.registry.RegistryManager;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -53,7 +53,7 @@ public class MockIaasService {
 
     private static final ExecutorService mockMemberExecutorService =
             StratosThreadPool.getExecutorService("MOCK_MEMBER_EXECUTOR_SERVICE", MockConstants.MAX_MOCK_MEMBER_COUNT);
-    private static final String MOCK_IAAS_MEMBERS = "/mock/iaas/members";
+    private static final String MOCK_IAAS_MEMBERS = "/cloud.controller/mock/iaas/members";
     private static volatile MockIaasService instance;
 
     private MockPartitionValidator partitionValidator;
@@ -63,7 +63,13 @@ public class MockIaasService {
     private MockIaasService() {
         super();
         partitionValidator = new MockPartitionValidator();
-        serviceNameToMockMemberMap = readFromRegistry();
+        try {
+            serviceNameToMockMemberMap = readFromRegistry();
+        } catch (RegistryException e) {
+            String message = "Could not read service name -> mock member map from registry";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
         if(serviceNameToMockMemberMap == null) {
             // No members found in registry, create a new map
             serviceNameToMockMemberMap = new ConcurrentHashMap<String, Map<String, MockMember>>();
@@ -148,7 +154,7 @@ public class MockIaasService {
         }
     }
 
-    private ConcurrentHashMap<String, Map<String, MockMember>> readFromRegistry() {
+    private ConcurrentHashMap<String, Map<String, MockMember>> readFromRegistry() throws RegistryException {
         return (ConcurrentHashMap<String, Map<String, MockMember>>)
                 RegistryManager.getInstance().read(MOCK_IAAS_MEMBERS);
     }

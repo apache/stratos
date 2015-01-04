@@ -9,7 +9,7 @@ import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 
 /**
- * Created by imesh on 12/1/14.
+ * Stratos common service reference holder.
  */
 public class ServiceReferenceHolder {
 

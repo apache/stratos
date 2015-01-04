@@ -16,12 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.registry;
+package org.apache.stratos.common.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.messaging.domain.topology.Topology;
 
 import java.io.*;
 
@@ -59,13 +57,12 @@ public class Serializer {
                 fileOutputStream.close();
             }
         }
-
     }
-    
+
     /**
-     * Serialize a {@link org.apache.stratos.cloud.controller.context.CloudControllerContext} to a byte array.
+     * Serialize an object to a byte array.
      * @param serializableObject
-     * @return byte[] 
+     * @return
      * @throws IOException
      */
     public static byte[]  serializeToByteArray(Serializable serializableObject) throws IOException {
@@ -84,32 +81,5 @@ public class Serializer {
             }
             bos.close();
         }
-
     }
-
-     /**
-     * Serialize a {@link org.apache.stratos.cloud.controller.context.CloudControllerContext} to a byte array.
-     * @param topology
-     * @return byte[]
-     * @throws IOException
-     */
-    public static byte[] serializeToByteArray(Topology topology) throws IOException {
-
-    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    	ObjectOutput out = null;
-    	try {
-    	  out = new ObjectOutputStream(bos);
-    	  out.writeObject(topology);
-
-    	  return bos.toByteArray();
-
-        } finally {
-            if (out != null) {
-                out.close();
-            }
-            bos.close();
-        }
-
-    }
-
 }

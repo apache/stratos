@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.registry;
+package org.apache.stratos.common.registry;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

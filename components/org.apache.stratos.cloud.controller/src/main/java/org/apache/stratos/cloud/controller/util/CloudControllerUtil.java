@@ -31,7 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterExc
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.common.registry.RegistryManager;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
@@ -318,22 +318,16 @@ public class CloudControllerUtil {
           log.fatal(msg, e);
       }
     }
-    
-    public static Topology retrieveTopology() {    	
-          Object dataObj = RegistryManager.getInstance().read(CloudControllerConstants.TOPOLOGY_RESOURCE);
-          if (dataObj != null) {
-              try {
-                  if(dataObj instanceof Topology) {
-                      return (Topology) dataObj;
-                  } else {
-                      return null;
-                  }
-              } catch (Exception e) {
-                String msg = "Unable to retrieve data from Registry. Hence, any historical data will not get reflected.";
-                log.warn(msg, e);
-            }
-          }
-          return null;
+
+    public static Topology retrieveTopology() {
+        try {
+            Object dataObj = RegistryManager.getInstance().read(CloudControllerConstants.TOPOLOGY_RESOURCE);
+            return (Topology) dataObj;
+        } catch (Exception e) {
+            String msg = "Unable to retrieve data from registry";
+            log.error(msg, e);
+            throw new RuntimeException(msg, e);
+        }
     }
 
 	

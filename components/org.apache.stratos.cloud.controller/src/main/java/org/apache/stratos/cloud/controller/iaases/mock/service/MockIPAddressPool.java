@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.iaases.mock.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
+import org.apache.stratos.common.registry.RegistryManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.io.Serializable;
@@ -33,8 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MockIPAddressPool {
     private static final Log log = LogFactory.getLog(MockIPAddressPool.class);
 
-    private static final String MOCK_IAAS_PRIVATE_IP_SEQUENCE = "/mock/iaas/private-ip-sequence";
-    private static final String MOCK_IAAS_PUBLIC_IP_SEQUENCE = "/mock/iaas/public-ip-sequence";
+    private static final String MOCK_IAAS_PRIVATE_IP_SEQUENCE = "/cloud.controller/mock/iaas/private-ip-sequence";
+    private static final String MOCK_IAAS_PUBLIC_IP_SEQUENCE = "/cloud.controller/mock/iaas/public-ip-sequence";
     private static final String PRIVATE_IP_PREFIX = "10.0.0.";
     private static final String PUBLIC_IP_PREFIX = "20.0.0.";
 
@@ -44,14 +44,26 @@ public class MockIPAddressPool {
     private AtomicInteger publicIpSequence;
 
     private MockIPAddressPool() {
-        privateIpSequence = readFromRegistry(MOCK_IAAS_PRIVATE_IP_SEQUENCE);
-        if (privateIpSequence == null) {
-            privateIpSequence = new AtomicInteger();
+        try {
+            privateIpSequence = (AtomicInteger) RegistryManager.getInstance().read(MOCK_IAAS_PRIVATE_IP_SEQUENCE);
+            if (privateIpSequence == null) {
+                privateIpSequence = new AtomicInteger();
+            }
+        } catch (RegistryException e) {
+            String message = "Could not read private ip sequence from registry";
+            log.error(message, e);
+            throw new RuntimeException(e);
         }
 
-        publicIpSequence = readFromRegistry(MOCK_IAAS_PUBLIC_IP_SEQUENCE);
-        if (publicIpSequence == null) {
-            publicIpSequence = new AtomicInteger();
+        try {
+            publicIpSequence = (AtomicInteger) RegistryManager.getInstance().read(MOCK_IAAS_PUBLIC_IP_SEQUENCE);
+            if (publicIpSequence == null) {
+                publicIpSequence = new AtomicInteger();
+            }
+        } catch (RegistryException e) {
+            String message = "Could not read public ip sequence from registry";
+            log.error(message, e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -92,9 +104,5 @@ public class MockIPAddressPool {
         } catch (RegistryException e) {
             log.error(String.format("Could not persist mock iaas ip sequence [%s] in registry", resourcePath), e);
         }
-    }
-
-    private AtomicInteger readFromRegistry(String resourcePath) {
-        return (AtomicInteger) RegistryManager.getInstance().read(resourcePath);
     }
 }
