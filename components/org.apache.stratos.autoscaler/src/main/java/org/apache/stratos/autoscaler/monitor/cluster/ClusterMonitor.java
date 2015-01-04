@@ -734,7 +734,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
         getDependentScaleCheckKnowledgeSession().setGlobal("roundedRequiredInstanceCount", roundedRequiredInstanceCount);
         getDependentScaleCheckKnowledgeSession().setGlobal("algorithmName", clusterInstanceContext.getPartitionAlgorithm());
         getDependentScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
-
+        getDependentScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
         dependentScaleCheckFactHandle = AutoscalerRuleEvaluator.evaluate(getDependentScaleCheckKnowledgeSession()
                 , dependentScaleCheckFactHandle, clusterInstanceContext);
 
