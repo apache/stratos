@@ -29,8 +29,8 @@ import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptio
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.manager.client.AutoscalerServiceClient;
-import org.apache.stratos.manager.client.CloudControllerServiceClient;
+import org.apache.stratos.common.client.AutoscalerServiceClient;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
@@ -209,7 +209,7 @@ public class StratosApiV40Utils {
     private static CloudControllerServiceClient getCloudControllerServiceClient () throws RestAPIException {
 
         try {
-            return CloudControllerServiceClient.getServiceClient();
+            return CloudControllerServiceClient.getInstance();
 
         } catch (AxisFault axisFault) {
             String errorMsg = "Error while getting CloudControllerServiceClient instance to connect to the "
@@ -436,13 +436,13 @@ public class StratosApiV40Utils {
         try {
             Pattern searchPattern = getSearchStringPattern(cartridgeSearchString);
 
-            String[] availableCartridges = CloudControllerServiceClient.getServiceClient().getRegisteredCartridges();
+            String[] availableCartridges = CloudControllerServiceClient.getInstance().getRegisteredCartridges();
 
             if (availableCartridges != null) {
                 for (String cartridgeType : availableCartridges) {
                     CartridgeInfo cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getServiceClient().getCartridgeInfo(cartridgeType);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "

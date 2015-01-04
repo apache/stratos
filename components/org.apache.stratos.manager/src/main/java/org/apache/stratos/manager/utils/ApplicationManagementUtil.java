@@ -60,26 +60,6 @@ public class ApplicationManagementUtil {
         }
         return stubProps;
     }
-    
-    public static org.apache.stratos.autoscaler.stub.Properties toAutoscalerStubProperties(
-            org.apache.stratos.common.Properties properties) {
-        org.apache.stratos.autoscaler.stub.Properties stubProps = new org.apache.stratos.autoscaler.stub.Properties();
-
-        if (properties != null && properties.getProperties() != null) {
-
-            for (Property property : properties.getProperties()) {
-                if ((property != null) && (property.getValue() != null)) {
-                    org.apache.stratos.autoscaler.stub.Property newProperty = new org.apache.stratos.autoscaler.stub.Property();
-                    newProperty.setName(property.getName());
-                    newProperty.setValue(String.valueOf(property.getValue()));
-                    stubProps.addProperties(newProperty);
-                }
-            }
-
-        }
-
-        return stubProps;
-    }
 
     public static org.apache.stratos.common.Properties toCommonProperties(
             org.apache.stratos.cloud.controller.stub.Properties properties) {

@@ -178,5 +178,13 @@ public class StratosConstants {
 	public static final String EXISTING_LOAD_BALANCERS = "existing.load.balancers";
 
     public static final long HAZELCAST_INSTANCE_INIT_TIMEOUT = 300000; // 5 min
+
+    public static final String AUTOSCALER_SERVICE_URL = "autoscaler.service.url";
+    public static final String CLOUD_CONTROLLER_SERVICE_URL = "cloud.controller.service.url";
+
+    public static final String CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT = "cc.socket.timeout";
+    public static final String CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT = "cc.connection.timeout";
+    public static final String AUTOSCALER_CLIENT_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
+    public static final String AUTOSCALER_CLIENT_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
 }
 

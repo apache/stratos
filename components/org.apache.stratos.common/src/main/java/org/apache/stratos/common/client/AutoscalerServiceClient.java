@@ -17,23 +17,19 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.client;
+package org.apache.stratos.common.client;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
+import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.common.Properties;
-import org.apache.stratos.manager.internal.ServiceReferenceHolder;
-import org.apache.stratos.manager.utils.ApplicationManagementUtil;
-import org.apache.stratos.manager.utils.CartridgeConstants;
+import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.common.constants.StratosConstants;
 
 import java.rmi.RemoteException;
 
@@ -46,20 +42,20 @@ public class AutoscalerServiceClient {
 
     public AutoscalerServiceClient(String epr) throws AxisFault {
 
+        String autosclaerSocketTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT)
+                == null ? "300000" : System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT);
+        String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT)
+                == null ? "300000" : System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT);
 
-        String autosclaerSocketTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_SOCKET_TIMEOUT);
-        String autosclaerConnectionTimeout =
-                System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT);
-
-        ConfigurationContext clientConfigContext = ServiceReferenceHolder.getClientConfigContext();
         try {
-            stub = new AutoScalerServiceStub(clientConfigContext, epr);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, new Integer(autosclaerConnectionTimeout));
+            stub = new AutoScalerServiceStub(epr);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT,
+                    new Integer(autosclaerSocketTimeout));
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
+                    new Integer(autosclaerConnectionTimeout));
 
         } catch (AxisFault axisFault) {
-            String msg = "Failed to initiate autoscaler service client. " + axisFault.getMessage();
+            String msg = "Could not initialize autoscaler service client";
             log.error(msg, axisFault);
             throw new AxisFault(msg, axisFault);
         }
@@ -69,7 +65,7 @@ public class AutoscalerServiceClient {
         if (serviceClient == null) {
             synchronized (AutoscalerServiceClient.class) {
                 if (serviceClient == null) {
-                    serviceClient = new AutoscalerServiceClient(System.getProperty(CartridgeConstants.AUTOSCALER_SERVICE_URL));
+                    serviceClient = new AutoscalerServiceClient(System.getProperty(StratosConstants.AUTOSCALER_SERVICE_URL));
                 }
             }
         }
@@ -83,39 +79,21 @@ public class AutoscalerServiceClient {
 
     public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartition(
             String deploymentPolicyId) throws RemoteException {
-
-        ApplicationLevelNetworkPartition[] partitionGroups;
-//        partitionGroups = stub.getPartitionGroups(deploymentPolicyId);
-
-//        return partitionGroups;
-        //FIXME add a method to autoscaler to return Application Level NetworkPartitions
-        return null;
+        return stub.getNetworkPartitions(deploymentPolicyId);
     }
 
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()
             throws RemoteException {
-
-        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies;
-        autoscalePolicies = stub.getAutoScalingPolicies();
-
-        return autoscalePolicies;
+        return stub.getAutoScalingPolicies();
     }
 
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy getAutoScalePolicy(
             String autoscalingPolicyId) throws RemoteException {
-
-        org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy;
-        autoscalePolicy = stub.getAutoscalingPolicy(autoscalingPolicyId);
-
-        return autoscalePolicy;
+        return stub.getAutoscalingPolicy(autoscalingPolicyId);
     }
 
     public org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) throws RemoteException {
-
-        org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy;
-        deploymentPolicy = stub.getDeploymentPolicy(deploymentPolicyId);
-
-        return deploymentPolicy;
+        return stub.getDeploymentPolicy(deploymentPolicyId);
     }
 
     public void addApplication(ApplicationContext applicationContext) throws AutoScalerServiceApplicationDefinitionExceptionException, RemoteException {
@@ -132,9 +110,7 @@ public class AutoscalerServiceClient {
 
     public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws RemoteException,
             AutoScalerServiceInvalidPolicyExceptionException, AutoScalerServiceApplicationDefinitionExceptionException {
-
         return stub.deployApplication(applicationId, deploymentPolicy);
-
     }
 
     public void undeployApplication(String applicationId) throws
@@ -148,13 +124,11 @@ public class AutoscalerServiceClient {
 
     public boolean deployAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
             AutoScalerServiceInvalidPolicyExceptionException {
-
         return stub.addAutoScalingPolicy(autoScalePolicy);
     }
 
     public boolean updateAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
             AutoScalerServiceInvalidPolicyExceptionException {
-
         return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
@@ -174,7 +148,7 @@ public class AutoscalerServiceClient {
         stub.removeServiceGroup(groupName);
     }
 
-    public void updateClusterMonitor(String clusterId, Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
-        stub.updateClusterMonitor(clusterId, ApplicationManagementUtil.toAutoscalerStubProperties(properties));
+    public void updateClusterMonitor(String clusterId, org.apache.stratos.autoscaler.stub.Properties properties) throws RemoteException, AutoScalerServiceInvalidArgumentExceptionException {
+        stub.updateClusterMonitor(clusterId, properties);
     }
 }

@@ -20,20 +20,8 @@
 package org.apache.stratos.manager.utils;
 
 public class CartridgeConstants {
-	public static final String AUTOSCALER_SERVICE_URL = "autoscaler.service.url";
-    public static final String CLOUD_CONTROLLER_SERVICE_URL = "cloud.controller.service.url";
-    public static final String PUPPET_IP = "puppet.ip";
-    public static final String PUPPET_HOSTNAME = "puppet.hostname";
-    public static final String PUPPET_DNS_AVAILABLE = "puppet.dns.available";
-    public static final String PUPPET_ENVIRONMENT = "puppet.environment";
 
     public static final String FEATURE_MULTI_TENANT_MULTIPLE_SUBSCRIPTION_ENABLED = "feature.multitenant.multiplesubscription.enabled";
-    public static final String DATA_CARTRIDGE_PROVIDER = "data";
-
-    public static final String CC_SOCKET_TIMEOUT = "cc.socket.timeout";
-    public static final String CC_CONNECTION_TIMEOUT = "cc.connection.timeout";
-    public static final String AUTOSCALER_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
-    public static final String AUTOSCALER_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
 
 	// BAM publisher related values
 	public static final String BAM_PUBLISHER_ENABLED = "bam.publisher.enabled";

@@ -44,7 +44,6 @@ public class ConfUtil {
 
 	private ConfUtil(String configFilePath) {
 		try {
-
 			File confFile;
 			if (configFilePath != null && !configFilePath.isEmpty()) {
 				confFile = new File(configFilePath);
@@ -52,9 +51,7 @@ public class ConfUtil {
 			} else {
 				confFile = new File(CarbonUtils.getCarbonConfigDirPath(), Constants.AUTOSCALER_CONFIG_FILE_NAME);
 			}
-
 			config = new XMLConfiguration(confFile);
-
 		} catch (ConfigurationException e) {
 			log.error("Unable to load configuration file", e);
 			config = new XMLConfiguration();  // continue with default values

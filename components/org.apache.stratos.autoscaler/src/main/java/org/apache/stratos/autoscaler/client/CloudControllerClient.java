@@ -72,11 +72,12 @@ public class CloudControllerClient {
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
             String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX;
             int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
+
             stub = new CloudControllerServiceStub(epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
         } catch (Exception e) {
-            log.error("Stub init error", e);
+            log.error("Could not initialize cloud controller client", e);
         }
     }
     

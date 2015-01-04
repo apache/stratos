@@ -39,16 +39,6 @@
 			<artifactId>org.wso2.carbon.registry.ws.client</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-        <dependency>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.utils</artifactId>
 			<version>${wso2carbon.version}</version>
