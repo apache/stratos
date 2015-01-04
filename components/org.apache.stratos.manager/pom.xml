@@ -29,8 +29,8 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>org.apache.stratos.manager</artifactId>
 	<packaging>bundle</packaging>
-	<name>Apache Stratos - Manager BE</name>
-	<description>BE functionalities of SM</description>
+	<name>Apache Stratos - Manager</name>
+	<description>Stratos Manager (SM)</description>
 	<url>http://apache.org</url>
 
 	<dependencies>
@@ -38,8 +38,6 @@
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.registry.ws.client</artifactId>
 		</dependency>
-		<!--<dependency> <groupId>commons-logging</groupId> <artifactId>commons-logging-api</artifactId> 
-			</dependency> -->
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.cloud.controller.service.stub</artifactId>
@@ -50,30 +48,21 @@
             <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
-		<!--dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.adc.topology.mgt</artifactId>
-			<version>${project.version}</version>
-		</dependency-->
-
 		<dependency>
 			<groupId>org.wso2.carbon</groupId>
 			<artifactId>org.wso2.carbon.utils</artifactId>
 			<version>${wso2carbon.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.stratos</groupId>
 			<artifactId>org.apache.stratos.cartridge.agent.stub</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.tomcat.wso2</groupId>
 			<artifactId>jdbc-pool</artifactId>
 			<version>${version.tomcat}.wso2v1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>com.gitblit</groupId>
 			<artifactId>gitblit</artifactId>
@@ -120,7 +109,6 @@
             <version>2.2.2</version>
             <scope>provided</scope>
         </dependency>
-        
          <dependency>
 		        <groupId>org.eclipse.paho</groupId>
 		        <artifactId>mqtt-client</artifactId>

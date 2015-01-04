@@ -54,17 +54,19 @@ public class InfoCommand implements Command<StratosCommandContext> {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}
-		if (args != null && args.length == 1) {
-			String alias = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting info {}", alias);
-			}
-			CommandLineService.getInstance().info(alias);
-			return CliConstants.COMMAND_SUCCESSFULL;
-		} else {
-			context.getStratosApplication().printUsage(getName());
-			return CliConstants.COMMAND_FAILED;
-		}
+		throw new RuntimeException("Not implemented");
+
+//		if (args != null && args.length == 1) {
+//			String alias = args[0];
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("Getting info {}", alias);
+//			}
+//			CommandLineService.getInstance().info(alias);
+//			return CliConstants.COMMAND_SUCCESSFULL;
+//		} else {
+//			context.getStratosApplication().printUsage(getName());
+//			return CliConstants.COMMAND_FAILED;
+//		}
 	}
 
 	@Override

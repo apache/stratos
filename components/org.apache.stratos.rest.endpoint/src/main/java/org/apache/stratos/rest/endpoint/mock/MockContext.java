@@ -19,9 +19,8 @@
 package org.apache.stratos.rest.endpoint.mock;
 
 import org.apache.stratos.common.beans.TenantInfoBean;
-import org.apache.stratos.manager.dto.Cartridge;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.domain.Cartridge;
+import org.apache.stratos.manager.domain.SubscriptionInfo;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.CartridgeInfoBean;
 import org.apache.stratos.common.beans.StratosApiResponse;
@@ -34,6 +33,7 @@ import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionB
 import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
 import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.common.beans.topology.Cluster;
+import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.CarbonContext;

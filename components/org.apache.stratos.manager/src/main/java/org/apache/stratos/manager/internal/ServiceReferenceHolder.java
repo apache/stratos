@@ -19,13 +19,22 @@
 
 package org.apache.stratos.manager.internal;
 
+import org.apache.axis2.context.ConfigurationContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
+import org.wso2.carbon.registry.core.service.RegistryService;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.utils.CarbonUtils;
 
 /**
  * Service reference holder.
  */
 public class ServiceReferenceHolder {
     private static volatile ServiceReferenceHolder instance = null;
+
+    private static ConfigurationContext clientConfigContext;
+    private static ConfigurationContext serverConfigContext;
+    private static RealmService realmService;
+    private static RegistryService registryService;
     private TaskService taskService;
 
     private ServiceReferenceHolder() {       }
@@ -39,6 +48,40 @@ public class ServiceReferenceHolder {
             }
         }
         return instance;
+    }
+
+    public static RealmService getRealmService() {
+        return realmService;
+    }
+
+    public static void setRealmService(RealmService realmService) {
+        ServiceReferenceHolder.realmService = realmService;
+    }
+
+    public static RegistryService getRegistryService() {
+        return registryService;
+    }
+
+    public static ConfigurationContext getClientConfigContext() {
+        CarbonUtils.checkSecurity();
+        return clientConfigContext;
+    }
+
+    public static void setClientConfigContext(ConfigurationContext clientConfigContext) {
+        ServiceReferenceHolder.clientConfigContext = clientConfigContext;
+    }
+
+    public static ConfigurationContext getServerConfigContext() {
+        CarbonUtils.checkSecurity();
+        return serverConfigContext;
+    }
+
+    public static void setServerConfigContext(ConfigurationContext serverConfigContext) {
+        ServiceReferenceHolder.serverConfigContext = serverConfigContext;
+    }
+
+    public static void setRegistryService(RegistryService registryService) {
+        ServiceReferenceHolder.registryService = registryService;
     }
 
     public void setTaskService(TaskService taskService) {

@@ -30,7 +30,7 @@ import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesClus
 import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
@@ -50,7 +50,7 @@ public class CloudControllerServiceClient {
 		String ccConnectionTimeout = 
 			System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.CC_CONNECTION_TIMEOUT);
 		
-		ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
+		ConfigurationContext clientConfigContext = ServiceReferenceHolder.getClientConfigContext();
 		try {
 			stub = new CloudControllerServiceStub(clientConfigContext, epr);
 			stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(ccSocketTimeout));

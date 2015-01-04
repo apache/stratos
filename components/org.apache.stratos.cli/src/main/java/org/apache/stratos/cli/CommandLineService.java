@@ -41,9 +41,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
-import org.apache.stratos.manager.dto.Cartridge;
-import org.apache.stratos.manager.dto.PolicyDefinition;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.domain.PolicyDefinition;
+import org.apache.stratos.manager.domain.PolicyDefinition;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceADCExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceAlreadySubscribedExceptionException;
 import org.apache.stratos.manager.stub.ApplicationManagementServiceDomainMappingExistsExceptionException;
@@ -164,185 +163,185 @@ public class CommandLineService {
 		}
 	}
 
-	public void listSubscribedCartridges(final boolean full) throws CommandException {
-		try {
-			Cartridge[] cartridges = stub.getSubscribedCartridges();
+//	public void listSubscribedCartridges(final boolean full) throws CommandException {
+//		try {
+//			Cartridge[] cartridges = stub.getSubscribedCartridges();
+//
+//			if (cartridges == null) {
+//				if (logger.isDebugEnabled()) {
+//					logger.debug("No subscribed cartridges found");
+//				}
+//				System.out.println("There are no subscribed cartridges");
+//				return;
+//			}
+//
+//			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
+//
+//				public String[] getData(Cartridge cartridge) {
+//					String[] data = full ? new String[9] : new String[7];
+//					data[0] = cartridge.getCartridgeType();
+//					data[1] = cartridge.getDisplayName();
+//					data[2] = cartridge.getVersion();
+//					data[3] = cartridge.getMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
+//					data[4] = cartridge.getCartridgeAlias();
+//					data[5] = cartridge.getStatus();
+//					data[6] = cartridge.getMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
+//					if (full) {
+//						data[7] = getAccessURLs(cartridge);
+//						data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
+//					}
+//					return data;
+//				}
+//			};
+//
+//			List<String> headers = new ArrayList<String>();
+//			headers.add("Type");
+//			headers.add("Name");
+//			headers.add("Version");
+//			headers.add("Tenancy Model");
+//			headers.add("Alias");
+//			headers.add("Status");
+//			headers.add("Running Instances");
+//			if (full) {
+//				headers.add("Access URL(s)");
+//				headers.add("Repo URL");
+//			}
+//
+//			System.out.println("Subscribed Cartridges:");
+//			CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
+//
+//			System.out.println();
+//
+//		} catch (ApplicationManagementServiceADCExceptionException e) {
+//			handleException("cannot.list.subscribed.cartridges", e);
+//		} catch (RemoteException e) {
+//			handleException(e);
+//		}
+//	}
 
-			if (cartridges == null) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("No subscribed cartridges found");
-				}
-				System.out.println("There are no subscribed cartridges");
-				return;
-			}
-
-			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
-
-				public String[] getData(Cartridge cartridge) {
-					String[] data = full ? new String[9] : new String[7];
-					data[0] = cartridge.getCartridgeType();
-					data[1] = cartridge.getDisplayName();
-					data[2] = cartridge.getVersion();
-					data[3] = cartridge.getMultiTenant() ? "Multi-Tenant" : "Single-Tenant";
-					data[4] = cartridge.getCartridgeAlias();
-					data[5] = cartridge.getStatus();
-					data[6] = cartridge.getMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances());
-					if (full) {
-						data[7] = getAccessURLs(cartridge);
-						data[8] = cartridge.getRepoURL() != null ? cartridge.getRepoURL() : "";
-					}
-					return data;
-				}
-			};
-			
-			List<String> headers = new ArrayList<String>();
-			headers.add("Type");
-			headers.add("Name");
-			headers.add("Version");
-			headers.add("Tenancy Model");
-			headers.add("Alias");
-			headers.add("Status");
-			headers.add("Running Instances");
-			if (full) {
-				headers.add("Access URL(s)");
-				headers.add("Repo URL");
-			}
-
-			System.out.println("Subscribed Cartridges:");
-			CliUtils.printTable(cartridges, cartridgeMapper, headers.toArray(new String[headers.size()]));
-
-			System.out.println();
-
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.list.subscribed.cartridges", e);
-		} catch (RemoteException e) {
-			handleException(e);
-		}
-	}
-
-	public void listAvailableCartridges() throws CommandException {
-		try {
-            Cartridge[] multiTenantCatridges = stub.getAvailableCartridges(true);
-
-			if (multiTenantCatridges == null) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("No multi-tenant cartridges available");
-				}
-				System.out.println("There are no multi-tenant cartridges available");
-			}
-
-			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
-
-				public String[] getData(Cartridge cartridge) {
-					String[] data = new String[3];
-					data[0] = cartridge.getCartridgeType();
-					data[1] = cartridge.getDisplayName();
-					data[2] = cartridge.getVersion();
-					return data;
-				}
-			};
-
-			System.out.println("Available Multi-Tenant Cartridges:");
-			CliUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
-			System.out.println();
-			
-			Cartridge[] singleTenantCatridges = stub.getAvailableCartridges(false);
-
-			if (singleTenantCatridges == null) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("No single-tenant cartridges available");
-				}
-				System.out.println("There are no single-tenant cartridges available");
-			}
-			
-			System.out.println("Available Single-Tenant Cartridges:");
-			CliUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
-			System.out.println();
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.list.available.cartridges", e);
-		} catch (RemoteException e) {
-			handleException(e);
-		}
-	}
+//	public void listAvailableCartridges() throws CommandException {
+//		try {
+//            Cartridge[] multiTenantCatridges = stub.getAvailableCartridges(true);
+//
+//			if (multiTenantCatridges == null) {
+//				if (logger.isDebugEnabled()) {
+//					logger.debug("No multi-tenant cartridges available");
+//				}
+//				System.out.println("There are no multi-tenant cartridges available");
+//			}
+//
+//			RowMapper<Cartridge> cartridgeMapper = new RowMapper<Cartridge>() {
+//
+//				public String[] getData(Cartridge cartridge) {
+//					String[] data = new String[3];
+//					data[0] = cartridge.getCartridgeType();
+//					data[1] = cartridge.getDisplayName();
+//					data[2] = cartridge.getVersion();
+//					return data;
+//				}
+//			};
+//
+//			System.out.println("Available Multi-Tenant Cartridges:");
+//			CliUtils.printTable(multiTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+//			System.out.println();
+//
+//			Cartridge[] singleTenantCatridges = stub.getAvailableCartridges(false);
+//
+//			if (singleTenantCatridges == null) {
+//				if (logger.isDebugEnabled()) {
+//					logger.debug("No single-tenant cartridges available");
+//				}
+//				System.out.println("There are no single-tenant cartridges available");
+//			}
+//
+//			System.out.println("Available Single-Tenant Cartridges:");
+//			CliUtils.printTable(singleTenantCatridges, cartridgeMapper, "Type", "Name", "Version");
+//			System.out.println();
+//		} catch (ApplicationManagementServiceADCExceptionException e) {
+//			handleException("cannot.list.available.cartridges", e);
+//		} catch (RemoteException e) {
+//			handleException(e);
+//		}
+//	}
 	
-	public void listAvailablePolicies() throws CommandException {
-		try {
-			PolicyDefinition[] policies = stub.getPolicyDefinitions();
+//	public void listAvailablePolicies() throws CommandException {
+//		try {
+//			PolicyDefinition[] policies = stub.getPolicyDefinitions();
+//
+//			if (policies == null) {
+//				if (logger.isDebugEnabled()) {
+//					logger.debug("No policies available");
+//				}
+//				System.out.println("There are no policies available");
+//			}
+//
+//			RowMapper<PolicyDefinition> policyMapper = new RowMapper<PolicyDefinition>() {
+//
+//				public String[] getData(PolicyDefinition policyDefinition) {
+//					String[] data = new String[3];
+//					data[0] = policyDefinition.getName();
+//					data[1] = policyDefinition.getDescription();
+//					data[2] = policyDefinition.getDefaultPolicy() ? "Yes" : "No";
+//					return data;
+//				}
+//			};
+//
+//			CliUtils.printTable(policies, policyMapper, "Policy Name", "Description", "Default");
+//			System.out.println();
+//		} catch (RemoteException e) {
+//			handleException(e);
+//		}
+//	}
 
-			if (policies == null) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("No policies available");
-				}
-				System.out.println("There are no policies available");
-			}
-
-			RowMapper<PolicyDefinition> policyMapper = new RowMapper<PolicyDefinition>() {
-
-				public String[] getData(PolicyDefinition policyDefinition) {
-					String[] data = new String[3];
-					data[0] = policyDefinition.getName();
-					data[1] = policyDefinition.getDescription();
-					data[2] = policyDefinition.getDefaultPolicy() ? "Yes" : "No";
-					return data;
-				}
-			};
-
-			CliUtils.printTable(policies, policyMapper, "Policy Name", "Description", "Default");
-			System.out.println();
-		} catch (RemoteException e) {
-			handleException(e);
-		}
-	}
-
-	public void info(String alias) throws CommandException {
-		try {
-            Cartridge cartridge = null;
-            try {
-                cartridge = stub.getCartridgeInfo(alias);
-            } catch (ApplicationManagementServiceADCExceptionException e) {
-            	handleException(e);
-                return;
-            } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-            	handleException("notsubscribed.error", e, alias);
-			}
-			if (logger.isDebugEnabled()) {
-				logger.debug("Cartridge Info: {}", new Gson().toJson(cartridge));
-			}
-			final String FORMAT = "%-20s: %s%n";
-			System.out.println();
-			System.out.println("Cartridge Information");
-			System.out.println("---------------------");
-			System.out.format(FORMAT, "Cartridge", cartridge.getCartridgeType());
-			System.out.format(FORMAT, "Name", cartridge.getDisplayName());
-			System.out.format(FORMAT, "Description", cartridge.getDescription());
-			System.out.format(FORMAT, "Version", cartridge.getVersion());
-			System.out.format(FORMAT, "Tenancy Model", cartridge.getMultiTenant() ? "Multi-Tenant" : "Single-Tenant");
-			System.out.format(FORMAT, "Alias", cartridge.getCartridgeAlias());
-			if (StringUtils.isNotBlank(cartridge.getPolicyDescription())) {
-				System.out.format(FORMAT, "Policy", cartridge.getPolicyDescription());
-			}
-			System.out.format(FORMAT, "Access URL(s)", getAccessURLs(cartridge));
-			if (StringUtils.isNotBlank(cartridge.getIp())) {
-				System.out.format(FORMAT, "Host", cartridge.getIp());
-			}
-			if (StringUtils.isNotBlank(cartridge.getDbUserName())) {
-				System.out.format(FORMAT, "Database Username", cartridge.getDbUserName());
-			}
-			if (StringUtils.isNotBlank(cartridge.getPassword())) {
-				System.out.format(FORMAT, "Password", cartridge.getPassword());
-			}
-			if (StringUtils.isNotBlank(cartridge.getRepoURL())) {
-				System.out.format(FORMAT, "Repository URL", cartridge.getRepoURL());
-			}
-			System.out.format(FORMAT, "Status", cartridge.getStatus());
-			System.out.format(FORMAT, "Running Instances",
-					cartridge.getMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances()));
-			System.out.println();
-
-        } catch (RemoteException e) {
-        	handleException(e);
-        }
-	}
+//	public void info(String alias) throws CommandException {
+//		try {
+//            Cartridge cartridge = null;
+//            try {
+//                cartridge = stub.getCartridgeInfo(alias);
+//            } catch (ApplicationManagementServiceADCExceptionException e) {
+//            	handleException(e);
+//                return;
+//            } catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
+//            	handleException("notsubscribed.error", e, alias);
+//			}
+//			if (logger.isDebugEnabled()) {
+//				logger.debug("Cartridge Info: {}", new Gson().toJson(cartridge));
+//			}
+//			final String FORMAT = "%-20s: %s%n";
+//			System.out.println();
+//			System.out.println("Cartridge Information");
+//			System.out.println("---------------------");
+//			System.out.format(FORMAT, "Cartridge", cartridge.getCartridgeType());
+//			System.out.format(FORMAT, "Name", cartridge.getDisplayName());
+//			System.out.format(FORMAT, "Description", cartridge.getDescription());
+//			System.out.format(FORMAT, "Version", cartridge.getVersion());
+//			System.out.format(FORMAT, "Tenancy Model", cartridge.getMultiTenant() ? "Multi-Tenant" : "Single-Tenant");
+//			System.out.format(FORMAT, "Alias", cartridge.getCartridgeAlias());
+//			if (StringUtils.isNotBlank(cartridge.getPolicyDescription())) {
+//				System.out.format(FORMAT, "Policy", cartridge.getPolicyDescription());
+//			}
+//			System.out.format(FORMAT, "Access URL(s)", getAccessURLs(cartridge));
+//			if (StringUtils.isNotBlank(cartridge.getIp())) {
+//				System.out.format(FORMAT, "Host", cartridge.getIp());
+//			}
+//			if (StringUtils.isNotBlank(cartridge.getDbUserName())) {
+//				System.out.format(FORMAT, "Database Username", cartridge.getDbUserName());
+//			}
+//			if (StringUtils.isNotBlank(cartridge.getPassword())) {
+//				System.out.format(FORMAT, "Password", cartridge.getPassword());
+//			}
+//			if (StringUtils.isNotBlank(cartridge.getRepoURL())) {
+//				System.out.format(FORMAT, "Repository URL", cartridge.getRepoURL());
+//			}
+//			System.out.format(FORMAT, "Status", cartridge.getStatus());
+//			System.out.format(FORMAT, "Running Instances",
+//					cartridge.getMultiTenant() ? "N/A" : String.valueOf(cartridge.getActiveInstances()));
+//			System.out.println();
+//
+//        } catch (RemoteException e) {
+//        	handleException(e);
+//        }
+//	}
 
 	public void unsubscribe(String alias) throws CommandException {
 		try {
@@ -402,122 +401,122 @@ public class CommandLineService {
 			boolean privateRepo, String username, String password, String dataCartridgeType, String dataCartridgeAlias)
 			throws CommandException {
 		
-		SubscriptionInfo subcriptionConnectInfo = null;
-		if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
-			System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
-					dataCartridgeAlias);
-			try {
-				subcriptionConnectInfo = stub.subscribe(dataCartridgeType, dataCartridgeAlias, null, null, false, null,
-						null, null, null);
-				System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n",
-						dataCartridgeType, dataCartridgeAlias);
-				System.out.format("%nSubscribing to %s cartridge and connecting with %s data cartridge.%n", alias,
-						dataCartridgeAlias);
-			} catch (RemoteException e) {
-				handleException(e);
-			} catch (ApplicationManagementServiceADCExceptionException e) {
-				handleException("cannot.subscribe", e);
-			} catch (ApplicationManagementServiceRepositoryRequiredExceptionException e) {
-				handleException("repository.required", e);
-			} catch (ApplicationManagementServiceUnregisteredCartridgeExceptionException e) {
-				handleException("cartridge.notregistered", e, dataCartridgeType);
-			} catch (ApplicationManagementServiceInvalidCartridgeAliasExceptionException e) {
-				handleException("cartridge.invalid.alias", e);
-			} catch (ApplicationManagementServiceAlreadySubscribedExceptionException e) {
-				handleException("cartridge.already.subscribed", e, e.getFaultMessage().getAlreadySubscribedException()
-						.getCartridgeType());
-			} catch (ApplicationManagementServiceDuplicateCartridgeAliasExceptionException e) {
-				handleException("cartridge.alias.duplicate", e, dataCartridgeAlias);
-			} catch (ApplicationManagementServicePolicyExceptionException e) {
-				handleException("policy.error", e);
-			} catch (ApplicationManagementServiceRepositoryTransportExceptionException e) {
-				handleException("repository.transport.error", e, externalRepoURL);
-			} catch (ApplicationManagementServiceRepositoryCredentialsRequiredExceptionException e) {
-				handleException("repository.credentials.required", e, externalRepoURL);
-			} catch (ApplicationManagementServiceInvalidRepositoryExceptionException e) {
-				handleException("repository.invalid.error", e, externalRepoURL);
-			}
-		}
-		
-		
-		try {
-			SubscriptionInfo subcriptionInfo = stub.subscribe(cartridgeType, alias, policy, externalRepoURL,
-					privateRepo, username, password, dataCartridgeType, dataCartridgeAlias);
-
-			System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
-
-			String repoURL = null;
-			String hostnames = null;
-			String hostnamesLabel = null;
-			if (subcriptionInfo != null) {
-				repoURL = subcriptionInfo.getRepositoryURL();
-				hostnames = subcriptionInfo.getHostname();
-				hostnamesLabel = "host name";
-
-				if (repoURL != null) {
-					System.out.println("GIT Repository URL: " + repoURL);
-				}
-
-				Cartridge cart = stub.getCartridgeInfo(alias);
-				System.out.format("Your application is being published here. %s%n", getAccessURLs(cart));
-			}
-			if (subcriptionConnectInfo != null) {
-				hostnames += ", " + subcriptionConnectInfo.getHostname();
-				hostnamesLabel = "host names";
-
-				Cartridge cart = stub.getCartridgeInfo(alias);
-				System.out.format("Your data application is being published here. %s%n", getAccessURLs(cart));
-			}
-			if (externalRepoURL != null) {
-				String takeTimeMsg = "(this might take few minutes... depending on repo size)\n";
-				System.out.println(takeTimeMsg);
-			}
-
-			System.out.format("Please map the %s \"%s\" to ELB IP%n", hostnamesLabel, hostnames);
-		} catch (RemoteException e) {
-			handleException(e);
-		} catch (ApplicationManagementServiceADCExceptionException e) {
-			handleException("cannot.subscribe", e);
-		} catch (ApplicationManagementServiceRepositoryRequiredExceptionException e) {
-			handleException("repository.required", e);
-		} catch (ApplicationManagementServiceUnregisteredCartridgeExceptionException e) {
-			handleException("cartridge.notregistered", e, cartridgeType);
-		} catch (ApplicationManagementServiceInvalidCartridgeAliasExceptionException e) {
-			handleException("cartridge.invalid.alias", e);
-		} catch (ApplicationManagementServiceAlreadySubscribedExceptionException e) {
-			handleException("cartridge.already.subscribed", e, e.getFaultMessage().getAlreadySubscribedException()
-					.getCartridgeType());
-		} catch (ApplicationManagementServiceDuplicateCartridgeAliasExceptionException e) {
-			handleException("cartridge.alias.duplicate", e, alias);
-		} catch (ApplicationManagementServicePolicyExceptionException e) {
-			handleException("policy.error", e);
-		} catch (ApplicationManagementServiceRepositoryTransportExceptionException e) {
-			handleException("repository.transport.error", e, externalRepoURL);
-		} catch (ApplicationManagementServiceRepositoryCredentialsRequiredExceptionException e) {
-			handleException("repository.credentials.required", e, externalRepoURL);
-		} catch (ApplicationManagementServiceInvalidRepositoryExceptionException e) {
-			handleException("repository.invalid.error", e, externalRepoURL);
-		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
-			handleException("notsubscribed.error", e, alias);
-		}
+//		SubscriptionInfo subcriptionConnectInfo = null;
+//		if (StringUtils.isNotBlank(dataCartridgeType) && StringUtils.isNotBlank(dataCartridgeAlias)) {
+//			System.out.format("Subscribing to data cartridge %s with alias %s.%n", dataCartridgeType,
+//					dataCartridgeAlias);
+//			try {
+//				subcriptionConnectInfo = stub.subscribe(dataCartridgeType, dataCartridgeAlias, null, null, false, null,
+//						null, null, null);
+//				System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n",
+//						dataCartridgeType, dataCartridgeAlias);
+//				System.out.format("%nSubscribing to %s cartridge and connecting with %s data cartridge.%n", alias,
+//						dataCartridgeAlias);
+//			} catch (RemoteException e) {
+//				handleException(e);
+//			} catch (ApplicationManagementServiceADCExceptionException e) {
+//				handleException("cannot.subscribe", e);
+//			} catch (ApplicationManagementServiceRepositoryRequiredExceptionException e) {
+//				handleException("repository.required", e);
+//			} catch (ApplicationManagementServiceUnregisteredCartridgeExceptionException e) {
+//				handleException("cartridge.notregistered", e, dataCartridgeType);
+//			} catch (ApplicationManagementServiceInvalidCartridgeAliasExceptionException e) {
+//				handleException("cartridge.invalid.alias", e);
+//			} catch (ApplicationManagementServiceAlreadySubscribedExceptionException e) {
+//				handleException("cartridge.already.subscribed", e, e.getFaultMessage().getAlreadySubscribedException()
+//						.getCartridgeType());
+//			} catch (ApplicationManagementServiceDuplicateCartridgeAliasExceptionException e) {
+//				handleException("cartridge.alias.duplicate", e, dataCartridgeAlias);
+//			} catch (ApplicationManagementServicePolicyExceptionException e) {
+//				handleException("policy.error", e);
+//			} catch (ApplicationManagementServiceRepositoryTransportExceptionException e) {
+//				handleException("repository.transport.error", e, externalRepoURL);
+//			} catch (ApplicationManagementServiceRepositoryCredentialsRequiredExceptionException e) {
+//				handleException("repository.credentials.required", e, externalRepoURL);
+//			} catch (ApplicationManagementServiceInvalidRepositoryExceptionException e) {
+//				handleException("repository.invalid.error", e, externalRepoURL);
+//			}
+//		}
+//
+//
+//		try {
+//			SubscriptionInfo subcriptionInfo = stub.subscribe(cartridgeType, alias, policy, externalRepoURL,
+//					privateRepo, username, password, dataCartridgeType, dataCartridgeAlias);
+//
+//			System.out.format("You have successfully subscribed to %s cartridge with alias %s.%n", cartridgeType, alias);
+//
+//			String repoURL = null;
+//			String hostnames = null;
+//			String hostnamesLabel = null;
+//			if (subcriptionInfo != null) {
+//				repoURL = subcriptionInfo.getRepositoryURL();
+//				hostnames = subcriptionInfo.getHostname();
+//				hostnamesLabel = "host name";
+//
+//				if (repoURL != null) {
+//					System.out.println("GIT Repository URL: " + repoURL);
+//				}
+//
+//				Cartridge cart = stub.getCartridgeInfo(alias);
+//				System.out.format("Your application is being published here. %s%n", getAccessURLs(cart));
+//			}
+//			if (subcriptionConnectInfo != null) {
+//				hostnames += ", " + subcriptionConnectInfo.getHostname();
+//				hostnamesLabel = "host names";
+//
+//				Cartridge cart = stub.getCartridgeInfo(alias);
+//				System.out.format("Your data application is being published here. %s%n", getAccessURLs(cart));
+//			}
+//			if (externalRepoURL != null) {
+//				String takeTimeMsg = "(this might take few minutes... depending on repo size)\n";
+//				System.out.println(takeTimeMsg);
+//			}
+//
+//			System.out.format("Please map the %s \"%s\" to ELB IP%n", hostnamesLabel, hostnames);
+//		} catch (RemoteException e) {
+//			handleException(e);
+//		} catch (ApplicationManagementServiceADCExceptionException e) {
+//			handleException("cannot.subscribe", e);
+//		} catch (ApplicationManagementServiceRepositoryRequiredExceptionException e) {
+//			handleException("repository.required", e);
+//		} catch (ApplicationManagementServiceUnregisteredCartridgeExceptionException e) {
+//			handleException("cartridge.notregistered", e, cartridgeType);
+//		} catch (ApplicationManagementServiceInvalidCartridgeAliasExceptionException e) {
+//			handleException("cartridge.invalid.alias", e);
+//		} catch (ApplicationManagementServiceAlreadySubscribedExceptionException e) {
+//			handleException("cartridge.already.subscribed", e, e.getFaultMessage().getAlreadySubscribedException()
+//					.getCartridgeType());
+//		} catch (ApplicationManagementServiceDuplicateCartridgeAliasExceptionException e) {
+//			handleException("cartridge.alias.duplicate", e, alias);
+//		} catch (ApplicationManagementServicePolicyExceptionException e) {
+//			handleException("policy.error", e);
+//		} catch (ApplicationManagementServiceRepositoryTransportExceptionException e) {
+//			handleException("repository.transport.error", e, externalRepoURL);
+//		} catch (ApplicationManagementServiceRepositoryCredentialsRequiredExceptionException e) {
+//			handleException("repository.credentials.required", e, externalRepoURL);
+//		} catch (ApplicationManagementServiceInvalidRepositoryExceptionException e) {
+//			handleException("repository.invalid.error", e, externalRepoURL);
+//		} catch (ApplicationManagementServiceNotSubscribedExceptionException e) {
+//			handleException("notsubscribed.error", e, alias);
+//		}
 	}
 
-	private String getAccessURLs(Cartridge cartridge) {
-		String[] accessURLs = cartridge.getAccessURLs();
-		StringBuilder urlBuilder = new StringBuilder();
-		if (accessURLs != null) {
-			for (int i = 0; i < accessURLs.length; i++) {
-				String url = accessURLs[i];
-				if (url != null) {
-					if (i > 0) {
-						urlBuilder.append(", ");
-					}
-					urlBuilder.append(url);
-				}
-			}
-		}
-		return urlBuilder.toString();
-	}
+//	private String getAccessURLs(Cartridge cartridge) {
+//		String[] accessURLs = cartridge.getAccessURLs();
+//		StringBuilder urlBuilder = new StringBuilder();
+//		if (accessURLs != null) {
+//			for (int i = 0; i < accessURLs.length; i++) {
+//				String url = accessURLs[i];
+//				if (url != null) {
+//					if (i > 0) {
+//						urlBuilder.append(", ");
+//					}
+//					urlBuilder.append(url);
+//				}
+//			}
+//		}
+//		return urlBuilder.toString();
+//	}
 
 	private void handleException(Exception e) throws CommandException {
 		if (logger.isDebugEnabled()) {

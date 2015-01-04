@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.manager.internal.DataHolder;
+import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 
@@ -52,7 +52,7 @@ public class AutoscalerServiceClient {
         String autosclaerConnectionTimeout =
                 System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT) == null ? "300000" : System.getProperty(CartridgeConstants.AUTOSCALER_CONNECTION_TIMEOUT);
 
-        ConfigurationContext clientConfigContext = DataHolder.getClientConfigContext();
+        ConfigurationContext clientConfigContext = ServiceReferenceHolder.getClientConfigContext();
         try {
             stub = new AutoScalerServiceStub(clientConfigContext, epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, new Integer(autosclaerSocketTimeout));

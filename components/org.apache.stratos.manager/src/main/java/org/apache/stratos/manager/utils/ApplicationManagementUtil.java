@@ -1,4 +1,3 @@
-package org.apache.stratos.manager.utils;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -18,18 +17,15 @@ package org.apache.stratos.manager.utils;
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
+package org.apache.stratos.manager.utils;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
@@ -41,14 +37,14 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeN
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.manager.client.CloudControllerServiceClient;
-import org.apache.stratos.manager.dao.CartridgeSubscriptionInfo;
-import org.apache.stratos.manager.dao.DataCartridge;
-import org.apache.stratos.manager.dao.PortMapping;
-import org.apache.stratos.manager.dto.Policy;
-import org.apache.stratos.manager.dto.SubscriptionInfo;
+import org.apache.stratos.manager.domain.CartridgeSubscriptionInfo;
+import org.apache.stratos.manager.domain.DataCartridge;
+import org.apache.stratos.manager.domain.PortMapping;
+import org.apache.stratos.manager.domain.Policy;
+import org.apache.stratos.manager.domain.SubscriptionInfo;
 import org.apache.stratos.manager.exception.ADCException;
 import org.apache.stratos.manager.exception.UnregisteredCartridgeException;
-import org.apache.stratos.manager.repository.Repository;
+import org.apache.stratos.manager.domain.repository.Repository;
 import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 /**
@@ -313,8 +309,6 @@ public class ApplicationManagementUtil {
         return subscriptionInfo;
     }
 
-    
-    
     public static void registerService(String cartridgeType, String domain, String subDomain,
                                        StringBuilder payload, String tenantRange, String hostName,
                                        String autoscalingPoliyName, String deploymentPolicyName,
@@ -333,7 +327,4 @@ public class ApplicationManagementUtil {
         	throw new ADCException("An error occurred in subscribing process", e);
         }
     }
-
-    
-
 }

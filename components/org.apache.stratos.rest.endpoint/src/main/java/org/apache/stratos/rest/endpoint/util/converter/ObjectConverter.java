@@ -24,7 +24,10 @@ import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetwork
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.*;
+import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
+import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.beans.GroupBean;
@@ -42,15 +45,15 @@ import org.apache.stratos.common.beans.kubernetes.PortRange;
 import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
 import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.manager.composite.application.beans.*;
-import org.apache.stratos.manager.deploy.service.Service;
-import org.apache.stratos.manager.grouping.definitions.DependencyDefinitions;
-import org.apache.stratos.manager.subscription.SubscriptionDomain;
+import org.apache.stratos.manager.domain.*;
+import org.apache.stratos.manager.domain.DependencyDefinitions;
+import org.apache.stratos.manager.exception.ServiceGroupDefinitioException;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
+import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
@@ -899,28 +902,28 @@ public class ObjectConverter {
         return networkPartitionGroupsBeans;
     }
 
-    public static ServiceDefinitionBean convertToServiceDefinitionBean(Service service) {
+//    public static ServiceDefinitionBean convertToServiceDefinitionBean(Service service) {
+//
+//        ServiceDefinitionBean serviceDefinitionBean = new ServiceDefinitionBean();
+//        serviceDefinitionBean.setCartridgeType(service.getType());
+//        serviceDefinitionBean.setTenantRange(service.getTenantRange());
+//        serviceDefinitionBean.setClusterDomain(service.getClusterId());
+//        serviceDefinitionBean.setIsPublic(service.getIsPublic());
+//        serviceDefinitionBean.setAutoscalingPolicyName(service.getAutoscalingPolicyName());
+//        serviceDefinitionBean.setDeploymentPolicyName(service.getDeploymentPolicyName());
+//
+//        return serviceDefinitionBean;
+//    }
 
-        ServiceDefinitionBean serviceDefinitionBean = new ServiceDefinitionBean();
-        serviceDefinitionBean.setCartridgeType(service.getType());
-        serviceDefinitionBean.setTenantRange(service.getTenantRange());
-        serviceDefinitionBean.setClusterDomain(service.getClusterId());
-        serviceDefinitionBean.setIsPublic(service.getIsPublic());
-        serviceDefinitionBean.setAutoscalingPolicyName(service.getAutoscalingPolicyName());
-        serviceDefinitionBean.setDeploymentPolicyName(service.getDeploymentPolicyName());
-
-        return serviceDefinitionBean;
-    }
-
-    public static List<ServiceDefinitionBean> convertToServiceDefinitionBeans(Collection<Service> services) {
-
-        List<ServiceDefinitionBean> serviceDefinitionBeans = new ArrayList<ServiceDefinitionBean>();
-
-        for (Service service : services) {
-            serviceDefinitionBeans.add(convertToServiceDefinitionBean(service));
-        }
-        return serviceDefinitionBeans;
-    }
+//    public static List<ServiceDefinitionBean> convertToServiceDefinitionBeans(Collection<Service> services) {
+//
+//        List<ServiceDefinitionBean> serviceDefinitionBeans = new ArrayList<ServiceDefinitionBean>();
+//
+//        for (Service service : services) {
+//            serviceDefinitionBeans.add(convertToServiceDefinitionBean(service));
+//        }
+//        return serviceDefinitionBeans;
+//    }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
         convertToCCKubernetesClusterPojo(KubernetesCluster kubernetesClusterBean) {
@@ -1256,16 +1259,16 @@ public class ObjectConverter {
         return subscribableInfo;
     }
 
-    private static List<org.apache.stratos.manager.composite.application.beans.PropertyBean>
+    private static List<org.apache.stratos.manager.domain.PropertyBean>
         convertStubPropertiesToPropertyBeanList(org.apache.stratos.autoscaler.stub.Properties properties) {
 
-        List<org.apache.stratos.manager.composite.application.beans.PropertyBean> propertyBeanList =
-                new ArrayList<org.apache.stratos.manager.composite.application.beans.PropertyBean>();
+        List<org.apache.stratos.manager.domain.PropertyBean> propertyBeanList =
+                new ArrayList<org.apache.stratos.manager.domain.PropertyBean>();
         if((properties != null) && (properties.getProperties() != null)) {
             for (org.apache.stratos.autoscaler.stub.Property property : properties.getProperties()) {
                 if((property != null) && (property.getValue() instanceof String)) {
-                    org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean =
-                            new org.apache.stratos.manager.composite.application.beans.PropertyBean();
+                    org.apache.stratos.manager.domain.PropertyBean propertyBean =
+                            new org.apache.stratos.manager.domain.PropertyBean();
                     propertyBean.setName(property.getName());
                     propertyBean.setValue(String.valueOf(property.getValue()));
                     propertyBeanList.add(propertyBean);
@@ -1310,10 +1313,10 @@ public class ObjectConverter {
     }
 
 	private static org.apache.stratos.autoscaler.stub.Properties convertPropertyBeansToStubProperties(
-            List<org.apache.stratos.manager.composite.application.beans.PropertyBean> property) {
+            List<org.apache.stratos.manager.domain.PropertyBean> property) {
 		org.apache.stratos.autoscaler.stub.Properties prop = new org.apache.stratos.autoscaler.stub.Properties();
 		if (property != null) {
-			for (org.apache.stratos.manager.composite.application.beans.PropertyBean propertyBean : property) {
+			for (org.apache.stratos.manager.domain.PropertyBean propertyBean : property) {
 				org.apache.stratos.autoscaler.stub.Property p = new org.apache.stratos.autoscaler.stub.Property();
 				p.setName(propertyBean.getName());
 				p.setValue(propertyBean.getValue());
@@ -1527,5 +1530,126 @@ public class ObjectConverter {
             carbonTenantInfoBean.setCreatedDate(calendar);
         }
         return carbonTenantInfoBean;
+    }
+
+    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(ServiceGroupDefinition serviceGroupDefinition) throws ServiceGroupDefinitioException {
+        ServiceGroup servicegroup = new ServiceGroup();
+
+        // implement conversion (mostly List -> Array)
+        servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled);
+        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
+        List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
+
+        servicegroup.setName(serviceGroupDefinition.getName());
+
+        if (groupsDef == null) {
+            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
+        }
+
+        if (cartridgesDef == null) {
+            cartridgesDef = new ArrayList<String>(0);
+        }
+
+        ServiceGroup[] subGroups = new ServiceGroup[groupsDef.size()];
+        String[] cartridges = new String[cartridgesDef.size()];
+
+        int i = 0;
+        for (ServiceGroupDefinition groupDefinition : groupsDef) {
+            subGroups[i] = convertServiceGroupDefinitionToASStubServiceGroup(groupDefinition);
+            ++i;
+        }
+
+        servicegroup.setGroups(subGroups);
+        cartridges = cartridgesDef.toArray(cartridges);
+        servicegroup.setCartridges(cartridges);
+
+        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+
+        if (depDefs != null) {
+            Dependencies dependencies = new Dependencies();
+            List<String> startupOrdersDef = depDefs.getStartupOrders();
+            if (startupOrdersDef != null) {
+                String[] startupOrders = new String[startupOrdersDef.size()];
+                startupOrders = startupOrdersDef.toArray(startupOrders);
+                dependencies.setStartupOrders(startupOrders);
+            }
+            // validate termination behavior
+            validateTerminationBehavior(depDefs.getTerminationBehaviour());
+            dependencies.setTerminationBehaviour(depDefs.getTerminationBehaviour());
+            if (depDefs.getScalingDependants() != null) {
+                dependencies.setScalingDependants(depDefs.getScalingDependants()
+                        .toArray(new String[depDefs.getScalingDependants().size()]));
+            }
+            servicegroup.setDependencies(dependencies);
+        }
+
+        return servicegroup;
+    }
+
+    public static ServiceGroupDefinition convertStubServiceGroupToServiceGroupDefinition(ServiceGroup serviceGroup) {
+        if(serviceGroup == null) {
+            return null;
+        }
+
+        ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
+        servicegroupDef.setName(serviceGroup.getName());
+        String[] cartridges = serviceGroup.getCartridges();
+        ServiceGroup[] groups = serviceGroup.getGroups();
+        org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
+
+        List<ServiceGroupDefinition> groupDefinitions = new ArrayList<ServiceGroupDefinition>(groups.length);
+        for (ServiceGroup group : groups) {
+            if (group != null) {
+                groupDefinitions.add(convertStubServiceGroupToServiceGroupDefinition(group));
+            }
+        }
+
+        if (deps != null) {
+            DependencyDefinitions depsDef = new DependencyDefinitions();
+            String[] startupOrders = deps.getStartupOrders();
+            if (startupOrders != null && startupOrders[0] != null) {
+                List<String> startupOrdersDef = Arrays.asList(startupOrders);
+                depsDef.setStartupOrders(startupOrdersDef);
+            }
+
+            String [] scalingDependants = deps.getScalingDependants();
+            if (scalingDependants != null && scalingDependants[0] != null) {
+                List<String> scalingDependenciesDef = Arrays.asList(scalingDependants);
+                depsDef.setScalingDependants(scalingDependenciesDef);
+            }
+
+            depsDef.setTerminationBehaviour(deps.getTerminationBehaviour());
+            servicegroupDef.setDependencies(depsDef);
+        }
+
+        List<String> cartridgesDef = new ArrayList<String>(Arrays.asList(cartridges));
+        //List<ServiceGroupDefinition> subGroupsDef = new ArrayList<ServiceGroupDefinition>(groups.length);
+        if (cartridges[0] != null) {
+            servicegroupDef.setCartridges(cartridgesDef);
+        }
+        if (groups != null) {
+            servicegroupDef.setGroups(groupDefinitions);
+        }
+
+        return servicegroupDef;
+    }
+
+    /**
+     * Validates terminationBehavior. The terminationBehavior should be one of the following:
+     * 1. terminate-none
+     * 2. terminate-dependents
+     * 3. terminate-all
+     *
+     * @throws ServiceGroupDefinitioException if terminationBehavior is different to what is
+     *                                        listed above
+     */
+    private static void validateTerminationBehavior(String terminationBehavior) throws ServiceGroupDefinitioException {
+
+        if (!(terminationBehavior == null || "terminate-none".equals(terminationBehavior) ||
+                "terminate-dependents".equals(terminationBehavior) || "terminate-all".equals(terminationBehavior))) {
+            throw new ServiceGroupDefinitioException("Invalid Termination Behaviour specified: [ " +
+                    terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
+                    " 'terminate-all' ");
+        }
     }
 }

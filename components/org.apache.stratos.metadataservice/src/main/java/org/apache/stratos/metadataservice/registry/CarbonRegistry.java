@@ -21,13 +21,10 @@ package org.apache.stratos.metadataservice.registry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.DataHolder;
-import org.apache.stratos.manager.registry.RegistryManager;
+import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.metadataservice.definition.NewProperty;
-import org.wso2.carbon.core.AbstractAdmin;
 import org.wso2.carbon.registry.api.Registry;
 import org.wso2.carbon.registry.api.RegistryException;
-import org.wso2.carbon.registry.api.RegistryService;
 import org.wso2.carbon.registry.api.Resource;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +59,7 @@ public class CarbonRegistry implements DataStore {
      * @throws RegistryException
      */
     public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws RegistryException {
-        Registry tempRegistry = DataHolder.getRegistryService().getRegistry();
+        Registry tempRegistry = ServiceReferenceHolder.getRegistryService().getRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
         if (!tempRegistry.resourceExists(resourcePath)) {
             return null;
@@ -96,7 +93,7 @@ public class CarbonRegistry implements DataStore {
      * @throws RegistryException
      */
     public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException {
-        Registry tempRegistry = DataHolder.getRegistryService().getRegistry();
+        Registry tempRegistry = ServiceReferenceHolder.getRegistryService().getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
         Resource regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
 
@@ -116,7 +113,7 @@ public class CarbonRegistry implements DataStore {
         if(StringUtils.isBlank(applicationId)){
             throw new IllegalArgumentException("Application ID can not be null");
         }
-        Registry tempRegistry = DataHolder.getRegistryService().getRegistry();
+        Registry tempRegistry = ServiceReferenceHolder.getRegistryService().getRegistry();
         String resourcePath = mainResource + applicationId;
 
         if(tempRegistry.resourceExists(resourcePath)){
@@ -136,7 +133,7 @@ public class CarbonRegistry implements DataStore {
      * @throws RegistryException
      */
     public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws RegistryException {
-        Registry tempRegistry = DataHolder.getRegistryService().getRegistry();
+        Registry tempRegistry = ServiceReferenceHolder.getRegistryService().getRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
         Resource regResource;
         regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);

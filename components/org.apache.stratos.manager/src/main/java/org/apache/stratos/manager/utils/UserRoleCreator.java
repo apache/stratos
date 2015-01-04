@@ -22,7 +22,7 @@ package org.apache.stratos.manager.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.user.mgt.exception.UserManagerException;
+import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
