@@ -39,7 +39,6 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
@@ -414,7 +413,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                                 " [group] " + this.id + " [cluster]: " + terminationContext.getId());
                     }
                     ClusterStatusEventPublisher.sendClusterTerminatingEvent(this.appId,
-                            ((AbstractClusterMonitor) monitor).getServiceId(),
+                            ((ClusterMonitor) monitor).getServiceId(),
                             terminationContext.getId(), instanceId);
                 }
             } else {
@@ -553,8 +552,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                     } finally {
                         ApplicationHolder.releaseReadLock();
                     }
-                } else if (monitor instanceof AbstractClusterMonitor) {
-                    AbstractClusterMonitor monitor1 = (AbstractClusterMonitor) monitor;
+                } else if (monitor instanceof ClusterMonitor) {
+                    ClusterMonitor monitor1 = (ClusterMonitor) monitor;
                     TopologyManager.acquireReadLockForCluster(monitor1.getServiceId(),
                             monitor1.getClusterId());
                     try {

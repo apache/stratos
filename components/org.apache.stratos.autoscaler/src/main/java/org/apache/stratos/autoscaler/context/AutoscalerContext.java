@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 
 /**
@@ -38,7 +38,7 @@ public class AutoscalerContext {
     // Map<ApplicationId, ApplicationContext>
     private Map<String, ApplicationContext> applicationContextMap;
     // Map<ClusterId, AbstractClusterMonitor>
-    private Map<String, AbstractClusterMonitor> clusterMonitors;
+    private Map<String, ClusterMonitor> clusterMonitors;
     // Map<ApplicationId, ApplicationMonitor>
     private Map<String, ApplicationMonitor> applicationMonitors;
     //pending application monitors
@@ -49,7 +49,7 @@ public class AutoscalerContext {
         if(applicationContextMap == null) {
             applicationContextMap = new ConcurrentHashMap<String, ApplicationContext>();
         }
-        setClusterMonitors(new HashMap<String, AbstractClusterMonitor>());
+        setClusterMonitors(new HashMap<String, ClusterMonitor>());
         setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
         pendingApplicationMonitors = new ArrayList<String>();
     }
@@ -72,15 +72,15 @@ public class AutoscalerContext {
         return INSTANCE;
     }
 
-    public void addClusterMonitor(AbstractClusterMonitor clusterMonitor) {
+    public void addClusterMonitor(ClusterMonitor clusterMonitor) {
         getClusterMonitors().put(clusterMonitor.getClusterId(), clusterMonitor);
     }
 
-    public AbstractClusterMonitor getClusterMonitor(String clusterId) {
+    public ClusterMonitor getClusterMonitor(String clusterId) {
         return getClusterMonitors().get(clusterId);
     }
 
-    public AbstractClusterMonitor removeClusterMonitor(String clusterId) {
+    public ClusterMonitor removeClusterMonitor(String clusterId) {
         return getClusterMonitors().remove(clusterId);
     }
 
@@ -96,11 +96,11 @@ public class AutoscalerContext {
         getApplicationMonitors().remove(applicationId);
     }
 
-    public Map<String, AbstractClusterMonitor> getClusterMonitors() {
+    public Map<String, ClusterMonitor> getClusterMonitors() {
         return clusterMonitors;
     }
 
-    public void setClusterMonitors(Map<String, AbstractClusterMonitor> clusterMonitors) {
+    public void setClusterMonitors(Map<String, ClusterMonitor> clusterMonitors) {
         this.clusterMonitors = clusterMonitors;
     }
 

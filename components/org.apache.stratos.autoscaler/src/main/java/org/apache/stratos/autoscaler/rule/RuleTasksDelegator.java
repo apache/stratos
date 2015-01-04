@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
@@ -223,7 +222,7 @@ public class RuleTasksDelegator {
             log.debug("Scaling dependent notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
         float fMinimumInstanceCount = minimumInstanceCount;
         float factor = requiredInstanceCount / fMinimumInstanceCount;
         if (abstractClusterMonitor instanceof ClusterMonitor) {
@@ -237,7 +236,7 @@ public class RuleTasksDelegator {
             log.debug("Scaling max out notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
         if (abstractClusterMonitor instanceof ClusterMonitor) {
 
             ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;
@@ -250,7 +249,7 @@ public class RuleTasksDelegator {
             log.debug("Scaling down lower min notification is going to the [parentInstance] " + instanceId);
         }
         //Notify parent for checking scaling dependencies
-        AbstractClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
+        ClusterMonitor abstractClusterMonitor = AutoscalerContext.getInstance().getClusterMonitor(clusterId);
         if (abstractClusterMonitor instanceof ClusterMonitor) {
 
             ClusterMonitor clusterMonitor = (ClusterMonitor) abstractClusterMonitor;

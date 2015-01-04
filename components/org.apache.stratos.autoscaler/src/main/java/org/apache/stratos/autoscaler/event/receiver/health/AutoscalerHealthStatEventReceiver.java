@@ -22,7 +22,6 @@ package org.apache.stratos.autoscaler.event.receiver.health;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -105,7 +104,7 @@ public class AutoscalerHealthStatEventReceiver {
                 AverageLoadAverageEvent averageLoadAverageEvent = (AverageLoadAverageEvent) event;
                 String clusterId = averageLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -125,7 +124,7 @@ public class AutoscalerHealthStatEventReceiver {
                 AverageMemoryConsumptionEvent averageMemoryConsumptionEvent = (AverageMemoryConsumptionEvent) event;
                 String clusterId = averageMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -144,7 +143,7 @@ public class AutoscalerHealthStatEventReceiver {
                 AverageRequestsInFlightEvent averageRequestsInFlightEvent = (AverageRequestsInFlightEvent) event;
                 String clusterId = averageRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -163,7 +162,7 @@ public class AutoscalerHealthStatEventReceiver {
                 AverageRequestsServingCapabilityEvent averageRequestsServingCapabilityEvent = (AverageRequestsServingCapabilityEvent) event;
                 String clusterId = averageRequestsServingCapabilityEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -185,7 +184,7 @@ public class AutoscalerHealthStatEventReceiver {
                 GradientOfLoadAverageEvent gradientOfLoadAverageEvent = (GradientOfLoadAverageEvent) event;
                 String clusterId = gradientOfLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -204,7 +203,7 @@ public class AutoscalerHealthStatEventReceiver {
                 GradientOfMemoryConsumptionEvent gradientOfMemoryConsumptionEvent = (GradientOfMemoryConsumptionEvent) event;
                 String clusterId = gradientOfMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -223,7 +222,7 @@ public class AutoscalerHealthStatEventReceiver {
                 GradientOfRequestsInFlightEvent gradientOfRequestsInFlightEvent = (GradientOfRequestsInFlightEvent) event;
                 String clusterId = gradientOfRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -256,7 +255,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 String clusterId = member.getClusterId();
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
@@ -290,7 +289,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 String clusterId = member.getClusterId();
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
@@ -318,7 +317,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -351,7 +350,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 String clusterId = member.getClusterId();
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
@@ -386,7 +385,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 String clusterId = member.getClusterId();
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
@@ -420,7 +419,7 @@ public class AutoscalerHealthStatEventReceiver {
                     return;
                 }
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 String clusterId = member.getClusterId();
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
@@ -447,7 +446,7 @@ public class AutoscalerHealthStatEventReceiver {
                 SecondDerivativeOfLoadAverageEvent secondDerivativeOfLoadAverageEvent = (SecondDerivativeOfLoadAverageEvent) event;
                 String clusterId = secondDerivativeOfLoadAverageEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -466,7 +465,7 @@ public class AutoscalerHealthStatEventReceiver {
                 SecondDerivativeOfMemoryConsumptionEvent secondDerivativeOfMemoryConsumptionEvent = (SecondDerivativeOfMemoryConsumptionEvent) event;
                 String clusterId = secondDerivativeOfMemoryConsumptionEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
@@ -486,7 +485,7 @@ public class AutoscalerHealthStatEventReceiver {
                         = (SecondDerivativeOfRequestsInFlightEvent) event;
                 String clusterId = secondDerivativeOfRequestsInFlightEvent.getClusterId();
                 AutoscalerContext asCtx = AutoscalerContext.getInstance();
-                AbstractClusterMonitor monitor;
+                ClusterMonitor monitor;
                 monitor = asCtx.getClusterMonitor(clusterId);
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {

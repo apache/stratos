@@ -36,7 +36,7 @@ import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupExc
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -340,7 +340,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             log.debug(String.format("Updating Cluster monitor [Cluster id] %s ", clusterId));
         }
         AutoscalerContext asCtx = AutoscalerContext.getInstance();
-        AbstractClusterMonitor monitor = asCtx.getClusterMonitor(clusterId);
+        ClusterMonitor monitor = asCtx.getClusterMonitor(clusterId);
 
         if (monitor != null) {
             monitor.handleDynamicUpdates(properties);

@@ -38,11 +38,11 @@ public class ClusterMonitorFactory {
      * @throws PolicyValidationException    when deployment policy is not valid
      * @throws PartitionValidationException when partition is not valid
      */
-    public static AbstractClusterMonitor getMonitor(Cluster cluster, boolean hasScalingDependents,
+    public static ClusterMonitor getMonitor(Cluster cluster, boolean hasScalingDependents,
                                                     boolean groupScalingEnabledSubtree)
             throws PolicyValidationException, PartitionValidationException {
 
-        AbstractClusterMonitor clusterMonitor =
+        ClusterMonitor clusterMonitor =
                 getClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
         return clusterMonitor;
     }

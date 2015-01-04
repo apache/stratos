@@ -29,9 +29,8 @@ import org.apache.stratos.autoscaler.exception.application.DependencyBuilderExce
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.cluster.AbstractClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
@@ -211,7 +210,7 @@ public class MonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.policy.PolicyValidationException
      * @throws org.apache.stratos.autoscaler.exception.partition.PartitionValidationException
      */
-    public static AbstractClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
+    public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
                                                            ClusterChildContext context,
                                                            List<String> parentInstanceIds)
             throws PolicyValidationException,
@@ -255,7 +254,7 @@ public class MonitorFactory {
                 GroupMonitor groupMonitor = (GroupMonitor) parentMonitor;
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
             }
-            AbstractClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents,
+            ClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents,
                     groupScalingEnabledSubtree);
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
