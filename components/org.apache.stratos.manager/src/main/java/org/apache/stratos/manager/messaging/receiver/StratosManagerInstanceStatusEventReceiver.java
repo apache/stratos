@@ -22,9 +22,7 @@ package org.apache.stratos.manager.messaging.receiver;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.stub.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.stub.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.manager.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.messaging.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.messaging.event.Event;
@@ -117,7 +115,27 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
      */
     private List<SubscribableInfoContext> findCartridgeContext(ApplicationContext applicationContext, String serviceName) {
         List<SubscribableInfoContext> subscribableInfoContexts = new ArrayList<SubscribableInfoContext>();
-        CartridgeContext[] cartridgeContexts = applicationContext.getComponents().getCartridgeContexts();
+
+        ComponentContext componentContext = applicationContext.getComponents();
+        List<SubscribableInfoContext> contexts = findSubscribableInfoContexts(serviceName,
+                componentContext.getCartridgeContexts());
+        subscribableInfoContexts.addAll(contexts);
+
+        GroupContext[] groupContexts = componentContext.getGroupContexts();
+        if(groupContexts != null) {
+            for(GroupContext groupContext : groupContexts) {
+                if(groupContext != null) {
+                    contexts = findSubscribableInfoContexts(serviceName, groupContext.getCartridgeContexts());
+                    subscribableInfoContexts.addAll(contexts);
+                }
+            }
+        }
+
+        return subscribableInfoContexts;
+    }
+
+    private List<SubscribableInfoContext> findSubscribableInfoContexts(String serviceName, CartridgeContext[] cartridgeContexts) {
+        List<SubscribableInfoContext> subscribableInfoContexts = new ArrayList<SubscribableInfoContext>();
         if (cartridgeContexts != null) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if (cartridgeContext != null) {
