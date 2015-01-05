@@ -291,6 +291,18 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 log.info("Starting to undeploy application: [application-id] " + applicationId);
             }
 
+            ApplicationContext application = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            if ( application == null){
+                String msg = String.format("Application not found : [application-id] %s", applicationId);
+                throw new RuntimeException(msg);
+            }
+
+            if (!application.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                String message = String.format("Application is not deployed: [application-id] %s", applicationId);
+                log.error(message);
+                throw new RuntimeException(message);
+            }
+
             ApplicationBuilder.handleApplicationUndeployed(applicationId);
 
             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);

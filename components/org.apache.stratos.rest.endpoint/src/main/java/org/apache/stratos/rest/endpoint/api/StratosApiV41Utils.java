@@ -959,6 +959,18 @@ public class StratosApiV41Utils {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
         if (autoscalerServiceClient != null) {
             try {
+                ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
+                if(application == null) {
+                    String message = String.format("Application is not found: [application-id] %s", applicationId);
+                    log.error(message);
+                    throw new RestAPIException(message);
+                }
+                if (!application.getStatus().equals(APPLICATION_STATUS_DEPLOYED)) {
+                    String message = String.format("Application is not deployed: [application-id] %s", applicationId);
+                    log.error(message);
+                    throw new RestAPIException(message);
+                }
+
                 autoscalerServiceClient.undeployApplication(applicationId);
             } catch (RemoteException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
