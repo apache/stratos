@@ -141,18 +141,13 @@ public class AutoscalerContext {
         RegistryManager.getInstance().persistApplicationContext(applicationContext);
     }
 
-    public void removeApplicationContext(String applicationId) {
-        if(applicationContextMap.containsKey(applicationId)) {
-            applicationContextMap.remove(applicationId);
-            RegistryManager.getInstance().removeApplicationContext(applicationId);
-        }
+    public ApplicationContext removeApplicationContext(String applicationId) {
+        RegistryManager.getInstance().removeApplicationContext(applicationId);
+        return applicationContextMap.remove(applicationId);
     }
 
     public ApplicationContext getApplicationContext(String applicationId) {
-        if(applicationContextMap.containsKey(applicationId)) {
-            return applicationContextMap.get(applicationId);
-        }
-        return null;
+        return applicationContextMap.get(applicationId);
     }
 
     public Collection<ApplicationContext> getApplicationContexts() {
