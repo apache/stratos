@@ -30,7 +30,6 @@ import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentE
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
-import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitorFactory;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
@@ -43,13 +42,14 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Factory class to get the Monitors.
  */
 public class MonitorFactory {
     private static final Log log = LogFactory.getLog(MonitorFactory.class);
-
+    public static final String IS_PRIMARY = "PRIMARY";
 
     /**
      * Factor method used to create relevant monitors based on the given context
@@ -254,8 +254,16 @@ public class MonitorFactory {
                 GroupMonitor groupMonitor = (GroupMonitor) parentMonitor;
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
             }
-            ClusterMonitor clusterMonitor = ClusterMonitorFactory.getMonitor(cluster, hasScalingDependents,
-                    groupScalingEnabledSubtree);
+
+            ClusterMonitor clusterMonitor = new ClusterMonitor(cluster, hasScalingDependents, groupScalingEnabledSubtree);
+
+            Properties props = cluster.getProperties();
+            if (props != null) {
+                // set hasPrimary property
+                // hasPrimary is true if there are primary members available in that cluster
+                clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(IS_PRIMARY)));
+            }
+
             //Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
@@ -272,6 +280,7 @@ public class MonitorFactory {
             ((ClusterMonitor) clusterMonitor).createClusterInstances(parentInstanceIds, cluster);
             //add it to autoscaler context
             AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
+            log.info("ClusterMonitor created: " + clusterMonitor.toString());
 
             return clusterMonitor;
         } finally {

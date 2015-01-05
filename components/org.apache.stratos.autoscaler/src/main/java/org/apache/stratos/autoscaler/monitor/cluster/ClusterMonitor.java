@@ -111,7 +111,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     private float scalingFactorBasedOnDependencies = 1.0f;
 
 
-    protected ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
+    public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
         this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
