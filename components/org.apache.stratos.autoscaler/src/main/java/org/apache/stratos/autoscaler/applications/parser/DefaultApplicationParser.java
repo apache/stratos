@@ -42,10 +42,7 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.applications.DependencyOrder;
-import org.apache.stratos.messaging.domain.applications.Group;
+import org.apache.stratos.messaging.domain.applications.*;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
 import javax.crypto.Cipher;
@@ -192,7 +189,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // get top level Subscribables
             if (appCtxt.getComponents().getCartridgeContexts() != null) {
                 clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
-                        application.getKey(), null, Arrays.asList(appCtxt.getComponents().getCartridgeContexts()));
+                        application.getKey(), null, Arrays.asList(appCtxt.getComponents().getCartridgeContexts()),null);
                 application.setClusterData(clusterDataMap);
             }
 
@@ -298,12 +295,12 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions(
     		String appId, int tenantId, String key, String groupName,
-            List<CartridgeContext> cartridgeContextList) throws ApplicationDefinitionException {
+            List<CartridgeContext> cartridgeContextList,String[] dependencyOrder) throws ApplicationDefinitionException {
 
     	 Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
 
     	 for (CartridgeContext cartridgeContext : cartridgeContextList) {
-
+		     List<String> dependencyClusterIDs = new ArrayList<String>();
     		 String cartridgeType = cartridgeContext.getType();
     		 String subscriptionAlias = cartridgeContext.getSubscribableInfoContext().getAlias();
 
@@ -326,12 +323,26 @@ public class DefaultApplicationParser implements ApplicationParser {
              String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
              String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
 
-             // create and collect this cluster's information
+		     //Get dependency cluster id
+		     if (dependencyOrder.length > 0) {
+			     for (int i = 0; i < dependencyOrder.length; i++) {
+				     String[] dependencies = dependencyOrder[i].split(",");
+				     if (dependencies[dependencies.length - 1].equals(subscriptionAlias)) {
+					     ClusterDataHolder dataHolder = clusterDataMap.get(dependencies[i]);
+					     dependencyClusterIDs.add(dataHolder.getClusterId());
+				     }
+			     }
+		     }
+
+		    String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
+		    arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
+
+		     // create and collect this cluster's information
              ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                      key, tenantId, cartridgeContext.getSubscribableInfoContext().getRepoUrl(), subscriptionAlias,
                      clusterId, hostname, cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false,
                      cartridgeContext.getSubscribableInfoContext().getDependencyAliases(),
-                     cartridgeContext.getSubscribableInfoContext().getProperties());
+                     cartridgeContext.getSubscribableInfoContext().getProperties(), arrDependencyClusterIDs);
 
              appClusterCtxt.setAutoscalePolicyName(cartridgeContext.getSubscribableInfoContext().getAutoscalingPolicy());
              appClusterCtxt.setProperties(cartridgeContext.getSubscribableInfoContext().getProperties());
@@ -485,7 +496,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // get group level CartridgeContexts
         if (groupCtxt.getCartridgeContexts() != null) {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
-                    Arrays.asList(groupCtxt.getCartridgeContexts()));
+                    Arrays.asList(groupCtxt.getCartridgeContexts()),startupOrders);
             group.setClusterData(clusterDataMap);
         }
 
@@ -682,6 +693,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @param hostname Hostname
      * @param deploymentPolicy Deployment policy used
      * @param isLB if this cluster is an LB
+     * @param dependencyClustorIDs
      * @return ApplicationClusterContext object with relevant information
      *
      * @throws ApplicationDefinitionException If any error occurs
@@ -689,12 +701,12 @@ public class DefaultApplicationParser implements ApplicationParser {
     private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, CartridgeInfo cartridgeInfo,
                                                                        String subscriptionKey, int tenantId, String repoUrl,
                                                                        String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases, Properties properties)
+                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases, Properties properties,String[] dependencyClustorIDs)
             throws ApplicationDefinitionException {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs);
 
         String textPayload = payloadData.toString();
 

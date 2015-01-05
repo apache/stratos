@@ -197,12 +197,12 @@ public class ApplicationUtils {
 
     public static PayloadData createPayload(String appId, String groupName, CartridgeInfo cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
-                                            org.apache.stratos.common.Properties properties, String oauthToken)
+                                            org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs)
             throws ApplicationDefinitionException {
 
         //Create the payload
         BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridgeInfo, subscriptionKey,
-                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases);
+                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -265,7 +265,7 @@ public class ApplicationUtils {
     private static BasicPayloadData createBasicPayload(String appId, String groupName, CartridgeInfo cartridge,
                                                        String subscriptionKey, String clusterId,
                                                        String hostName, String repoUrl, String alias,
-                                                       int tenantId, String[] dependencyAliases) {
+                                                       int tenantId, String[] dependencyAliases,String[] dependencyCLusterIDs) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setAppId(appId);

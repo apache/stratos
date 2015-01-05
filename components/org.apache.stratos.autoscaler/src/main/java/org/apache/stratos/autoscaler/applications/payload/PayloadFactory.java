@@ -26,6 +26,8 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 
 public class PayloadFactory {
 
+	private static final String LB_IDENTIFIER = "lb";
+	public static final String DATA_IDENTIFIER = "data";
 	private static Log log = LogFactory.getLog(PayloadFactory.class);
 
     /**
@@ -43,9 +45,13 @@ public class PayloadFactory {
         PayloadData payloadData = null;
 
         //TODO: fix after adding the property Category to Cartridge Definition
-        if (cartridgeProvider.equals("data")) {
+        if (cartridgeProvider.equals(DATA_IDENTIFIER)) {
             payloadData = new DataCartridgePayloadData(basicPayloadData);
-        } else {
+        }
+        else if(cartridgeProvider.equals(LB_IDENTIFIER)){
+	        payloadData = new LoadBalancerCartridgePayloadData(basicPayloadData);
+        }
+        else {
             payloadData = new FrameworkCartridgePayloadData(basicPayloadData);
         }
 

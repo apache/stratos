@@ -52,6 +52,7 @@ public class BasicPayloadData implements Serializable {
     private String provider;
     private String[] dependencyAliases;
     private String[] exportingProperties;
+	private String[] dependencyClusterIDs;
 
     protected StringBuilder payloadBuilder;
 
@@ -110,6 +111,10 @@ public class BasicPayloadData implements Serializable {
         if(getExportingPropertiesPayloadString() != null){
             payloadBuilder.append("EXPORTING_PROPERTIES=" + getExportingPropertiesPayloadString());
         }
+	    payloadBuilder.append(",");
+	    if (getDependencyClusterIDPayloadString() != null) {
+		    payloadBuilder.append("DEPENDENCY_CLUSTER_IDS=" + getDependencyClusterIDPayloadString());
+	    }
     }
 
     public String getServiceName() {
@@ -308,4 +313,24 @@ public class BasicPayloadData implements Serializable {
     public void setExportingProperties(String[] exportingProperties) {
         this.exportingProperties = exportingProperties;
     }
+
+	public String getDependencyClusterIDPayloadString() {
+		if (dependencyClusterIDs == null) {
+			return null;
+		}
+
+		StringBuilder dependencyClusterIDsPayload = new StringBuilder();
+		for (int i = 0; i < dependencyClusterIDs.length; i++) {
+			dependencyClusterIDsPayload.append(dependencyAliases[i]);
+			if (i != dependencyAliases.length - 1) {
+				dependencyClusterIDsPayload.append("|");
+			}
+		}
+		log.debug("Dependency Cluster IDs:  " + dependencyClusterIDsPayload);
+		return dependencyClusterIDsPayload.toString();
+	}
+
+	public void setDependencyClusterIDs(String[] dependencyClusterIDs) {
+		this.dependencyClusterIDs = dependencyClusterIDs;
+	}
 }
