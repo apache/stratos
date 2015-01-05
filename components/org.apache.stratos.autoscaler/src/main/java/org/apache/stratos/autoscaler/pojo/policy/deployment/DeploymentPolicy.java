@@ -185,7 +185,7 @@ public class DeploymentPolicy implements Serializable{
     }
     
     public String toString() {
-        return "Deployment Policy [applicationId]" + this.applicationId + " Description " +  this.description
+        return "Deployment Policy [applicationId] " + this.applicationId + " Description " +  this.description
         		+ " isPublic " +  this.isPublic 
         		+" [partitions] " + Arrays.toString(this.getAllPartitions());
     }

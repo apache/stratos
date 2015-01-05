@@ -53,7 +53,7 @@ public class RuleTasksDelegator {
         double predictedValue;
 //        s = u * t + 0.5 * a * t * t
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Predicting the value, [average]: %s , [gradient]: %s , [second derivative]" +
+            log.debug(String.format("Predicting the value, [average]: %s , [gradient]: %s , [second derivative] " +
                     ": %s , [time intervals]: %s ", average, gradient, secondDerivative, timeInterval));
         }
         predictedValue = average + gradient * timeInterval + 0.5 * secondDerivative * timeInterval * timeInterval;

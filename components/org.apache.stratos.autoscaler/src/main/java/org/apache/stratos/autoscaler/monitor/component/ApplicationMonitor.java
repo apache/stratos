@@ -81,7 +81,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             @Override
             public void run() {
                 if (log.isDebugEnabled()) {
-                    log.debug("Application monitor is running for [application]" + appId + " =======");
+                    log.debug("Application monitor is running for [application] " + appId + " =======");
                 }
                 for (NetworkPartitionContext networkPartitionContext : networkPartitionContexts) {
 

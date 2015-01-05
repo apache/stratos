@@ -68,7 +68,7 @@ public class GroupStatusTerminatingProcessor extends GroupStatusProcessor {
 
         if (log.isDebugEnabled()) {
             log.debug("StatusChecker calculating the terminating status for the group " +
-                    "[ " + idOfComponent + " ]" + " for the instance " + " [ " + instanceId + " ]");
+                    "[ " + idOfComponent + " ] " + " for the instance " + " [ " + instanceId + " ]");
         }
 
         try {

@@ -438,7 +438,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         if (StringUtils.isNotEmpty(volume.getVolumeId())) {
             // volumeID is specified, so not creating additional volumes
             if (log.isDebugEnabled()) {
-                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID]" + volume.getVolumeId());
+                log.debug("Volume creation is skipping since a volume ID is specified. [Volume ID] " + volume.getVolumeId());
             }
             volume.setId(volume.getVolumeId());
         } else {
@@ -918,7 +918,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                     if (log.isDebugEnabled()) {
                         log.debug("Partition " + partitionId + " added to the cache against cartridge: " +
-                                "[cartridge-type]" + cartridgeType);
+                                "[cartridge-type] " + cartridgeType);
                     }
                 } catch (Exception e) {
                     String message = "Could not cache partitions against the cartridge: [cartridge-type] " + cartridgeType;

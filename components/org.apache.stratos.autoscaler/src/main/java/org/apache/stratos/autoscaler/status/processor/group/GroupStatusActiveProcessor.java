@@ -68,7 +68,7 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
 
         if (log.isDebugEnabled()) {
             log.debug("StatusChecker calculating the active status for the group " +
-                    "[ " + idOfComponent + " ]" + " for the instance " + " [ " + instanceId + " ]");
+                    "[ " + idOfComponent + " ] " + " for the instance " + " [ " + instanceId + " ]");
         }
         try {
             ApplicationHolder.acquireWriteLock();

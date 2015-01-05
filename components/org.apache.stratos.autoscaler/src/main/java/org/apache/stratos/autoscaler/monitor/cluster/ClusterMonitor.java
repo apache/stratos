@@ -669,7 +669,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
         log.info("Parent scaling event received to [cluster]: " + this.getClusterId()
                     + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
                     + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
-                    + ", [factor]" + scalingEvent.getFactor());
+                    + ", [factor] " + scalingEvent.getFactor());
 
 
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
