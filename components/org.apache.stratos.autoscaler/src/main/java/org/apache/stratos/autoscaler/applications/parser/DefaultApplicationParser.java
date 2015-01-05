@@ -327,7 +327,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 		     if (dependencyOrder.length > 0) {
 			     for (int i = 0; i < dependencyOrder.length; i++) {
 				     String[] dependencies = dependencyOrder[i].split(",");
-				     if (dependencies[dependencies.length - 1].equals(subscriptionAlias)) {
+				     if (dependencies[dependencies.length - 1].equals("cartridge."+subscriptionAlias)) {
 					     ClusterDataHolder dataHolder = clusterDataMap.get(dependencies[i]);
 					     dependencyClusterIDs.add(dataHolder.getClusterId());
 				     }
