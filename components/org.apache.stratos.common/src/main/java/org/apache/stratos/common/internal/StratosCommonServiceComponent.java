@@ -99,7 +99,7 @@ public class StratosCommonServiceComponent {
                 registerDistributedObjectProviderService(bundleContext);
             }
 
-            // Register manager configuration OSGI service
+            // Register manager configuration service
             try {
                 StratosConfiguration stratosConfiguration = CommonUtil.loadStratosConfiguration();
                 bundleContext.registerService(StratosConfiguration.class.getName(), stratosConfiguration, null);

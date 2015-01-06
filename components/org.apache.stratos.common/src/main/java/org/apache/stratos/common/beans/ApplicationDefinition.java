@@ -30,11 +30,12 @@ public class ApplicationDefinition implements Serializable {
     private static final long serialVersionUID = -2829206180707597651L;
 
 	private String applicationId;
+    private boolean multiTenant;
     private String name;
     private String description;
     private String alias;
-    private ComponentDefinition components;
     private String status;
+    private ComponentDefinition components;
     private List<PropertyBean> property;
 
     public String getApplicationId() {
@@ -43,6 +44,14 @@ public class ApplicationDefinition implements Serializable {
 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
+    }
+
+    public boolean isMultiTenant() {
+        return multiTenant;
+    }
+
+    public void setMultiTenant(boolean multiTenant) {
+        this.multiTenant = multiTenant;
     }
 
     public String getName() {

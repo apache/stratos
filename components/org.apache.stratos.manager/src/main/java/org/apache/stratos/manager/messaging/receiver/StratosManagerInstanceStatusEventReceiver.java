@@ -24,6 +24,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
+import org.apache.stratos.manager.application.signups.ApplicationSignUpManager;
+import org.apache.stratos.manager.domain.ApplicationSignUp;
+import org.apache.stratos.manager.domain.ArtifactRepository;
 import org.apache.stratos.manager.messaging.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
@@ -40,7 +43,10 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
 
     private static final Log log = LogFactory.getLog(StratosManagerInstanceStatusEventReceiver.class);
 
+    private ApplicationSignUpManager signUpManager;
+
     public StratosManagerInstanceStatusEventReceiver() {
+        signUpManager = new ApplicationSignUpManager();
         addEventListeners();
     }
 
@@ -72,31 +78,42 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
                         throw new RuntimeException("Cluster id not found in instance started event: " + instanceStartedEvent);
                     }
 
-                    AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getServiceClient();
-                    ApplicationContext applicationContext = autoscalerServiceClient.getApplication(applicationId);
-                    if (applicationContext == null) {
-                        throw new RuntimeException("Application not found: [application-id] " + applicationId);
-                    }
-
-                    List<SubscribableInfoContext> subscribableInfoContexts = findCartridgeContext(applicationContext, serviceName);
-                    if ((subscribableInfoContexts == null) || (subscribableInfoContexts.size() == 0)) {
-                        throw new RuntimeException(String.format("Subscribable information not found: " +
-                                "[application-id] %s [cartridge-type] %s", applicationId, serviceName));
+                    List<ApplicationSignUp> applicationSignUps = signUpManager.getApplicationSignUps(applicationId);
+                    if ((applicationSignUps == null) || (applicationSignUps.size() == 0)) {
+                        log.warn(String.format("Application signups not found for application, artifact updated event" +
+                                "not sent: [application-id] %s [cartridge-type] %s", applicationId, serviceName));
+                        return;
                     }
 
                     InstanceNotificationPublisher publisher = new InstanceNotificationPublisher();
+                    for (ApplicationSignUp applicationSignUp : applicationSignUps) {
+                        if (!artifactRepositoriesExist(applicationSignUp)) {
+                            log.warn(String.format("Artifact repositories not found for application signup, " +
+                                            "artifact updated event not sent: [application-id] %s [signup-id] %s " +
+                                            "[cartridge-type] %s",
+                                    applicationId, applicationSignUp.getSignUpId(), serviceName));
+                        } else {
+                            for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                                if(artifactRepository != null) {
+                                    if (serviceName.equals(artifactRepository.getCartridgeType())) {
+                                        publisher.publishArtifactUpdatedEvent(clusterId,
+                                                String.valueOf(applicationSignUp.getTenantId()),
+                                                artifactRepository.getRepoUrl(),
+                                                artifactRepository.getRepoUsername(),
+                                                artifactRepository.getRepoPassword(), false);
 
-                    for(SubscribableInfoContext subscribableInfoContext : subscribableInfoContexts) {
-                        String tenantId = "-1234";
-                        publisher.publishArtifactUpdatedEvent(clusterId, tenantId, subscribableInfoContext.getRepoUrl(), subscribableInfoContext.getRepoUsername(),
-                                subscribableInfoContext.getRepoPassword(), false);
-
-                        if (log.isInfoEnabled()) {
-                            log.info(String.format("Artifact updated event published: [application-id] %s [cartridge-type] %s " +
-                                            "[member-id] %s [subscription-alias] %s [repo-url] %s",
-                                    instanceStartedEvent.getApplicationId(), instanceStartedEvent.getServiceName(),
-                                    instanceStartedEvent.getMemberId(), subscribableInfoContext.getAlias(),
-                                    subscribableInfoContext.getRepoUrl()));
+                                        if (log.isInfoEnabled()) {
+                                            log.info(String.format("Artifact updated event published: [application-id] %s " +
+                                                            "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
+                                                    instanceStartedEvent.getApplicationId(),
+                                                    applicationSignUp.getSignUpId(),
+                                                    instanceStartedEvent.getServiceName(),
+                                                    artifactRepository.getAlias(),
+                                                    artifactRepository.getRepoUrl()));
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -104,11 +121,18 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
                     log.error(message, e);
                 }
             }
+
+            private boolean artifactRepositoriesExist(ApplicationSignUp applicationSignUp) {
+                ArtifactRepository[] artifactRepositories = applicationSignUp.getArtifactRepositories();
+                return ((artifactRepositories != null) && (artifactRepositories.length > 0) &&
+                        (artifactRepositories[0] != null));
+            }
         });
     }
 
     /**
      * Find subscribable info contexts of cartridge type/service name.
+     *
      * @param applicationContext
      * @param serviceName
      * @return
@@ -122,9 +146,9 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
         subscribableInfoContexts.addAll(contexts);
 
         GroupContext[] groupContexts = componentContext.getGroupContexts();
-        if(groupContexts != null) {
-            for(GroupContext groupContext : groupContexts) {
-                if(groupContext != null) {
+        if (groupContexts != null) {
+            for (GroupContext groupContext : groupContexts) {
+                if (groupContext != null) {
                     contexts = findSubscribableInfoContexts(serviceName, groupContext.getCartridgeContexts());
                     subscribableInfoContexts.addAll(contexts);
                 }

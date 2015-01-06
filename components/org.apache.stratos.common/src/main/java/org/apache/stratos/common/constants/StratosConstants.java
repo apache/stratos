@@ -181,10 +181,16 @@ public class StratosConstants {
 
     public static final String AUTOSCALER_SERVICE_URL = "autoscaler.service.url";
     public static final String CLOUD_CONTROLLER_SERVICE_URL = "cloud.controller.service.url";
+    public static final String STRATOS_MANAGER_SERVICE_URL = "stratos.manager.service.url";
 
     public static final String CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT = "cc.socket.timeout";
     public static final String CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT = "cc.connection.timeout";
     public static final String AUTOSCALER_CLIENT_SOCKET_TIMEOUT = "autoscaler.socket.timeout";
     public static final String AUTOSCALER_CLIENT_CONNECTION_TIMEOUT = "autoscaler.connection.timeout";
+    public static final String STRATOS_MANAGER_CLIENT_SOCKET_TIMEOUT = "stratos.manager.socket.timeout";
+    public static final String STRATOS_MANAGER_CLIENT_CONNECTION_TIMEOUT = "stratos.manager.connection.timeout";
+
+    public static final String DEFAULT_CLIENT_SOCKET_TIMEOUT = "300000";
+    public static final String DEFAULT_CLIENT_CONNECTION_TIMEOUT = "300000";
 }
 

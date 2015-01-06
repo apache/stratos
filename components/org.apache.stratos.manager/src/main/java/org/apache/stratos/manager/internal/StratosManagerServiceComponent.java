@@ -53,8 +53,7 @@ import java.util.concurrent.ExecutorService;
  *                cardinality="1..1" policy="dynamic" bind="setRealmService"
  *                unbind="unsetRealmService"
  * @scr.reference name="registry.service"
- *                interface=
- *                "org.wso2.carbon.registry.core.service.RegistryService"
+ *                interface="org.wso2.carbon.registry.core.service.RegistryService"
  *                cardinality="1..1" policy="dynamic" bind="setRegistryService"
  *                unbind="unsetRegistryService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
@@ -112,26 +111,21 @@ public class StratosManagerServiceComponent {
                 log.info("Topology event receiver thread started");
             }
 
+            // Create internal/user Role at server start-up
             RealmService realmService = ServiceReferenceHolder.getRealmService();
             UserRealm realm = realmService.getBootstrapRealm();
             UserStoreManager userStoreManager = realm.getUserStoreManager();
-            //Create a Internal/user Role at server start-up
-            UserRoleCreator.createTenantUserRole(userStoreManager);
+            UserRoleCreator.createInternalUserRole(userStoreManager);
 
             TenantUserRoleManager tenantUserRoleManager = new TenantUserRoleManager();
             componentContext.getBundleContext().registerService(
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantUserRoleManager, null);
 
-            // retrieve persisted CartridgeSubscriptions
-//            new DataInsertionAndRetrievalManager().cachePersistedSubscriptions();
-
-            //Component activated successfully
-            log.info("ADC management server component is activated");
-			
+            log.info("Stratos manager component is activated");
 		} catch (Exception e) {
             if(log.isErrorEnabled()) {
-			    log.error("Could not activate ADC management server component", e);
+			    log.error("Could not activate stratos manager component", e);
             }
 		}
 	}
@@ -166,13 +160,6 @@ public class StratosManagerServiceComponent {
     protected void unsetRegistryService(RegistryService registryService) {
     }
 
-    /*protected void setTopologyManagementService(TopologyManagementService topologyMgtService) {
-        DataHolder.setTopologyMgtService(topologyMgtService);
-    }
-
-    protected void unsetTopologyManagementService(TopologyManagementService topologyMgtService) {
-    }*/
-
     protected void setTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
             log.debug("Setting the task service");
@@ -193,7 +180,5 @@ public class StratosManagerServiceComponent {
         EventPublisherPool.close(Util.Topics.TENANT_TOPIC.getTopicName());
 
 	    executorService.shutdownNow();
-        //terminate Stratos Manager Topology Receiver
-        topologyEventReceiver.terminate();
     }
 }

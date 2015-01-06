@@ -29,17 +29,11 @@ public class GroupDefinition implements Serializable {
     private static final long serialVersionUID = 7261380706841894892L;
 
 	private String name;
-
     private String alias;
-
     private int groupMinInstances;
-
     private int groupMaxInstances;
-
-    public boolean isGroupScalingEnabled;
-
+    private boolean isGroupScalingEnabled;
     private List<CartridgeDefinition> cartridges;
-
     private List<GroupDefinition> groups;
 
     public String getName() {

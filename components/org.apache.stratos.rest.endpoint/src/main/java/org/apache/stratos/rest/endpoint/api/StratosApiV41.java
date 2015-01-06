@@ -20,8 +20,7 @@ package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.StratosApiResponse;
-import org.apache.stratos.common.beans.UserInfoBean;
+import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
@@ -32,9 +31,6 @@ import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.common.beans.ApplicationDefinition;
-import org.apache.stratos.common.beans.ApplicationSubscription;
-import org.apache.stratos.common.beans.ServiceGroupDefinition;
 import org.apache.stratos.manager.user.management.StratosUserManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
@@ -360,8 +356,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getApplications()
-            throws RestAPIException {
+    public Response getApplications() throws RestAPIException {
         List<ApplicationDefinition> applicationDefinitions = StratosApiV41Utils.getApplications();
         ApplicationDefinition[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationDefinition[applicationDefinitions.size()]);
         return Response.ok(applicationDefinitionsArray).build();
@@ -411,6 +406,38 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok(deploymentPolicy).build();
+    }
+
+    @POST
+    @Path("/applications/{applicationId}/signups")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addApplicationSignUp(@PathParam("applicationId") String applicationId,
+                                         ApplicationSignUpBean applicationSignUpBean) throws RestAPIException {
+        StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/applications/{applicationId}/signups/{signUpId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response removeApplicationSignUp(@PathParam("applicationId") String applicationId,
+                                            @PathParam("signUpId") String signUpId) throws RestAPIException {
+        StratosApiV41Utils.removeApplicationSignUp(applicationId, signUpId);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/applications/{applicationId}/signups")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getApplicationSignUps(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        List<ApplicationSignUpBean> applicationSignUpBeans = StratosApiV41Utils.getApplicationSignUps(applicationId);
+        return Response.ok(applicationSignUpBeans).build();
     }
     
     /**

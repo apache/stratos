@@ -28,25 +28,12 @@ public class SubscribableInfoContext implements Serializable {
     private static final long serialVersionUID = -6874644941002783034L;
 
     private String alias;
-
     private String deploymentPolicy;
-
     private String autoscalingPolicy;
-
     private int minMembers;
-
     private int maxMembers;
-
-    private String repoUrl;
-
-    private boolean privateRepo;
-
-    private String repoUsername;
-
-    private String repoPassword;
-
     private String[] dependencyAliases;
-    
+    private ArtifactRepositoryContext artifactRepositoryContext;
     private Properties properties;
 
     public String getAlias() {
@@ -71,38 +58,6 @@ public class SubscribableInfoContext implements Serializable {
 
     public void setAutoscalingPolicy(String autoscalingPolicy) {
         this.autoscalingPolicy = autoscalingPolicy;
-    }
-
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
-    }
-
-    public boolean isPrivateRepo() {
-        return privateRepo;
-    }
-
-    public void setPrivateRepo(boolean privateRepo) {
-        this.privateRepo = privateRepo;
-    }
-
-    public String getRepoUsername() {
-        return repoUsername;
-    }
-
-    public void setRepoUsername(String repoUsername) {
-        this.repoUsername = repoUsername;
-    }
-
-    public String getRepoPassword() {
-        return repoPassword;
-    }
-
-    public void setRepoPassword(String repoPassword) {
-        this.repoPassword = repoPassword;
     }
 
     public String[] getDependencyAliases() {
@@ -135,5 +90,13 @@ public class SubscribableInfoContext implements Serializable {
 
     public void setMaxMembers(int maxMembers) {
         this.maxMembers = maxMembers;
+    }
+
+    public ArtifactRepositoryContext getArtifactRepositoryContext() {
+        return artifactRepositoryContext;
+    }
+
+    public void setArtifactRepositoryContext(ArtifactRepositoryContext artifactRepositoryContext) {
+        this.artifactRepositoryContext = artifactRepositoryContext;
     }
 }

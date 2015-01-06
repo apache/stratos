@@ -26,11 +26,8 @@ public class CartridgeContext implements Serializable {
     private static final long serialVersionUID = 7782017881026018352L;
 
 	private String type;
-	
 	private int cartridgeMin;
-	
 	private int cartridgeMax;
-	
 	private SubscribableInfoContext subscribableInfoContext;
 
 	public String getType() {

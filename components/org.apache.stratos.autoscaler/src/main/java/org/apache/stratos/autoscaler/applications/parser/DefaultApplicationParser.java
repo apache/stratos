@@ -235,41 +235,46 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        String alias;
+        // TODO: Might need to remove following logic
         Properties properties = new Properties();
         for (SubscribableInfoContext subscribableInfoContext : subscribableInfoCtxts.values()) {
-            alias = subscribableInfoContext.getAlias();
-            String username = subscribableInfoContext.getRepoUsername();
-            String password = subscribableInfoContext.getRepoPassword();
-            String repoUrl = subscribableInfoContext.getRepoUrl();
 
+            String alias = subscribableInfoContext.getAlias();
             List<Property> propertyList = new ArrayList<Property>();
-            if (StringUtils.isNotEmpty(username)) {
-                Property property = new Property();
-                property.setName("REPO_USERNAME");
-                property.setValue(username);
-                propertyList.add(property);
-            }
 
-            if (StringUtils.isNotEmpty(password)) {
-                String encryptedPassword = encryptPassword(password, application.getKey());
-                Property property = new Property();
-                property.setName("REPO_PASSWORD");
-                property.setValue(encryptedPassword);
-                propertyList.add(property);
-            }
-
-            if (StringUtils.isNotEmpty(repoUrl)) {
-                Property property = new Property();
-                property.setName("REPO_URL");
-                property.setValue(repoUrl);
-                propertyList.add(property);
-            }
+//            ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
+//            if(artifactRepositoryContext != null) {
+//                String username = artifactRepositoryContext.getRepoUsername();
+//                String password = artifactRepositoryContext.getRepoPassword();
+//                String repoUrl = artifactRepositoryContext.getRepoUrl();
+//
+//                if (StringUtils.isNotEmpty(username)) {
+//                    Property property = new Property();
+//                    property.setName("REPO_USERNAME");
+//                    property.setValue(username);
+//                    propertyList.add(property);
+//                }
+//
+//                if (StringUtils.isNotEmpty(password)) {
+//                    String encryptedPassword = encryptPassword(password, application.getKey());
+//                    Property property = new Property();
+//                    property.setName("REPO_PASSWORD");
+//                    property.setValue(encryptedPassword);
+//                    propertyList.add(property);
+//                }
+//
+//                if (StringUtils.isNotEmpty(repoUrl)) {
+//                    Property property = new Property();
+//                    property.setName("REPO_URL");
+//                    property.setValue(repoUrl);
+//                    propertyList.add(property);
+//                }
+//            }
 
             if(propertyList.size() > 0 ) {
                 Property[] properties1 = new Property[propertyList.size()];
                 properties.setProperties(propertyList.toArray(properties1));
-                this.addProperties(alias, properties);
+                addProperties(alias, properties);
             }
         }
 
@@ -323,6 +328,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
              String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
              String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
+             String repoUrl = null;
+             if(cartridgeContext.getSubscribableInfoContext().getArtifactRepositoryContext() != null) {
+                 repoUrl = cartridgeContext.getSubscribableInfoContext().getArtifactRepositoryContext().getRepoUrl();
+             }
 
 		     // add relevant information to the map
 		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
@@ -346,8 +355,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 
 		     // create and collect this cluster's information
              ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
-                     key, tenantId, cartridgeContext.getSubscribableInfoContext().getRepoUrl(), subscriptionAlias,
-                     clusterId, hostname, cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false,
+                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
+                     cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false,
                      cartridgeContext.getSubscribableInfoContext().getDependencyAliases(),
                      cartridgeContext.getSubscribableInfoContext().getProperties(), arrDependencyClusterIDs);
 

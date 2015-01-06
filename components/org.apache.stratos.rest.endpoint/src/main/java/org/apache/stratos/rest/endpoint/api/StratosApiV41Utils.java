@@ -33,9 +33,7 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
-import org.apache.stratos.common.beans.ApplicationBean;
-import org.apache.stratos.common.beans.GroupBean;
-import org.apache.stratos.common.beans.PropertyBean;
+import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
 import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
@@ -48,12 +46,11 @@ import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
 import org.apache.stratos.common.beans.topology.GroupInstanceBean;
+import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
-import org.apache.stratos.common.beans.ApplicationDefinition;
-import org.apache.stratos.common.beans.ApplicationSubscription;
-import org.apache.stratos.common.beans.ServiceGroupDefinition;
+import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -1040,16 +1037,6 @@ public class StratosApiV41Utils {
         }
         return applicationBean;
     }
-
-    private static void addGroupsToApplicationBean(ApplicationBean applicationBean, Application application) {
-        Collection<Group> groups = application.getGroups();
-        for (Group group : groups) {
-            GroupBean groupBean = ObjectConverter.convertGroupToGroupBean(group);
-            setSubGroups(group, groupBean);
-            applicationBean.addGroup(groupBean);
-        }
-    }
-
     private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
                                                                     Application application) {
         Collection<Group> groups = application.getGroups();
@@ -1116,17 +1103,6 @@ public class StratosApiV41Utils {
 
     }
 
-
-    private static void setSubGroups(Group group, GroupBean groupBean) {
-        Collection<Group> subgroups = group.getGroups();
-        addClustersToGroupBean(group, groupBean);
-        for (Group subGroup : subgroups) {
-            GroupBean subGroupBean = ObjectConverter.convertGroupToGroupBean(subGroup);
-
-            setSubGroups(subGroup, subGroupBean);
-            groupBean.addGroup(subGroupBean);
-        }
-    }
     private static void setSubGroupInstances(Group group, GroupInstanceBean groupInstanceBean) {
         Collection<Group> subgroups = group.getGroups();
         addClustersInstancesToGroupInstanceBean(groupInstanceBean, group);
@@ -1143,15 +1119,6 @@ public class StratosApiV41Utils {
             }
         }
 
-    }
-
-    private static void addClustersToGroupBean(Group group, GroupBean groupBean) {
-        Map<String, ClusterDataHolder> clustersDatamap = group.getClusterDataMap();
-        for (Map.Entry<String, ClusterDataHolder> x : clustersDatamap.entrySet()) {
-            ClusterDataHolder clusterHolder = x.getValue();
-            Cluster topLevelCluster = TopologyManager.getTopology().getService(clusterHolder.getServiceType()).getCluster(clusterHolder.getClusterId());
-            groupBean.addCluster(ObjectConverter.convertClusterToClusterBean(topLevelCluster, null));
-        }
     }
 
     // Util methods for Kubernetes clusters
@@ -1371,27 +1338,113 @@ public class StratosApiV41Utils {
         return false;
     }
 
-//    public static void updateSubscriptionProperties(ConfigurationContext context, String alias, List<PropertyBean> property) throws RestAPIException {
-//        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-//        if (autoscalerServiceClient != null) {
-//            try {
-//                Cluster cluster = TopologyClusterInformationModel.getInstance().getCluster(ApplicationManagementUtil.getTenantId(context)
-//                        , alias);
-//                if (cluster == null) {
-//                    throw new RestAPIException("No matching cluster found for [alias] " + alias);
-//                }
-//                if (property != null) {
-//                    autoscalerServiceClient.updateClusterMonitor(cluster.getClusterId(), ObjectConverter.convertPropertyBeansToProperties(property));
-//                }
-//            } catch (AutoScalerServiceInvalidArgumentExceptionException e) {
-//                String message = e.getFaultMessage().getInvalidArgumentException().getMessage();
-//                log.error(message, e);
-//                throw new RestAPIException(message, e);
-//            } catch (RemoteException e) {
-//                String msg = "Error while connecting to Autoscaler Service. " + e.getMessage();
-//                log.error(msg, e);
-//                throw new RestAPIException(e.getMessage(), e);
-//            }
-//        }
-//    }
+    public static void addApplicationSignUp(String applicationId, ApplicationSignUpBean applicationSignUpBean) throws RestAPIException {
+        if(StringUtils.isBlank(applicationId)) {
+            throw new RestAPIException("Application id is null");
+        }
+
+        ApplicationDefinition application = getApplication(applicationId);
+        if(application == null) {
+            throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        }
+
+        if(!APPLICATION_STATUS_DEPLOYED.equals(application.getStatus())) {
+            throw new RestAPIException("Application has not been deployed: [application-id] " + applicationId);
+        }
+
+        if(!application.isMultiTenant()) {
+            throw new RestAPIException("Application signups cannot be added to single-tenant applications");
+        }
+
+        if(applicationSignUpBean == null) {
+            throw new RestAPIException("Application signup is null");
+        }
+
+        if(StringUtils.isBlank(applicationSignUpBean.getApplicationId())) {
+            throw new RestAPIException("Application id in application signup is null");
+        }
+
+        if(!applicationId.equals(applicationSignUpBean.getApplicationId())) {
+            throw new RestAPIException("Application id does not match with application id in application signup");
+        }
+
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Adding application signup: [application-id] %s", applicationId));
+            }
+
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
+            String signupId = serviceClient.addApplicationSignUp(applicationSignUp);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Application signup added successfully: [application-id] %s [signup-id] %s",
+                        applicationId, signupId));
+            }
+        } catch (Exception e) {
+            String message = "Could not add application signup: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    public static void removeApplicationSignUp(String applicationId, String signUpId) throws RestAPIException {
+        if(StringUtils.isBlank(applicationId)) {
+            throw new RestAPIException("Application id is null");
+        }
+
+        ApplicationDefinition application = getApplication(applicationId);
+        if(application == null) {
+            throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        }
+
+        if(StringUtils.isBlank(signUpId)) {
+            throw new RestAPIException("Signup id is null");
+        }
+
+        try {
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            serviceClient.removeApplicationSignUp(signUpId);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Application signup removed successfully: [application-id] %s" +
+                        "[signup-id] %s", applicationId, signUpId));
+            }
+        } catch (Exception e) {
+            String message = "Could not remove application signup: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    public static List<ApplicationSignUpBean> getApplicationSignUps(String applicationId) throws RestAPIException {
+        if(StringUtils.isBlank(applicationId)) {
+            throw new RestAPIException("Application id is null");
+        }
+
+        ApplicationDefinition application = getApplication(applicationId);
+        if(application == null) {
+            throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        }
+
+        try {
+            List<ApplicationSignUpBean> applicationSignUpBeans = new ArrayList<ApplicationSignUpBean>();
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            ApplicationSignUp[] applicationSignUps = serviceClient.getApplicationSignUps(applicationId);
+            if(applicationSignUps != null) {
+                for(ApplicationSignUp applicationSignUp : applicationSignUps) {
+                    if(applicationSignUp != null) {
+                        ApplicationSignUpBean applicationSignUpBean =
+                                ObjectConverter.convertStubApplicationSignUpToApplicationSignUpBean(applicationSignUp);
+                        applicationSignUpBeans.add(applicationSignUpBean);
+                    }
+                }
+            }
+            return applicationSignUpBeans;
+        } catch (Exception e) {
+            String message = "Could not get application signups: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
 }

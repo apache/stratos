@@ -219,7 +219,6 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         healthStatPublisher.publish(MemberFaultEventMap, true);
     }
 
-
     @Override
     public void run() {
         try {

@@ -31,12 +31,13 @@ public class ApplicationContext implements Serializable {
     public static final String STATUS_DEPLOYED = "Deployed";
 
     private String applicationId;
+    private String alias;
+    private boolean multiTenant;
     private String name;
     private String description;
     private int tenantId;
     private String tenantDomain;
     private String teantAdminUsername;
-    private String alias;
     private ComponentContext componentContext;
     private Properties properties;
     private String status;
@@ -58,6 +59,14 @@ public class ApplicationContext implements Serializable {
 
     public void setAlias(String alias) {
         this.alias = alias;
+    }
+
+    public boolean isMultiTenant() {
+        return multiTenant;
+    }
+
+    public void setMultiTenant(boolean multiTenant) {
+        this.multiTenant = multiTenant;
     }
 
     public ComponentContext getComponents() {
@@ -124,5 +133,4 @@ public class ApplicationContext implements Serializable {
     public void setDescription(String description) {
         this.description = description;
     }
-
 }

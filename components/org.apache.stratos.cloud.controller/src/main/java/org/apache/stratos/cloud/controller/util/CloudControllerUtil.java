@@ -31,7 +31,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidKubernetesClusterExc
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidKubernetesMasterException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.common.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;

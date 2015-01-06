@@ -27,7 +27,7 @@ import org.apache.stratos.cloud.controller.iaases.mock.MockPartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.mock.service.config.MockIaasConfig;
 import org.apache.stratos.cloud.controller.iaases.mock.service.statistics.generator.MockHealthStatisticsGenerator;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.common.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 

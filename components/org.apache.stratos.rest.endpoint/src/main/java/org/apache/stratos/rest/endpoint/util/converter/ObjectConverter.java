@@ -48,6 +48,8 @@ import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBea
 import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.common.beans.DependencyDefinitions;
+import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.ArtifactRepository;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
@@ -1117,9 +1119,10 @@ public class ObjectConverter {
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
         applicationContext.setApplicationId(applicationDefinition.getApplicationId());
+        applicationContext.setAlias(applicationDefinition.getAlias());
+        applicationContext.setMultiTenant(applicationDefinition.isMultiTenant());
         applicationContext.setName(applicationDefinition.getName());
         applicationContext.setDescription(applicationDefinition.getDescription());
-        applicationContext.setAlias(applicationDefinition.getAlias());
         applicationContext.setStatus(applicationDefinition.getStatus());
 
         // convert and set components
@@ -1155,10 +1158,11 @@ public class ObjectConverter {
 
         ApplicationDefinition applicationDefinition = new ApplicationDefinition();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
+        applicationDefinition.setAlias(applicationContext.getAlias());
+        applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
         applicationDefinition.setName(applicationContext.getName());
         applicationDefinition.setDescription(applicationContext.getDescription());
         applicationDefinition.setStatus(applicationContext.getStatus());
-        applicationDefinition.setAlias(applicationContext.getAlias());
 
         // convert and set components
         if (applicationContext.getComponents() != null) {
@@ -1252,11 +1256,20 @@ public class ObjectConverter {
         subscribableInfo.setDeploymentPolicy(subscribableInfoContext.getDeploymentPolicy());
         subscribableInfo.setMinMembers(subscribableInfoContext.getMinMembers());
         subscribableInfo.setMaxMembers(subscribableInfoContext.getMaxMembers());
-        subscribableInfo.setPrivateRepo(subscribableInfoContext.getPrivateRepo());
         subscribableInfo.setProperty(convertStubPropertiesToPropertyBeanList(subscribableInfoContext.getProperties()));
-        subscribableInfo.setRepoPassword(subscribableInfoContext.getRepoPassword());
-        subscribableInfo.setRepoUsername(subscribableInfoContext.getRepoUsername());
-        subscribableInfo.setRepoUrl(subscribableInfoContext.getRepoUrl());
+
+        if(subscribableInfoContext.getArtifactRepositoryContext() != null) {
+            ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
+
+            ArtifactRepositoryBean artifactRepository = new ArtifactRepositoryBean();
+            artifactRepository.setAlias(artifactRepositoryContext.getAlias());
+            artifactRepository.setRepoUrl(artifactRepositoryContext.getRepoUrl());
+            artifactRepository.setPrivateRepo(artifactRepositoryContext.getPrivateRepo());
+            artifactRepository.setRepoUsername(artifactRepositoryContext.getRepoUsername());
+            artifactRepository.setRepoPassword(artifactRepositoryContext.getRepoPassword());
+
+            subscribableInfo.setArtifactRepository(artifactRepository);
+        }
         return subscribableInfo;
     }
 
@@ -1298,18 +1311,28 @@ public class ObjectConverter {
 
 	private static SubscribableInfoContext convertSubscribableInfo(
             SubscribableInfo subscribableInfo) {
-		SubscribableInfoContext infoContext = new SubscribableInfoContext();
+
+        SubscribableInfoContext infoContext = new SubscribableInfoContext();
 		infoContext.setAlias(subscribableInfo.getAlias());
 		infoContext.setAutoscalingPolicy(subscribableInfo.getAutoscalingPolicy());
 		infoContext.setDependencyAliases(subscribableInfo.getDependencyAliases());
 		infoContext.setDeploymentPolicy(subscribableInfo.getDeploymentPolicy());
 		infoContext.setMaxMembers(subscribableInfo.getMaxMembers());
 		infoContext.setMinMembers(subscribableInfo.getMinMembers());
-		infoContext.setRepoPassword(subscribableInfo.getRepoPassword());
-		infoContext.setRepoUrl(subscribableInfo.getRepoUrl());
-		infoContext.setRepoUsername(subscribableInfo.getRepoUsername());
-		infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
-		
+
+        if(subscribableInfo.getArtifactRepository() != null) {
+            ArtifactRepositoryBean artifactRepository = subscribableInfo.getArtifactRepository();
+
+            ArtifactRepositoryContext artifactRepositoryContext = new ArtifactRepositoryContext();
+            artifactRepositoryContext.setAlias(infoContext.getAlias());
+            artifactRepositoryContext.setPrivateRepo(artifactRepository.isPrivateRepo());
+            artifactRepositoryContext.setRepoUrl(artifactRepository.getRepoUrl());
+            artifactRepositoryContext.setRepoUsername(artifactRepository.getRepoUsername());
+            artifactRepositoryContext.setRepoPassword(artifactRepository.getRepoPassword());
+            infoContext.setArtifactRepositoryContext(artifactRepositoryContext);
+        }
+
+        infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
 	    return infoContext;
     }
 
@@ -1358,7 +1381,7 @@ public class ObjectConverter {
             groupContext.setAlias(groupDefinition.getAlias());
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
-            groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled);
+            groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled());
            
             // Groups
             if (groupDefinition.getGroups() != null) {
@@ -1421,18 +1444,6 @@ public class ObjectConverter {
             }
         }
         return applicationInstanceList;
-    }
-
-    public static GroupBean convertGroupToGroupBean(Group group) {
-        if (group == null) {
-            return null;
-        }
-
-        GroupBean groupBean = new GroupBean();
-        groupBean.setInstances(convertGroupInstancesToInstances(group));
-        groupBean.setAlias(group.getUniqueIdentifier());
-        groupBean.setAutoScalingPolicy(group.getAutoscalingPolicy());
-        return groupBean;
     }
 
     public static List<GroupInstanceBean> convertGroupToGroupInstancesBean(String instanceId, Group group) {
@@ -1680,5 +1691,54 @@ public class ObjectConverter {
         volume.setVolumeId(stubVolume.getVolumeId());
         volume.setSize(stubVolume.getSize());
         return volume;
+    }
+
+    public static ApplicationSignUp convertApplicationSignUpBeanToStubApplicationSignUp(ApplicationSignUpBean applicationSignUpBean) {
+        ApplicationSignUp applicationSignUp = new ApplicationSignUp();
+        applicationSignUp.setApplicationId(applicationSignUpBean.getApplicationId());
+
+        if(applicationSignUpBean.getArtifactRepositories() != null) {
+            List<ArtifactRepository> artifactRepositoryList = new ArrayList<ArtifactRepository>();
+            for(ArtifactRepositoryBean artifactRepositoryBean : applicationSignUpBean.getArtifactRepositories()) {
+                ArtifactRepository artifactRepository = new ArtifactRepository();
+
+                artifactRepository.setAlias(artifactRepositoryBean.getAlias());
+                artifactRepository.setPrivateRepo(artifactRepositoryBean.isPrivateRepo());
+                artifactRepository.setRepoUrl(artifactRepositoryBean.getRepoUrl());
+                artifactRepository.setRepoUsername(artifactRepositoryBean.getRepoUsername());
+                artifactRepository.setRepoPassword(artifactRepositoryBean.getRepoPassword());
+
+                artifactRepositoryList.add(artifactRepository);
+            }
+            ArtifactRepository[] artifactRepositoryArray = artifactRepositoryList.toArray(new ArtifactRepository[
+                    artifactRepositoryList.size()]);
+            applicationSignUp.setArtifactRepositories(artifactRepositoryArray);
+        }
+        return applicationSignUp;
+    }
+
+    public static ApplicationSignUpBean convertStubApplicationSignUpToApplicationSignUpBean(ApplicationSignUp applicationSignUp) {
+        ApplicationSignUpBean applicationSignUpBean = new ApplicationSignUpBean();
+        applicationSignUpBean.setApplicationId(applicationSignUp.getApplicationId());
+        applicationSignUpBean.setSignUpId(applicationSignUp.getSignUpId());
+
+        if(applicationSignUp.getArtifactRepositories() != null) {
+            List<ArtifactRepositoryBean> artifactRepositoryBeanList = new ArrayList<ArtifactRepositoryBean>();
+            for(ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                if(artifactRepository != null) {
+                    ArtifactRepositoryBean artifactRepositoryBean = new ArtifactRepositoryBean();
+
+                    artifactRepositoryBean.setAlias(artifactRepository.getAlias());
+                    artifactRepositoryBean.setPrivateRepo(artifactRepository.getPrivateRepo());
+                    artifactRepositoryBean.setRepoUrl(artifactRepository.getRepoUrl());
+                    artifactRepositoryBean.setRepoUsername(artifactRepository.getRepoUsername());
+                    artifactRepositoryBean.setRepoPassword(artifactRepository.getRepoPassword());
+
+                    artifactRepositoryBeanList.add(artifactRepositoryBean);
+                }
+            }
+            applicationSignUpBean.setArtifactRepositories(artifactRepositoryBeanList);
+        }
+        return applicationSignUpBean;
     }
 }

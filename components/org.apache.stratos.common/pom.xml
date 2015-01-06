@@ -46,7 +46,8 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.common.*,
-                            org.apache.stratos.common.clustering.*
+                            org.apache.stratos.common.client.*,
+                            org.apache.stratos.common.clustering.*,
                             org.apache.stratos.common.statistics.publisher.*,
                         </Export-Package>
                         <Import-Package>
@@ -84,6 +85,11 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.autoscaler.service.stub</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.manager.service.stub</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

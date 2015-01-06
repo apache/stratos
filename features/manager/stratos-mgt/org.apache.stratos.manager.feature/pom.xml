@@ -58,6 +58,9 @@
                         <configuration>
                             <id>org.apache.stratos.manager</id>
                             <propertiesFile>../../../../etc/feature.properties</propertiesFile>
+                            <bundles>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}</bundleDef>
+                            </bundles>
                             <includedFeatures>
                                 <includedFeatureDef>org.apache.stratos:org.apache.stratos.manager.server.feature:${project.version}</includedFeatureDef>
                             </includedFeatures>

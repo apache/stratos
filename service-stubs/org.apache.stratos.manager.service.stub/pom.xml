@@ -26,9 +26,9 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>org.apache.stratos.manager.stub</artifactId>
+    <artifactId>org.apache.stratos.manager.service.stub</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache Stratos - Cartridge app Management Stub</name>
+    <name>Apache Stratos - Manager Service Stub</name>
     <url>http://apache.org</url>
 
     <build>
@@ -46,14 +46,14 @@
                         <configuration>
                             <tasks>
                                 <path id="wsdl2java.classpath">
-				    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar" />
+                                    <pathelement location="${settings.localRepository}/org/apache/ws/commons/axiom/wso2/axiom/${axiom.wso2.version}/axiom-${axiom.wso2.version}.jar" />
                                     <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2-client/${axis2.wso2.client.version}/axis2-client-${axis2.wso2.client.version}.jar" />
                                     <pathelement location="${settings.localRepository}/org/apache/axis2/wso2/axis2/${axis2.wso2.version}/axis2-${axis2.wso2.version}.jar" />
                                 </path>
                                 <java classname="org.apache.axis2.wsdl.WSDL2Java" fork="true">
-                                    <arg line="-uri src/main/resources/ApplicationManagementService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.manager.stub -ns2p http://exception.manager.stratos.apache.org/xsd=org.apache.stratos.manager.exception,http://dto.manager.stratos.apache.org/xsd=org.apache.stratos.manager.dto" />
+                                    <arg line="-uri src/main/resources/StratosManagerService.wsdl -u -uw -o target/generated-code -p org.apache.stratos.manager.service.stub -ns2p http://impl.services.manager.stratos.apache.org=org.apache.stratos.manager.service.stub.impl,http://domain.manager.stratos.apache.org/xsd=org.apache.stratos.manager.service.stub.domain,http://exception.manager.stratos.apache.org/xsd=org.apache.stratos.manager.service.stub.exceptions" />
                                     <classpath refid="wsdl2java.classpath" />
-				    <classpath refid="maven.dependency.classpath" />
+				                    <classpath refid="maven.dependency.classpath" />
                                     <classpath refid="maven.compile.classpath" />
                                     <classpath refid="maven.runtime.classpath" />
                                 </java>
@@ -94,15 +94,13 @@
                         <Private-Package>
                         </Private-Package>
                         <Export-Package>
-                            org.apache.stratos.manager.stub.*; version="${project.version}",
-                            org.apache.stratos.manager.service.*; version="${project.version}",
-                            org.apache.stratos.manager.dto.*; version="${project.version}",
+                            org.apache.stratos.manager.service.stub.*; version="${project.version}",
+                            org.apache.stratos.manager.service.stub.domain.*; version="${project.version}",
                             org.apache.stratos.manager.exception.*; version="${project.version}"
                         </Export-Package>
                         <Import-Package>
-                            !org.apache.stratos.manager.stub.*
+                            *;resolution:=optional
                         </Import-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -122,22 +120,5 @@
             <groupId>wsdl4j.wso2</groupId>
             <artifactId>wsdl4j</artifactId>
         </dependency>
-        <!--dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.ws.commons.schema.wso2</groupId>
-            <artifactId>XmlSchema</artifactId>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
-            <artifactId>axiom</artifactId>
-       </dependency>
-       <dependency>
-            <groupId>org.apache.neethi.wso2</groupId>
-            <artifactId>neethi</artifactId>
-       </dependency-->
     </dependencies>
-
 </project>

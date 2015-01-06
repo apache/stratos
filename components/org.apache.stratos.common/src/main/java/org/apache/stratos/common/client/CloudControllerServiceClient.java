@@ -40,12 +40,15 @@ public class CloudControllerServiceClient {
 	private static final Log log = LogFactory.getLog(CloudControllerServiceClient.class);
     private static volatile CloudControllerServiceClient instance;
 
-	public CloudControllerServiceClient(String epr) throws AxisFault {
+	private CloudControllerServiceClient(String epr) throws AxisFault {
 
-		String ccSocketTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT)
-                == null ? "300000" : System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT);
-		String ccConnectionTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT)
-                == null ? "300000" : System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT);
+		String ccSocketTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT) == null ?
+                StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
+                System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_SOCKET_TIMEOUT);
+
+        String ccConnectionTimeout = System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT) == null ?
+                StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
+                System.getProperty(StratosConstants.CLOUD_CONTROLLER_CLIENT_CONNECTION_TIMEOUT);
 		
 		try {
 			stub = new CloudControllerServiceStub(epr);

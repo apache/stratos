@@ -40,12 +40,15 @@ public class AutoscalerServiceClient {
     private static final Log log = LogFactory.getLog(AutoscalerServiceClient.class);
     private static volatile AutoscalerServiceClient serviceClient;
 
-    public AutoscalerServiceClient(String epr) throws AxisFault {
+    private AutoscalerServiceClient(String epr) throws AxisFault {
 
-        String autosclaerSocketTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT)
-                == null ? "300000" : System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT);
-        String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT)
-                == null ? "300000" : System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT);
+        String autosclaerSocketTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT) == null ?
+                StratosConstants.DEFAULT_CLIENT_SOCKET_TIMEOUT :
+                System.getProperty(StratosConstants.AUTOSCALER_CLIENT_SOCKET_TIMEOUT);
+
+        String autosclaerConnectionTimeout = System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT) == null ?
+                StratosConstants.DEFAULT_CLIENT_CONNECTION_TIMEOUT :
+                System.getProperty(StratosConstants.AUTOSCALER_CLIENT_CONNECTION_TIMEOUT);
 
         try {
             stub = new AutoScalerServiceStub(epr);

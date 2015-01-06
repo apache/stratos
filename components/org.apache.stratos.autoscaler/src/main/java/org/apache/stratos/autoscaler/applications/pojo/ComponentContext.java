@@ -26,9 +26,7 @@ public class ComponentContext implements Serializable {
     private static final long serialVersionUID = -3841830873207967496L;
 
     private GroupContext[] groupContexts;
-    
     private CartridgeContext[] cartridgeContexts;
-
     private DependencyContext dependencyContext;
 
     public GroupContext[] getGroupContexts() {

@@ -19,7 +19,7 @@
  *
 */
 
-package org.apache.stratos.common.registry;
+package org.apache.stratos.cloud.controller.registry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +32,7 @@ import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
-import java.io.Serializable;
+import java.io.*;
 
 /**
  * Registry manager provides functionality for persisting resources in the registry and reading them back.
@@ -69,7 +69,7 @@ public class RegistryManager {
             registry.beginTransaction();
 
             Resource nodeResource = registry.newResource();
-            nodeResource.setContent(Serializer.serializeToByteArray(serializableObject));
+            nodeResource.setContent(serializeToByteArray(serializableObject));
             registry.put(resourcePath, nodeResource);
 
             registry.commitTransaction();
@@ -90,7 +90,7 @@ public class RegistryManager {
      * Returns an object stored in the given resource path.
      * @param resourcePath
      * @return
-     * @throws RegistryException
+     * @throws org.wso2.carbon.registry.core.exceptions.RegistryException
      */
     public synchronized Object read(String resourcePath) throws RegistryException {
         try {
@@ -101,15 +101,15 @@ public class RegistryManager {
         	ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             Resource resource = registry.get(resourcePath);
             Object content = resource.getContent();
-            if (content != null) {
+            if ((content != null) && (content instanceof byte[])) {
                 try {
-                    return Deserializer.deserializeFromByteArray((byte[])content);
+                    return deserializeFromByteArray((byte[]) content);
                 } catch (Exception e) {
                     log.error("Could not de-serialize object stored in registry", e);
                     throw new RuntimeException(e);
                 }
             }
-            return null;
+            return content;
         } catch (ResourceNotFoundException ignore) {
             return null;
         } catch (RegistryException e) {
@@ -119,7 +119,74 @@ public class RegistryManager {
         }
     }
 
+    public synchronized void remove(String resourcePath) throws RegistryException{
+        Registry registry = getRegistry();
+
+        try {
+            registry.beginTransaction();
+            registry.delete(resourcePath);
+            registry.commitTransaction();
+        } catch (RegistryException e) {
+            try {
+                registry.rollbackTransaction();
+            } catch (RegistryException e1) {
+                if (log.isErrorEnabled()) {
+                    log.error("Could not rollback transaction", e);
+                }
+            }
+            log.error("Could not remove registry resource: [resource-path] " + resourcePath);
+        }
+    }
+
     private UserRegistry getRegistry() throws RegistryException {
         return ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
+    }
+
+    /**
+     * Serialize an object to a byte array.
+     * @param serializableObject
+     * @return
+     * @throws java.io.IOException
+     */
+    private byte[]  serializeToByteArray(Serializable serializableObject) throws IOException {
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(serializableObject);
+
+            return bos.toByteArray();
+
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            bos.close();
+        }
+    }
+
+    /**
+     * Deserialize a byte array and retrieve the object.
+     * @param bytes bytes to be deserialized
+     * @return the deserialized {@link Object}
+     * @throws Exception if the deserialization is failed.
+     */
+    private Object deserializeFromByteArray(byte[] bytes) throws Exception {
+
+        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+        ObjectInput in = null;
+        try {
+            in = new ObjectInputStream(bis);
+            Object o = in.readObject();
+
+            return o;
+
+        } finally {
+            bis.close();
+            if (in != null) {
+                in.close();
+            }
+        }
     }
 }

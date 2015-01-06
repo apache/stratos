@@ -19,8 +19,6 @@
 
 package org.apache.stratos.common.beans;
 
-import org.apache.stratos.common.beans.PropertyBean;
-
 import java.io.Serializable;
 import java.util.List;
 
@@ -34,13 +32,10 @@ public class SubscribableInfo implements Serializable {
 	private String alias;
     private String deploymentPolicy;
     private String autoscalingPolicy;
-    private String repoUrl;
-    private boolean privateRepo;
-    private String repoUsername;
     private int maxMembers;
     private int minMembers;
-    private String repoPassword;
     private String[] dependencyAliases;
+    private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
 
     public String getAlias() {
@@ -65,38 +60,6 @@ public class SubscribableInfo implements Serializable {
 
     public void setAutoscalingPolicy(String autoscalingPolicy) {
         this.autoscalingPolicy = autoscalingPolicy;
-    }
-
-    public String getRepoUrl() {
-        return repoUrl;
-    }
-
-    public void setRepoUrl(String repoUrl) {
-        this.repoUrl = repoUrl;
-    }
-
-    public boolean isPrivateRepo() {
-        return privateRepo;
-    }
-
-    public void setPrivateRepo(boolean privateRepo) {
-        this.privateRepo = privateRepo;
-    }
-
-    public String getRepoUsername() {
-        return repoUsername;
-    }
-
-    public void setRepoUsername(String repoUsername) {
-        this.repoUsername = repoUsername;
-    }
-
-    public String getRepoPassword() {
-        return repoPassword;
-    }
-
-    public void setRepoPassword(String repoPassword) {
-        this.repoPassword = repoPassword;
     }
 
     public String[] getDependencyAliases() {
@@ -129,5 +92,13 @@ public class SubscribableInfo implements Serializable {
 
     public void setMinMembers(int minMembers) {
         this.minMembers = minMembers;
+    }
+
+    public ArtifactRepositoryBean getArtifactRepository() {
+        return artifactRepository;
+    }
+
+    public void setArtifactRepository(ArtifactRepositoryBean artifactRepository) {
+        this.artifactRepository = artifactRepository;
     }
 }

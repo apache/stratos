@@ -65,8 +65,8 @@ public class ApplicationBuilder {
         }
     }
 
-    public static synchronized void handleApplicationCreated(Application application,
-                                                             Set<ApplicationClusterContext> appClusterContexts) {
+    public static synchronized void handleApplicationCreatedEvent(Application application,
+                                                                  Set<ApplicationClusterContext> appClusterContexts) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());

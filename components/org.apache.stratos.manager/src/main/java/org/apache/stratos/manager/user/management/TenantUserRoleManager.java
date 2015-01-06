@@ -58,7 +58,7 @@ public class TenantUserRoleManager implements TenantMgtListener {
                 UserStoreManager userStoreManager = userRealm.getUserStoreManager();
                 //Call Util class to create the user role
 
-                UserRoleCreator.createTenantUserRole(userStoreManager);
+                UserRoleCreator.createInternalUserRole(userStoreManager);
 
             } catch (UserStoreException e) {
                 String msg = "Error while retrieving the user store for tenant: "+ tenantInfo.getTenantDomain();

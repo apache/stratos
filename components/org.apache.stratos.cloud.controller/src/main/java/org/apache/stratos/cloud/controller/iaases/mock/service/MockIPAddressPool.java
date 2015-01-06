@@ -21,7 +21,7 @@ package org.apache.stratos.cloud.controller.iaases.mock.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.registry.RegistryManager;
+import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 import java.io.Serializable;

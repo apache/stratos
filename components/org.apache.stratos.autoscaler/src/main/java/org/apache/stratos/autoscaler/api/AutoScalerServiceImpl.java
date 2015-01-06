@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -50,6 +50,9 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.ArtifactRepository;
 import org.apache.stratos.messaging.domain.applications.Application;
 import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.applications.Group;
@@ -110,14 +113,14 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                             CloudControllerClient.getInstance().validateDeploymentPolicy(
                                     clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
                         } else {
-                            String msg = "Error while retrieving the group/cluster for the Deployment " +
+                            String msg = "Error while retrieving the group/cluster for the deployment " +
                                     "policy: " + alias;
                             log.error(msg);
                             throw new TopologyInConsistentException(msg);
                         }
                     }
                 } else {
-                    String msg = "Error while retrieving the application for the Deployment policy: " +
+                    String msg = "Error while retrieving the application for the deployment policy: " +
                             deploymentPolicy.getApplicationId();
                     log.error(msg);
                     throw new TopologyInConsistentException(msg);
@@ -200,7 +203,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
 
             ApplicationParser applicationParser = new DefaultApplicationParser();
             Application application = applicationParser.parse(applicationContext);
-            ApplicationBuilder.handleApplicationCreated(application, applicationParser.getApplicationClusterContexts());
+            ApplicationBuilder.handleApplicationCreatedEvent(application, applicationParser.getApplicationClusterContexts());
 
             try {
                 // Update kubernetes cluster ids
@@ -209,6 +212,9 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 validateDeploymentPolicy(deploymentPolicy);
                 // Add deployment policy
                 PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
+                // Add application signup in stratos manager
+                addApplicationSignUp(applicationContext);
+
                 applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             } catch (InvalidPolicyException e) {
@@ -217,7 +223,7 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                 throw new RuntimeException(message, e);
             }
 
-            //Check whether all the clusters are there
+            // Check whether all the clusters are there
             boolean allClusterInitialized = false;
             try {
                 ApplicationHolder.acquireReadLock();
@@ -251,6 +257,72 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
             String message = "Application deployment failed";
             log.error(message, e);
             throw new RuntimeException(message, e);
+        }
+    }
+
+    private void addApplicationSignUp(ApplicationContext applicationContext) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Adding application signup: [application-id] %s",
+                        applicationContext.getApplicationId()));
+            }
+
+            ComponentContext components = applicationContext.getComponents();
+            if (components != null) {
+                ApplicationSignUp applicationSignUp = new ApplicationSignUp();
+                applicationSignUp.setApplicationId(applicationContext.getApplicationId());
+                applicationSignUp.setTenantId(applicationContext.getTenantId());
+
+                List<ArtifactRepository> artifactRepositoryList = new ArrayList<ArtifactRepository>();
+                CartridgeContext[] cartridgeContexts = components.getCartridgeContexts();
+                if (cartridgeContexts != null) {
+                    updateArtifactRepositoryList(artifactRepositoryList, cartridgeContexts);
+                }
+
+                GroupContext[] groupContexts = components.getGroupContexts();
+                if (groupContexts != null) {
+                    for (GroupContext groupContext : groupContexts) {
+                        if (groupContext != null) {
+                            updateArtifactRepositoryList(artifactRepositoryList, groupContext.getCartridgeContexts());
+                        }
+                    }
+                }
+
+                ArtifactRepository[] artifactRepositoryArray = artifactRepositoryList.toArray(
+                        new ArtifactRepository[artifactRepositoryList.size()]);
+                applicationSignUp.setArtifactRepositories(artifactRepositoryArray);
+
+                StratosManagerServiceClient serviceClient =  StratosManagerServiceClient.getInstance();
+                serviceClient.addApplicationSignUp(applicationSignUp);
+
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Application signup added successfully: [application-id] %s",
+                            applicationContext.getApplicationId()));
+                }
+            }
+        } catch (Exception e) {
+            String message = "Could not add application signup";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList, CartridgeContext[] cartridgeContexts) {
+        for(CartridgeContext cartridgeContext : cartridgeContexts) {
+            SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+            ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
+            if(artifactRepositoryContext != null) {
+
+                ArtifactRepository artifactRepository = new ArtifactRepository();
+                artifactRepository.setCartridgeType(cartridgeContext.getType());
+                artifactRepository.setAlias(subscribableInfoContext.getAlias());
+                artifactRepository.setRepoUrl(artifactRepositoryContext.getRepoUrl());
+                artifactRepository.setPrivateRepo(artifactRepositoryContext.isPrivateRepo());
+                artifactRepository.setRepoUsername(artifactRepositoryContext.getRepoUsername());
+                artifactRepository.setRepoPassword(artifactRepositoryContext.getRepoPassword());
+
+                artifactRepositoryList.add(artifactRepository);
+            }
         }
     }
 

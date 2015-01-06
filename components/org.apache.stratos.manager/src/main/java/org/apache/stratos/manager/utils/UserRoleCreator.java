@@ -22,10 +22,13 @@ package org.apache.stratos.manager.utils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.wso2.carbon.user.api.Permission;
 import org.wso2.carbon.user.api.UserStoreException;
 import org.wso2.carbon.user.api.UserStoreManager;
+import org.wso2.carbon.user.core.UserRealm;
+import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.mgt.UserMgtConstants;
 
 public class UserRoleCreator {
@@ -33,16 +36,16 @@ public class UserRoleCreator {
     private static final Log log = LogFactory.getLog(UserRoleCreator.class);
 
     /**
-     * Creating a Internal/user Role at Carbon Server Start-up
+     * Creating Internal/user Role at Carbon Server Start-up
      */
-    public static void createTenantUserRole(UserStoreManager manager) throws UserManagerException {
+    public static void createInternalUserRole(UserStoreManager userStoreManager) throws UserManagerException {
 
         String userRole = "Internal/user";
 
         try {
-            if (!manager.isExistingRole(userRole)) {
+            if (!userStoreManager.isExistingRole(userRole)) {
                 if (log.isDebugEnabled()) {
-                    log.debug("Creating new role: " + userRole);
+                    log.debug("Creating internal user role: " + userRole);
                 }
                 //Set permissions to the Internal/user role
                 Permission[] tenantUserPermissions = new Permission[]{new Permission(PermissionConstants.VIEW_AUTOSCALING_POLICY, UserMgtConstants.EXECUTE_ACTION),
@@ -61,7 +64,7 @@ public class UserRoleCreator {
                 };
 
                 String[] userList = new String[]{};
-                manager.addRole(userRole, userList, tenantUserPermissions);
+                userStoreManager.addRole(userRole, userList, tenantUserPermissions);
             }
         } catch (UserStoreException e) {
             String msg = "Error while creating the role: " + userRole;
