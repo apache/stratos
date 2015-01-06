@@ -209,7 +209,6 @@ public class ApplicationUtils {
         PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
                 cartridgeInfo.getType(), basicPayloadData);
 
-        boolean isDeploymentParam = false;
         // get the payload parameters defined in the cartridgeInfo definition file for this cartridgeInfo type
         if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
@@ -228,7 +227,8 @@ public class ApplicationUtils {
                         String payloadParamName = propertyEntry.getName();
                         String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
                         if ("DEPLOYMENT".equals(payloadParamSubstring)) {
-                            isDeploymentParam = true;
+                            payloadData.getBasicPayloadData().setDeployment(payloadParamSubstring);
+                            continue;
                         }
                         payloadData.add(payloadParamSubstring, propertyEntry.getValue());
                     }
@@ -246,13 +246,6 @@ public class ApplicationUtils {
 				}
 			}
 		}
-        
-        // DEPLOYMENT payload param must be set because its used by puppet agent
-        // to generate the hostname. Therefore, if DEPLOYMENT is not set in cartridgeInfo properties,
-        // adding the DEPLOYMENT="default" param
-        if(!isDeploymentParam) {
-            payloadData.add("DEPLOYMENT", "default");
-        }
 
         if(!StringUtils.isEmpty(oauthToken)){
             payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oauthToken);

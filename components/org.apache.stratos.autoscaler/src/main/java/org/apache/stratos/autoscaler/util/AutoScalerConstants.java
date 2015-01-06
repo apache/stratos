@@ -57,4 +57,9 @@ public final class AutoScalerConstants {
      */
     public static final int PORT_RANGE_MAX = 65535;
     public static final int PORT_RANGE_MIN = 1;
+    
+    /**
+     * Payload values
+     */
+    public static final String PAYLOAD_DEPLOYMENT = "default";
 }
