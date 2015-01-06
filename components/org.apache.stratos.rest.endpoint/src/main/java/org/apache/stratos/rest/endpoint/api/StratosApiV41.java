@@ -437,7 +437,9 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationSignUps(@PathParam("applicationId") String applicationId) throws RestAPIException {
         List<ApplicationSignUpBean> applicationSignUpBeans = StratosApiV41Utils.getApplicationSignUps(applicationId);
-        return Response.ok(applicationSignUpBeans).build();
+        ApplicationSignUpBean[] applicationSignUpBeansArray = applicationSignUpBeans.toArray(
+                new ApplicationSignUpBean[applicationSignUpBeans.size()]);
+        return Response.ok(applicationSignUpBeansArray).build();
     }
     
     /**
