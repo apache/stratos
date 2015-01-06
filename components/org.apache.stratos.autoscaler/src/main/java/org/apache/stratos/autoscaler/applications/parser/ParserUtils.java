@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 import org.apache.stratos.messaging.domain.applications.StartupOrder;
@@ -74,7 +73,9 @@ public class ParserUtils {
         for (String commaSeparatedStartupOrder : startupOrderArr) {
             // convertStartupOrder all Startup Orders to aliases-based
             List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
-            startupOrders.add(getStartupOrder(components, groupContext));
+	        StartupOrder startupOrder=new StartupOrder(components);
+	        startupOrders.add(startupOrder);
+
         }
 
         return startupOrders;

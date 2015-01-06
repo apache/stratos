@@ -295,7 +295,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      */
     private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions(
     		String appId, int tenantId, String key, String groupName,
-            List<CartridgeContext> cartridgeContextList,String[] dependencyOrder) throws ApplicationDefinitionException {
+            List<CartridgeContext> cartridgeContextList,Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException {
 
     	 Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
 
@@ -303,6 +303,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 		     List<String> dependencyClusterIDs = new ArrayList<String>();
     		 String cartridgeType = cartridgeContext.getType();
     		 String subscriptionAlias = cartridgeContext.getSubscribableInfoContext().getAlias();
+
 
     		 // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
              CartridgeInfo cartridgeInfo =  getCartridge(cartridgeType);
@@ -323,15 +324,22 @@ public class DefaultApplicationParser implements ApplicationParser {
              String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
              String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
 
+		     // add relevant information to the map
+		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+		     clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+		     clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+
 		     //Get dependency cluster id
-		     if (dependencyOrder.length > 0) {
-			     for (int i = 0; i < dependencyOrder.length; i++) {
-				     String[] dependencies = dependencyOrder[i].split(",");
-				     if (dependencies[dependencies.length - 1].equals("cartridge."+subscriptionAlias)) {
-					     ClusterDataHolder dataHolder = clusterDataMap.get(dependencies[i]);
-					     dependencyClusterIDs.add(dataHolder.getClusterId());
+		     for(StartupOrder startupOrder:dependencyOrder){
+			     for(String startupOrderComponent:startupOrder.getStartupOrderComponentList()){
+				     ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
+				     dependencyClusterIDs.add(dataHolder.getClusterId());
+				     if(startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))){
+					    break;
 				     }
 			     }
+
 		     }
 
 		    String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
@@ -348,11 +356,7 @@ public class DefaultApplicationParser implements ApplicationParser {
              appClusterCtxt.setProperties(cartridgeContext.getSubscribableInfoContext().getProperties());
              this.applicationClusterContexts.add(appClusterCtxt);
 
-             // add relevant information to the map
-             ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
-             clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
-             clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
-             clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+
         }
 
 
@@ -480,8 +484,10 @@ public class DefaultApplicationParser implements ApplicationParser {
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
         String []  startupOrders = getStartupOrderForGroup(groupCtxt.getName(),serviceGroup);
+	    Set<StartupOrder> setStartUpOrder=null;
         if (startupOrders != null) {
-            dependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders, groupCtxt));
+	        setStartUpOrder= ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
+            dependencyOrder.setStartupOrders(setStartUpOrder);
         }
         String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
         if(scaleDependents != null) {
@@ -496,7 +502,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         // get group level CartridgeContexts
         if (groupCtxt.getCartridgeContexts() != null) {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
-                    Arrays.asList(groupCtxt.getCartridgeContexts()),startupOrders);
+                    Arrays.asList(groupCtxt.getCartridgeContexts()),setStartUpOrder);
             group.setClusterData(clusterDataMap);
         }
 

@@ -298,6 +298,7 @@ public class ApplicationUtils {
 
         basicPayloadData.setTenantRange("*");
         basicPayloadData.setDependencyAliases(dependencyAliases);
+	    basicPayloadData.setDependencyClusterIDs(dependencyCLusterIDs);
 //        if(cartridge.getExportingProperties() != null){
 //            basicPayloadData.setExportingProperties(cartridge.getExportingProperties());
 //            log.info("testing1 getExportingProperties " + cartridge.getExportingProperties());
