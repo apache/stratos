@@ -321,8 +321,8 @@ public class BasicPayloadData implements Serializable {
 
 		StringBuilder dependencyClusterIDsPayload = new StringBuilder();
 		for (int i = 0; i < dependencyClusterIDs.length; i++) {
-			dependencyClusterIDsPayload.append(dependencyAliases[i]);
-			if (i != dependencyAliases.length - 1) {
+			dependencyClusterIDsPayload.append(dependencyClusterIDs[i]);
+			if (i != dependencyClusterIDs.length - 1) {
 				dependencyClusterIDsPayload.append("|");
 			}
 		}

@@ -324,26 +324,8 @@ public class DefaultApplicationParser implements ApplicationParser {
              String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
              String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
 
-		     // add relevant information to the map
-		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
-		     clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
-		     clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
-		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
-
-		     //Get dependency cluster id
-		     for(StartupOrder startupOrder:dependencyOrder){
-			     for(String startupOrderComponent:startupOrder.getStartupOrderComponentList()){
-				     ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
-				     dependencyClusterIDs.add(dataHolder.getClusterId());
-				     if(startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))){
-					    break;
-				     }
-			     }
-
-		     }
-
-		    String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
-		    arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
+		     String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
+		     arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
 
 		     // create and collect this cluster's information
              ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
@@ -355,6 +337,24 @@ public class DefaultApplicationParser implements ApplicationParser {
              appClusterCtxt.setAutoscalePolicyName(cartridgeContext.getSubscribableInfoContext().getAutoscalingPolicy());
              appClusterCtxt.setProperties(cartridgeContext.getSubscribableInfoContext().getProperties());
              this.applicationClusterContexts.add(appClusterCtxt);
+
+		     // add relevant information to the map
+		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+		     clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+		     clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+
+		     //Get dependency cluster id
+		     for (StartupOrder startupOrder : dependencyOrder) {
+			     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
+				     ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
+				     dependencyClusterIDs.add(dataHolder.getClusterId());
+				     if (startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))) {
+					     break;
+				     }
+			     }
+
+		     }
 
 
         }
