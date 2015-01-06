@@ -25,6 +25,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTenantEventReceiver;
 import org.apache.stratos.load.balancer.messaging.LoadBalancerTopologyEventReceiver;
@@ -89,7 +90,7 @@ public class LoadBalancerServiceComponent {
     private LoadBalancerTopologyEventReceiver topologyReceiver;
     private LoadBalancerTenantEventReceiver tenantReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
-	private static final String STRATOS_MANAGER = "Stratos_manager";
+	private static final String LOAD_BALANCER_IDENTIFIER = "Load-Balancer";
 	private static final int THREAD_POOL_SIZE = 20;
 	private ExecutorService executorService;
 
@@ -188,7 +189,9 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startTopologyEventReceiver() {
+	    executorService= StratosThreadPool.getExecutorService(LOAD_BALANCER_IDENTIFIER,THREAD_POOL_SIZE);
 	    topologyReceiver = new LoadBalancerTopologyEventReceiver();
+	    topologyReceiver.setExecutorService(executorService);
 	    topologyReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");

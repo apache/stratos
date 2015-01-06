@@ -35,6 +35,8 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Load balancer topology receiver updates load balancer context according to
  * incoming topology events.
@@ -42,7 +44,7 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 public class LoadBalancerTopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerTopologyEventReceiver.class);
-
+	private ExecutorService executorService;
     private TopologyEventReceiver topologyEventReceiver;
     private boolean terminated;
 
@@ -52,7 +54,7 @@ public class LoadBalancerTopologyEventReceiver {
     }
 
     public void execute() {
-
+		topologyEventReceiver.setExecutorService(executorService);
 	    topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
@@ -408,4 +410,12 @@ public class LoadBalancerTopologyEventReceiver {
         topologyEventReceiver.terminate();
         terminated = true;
     }
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
+	}
 }
