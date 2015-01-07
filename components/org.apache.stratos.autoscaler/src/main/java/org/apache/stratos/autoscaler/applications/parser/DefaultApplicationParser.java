@@ -254,6 +254,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             List<CartridgeContext> cartridgeContextList,Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException {
 
     	 Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
+	    Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
     	 for (CartridgeContext cartridgeContext : cartridgeContextList) {
 		     List<String> dependencyClusterIDs = new ArrayList<String>();
@@ -285,20 +286,22 @@ public class DefaultApplicationParser implements ApplicationParser {
              }
 
 		     // add relevant information to the map
-		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
-		     clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
-		     clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
-		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+		     ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
+		     clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
+		     clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
+		     clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
 
 		     //Get dependency cluster id
 		     if (dependencyOrder != null) {
 		    	 for (StartupOrder startupOrder : dependencyOrder) {
 		    		 for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
-		    			 ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
-		    			 dependencyClusterIDs.add(dataHolder.getClusterId());
-		    			 if (startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))) {
-		    				 break;
-		    			 }
+		    			 ClusterDataHolder dataHolder = clusterDataMapByType.get(startupOrderComponent.split("\\.")[1]);
+					     if(dataHolder!=null) {
+						     dependencyClusterIDs.add(dataHolder.getClusterId());
+						     if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
+							     break;
+						     }
+					     }
 		    		 }
 		    		 
 		    	 }
@@ -316,6 +319,12 @@ public class DefaultApplicationParser implements ApplicationParser {
              appClusterCtxt.setAutoscalePolicyName(cartridgeContext.getSubscribableInfoContext().getAutoscalingPolicy());
              appClusterCtxt.setProperties(cartridgeContext.getSubscribableInfoContext().getProperties());
              this.applicationClusterContexts.add(appClusterCtxt);
+
+		     // add relevant information to the map
+		     ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+		     clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+		     clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
          }
          return clusterDataMap;
@@ -673,7 +682,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs);
 
         String textPayload = payloadData.toString();
-		log.debug("Payload :: "+textPayload);
+		log.debug("Payload :: " + textPayload);
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
