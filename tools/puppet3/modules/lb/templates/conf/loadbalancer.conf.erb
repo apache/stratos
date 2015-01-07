@@ -54,6 +54,9 @@ loadbalancer {
     # topology_event_listener_enabled is set to true. This functionality could be used for hosting
     # dedicated load balancers for subscriptions.
     # topology-cluster-filter: cluster-id=cluster-id1,cluster-id2;
+    <% if @dependant_cluster_id and @dependant_cluster_id != 'null' %>
+    topology-cluster-filter: cluster-id=<%= @dependant_cluster_id %>;
+    <% end %>
 
     # Topology member filter
     # Provide load balancer cluster ids in a comma separated list to filter incoming topology events if
