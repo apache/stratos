@@ -1379,6 +1379,39 @@ public class StratosApiV41Utils {
         }
     }
 
+    public static ApplicationSignUpBean getApplicationSignUp(String applicationId, String signUpId) throws RestAPIException {
+        if(StringUtils.isBlank(applicationId)) {
+            throw new RestAPIException("Application id is null");
+        }
+
+        ApplicationDefinition application = getApplication(applicationId);
+        if(application == null) {
+            throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        }
+
+        if(!application.isMultiTenant()) {
+            throw new RestAPIException("Application singups not available for single-tenant applications");
+        }
+
+        if(StringUtils.isBlank(signUpId)) {
+            throw new RestAPIException("Signup id is null");
+        }
+
+        try {
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            ApplicationSignUp applicationSignUp = serviceClient.getApplicationSignUp(signUpId);
+            if(applicationSignUp != null) {
+                return ObjectConverter.convertStubApplicationSignUpToApplicationSignUpBean(applicationSignUp);
+            }
+            return null;
+        } catch (Exception e) {
+            String message = String.format("Could not get application signup: [application-id] %s [sign-up] %s",
+                    applicationId, signUpId);
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
     public static void removeApplicationSignUp(String applicationId, String signUpId) throws RestAPIException {
         if(StringUtils.isBlank(applicationId)) {
             throw new RestAPIException("Application id is null");
