@@ -340,16 +340,18 @@ public class DefaultApplicationParser implements ApplicationParser {
 		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
 		     //Get dependency cluster id
-		     for (StartupOrder startupOrder : dependencyOrder) {
-			     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
-				     ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
-				     dependencyClusterIDs.add(dataHolder.getClusterId());
-				     if (startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))) {
-					     break;
-				     }
-			     }
-
-		     }
+		     if (dependencyOrder != null) {
+		    	 for (StartupOrder startupOrder : dependencyOrder) {
+		    		 for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
+		    			 ClusterDataHolder dataHolder = clusterDataMap.get(startupOrderComponent.split("\\.")[1]);
+		    			 dependencyClusterIDs.add(dataHolder.getClusterId());
+		    			 if (startupOrderComponent.equals("cartridge.".concat(subscriptionAlias))) {
+		    				 break;
+		    			 }
+		    		 }
+		    		 
+		    	 }
+			}
 		     String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
 		     arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
 
