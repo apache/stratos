@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.autoscaler.api;
+package org.apache.stratos.autoscaler.services.impl;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentE
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-import org.apache.stratos.autoscaler.interfaces.AutoScalerServiceInterface;
+import org.apache.stratos.autoscaler.services.AutoScalerService;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -70,7 +70,7 @@ import java.util.Set;
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
  */
-public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
+public class AutoScalerServiceImpl implements AutoScalerService {
 
     private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
 
@@ -93,8 +93,8 @@ public class AutoScalerServiceImpl implements AutoScalerServiceInterface {
                     }
                 }
 
-                Application application = ApplicationHolder.getApplications().
-                        getApplication(deploymentPolicy.getApplicationId());
+                Application application = ApplicationHolder.getApplications().getApplication(
+                        deploymentPolicy.getApplicationId());
                 Partition[] partitions = new Partition[partitionList.size()];
                 if (application != null) {
                     Group group = application.getGroupRecursively(alias);

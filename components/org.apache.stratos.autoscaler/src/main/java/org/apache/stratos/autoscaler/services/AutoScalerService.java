@@ -19,7 +19,7 @@
  *
 */
 
-package org.apache.stratos.autoscaler.interfaces;
+package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
@@ -31,7 +31,7 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.common.Properties;
 
-public interface AutoScalerServiceInterface {
+public interface AutoScalerService {
     /**
      * Add autoscaling policy
      * @param autoscalePolicy

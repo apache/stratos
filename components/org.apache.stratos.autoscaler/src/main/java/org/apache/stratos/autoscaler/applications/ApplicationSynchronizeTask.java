@@ -37,7 +37,6 @@ public class ApplicationSynchronizeTask implements Task {
         }
         // publish to the topic
         if (ApplicationHolder.getApplications() != null) {
-            //ApplicationsEventPublisher.sendCompleteApplicationsEvent(ApplicationHolder.getApplications());
             ApplicationBuilder.handleCompleteApplication(ApplicationHolder.getApplications());
         }
     }
