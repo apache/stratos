@@ -1,11 +1,34 @@
-package org.apache.stratos.manager.application.signups;
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.stratos.manager.components;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.domain.ArtifactRepository;
 import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.manager.domain.ApplicationSignUp;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
+import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +59,19 @@ public class ApplicationSignUpManager {
                         applicationSignUp.getApplicationId()));
             }
 
+            // Generate application signup id
             String signUpId = UUID.randomUUID().toString();
             applicationSignUp.setSignUpId(signUpId);
+
+            // Encrypt artifact repository passwords
+            String applicationId = applicationSignUp.getApplicationId();
+            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            if(application == null) {
+                throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
+            }
+            encryptRepositoryPasswords(applicationSignUp, application.getKey());
+
+            // Persist application signup
             String resourcePath = APPLICATION_SIGNUP_RESOURCE_PATH + applicationSignUp.getSignUpId();
             RegistryManager.getInstance().persist(resourcePath, applicationSignUp);
 
@@ -50,6 +84,25 @@ public class ApplicationSignUpManager {
             String message = "Could not add application signup";
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
+        }
+    }
+
+    private void encryptRepositoryPasswords(ApplicationSignUp applicationSignUp, String applicationKey) {
+        if(applicationSignUp.getArtifactRepositories() != null) {
+            for(ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                String repoPassword = artifactRepository.getRepoPassword();
+                if((artifactRepository != null) && (StringUtils.isNotBlank(repoPassword))) {
+                    String encryptedRepoPassword = CommonUtil.encryptPassword(repoPassword,
+                            applicationKey);
+                    artifactRepository.setRepoPassword(encryptedRepoPassword);
+
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Artifact repository password encrypted: [application-id] %s " +
+                                "[signup-id] %s [repo-url] %s", applicationSignUp.getApplicationId(),
+                                applicationSignUp.getSignUpId(), artifactRepository.getRepoUrl()));
+                    }
+                }
+            }
         }
     }
 
@@ -138,6 +191,65 @@ public class ApplicationSignUpManager {
             return applicationSignUps;
         } catch (Exception e) {
             String message = "Could not get application signups";
+            log.error(message, e);
+            throw new ApplicationSignUpException(message, e);
+        }
+    }
+
+    private List<ApplicationSignUp> getApplicationSignUps() throws ApplicationSignUpException {
+        try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Reading application signups"));
+            }
+
+            List<ApplicationSignUp> applicationSignUps = new ArrayList<ApplicationSignUp>();
+
+            String[] resourcePaths = (String[]) RegistryManager.getInstance().read(APPLICATION_SIGNUP_RESOURCE_PATH);
+            if(resourcePaths != null) {
+                for (String resourcePath : resourcePaths) {
+                    if(resourcePath != null) {
+                        ApplicationSignUp applicationSignUp = (ApplicationSignUp)
+                                RegistryManager.getInstance().read(resourcePath);
+                            applicationSignUps.add(applicationSignUp);
+                    }
+                }
+            }
+
+            return applicationSignUps;
+        } catch (Exception e) {
+            String message = "Could not get application signups";
+            log.error(message, e);
+            throw new ApplicationSignUpException(message, e);
+        }
+    }
+
+    /**
+     * Get application signups for artifact repository
+     * @param repoUrl
+     * @return
+     * @throws ApplicationSignUpException
+     */
+    public List<ApplicationSignUp> getApplicationSignUpsForRepository(String repoUrl) throws ApplicationSignUpException {
+        try {
+            List<ApplicationSignUp> filteredResult = new ArrayList<ApplicationSignUp>();
+
+            List<ApplicationSignUp> applicationSignUps = getApplicationSignUps();
+            for(ApplicationSignUp applicationSignUp : applicationSignUps) {
+                if(applicationSignUp.getArtifactRepositories() != null) {
+                    for(ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                        if(artifactRepository != null) {
+                            if(artifactRepository.getRepoUrl().equals(repoUrl)) {
+                                filteredResult.add(applicationSignUp);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return filteredResult;
+        } catch (Exception e) {
+            String message = "Could not get artifact repositories for repository: [repo-url] " + repoUrl;
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
         }

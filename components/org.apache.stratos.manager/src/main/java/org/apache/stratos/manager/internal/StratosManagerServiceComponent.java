@@ -21,6 +21,7 @@ package org.apache.stratos.manager.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.manager.messaging.receiver.StratosManagerApplicationEventReceiver;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerInstanceStatusEventReceiver;
 import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.messaging.publisher.TenantEventPublisher;
@@ -69,6 +70,7 @@ public class StratosManagerServiceComponent {
 
     private StratosManagerTopologyEventReceiver topologyEventReceiver;
     private StratosManagerInstanceStatusEventReceiver instanceStatusEventReceiver;
+    private StratosManagerApplicationEventReceiver applicationEventReceiver;
 	private ExecutorService executorService;
 
     protected void activate(ComponentContext componentContext) throws Exception {
@@ -90,26 +92,21 @@ public class StratosManagerServiceComponent {
             componentContext.getBundleContext().registerService(
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantEventPublisher, null);
-
-            if(log.isDebugEnabled()) {
-                log.debug("Starting instance status event receiver...");
+            if(log.isInfoEnabled()) {
+                log.info("Tenant event publisher started");
             }
+
             instanceStatusEventReceiver = new StratosManagerInstanceStatusEventReceiver();
             instanceStatusEventReceiver.setExecutorService(executorService);
             instanceStatusEventReceiver.execute();
-            if(log.isInfoEnabled()) {
-                log.info("Instance status event receiver thread started");
-            }
 
-            if(log.isDebugEnabled()) {
-                log.debug("Starting topology event receiver...");
-            }
             topologyEventReceiver = new StratosManagerTopologyEventReceiver();
             topologyEventReceiver.setExecutorService(executorService);
-            executorService.execute(topologyEventReceiver);
-            if(log.isInfoEnabled()) {
-                log.info("Topology event receiver thread started");
-            }
+            topologyEventReceiver.execute();
+
+            applicationEventReceiver = new StratosManagerApplicationEventReceiver();
+            applicationEventReceiver.setExecutorService(executorService);
+            applicationEventReceiver.execute();
 
             // Create internal/user Role at server start-up
             RealmService realmService = ServiceReferenceHolder.getRealmService();
@@ -122,7 +119,9 @@ public class StratosManagerServiceComponent {
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantUserRoleManager, null);
 
-            log.info("Stratos manager component is activated");
+            if(log.isInfoEnabled()) {
+                log.info("Stratos manager component is activated");
+            }
 		} catch (Exception e) {
             if(log.isErrorEnabled()) {
 			    log.error("Could not activate stratos manager component", e);

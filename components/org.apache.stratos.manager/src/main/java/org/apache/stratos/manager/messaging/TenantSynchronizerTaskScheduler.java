@@ -55,11 +55,10 @@ public class TenantSynchronizerTaskScheduler {
                         TenantSynzhronizerTask.class.getName(),
                         new HashMap<String, String>(), triggerInfo);
                 taskManager.registerTask(taskInfo);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant synchronization task scheduled: %s", TENANT_SYNC_TASK_NAME));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Tenant synchronization task scheduled: %s", TENANT_SYNC_TASK_NAME));
                 }
             }
-
         } catch (Exception e) {
             if (taskManager != null) {
                 try {

@@ -1239,23 +1239,12 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/sync")
     public Response notifyRepository(Payload payload) throws RestAPIException {
-
-        StratosApiV41Utils.getGitRepositoryNotification(payload);
-        return Response.noContent().build();
-    }
-
-    @POST
-    @Path("/repo/synchronize/{subscriptionAlias}")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/admin/manage/add/sync")
-    public Response synchronizeRepositoryOfSubscription(@PathParam("subscriptionAlias") String alias) throws RestAPIException {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Synchronizing Git repository for alias '%s'", alias));
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Git update"));
         }
 
-//        StratosApiV41Utils.synchronizeRepository(cartridgeSubscription);
-//        return Response.noContent().build();
-        throw new RestAPIException("Not implemented");
+        StratosApiV41Utils.notifyArtifactUpdatedEvent(payload);
+        return Response.noContent().build();
     }
 
     // API methods for users

@@ -41,13 +41,9 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.applications.*;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.rmi.RemoteException;
 import java.util.*;
 
@@ -71,25 +67,23 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
 
     @Override
-    public Application parse(Object obj) throws ApplicationDefinitionException {
+    public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException {
 
-        ApplicationContext applicationCtxt = (ApplicationContext) obj;
-
-        if (applicationCtxt == null) {
-            handleError("Invalid Composite Application Definition");
+        if (applicationContext == null) {
+            handleError("Application context is null");
         }
 
-        assert applicationCtxt != null;
-        if (applicationCtxt.getAlias() == null || applicationCtxt.getAlias().isEmpty()) {
-            handleError("Invalid alias specified");
+        assert applicationContext != null;
+        if (applicationContext.getAlias() == null || applicationContext.getAlias().isEmpty()) {
+            handleError("Application alias not found application");
         }
 
-        if (applicationCtxt.getApplicationId() == null || applicationCtxt.getApplicationId().isEmpty()) {
-            handleError("Invalid Composite App id specified");
+        if (applicationContext.getApplicationId() == null || applicationContext.getApplicationId().isEmpty()) {
+            handleError("Application id not found in application");
         }
 
         // get the Subscribables Information
-        Map<String, SubscribableInfoContext> subscribablesInfo = getSubscribableInformation(applicationCtxt);
+        Map<String, SubscribableInfoContext> subscribablesInfo = getSubscribableInformation(applicationContext);
         if (log.isDebugEnabled()) {
             Set<Map.Entry<String, SubscribableInfoContext>> subscribableInfoCtxtEntries = subscribablesInfo.entrySet();
             log.debug("Defined Subscribable Information: [ ");
@@ -100,11 +94,11 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         if (subscribablesInfo == null) {
-            handleError("Invalid Composite Application Definition, no Subscribable Information specified");
+            handleError("Invalid application definition, subscribable information not found");
         }
 
-        oauthToken = createToken(applicationCtxt.getApplicationId());
-        return buildCompositeAppStructure (applicationCtxt, subscribablesInfo);
+        oauthToken = createToken(applicationContext.getApplicationId());
+        return buildCompositeAppStructure (applicationContext, subscribablesInfo);
     }
 
     @Override
@@ -165,69 +159,69 @@ public class DefaultApplicationParser implements ApplicationParser {
     /**
      * Builds the Application structure
      *
-     * @param appCtxt ApplicationContext object with Application information
+     * @param applicationContext ApplicationContext object with Application information
      * @param subscribableInfoCtxts Map [cartridge alias -> Group] with extracted Subscription Information
      * @return Application Application object denoting the Application structure
      *
      * @throws ApplicationDefinitionException If an error occurs in building the Application structure
      */
-    private Application buildCompositeAppStructure (ApplicationContext appCtxt,
+    private Application buildCompositeAppStructure (ApplicationContext applicationContext,
                                                     Map<String, SubscribableInfoContext> subscribableInfoCtxts)
             throws ApplicationDefinitionException {
 
-        Application application = new Application(appCtxt.getApplicationId());
+        Application application = new Application(applicationContext.getApplicationId());
 
         // set tenant related information
-        application.setTenantId(appCtxt.getTenantId());
-        application.setTenantDomain(appCtxt.getTenantDomain());
-        application.setTenantAdminUserName(appCtxt.getTeantAdminUsername());
+        application.setTenantId(applicationContext.getTenantId());
+        application.setTenantDomain(applicationContext.getTenantDomain());
+        application.setTenantAdminUserName(applicationContext.getTeantAdminUsername());
 
         // following keeps track of all Clusters created for this application
         Map<String, ClusterDataHolder> clusterDataMap;
 
-        if (appCtxt.getComponents() != null) {
+        if (applicationContext.getComponents() != null) {
             // get top level Subscribables
-            if (appCtxt.getComponents().getCartridgeContexts() != null) {
-                clusterDataMap = parseLeafLevelSubscriptions(appCtxt.getApplicationId(), appCtxt.getTenantId(),
-                        application.getKey(), null, Arrays.asList(appCtxt.getComponents().getCartridgeContexts()),null);
+            if (applicationContext.getComponents().getCartridgeContexts() != null) {
+                clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationId(), applicationContext.getTenantId(),
+                        application.getKey(), null, Arrays.asList(applicationContext.getComponents().getCartridgeContexts()),null);
                 application.setClusterData(clusterDataMap);
             }
 
             // get Groups
-            if (appCtxt.getComponents().getGroupContexts() != null) {
-                application.setGroups(parseGroups(appCtxt.getApplicationId(), appCtxt.getTenantId(),
-                        application.getKey(), Arrays.asList(appCtxt.getComponents().getGroupContexts()),
+            if (applicationContext.getComponents().getGroupContexts() != null) {
+                application.setGroups(parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
+                        application.getKey(), Arrays.asList(applicationContext.getComponents().getGroupContexts()),
                         subscribableInfoCtxts));
             }
 
             // get top level Dependency definitions
-            if (appCtxt.getComponents().getDependencyContext() != null) {
+            if (applicationContext.getComponents().getDependencyContext() != null) {
                 DependencyOrder appDependencyOrder = new DependencyOrder();
-                String [] startupOrders = appCtxt.getComponents().getDependencyContext().getStartupOrdersContexts();
+                String [] startupOrders = applicationContext.getComponents().getDependencyContext().getStartupOrdersContexts();
                 if (startupOrders != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders != null for app alias: " +
-                                appCtxt.getAlias() + " #: " + startupOrders.length);
+                        log.debug("parsing application... buildCompositeAppStructure: startupOrders != null for app alias: " +
+                                applicationContext.getAlias() + " #: " + startupOrders.length);
                     }
                     appDependencyOrder.setStartupOrders(ParserUtils.convertStartupOrder(startupOrders));
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
+                        log.debug("parsing application... buildCompositeAppStructure: startupOrders == null for app alias: " + applicationContext.getAlias());
                     }
                 }
-                String [] scalingDependents = appCtxt.getComponents().getDependencyContext().getScalingDependents();
+                String [] scalingDependents = applicationContext.getComponents().getDependencyContext().getScalingDependents();
                 if (scalingDependents != null) {
                     if (log.isDebugEnabled()) {
-                        log.debug("parsing application ... buildCompositeAppStructure: scalingDependents != null for app alias: " +
-                                appCtxt.getAlias() + " #: " + scalingDependents.length);
+                        log.debug("parsing application... buildCompositeAppStructure: scalingDependents != null for app alias: " +
+                                applicationContext.getAlias() + " #: " + scalingDependents.length);
                     }
                     appDependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scalingDependents));
                 } else {
                     if (log.isDebugEnabled()) {
-                        log.debug("parsing application ... buildCompositeAppStructure: startupOrders == null for app alias: " + appCtxt.getAlias());
+                        log.debug("parsing application... buildCompositeAppStructure: startupOrders == null for app alias: " + applicationContext.getAlias());
                     }
                 }
-                String terminationBehavior = appCtxt.getComponents().getDependencyContext().getTerminationBehaviour();
+                String terminationBehavior = applicationContext.getComponents().getDependencyContext().getTerminationBehaviour();
                 validateTerminationBehavior(terminationBehavior);
                 appDependencyOrder.setTerminationBehaviour(terminationBehavior);
 
@@ -235,51 +229,8 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
         }
 
-        // TODO: Might need to remove following logic
-        Properties properties = new Properties();
-        for (SubscribableInfoContext subscribableInfoContext : subscribableInfoCtxts.values()) {
-
-            String alias = subscribableInfoContext.getAlias();
-            List<Property> propertyList = new ArrayList<Property>();
-
-//            ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
-//            if(artifactRepositoryContext != null) {
-//                String username = artifactRepositoryContext.getRepoUsername();
-//                String password = artifactRepositoryContext.getRepoPassword();
-//                String repoUrl = artifactRepositoryContext.getRepoUrl();
-//
-//                if (StringUtils.isNotEmpty(username)) {
-//                    Property property = new Property();
-//                    property.setName("REPO_USERNAME");
-//                    property.setValue(username);
-//                    propertyList.add(property);
-//                }
-//
-//                if (StringUtils.isNotEmpty(password)) {
-//                    String encryptedPassword = encryptPassword(password, application.getKey());
-//                    Property property = new Property();
-//                    property.setName("REPO_PASSWORD");
-//                    property.setValue(encryptedPassword);
-//                    propertyList.add(property);
-//                }
-//
-//                if (StringUtils.isNotEmpty(repoUrl)) {
-//                    Property property = new Property();
-//                    property.setName("REPO_URL");
-//                    property.setValue(repoUrl);
-//                    propertyList.add(property);
-//                }
-//            }
-
-            if(propertyList.size() > 0 ) {
-                Property[] properties1 = new Property[propertyList.size()];
-                properties.setProperties(propertyList.toArray(properties1));
-                addProperties(alias, properties);
-            }
-        }
-
         if(log.isDebugEnabled()) {
-            log.debug("Application with id " + appCtxt.getApplicationId() + " parsed successfully");
+            log.debug("Application parsed successfully: [application-id] " + applicationContext.getApplicationId());
         }
         return application;
     }
@@ -775,23 +726,5 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
     public void addProperties(String alias, Properties properties) {
         this.getAliasToProperties().put(alias, properties);
-    }
-
-    public static String encryptPassword(String repoUserPassword, String secKey) {
-        String encryptPassword = "";
-        SecretKey key;
-        Cipher cipher;
-        Base64 coder;
-        key = new SecretKeySpec(secKey.getBytes(), "AES");
-        try {
-            cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
-            coder = new Base64();
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] cipherText = cipher.doFinal(repoUserPassword.getBytes());
-            encryptPassword = new String(coder.encode(cipherText));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return encryptPassword;
     }
 }

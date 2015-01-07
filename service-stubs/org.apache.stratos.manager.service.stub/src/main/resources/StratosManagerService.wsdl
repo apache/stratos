@@ -23,6 +23,27 @@
         <xs:schema xmlns:ax24="http://domain.manager.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
             <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"/>
             <xs:import namespace="http://domain.manager.stratos.apache.org/xsd"/>
+            <xs:element name="StratosManagerServiceArtifactDistributionCoordinatorException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ArtifactDistributionCoordinatorException" nillable="true" type="ax21:ArtifactDistributionCoordinatorException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="notifyArtifactUpdatedEventForSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="signUpId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="notifyArtifactUpdatedEventForRepository">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="StratosManagerServiceApplicationSignUpException">
                 <xs:complexType>
                     <xs:sequence>
@@ -30,38 +51,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addApplicationSignUp">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax23:ApplicationSignUp"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addApplicationSignUpResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="removeApplicationSignUp">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="signUpId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUps">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUpsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -79,8 +72,39 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getApplicationSignUps">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationSignUpsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addApplicationSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax23:ApplicationSignUp"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addApplicationSignUpResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.manager.stratos.apache.org/xsd">
+            <xs:complexType name="ArtifactDistributionCoordinatorException">
+                <xs:sequence/>
+            </xs:complexType>
             <xs:complexType name="ApplicationSignUpException">
                 <xs:sequence/>
             </xs:complexType>
@@ -95,8 +119,17 @@
     <wsdl:message name="StratosManagerServiceApplicationSignUpException">
         <wsdl:part name="parameters" element="ns:StratosManagerServiceApplicationSignUpException"/>
     </wsdl:message>
+    <wsdl:message name="notifyArtifactUpdatedEventForSignUpRequest">
+        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForSignUp"/>
+    </wsdl:message>
+    <wsdl:message name="StratosManagerServiceArtifactDistributionCoordinatorException">
+        <wsdl:part name="parameters" element="ns:StratosManagerServiceArtifactDistributionCoordinatorException"/>
+    </wsdl:message>
     <wsdl:message name="removeApplicationSignUpRequest">
         <wsdl:part name="parameters" element="ns:removeApplicationSignUp"/>
+    </wsdl:message>
+    <wsdl:message name="notifyArtifactUpdatedEventForRepositoryRequest">
+        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForRepository"/>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpRequest">
         <wsdl:part name="parameters" element="ns:getApplicationSignUp"/>
@@ -116,9 +149,17 @@
             <wsdl:output message="ns:getApplicationSignUpsResponse" wsaw:Action="urn:getApplicationSignUpsResponse"/>
             <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:getApplicationSignUpsStratosManagerServiceApplicationSignUpException"/>
         </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
+            <wsdl:input message="ns:notifyArtifactUpdatedEventForSignUpRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUp"/>
+            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUpStratosManagerServiceArtifactDistributionCoordinatorException"/>
+        </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
             <wsdl:input message="ns:removeApplicationSignUpRequest" wsaw:Action="urn:removeApplicationSignUp"/>
             <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:removeApplicationSignUpStratosManagerServiceApplicationSignUpException"/>
+        </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
+            <wsdl:input message="ns:notifyArtifactUpdatedEventForRepositoryRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForRepository"/>
+            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForRepositoryStratosManagerServiceArtifactDistributionCoordinatorException"/>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
             <wsdl:input message="ns:getApplicationSignUpRequest" wsaw:Action="urn:getApplicationSignUp"/>
@@ -145,6 +186,15 @@
                 <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
+            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
+                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
             <soap:operation soapAction="urn:removeApplicationSignUp" style="document"/>
             <wsdl:input>
@@ -152,6 +202,15 @@
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
                 <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
+            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
+                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
@@ -193,6 +252,15 @@
                 <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
+            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
+                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
             <soap12:operation soapAction="urn:removeApplicationSignUp" style="document"/>
             <wsdl:input>
@@ -200,6 +268,15 @@
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
                 <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+            </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
+            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
+                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
@@ -238,8 +315,20 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
+            <http:operation location="notifyArtifactUpdatedEventForSignUp"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
             <http:operation location="removeApplicationSignUp"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
+            <http:operation location="notifyArtifactUpdatedEventForRepository"/>
             <wsdl:input>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>

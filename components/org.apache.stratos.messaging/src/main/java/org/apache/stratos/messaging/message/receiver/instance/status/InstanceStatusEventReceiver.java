@@ -53,7 +53,6 @@ public class InstanceStatusEventReceiver {
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Util.Topics.INSTANCE_STATUS_TOPIC.getTopicName(), messageListener);
-//            subscriber.setMessageListener(messageListener);
             executorService.submit(topicSubscriber);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
@@ -64,8 +63,6 @@ public class InstanceStatusEventReceiver {
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
-
-
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
                 log.error("InstanceNotifier receiver failed", e);

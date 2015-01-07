@@ -20,6 +20,7 @@ package org.apache.stratos.common.util;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -40,6 +41,9 @@ import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -623,6 +627,24 @@ public class CommonUtil {
 
     public static boolean isEmptyArray(String[] array) {
         return (array == null) || (array.length == 0) || ((array.length == 1) && (array[0] == null));
+    }
+
+    public static String encryptPassword(String repoUserPassword, String secKey) {
+        String encryptPassword = "";
+        SecretKey key;
+        Cipher cipher;
+        Base64 coder;
+        key = new SecretKeySpec(secKey.getBytes(), "AES");
+        try {
+            cipher = Cipher.getInstance("AES/ECB/PKCS5Padding", "SunJCE");
+            coder = new Base64();
+            cipher.init(Cipher.ENCRYPT_MODE, key);
+            byte[] cipherText = cipher.doFinal(repoUserPassword.getBytes());
+            encryptPassword = new String(coder.encode(cipherText));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return encryptPassword;
     }
 }
 

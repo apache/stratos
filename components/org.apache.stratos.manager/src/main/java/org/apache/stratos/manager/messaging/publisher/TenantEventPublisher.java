@@ -67,8 +67,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 				log.info(String.format("Publishing tenant updated event: [tenant-id] %d [tenant-domain] %s",
 				                       tenantInfo.getTenantId(), tenantInfo.getTenantDomain()));
 			}
-			TenantUpdatedEvent event =
-			                           new TenantUpdatedEvent(tenantInfo.getTenantId(),
+			TenantUpdatedEvent event = new TenantUpdatedEvent(tenantInfo.getTenantId(),
 			                                                  tenantInfo.getTenantDomain());
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
@@ -96,8 +95,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 	}
 
 	@Override
-	public void onTenantRename(int tenantId, String oldDomainName, String newDomainName)
-	                                                                                    throws ApacheStratosException {
+	public void onTenantRename(int tenantId, String oldDomainName, String newDomainName) throws ApacheStratosException {
 	}
 
 	@Override
@@ -113,8 +111,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 	}
 
 	@Override
-	public void onSubscriptionPlanChange(int tenantId, String oldPlan, String newPlan)
-	                                                                                  throws ApacheStratosException {
+	public void onSubscriptionPlanChange(int tenantId, String oldPlan, String newPlan) throws ApacheStratosException {
 	}
 
 	@Override

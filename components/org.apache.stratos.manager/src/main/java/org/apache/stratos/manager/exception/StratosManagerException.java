@@ -18,27 +18,27 @@
  */
 package org.apache.stratos.manager.exception;
 
-public class ADCException extends Exception {
+public class StratosManagerException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
 	private String message;
 
-	public ADCException() {
+	public StratosManagerException() {
 		super();
 	}
 
-	public ADCException(String message, Throwable cause) {
+	public StratosManagerException(String message, Throwable cause) {
 		super(message, cause);
 		this.message = message;
 	}
 
-	public ADCException(String message) {
+	public StratosManagerException(String message) {
 		super(message);
 		this.message = message;
 	}
 
-	public ADCException(Throwable cause) {
+	public StratosManagerException(Throwable cause) {
 		super(cause);
 	}
 

@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.applications.Application;
@@ -36,13 +37,11 @@ public interface ApplicationParser {
     /**
      * Parses the Application Definition
      *
-     * @param obj Object with the Application Definition. An Object is used here since there can be
-     *            significant changes between the way composite Applications are defined in different
-     *            conventions
+     * @param applicationContext Application context definition
      * @return Application structure denoting the parsed Application
      * @throws ApplicationDefinitionException If the Application Definition is invalid
      */
-    public Application parse (Object obj) throws ApplicationDefinitionException;
+    public Application parse (ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
     /**
      * Returns a set of ApplicationClusterContext which will comprise of cluster related information

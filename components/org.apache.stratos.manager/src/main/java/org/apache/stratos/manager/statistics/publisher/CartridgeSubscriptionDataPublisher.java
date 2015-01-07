@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.stratos.manager.statistics.publisher;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.StratosManagerException;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
@@ -52,7 +53,7 @@ public class CartridgeSubscriptionDataPublisher {
 			String cartridgeAlias, String cartridgeType, String repositoryUrl,
 			boolean isMultiTenant, String autoScalingPolicy,
 			String deploymentPolicy, String clusterID, String hostName,
-			String mappedDomain, String action) throws ADCException {
+			String mappedDomain, String action) throws StratosManagerException {
 		
 		//check if bam is enabled in cartridge-config.properties
 		if(! Boolean.parseBoolean(System.getProperty(CartridgeConstants.BAM_PUBLISHER_ENABLED))){
@@ -137,7 +138,7 @@ public class CartridgeSubscriptionDataPublisher {
 		return streamDefinition;
 	}
 
-	private static void createDataPublisher() throws ADCException {
+	private static void createDataPublisher() throws StratosManagerException {
 		// creating the agent
 		ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
 		String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
@@ -162,7 +163,7 @@ public class CartridgeSubscriptionDataPublisher {
 		} catch (Exception e) {
 			String msg = "Unable to create a data publisher to "+ bamServerUrl;
 			log.error(msg, e);
-			throw new ADCException(msg, e);
+			throw new StratosManagerException(msg, e);
 		}
 	}
 	

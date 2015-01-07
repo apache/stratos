@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
+import org.apache.stratos.manager.service.stub.StratosManagerServiceArtifactDistributionCoordinatorExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceStub;
 import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
 
@@ -114,5 +115,25 @@ public class StratosManagerServiceClient {
      */
     public ApplicationSignUp[] getApplicationSignUps(String applicationId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
         return stub.getApplicationSignUps(applicationId);
+    }
+
+    /**
+     * Notify artifact updated event for application signup.
+     * @param signUpId
+     * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
+     * @throws RemoteException
+     */
+    public void notifyArtifactUpdatedEventForSignUp(String signUpId) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
+        stub.notifyArtifactUpdatedEventForSignUp(signUpId);
+    }
+
+    /**
+     * Notify artifact updated event for artifact repository.
+     * @param repoUrl
+     * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
+     * @throws RemoteException
+     */
+    public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
+        stub.notifyArtifactUpdatedEventForRepository(repoUrl);
     }
 }

@@ -46,10 +46,9 @@ import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
 import org.apache.stratos.common.beans.topology.GroupInstanceBean;
-import org.apache.stratos.common.client.StratosManagerServiceClient;
-import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
+import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
@@ -602,29 +601,16 @@ public class StratosApiV41Utils {
 
     // Util methods for repo actions
 
-    public static void getGitRepositoryNotification(Payload payload) throws RestAPIException {
+    public static void notifyArtifactUpdatedEvent(Payload payload) throws RestAPIException {
         try {
-
-            RepositoryNotifier repoNotification = new RepositoryNotifier();
-            repoNotification.updateRepository(payload.getRepository().getUrl());
-
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            serviceClient.notifyArtifactUpdatedEventForRepository(payload.getRepository().getUrl());
         } catch (Exception e) {
-            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
-            log.error(msg, e);
-            throw new RestAPIException(msg, e);
+            String message = "Could not send artifact updated event";
+            log.error(message, e);
+            throw new RestAPIException(message, e);
         }
     }
-
-//    public static void synchronizeRepository(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
-//        try {
-//            RepositoryNotifier repoNotification = new RepositoryNotifier();
-//            repoNotification.updateRepository(cartridgeSubscription);
-//        } catch (Exception e) {
-//            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
-//            log.error(msg, e);
-//            throw new RestAPIException(msg, e);
-//        }
-//    }
 
     // Util methods for service groups
 
@@ -1376,13 +1362,18 @@ public class StratosApiV41Utils {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
             String signupId = serviceClient.addApplicationSignUp(applicationSignUp);
-
             if(log.isInfoEnabled()) {
                 log.info(String.format("Application signup added successfully: [application-id] %s [signup-id] %s",
                         applicationId, signupId));
             }
+
+            serviceClient.notifyArtifactUpdatedEventForSignUp(signupId);
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Artifact updated event sent: [application-id] %s [signup-id] %s",
+                        applicationId, signupId));
+            }
         } catch (Exception e) {
-            String message = "Could not add application signup: [application-id] " + applicationId;
+            String message = "Error in application signup: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
         }

@@ -37,7 +37,6 @@ public class TopologyEventReceiver {
     private TopologyEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
 	private ExecutorService executorService;
-    private boolean terminated;
 
     public TopologyEventReceiver() {
         TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
@@ -79,7 +78,6 @@ public class TopologyEventReceiver {
     public void terminate() {
         topicSubscriber.terminate();
         messageDelegator.terminate();
-        terminated = true;
     }
 
 	public ExecutorService getExecutorService() {

@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.Cartridge;
-import org.apache.stratos.manager.exception.ADCException;
+import org.apache.stratos.manager.exception.StratosManagerException;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
@@ -287,7 +287,7 @@ public class StratosApiV40Mock {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
-            throws ADCException, RestAPIException {
+            throws StratosManagerException, RestAPIException {
         return MockContext.getInstance().getAvailableSingleTenantCartridgeInfo(cartridgeType);
     }
 

@@ -21,33 +21,29 @@ package org.apache.stratos.manager.messaging.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
-import java.util.concurrent.ExecutorService;
+/**
+ * Stratos manager application event receiver.
+ */
+public class StratosManagerApplicationEventReceiver extends ApplicationsEventReceiver {
 
-public class StratosManagerTopologyEventReceiver extends TopologyEventReceiver {
+	private static final Log log = LogFactory.getLog(StratosManagerApplicationEventReceiver.class);
 
-    private static final Log log = LogFactory.getLog(StratosManagerTopologyEventReceiver.class);
+	public StratosManagerApplicationEventReceiver() {
+		addEventListeners();
 
-    public StratosManagerTopologyEventReceiver() {
-        addEventListeners();
-    }
+	}
+
+	@Override
+	public void execute() {
+		super.execute();
+
+		if (log.isInfoEnabled()) {
+			log.info("Stratos manager application event receiver thread started");
+		}
+	}
 
     private void addEventListeners() {
-    }
-
-    @Override
-    public void execute() {
-	    super.execute();
-
-        if(log.isInfoEnabled()) {
-            log.info("Stratos manager topology event receiver thread started");
-        }
     }
 }

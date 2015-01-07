@@ -32,7 +32,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaa
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.beans.Cartridge;
-import org.apache.stratos.manager.artifact.distribution.coordinator.RepositoryNotifier;
+import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.common.beans.StratosApiResponse;
@@ -993,33 +993,16 @@ public class StratosApiV40Utils {
 //        return stratosApiResponse;
     }
 
-    static void getGitRepositoryNotification(Payload payload) throws RestAPIException {
+    static void notifyArtifactUpdatedEvent(Payload payload) throws RestAPIException {
         try {
-
-            RepositoryNotifier repoNotification = new RepositoryNotifier();
-            repoNotification.updateRepository(payload.getRepository().getUrl());
-
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            serviceClient.notifyArtifactUpdatedEventForRepository(payload.getRepository().getUrl());
         } catch (Exception e) {
-            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
-            log.error(msg, e);
-            throw new RestAPIException(msg, e);
+            String message = "Could not send artifact updated event";
+            log.error(message, e);
+            throw new RestAPIException(message, e);
         }
     }
-
-//    static StratosApiResponse synchronizeRepository(CartridgeSubscription cartridgeSubscription) throws RestAPIException {
-//        try {
-//            RepositoryNotifier repoNotification = new RepositoryNotifier();
-//            repoNotification.updateRepository(cartridgeSubscription);
-//        } catch (Exception e) {
-//            String msg = "Failed to get git repository notifications. Cause : " + e.getMessage();
-//            log.error(msg, e);
-//            throw new RestAPIException(msg, e);
-//        }
-//
-//        StratosApiResponse stratosApiResponse = new StratosApiResponse();
-//        stratosApiResponse.setMessage("Successfully sent the repository synchronization request for " + cartridgeSubscription.getAlias());
-//        return stratosApiResponse;
-//    }
 
     public static StratosApiResponse addSubscriptionDomains(ConfigurationContext configurationContext, String cartridgeType,
                                                             String subscriptionAlias,

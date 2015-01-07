@@ -945,7 +945,7 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public void getRepoNotification(Payload payload) throws RestAPIException {
 
-        StratosApiV40Utils.getGitRepositoryNotification(payload);
+        StratosApiV40Utils.notifyArtifactUpdatedEvent(payload);
     }
 
     @POST
