@@ -23,10 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.applications.ApplicationDeletedEvent;
-import org.apache.stratos.messaging.event.applications.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.listener.applications.ApplicationDeletedEventListener;
-import org.apache.stratos.messaging.listener.applications.ApplicationInstanceTerminatedEventListener;
-import org.apache.stratos.messaging.listener.applications.ApplicationUndeployedEventListener;
 import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
@@ -34,13 +31,12 @@ import java.util.concurrent.ExecutorService;
 /**
  * This is to receive the application topic messages.
  */
-public class ApplicationTopicReceiver {
-	private static final Log log = LogFactory.getLog(ApplicationTopicReceiver.class);
+public class ApplicationEventReceiver {
+	private static final Log log = LogFactory.getLog(ApplicationEventReceiver.class);
 	private ApplicationsEventReceiver applicationsEventReceiver;
-	private boolean terminated;
 	private ExecutorService executorService;
 
-	public ApplicationTopicReceiver() {
+	public ApplicationEventReceiver() {
 		this.applicationsEventReceiver = new ApplicationsEventReceiver();
 		addEventListeners();
 
@@ -49,33 +45,19 @@ public class ApplicationTopicReceiver {
 	public void execute() {
 
 		if (log.isInfoEnabled()) {
-			log.info("Cloud controller application status thread started");
+			log.info("Cloud controller application event receiver thread started");
 		}
 		applicationsEventReceiver.setExecutorService(executorService);
 		applicationsEventReceiver.execute();
-
-
-		if (log.isInfoEnabled()) {
-			log.info("Cloud controller application status thread terminated");
-		}
-
-	}
-
-	public void setTerminated(boolean terminated) {
-		this.terminated = terminated;
-	}
-
-	public ExecutorService getExecutorService() {
-		return executorService;
 	}
 
     private void addEventListeners() {
         applicationsEventReceiver.addEventListener(new ApplicationDeletedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                //Remove the application related data
+                // Remove the application related data
                 ApplicationDeletedEvent deletedEvent = (ApplicationDeletedEvent)event;
-                log.info("ApplicationDeletedEvent received for [application] " + deletedEvent.getAppId());
+                log.info("Application deleted event received: [application-id] " + deletedEvent.getAppId());
                 String appId = deletedEvent.getAppId();
                 TopologyBuilder.handleApplicationClustersRemoved(appId, deletedEvent.getClusterData());
             }

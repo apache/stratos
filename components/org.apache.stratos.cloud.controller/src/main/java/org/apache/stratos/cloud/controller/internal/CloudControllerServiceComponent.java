@@ -27,7 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.iaases.mock.service.MockIaasService;
 import org.apache.stratos.cloud.controller.iaases.mock.service.config.MockIaasConfig;
-import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationTopicReceiver;
+import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
@@ -68,7 +68,7 @@ public class CloudControllerServiceComponent {
 	private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
 	private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
 	private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
-	private ApplicationTopicReceiver applicationTopicReceiver;
+	private ApplicationEventReceiver applicationEventReceiver;
     private ExecutorService executorService;
 
     private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
@@ -118,9 +118,9 @@ public class CloudControllerServiceComponent {
     }
 
     private void executeCoordinatorTasks() {
-        applicationTopicReceiver = new ApplicationTopicReceiver();
-        applicationTopicReceiver.setExecutorService(executorService);
-        applicationTopicReceiver.execute();
+        applicationEventReceiver = new ApplicationEventReceiver();
+        applicationEventReceiver.setExecutorService(executorService);
+        applicationEventReceiver.execute();
 
         if (log.isInfoEnabled()) {
             log.info("Application Receiver thread started");
