@@ -20,7 +20,6 @@ package org.apache.stratos.messaging.event.topology;
 
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -38,7 +37,6 @@ public class MemberCreatedEvent extends TopologyEvent implements Serializable {
     private final String memberId;
 
     private final long initTime;
-    private String lbClusterId;
     private Properties properties;
 
 
@@ -75,14 +73,6 @@ public class MemberCreatedEvent extends TopologyEvent implements Serializable {
     
     public long getInitTime() {
     	return initTime;
-    }
-
-    public String getLbClusterId() {
-        return lbClusterId;
-    }
-
-    public void setLbClusterId(String lbClusterId) {
-        this.lbClusterId = lbClusterId;
     }
 
     public Properties getProperties() {

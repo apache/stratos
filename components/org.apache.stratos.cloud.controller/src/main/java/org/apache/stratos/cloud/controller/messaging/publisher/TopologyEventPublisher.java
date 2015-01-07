@@ -149,7 +149,6 @@ public class TopologyEventPublisher {
                 memberContext.getPartition().getId(),
                 memberContext.getInitTime());
 
-        memberCreatedEvent.setLbClusterId(memberContext.getLbClusterId());
         memberCreatedEvent.setProperties(CloudControllerUtil
                 .toJavaUtilProperties(memberContext.getProperties()));
 

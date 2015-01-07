@@ -20,10 +20,12 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.MemberCreatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
-import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
@@ -93,15 +95,6 @@ public class MemberCreatedMessageProcessor extends MessageProcessor {
             }
         }
 
-        // Apply member filter
-        if(TopologyMemberFilter.getInstance().isActive()) {
-            if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(event.getLbClusterId())) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Member is excluded: [lb-cluster-id] %s", event.getLbClusterId()));
-                }
-                return false;
-            }
-        }
 
         // Validate event against the existing topology
         Service service = topology.getService(event.getServiceName());
@@ -133,7 +126,6 @@ public class MemberCreatedMessageProcessor extends MessageProcessor {
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId(),
                     event.getClusterInstanceId(), event.getNetworkPartitionId(),
                     event.getPartitionId(), event.getInitTime());
-            member.setLbClusterId(event.getLbClusterId());
             member.setProperties(event.getProperties());
             cluster.addMember(member);
 
