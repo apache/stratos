@@ -133,6 +133,7 @@ class CartridgeAgentConfiguration:
                 self.app_path = self.read_property(cartridgeagentconstants.APPLICATION_PATH, False)
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
+                self.dependant_cluster_id = str(self.read_property(cartridgeagentconstants.DEPENDANT_CLUSTER_IDS)).split("|")
 
                 try:
                     self.log_file_paths = str(
