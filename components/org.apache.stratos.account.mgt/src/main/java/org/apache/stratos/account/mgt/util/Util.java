@@ -55,7 +55,7 @@ public class Util {
     private static RegistryService registryService;
     private static RealmService realmService;
     private static EmailVerifcationSubscriber emailVerificationService = null;
-    private static EmailVerifierConfig emailVerfierConfig = null;
+    private static EmailVerifierConfig emailVerifierConfig = null;
     private static List<TenantMgtListener> tenantMgtListeners = new ArrayList<TenantMgtListener>();
 
     public static synchronized void setRegistryService(RegistryService service) {
@@ -117,11 +117,11 @@ public class Util {
     public static void loadEmailVerificationConfig() {
         String configXml = CarbonUtils.getCarbonConfigDirPath()+ File.separator
                            + StratosConstants.EMAIL_CONFIG +File.separator +"email-update.xml";
-        emailVerfierConfig = org.wso2.carbon.email.verification.util.Util.loadeMailVerificationConfig(configXml);
+        emailVerifierConfig = org.wso2.carbon.email.verification.util.Util.loadeMailVerificationConfig(configXml);
     }
 
     public static EmailVerifierConfig getEmailVerifierConfig() {
-        return emailVerfierConfig;
+        return emailVerifierConfig;
     }
 
     public static void addTenantMgtListenerService(TenantMgtListener tenantMgtListener) {
