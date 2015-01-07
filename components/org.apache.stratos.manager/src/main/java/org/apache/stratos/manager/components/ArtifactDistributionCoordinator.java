@@ -79,10 +79,24 @@ public class ArtifactDistributionCoordinator {
             } else {
                 for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
                     if (artifactRepository != null) {
-                        if(StringUtils.isBlank(clusterId) ||
-                                (clusterId.equals(findClusterId(applicationId, artifactRepository.getAlias())))) {
-                            publishArtifactUpdatedEvent(String.valueOf(applicationSignUp.getTenantId()),
-                                    applicationId, applicationSignUp.getSignUpId(), artifactRepository);
+                        String artifactRepositoryClusterId = findClusterId(applicationId, artifactRepository.getAlias());
+                        if(StringUtils.isBlank(clusterId) || (clusterId.equals(artifactRepositoryClusterId))) {
+
+                            publisher.publishArtifactUpdatedEvent(artifactRepositoryClusterId,
+                                    String.valueOf(applicationSignUp.getTenantId()),
+                                    artifactRepository.getRepoUrl(),
+                                    artifactRepository.getRepoUsername(),
+                                    artifactRepository.getRepoPassword(), false);
+
+                            if (log.isInfoEnabled()) {
+                                log.info(String.format("Artifact updated event published: [application-id] %s " +
+                                                "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
+                                        applicationId,
+                                        applicationSignUp.getSignUpId(),
+                                        artifactRepository.getCartridgeType(),
+                                        artifactRepository.getAlias(),
+                                        artifactRepository.getRepoUrl()));
+                            }
                         }
                     }
                 }
@@ -112,9 +126,25 @@ public class ArtifactDistributionCoordinator {
                     if(applicationSignUp.getArtifactRepositories() != null) {
                         for(ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
                             if((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
-                                publishArtifactUpdatedEvent(String.valueOf(applicationSignUp.getTenantId()),
-                                        applicationSignUp.getApplicationId(), applicationSignUp.getSignUpId(),
-                                        artifactRepository);
+
+                                String applicationId = applicationSignUp.getApplicationId();
+                                String clusterId = findClusterId(applicationId, artifactRepository.getAlias());
+
+                                publisher.publishArtifactUpdatedEvent(clusterId,
+                                        String.valueOf(applicationSignUp.getTenantId()),
+                                        artifactRepository.getRepoUrl(),
+                                        artifactRepository.getRepoUsername(),
+                                        artifactRepository.getRepoPassword(), false);
+
+                                if (log.isInfoEnabled()) {
+                                    log.info(String.format("Artifact updated event published: [application-id] %s " +
+                                                    "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
+                                            applicationId,
+                                            applicationSignUp.getSignUpId(),
+                                            artifactRepository.getCartridgeType(),
+                                            artifactRepository.getAlias(),
+                                            artifactRepository.getRepoUrl()));
+                                }
                             }
                         }
                     }
@@ -124,26 +154,6 @@ public class ArtifactDistributionCoordinator {
             String message = "Could not notify artifact updated event";
             log.error(message, e);
             throw new ArtifactDistributionCoordinatorException(message, e);
-        }
-    }
-
-    private void publishArtifactUpdatedEvent(String tenantId, String applicationId, String signUpId,
-                                             ArtifactRepository artifactRepository) {
-        String clusterId = findClusterId(applicationId, artifactRepository.getAlias());
-        publisher.publishArtifactUpdatedEvent(clusterId,
-                tenantId,
-                artifactRepository.getRepoUrl(),
-                artifactRepository.getRepoUsername(),
-                artifactRepository.getRepoPassword(), false);
-
-        if (log.isInfoEnabled()) {
-            log.info(String.format("Artifact updated event published: [application-id] %s " +
-                            "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
-                    applicationId,
-                    signUpId,
-                    artifactRepository.getCartridgeType(),
-                    artifactRepository.getAlias(),
-                    artifactRepository.getRepoUrl()));
         }
     }
 

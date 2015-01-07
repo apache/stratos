@@ -1389,6 +1389,10 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
         }
 
+        if(!application.isMultiTenant()) {
+            throw new RestAPIException("Application singups not available for single-tenant applications");
+        }
+
         if(StringUtils.isBlank(signUpId)) {
             throw new RestAPIException("Signup id is null");
         }
@@ -1416,6 +1420,10 @@ public class StratosApiV41Utils {
         ApplicationDefinition application = getApplication(applicationId);
         if(application == null) {
             throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        }
+
+        if(!application.isMultiTenant()) {
+            throw new RestAPIException("Application singups not available for single-tenant applications");
         }
 
         try {
