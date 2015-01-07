@@ -357,7 +357,6 @@ public class LoadBalancerConfiguration {
                 }
                 String clusterFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER);
                 if (StringUtils.isNotBlank(clusterFilter)) {
-	                log.info("CLuster filter:::"+clusterFilter);
                     configuration.setTopologyClusterFilter(clusterFilter);
                 }
                 String memberFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_FILTER);
