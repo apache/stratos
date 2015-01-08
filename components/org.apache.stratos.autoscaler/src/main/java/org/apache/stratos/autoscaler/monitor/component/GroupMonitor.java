@@ -51,7 +51,6 @@ import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -436,6 +435,12 @@ public class GroupMonitor extends ParentComponentMonitor {
 
     @Override
     public void onParentScalingEvent(ScalingEvent scalingEvent) {
+
+        log.info("Parent scaling event received to [group]: " + this.getId()
+                + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
+                + ", [factor] " + scalingEvent.getFactor());
+
         //Parent notification always brings up new group instances in order to keep the ratio.
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         final String parentInstanceId = scalingEvent.getInstanceId();
