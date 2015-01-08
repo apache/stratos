@@ -23,17 +23,29 @@ package org.apache.stratos.autoscaler.context;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
 /**
  * It holds all cluster monitors which are active in stratos.
  */
 public class AutoscalerContext {
 
+	private static final String AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP = "AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP";
+	private static final String AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP = "AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP";
+	private static final String AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP = "AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP";
+	private static final String AS_PENDING_APPLICATION_MONITOR_LIST = "AS_PENDING_APPLICATION_MONITOR_LIST";
+	private boolean clustered;
+	private boolean coordinator;
+	
     private static final AutoscalerContext INSTANCE = new AutoscalerContext();
+    private final transient DistributedObjectProvider distributedObjectProvider;
 
     // Map<ApplicationId, ApplicationContext>
     private Map<String, ApplicationContext> applicationContextMap;
@@ -45,13 +57,22 @@ public class AutoscalerContext {
     private List<String> pendingApplicationMonitors;
 
     private AutoscalerContext() {
-        applicationContextMap = readApplicationContextsFromRegistry();
-        if(applicationContextMap == null) {
-            applicationContextMap = new ConcurrentHashMap<String, ApplicationContext>();
+    	// Check clustering status
+        AxisConfiguration axisConfiguration = ServiceReferenceHolder.getInstance().getAxisConfiguration();
+        if ((axisConfiguration != null) && (axisConfiguration.getClusteringAgent() != null)) {
+            clustered = true;
         }
-        setClusterMonitors(new HashMap<String, ClusterMonitor>());
-        setApplicationMonitors(new HashMap<String, ApplicationMonitor>());
-        pendingApplicationMonitors = new ArrayList<String>();
+
+        // Initialize distributed object provider
+        distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
+    	
+    	applicationContextMap = readApplicationContextsFromRegistry();
+        if(applicationContextMap == null) {
+            applicationContextMap = distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP);//new ConcurrentHashMap<String, ApplicationContext>();
+        }
+        setClusterMonitors(distributedObjectProvider.getMap(AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP));
+        setApplicationMonitors(distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP));
+        pendingApplicationMonitors = distributedObjectProvider.getList(AS_PENDING_APPLICATION_MONITOR_LIST);//new ArrayList<String>();
     }
 
     private Map<String, ApplicationContext> readApplicationContextsFromRegistry() {
@@ -60,7 +81,7 @@ public class AutoscalerContext {
             return null;
         }
 
-        Map<String, ApplicationContext> applicationContextMap = new ConcurrentHashMap<String, ApplicationContext>();
+        Map<String, ApplicationContext> applicationContextMap = distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP);//new ConcurrentHashMap<String, ApplicationContext>();
         for(String resourcePath : resourcePaths) {
             ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContextByResourcePath(resourcePath);
             applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
@@ -157,5 +178,17 @@ public class AutoscalerContext {
     public void updateApplicationContext(ApplicationContext applicationContext) {
         applicationContextMap.put(applicationContext.getApplicationId(), applicationContext);
         RegistryManager.getInstance().persistApplicationContext(applicationContext);
+    }
+    
+    public boolean isClustered() {
+        return clustered;
+    }
+
+    public boolean isCoordinator() {
+        return coordinator;
+    }
+
+    public void setCoordinator(boolean coordinator) {
+        this.coordinator = coordinator;
     }
 }

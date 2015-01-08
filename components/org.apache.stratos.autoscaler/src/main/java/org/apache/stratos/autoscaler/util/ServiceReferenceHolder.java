@@ -21,11 +21,15 @@ package org.apache.stratos.autoscaler.util;
 */
 
 
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+
+import com.hazelcast.core.HazelcastInstance;
 
 public class ServiceReferenceHolder {
 	
@@ -34,6 +38,9 @@ public class ServiceReferenceHolder {
     private TaskService taskService;
     private ClusterStatusProcessorChain clusterStatusProcessorChain;
     private GroupStatusProcessorChain groupStatusProcessorChain;
+    private AxisConfiguration axisConfiguration;
+    private DistributedObjectProvider distributedObjectProvider;
+    private HazelcastInstance hazelcastInstance;
 
 	private ServiceReferenceHolder() {
 	}
@@ -44,6 +51,30 @@ public class ServiceReferenceHolder {
 	    }
 	        return instance;
 	}
+	
+	public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
+        this.axisConfiguration = axisConfiguration;
+    }
+    
+    public AxisConfiguration getAxisConfiguration() {
+        return axisConfiguration;
+    }
+    
+    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        this.distributedObjectProvider = distributedObjectProvider;
+    }
+
+    public DistributedObjectProvider getDistributedObjectProvider() {
+        return distributedObjectProvider;
+    }
+
+    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        this.hazelcastInstance = hazelcastInstance;
+    }
+
+    public HazelcastInstance getHazelcastInstance() {
+        return hazelcastInstance;
+    }
 	 
 	public void setRegistry(UserRegistry governanceSystemRegistry) {
 		registry = governanceSystemRegistry;
