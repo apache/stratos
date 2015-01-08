@@ -17,12 +17,29 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.listener.tenant;
+package org.apache.stratos.messaging.event.domain.mapping;
 
-import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.messaging.event.Event;
+
+import java.io.Serializable;
+import java.util.List;
 
 /**
- * Tenant subscription domains removed event listener.
+ * This event is fired periodically to be able for client's to initialize the current state
+ * of the domain mappings.
  */
-public abstract class SubscriptionDomainsRemovedEventListener extends EventListener {
+public class CompleteDomainMappingsEvent extends Event implements Serializable {
+
+    private static final long serialVersionUID = -3540099493690136278L;
+
+    private final List<DomainMapping> domainMappings;
+
+    public CompleteDomainMappingsEvent(List<DomainMapping> domainMappings) {
+        this.domainMappings = domainMappings;
+    }
+
+    public List<DomainMapping> getDomainMappings() {
+        return domainMappings;
+    }
 }

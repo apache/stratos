@@ -17,28 +17,30 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
+package org.apache.stratos.messaging.event.domain.mapping;
 
 import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
- * This event is fired when domains are removed from a tenant subscription.
+ * This event is fired when a domain name is removed.
  */
-public class SubscriptionDomainRemovedEvent extends Event implements Serializable {
+public class DomainMappingRemovedEvent extends Event implements Serializable {
     private static final long serialVersionUID = -8837521344795740210L;
 
     private final int tenantId;
+    private final String applicationId;
     private final String serviceName;
-    private final Set<String> clusterIds;
+    private final String clusterId;
     private final String domainName;
 
-    public SubscriptionDomainRemovedEvent(int tenantId, String serviceName, Set<String> clusterIds, String domainName) {
+    public DomainMappingRemovedEvent(int tenantId, String applicationId, String serviceName,
+                                     String clusterId, String domainName) {
         this.tenantId = tenantId;
+        this.applicationId = applicationId;
         this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
+        this.clusterId = clusterId;
         this.domainName = domainName;
     }
 
@@ -46,12 +48,16 @@ public class SubscriptionDomainRemovedEvent extends Event implements Serializabl
         return tenantId;
     }
 
+    public String getApplicationId() {
+        return applicationId;
+    }
+
     public String getServiceName() {
         return serviceName;
     }
 
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
+    public String getClusterId() {
+        return clusterId;
     }
 
     public String getDomainName() {

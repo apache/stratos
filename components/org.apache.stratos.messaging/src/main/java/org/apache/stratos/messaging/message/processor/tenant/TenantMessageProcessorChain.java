@@ -37,11 +37,9 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
     private TenantSubscribedMessageProcessor tenantSubscribedMessageProcessor;
     private TenantUnSubscribedMessageProcessor tenantUnSubscribedMessageProcessor;
-    private SubscriptionDomainAddedMessageProcessor subscriptionDomainAddedMessageProcessor;
-    private SubscriptionDomainRemovedMessageProcessor subscriptionDomainRemovedMessageProcessor;
 
     public void initialize() {
-        // Add tenant event processors
+        // Initialize tenant event processors
         completeTenantMessageProcessor = new CompleteTenantMessageProcessor();
         add(completeTenantMessageProcessor);
 
@@ -59,12 +57,6 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
 
         tenantUnSubscribedMessageProcessor = new TenantUnSubscribedMessageProcessor();
         add(tenantUnSubscribedMessageProcessor);
-
-        subscriptionDomainAddedMessageProcessor = new SubscriptionDomainAddedMessageProcessor();
-        add(subscriptionDomainAddedMessageProcessor);
-
-        subscriptionDomainRemovedMessageProcessor = new SubscriptionDomainRemovedMessageProcessor();
-        add(subscriptionDomainRemovedMessageProcessor);
 
         if (log.isDebugEnabled()) {
             log.debug("Tenant message processor chain initialized");
@@ -84,10 +76,6 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
             tenantSubscribedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantUnSubscribedEventListener) {
             tenantUnSubscribedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof SubscriptionDomainsAddedEventListener) {
-            subscriptionDomainAddedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof SubscriptionDomainsRemovedEventListener) {
-            subscriptionDomainRemovedMessageProcessor.addEventListener(eventListener);
         }
         else {
             throw new RuntimeException("Unknown event listener");

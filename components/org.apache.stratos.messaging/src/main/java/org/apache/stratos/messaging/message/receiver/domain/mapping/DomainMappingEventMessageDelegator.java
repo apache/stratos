@@ -16,31 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.message.receiver.topology;
+
+package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
-import org.apache.stratos.messaging.message.processor.topology.TopologyMessageProcessorChain;
-
+import org.apache.stratos.messaging.message.processor.domain.mapping.DomainMappingMessageProcessorChain;
 
 /**
- * Implements logic for processing topology event messages based on a given
- * topology process chain.
+ * Domain mapping event message delegator.
  */
-class TopologyEventMessageDelegator implements Runnable {
+class DomainMappingEventMessageDelegator implements Runnable {
 
-    private static final Log log = LogFactory.getLog(TopologyEventMessageDelegator.class);
+    private static final Log log = LogFactory.getLog(DomainMappingEventMessageDelegator.class);
 
     private MessageProcessorChain processorChain;
-    private TopologyEventMessageQueue messageQueue;
+    private DomainMappingEventMessageQueue messageQueue;
     private boolean terminated;
 
-    public TopologyEventMessageDelegator(TopologyEventMessageQueue messageQueue) {
+    public DomainMappingEventMessageDelegator(DomainMappingEventMessageQueue messageQueue) {
         this.messageQueue = messageQueue;
-        this.processorChain = new TopologyMessageProcessorChain();
+        this.processorChain = new DomainMappingMessageProcessorChain();
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -51,7 +50,7 @@ class TopologyEventMessageDelegator implements Runnable {
     public void run() {
         try {
             if (log.isInfoEnabled()) {
-                log.info("Topology event message delegator started");
+                log.info("Domain mapping event message delegator started");
             }
 
             while (!terminated) {
@@ -63,24 +62,24 @@ class TopologyEventMessageDelegator implements Runnable {
                     String json = message.getText();
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Topology event message [%s] received from queue: %s", type,
-                                messageQueue.getClass()));
+                        log.debug(String.format("Domain mapping event message received from queue: [event-class-name] %s " +
+                                        "[message-queue] %s", type, messageQueue.getClass()));
                     }
 
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Delegating topology event message: %s", type));
+                        log.debug(String.format("Delegating domain mapping event message: %s", type));
                     }
-                    processorChain.process(type, json, TopologyManager.getTopology());
+                    processorChain.process(type, json, DomainMappingManager.getInstance());
                 } catch (InterruptedException e) {
-                    log.info("TopologyEventMessageDelegator is shutting down ..");
+                    log.info("Domain mapping event message delegator is shutting down...");
                     return;
                 } catch (Exception e) {
-                    log.error("Failed to retrieve topology event message", e);
+                    log.error("Failed to retrieve domain mapping event message", e);
                 }
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Topology event message delegator failed", e);
+                log.error("Domain mapping event message delegator failed", e);
             }
         }
     }

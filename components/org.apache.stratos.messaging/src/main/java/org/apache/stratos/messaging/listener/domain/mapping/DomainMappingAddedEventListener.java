@@ -17,12 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.listener.tenant;
+package org.apache.stratos.messaging.listener.domain.mapping;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- * Tenant subscription domains added event listener.
+ * Domain name added event listener.
  */
-public abstract class SubscriptionDomainsAddedEventListener extends EventListener {
+public abstract class DomainMappingAddedEventListener extends EventListener {
 }

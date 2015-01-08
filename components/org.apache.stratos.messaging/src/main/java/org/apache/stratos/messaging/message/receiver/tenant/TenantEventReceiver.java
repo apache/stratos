@@ -51,7 +51,6 @@ public class TenantEventReceiver{
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Util.Topics.TENANT_TOPIC.getTopicName(), messageListener);
-//            subscriber.setMessageListener(messageListener);
             Thread subscriberThread = new Thread(topicSubscriber);
             subscriberThread.start();
             if (log.isDebugEnabled()) {

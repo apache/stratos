@@ -17,44 +17,55 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.tenant;
-
-import org.apache.stratos.messaging.event.Event;
+package org.apache.stratos.messaging.domain.domain.mapping;
 
 import java.io.Serializable;
-import java.util.*;
 
 /**
- * This event is fired when domains are removed from a tenant subscription.
+ * Domain mapping definition.
  */
-public class SubscriptionDomainsRemovedEvent extends Event implements Serializable {
-    private static final long serialVersionUID = -8837521344795740210L;
+public class DomainMapping implements Serializable {
+
+    private static final long serialVersionUID = -3718485901172753504L;
 
     private final int tenantId;
+    private final String applicationId;
     private final String serviceName;
-    private final Set<String> clusterIds;
-    private Set<String> domains;
+    private final String clusterId;
+    private final String domainName;
+    private final String contextPath;
 
-    public SubscriptionDomainsRemovedEvent(int tenantId, String serviceName, Set<String> clusterIds, Set<String> domains) {
+    public DomainMapping(int tenantId, String applicationId, String serviceName, String clusterId,
+                         String domainName, String contextPath) {
         this.tenantId = tenantId;
+        this.applicationId = applicationId;
         this.serviceName = serviceName;
-        this.clusterIds = clusterIds;
-        this.domains = (domains != null) ? domains : new HashSet<String>();
+        this.clusterId = clusterId;
+        this.domainName = domainName;
+        this.contextPath = contextPath;
     }
 
     public int getTenantId() {
         return tenantId;
     }
 
+    public String getApplicationId() {
+        return applicationId;
+    }
+
     public String getServiceName() {
         return serviceName;
     }
 
-    public Set<String> getClusterIds() {
-        return Collections.unmodifiableSet(clusterIds);
+    public String getClusterId() {
+        return clusterId;
     }
 
-    public Set<String> getDomains() {
-        return Collections.unmodifiableSet(domains);
+    public String getDomainName() {
+        return domainName;
+    }
+
+    public String getContextPath() {
+        return contextPath;
     }
 }

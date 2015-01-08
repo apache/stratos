@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.receiver.topology;
+package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,22 +28,21 @@ import org.apache.stratos.messaging.util.Util;
 import java.util.concurrent.ExecutorService;
 
 /**
- * A thread for receiving topology information from message broker and
- * build topology in topology manager.
+ * Domain mapping event receiver.
  */
-public class TopologyEventReceiver {
+public class DomainMappingEventReceiver {
 
-    private static final Log log = LogFactory.getLog(TopologyEventReceiver.class);
+    private static final Log log = LogFactory.getLog(DomainMappingEventReceiver.class);
 
-    private TopologyEventMessageDelegator messageDelegator;
-    private TopologyEventMessageListener messageListener;
+    private DomainMappingEventMessageDelegator messageDelegator;
+    private DomainMappingEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
-    public TopologyEventReceiver() {
-        TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
-        this.messageDelegator = new TopologyEventMessageDelegator(messageQueue);
-        this.messageListener = new TopologyEventMessageListener(messageQueue);
+    public DomainMappingEventReceiver() {
+        DomainMappingEventMessageQueue messageQueue = new DomainMappingEventMessageQueue();
+        this.messageDelegator = new DomainMappingEventMessageDelegator(messageQueue);
+        this.messageListener = new DomainMappingEventMessageListener(messageQueue);
     }
 
     public void addEventListener(EventListener eventListener) {
@@ -51,28 +50,28 @@ public class TopologyEventReceiver {
     }
 
 
-	public void execute() {
-		try {
-			// Start topic subscriber thread
-			topicSubscriber = new TopicSubscriber(Util.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
-			// subscriber.setMessageListener(messageListener);
-			executorService.execute(topicSubscriber);
+    public void execute() {
+        try {
+            // Start topic subscriber thread
+            topicSubscriber = new TopicSubscriber(Util.Topics.DOMAIN_MAPPING_TOPIC.getTopicName(), messageListener);
+            // subscriber.setMessageListener(messageListener);
+            executorService.execute(topicSubscriber);
 
 
             if (log.isDebugEnabled()) {
-                log.debug("Topology event message receiver thread started");
+                log.debug("Domain mapping event message receiver thread started");
             }
 
             // Start topology event message delegator thread
             executorService.execute(messageDelegator);
             if (log.isDebugEnabled()) {
-                log.debug("Topology event message delegator thread started");
+                log.debug("Domain mapping event message delegator thread started");
             }
 
 
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Topology receiver failed", e);
+                log.error("Domain mapping receiver failed", e);
             }
         }
     }
@@ -82,11 +81,11 @@ public class TopologyEventReceiver {
         messageDelegator.terminate();
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }
