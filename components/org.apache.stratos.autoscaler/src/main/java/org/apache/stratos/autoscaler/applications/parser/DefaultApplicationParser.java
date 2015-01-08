@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.amber.oauth2.common.exception.OAuthProblemException;
 import org.apache.amber.oauth2.common.exception.OAuthSystemException;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -297,9 +296,11 @@ public class DefaultApplicationParser implements ApplicationParser {
 		    		 for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 		    			 ClusterDataHolder dataHolder = clusterDataMapByType.get(startupOrderComponent.split("\\.")[1]);
 					     if(dataHolder!=null) {
-						     dependencyClusterIDs.add(dataHolder.getClusterId());
-						     if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
-							     break;
+						     if(!dataHolder.getClusterId().equals(clusterId)) {
+							     dependencyClusterIDs.add(dataHolder.getClusterId());
+							     if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
+								     break;
+							     }
 						     }
 					     }
 		    		 }
