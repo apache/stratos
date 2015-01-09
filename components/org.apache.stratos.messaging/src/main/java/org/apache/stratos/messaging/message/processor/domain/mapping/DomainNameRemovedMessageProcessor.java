@@ -21,13 +21,12 @@ package org.apache.stratos.messaging.message.processor.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
-import org.apache.stratos.messaging.domain.tenant.Subscription;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingManager;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
 import org.apache.stratos.messaging.util.Util;

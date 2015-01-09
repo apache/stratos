@@ -24,9 +24,9 @@ import org.apache.stratos.autoscaler.exception.application.MonitorNotFoundExcept
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
+import org.apache.stratos.messaging.domain.application.GroupStatus;
 
 /**
  * This will build the necessary monitor status events to be sent to the parent/child  monitor

@@ -23,8 +23,8 @@ import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.Applications;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.Applications;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 

@@ -34,7 +34,7 @@ import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
-import org.apache.stratos.messaging.domain.applications.Application;
+import org.apache.stratos.messaging.domain.application.Application;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.Resource;

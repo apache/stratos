@@ -22,9 +22,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.applications.ApplicationDeletedEvent;
-import org.apache.stratos.messaging.listener.applications.ApplicationDeletedEventListener;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.event.application.ApplicationDeletedEvent;
+import org.apache.stratos.messaging.listener.application.ApplicationDeletedEventListener;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 
 import java.util.concurrent.ExecutorService;
 

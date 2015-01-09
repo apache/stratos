@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain.instance;
 
-import org.apache.stratos.messaging.domain.applications.ApplicationStatus;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.topology.LifeCycleStateTransitionBehavior;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 

@@ -119,6 +119,13 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="addDomainMapping">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="domainMapping" nillable="true" type="ax27:DomainMapping"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="StratosManagerServiceArtifactDistributionCoordinatorException">
                 <xs:complexType>
                     <xs:sequence>
@@ -138,13 +145,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addDomainMapping">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="domainMapping" nillable="true" type="ax27:DomainMapping"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>

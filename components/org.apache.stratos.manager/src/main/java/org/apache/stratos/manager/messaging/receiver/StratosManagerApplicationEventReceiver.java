@@ -21,7 +21,7 @@ package org.apache.stratos.manager.messaging.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 
 /**
  * Stratos manager application event receiver.

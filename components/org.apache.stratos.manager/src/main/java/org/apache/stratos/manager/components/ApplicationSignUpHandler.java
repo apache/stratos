@@ -27,8 +27,8 @@ import org.apache.stratos.manager.domain.ApplicationSignUp;
 import org.apache.stratos.manager.domain.ArtifactRepository;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.registry.RegistryManager;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 
 import java.util.ArrayList;
 import java.util.List;

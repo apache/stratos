@@ -26,10 +26,10 @@ import org.apache.stratos.manager.domain.ApplicationSignUp;
 import org.apache.stratos.manager.domain.ArtifactRepository;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
 import org.apache.stratos.manager.messaging.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.messaging.domain.applications.Application;
-import org.apache.stratos.messaging.domain.applications.Applications;
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
-import org.apache.stratos.messaging.message.receiver.applications.ApplicationManager;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.Applications;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 
 import java.util.List;
 

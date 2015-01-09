@@ -22,8 +22,8 @@ package org.apache.stratos.autoscaler.applications.parser;
 import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
 import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
-import org.apache.stratos.messaging.domain.applications.StartupOrder;
+import org.apache.stratos.messaging.domain.application.ScalingDependentList;
+import org.apache.stratos.messaging.domain.application.StartupOrder;
 
 import java.util.*;
 

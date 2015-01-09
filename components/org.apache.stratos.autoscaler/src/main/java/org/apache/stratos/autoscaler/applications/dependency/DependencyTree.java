@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
-import org.apache.stratos.messaging.domain.applications.ScalingDependentList;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -40,7 +40,7 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.messaging.domain.applications.*;
+import org.apache.stratos.messaging.domain.application.*;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
 import java.rmi.RemoteException;

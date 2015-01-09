@@ -18,9 +18,7 @@
  */
 package org.apache.stratos.autoscaler.monitor.events;
 
-import org.apache.stratos.messaging.domain.applications.GroupStatus;
-
-import java.util.List;
+import org.apache.stratos.messaging.domain.application.GroupStatus;
 
 /**
  * This will use to notify observers upon a group activation events received in Topology.

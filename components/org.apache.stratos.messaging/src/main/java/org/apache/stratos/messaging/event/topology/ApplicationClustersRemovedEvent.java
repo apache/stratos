@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.applications.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 
 import java.io.Serializable;
 import java.util.Set;
