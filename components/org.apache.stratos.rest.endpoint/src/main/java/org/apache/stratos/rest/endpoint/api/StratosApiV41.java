@@ -413,7 +413,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @POST
-    @Path("/applications/{applicationId}/signups")
+    @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -424,13 +424,13 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @GET
-    @Path("/applications/{applicationId}/signups/{signUpId}")
+    @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationSignUp(@PathParam("applicationId") String applicationId,
                                          @PathParam("signUpId") String signUpId) throws RestAPIException {
-        ApplicationSignUpBean applicationSignUpBean = StratosApiV41Utils.getApplicationSignUp(applicationId, signUpId);
+        ApplicationSignUpBean applicationSignUpBean = StratosApiV41Utils.getApplicationSignUp(applicationId);
         if (applicationSignUpBean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -438,26 +438,13 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     @DELETE
-    @Path("/applications/{applicationId}/signups/{signUpId}")
+    @Path("/applications/{applicationId}/signup")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response removeApplicationSignUp(@PathParam("applicationId") String applicationId,
-                                            @PathParam("signUpId") String signUpId) throws RestAPIException {
-        StratosApiV41Utils.removeApplicationSignUp(applicationId, signUpId);
+    public Response removeApplicationSignUp(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        StratosApiV41Utils.removeApplicationSignUp(applicationId);
         return Response.ok().build();
-    }
-
-    @GET
-    @Path("/applications/{applicationId}/signups")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getApplicationSignUps(@PathParam("applicationId") String applicationId) throws RestAPIException {
-        List<ApplicationSignUpBean> applicationSignUpBeans = StratosApiV41Utils.getApplicationSignUps(applicationId);
-        ApplicationSignUpBean[] applicationSignUpBeansArray = applicationSignUpBeans.toArray(
-                new ApplicationSignUpBean[applicationSignUpBeans.size()]);
-        return Response.ok(applicationSignUpBeansArray).build();
     }
 
     /**

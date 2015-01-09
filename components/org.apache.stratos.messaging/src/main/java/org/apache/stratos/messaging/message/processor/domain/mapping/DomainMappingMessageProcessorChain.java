@@ -22,7 +22,6 @@ package org.apache.stratos.messaging.message.processor.domain.mapping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.listener.domain.mapping.CompleteDomainMappingsEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
@@ -34,15 +33,11 @@ public class DomainMappingMessageProcessorChain extends MessageProcessorChain {
 
     private static final Log log = LogFactory.getLog(DomainMappingMessageProcessorChain.class);
 
-    private CompleteDomainMappingsMessageProcessor completeDomainMappingsMessageProcessor;
     private DomainNameAddedMessageProcessor domainNameAddedMessageProcessor;
     private DomainNameRemovedMessageProcessor domainNameRemovedMessageProcessor;
 
     @Override
     protected void initialize() {
-        completeDomainMappingsMessageProcessor = new CompleteDomainMappingsMessageProcessor();
-        add(completeDomainMappingsMessageProcessor);
-
         domainNameAddedMessageProcessor = new DomainNameAddedMessageProcessor();
         add(domainNameAddedMessageProcessor);
 
@@ -52,9 +47,7 @@ public class DomainMappingMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if (eventListener instanceof CompleteDomainMappingsEventListener) {
-            completeDomainMappingsMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof DomainMappingAddedEventListener) {
+        if (eventListener instanceof DomainMappingAddedEventListener) {
             domainNameAddedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof DomainMappingRemovedEventListener) {
             domainNameRemovedMessageProcessor.addEventListener(eventListener);

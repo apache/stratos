@@ -108,7 +108,7 @@ public class LoadBalancerContext {
         return hostNameClusterMap;
     }
 
-    public HostNameAppContextMap getHostNameAppContextMap() {
+    public HostNameAppContextMap getHostNameContextPathMap() {
         return hostNameAppContextMap;
     }
 

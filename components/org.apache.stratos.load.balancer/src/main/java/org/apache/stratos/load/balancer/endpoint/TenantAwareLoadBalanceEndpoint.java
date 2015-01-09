@@ -596,8 +596,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             }
 
             String hostName = extractTargetHost(synCtx);
-            if (LoadBalancerContext.getInstance().getHostNameAppContextMap().contains(hostName)) {
-                String appContext = LoadBalancerContext.getInstance().getHostNameAppContextMap().getAppContext(hostName);
+            if (LoadBalancerContext.getInstance().getHostNameContextPathMap().contains(hostName)) {
+                String appContext = LoadBalancerContext.getInstance().getHostNameContextPathMap().getAppContext(hostName);
                 if(StringUtils.isNotBlank(appContext)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Domain mapping found with application context: [domain-name] %s [app-context] %s", hostName, appContext));

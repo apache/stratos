@@ -22,7 +22,7 @@ package org.apache.stratos.load.balancer.context.map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Host/domain name application context map.
+ * Host/domain name context path map.
  */
 public class HostNameAppContextMap {
     private ConcurrentHashMap<String, String> concurrentHashMap;
@@ -31,7 +31,7 @@ public class HostNameAppContextMap {
         concurrentHashMap = new ConcurrentHashMap<String, String>();
     }
 
-    public void addAppContext(String hostName, String appContext) {
+    public void addContextPath(String hostName, String appContext) {
         concurrentHashMap.put(hostName, appContext);
     }
 
@@ -39,7 +39,7 @@ public class HostNameAppContextMap {
         return concurrentHashMap.get(hostName);
     }
 
-    public void removeAppContext(String hostName) {
+    public void removeContextPath(String hostName) {
         if(contains(hostName)) {
             concurrentHashMap.remove(hostName);
         }

@@ -176,10 +176,10 @@ public class LoadBalancerContextUtil {
      * Add clusters against domain name for the given service, cluster ids.
      *
      * @param serviceName
-     * @param clusterIds
+     * @param clusterId
      * @param domainName
      */
-    public static void addClustersAgainstDomain(String serviceName, Set<String> clusterIds, String domainName) {
+    public static void addClusterAgainstDomain(String serviceName, String clusterId, String domainName) {
         try {
             TopologyManager.acquireReadLock();
             Service service = TopologyManager.getTopology().getService(serviceName);
@@ -189,15 +189,12 @@ public class LoadBalancerContextUtil {
                 }
                 return;
             }
-            Cluster cluster;
-            for (String clusterId : clusterIds) {
-                cluster = service.getCluster(clusterId);
-                if (cluster != null) {
-                    addClusterAgainstDomain(serviceName, cluster, domainName);
-                } else {
-                    if (log.isWarnEnabled()) {
-                        log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
-                    }
+            Cluster cluster = service.getCluster(clusterId);
+            if (cluster != null) {
+                addClusterAgainstDomain(serviceName, cluster, domainName);
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
                 }
             }
         } finally {
@@ -209,10 +206,10 @@ public class LoadBalancerContextUtil {
      * Remove clusters mapped against domain name for the given service, cluster ids.
      *
      * @param serviceName
-     * @param clusterIds
+     * @param clusterId
      * @param domainName
      */
-    public static void removeClustersAgainstDomain(String serviceName, Set<String> clusterIds, String domainName) {
+    public static void removeClusterAgainstDomain(String serviceName, String clusterId, String domainName) {
         try {
             TopologyManager.acquireReadLock();
 
@@ -223,16 +220,13 @@ public class LoadBalancerContextUtil {
                 }
                 return;
             }
-            Cluster cluster;
-            for (String clusterId : clusterIds) {
-                cluster = service.getCluster(clusterId);
-                if (cluster != null) {
-                    // Remove clusters mapped against domain names
-                    removeClusterAgainstDomain(cluster, domainName);
-                } else {
-                    if (log.isWarnEnabled()) {
-                        log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
-                    }
+            Cluster cluster = service.getCluster(clusterId);
+            if (cluster != null) {
+                // Remove clusters mapped against domain names
+                removeClusterAgainstDomain(cluster, domainName);
+            } else {
+                if (log.isWarnEnabled()) {
+                    log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s", serviceName, clusterId));
                 }
             }
         } finally {
@@ -426,18 +420,18 @@ public class LoadBalancerContextUtil {
         }
     }
 
-    public static void addAppContextAgainstDomain(String domainName, String appContext) {
-        LoadBalancerContext.getInstance().getHostNameAppContextMap().addAppContext(domainName, appContext);
+    public static void addContextPathAgainstDomain(String domainName, String appContext) {
+        LoadBalancerContext.getInstance().getHostNameContextPathMap().addContextPath(domainName, appContext);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Application context added against domain name: [domain-name] %s [app-context] %s",
+            log.debug(String.format("Context path added against domain name: [domain-name] %s [context-path] %s",
                     domainName, appContext));
         }
     }
 
-    public static void removeAppContextAgainstDomain(String domainName) {
-        LoadBalancerContext.getInstance().getHostNameAppContextMap().removeAppContext(domainName);
+    public static void removeContextPathAgainstDomain(String domainName) {
+        LoadBalancerContext.getInstance().getHostNameContextPathMap().removeContextPath(domainName);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Application context removed against domain name: [domain-name] %s",
+            log.debug(String.format("Context path removed against domain name: [domain-name] %s",
                     domainName));
         }
     }
@@ -464,7 +458,7 @@ public class LoadBalancerContextUtil {
                                     "[tenant-id] %d [domains] %s", serviceName, tenantId, subscription.getSubscriptionDomains()));
                         }
                         for (SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
-                            removeAppContextAgainstDomain(subscriptionDomain.getDomainName());
+                            removeContextPathAgainstDomain(subscriptionDomain.getDomainName());
                         }
                     } else {
                         if (log.isDebugEnabled()) {

@@ -17,29 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.domain.mapping;
-
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
-import org.apache.stratos.messaging.event.Event;
-
-import java.io.Serializable;
-import java.util.List;
+package org.apache.stratos.manager.exception;
 
 /**
- * This event is fired periodically to be able for client's to initialize the current state
- * of the domain mappings.
+ * Domain mapping exception.
  */
-public class CompleteDomainMappingsEvent extends Event implements Serializable {
+public class DomainMappingException extends Exception {
 
-    private static final long serialVersionUID = -3540099493690136278L;
-
-    private final List<DomainMapping> domainMappings;
-
-    public CompleteDomainMappingsEvent(List<DomainMapping> domainMappings) {
-        this.domainMappings = domainMappings;
-    }
-
-    public List<DomainMapping> getDomainMappings() {
-        return domainMappings;
+    public DomainMappingException(String message, Throwable throwable) {
+        super(message, throwable);
     }
 }

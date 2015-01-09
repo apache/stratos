@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.messaging;
+package org.apache.stratos.load.balancer.messaging.receiver;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;

@@ -33,6 +33,7 @@ import org.apache.stratos.messaging.util.Util;
  * instances.
  */
 public class InstanceNotificationPublisher {
+
 	private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
 
 	public InstanceNotificationPublisher() {

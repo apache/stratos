@@ -17,13 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.messaging;
+package org.apache.stratos.load.balancer.messaging.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
-import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.ServiceType;
@@ -68,22 +67,13 @@ public class LoadBalancerTenantEventReceiver{
                                         tenant.getTenantId(),
                                         subscription.getClusterIds());
                             }
-
-                            for (SubscriptionDomain subscriptionDomain : subscription.getSubscriptionDomains()) {
-                                LoadBalancerContextUtil.addClustersAgainstDomain(
-                                        subscription.getServiceName(),
-                                        subscription.getClusterIds(),
-                                        subscriptionDomain.getDomainName());
-
-                                LoadBalancerContextUtil.addAppContextAgainstDomain(subscriptionDomain.getDomainName(),
-                                        subscriptionDomain.getApplicationContext());
-                            }
                         }
                     }
                     initialized = true;
                 }
             }
         });
+
         tenantEventReceiver.addEventListener(new TenantSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -103,6 +93,7 @@ public class LoadBalancerTenantEventReceiver{
                 }
             }
         });
+
         tenantEventReceiver.addEventListener(new TenantUnSubscribedEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -132,51 +123,6 @@ public class LoadBalancerTenantEventReceiver{
                         tenantUnSubscribedEvent.getTenantId());
             }
         });
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent) event;
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant subscription domain added event received: [tenant-id] %d " +
-                            "[service] %s [cluster-ids] %s [domain-name] %s",
-                            subscriptionDomainAddedEvent.getTenantId(),
-                            subscriptionDomainAddedEvent.getServiceName(),
-                            subscriptionDomainAddedEvent.getClusterIds(),
-                            subscriptionDomainAddedEvent.getDomainName()));
-                }
-
-                LoadBalancerContextUtil.addClustersAgainstDomain(
-                        subscriptionDomainAddedEvent.getServiceName(),
-                        subscriptionDomainAddedEvent.getClusterIds(),
-                        subscriptionDomainAddedEvent.getDomainName());
-
-                LoadBalancerContextUtil.addAppContextAgainstDomain(
-                        subscriptionDomainAddedEvent.getDomainName(),
-                        subscriptionDomainAddedEvent.getApplicationContext());
-            }
-        });
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent) event;
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Tenant subscription domain removed event received: [tenant-id] %d " +
-                            "[service] %s [cluster-ids] %s [domain-name] %s",
-                            subscriptionDomainRemovedEvent.getTenantId(),
-                            subscriptionDomainRemovedEvent.getServiceName(),
-                            subscriptionDomainRemovedEvent.getClusterIds(),
-                            subscriptionDomainRemovedEvent.getDomainName()));
-                }
-
-                LoadBalancerContextUtil.removeClustersAgainstDomain(
-                        subscriptionDomainRemovedEvent.getServiceName(),
-                        subscriptionDomainRemovedEvent.getClusterIds(),
-                        subscriptionDomainRemovedEvent.getDomainName());
-
-                LoadBalancerContextUtil.removeAppContextAgainstDomain(
-                        subscriptionDomainRemovedEvent.getDomainName());
-            }
-        });
     }
 
     private boolean isMultiTenantService(String serviceName) {
@@ -191,7 +137,6 @@ public class LoadBalancerTenantEventReceiver{
             TopologyManager.releaseReadLock();
         }
     }
-
 
     public void execute() {
         tenantEventReceiver.execute();

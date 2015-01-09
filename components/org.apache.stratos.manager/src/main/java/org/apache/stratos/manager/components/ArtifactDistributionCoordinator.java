@@ -40,42 +40,46 @@ public class ArtifactDistributionCoordinator {
 
     private static final Log log = LogFactory.getLog(ArtifactDistributionCoordinator.class);
 
-    private ApplicationSignUpManager applicationSignUpManager;
+    private ApplicationSignUpHandler applicationSignUpManager;
     private InstanceNotificationPublisher publisher;
 
 
     public ArtifactDistributionCoordinator() {
-        applicationSignUpManager = new ApplicationSignUpManager();
+        applicationSignUpManager = new ApplicationSignUpHandler();
         publisher = new InstanceNotificationPublisher();
     }
 
     /**
      * Notify artifact updated event for an application signup.
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      * @throws ArtifactDistributionCoordinatorException
      */
-    public void notifyArtifactUpdatedEventForSignUp(String signUpId) throws ArtifactDistributionCoordinatorException {
-        notifyArtifactUpdatedEventForSignUp(signUpId, null);
+    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId) throws ArtifactDistributionCoordinatorException {
+        notifyArtifactUpdatedEventForSignUp(applicationId, tenantId, null);
     }
 
     /**
      * Notify artifact updated event for an application signup, cluster.
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      * @param clusterId
      * @throws ArtifactDistributionCoordinatorException
      */
-    public void notifyArtifactUpdatedEventForSignUp(String signUpId, String clusterId) throws ArtifactDistributionCoordinatorException {
+    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId, String clusterId)
+            throws ArtifactDistributionCoordinatorException {
+
         try {
-            ApplicationSignUp applicationSignUp = applicationSignUpManager.getApplicationSignUp(signUpId);
+            ApplicationSignUp applicationSignUp = applicationSignUpManager.getApplicationSignUp(applicationId, tenantId);
             if (applicationSignUp == null) {
-                throw new RuntimeException(String.format("Application signup not found: [signup-id] %s", signUpId));
+                throw new RuntimeException(String.format("Application signup not found: [application-id] %s " +
+                        "[tenant-id] %d", applicationId, tenantId));
             }
 
-            String applicationId = applicationSignUp.getApplicationId();
             if (!artifactRepositoriesExist(applicationSignUp)) {
                 log.warn(String.format("Artifact repositories not found for application signup, " +
-                                "artifact updated event not sent: [application-id] %s [signup-id] %s ",
-                        applicationId, applicationSignUp.getSignUpId()));
+                                "artifact updated event not sent: [application-id] %s [tenant-id] %s ",
+                        applicationId, tenantId));
             } else {
                 for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
                     if (artifactRepository != null) {
@@ -90,9 +94,9 @@ public class ArtifactDistributionCoordinator {
 
                             if (log.isInfoEnabled()) {
                                 log.info(String.format("Artifact updated event published: [application-id] %s " +
-                                                "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
+                                                "[tenant-id] %d [cartridge-type] %s [alias] %s [repo-url] %s",
                                         applicationId,
-                                        applicationSignUp.getSignUpId(),
+                                        tenantId,
                                         artifactRepository.getCartridgeType(),
                                         artifactRepository.getAlias(),
                                         artifactRepository.getRepoUrl()));
@@ -128,6 +132,7 @@ public class ArtifactDistributionCoordinator {
                             if((artifactRepository != null) && (artifactRepository.getRepoUrl().equals(repoUrl))) {
 
                                 String applicationId = applicationSignUp.getApplicationId();
+                                int tenantId = applicationSignUp.getTenantId();
                                 String clusterId = findClusterId(applicationId, artifactRepository.getAlias());
 
                                 publisher.publishArtifactUpdatedEvent(clusterId,
@@ -138,9 +143,9 @@ public class ArtifactDistributionCoordinator {
 
                                 if (log.isInfoEnabled()) {
                                     log.info(String.format("Artifact updated event published: [application-id] %s " +
-                                                    "[signup-id] %s [cartridge-type] %s [alias] %s [repo-url] %s",
+                                                    "[tenant-id] %d [cartridge-type] %s [alias] %s [repo-url] %s",
                                             applicationId,
-                                            applicationSignUp.getSignUpId(),
+                                            tenantId,
                                             artifactRepository.getCartridgeType(),
                                             artifactRepository.getAlias(),
                                             artifactRepository.getRepoUrl()));

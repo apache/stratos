@@ -22,6 +22,8 @@ package org.apache.stratos.manager.services;
 import org.apache.stratos.manager.domain.ApplicationSignUp;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
+import org.apache.stratos.manager.exception.DomainMappingException;
+import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
 
 import java.util.List;
 
@@ -33,36 +35,39 @@ public interface StratosManagerService {
     /**
      * Add application signup
      * @param applicationSignUp
-     * @return signup id
      * @throws ApplicationSignUpException
      */
-    public String addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException;
+    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException;
 
     /**
      * Remove application signup.
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      */
-    public void removeApplicationSignUp(String signUpId) throws ApplicationSignUpException;
+    public void removeApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException;
 
     /**
      * Get application signup.
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      * @return
      */
-    public ApplicationSignUp getApplicationSignUp(String signUpId) throws ApplicationSignUpException;
+    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws ApplicationSignUpException;
 
     /**
-     * Get application signups.
+     * Get application signups available for an application.
      * @return
      */
-    public List<ApplicationSignUp> getApplicationSignUps(String applicationId) throws ApplicationSignUpException;
+    public ApplicationSignUp[] getApplicationSignUps(String applicationId) throws ApplicationSignUpException;
 
     /**
      * Notify artifact updated event for application signup.
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      * @throws ArtifactDistributionCoordinatorException
      */
-    public void notifyArtifactUpdatedEventForSignUp(String signUpId) throws ArtifactDistributionCoordinatorException;
+    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId)
+            throws ArtifactDistributionCoordinatorException;
 
     /**
      * Notify artifact updated event for artifact repository.
@@ -70,4 +75,29 @@ public interface StratosManagerService {
      * @throws ArtifactDistributionCoordinatorException
      */
     public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws ArtifactDistributionCoordinatorException;
+
+    /**
+     * Add domain mapping
+     * @param domainMapping
+     * @throws DomainMappingException
+     */
+    public void addDomainMapping(DomainMapping domainMapping) throws DomainMappingException;
+
+    /**
+     * Get domain mappings available for application signup.
+     * @param applicationId
+     * @param tenantId
+     * @return
+     * @throws DomainMappingException
+     */
+    public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws DomainMappingException;
+
+    /**
+     * Remove domain mapping by domain name.
+     * @param applicationId
+     * @param tenantId
+     * @param domainName
+     * @throws DomainMappingException
+     */
+    public void removeDomainMapping(String applicationId, int tenantId, String domainName) throws DomainMappingException;
 }

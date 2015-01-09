@@ -23,8 +23,8 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
@@ -61,9 +61,9 @@ public interface ExtensionHandler {
 
     public void volumeMountExtension(String persistenceMappingsPayload);
 
-    public void onSubscriptionDomainAddedEvent(SubscriptionDomainAddedEvent subscriptionDomainAddedEvent);
+    public void onSubscriptionDomainAddedEvent(DomainMappingAddedEvent subscriptionDomainAddedEvent);
 
-    public void onSubscriptionDomainRemovedEvent(SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent);
+    public void onSubscriptionDomainRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent);
 
     public void onCopyArtifactsExtension(String src, String des);
 

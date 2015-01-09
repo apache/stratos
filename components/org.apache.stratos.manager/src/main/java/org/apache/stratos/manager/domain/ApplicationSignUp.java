@@ -19,6 +19,8 @@
 
 package org.apache.stratos.manager.domain;
 
+import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+
 import java.io.Serializable;
 
 /**
@@ -28,18 +30,10 @@ public class ApplicationSignUp implements Serializable {
 
     private static final long serialVersionUID = -3055522170914869018L;
 
-    private String signUpId;
     private int tenantId;
     private String applicationId;
     private ArtifactRepository[] artifactRepositories;
-
-    public String getSignUpId() {
-        return signUpId;
-    }
-
-    public void setSignUpId(String signUpId) {
-        this.signUpId = signUpId;
-    }
+    private DomainMapping[] domainMappings;
 
     public int getTenantId() {
         return tenantId;
@@ -63,5 +57,13 @@ public class ApplicationSignUp implements Serializable {
 
     public void setArtifactRepositories(ArtifactRepository[] artifactRepositories) {
         this.artifactRepositories = artifactRepositories;
+    }
+
+    public DomainMapping[] getDomainMappings() {
+        return domainMappings;
+    }
+
+    public void setDomainMappings(DomainMapping[] domainMappings) {
+        this.domainMappings = domainMappings;
     }
 }

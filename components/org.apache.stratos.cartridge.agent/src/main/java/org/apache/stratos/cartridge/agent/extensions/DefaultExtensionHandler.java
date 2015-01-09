@@ -37,8 +37,8 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
@@ -946,7 +946,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     }
 
     @Override
-    public void onSubscriptionDomainAddedEvent(SubscriptionDomainAddedEvent subscriptionDomainAddedEvent) {
+    public void onSubscriptionDomainAddedEvent(DomainMappingAddedEvent subscriptionDomainAddedEvent) {
         String tenantDomain = findTenantDomain(subscriptionDomainAddedEvent.getTenantId());
         if (log.isInfoEnabled()) {
             log.info(String.format("Subscription domain added event received: [tenant-id] %d [tenant-domain] %s " +
@@ -954,7 +954,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                     subscriptionDomainAddedEvent.getTenantId(),
                     tenantDomain,
                     subscriptionDomainAddedEvent.getDomainName(),
-                    subscriptionDomainAddedEvent.getApplicationContext()
+                    subscriptionDomainAddedEvent.getContextPath()
             ));
         }
 
@@ -968,7 +968,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         env.put("STRATOS_SUBSCRIPTION_DOMAIN_NAME", subscriptionDomainAddedEvent.getDomainName());
         env.put("STRATOS_SUBSCRIPTION_TENANT_ID", Integer.toString(subscriptionDomainAddedEvent.getTenantId()));
         env.put("STRATOS_SUBSCRIPTION_TENANT_DOMAIN", tenantDomain);
-        env.put("STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT", subscriptionDomainAddedEvent.getApplicationContext());
+        env.put("STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT", subscriptionDomainAddedEvent.getContextPath());
         ExtensionUtils.executeSubscriptionDomainAddedExtension(env);
     }
 
@@ -986,7 +986,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     }
 
     @Override
-    public void onSubscriptionDomainRemovedEvent(SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent) {
+    public void onSubscriptionDomainRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent) {
         String tenantDomain = findTenantDomain(subscriptionDomainRemovedEvent.getTenantId());
         if (log.isInfoEnabled()) {
             log.info(String.format("Subscription domain removed event received: [tenant-id] %d [tenant-domain] %s " +

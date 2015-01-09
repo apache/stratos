@@ -30,29 +30,29 @@ public class DomainMappingAddedEvent extends Event implements Serializable {
 
     private static final long serialVersionUID = 3457484382856403382L;
 
-    private final int tenantId;
     private final String applicationId;
+    private final int tenantId;
     private final String serviceName;
     private final String clusterId;
     private final String domainName;
     private final String contextPath;
 
-    public DomainMappingAddedEvent(int tenantId, String applicationId, String serviceName, String clusterId,
+    public DomainMappingAddedEvent(String applicationId, int tenantId, String serviceName, String clusterId,
                                    String domainName, String contextPath) {
-        this.tenantId = tenantId;
         this.applicationId = applicationId;
+        this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.domainName = domainName;
         this.contextPath = contextPath;
     }
 
-    public int getTenantId() {
-        return tenantId;
-    }
-
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public int getTenantId() {
+        return tenantId;
     }
 
     public String getServiceName() {
@@ -69,5 +69,12 @@ public class DomainMappingAddedEvent extends Event implements Serializable {
 
     public String getContextPath() {
         return contextPath;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[application-id] %s [tenant-id] %d [service-name] %s [cluster-id] %s [domain-name] %s " +
+                "[context-path] %s", getApplicationId(), getTenantId(), getServiceName(), getClusterId(), getDomainName(),
+                getContextPath());
     }
 }

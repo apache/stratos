@@ -60,6 +60,7 @@ import org.apache.stratos.messaging.message.receiver.applications.ApplicationMan
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
+import org.wso2.carbon.context.CarbonContext;
 
 import java.rmi.RemoteException;
 import java.util.*;
@@ -1359,18 +1360,22 @@ public class StratosApiV41Utils {
                 log.info(String.format("Adding application signup: [application-id] %s", applicationId));
             }
 
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
-            String signupId = serviceClient.addApplicationSignUp(applicationSignUp);
+            applicationSignUp.setTenantId(tenantId);
+            serviceClient.addApplicationSignUp(applicationSignUp);
+
             if(log.isInfoEnabled()) {
-                log.info(String.format("Application signup added successfully: [application-id] %s [signup-id] %s",
-                        applicationId, signupId));
+                log.info(String.format("Application signup added successfully: [application-id] %s [tenant-id] %d",
+                        applicationId, tenantId));
             }
 
-            serviceClient.notifyArtifactUpdatedEventForSignUp(signupId);
+            serviceClient.notifyArtifactUpdatedEventForSignUp(applicationId, tenantId);
             if(log.isInfoEnabled()) {
-                log.info(String.format("Artifact updated event sent: [application-id] %s [signup-id] %s",
-                        applicationId, signupId));
+                log.info(String.format("Artifact updated event sent: [application-id] %s [tenant-id] %d",
+                        applicationId, tenantId));
             }
         } catch (Exception e) {
             String message = "Error in application signup: [application-id] " + applicationId;
@@ -1379,7 +1384,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static ApplicationSignUpBean getApplicationSignUp(String applicationId, String signUpId) throws RestAPIException {
+    public static ApplicationSignUpBean getApplicationSignUp(String applicationId) throws RestAPIException {
         if(StringUtils.isBlank(applicationId)) {
             throw new RestAPIException("Application id is null");
         }
@@ -1393,26 +1398,24 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application singups not available for single-tenant applications");
         }
 
-        if(StringUtils.isBlank(signUpId)) {
-            throw new RestAPIException("Signup id is null");
-        }
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
-            ApplicationSignUp applicationSignUp = serviceClient.getApplicationSignUp(signUpId);
+            ApplicationSignUp applicationSignUp = serviceClient.getApplicationSignUp(applicationId, tenantId);
             if(applicationSignUp != null) {
                 return ObjectConverter.convertStubApplicationSignUpToApplicationSignUpBean(applicationSignUp);
             }
             return null;
         } catch (Exception e) {
-            String message = String.format("Could not get application signup: [application-id] %s [sign-up] %s",
-                    applicationId, signUpId);
+            String message = String.format("Could not get application signup: [application-id] %s [tenant-id] %d",
+                    applicationId, tenantId);
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
     }
 
-    public static void removeApplicationSignUp(String applicationId, String signUpId) throws RestAPIException {
+    public static void removeApplicationSignUp(String applicationId) throws RestAPIException {
         if(StringUtils.isBlank(applicationId)) {
             throw new RestAPIException("Application id is null");
         }
@@ -1426,20 +1429,19 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application singups not available for single-tenant applications");
         }
 
-        if(StringUtils.isBlank(signUpId)) {
-            throw new RestAPIException("Signup id is null");
-        }
+        int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
         try {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
-            serviceClient.removeApplicationSignUp(signUpId);
+            serviceClient.removeApplicationSignUp(applicationId, tenantId);
 
             if(log.isInfoEnabled()) {
                 log.info(String.format("Application signup removed successfully: [application-id] %s" +
-                        "[signup-id] %s", applicationId, signUpId));
+                        "[tenant-id] %d", applicationId, tenantId));
             }
         } catch (Exception e) {
-            String message = "Could not remove application signup: [application-id] " + applicationId;
+            String message = String.format("Could not remove application signup: [application-id] %s [tenant-id] %d ",
+                    applicationId, tenantId);
             log.error(message, e);
             throw new RestAPIException(message, e);
         }

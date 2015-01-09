@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.*;
-import org.apache.stratos.manager.components.ApplicationSignUpManager;
+import org.apache.stratos.manager.components.ApplicationSignUpHandler;
 import org.apache.stratos.manager.components.ArtifactDistributionCoordinator;
 import org.apache.stratos.manager.domain.ApplicationSignUp;
 import org.apache.stratos.messaging.event.Event;
@@ -41,12 +41,12 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
 
     private static final Log log = LogFactory.getLog(StratosManagerInstanceStatusEventReceiver.class);
 
-    private ApplicationSignUpManager signUpManager;
+    private ApplicationSignUpHandler signUpManager;
     private ArtifactDistributionCoordinator artifactDistributionCoordinator;
 
 
     public StratosManagerInstanceStatusEventReceiver() {
-        signUpManager = new ApplicationSignUpManager();
+        signUpManager = new ApplicationSignUpHandler();
         artifactDistributionCoordinator = new ArtifactDistributionCoordinator();
 
         addEventListeners();
@@ -89,8 +89,9 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
                         throw new RuntimeException("Cluster id not found in instance started event: " + instanceStartedEvent);
                     }
 
-                    List<ApplicationSignUp> applicationSignUps = signUpManager.getApplicationSignUps(applicationId);
-                    if ((applicationSignUps == null) || (applicationSignUps.size() == 0)) {
+                    ApplicationSignUp[] applicationSignUps = signUpManager.getApplicationSignUps(applicationId);
+                    if ((applicationSignUps == null) || (applicationSignUps.length == 0) || (
+                            (applicationSignUps.length == 1) && (applicationSignUps[0] == null))) {
                         log.warn(String.format("Application signups not found for application, artifact updated event" +
                                 "not sent: [application-id] %s [cartridge-type] %s", applicationId, serviceName));
                         return;
@@ -98,7 +99,7 @@ public class StratosManagerInstanceStatusEventReceiver extends InstanceStatusEve
 
                     for (ApplicationSignUp applicationSignUp : applicationSignUps) {
                         artifactDistributionCoordinator.notifyArtifactUpdatedEventForSignUp(
-                                applicationSignUp.getSignUpId(), clusterId);
+                                applicationSignUp.getApplicationId(), applicationSignUp.getTenantId(), clusterId);
                     }
                 } catch (Exception e) {
                     String message = "Could not send artifact updated event";

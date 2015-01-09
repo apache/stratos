@@ -36,13 +36,13 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainAddedEvent;
-import org.apache.stratos.messaging.event.tenant.SubscriptionDomainRemovedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
+import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
-import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsAddedEventListener;
-import org.apache.stratos.messaging.listener.tenant.SubscriptionDomainsRemovedEventListener;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
+import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
@@ -428,7 +428,7 @@ public class CartridgeAgent implements Runnable {
             log.debug("Starting tenant event message receiver thread");
         }
         TenantEventReceiver tenantEventReceiver = new TenantEventReceiver();
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsAddedEventListener() {
+        tenantEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -436,7 +436,7 @@ public class CartridgeAgent implements Runnable {
                     if (log.isDebugEnabled()) {
                         log.debug("Subscription domain added event received");
                     }
-                    SubscriptionDomainAddedEvent subscriptionDomainAddedEvent = (SubscriptionDomainAddedEvent) event;
+                    DomainMappingAddedEvent subscriptionDomainAddedEvent = (DomainMappingAddedEvent) event;
                     extensionHandler.onSubscriptionDomainAddedEvent(subscriptionDomainAddedEvent);
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
@@ -449,7 +449,7 @@ public class CartridgeAgent implements Runnable {
             }
         });
 
-        tenantEventReceiver.addEventListener(new SubscriptionDomainsRemovedEventListener() {
+        tenantEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
@@ -457,7 +457,7 @@ public class CartridgeAgent implements Runnable {
                     if (log.isDebugEnabled()) {
                         log.debug("Subscription domain removed event received");
                     }
-                    SubscriptionDomainRemovedEvent subscriptionDomainRemovedEvent = (SubscriptionDomainRemovedEvent) event;
+                    DomainMappingRemovedEvent subscriptionDomainRemovedEvent = (DomainMappingRemovedEvent) event;
                     extensionHandler.onSubscriptionDomainRemovedEvent(subscriptionDomainRemovedEvent);
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {

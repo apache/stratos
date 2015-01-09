@@ -29,27 +29,27 @@ import java.io.Serializable;
 public class DomainMappingRemovedEvent extends Event implements Serializable {
     private static final long serialVersionUID = -8837521344795740210L;
 
-    private final int tenantId;
     private final String applicationId;
+    private final int tenantId;
     private final String serviceName;
     private final String clusterId;
     private final String domainName;
 
-    public DomainMappingRemovedEvent(int tenantId, String applicationId, String serviceName,
+    public DomainMappingRemovedEvent(String applicationId, int tenantId, String serviceName,
                                      String clusterId, String domainName) {
-        this.tenantId = tenantId;
         this.applicationId = applicationId;
+        this.tenantId = tenantId;
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.domainName = domainName;
     }
 
-    public int getTenantId() {
-        return tenantId;
-    }
-
     public String getApplicationId() {
         return applicationId;
+    }
+
+    public int getTenantId() {
+        return tenantId;
     }
 
     public String getServiceName() {
@@ -62,5 +62,11 @@ public class DomainMappingRemovedEvent extends Event implements Serializable {
 
     public String getDomainName() {
         return domainName;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[application-id] %s [tenant-id] %d [service-name] %s [cluster-id] %s [domain-name] %s ",
+                getApplicationId(), getTenantId(), getServiceName(), getClusterId(), getDomainName());
     }
 }

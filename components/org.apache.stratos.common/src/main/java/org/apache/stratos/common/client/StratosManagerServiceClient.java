@@ -85,27 +85,29 @@ public class StratosManagerServiceClient {
      *
      * @param applicationSignUp
      */
-    public String addApplicationSignUp(ApplicationSignUp applicationSignUp) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
-        return stub.addApplicationSignUp(applicationSignUp);
+    public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+        stub.addApplicationSignUp(applicationSignUp);
     }
 
     /**
      * Remove application signup.
      *
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      */
-    public void removeApplicationSignUp(String signUpId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
-        stub.removeApplicationSignUp(signUpId);
+    public void removeApplicationSignUp(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+        stub.removeApplicationSignUp(applicationId, tenantId);
     }
 
     /**
      * Get application signup.
      *
-     * @param signUpId
+     * @param applicationId
+     * @param tenantId
      * @return
      */
-    public ApplicationSignUp getApplicationSignUp(String signUpId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
-        return stub.getApplicationSignUp(signUpId);
+    public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) throws StratosManagerServiceApplicationSignUpExceptionException, RemoteException {
+        return stub.getApplicationSignUp(applicationId, tenantId);
     }
 
     /**
@@ -119,16 +121,19 @@ public class StratosManagerServiceClient {
 
     /**
      * Notify artifact updated event for application signup.
-     * @param signUpId
+     *
+     * @param applicationId
+     * @param tenantId
      * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
      * @throws RemoteException
      */
-    public void notifyArtifactUpdatedEventForSignUp(String signUpId) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
-        stub.notifyArtifactUpdatedEventForSignUp(signUpId);
+    public void notifyArtifactUpdatedEventForSignUp(String applicationId, int tenantId) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
+        stub.notifyArtifactUpdatedEventForSignUp(applicationId, tenantId);
     }
 
     /**
      * Notify artifact updated event for artifact repository.
+     *
      * @param repoUrl
      * @throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException
      * @throws RemoteException
