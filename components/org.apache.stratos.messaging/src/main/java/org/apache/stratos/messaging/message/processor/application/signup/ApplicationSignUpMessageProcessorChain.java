@@ -17,37 +17,44 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.message.processor.domain.mapping;
+package org.apache.stratos.messaging.message.processor.application.signup;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.listener.application.signup.CompleteApplicationSignUpsEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 
 /**
- * Domain mapping message processor chain.
+ * Application signup message processor chain.
  */
-public class DomainMappingMessageProcessorChain extends MessageProcessorChain {
+public class ApplicationSignUpMessageProcessorChain extends MessageProcessorChain {
 
-    private static final Log log = LogFactory.getLog(DomainMappingMessageProcessorChain.class);
+    private static final Log log = LogFactory.getLog(ApplicationSignUpMessageProcessorChain.class);
 
-    private DomainMappingAddedMessageProcessor domainNameAddedMessageProcessor;
-    private DomainMappingRemovedMessageProcessor domainNameRemovedMessageProcessor;
+    private CompleteApplicationSignUpsMessageProcessor completeApplicationSignUpsMessageProcessor;
+    private ApplicationSignUpAddedMessageProcessor domainNameAddedMessageProcessor;
+    private ApplicationSignUpRemovedMessageProcessor domainNameRemovedMessageProcessor;
 
     @Override
     protected void initialize() {
-        domainNameAddedMessageProcessor = new DomainMappingAddedMessageProcessor();
+        completeApplicationSignUpsMessageProcessor = new CompleteApplicationSignUpsMessageProcessor();
+        add(completeApplicationSignUpsMessageProcessor);
+
+        domainNameAddedMessageProcessor = new ApplicationSignUpAddedMessageProcessor();
         add(domainNameAddedMessageProcessor);
 
-        domainNameRemovedMessageProcessor = new DomainMappingRemovedMessageProcessor();
+        domainNameRemovedMessageProcessor = new ApplicationSignUpRemovedMessageProcessor();
         add(domainNameRemovedMessageProcessor);
     }
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if (eventListener instanceof DomainMappingAddedEventListener) {
+        if (eventListener instanceof CompleteApplicationSignUpsEventListener) {
+            completeApplicationSignUpsMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof DomainMappingAddedEventListener) {
             domainNameAddedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof DomainMappingRemovedEventListener) {
             domainNameRemovedMessageProcessor.addEventListener(eventListener);

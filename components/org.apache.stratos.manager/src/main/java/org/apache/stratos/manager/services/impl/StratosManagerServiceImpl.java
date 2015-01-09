@@ -24,14 +24,12 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.components.ApplicationSignUpHandler;
 import org.apache.stratos.manager.components.ArtifactDistributionCoordinator;
 import org.apache.stratos.manager.components.DomainMappingHandler;
-import org.apache.stratos.manager.domain.ApplicationSignUp;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
 import org.apache.stratos.manager.exception.DomainMappingException;
 import org.apache.stratos.manager.services.StratosManagerService;
 import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
-
-import java.util.List;
 
 /**
  * Stratos manager service implementation.

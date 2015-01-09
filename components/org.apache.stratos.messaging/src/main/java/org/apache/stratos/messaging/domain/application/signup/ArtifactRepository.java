@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.domain;
+package org.apache.stratos.messaging.domain.application.signup;
 
 import java.io.Serializable;
 

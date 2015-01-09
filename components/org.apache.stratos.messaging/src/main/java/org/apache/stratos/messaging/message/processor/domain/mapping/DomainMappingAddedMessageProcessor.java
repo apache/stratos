@@ -34,9 +34,9 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * Url mapping added message processor.
  */
-public class DomainNameAddedMessageProcessor extends MessageProcessor {
+public class DomainMappingAddedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(DomainNameAddedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(DomainMappingAddedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 

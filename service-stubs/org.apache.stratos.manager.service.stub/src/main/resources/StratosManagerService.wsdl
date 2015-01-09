@@ -1,18 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.services.manager.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://domain.manager.stratos.apache.org/xsd" xmlns:ax24="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" xmlns:ax21="http://exception.manager.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.manager.stratos.apache.org">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.services.manager.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax24="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" xmlns:ax21="http://exception.manager.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.manager.stratos.apache.org">
     <wsdl:types>
-        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://mapping.domain.domain.messaging.stratos.apache.org/xsd">
-            <xs:complexType name="DomainMapping">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax25="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.manager.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax25="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://signup.application.domain.messaging.stratos.apache.org/xsd">
             <xs:import namespace="http://mapping.domain.domain.messaging.stratos.apache.org/xsd"/>
             <xs:complexType name="ApplicationSignUp">
                 <xs:sequence>
@@ -33,9 +21,21 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax27="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" xmlns:ax26="http://domain.manager.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://mapping.domain.domain.messaging.stratos.apache.org/xsd">
+            <xs:complexType name="DomainMapping">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+        <xs:schema xmlns:ax27="http://mapping.domain.domain.messaging.stratos.apache.org/xsd" xmlns:ax26="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
             <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://domain.manager.stratos.apache.org/xsd"/>
+            <xs:import namespace="http://signup.application.domain.messaging.stratos.apache.org/xsd"/>
             <xs:import namespace="http://mapping.domain.domain.messaging.stratos.apache.org/xsd"/>
             <xs:element name="StratosManagerServiceApplicationSignUpException">
                 <xs:complexType>

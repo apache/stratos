@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,27 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.application;
 
-import org.apache.stratos.messaging.domain.application.Application;
+package org.apache.stratos.messaging.event.application.signup;
+
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.Event;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
- * This event will be fired upon the application created is detected.
+ * Complete application signup event.
  */
-public class ApplicationCreatedEvent extends Event implements Serializable {
+public class CompleteApplicationSignUpsEvent extends Event implements Serializable {
 
-    private static final long serialVersionUID = 2625412714611885089L;
+    private static final long serialVersionUID = 417310788611446084L;
 
-    private Application application;
+    private final List<ApplicationSignUp> applicationSignUps;
 
-    public ApplicationCreatedEvent(Application application) {
-        this.application = application;
-    }
-
-    public Application getApplication() {
-        return application;
+    public CompleteApplicationSignUpsEvent(List<ApplicationSignUp> applicationSignUps) {
+        this.applicationSignUps = applicationSignUps;
     }
 }

@@ -64,6 +64,7 @@ public class Util {
 		INSTANCE_STATUS_TOPIC("instance/status/#"),
 		INSTANCE_NOTIFIER_TOPIC("instance/notifier/#"),
 		APPLICATIONS_TOPIC("applications/#"),
+		APPLICATION_SIGNUPS_TOPIC("application-signups/#"),
 		CLUSTER_STATUS_TOPIC("cluster/status/#"),
 		TENANT_TOPIC("tenant/#"),
 		DOMAIN_MAPPING_TOPIC("domain/mappings/#");

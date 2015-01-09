@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.manager.components.ApplicationSignUpHandler;
 import org.apache.stratos.manager.components.ArtifactDistributionCoordinator;
-import org.apache.stratos.manager.domain.ApplicationSignUp;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;

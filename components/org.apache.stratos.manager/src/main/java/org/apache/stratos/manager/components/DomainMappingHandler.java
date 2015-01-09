@@ -21,7 +21,7 @@ package org.apache.stratos.manager.components;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.domain.ApplicationSignUp;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.exception.DomainMappingException;
 import org.apache.stratos.manager.messaging.publisher.DomainMappingEventPublisher;
 import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;

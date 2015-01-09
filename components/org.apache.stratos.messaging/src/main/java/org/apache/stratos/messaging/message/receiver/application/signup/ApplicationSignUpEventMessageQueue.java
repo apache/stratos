@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,27 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.messaging.event.application;
 
-import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.event.Event;
+package org.apache.stratos.messaging.message.receiver.application.signup;
 
-import java.io.Serializable;
+import org.apache.stratos.messaging.domain.Message;
+
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * This event will be fired upon the application created is detected.
+ * Application signup event message queue.
  */
-public class ApplicationCreatedEvent extends Event implements Serializable {
-
-    private static final long serialVersionUID = 2625412714611885089L;
-
-    private Application application;
-
-    public ApplicationCreatedEvent(Application application) {
-        this.application = application;
-    }
-
-    public Application getApplication() {
-        return application;
-    }
+class ApplicationSignUpEventMessageQueue extends LinkedBlockingQueue<Message> {
 }

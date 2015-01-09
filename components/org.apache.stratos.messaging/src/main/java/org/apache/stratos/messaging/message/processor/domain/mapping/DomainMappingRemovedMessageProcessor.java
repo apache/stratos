@@ -34,9 +34,9 @@ import org.apache.stratos.messaging.util.Util;
 /**
  * Subscription domain removed message processor for removing domains from tenant subscriptions.
  */
-public class DomainNameRemovedMessageProcessor extends MessageProcessor {
+public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
 
-    private static final Log log = LogFactory.getLog(DomainNameRemovedMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(DomainMappingRemovedMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
 
@@ -47,6 +47,7 @@ public class DomainNameRemovedMessageProcessor extends MessageProcessor {
 
     @Override
     public boolean process(String type, String message, Object object) {
+
         if (DomainMappingRemovedEvent.class.getName().equals(type)) {
 
             // Return if domain mapping manager has not initialized

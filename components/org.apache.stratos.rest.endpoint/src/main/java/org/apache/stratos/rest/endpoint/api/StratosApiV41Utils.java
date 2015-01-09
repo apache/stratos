@@ -49,7 +49,7 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
-import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.application.Application;

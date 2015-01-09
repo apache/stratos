@@ -28,7 +28,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceArtifactDistributionCoordinatorExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceStub;
-import org.apache.stratos.manager.service.stub.domain.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 
 import java.rmi.RemoteException;
 
