@@ -51,7 +51,7 @@ public class ApplicationSignUpSynchronizerTask implements Task {
     public void execute() {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpHandler.getApplicationSignUps();
-            if(applicationSignUps != null) {
+            if((applicationSignUps != null) && (applicationSignUps.size() > 0)) {
                 ApplicationSignUpEventPublisher.publishCompleteApplicationSignUpsEvent(applicationSignUps);
             }
         } catch (Exception e) {
