@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.message.receiver.application;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.Message;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpAddedEvent;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.application.ApplicationsMessageProcessorChain;
@@ -53,18 +54,22 @@ public class ApplicationsEventMessageDelegator implements Runnable {
                     Message message = messageQueue.take();
                     String type = message.getEventClassName();
 
-                    // Retrieve the actual message
-                    String json = message.getText();
+                    // Skip application signup events
+                    if(!type.startsWith("org.apache.stratos.messaging.event.application.signup")) {
 
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Application status event message received from queue: %s", type));
-                    }
+                        // Retrieve the actual message
+                        String json = message.getText();
 
-                    // Delegate message to message processor chain
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Delegating application status event message: %s", type));
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Application status event message received from queue: %s", type));
+                        }
+
+                        // Delegate message to message processor chain
+                        if (log.isDebugEnabled()) {
+                            log.debug(String.format("Delegating application status event message: %s", type));
+                        }
+                        processorChain.process(type, json, ApplicationManager.getApplications());
                     }
-                    processorChain.process(type, json, ApplicationManager.getApplications());
                 } catch (Exception e) {
                     log.error("Failed to retrieve application status event message", e);
                 }
