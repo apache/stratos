@@ -38,23 +38,6 @@ public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventRe
 
     private void addEventListeners() {
 
-//        addEventListener(new CompleteDomainMappingsEventListener() {
-//            @Override
-//            protected void onEvent(Event event) {
-//                CompleteDomainMappingsEvent completeDomainMappingsEvent = (CompleteDomainMappingsEvent)event;
-//
-//                for(DomainMapping domainMapping : completeDomainMappingsEvent.getDomainMappings()) {
-//                    LoadBalancerContextUtil.addClusterAgainstDomain(
-//                            domainMapping.getServiceName(),
-//                            domainMapping.getClusterId(),
-//                            domainMapping.getDomainName());
-//
-//                    LoadBalancerContextUtil.addContextPathAgainstDomain(domainMapping.getDomainName(),
-//                            domainMapping.getContextPath());
-//                }
-//            }
-//        });
-
         addEventListener(new DomainMappingAddedEventListener() {
             @Override
             protected void onEvent(Event event) {

@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerApplicationSignUpEventReceiver;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerDomainMappingEventReceiver;
 import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTenantEventReceiver;
 import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
@@ -89,10 +91,11 @@ public class LoadBalancerServiceComponent {
     private boolean activated = false;
     private LoadBalancerTopologyEventReceiver topologyReceiver;
     private LoadBalancerTenantEventReceiver tenantReceiver;
+    private LoadBalancerApplicationSignUpEventReceiver applicationSignUpEventReceiver;
+    private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
 	private static final String LOAD_BALANCER_IDENTIFIER = "Load-Balancer";
 	private static final int THREAD_POOL_SIZE = 20;
-	private ExecutorService executorService;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -120,14 +123,19 @@ public class LoadBalancerServiceComponent {
             // Configure topology filters
             TopologyFilterConfigurator.configure(configuration);
 
+            ExecutorService executorService = StratosThreadPool.getExecutorService(LOAD_BALANCER_IDENTIFIER,THREAD_POOL_SIZE);
+
+            startApplicationSignUpEventReceiver(executorService);
+            startDomainMappingEventReceiver(executorService);
+
             if (configuration.isMultiTenancyEnabled()) {
                 // Start tenant event receiver
-                startTenantEventReceiver();
+                startTenantEventReceiver(executorService);
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
-                startTopologyEventReceiver();
+                startTopologyEventReceiver(executorService);
 
                 if (log.isInfoEnabled()) {
                     if (TopologyServiceFilter.getInstance().isActive()) {
@@ -180,16 +188,34 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTenantEventReceiver() {
+    private void startTenantEventReceiver(ExecutorService executorService) {
 	    tenantReceiver = new LoadBalancerTenantEventReceiver();
+        tenantReceiver.setExecutorService(executorService);
 	    tenantReceiver.execute();
         if (log.isInfoEnabled()) {
-            log.info("Tenant receiver thread started");
+            log.info("Tenant event receiver thread started");
         }
     }
 
-    private void startTopologyEventReceiver() {
-	    executorService= StratosThreadPool.getExecutorService(LOAD_BALANCER_IDENTIFIER,THREAD_POOL_SIZE);
+    private void startDomainMappingEventReceiver(ExecutorService executorService) {
+        domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver();
+        domainMappingEventReceiver.setExecutorService(executorService);
+        domainMappingEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Domain mapping event receiver thread started");
+        }
+    }
+
+    private void startApplicationSignUpEventReceiver(ExecutorService executorService) {
+        applicationSignUpEventReceiver = new LoadBalancerApplicationSignUpEventReceiver();
+        applicationSignUpEventReceiver.setExecutorService(executorService);
+        applicationSignUpEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Application signup event receiver thread started");
+        }
+    }
+
+    private void startTopologyEventReceiver(ExecutorService executorService) {
 	    topologyReceiver = new LoadBalancerTopologyEventReceiver();
 	    topologyReceiver.setExecutorService(executorService);
 	    topologyReceiver.execute();

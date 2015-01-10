@@ -46,7 +46,6 @@ public class LoadBalancerTopologyEventReceiver {
     private static final Log log = LogFactory.getLog(LoadBalancerTopologyEventReceiver.class);
 	private ExecutorService executorService;
     private TopologyEventReceiver topologyEventReceiver;
-    private boolean terminated;
 
     public LoadBalancerTopologyEventReceiver() {
         this.topologyEventReceiver = new TopologyEventReceiver();
@@ -59,8 +58,6 @@ public class LoadBalancerTopologyEventReceiver {
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
         }
-
-
     }
 
     private void addEventListeners() {
@@ -408,7 +405,6 @@ public class LoadBalancerTopologyEventReceiver {
      */
     public void terminate() {
         topologyEventReceiver.terminate();
-        terminated = true;
     }
 
 	public ExecutorService getExecutorService() {
