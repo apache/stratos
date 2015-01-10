@@ -22,6 +22,7 @@ package org.apache.stratos.manager.messaging.publisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpAddedEvent;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
@@ -34,27 +35,30 @@ import java.util.List;
  */
 public class ApplicationSignUpEventPublisher {
 
+    private static void publish(Event event) {
+        String topic = Util.getMessageTopicName(event);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+        eventPublisher.publish(event);
+    }
+
     public static void publishCompleteApplicationSignUpsEvent(List<ApplicationSignUp> applicationSignUps) {
 
         CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = new CompleteApplicationSignUpsEvent(
                 applicationSignUps);
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Util.Topics.APPLICATION_SIGNUPS_TOPIC.getTopicName());
-        eventPublisher.publish(completeApplicationSignUpsEvent);
+        publish(completeApplicationSignUpsEvent);
     }
 
     public static void publishApplicationSignUpAddedEvent(String applicationId, int tenantId, List<String> clusterIds) {
 
         ApplicationSignUpAddedEvent applicationSignUpAddedEvent = new ApplicationSignUpAddedEvent(
                 applicationId, tenantId, clusterIds);
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Util.Topics.APPLICATION_SIGNUPS_TOPIC.getTopicName());
-        eventPublisher.publish(applicationSignUpAddedEvent);
+        publish(applicationSignUpAddedEvent);
     }
 
     public static void publishApplicationSignUpRemovedEvent(String applicationId, int tenantId) {
 
-        ApplicationSignUpRemovedEvent applicationSignUpAddedEvent = new ApplicationSignUpRemovedEvent(
+        ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent = new ApplicationSignUpRemovedEvent(
                 applicationId, tenantId);
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Util.Topics.APPLICATION_SIGNUPS_TOPIC.getTopicName());
-        eventPublisher.publish(applicationSignUpAddedEvent);
+        publish(applicationSignUpRemovedEvent);
     }
 }

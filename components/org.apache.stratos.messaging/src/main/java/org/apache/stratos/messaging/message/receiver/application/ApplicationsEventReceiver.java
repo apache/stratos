@@ -49,7 +49,7 @@ public class ApplicationsEventReceiver {
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Util.Topics.APPLICATIONS_TOPIC.getTopicName(), messageListener);
+            topicSubscriber = new TopicSubscriber(Util.Topics.APPLICATION_TOPIC.getTopicName(), messageListener);
 			executorService.execute(topicSubscriber);
 
             if (log.isDebugEnabled()) {

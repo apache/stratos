@@ -41,8 +41,8 @@ public class InstanceNotificationPublisher {
 
 	private void publish(Event event) {
 		String topic = Util.getMessageTopicName(event);
-		EventPublisher depsyncEventPublisher = EventPublisherPool.getPublisher(topic);
-		depsyncEventPublisher.publish(event);
+		EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+		eventPublisher.publish(event);
 	}
 
 	/**

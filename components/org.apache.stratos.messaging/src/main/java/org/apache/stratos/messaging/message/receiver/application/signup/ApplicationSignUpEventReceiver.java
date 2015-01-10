@@ -53,7 +53,7 @@ public class ApplicationSignUpEventReceiver {
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Util.Topics.APPLICATION_SIGNUPS_TOPIC.getTopicName(), messageListener);
+            topicSubscriber = new TopicSubscriber(Util.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(), messageListener);
             // subscriber.setMessageListener(messageListener);
             executorService.execute(topicSubscriber);
 

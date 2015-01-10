@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.util.Util;
@@ -34,13 +35,17 @@ public class DomainMappingEventPublisher {
 
     private static final Log log = LogFactory.getLog(DomainMappingEventPublisher.class);
 
+    private static void publish(Event event) {
+        String topic = Util.getMessageTopicName(event);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+        eventPublisher.publish(event);
+    }
+
     public static void publishDomainMappingAddedEvent(String applicationId, int tenantId, String serviceName,
                                                       String clusterId, String domainName, String contextPath) {
         DomainMappingAddedEvent domainMappingAddedEvent = new DomainMappingAddedEvent(applicationId, tenantId,
                 serviceName, clusterId, domainName, contextPath);
-
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Util.Topics.DOMAIN_MAPPING_TOPIC.getTopicName());
-        eventPublisher.publish(domainMappingAddedEvent);
+        publish(domainMappingAddedEvent);
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Domain mapping added event published: %s", domainMappingAddedEvent.toString()));
@@ -51,9 +56,7 @@ public class DomainMappingEventPublisher {
                                                      String clusterId, String domainName) {
         DomainMappingRemovedEvent domainNameRemovedEvent = new DomainMappingRemovedEvent(applicationId, tenantId,
                 serviceName, clusterId, domainName);
-
-        EventPublisher eventPublisher = EventPublisherPool.getPublisher(Util.Topics.DOMAIN_MAPPING_TOPIC.getTopicName());
-        eventPublisher.publish(domainNameRemovedEvent);
+        publish(domainNameRemovedEvent);
 
         if(log.isInfoEnabled()) {
             log.info(String.format("Domain mapping removed event published: %s", domainNameRemovedEvent.toString()));

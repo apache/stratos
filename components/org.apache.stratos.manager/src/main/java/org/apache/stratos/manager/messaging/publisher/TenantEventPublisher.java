@@ -27,6 +27,7 @@ import org.apache.stratos.common.listeners.TenantMgtListener;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
@@ -41,6 +42,12 @@ public class TenantEventPublisher implements TenantMgtListener {
 	private static final Log log = LogFactory.getLog(TenantEventPublisher.class);
 	private static final int EXEC_ORDER = 1;
 
+	private void publish(Event event) {
+		String topic = Util.getMessageTopicName(event);
+		EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
+		eventPublisher.publish(event);
+	}
+
 	@Override
 	public void onTenantCreate(TenantInfoBean tenantInfo) throws ApacheStratosException {
 		try {
@@ -50,9 +57,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 			}
 			Tenant tenant = new Tenant(tenantInfo.getTenantId(), tenantInfo.getTenantDomain());
 			TenantCreatedEvent event = new TenantCreatedEvent(tenant);
-			String topic = Util.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
-			eventPublisher.publish(event);
+			publish(event);
 		} catch (Exception e) {
 			log.error(String.format("Could not publish tenant created event [tenant-id] %d [tenant-domain] %s ",
 			                        tenantInfo.getTenantId(),
@@ -69,9 +74,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 			}
 			TenantUpdatedEvent event = new TenantUpdatedEvent(tenantInfo.getTenantId(),
 			                                                  tenantInfo.getTenantDomain());
-			String topic = Util.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
-			eventPublisher.publish(event);
+			publish(event);
 		} catch (Exception e) {
 			log.error(String.format("Could not publish tenant updated event:[tenant-id] %d [tenant-domain] %s ",
 			                        tenantInfo.getTenantId(),
@@ -86,9 +89,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 				log.info(String.format("Publishing tenant removed event: [tenant-id] %d", tenantId));
 			}
 			TenantRemovedEvent event = new TenantRemovedEvent(tenantId);
-			String topic = Util.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
-			eventPublisher.publish(event);
+			publish(event);
 		} catch (Exception e) {
 			log.error(String.format("Could not publish tenant removed event [tenant-id] %d", tenantId),e);
 		}
