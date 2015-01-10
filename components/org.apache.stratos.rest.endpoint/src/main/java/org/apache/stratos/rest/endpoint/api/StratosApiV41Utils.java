@@ -33,19 +33,19 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
-import org.apache.stratos.common.beans.*;
+import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.PersistenceBean;
 import org.apache.stratos.common.beans.cartridge.VolumeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
-import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
+import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
@@ -53,7 +53,9 @@ import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -1330,16 +1332,18 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application id is null");
         }
 
-        ApplicationBean application = getApplication(applicationId);
-        if(application == null) {
-            throw new RestAPIException("Application does not exist: [application-id] " + applicationId);
+        ApplicationBean applicationBean = getApplication(applicationId);
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+
+        if((applicationBean == null) || (application == null)) {
+            throw new RestAPIException("Application not found: [application-id] " + applicationId);
         }
 
-        if(!APPLICATION_STATUS_DEPLOYED.equals(application.getStatus())) {
+        if(!APPLICATION_STATUS_DEPLOYED.equals(applicationBean.getStatus())) {
             throw new RestAPIException("Application has not been deployed: [application-id] " + applicationId);
         }
 
-        if(!application.isMultiTenant()) {
+        if(!applicationBean.isMultiTenant()) {
             throw new RestAPIException("Application signups cannot be added to single-tenant applications");
         }
 
@@ -1348,23 +1352,27 @@ public class StratosApiV41Utils {
         }
 
         if(StringUtils.isBlank(applicationSignUpBean.getApplicationId())) {
-            throw new RestAPIException("Application id in application signup is null");
+            throw new RestAPIException("Application id in applicationBean signup is null");
         }
 
         if(!applicationId.equals(applicationSignUpBean.getApplicationId())) {
-            throw new RestAPIException("Application id does not match with application id in application signup");
+            throw new RestAPIException("Application id does not match with applicationBean id in applicationBean signup");
         }
 
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Adding application signup: [application-id] %s", applicationId));
+                log.info(String.format("Adding applicationBean signup: [application-id] %s", applicationId));
             }
 
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
-            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
             applicationSignUp.setTenantId(tenantId);
+
+            // Encrypt artifact repository passwords
+            encryptRepositoryPasswords(applicationSignUp, application.getKey());
+
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             serviceClient.addApplicationSignUp(applicationSignUp);
 
             if(log.isInfoEnabled()) {
@@ -1378,9 +1386,33 @@ public class StratosApiV41Utils {
                         applicationId, tenantId));
             }
         } catch (Exception e) {
-            String message = "Error in application signup: [application-id] " + applicationId;
+            String message = "Error in applicationBean signup: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
+        }
+    }
+
+    /**
+     * Encrypt artifact repository passwords.
+     * @param applicationSignUp
+     * @param applicationKey
+     */
+    private static void encryptRepositoryPasswords(ApplicationSignUp applicationSignUp, String applicationKey) {
+        if (applicationSignUp.getArtifactRepositories() != null) {
+            for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                String repoPassword = artifactRepository.getRepoPassword();
+                if ((artifactRepository != null) && (StringUtils.isNotBlank(repoPassword))) {
+                    String encryptedRepoPassword = CommonUtil.encryptPassword(repoPassword,
+                            applicationKey);
+                    artifactRepository.setRepoPassword(encryptedRepoPassword);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Artifact repository password encrypted: [application-id] %s " +
+                                        "[tenant-id] %d [repo-url] %s", applicationSignUp.getApplicationId(),
+                                applicationSignUp.getTenantId(), artifactRepository.getRepoUrl()));
+                    }
+                }
+            }
         }
     }
 

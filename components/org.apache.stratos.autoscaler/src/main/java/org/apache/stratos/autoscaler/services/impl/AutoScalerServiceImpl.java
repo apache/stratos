@@ -51,6 +51,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
+import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -213,7 +214,7 @@ public class AutoScalerServiceImpl implements AutoScalerService {
                 // Add deployment policy
                 PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
                 // Add application signup in stratos manager
-                addApplicationSignUp(applicationContext);
+                addApplicationSignUp(applicationContext, application.getKey());
 
                 applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
@@ -260,7 +261,7 @@ public class AutoScalerServiceImpl implements AutoScalerService {
         }
     }
 
-    private void addApplicationSignUp(ApplicationContext applicationContext) {
+    private void addApplicationSignUp(ApplicationContext applicationContext, String applicationKey) {
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Adding application signup: [application-id] %s",
@@ -292,7 +293,10 @@ public class AutoScalerServiceImpl implements AutoScalerService {
                         new ArtifactRepository[artifactRepositoryList.size()]);
                 applicationSignUp.setArtifactRepositories(artifactRepositoryArray);
 
-                StratosManagerServiceClient serviceClient =  StratosManagerServiceClient.getInstance();
+                // Encrypt artifact repository passwords
+                encryptRepositoryPasswords(applicationSignUp, applicationKey);
+
+                StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
                 serviceClient.addApplicationSignUp(applicationSignUp);
 
                 if(log.isInfoEnabled()) {
@@ -304,6 +308,30 @@ public class AutoScalerServiceImpl implements AutoScalerService {
             String message = "Could not add application signup";
             log.error(message, e);
             throw new RuntimeException(message, e);
+        }
+    }
+
+    /**
+     * Encrypt artifact repository passwords.
+     * @param applicationSignUp
+     * @param applicationKey
+     */
+    private void encryptRepositoryPasswords(ApplicationSignUp applicationSignUp, String applicationKey) {
+        if (applicationSignUp.getArtifactRepositories() != null) {
+            for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
+                String repoPassword = artifactRepository.getRepoPassword();
+                if ((artifactRepository != null) && (StringUtils.isNotBlank(repoPassword))) {
+                    String encryptedRepoPassword = CommonUtil.encryptPassword(repoPassword,
+                            applicationKey);
+                    artifactRepository.setRepoPassword(encryptedRepoPassword);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Artifact repository password encrypted: [application-id] %s " +
+                                        "[tenant-id] %d [repo-url] %s", applicationSignUp.getApplicationId(),
+                                applicationSignUp.getTenantId(), artifactRepository.getRepoUrl()));
+                    }
+                }
+            }
         }
     }
 

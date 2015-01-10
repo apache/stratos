@@ -61,18 +61,12 @@ public class ApplicationSignUpHandler {
 
         String applicationId = applicationSignUp.getApplicationId();
         int tenantId = applicationSignUp.getTenantId();
+        List<String> clusterIds = applicationSignUp.getClusterIds();
 
         try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding application signup: [application-id] %s [tenant-id] %d",
                         applicationId, tenantId));
-            }
-
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
-            if (application == null) {
-                throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
             }
 
             if (applicationSignUpExist(applicationId, tenantId)) {
@@ -80,15 +74,10 @@ public class ApplicationSignUpHandler {
                         "[application-id] %s [tenant-id] %d", applicationId, tenantId));
             }
 
-            // Encrypt artifact repository passwords
-            encryptRepositoryPasswords(applicationSignUp, application.getKey());
-
             // Persist application signup
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
             RegistryManager.getInstance().persist(resourcePath, applicationSignUp);
 
-            // TODO: Add logic to filter cluster ids based on tenant id, tenant range
-            List<String> clusterIds = findClusterIds(application);
             ApplicationSignUpEventPublisher.publishApplicationSignUpAddedEvent(applicationId, tenantId, clusterIds);
 
             if (log.isInfoEnabled()) {
@@ -99,17 +88,7 @@ public class ApplicationSignUpHandler {
             String message = "Could not add application signup";
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(applicationId);
         }
-    }
-
-    private List<String> findClusterIds(Application application) {
-        List<String> clusterIds = new ArrayList<String>();
-        for(ClusterDataHolder clusterData : application.getClusterDataRecursively()) {
-            clusterIds.add(clusterData.getClusterId());
-        }
-        return clusterIds;
     }
 
     /**
@@ -128,30 +107,6 @@ public class ApplicationSignUpHandler {
             String message = "Could not check application signup availability";
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
-        }
-    }
-
-    /**
-     * Encrypt artifact repository passwords.
-     * @param applicationSignUp
-     * @param applicationKey
-     */
-    private void encryptRepositoryPasswords(ApplicationSignUp applicationSignUp, String applicationKey) {
-        if (applicationSignUp.getArtifactRepositories() != null) {
-            for (ArtifactRepository artifactRepository : applicationSignUp.getArtifactRepositories()) {
-                String repoPassword = artifactRepository.getRepoPassword();
-                if ((artifactRepository != null) && (StringUtils.isNotBlank(repoPassword))) {
-                    String encryptedRepoPassword = CommonUtil.encryptPassword(repoPassword,
-                            applicationKey);
-                    artifactRepository.setRepoPassword(encryptedRepoPassword);
-
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Artifact repository password encrypted: [application-id] %s " +
-                                        "[tenant-id] %d [repo-url] %s", applicationSignUp.getApplicationId(),
-                                applicationSignUp.getTenantId(), artifactRepository.getRepoUrl()));
-                    }
-                }
-            }
         }
     }
 
