@@ -36,4 +36,12 @@ public class ApplicationSignUpRemovedEvent extends Event implements Serializable
         this.applicationId = applicationId;
         this.tenantId = tenantId;
     }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
 }

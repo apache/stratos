@@ -38,4 +38,16 @@ public class ApplicationSignUpAddedEvent extends Event implements Serializable {
         this.tenantId = tenantId;
         this.clusterIds = clusterIds;
     }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
+
+    public int getTenantId() {
+        return tenantId;
+    }
+
+    public List<String> getClusterIds() {
+        return clusterIds;
+    }
 }

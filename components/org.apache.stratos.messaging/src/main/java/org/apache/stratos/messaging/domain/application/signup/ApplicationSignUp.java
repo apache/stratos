@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.domain.application.signup;
 import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Application signup.
@@ -34,6 +35,7 @@ public class ApplicationSignUp implements Serializable {
     private String applicationId;
     private ArtifactRepository[] artifactRepositories;
     private DomainMapping[] domainMappings;
+    private List<String> clusterIds;
 
     public int getTenantId() {
         return tenantId;
@@ -65,5 +67,13 @@ public class ApplicationSignUp implements Serializable {
 
     public void setDomainMappings(DomainMapping[] domainMappings) {
         this.domainMappings = domainMappings;
+    }
+
+    public void setClusterIds(List<String> clusterIds) {
+        this.clusterIds = clusterIds;
+    }
+
+    public List<String> getClusterIds() {
+        return clusterIds;
     }
 }

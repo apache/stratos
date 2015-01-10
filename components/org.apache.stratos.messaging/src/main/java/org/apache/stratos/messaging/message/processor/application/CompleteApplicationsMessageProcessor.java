@@ -50,10 +50,8 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
 
             if (!applications.isInitialized()) {
                 ApplicationsUpdater.acquireWriteLockForApplications();
-
                 try {
                     doProcess(event, applications);
-
                 } finally {
                     ApplicationsUpdater.releaseWriteLockForApplications();
                 }

@@ -19,25 +19,64 @@
 
 package org.apache.stratos.messaging.message.processor.application.signup;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpAddedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
+import org.apache.stratos.messaging.util.Util;
 
 /**
  * Application signup added message processor.
  */
 public class ApplicationSignUpAddedMessageProcessor extends MessageProcessor {
 
+    private static final Log log = LogFactory.getLog(ApplicationSignUpAddedMessageProcessor.class);
+
+    private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
 
         if(type.equals(ApplicationSignUpAddedEvent.class.getName())) {
+            ApplicationSignUpAddedEvent event = (ApplicationSignUpAddedEvent) Util.jsonToObject(message,
+                    ApplicationSignUpAddedEvent.class);
+            if (event == null) {
+                log.error("Unable to convert the JSON message to ApplicationSignUpAddedEvent");
+                return false;
+            }
 
+            try {
+                ApplicationSignUpManager.acquireWriteLock();
+
+                ApplicationSignUp applicationSignUp = new ApplicationSignUp();
+                applicationSignUp.setApplicationId(event.getApplicationId());
+                applicationSignUp.setTenantId(event.getTenantId());
+                applicationSignUp.setClusterIds(event.getClusterIds());
+
+                ApplicationSignUpManager.getInstance().addApplicationSignUp(applicationSignUp);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Application signup added: [application-id] %s [tenant-id] %s",
+                            applicationSignUp.getApplicationId(), applicationSignUp.getTenantId()));
+                }
+            } finally {
+                ApplicationSignUpManager.releaseWriteLock();
+            }
+
+            notifyEventListeners(event);
+            return true;
+        } else if (nextProcessor != null) {
+            // ask the next processor to take care of the message.
+            return nextProcessor.process(type, message, object);
+        } else {
+            throw new RuntimeException(String.format("Failed to process message using available message processors: " +
+                    "[type] %s [body] %s", type, message));
         }
-        return false;
     }
 }

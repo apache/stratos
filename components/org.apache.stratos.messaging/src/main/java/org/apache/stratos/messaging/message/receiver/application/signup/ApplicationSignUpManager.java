@@ -131,4 +131,12 @@ public class ApplicationSignUpManager {
             }
         }
     }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public void setInitialized(boolean initialized) {
+        this.initialized = initialized;
+    }
 }
