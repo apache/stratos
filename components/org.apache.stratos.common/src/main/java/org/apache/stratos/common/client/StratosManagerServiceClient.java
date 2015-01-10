@@ -27,8 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceApplicationSignUpExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceArtifactDistributionCoordinatorExceptionException;
+import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceStub;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
+import org.apache.stratos.manager.service.stub.domain.domain.mapping.DomainMapping;
 
 import java.rmi.RemoteException;
 
@@ -140,5 +142,17 @@ public class StratosManagerServiceClient {
      */
     public void notifyArtifactUpdatedEventForRepository(String repoUrl) throws StratosManagerServiceArtifactDistributionCoordinatorExceptionException, RemoteException {
         stub.notifyArtifactUpdatedEventForRepository(repoUrl);
+    }
+
+    public void addDomainMapping(DomainMapping domainMapping) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+        stub.addDomainMapping(domainMapping);
+    }
+
+    public void removeDomainMapping(String applicationId, int tenantId, String domainName) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+        stub.removeDomainMapping(applicationId, tenantId, domainName);
+    }
+
+    public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
+        return stub.getDomainMappings(applicationId, tenantId);
     }
 }

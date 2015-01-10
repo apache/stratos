@@ -36,6 +36,8 @@ import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
+import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -56,6 +58,7 @@ import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
+import org.apache.stratos.manager.service.stub.domain.domain.mapping.DomainMapping;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -1509,6 +1512,100 @@ public class StratosApiV41Utils {
             return applicationSignUpBeans;
         } catch (Exception e) {
             String message = "Could not get application signups: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    public static void addApplicationDomainMappings(String applicationId,
+                                                    ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            if(domainMapppingsBean.getDomainMappings() != null) {
+
+                for(DomainMappingBean domainMappingBean : domainMapppingsBean.getDomainMappings()) {
+                    ClusterDataHolder clusterDataHolder = findClusterDataHolder(applicationId, domainMappingBean.getCartridgeAlias());
+
+                    DomainMapping domainMapping = ObjectConverter.convertDomainMappingBeanToStubDomainMapping(domainMappingBean);
+                    domainMapping.setApplicationId(applicationId);
+                    domainMapping.setTenantId(tenantId);
+                    domainMapping.setServiceName(clusterDataHolder.getServiceType());
+                    domainMapping.setClusterId(clusterDataHolder.getClusterId());
+                    serviceClient.addDomainMapping(domainMapping);
+
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Domain mapping added: [application-id] %s [tenant-id] %d " +
+                                "[domain-name] %s [context-path] %s", applicationId, tenantId,
+                                domainMapping.getDomainName(), domainMapping.getContextPath()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            String message = "Could not add domain mappings: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    private static ClusterDataHolder findClusterDataHolder(String applicationId, String cartridgeAlias) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationId);
+        if(application == null) {
+            throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
+        }
+
+        ClusterDataHolder clusterDataHolder = application.getClusterData(cartridgeAlias);
+        if(clusterDataHolder == null) {
+            throw new RuntimeException(String.format("Cluster data not found for cartridge alias: [application-id] %s " +
+                    "[cartridge-alias] %s", applicationId, cartridgeAlias));
+        }
+        return clusterDataHolder;
+    }
+
+    public static void removeApplicationDomainMappings(String applicationId,
+                                                       ApplicationDomainMappingsBean domainMapppingsBean)
+            throws RestAPIException {
+
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            if(domainMapppingsBean.getDomainMappings() != null) {
+
+                for(DomainMappingBean domainMappingBean : domainMapppingsBean.getDomainMappings()) {
+                    serviceClient.removeDomainMapping(applicationId, tenantId, domainMappingBean.getDomainName());
+
+                    if(log.isInfoEnabled()) {
+                        log.info(String.format("Domain mapping removed: [application-id] %s [tenant-id] %d " +
+                                        "[domain-name] %s", applicationId, tenantId,
+                                domainMappingBean.getDomainName()));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            String message = "Could not remove domain mappings: [application-id] " + applicationId;
+            log.error(message, e);
+            throw new RestAPIException(message, e);
+        }
+    }
+
+    public static List<DomainMappingBean> getApplicationDomainMappings(String applicationId) throws RestAPIException {
+        try {
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            List<DomainMappingBean> domainMappingsBeans = new ArrayList<DomainMappingBean>();
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+            DomainMapping[] domainMappings = serviceClient.getDomainMappings(applicationId, tenantId);
+            if(domainMappings != null) {
+                for(DomainMapping domainMapping : domainMappings) {
+                    if(domainMapping != null) {
+                        DomainMappingBean domainMappingBean = ObjectConverter.convertStubDomainMappingToDomainMappingBean(domainMapping);
+                        domainMappingsBeans.add(domainMappingBean);
+                    }
+                }
+            }
+            return domainMappingsBeans;
+        } catch (Exception e) {
+            String message = "Could not get domain mappings: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
         }

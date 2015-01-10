@@ -23,6 +23,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
+import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -448,6 +450,40 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeApplicationSignUp(@PathParam("applicationId") String applicationId) throws RestAPIException {
         StratosApiV41Utils.removeApplicationSignUp(applicationId);
         return Response.ok().build();
+    }
+
+    @POST
+    @Path("/applications/{applicationId}/domainMappings")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addDomainMappings(@PathParam("applicationId") String applicationId,
+                                         ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+        StratosApiV41Utils.addApplicationDomainMappings(applicationId, domainMapppingsBean);
+        return Response.ok().build();
+    }
+
+    @DELETE
+    @Path("/applications/{applicationId}/domainMappings")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response removeDomainMappings(@PathParam("applicationId") String applicationId,
+                                     ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+        StratosApiV41Utils.removeApplicationDomainMappings(applicationId, domainMapppingsBean);
+        return Response.ok().build();
+    }
+
+    @GET
+    @Path("/applications/{applicationId}/domainMappings")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getDomainMappings(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        List<DomainMappingBean> domainMappingsBeanList = StratosApiV41Utils.getApplicationDomainMappings(applicationId);
+        DomainMappingBean[] domainMappingsBeans = domainMappingsBeanList.toArray(
+                new DomainMappingBean[domainMappingsBeanList.size()]);
+        return Response.ok(domainMappingsBeans).build();
     }
 
     /**

@@ -30,6 +30,7 @@ import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.beans.application.*;
+import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
 import org.apache.stratos.common.beans.cartridge.*;
@@ -49,6 +50,7 @@ import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
+import org.apache.stratos.manager.service.stub.domain.domain.mapping.DomainMapping;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
@@ -1681,5 +1683,19 @@ public class ObjectConverter {
             applicationSignUpBean.setArtifactRepositories(artifactRepositoryBeanList);
         }
         return applicationSignUpBean;
+    }
+
+    public static DomainMapping convertDomainMappingBeanToStubDomainMapping(DomainMappingBean domainMappingBean) {
+        DomainMapping domainMapping = new DomainMapping();
+        domainMapping.setDomainName(domainMappingBean.getDomainName());
+        domainMapping.setContextPath(domainMappingBean.getContextPath());
+        return domainMapping;
+    }
+
+    public static DomainMappingBean convertStubDomainMappingToDomainMappingBean(DomainMapping domainMapping) {
+        DomainMappingBean domainMappingBean = new DomainMappingBean();
+        domainMappingBean.setDomainName(domainMapping.getDomainName());
+        domainMappingBean.setContextPath(domainMapping.getContextPath());
+        return domainMappingBean;
     }
 }
