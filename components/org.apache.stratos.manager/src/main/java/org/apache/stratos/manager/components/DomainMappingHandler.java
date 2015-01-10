@@ -123,7 +123,10 @@ public class DomainMappingHandler {
     public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws DomainMappingException {
         try {
             ApplicationSignUp applicationSignUp = applicationSignUpHandler.getApplicationSignUp(applicationId, tenantId);
-            return applicationSignUp.getDomainMappings();
+            if(applicationSignUp != null) {
+                return applicationSignUp.getDomainMappings();
+            }
+            return null;
         } catch (Exception e) {
             String message = String.format("Could not get domain mappings: [application-id] %s [tenant-id] %d",
                     applicationId, tenantId);
