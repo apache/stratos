@@ -44,7 +44,6 @@ public class CartridgeBean {
     private String defaultAutoscalingPolicy;
     private String defaultDeploymentPolicy;
     private String serviceGroup;
-    private ContainerBean container;
     private List<PropertyBean> property;
     private List<String> exportingProperties;
 
@@ -241,13 +240,5 @@ public class CartridgeBean {
 
     public void setServiceGroup(String serviceGroup) {
         this.serviceGroup = serviceGroup;
-    }
-
-    public ContainerBean getContainer() {
-        return container;
-    }
-
-    public void setContainer(ContainerBean container) {
-        this.container = container;
     }
 }
