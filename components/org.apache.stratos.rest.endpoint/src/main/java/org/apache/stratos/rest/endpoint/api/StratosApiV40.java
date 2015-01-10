@@ -20,38 +20,34 @@ package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.common.beans.Cartridge;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.annotation.AuthorizationAction;
 import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
-import org.apache.stratos.common.beans.CartridgeInfoBean;
-import org.apache.stratos.common.beans.StratosApiResponse;
-import org.apache.stratos.common.beans.SubscriptionDomainRequest;
-import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.common.beans.autoscaler.partition.Partition;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.cartridge.definition.ServiceDefinitionBean;
-import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
-import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
-import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.context.RegistryType;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
+import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.carbon.tenant.mgt.core.TenantPersistor;
+import org.wso2.carbon.tenant.mgt.util.TenantMgtUtil;
 import org.wso2.carbon.user.api.UserRealm;
 import org.wso2.carbon.user.api.UserStoreManager;
 import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.tenant.Tenant;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
-import org.wso2.carbon.stratos.common.exception.StratosException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -76,10 +72,10 @@ public class StratosApiV40 extends AbstractApi {
     @POST
     @Path("/init")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosApiResponse initialize ()
+    public ApiResponseBean initialize ()
             throws RestAPIException {
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully logged in");
         return stratosApiResponse;
     }
@@ -112,7 +108,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deployCartridgeDefinition(CartridgeDefinitionBean cartridgeDefinitionBean)
+    public ApiResponseBean deployCartridgeBeanDefinition(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployCartridge(cartridgeDefinitionBean, getConfigContext(), getUsername(),
@@ -126,7 +122,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse unDeployCartridgeDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
+    public ApiResponseBean unDeployCartridgeBeanDefinition (@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
 
         return StratosApiV40Utils.undeployCartridge(cartridgeType);
     }
@@ -137,7 +133,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deployPartition (Partition partition)
+    public ApiResponseBean deployPartition (PartitionBean partition)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployPartition(partition);
@@ -149,7 +145,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deployAutoscalingPolicyDefintion (AutoscalePolicy autoscalePolicy)
+    public ApiResponseBean deployAutoscalingPolicyDefintion (AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         return StratosApiV40Utils.deployAutoscalingPolicy(autoscalePolicy);
@@ -161,7 +157,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response deployDeploymentPolicyDefinition(DeploymentPolicy deploymentPolicy)
+    public Response deployDeploymentPolicyDefinition(DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
         // Not supported in 4.1.0
         return Response.status(Response.Status.GONE).build();
@@ -182,7 +178,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Partition getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
+    public PartitionBean getPartition (@PathParam("partitionId") String partitionId) throws RestAPIException {
 
         return StratosApiV40Utils.getPartition(partitionId);
     }
@@ -192,7 +188,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApplicationLevelNetworkPartition[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public ApplicationLevelNetworkPartitionBean[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
         return StratosApiV40Utils.getPartitionGroups(deploymentPolicyId);
@@ -203,7 +199,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Partition [] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
+    public PartitionBean[] getPartitions (@PathParam("deploymentPolicyId") String deploymentPolicyId,
                                        @PathParam("partitionGroupId") String partitionGroupId) throws RestAPIException {
 
         return StratosApiV40Utils.getPartitionsOfGroup(deploymentPolicyId, partitionGroupId);
@@ -214,7 +210,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Partition [] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public PartitionBean[] getPartitionsOfPolicy (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
 
         return StratosApiV40Utils.getPartitionsOfDeploymentPolicy(deploymentPolicyId);
@@ -225,7 +221,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicy[] getAutoscalePolicies () throws RestAPIException {
+    public AutoscalePolicyBean[] getAutoscalePolicies () throws RestAPIException {
 
         return StratosApiV40Utils.getAutoScalePolicies();
     }
@@ -235,7 +231,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public AutoscalePolicy getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
+    public AutoscalePolicyBean getAutoscalePolicies (@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
 
         return StratosApiV40Utils.getAutoScalePolicy(autoscalePolicyId);
@@ -278,9 +274,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableMultiTenantCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV40Utils.getAvailableCartridges(null, true, getConfigContext());
-        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    public CartridgeBean[] getAvailableMultiTenantCartridgeBeans() throws RestAPIException {
+        List<CartridgeBean> cartridges = StratosApiV40Utils.getAvailableCartridges(null, true, getConfigContext());
+        return cartridges.isEmpty() ? new CartridgeBean[0] : cartridges.toArray(new CartridgeBean[cartridges.size()]);
     }
 
     @GET
@@ -288,9 +284,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableSingleTenantCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV40Utils.getAvailableCartridges(null, false, getConfigContext());
-        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    public CartridgeBean[] getAvailableSingleTenantCartridgeBeans() throws RestAPIException {
+        List<CartridgeBean> cartridges = StratosApiV40Utils.getAvailableCartridges(null, false, getConfigContext());
+        return cartridges.isEmpty() ? new CartridgeBean[0] : cartridges.toArray(new CartridgeBean[cartridges.size()]);
     }
 
     @GET
@@ -298,9 +294,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge[] getAvailableCartridges() throws RestAPIException {
-        List<Cartridge> cartridges = StratosApiV40Utils.getAvailableCartridges(null, null, getConfigContext());
-        return cartridges.isEmpty() ? new Cartridge[0] : cartridges.toArray(new Cartridge[cartridges.size()]);
+    public CartridgeBean[] getAvailableCartridgeBeans() throws RestAPIException {
+        List<CartridgeBean> cartridges = StratosApiV40Utils.getAvailableCartridges(null, null, getConfigContext());
+        return cartridges.isEmpty() ? new CartridgeBean[0] : cartridges.toArray(new CartridgeBean[cartridges.size()]);
     }
 
     @GET
@@ -308,7 +304,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getSubscribedCartridges() throws RestAPIException {
+    public Response getSubscribedCartridgeBeans() throws RestAPIException {
         return Response.status(404).build();
     }
 
@@ -317,7 +313,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getSubscribedCartridgesForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
+    public Response getSubscribedCartridgeBeansForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
         return Response.status(404).build();
     }
 
@@ -326,7 +322,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getCartridgeInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
+    public Response getCartridgeBeanInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
         return Response.status(404).build();
     }
 
@@ -335,7 +331,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Cartridge getAvailableSingleTenantCartridgeInfo(@PathParam("cartridgeType") String cartridgeType)
+    public CartridgeBean getAvailableSingleTenantCartridgeBeanInfo(@PathParam("cartridgeType") String cartridgeType)
             throws RestAPIException {
         return StratosApiV40Utils.getAvailableCartridgeInfo(cartridgeType, null, getConfigContext());
     }
@@ -345,7 +341,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public List<Cartridge> getAvailableLbCartridges()
+    public List<CartridgeBean> getAvailableLbCartridgeBeans()
             throws RestAPIException {
         return StratosApiV40Utils.getAvailableLbCartridges(false, getConfigContext());
     }
@@ -365,8 +361,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response subscribe(CartridgeInfoBean cartridgeInfoBean) throws RestAPIException {
-
+    public Response subscribe(Object cartridgeInfoBean) throws RestAPIException {
         return Response.status(404).build();
     }
 
@@ -422,7 +417,7 @@ public class StratosApiV40 extends AbstractApi {
     @Path("/cartridge/unsubscribe")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosApiResponse unsubscribe(String alias) throws RestAPIException {
+    public ApiResponseBean unsubscribe(String alias) throws RestAPIException {
 
         return StratosApiV40Utils.unsubscribe(alias, getTenantDomain());
 
@@ -434,7 +429,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ApiResponseBean addTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
         try {
             CommonUtil.validateEmail(tenantInfoBean.getEmail());
         } catch (Exception e) {
@@ -509,7 +504,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully added new tenant with domain " + tenantInfoBean.getTenantDomain());
         return stratosApiResponse;
     }
@@ -519,7 +514,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
+    public ApiResponseBean updateTenant(TenantInfoBean tenantInfoBean) throws RestAPIException {
 
         try {
             return updateExistingTenant(tenantInfoBean);
@@ -530,7 +525,7 @@ public class StratosApiV40 extends AbstractApi {
         }
     }
 
-    private StratosApiResponse updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
+    private ApiResponseBean updateExistingTenant(TenantInfoBean tenantInfoBean) throws Exception {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         UserStoreManager userStoreManager;
@@ -650,7 +645,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new Exception(msg, e);
         }
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully updated the tenant " + tenantDomain);
         return stratosApiResponse;
     }
@@ -721,7 +716,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ApiResponseBean deleteTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId = 0;
         try {
@@ -745,7 +740,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully deleted tenant " + tenantDomain);
         return stratosApiResponse;
     }
@@ -790,7 +785,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ApiResponseBean activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId;
         try {
@@ -806,7 +801,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException( e);
         }
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
 
         try {
             TenantMgtUtil.activateTenant(tenantDomain, tenantManager, tenantId);
@@ -849,7 +844,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public StratosApiResponse deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public ApiResponseBean deactivateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
         TenantManager tenantManager = ServiceHolder.getTenantManager();
         int tenantId;
@@ -867,7 +862,7 @@ public class StratosApiV40 extends AbstractApi {
             throw new RestAPIException( e);
         }
 
-        StratosApiResponse stratosApiResponse = new StratosApiResponse();
+        ApiResponseBean stratosApiResponse = new ApiResponseBean();
 
         try {
             TenantMgtUtil.deactivateTenant(tenantDomain, tenantManager, tenantId);
@@ -894,7 +889,7 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response deployService(ServiceDefinitionBean serviceDefinitionBean)
+    public Response deployService(Object serviceDefinitionBean)
             throws RestAPIException {
         return Response.status(404).build();
     }
@@ -943,7 +938,7 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public void getRepoNotification(Payload payload) throws RestAPIException {
+    public void getRepoNotification(GitNotificationPayloadBean payload) throws RestAPIException {
 
         StratosApiV40Utils.notifyArtifactUpdatedEvent(payload);
     }
@@ -952,11 +947,11 @@ public class StratosApiV40 extends AbstractApi {
     @Path("/cartridge/sync")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosApiResponse synchronizeRepository(String alias) throws RestAPIException {
+    public ApiResponseBean synchronizeRepository(String alias) throws RestAPIException {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Synchronizing Git repository for alias '%s'", alias));
         }
-//        CartridgeSubscription cartridgeSubscription = StratosApiV40Utils.getCartridgeSubscription(alias, getConfigContext());
+//        CartridgeBeanSubscription cartridgeSubscription = StratosApiV40Utils.getCartridgeBeanSubscription(alias, getConfigContext());
 //        if (cartridgeSubscription != null && cartridgeSubscription.getRepository() != null && log.isDebugEnabled()) {
 //            log.debug(String.format("Found subscription for '%s'. Git repository: %s", alias, cartridgeSubscription
 //                    .getRepository().getUrl()));
@@ -1010,10 +1005,9 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias,
-                                           SubscriptionDomainRequest request) throws RestAPIException {
+                                           Object request) throws RestAPIException {
 
-        StratosApiResponse stratosApiResponse = StratosApiV40Utils.addSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias, request);
-        return Response.ok().entity(stratosApiResponse).build();
+        throw new RestAPIException("Not implemented");
     }
 
     @GET
@@ -1051,10 +1045,10 @@ public class StratosApiV40 extends AbstractApi {
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public StratosApiResponse removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+    public ApiResponseBean removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
                                                          @PathParam("domainName") String domainName) throws RestAPIException {
-        return StratosApiV40Utils.removeSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
+        throw new RestAPIException("Not implemented");
     }
 
     @GET

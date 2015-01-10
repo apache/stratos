@@ -31,7 +31,7 @@ public class ClusterInstanceBean implements Serializable {
     private String alias;
     private String serviceName;
     private String clusterId;
-    private List<Member> member;
+    private List<MemberBean> member;
     private String tenantRange;
     private List<String> hostNames;
 
@@ -75,11 +75,11 @@ public class ClusterInstanceBean implements Serializable {
         this.clusterId = clusterId;
     }
 
-    public List<Member> getMember() {
+    public List<MemberBean> getMember() {
         return member;
     }
 
-    public void setMember(List<Member> member) {
+    public void setMember(List<MemberBean> member) {
         this.member = member;
     }
 

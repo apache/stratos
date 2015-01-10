@@ -20,7 +20,7 @@ package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.beans.NameValuePair;
+import org.apache.stratos.common.domain.NameValuePair;
 
 import java.io.Serializable;
 import java.util.Arrays;

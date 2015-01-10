@@ -21,13 +21,16 @@ package org.apache.stratos.rest.endpoint.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.*;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
-import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
-import org.apache.stratos.common.beans.repositoryNotificationInfoBean.Payload;
+import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
+import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
@@ -89,7 +92,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/restlogin")
     public Response initialize()
             throws RestAPIException {
-        StratosApiResponse response = new StratosApiResponse();
+        ApiResponseBean response = new ApiResponseBean();
         response.setMessage("Successfully authenticated");
         return Response.ok(response).build();
     }
@@ -132,7 +135,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
-    public Response addCartridge(CartridgeDefinitionBean cartridgeDefinitionBean)
+    public Response addCartridge(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
         StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
@@ -152,12 +155,12 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridges() throws RestAPIException {
-        List<CartridgeDefinitionBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
+        List<CartridgeBean> cartridges = StratosApiV41Utils.getAvailableCartridges(null, null, getConfigContext());
         if (cartridges == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        CartridgeDefinitionBean[] cartridgeArray = cartridges.isEmpty() ?
-                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]);
+        CartridgeBean[] cartridgeArray = cartridges.isEmpty() ?
+                new CartridgeBean[0] : cartridges.toArray(new CartridgeBean[cartridges.size()]);
         return Response.ok().entity(cartridgeArray).build();
     }
 
@@ -167,7 +170,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridge(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridge(cartridgeType);
+        CartridgeBean cartridge = StratosApiV41Utils.getCartridge(cartridgeType);
         if (cartridge == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -189,13 +192,13 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridgesByFilter(@DefaultValue("") @PathParam("filter") String filter,
                                           @QueryParam("criteria") String criteria) throws RestAPIException {
-        List<CartridgeDefinitionBean> cartridges = StratosApiV41Utils.
+        List<CartridgeBean> cartridges = StratosApiV41Utils.
                 getCartridgesByFilter(filter, criteria, getConfigContext());
         if (cartridges == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-        CartridgeDefinitionBean[] cartridgeArray = cartridges.isEmpty() ?
-                new CartridgeDefinitionBean[0] : cartridges.toArray(new CartridgeDefinitionBean[cartridges.size()]);
+        CartridgeBean[] cartridgeArray = cartridges.isEmpty() ?
+                new CartridgeBean[0] : cartridges.toArray(new CartridgeBean[cartridges.size()]);
         return Response.ok().entity(cartridgeArray).build();
     }
 
@@ -214,7 +217,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/cartridge")
     public Response getCartridgeByFilter(@PathParam("cartridgeType") String cartridgeType,
                                          @DefaultValue("") @PathParam("filter") String filter) throws RestAPIException {
-        CartridgeDefinitionBean cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
+        CartridgeBean cartridge = StratosApiV41Utils.getCartridgeByFilter(filter, cartridgeType, getConfigContext());
         if (cartridge == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -253,7 +256,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public Response addServiceGroup(ServiceGroupDefinition serviceGroupDefinition)
+    public Response addServiceGroup(GroupBean serviceGroupDefinition)
             throws RestAPIException {
         StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
         URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
@@ -274,7 +277,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getServiceGroupDefinition(@PathParam("groupDefinitionName") String groupDefinitionName)
             throws RestAPIException {
-        ServiceGroupDefinition serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
+        GroupBean serviceGroupDefinition = StratosApiV41Utils.getServiceGroupDefinition(groupDefinitionName);
         Response.ResponseBuilder rb;
         if (serviceGroupDefinition != null) {
             rb = Response.ok().entity(serviceGroupDefinition);
@@ -297,7 +300,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getServiceGroups() throws RestAPIException {
-        ServiceGroupDefinition[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
+        GroupBean[] serviceGroups = StratosApiV41Utils.getServiceGroupDefinitions();
         Response.ResponseBuilder rb;
         if (serviceGroups != null) {
             rb = Response.ok().entity(serviceGroups);
@@ -342,7 +345,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addApplication(ApplicationDefinition applicationDefinition)
+    public Response addApplication(ApplicationBean applicationDefinition)
             throws RestAPIException {
         StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
@@ -361,8 +364,8 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplications() throws RestAPIException {
-        List<ApplicationDefinition> applicationDefinitions = StratosApiV41Utils.getApplications();
-        ApplicationDefinition[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationDefinition[applicationDefinitions.size()]);
+        List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
+        ApplicationBean[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationBean[applicationDefinitions.size()]);
         return Response.ok(applicationDefinitionsArray).build();
     }
 
@@ -373,7 +376,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplication(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-        ApplicationDefinition applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -392,7 +395,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response deployApplication(@PathParam("applicationId") String applicationId, DeploymentPolicy deploymentPolicy)
+    public Response deployApplication(@PathParam("applicationId") String applicationId, DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
         StratosApiV41Utils.deployApplication(applicationId, deploymentPolicy);
         return Response.accepted().build();
@@ -405,7 +408,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getApplicationDeploymentPolicy(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-        DeploymentPolicy deploymentPolicy = StratosApiV41Utils.getDeploymentPolicy(applicationId);
+        DeploymentPolicyBean deploymentPolicy = StratosApiV41Utils.getDeploymentPolicy(applicationId);
         if (deploymentPolicy == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -525,7 +528,7 @@ public class StratosApiV41 extends AbstractApi {
     @SuperTenantService(true)
     public Response removeApplication(@PathParam("applicationId") String applicationId)
             throws RestAPIException {
-        ApplicationDefinition applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
+        ApplicationBean applicationDefinition = StratosApiV41Utils.getApplication(applicationId);
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -564,7 +567,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/view/autoscalingPolicy")
     public Response getAutoscalingPolicy(@PathParam("autoscalePolicyId") String autoscalePolicyId)
             throws RestAPIException {
-        AutoscalePolicy autoScalePolicy = StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId);
+        AutoscalePolicyBean autoScalePolicy = StratosApiV41Utils.getAutoScalePolicy(autoscalePolicyId);
         if (autoScalePolicy == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -583,7 +586,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response addAutoscalingPolicy(AutoscalePolicy autoscalePolicy)
+    public Response addAutoscalingPolicy(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
@@ -603,7 +606,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response updateAutoscalingPolicyDefintion(AutoscalePolicy autoscalePolicy)
+    public Response updateAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         StratosApiV41Utils.updateAutoscalingPolicy(autoscalePolicy);
@@ -612,25 +615,25 @@ public class StratosApiV41 extends AbstractApi {
 
     // API methods for subscriptions
 
-    /**
-     * Gets the subscriptions of an application.
-     *
-     * @param applicationId the application id
-     * @return the subscriptions of application
-     * @throws RestAPIException the rest api exception
-     */
-    @GET
-    @Path("/subscriptions/{applicationId}")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getSubscriptionsForApplication(@PathParam("applicationId") String applicationId) throws RestAPIException {
-        List<ApplicationSubscription> subscriptions = StratosApiV41Utils.getApplicationSubscriptions(applicationId);
-        if (subscriptions == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok().entity(subscriptions).build();
-    }
+//    /**
+//     * Gets the subscriptions of an application.
+//     *
+//     * @param applicationId the application id
+//     * @return the subscriptions of application
+//     * @throws RestAPIException the rest api exception
+//     */
+//    @GET
+//    @Path("/subscriptions/{applicationId}")
+//    @Produces("application/json")
+//    @Consumes("application/json")
+//    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+//    public Response getSubscriptionsForApplication(@PathParam("applicationId") String applicationId) throws RestAPIException {
+//        List<ApplicationSubscription> subscriptions = StratosApiV41Utils.getApplicationSubscriptions(applicationId);
+//        if (subscriptions == null) {
+//            return Response.status(Response.Status.NOT_FOUND).build();
+//        }
+//        return Response.ok().entity(subscriptions).build();
+//    }
 
     /**
      * Gets the subscribed cartridges of service group.
@@ -1243,7 +1246,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/sync")
-    public Response notifyRepository(Payload payload) throws RestAPIException {
+    public Response notifyRepository(GitNotificationPayloadBean payload) throws RestAPIException {
         if (log.isInfoEnabled()) {
             log.info(String.format("Git update"));
         }
@@ -1396,7 +1399,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    public Response addKubernetesHostCluster(KubernetesCluster kubernetesCluster) throws RestAPIException {
+    public Response addKubernetesHostCluster(KubernetesClusterBean kubernetesCluster) throws RestAPIException {
 
         StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
@@ -1416,7 +1419,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    public Response addKubernetesHost(@PathParam("kubernetesClusterId") String kubernetesClusterId, KubernetesHost kubernetesHost)
+    public Response addKubernetesHost(@PathParam("kubernetesClusterId") String kubernetesClusterId, KubernetesHostBean kubernetesHost)
             throws RestAPIException {
 
         StratosApiV41Utils.addKubernetesHost(kubernetesClusterId, kubernetesHost);
@@ -1436,7 +1439,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    public Response updateKubernetesMaster(KubernetesMaster kubernetesMaster) throws RestAPIException {
+    public Response updateKubernetesMaster(KubernetesMasterBean kubernetesMaster) throws RestAPIException {
         try {
             StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
@@ -1452,7 +1455,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/kubernetes")
-    public Response updateKubernetesHost(KubernetesHost kubernetesHost) throws RestAPIException {
+    public Response updateKubernetesHost(KubernetesHostBean kubernetesHost) throws RestAPIException {
         try {
             StratosApiV41Utils.updateKubernetesHost(kubernetesHost);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();

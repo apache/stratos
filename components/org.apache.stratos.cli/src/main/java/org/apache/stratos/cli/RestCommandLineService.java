@@ -34,17 +34,17 @@ import org.apache.stratos.cli.exception.ExceptionMapper;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
-import org.apache.stratos.common.beans.GroupBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.beans.cartridge.definition.CartridgeDefinitionBean;
-import org.apache.stratos.common.beans.cartridge.definition.IaasProviderBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
-import org.apache.stratos.common.beans.topology.Cluster;
-import org.apache.stratos.common.beans.ApplicationDefinition;
+import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.topology.ClusterBean;
+import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -251,9 +251,9 @@ public class RestCommandLineService {
      */
     public void listCartridges() throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
             }.getType();
-            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+            List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     listType, "cartridges");
 
             if ((cartridgeList == null) || (cartridgeList.size() == 0)) {
@@ -261,8 +261,8 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<CartridgeDefinitionBean> cartridgeMapper = new RowMapper<CartridgeDefinitionBean>() {
-                public String[] getData(CartridgeDefinitionBean cartridge) {
+            RowMapper<CartridgeBean> cartridgeMapper = new RowMapper<CartridgeBean>() {
+                public String[] getData(CartridgeBean cartridge) {
                     String[] data = new String[6];
                     data[0] = cartridge.getType();
                     data[1] = cartridge.getCategory();
@@ -274,7 +274,7 @@ public class RestCommandLineService {
                 }
             };
 
-            CartridgeDefinitionBean[] cartridges = new CartridgeDefinitionBean[cartridgeList.size()];
+            CartridgeBean[] cartridges = new CartridgeBean[cartridgeList.size()];
             cartridges = cartridgeList.toArray(cartridges);
 
             System.out.println("Cartridges found:");
@@ -293,14 +293,14 @@ public class RestCommandLineService {
      */
     public void describeCartridge(final String cartridgeType) throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<CartridgeDefinitionBean>>() {
+            Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
             }.getType();
             // GET /cartridges/{cartridgeType} not available, hence using the list method
-            List<CartridgeDefinitionBean> cartridgeList = (List<CartridgeDefinitionBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
+            List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES,
                     listType, "cartridges");
 
-            CartridgeDefinitionBean cartridge = null;
-            for(CartridgeDefinitionBean item : cartridgeList) {
+            CartridgeBean cartridge = null;
+            for(CartridgeBean item : cartridgeList) {
                 if(item.getType().equals(cartridgeType)) {
                     cartridge = item;
                     break;
@@ -350,7 +350,7 @@ public class RestCommandLineService {
         }
     }
 
-    private Cluster getClusterObjectFromString(String resultString) {
+    private ClusterBean getClusterObjectFromString(String resultString) {
         String tmp;
         if (resultString.startsWith("{\"cluster\"")) {
             tmp = resultString.substring("{\"cluster\"".length() + 1, resultString.length() - 1);
@@ -358,7 +358,7 @@ public class RestCommandLineService {
         }
         GsonBuilder gsonBuilder = new GsonBuilder();
         Gson gson = gsonBuilder.create();
-        return gson.fromJson(resultString, Cluster.class);
+        return gson.fromJson(resultString, ClusterBean.class);
     }
 
     // This method helps to create the new tenant
@@ -641,9 +641,9 @@ public class RestCommandLineService {
     // This method helps to list applications
     public void listApplications() throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<ApplicationDefinition>>() {
+            Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
             }.getType();
-            List<ApplicationDefinition> list = (List<ApplicationDefinition>) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
+            List<ApplicationBean> list = (List<ApplicationBean>) restClient.listEntity(ENDPOINT_LIST_APPLICATION,
                     listType, "applications");
 
             if ((list == null) || (list.size() == 0)) {
@@ -651,8 +651,8 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<ApplicationDefinition> rowMapper = new RowMapper<ApplicationDefinition>() {
-                public String[] getData(ApplicationDefinition applicationDefinition) {
+            RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
+                public String[] getData(ApplicationBean applicationDefinition) {
                     String[] data = new String[4];
                     data[0] = applicationDefinition.getApplicationId();
                     data[1] = StringUtils.isEmpty(applicationDefinition.getName()) ? "" :
@@ -663,7 +663,7 @@ public class RestCommandLineService {
                 }
             };
 
-            ApplicationDefinition[] array = new ApplicationDefinition[list.size()];
+            ApplicationBean[] array = new ApplicationBean[list.size()];
             array = list.toArray(array);
 
             System.out.println("Applications found:");
@@ -688,9 +688,9 @@ public class RestCommandLineService {
 
     public void listAutoscalingPolicies() throws CommandException {
         try {
-            Type listType = new TypeToken<ArrayList<AutoscalePolicy>>() {
+            Type listType = new TypeToken<ArrayList<AutoscalePolicyBean>>() {
             }.getType();
-            List<AutoscalePolicy> list = (List<AutoscalePolicy>) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
+            List<AutoscalePolicyBean> list = (List<AutoscalePolicyBean>) restClient.listEntity(ENDPOINT_LIST_AUTOSCALING_POLICIES,
                     listType, "autoscaling policies");
 
             if ((list == null) || (list == null) || (list.size() == 0)) {
@@ -698,9 +698,9 @@ public class RestCommandLineService {
                 return;
             }
 
-            RowMapper<AutoscalePolicy> rowMapper = new RowMapper<AutoscalePolicy>() {
+            RowMapper<AutoscalePolicyBean> rowMapper = new RowMapper<AutoscalePolicyBean>() {
 
-                public String[] getData(AutoscalePolicy policy) {
+                public String[] getData(AutoscalePolicyBean policy) {
                     String[] data = new String[2];
                     data[0] = policy.getId();
                     data[1] = policy.getIsPublic() ? "Public" : "Private";
@@ -708,7 +708,7 @@ public class RestCommandLineService {
                 }
             };
 
-            AutoscalePolicy[] array = new AutoscalePolicy[list.size()];
+            AutoscalePolicyBean[] array = new AutoscalePolicyBean[list.size()];
             array = list.toArray(array);
 
             System.out.println("Autoscaling policies found:");
@@ -721,8 +721,8 @@ public class RestCommandLineService {
 
     public void describeDeploymentPolicy(String applicationId) throws CommandException {
         try {
-            DeploymentPolicy policy = (DeploymentPolicy) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
-                    DeploymentPolicy.class, "{applicationId}", applicationId, "deployment policy");
+            DeploymentPolicyBean policy = (DeploymentPolicyBean) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
+                    DeploymentPolicyBean.class, "{applicationId}", applicationId, "deployment policy");
 
 	        if (policy == null) {
 	            System.out.println("Deployment policy not found: " + applicationId);
@@ -739,8 +739,8 @@ public class RestCommandLineService {
 
     public void describeAutoScalingPolicy(String id) throws CommandException {
         try {
-            AutoscalePolicy policy = (AutoscalePolicy) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY,
-                    AutoscalePolicy.class, "{id}", id, "autoscaling policy");
+            AutoscalePolicyBean policy = (AutoscalePolicyBean) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY,
+                    AutoscalePolicyBean.class, "{id}", id, "autoscaling policy");
 
             if (policy == null) {
                 System.out.println("Autoscaling policy not found: " + id);
@@ -761,13 +761,13 @@ public class RestCommandLineService {
 
     public void listKubernetesClusters() {
         try {
-            Type listType = new TypeToken<ArrayList<KubernetesHost>>() {
+            Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
             }.getType();
-            List<KubernetesCluster> list = (List<KubernetesCluster>) restClient.
+            List<KubernetesClusterBean> list = (List<KubernetesClusterBean>) restClient.
                     listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, listType, "kubernetes cluster");
             if ((list != null) && (list.size() > 0)) {
-                RowMapper<KubernetesCluster> partitionMapper = new RowMapper<KubernetesCluster>() {
-                    public String[] getData(KubernetesCluster kubernetesCluster) {
+                RowMapper<KubernetesClusterBean> partitionMapper = new RowMapper<KubernetesClusterBean>() {
+                    public String[] getData(KubernetesClusterBean kubernetesCluster) {
                         String[] data = new String[2];
                         data[0] = kubernetesCluster.getClusterId();
                         data[1] = kubernetesCluster.getDescription();
@@ -775,7 +775,7 @@ public class RestCommandLineService {
                     }
                 };
 
-                KubernetesCluster[] array = new KubernetesCluster[list.size()];
+                KubernetesClusterBean[] array = new KubernetesClusterBean[list.size()];
                 array = list.toArray(array);
                 System.out.println("Kubernetes clusters found:");
                 CliUtils.printTable(array, partitionMapper, "Group ID", "Description");
@@ -823,13 +823,13 @@ public class RestCommandLineService {
 
     public void listKubernetesHosts(String clusterId) {
         try {
-            Type listType = new TypeToken<ArrayList<KubernetesHost>>() {
+            Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
             }.getType();
-            List<KubernetesHost> list = (List<KubernetesHost>) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{kubernetesClusterId}", clusterId),
+            List<KubernetesHostBean> list = (List<KubernetesHostBean>) restClient.listEntity(ENDPOINT_LIST_KUBERNETES_HOSTS.replace("{kubernetesClusterId}", clusterId),
                     listType, "kubernetes host");
             if ((list != null) && (list.size() > 0)) {
-                RowMapper<KubernetesHost> partitionMapper = new RowMapper<KubernetesHost>() {
-                    public String[] getData(KubernetesHost kubernetesHost) {
+                RowMapper<KubernetesHostBean> partitionMapper = new RowMapper<KubernetesHostBean>() {
+                    public String[] getData(KubernetesHostBean kubernetesHost) {
                         String[] data = new String[3];
                         data[0] = kubernetesHost.getHostId();
                         data[1] = kubernetesHost.getHostname();
@@ -838,7 +838,7 @@ public class RestCommandLineService {
                     }
                 };
 
-                KubernetesHost[] array = new KubernetesHost[list.size()];
+                KubernetesHostBean[] array = new KubernetesHostBean[list.size()];
                 array = list.toArray(array);
                 System.out.println("Kubernetes hosts found:");
                 CliUtils.printTable(array, partitionMapper, "Host ID", "Hostname", "IP Address");
@@ -934,10 +934,10 @@ public class RestCommandLineService {
     // This method helps to describe applications
     public void describeApplication (String applicationID) {
         try {
-            Type listType = new TypeToken<ApplicationDefinition>() {
+            Type listType = new TypeToken<ApplicationBean>() {
             }.getType();
-            ApplicationDefinition application = (ApplicationDefinition) restClient
-                    .getEntity(ENDPOINT_GET_APPLICATION, ApplicationDefinition.class, "{appId}", applicationID,
+            ApplicationBean application = (ApplicationBean) restClient
+                    .getEntity(ENDPOINT_GET_APPLICATION, ApplicationBean.class, "{appId}", applicationID,
                             "application");
 
             if (application == null) {

@@ -27,27 +27,26 @@ import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.domain.*;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.beans.*;
-import org.apache.stratos.common.beans.autoscaler.partition.ApplicationLevelNetworkPartition;
-import org.apache.stratos.common.beans.autoscaler.partition.Partition;
-import org.apache.stratos.common.beans.autoscaler.policy.autoscale.*;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.common.beans.autoscaler.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.beans.cartridge.definition.*;
-import org.apache.stratos.common.beans.cartridge.definition.PropertyBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesCluster;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHost;
-import org.apache.stratos.common.beans.kubernetes.KubernetesMaster;
-import org.apache.stratos.common.beans.kubernetes.PortRange;
-import org.apache.stratos.common.beans.subscription.domain.SubscriptionDomainBean;
+import org.apache.stratos.common.beans.application.*;
+import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
+import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
+import org.apache.stratos.common.beans.cartridge.*;
+import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
+import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
+import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.ChildLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.ChildLevelPartitionBean;
+import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.policy.autoscale.*;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ChildPolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.*;
 import org.apache.stratos.common.util.CommonUtil;
-import org.apache.stratos.common.beans.DependencyDefinitions;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -55,7 +54,6 @@ import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
-import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
@@ -65,7 +63,7 @@ import java.util.*;
 public class ObjectConverter {
 
     public static CartridgeConfig convertCartridgeDefinitionBeanToStubCartridgeConfig(
-            CartridgeDefinitionBean cartridgeDefinitionBean) {
+            CartridgeBean cartridgeDefinitionBean) {
 
         CartridgeConfig cartridgeConfig = new CartridgeConfig();
 
@@ -166,7 +164,7 @@ public class ObjectConverter {
         return iaasConfigsArray;
     }
 
-    public static Persistence convertPersistenceBeanToStubPersistence(PersistenceBean persistenceBean) {
+    public static Persistence convertPersistenceBeanToStubPersistence(org.apache.stratos.common.beans.cartridge.PersistenceBean persistenceBean) {
         Persistence persistence = new Persistence();
         persistence.setPersistanceRequired(persistenceBean.isRequired());
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.getVolume().size()];
@@ -192,8 +190,8 @@ public class ObjectConverter {
 
     }
 
-    public static Properties convertPropertyBeansToProperties(List<PropertyBean> propertyBeans) {
-        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+    public static Properties convertPropertyBeansToProperties(List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans) {
+        org.apache.stratos.common.beans.cartridge.PropertyBean[] propertyBeansArray = new org.apache.stratos.common.beans.cartridge.PropertyBean[propertyBeans.size()];
         propertyBeans.toArray(propertyBeansArray);
         Property[] propertyArray = new Property[propertyBeansArray.length];
 
@@ -210,7 +208,7 @@ public class ObjectConverter {
     }
     
     public static org.apache.stratos.cloud.controller.stub.Properties convertPropertyBeansToCCStubProperties(
-            List<PropertyBean> propertyBeans) {
+            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans) {
         if (propertyBeans == null) {
             return null;
         }
@@ -218,7 +216,7 @@ public class ObjectConverter {
         List<org.apache.stratos.cloud.controller.stub.Property> stubPropertiesList =
                 new ArrayList<org.apache.stratos.cloud.controller.stub.Property>();
 
-        for (PropertyBean propertyBean : propertyBeans) {
+        for (org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean : propertyBeans) {
             org.apache.stratos.cloud.controller.stub.Property stubProperty = new org.apache.stratos.cloud.controller.stub.Property();
             stubProperty.setName(propertyBean.getName());
             stubProperty.setValue(propertyBean.getValue());
@@ -235,13 +233,13 @@ public class ObjectConverter {
 
 
     public static org.apache.stratos.autoscaler.stub.Properties convertProperyBeansToStubProperties(
-            List<PropertyBean> propertyBeans) {
+            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans) {
         if (propertyBeans == null || propertyBeans.isEmpty()) {
             return null;
         }
 
         //convert to an array
-        PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+        org.apache.stratos.common.beans.cartridge.PropertyBean[] propertyBeansArray = new org.apache.stratos.common.beans.cartridge.PropertyBean[propertyBeans.size()];
         propertyBeans.toArray(propertyBeansArray);
         org.apache.stratos.autoscaler.stub.Property[] propertyArray = new org.apache.stratos.autoscaler.stub.Property[propertyBeansArray.length];
 
@@ -297,7 +295,7 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertStubPartitionToPartition
-            (Partition partition) {
+            (PartitionBean partition) {
 
         org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition = new
                 org.apache.stratos.autoscaler.stub.deployment.partition.Partition();
@@ -314,7 +312,7 @@ public class ObjectConverter {
         return stubPartition;
     }
 
-    public static org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy convertToCCAutoscalerPojo(AutoscalePolicy
+    public static org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy convertToCCAutoscalerPojo(AutoscalePolicyBean
                                                                                                                         autoscalePolicyBean) {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = new
@@ -358,7 +356,7 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToASDeploymentPolicyPojo(
-            DeploymentPolicy deploymentPolicyBean) {
+            DeploymentPolicyBean deploymentPolicyBean) {
 
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                 new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
@@ -382,14 +380,14 @@ public class ObjectConverter {
         return deploymentPolicy;
     }
 
-    public static DeploymentPolicy convertStubDeploymentPolicyToDeploymentPolicy(
+    public static DeploymentPolicyBean convertStubDeploymentPolicyToDeploymentPolicy(
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy) {
 
         if(stubDeploymentPolicy == null) {
             return null;
         }
 
-        DeploymentPolicy deploymentPolicy = new DeploymentPolicy();
+        DeploymentPolicyBean deploymentPolicy = new DeploymentPolicyBean();
         deploymentPolicy.setApplicationId(stubDeploymentPolicy.getApplicationId());
         deploymentPolicy.setDescription(stubDeploymentPolicy.getDescription());
         deploymentPolicy.setPublic(stubDeploymentPolicy.getIsPublic());
@@ -397,8 +395,8 @@ public class ObjectConverter {
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
                     networkPartitions = stubDeploymentPolicy.getApplicationLevelNetworkPartitions();
             if(networkPartitions != null) {
-                deploymentPolicy.setApplicationPolicy(new ApplicationPolicy());
-                List<ApplicationLevelNetworkPartition> networkPartitionList = new ArrayList<ApplicationLevelNetworkPartition>();
+                deploymentPolicy.setApplicationPolicy(new ApplicationPolicyBean());
+                List<ApplicationLevelNetworkPartitionBean> networkPartitionList = new ArrayList<ApplicationLevelNetworkPartitionBean>();
                 for(org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition
                         networkPartition : networkPartitions) {
                     if(networkPartition != null) {
@@ -410,52 +408,52 @@ public class ObjectConverter {
         }
 
         if (stubDeploymentPolicy.getChildPolicies() != null) {
-            List<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy> childPolicyList =
-                    new ArrayList<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy>();
+            List<ChildPolicyBean> childPolicyBeanList =
+                    new ArrayList<ChildPolicyBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy stubChildDeploymentPolicy :
                     stubDeploymentPolicy.getChildPolicies()) {
                 if(stubChildDeploymentPolicy != null) {
-                    childPolicyList.add(convertStubChildPolicyToChildPolicy(stubChildDeploymentPolicy));
+                    childPolicyBeanList.add(convertStubChildPolicyToChildPolicy(stubChildDeploymentPolicy));
                 }
             }
-            deploymentPolicy.setChildPolicies(childPolicyList);
+            deploymentPolicy.setChildPolicies(childPolicyBeanList);
         }
         return deploymentPolicy;
     }
 
-    private static org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy
+    private static ChildPolicyBean
     convertStubChildPolicyToChildPolicy(ChildPolicy stubChildDeploymentPolicy) {
         if(stubChildDeploymentPolicy == null) {
             return null;
         }
-        org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy childPolicy = new
-                org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy();
-        childPolicy.setAlias(stubChildDeploymentPolicy.getAlias());
+        ChildPolicyBean childPolicyBean = new
+                ChildPolicyBean();
+        childPolicyBean.setAlias(stubChildDeploymentPolicy.getAlias());
         if(stubChildDeploymentPolicy.getChildLevelNetworkPartitions() != null) {
-            List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition> networkPartitionList
-                    = new ArrayList<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition>();
+            List<ChildLevelNetworkPartitionBean> networkPartitionList
+                    = new ArrayList<ChildLevelNetworkPartitionBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition
                     stubChildLevelNetworkPartition : stubChildDeploymentPolicy.getChildLevelNetworkPartitions()) {
                 networkPartitionList.add(convertStubChildLevelNetworkPartitionToChildLevelNetworkPartition(stubChildLevelNetworkPartition));
             }
-            childPolicy.setNetworkPartition(networkPartitionList);
+            childPolicyBean.setNetworkPartition(networkPartitionList);
         }
-        return childPolicy;
+        return childPolicyBean;
     }
 
-    private static org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition
+    private static ChildLevelNetworkPartitionBean
     convertStubChildLevelNetworkPartitionToChildLevelNetworkPartition(
             ChildLevelNetworkPartition stubChildLevelNetworkPartition) {
         if(stubChildLevelNetworkPartition == null) {
             return null;
         }
-        org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition childLevelNetworkPartition =
-                new org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition();
+        ChildLevelNetworkPartitionBean childLevelNetworkPartition =
+                new ChildLevelNetworkPartitionBean();
         childLevelNetworkPartition.setId(stubChildLevelNetworkPartition.getId());
         childLevelNetworkPartition.setPartitionAlgo(stubChildLevelNetworkPartition.getPartitionAlgo());
         if(stubChildLevelNetworkPartition.getChildLevelPartitions() != null) {
-            List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition> partitionList =
-                    new ArrayList<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition>();
+            List<ChildLevelPartitionBean> partitionList =
+                    new ArrayList<ChildLevelPartitionBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition stubChildLevelPartition : stubChildLevelNetworkPartition.getChildLevelPartitions()) {
                 partitionList.add(convertStubChildLevelPartitionToChildLevelPartition(stubChildLevelPartition));
             }
@@ -464,29 +462,29 @@ public class ObjectConverter {
         return childLevelNetworkPartition;
     }
 
-    private static org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition
+    private static ChildLevelPartitionBean
     convertStubChildLevelPartitionToChildLevelPartition(ChildLevelPartition stubChildLevelPartition) {
         if(stubChildLevelPartition == null) {
             return null;
         }
-        org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition childLevelPartition =
-                new org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition();
+        ChildLevelPartitionBean childLevelPartition =
+                new ChildLevelPartitionBean();
         childLevelPartition.setId(stubChildLevelPartition.getPartitionId());
         childLevelPartition.setMax(stubChildLevelPartition.getMax());
         return childLevelPartition;
     }
 
-    private static ApplicationLevelNetworkPartition convertStubNetworkPartitionToNetworkPartition(
+    private static ApplicationLevelNetworkPartitionBean convertStubNetworkPartitionToNetworkPartition(
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition stubNetworkPartition) {
         if(stubNetworkPartition == null) {
             return null;
         }
 
-        ApplicationLevelNetworkPartition networkPartition = new ApplicationLevelNetworkPartition();
+        ApplicationLevelNetworkPartitionBean networkPartition = new ApplicationLevelNetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
         networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
-            List<Partition> partitionList = new ArrayList<Partition>();
+            List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition :
                     stubNetworkPartition.getPartitions()) {
                 if(stubPartition != null) {
@@ -498,18 +496,18 @@ public class ObjectConverter {
         return networkPartition;
     }
 
-    private static Partition convertStubPartitionToPartition(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition) {
+    private static PartitionBean convertStubPartitionToPartition(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition) {
         if(stubPartition == null) {
             return null;
         }
-        Partition partition = new Partition();
+        PartitionBean partition = new PartitionBean();
         partition.setId(stubPartition.getId());
         partition.setPublic(stubPartition.getIsPublic());
         partition.setDescription(stubPartition.getDescription());
         partition.setProvider(stubPartition.getProvider());
         partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if(stubPartition.getProperties() != null) {
-            List<PropertyBean> propertyBeanList = new ArrayList<PropertyBean>();
+            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
             for(org.apache.stratos.autoscaler.stub.Property stubProperty : stubPartition.getProperties().getProperties()) {
                 if(stubProperty != null) {
                     propertyBeanList.add(convertStubPropertyToPropertyBean(stubProperty));
@@ -520,12 +518,12 @@ public class ObjectConverter {
         return partition;
     }
 
-    private static PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property stubProperty) {
+    private static org.apache.stratos.common.beans.cartridge.PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property stubProperty) {
         if ((stubProperty == null) || (!(stubProperty.getValue() instanceof String))) {
             return null;
         }
 
-        PropertyBean propertyBean = new PropertyBean();
+        org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean = new org.apache.stratos.common.beans.cartridge.PropertyBean();
         propertyBean.setName(stubProperty.getName());
         propertyBean.setValue(String.valueOf(stubProperty.getValue()));
         return propertyBean;
@@ -533,7 +531,7 @@ public class ObjectConverter {
 
     private static org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
         convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(
-            List<ApplicationLevelNetworkPartition> networkPartitionBeans) {
+            List<ApplicationLevelNetworkPartitionBean> networkPartitionBeans) {
 
         org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
                 appNWPartitions = new
@@ -544,7 +542,7 @@ public class ObjectConverter {
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition appNWPartition = new
                     org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition();
 
-            ApplicationLevelNetworkPartition networkPartition = networkPartitionBeans.get(i);
+            ApplicationLevelNetworkPartitionBean networkPartition = networkPartitionBeans.get(i);
 
             appNWPartition.setId(networkPartition.getId());
             appNWPartition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
@@ -559,7 +557,7 @@ public class ObjectConverter {
         return appNWPartitions;
     }
 
-    private static ChildPolicy[] convertChildPoliciesToStubChildPolicies(List<org.apache.stratos.common.beans.autoscaler.policy.deployment.ChildPolicy> childPolicies) {
+    private static ChildPolicy[] convertChildPoliciesToStubChildPolicies(List<ChildPolicyBean> childPolicies) {
         ChildPolicy[] stubChildPolicyArray = new ChildPolicy[childPolicies.size()];
         for (int i = 0; i < childPolicies.size(); i++) {
             ChildPolicy childPolicy = new ChildPolicy();
@@ -570,7 +568,7 @@ public class ObjectConverter {
         return stubChildPolicyArray;
     }
 
-    private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelNetworkPartition> networkPartitions) {
+    private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<ChildLevelNetworkPartitionBean> networkPartitions) {
 
         ChildLevelNetworkPartition[] childLevelNetworkPartitions = new ChildLevelNetworkPartition[networkPartitions.size()];
 
@@ -586,24 +584,24 @@ public class ObjectConverter {
         return childLevelNetworkPartitions;
     }
 
-    public static org.apache.stratos.common.beans.topology.Cluster convertClusterToClusterBean(Cluster cluster, String alias) {
-        org.apache.stratos.common.beans.topology.Cluster clusterBean = new
-                org.apache.stratos.common.beans.topology.Cluster();
+    public static ClusterBean convertClusterToClusterBean(Cluster cluster, String alias) {
+        ClusterBean clusterBean = new
+                ClusterBean();
         clusterBean.setAlias(alias);
         clusterBean.setServiceName(cluster.getServiceName());
         clusterBean.setClusterId(cluster.getClusterId());
         clusterBean.setLbCluster(cluster.isLbCluster());
         clusterBean.setTenantRange(cluster.getTenantRange());
         clusterBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(cluster.getProperties()));
-        clusterBean.setMember(new ArrayList<Member>());
+        clusterBean.setMember(new ArrayList<MemberBean>());
         clusterBean.setHostNames(new ArrayList<String>());
         Collection<ClusterInstance> clusterInstances = cluster.getClusterInstances();
-        List<org.apache.stratos.common.beans.topology.Instance> instancesList =
-        		new ArrayList<org.apache.stratos.common.beans.topology.Instance>();
+        List<InstanceBean> instancesList =
+        		new ArrayList<InstanceBean>();
 		if (clusterInstances != null) {
 			for (ClusterInstance clusterInstance : clusterInstances) {
-				org.apache.stratos.common.beans.topology.Instance instance =
-						new org.apache.stratos.common.beans.topology.Instance();
+				InstanceBean instance =
+						new InstanceBean();
 				instance.setInstanceId(clusterInstance.getInstanceId());
 				instance.setStatus(clusterInstance.getStatus().toString());
 				instancesList.add(instance);
@@ -612,7 +610,7 @@ public class ObjectConverter {
 		}
 
         for (org.apache.stratos.messaging.domain.topology.Member member : cluster.getMembers()) {
-            Member memberBean = new Member();
+            MemberBean memberBean = new MemberBean();
             memberBean.setServiceName(member.getServiceName());
             memberBean.setClusterId(member.getClusterId());
             memberBean.setMemberId(member.getMemberId());
@@ -657,12 +655,12 @@ public class ObjectConverter {
                     getStatus().toString());
         }
         clusterInstanceBean.setTenantRange(cluster.getTenantRange());
-        clusterInstanceBean.setMember(new ArrayList<Member>());
+        clusterInstanceBean.setMember(new ArrayList<MemberBean>());
         clusterInstanceBean.setHostNames(new ArrayList<String>());
 
         for (org.apache.stratos.messaging.domain.topology.Member member : cluster.getMembers()) {
             if (member.getClusterInstanceId().equals(instanceId)) {
-                Member memberBean = new Member();
+                MemberBean memberBean = new MemberBean();
                 memberBean.setClusterId(member.getClusterId());
                 memberBean.setLbClusterId(member.getLbClusterId());
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
@@ -695,7 +693,7 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] convertToCCPartitionPojos
-            (List<Partition> partitionList) {
+            (List<PartitionBean> partitionList) {
 
         org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] partitions =
                 new org.apache.stratos.autoscaler.stub.deployment.partition.Partition[partitionList.size()];
@@ -707,7 +705,7 @@ public class ObjectConverter {
     }
 
     private static ChildLevelPartition[] convertToCCChildPartitionPojos
-            (List<org.apache.stratos.common.beans.autoscaler.partition.ChildLevelPartition> partitionList) {
+            (List<ChildLevelPartitionBean> partitionList) {
 
         ChildLevelPartition[] childLevelPartitions = new ChildLevelPartition[partitionList.size()];
         for (int i = 0; i < partitionList.size(); i++) {
@@ -721,26 +719,26 @@ public class ObjectConverter {
         return childLevelPartitions;
     }
 
-    public static Partition[] populatePartitionPojos(org.apache.stratos.cloud.controller.stub.domain.Partition[]
+    public static PartitionBean[] populatePartitionPojos(org.apache.stratos.cloud.controller.stub.domain.Partition[]
                                                              partitions) {
 
-        Partition[] partitionBeans;
+        PartitionBean[] partitionBeans;
         if (partitions == null) {
-            partitionBeans = new Partition[0];
+            partitionBeans = new PartitionBean[0];
             return partitionBeans;
         }
 
-        partitionBeans = new Partition[partitions.length];
+        partitionBeans = new PartitionBean[partitions.length];
         for (int i = 0; i < partitions.length; i++) {
             partitionBeans[i] = populatePartitionPojo(partitions[i]);
         }
         return partitionBeans;
     }
 
-    public static Partition populatePartitionPojo(org.apache.stratos.cloud.controller.stub.domain.Partition
+    public static PartitionBean populatePartitionPojo(org.apache.stratos.cloud.controller.stub.domain.Partition
                                                           partition) {
 
-        Partition partitionBeans = new Partition();
+        PartitionBean partitionBeans = new PartitionBean();
         if (partition == null) {
             return partitionBeans;
         }
@@ -753,52 +751,24 @@ public class ObjectConverter {
         partitionBeans.partitionMax = partition.getPartitionMax();*/
         //properties 
         if (partition.getProperties() != null) {
-            List<PropertyBean> propertyBeans = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
+            List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
             partitionBeans.setProperty(propertyBeans);
         }
 
         return partitionBeans;
     }
 
-    public static List<SubscriptionDomainBean> populateSubscriptionDomainPojos(List<SubscriptionDomain> subscriptionDomains) {
+    private static List<org.apache.stratos.common.beans.cartridge.PropertyBean> convertJavaUtilPropertiesToPropertyBeans(java.util.Properties properties) {
 
-        List<SubscriptionDomainBean> subscriptionDomainBeans = new ArrayList<SubscriptionDomainBean>();
-
-        if (subscriptionDomains == null) {
-            return subscriptionDomainBeans;
-        }
-
-        for (SubscriptionDomain subscriptionDomain : subscriptionDomains) {
-            subscriptionDomainBeans.add(populateSubscriptionDomainPojo(subscriptionDomain));
-        }
-
-        return subscriptionDomainBeans;
-    }
-
-    public static SubscriptionDomainBean populateSubscriptionDomainPojo(SubscriptionDomain subscriptionDomain) {
-
-        SubscriptionDomainBean subscriptionDomainBean = new SubscriptionDomainBean();
-
-        if (subscriptionDomain == null) {
-            return subscriptionDomainBean;
-        }
-        subscriptionDomainBean.setDomainName(subscriptionDomain.getDomainName());
-        subscriptionDomainBean.setApplicationContext(subscriptionDomain.getApplicationContext());
-
-        return subscriptionDomainBean;
-    }
-
-    private static List<PropertyBean> convertJavaUtilPropertiesToPropertyBeans(java.util.Properties properties) {
-
-        List<PropertyBean> propertyBeans = null;
+        List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans = null;
         if (properties != null && !properties.isEmpty()) {
             Enumeration<?> e = properties.propertyNames();
-            propertyBeans = new ArrayList<PropertyBean>();
+            propertyBeans = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
 
             while (e.hasMoreElements()) {
                 String key = (String) e.nextElement();
                 String value = properties.getProperty(key);
-                PropertyBean propertyBean = new PropertyBean();
+                org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean = new org.apache.stratos.common.beans.cartridge.PropertyBean();
                 propertyBean.setName(key);
                 propertyBean.setValue(value);
                 propertyBeans.add(propertyBean);
@@ -807,29 +777,29 @@ public class ObjectConverter {
         return propertyBeans;
     }
 
-    public static AutoscalePolicy[] convertStubAutoscalePoliciesToAutoscalePolicies(
+    public static AutoscalePolicyBean[] convertStubAutoscalePoliciesToAutoscalePolicies(
             org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies) {
 
-        AutoscalePolicy[] autoscalePolicyBeans;
+        AutoscalePolicyBean[] autoscalePolicyBeans;
         if (autoscalePolicies == null) {
-            autoscalePolicyBeans = new AutoscalePolicy[0];
+            autoscalePolicyBeans = new AutoscalePolicyBean[0];
             return autoscalePolicyBeans;
         }
 
-        autoscalePolicyBeans = new AutoscalePolicy[autoscalePolicies.length];
+        autoscalePolicyBeans = new AutoscalePolicyBean[autoscalePolicies.length];
         for (int i = 0; i < autoscalePolicies.length; i++) {
             autoscalePolicyBeans[i] = convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicies[i]);
         }
         return autoscalePolicyBeans;
     }
 
-    public static AutoscalePolicy convertStubAutoscalePolicyToAutoscalePolicy(org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy
+    public static AutoscalePolicyBean convertStubAutoscalePolicyToAutoscalePolicy(org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy
                                                                                       autoscalePolicy) {
         if (autoscalePolicy == null) {
             return null;
         }
 
-        AutoscalePolicy autoscalePolicyBean = new AutoscalePolicy();
+        AutoscalePolicyBean autoscalePolicyBean = new AutoscalePolicyBean();
         autoscalePolicyBean.setId(autoscalePolicy.getId());
         autoscalePolicyBean.setDescription(autoscalePolicy.getDescription());
         autoscalePolicyBean.setIsPublic(autoscalePolicy.getIsPublic());
@@ -843,22 +813,22 @@ public class ObjectConverter {
         return autoscalePolicyBean;
     }
 
-    private static LoadThresholds convertStubLoadThreasholdsToLoadThresholds(org.apache.stratos.autoscaler.stub.autoscale.policy.LoadThresholds
+    private static LoadThresholdsBean convertStubLoadThreasholdsToLoadThresholds(org.apache.stratos.autoscaler.stub.autoscale.policy.LoadThresholds
                                                                                      loadThresholds) {
 
-        LoadThresholds loadThresholdBean = new LoadThresholds();
+        LoadThresholdsBean loadThresholdBean = new LoadThresholdsBean();
         if (loadThresholds.getLoadAverageThreshold() != 0) {
-            LoadAverageThresholds loadAverage = new LoadAverageThresholds();
+            LoadAverageThresholdsBean loadAverage = new LoadAverageThresholdsBean();
             loadAverage.setThreshold(loadThresholds.getLoadAverageThreshold());
             loadThresholdBean.setLoadAverage(loadAverage);
         }
         if (loadThresholds.getMemoryConsumptionThreshold() != 0) {
-            MemoryConsumptionThresholds memoryConsumption = new MemoryConsumptionThresholds();
+            MemoryConsumptionThresholdsBean memoryConsumption = new MemoryConsumptionThresholdsBean();
             memoryConsumption.setThreshold(loadThresholds.getMemoryConsumptionThreshold());
             loadThresholdBean.setMemoryConsumption(memoryConsumption);
         }
         if (loadThresholds.getRequestsInFlightThreshold() != 0) {
-            RequestsInFlightThresholds requestsInFlight = new RequestsInFlightThresholds();
+            RequestsInFlightThresholdsBean requestsInFlight = new RequestsInFlightThresholdsBean();
             requestsInFlight.setThreshold(loadThresholds.getRequestsInFlightThreshold());
             loadThresholdBean.setRequestsInFlight(requestsInFlight);
         }
@@ -866,10 +836,10 @@ public class ObjectConverter {
         return loadThresholdBean;
     }
 
-    public static ApplicationLevelNetworkPartition convertStubApplicationLevelNetworkPartitionToApplicationLevelNetworkPartition(
+    public static ApplicationLevelNetworkPartitionBean convertStubApplicationLevelNetworkPartitionToApplicationLevelNetworkPartition(
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition stubApplicationLevelNetworkPartition) {
 
-        ApplicationLevelNetworkPartition networkPartitionBean = new ApplicationLevelNetworkPartition();
+        ApplicationLevelNetworkPartitionBean networkPartitionBean = new ApplicationLevelNetworkPartitionBean();
         if (stubApplicationLevelNetworkPartition == null) {
             return networkPartitionBean;
         }
@@ -887,16 +857,16 @@ public class ObjectConverter {
         return networkPartitionBean;
     }
 
-    public static ApplicationLevelNetworkPartition[] convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(
+    public static ApplicationLevelNetworkPartitionBean[] convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(
             org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] partitionGroups) {
 
-        ApplicationLevelNetworkPartition[] networkPartitionGroupsBeans;
+        ApplicationLevelNetworkPartitionBean[] networkPartitionGroupsBeans;
         if (partitionGroups == null) {
-            networkPartitionGroupsBeans = new ApplicationLevelNetworkPartition[0];
+            networkPartitionGroupsBeans = new ApplicationLevelNetworkPartitionBean[0];
             return networkPartitionGroupsBeans;
         }
 
-        networkPartitionGroupsBeans = new ApplicationLevelNetworkPartition[partitionGroups.length];
+        networkPartitionGroupsBeans = new ApplicationLevelNetworkPartitionBean[partitionGroups.length];
 
         for (int i = 0; i < partitionGroups.length; i++) {
             networkPartitionGroupsBeans[i] = convertStubApplicationLevelNetworkPartitionToApplicationLevelNetworkPartition(partitionGroups[i]);
@@ -929,7 +899,7 @@ public class ObjectConverter {
 //    }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster
-        convertToCCKubernetesClusterPojo(KubernetesCluster kubernetesClusterBean) {
+        convertToCCKubernetesClusterPojo(KubernetesClusterBean kubernetesClusterBean) {
 
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster = new
                 org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster();
@@ -945,7 +915,7 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
-        convertToASKubernetesHostsPojo(List<KubernetesHost> kubernetesHosts) {
+        convertToASKubernetesHostsPojo(List<KubernetesHostBean> kubernetesHosts) {
 
         if (kubernetesHosts == null || kubernetesHosts.isEmpty()) {
             return null;
@@ -954,7 +924,7 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[]
                 kubernetesHostsArr = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[kubernetesHostCount];
         for (int i = 0; i < kubernetesHostCount; i++) {
-            KubernetesHost kubernetesHostBean = kubernetesHosts.get(i);
+            KubernetesHostBean kubernetesHostBean = kubernetesHosts.get(i);
             kubernetesHostsArr[i] = convertKubernetesHostToStubKubernetesHost(kubernetesHostBean);
         }
         return kubernetesHostsArr;
@@ -962,7 +932,7 @@ public class ObjectConverter {
 
 
     private static org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange
-        convertPortRangeToStubPortRange(PortRange portRangeBean) {
+        convertPortRangeToStubPortRange(PortRangeBean portRangeBean) {
 
         if (portRangeBean == null) {
             return null;
@@ -975,7 +945,7 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost
-        convertKubernetesHostToStubKubernetesHost(KubernetesHost kubernetesHostBean) {
+        convertKubernetesHostToStubKubernetesHost(KubernetesHostBean kubernetesHostBean) {
 
         if (kubernetesHostBean == null) {
             return null;
@@ -992,7 +962,7 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
-        convertStubKubernetesMasterToKubernetesMaster(KubernetesMaster kubernetesMasterBean) {
+        convertStubKubernetesMasterToKubernetesMaster(KubernetesMasterBean kubernetesMasterBean) {
 
         if (kubernetesMasterBean == null) {
             return null;
@@ -1009,23 +979,23 @@ public class ObjectConverter {
         return kubernetesMaster;
     }
 
-    public static KubernetesCluster[] convertStubKubernetesClustersToKubernetesClusters(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[] kubernetesClusters) {
+    public static KubernetesClusterBean[] convertStubKubernetesClustersToKubernetesClusters(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster[] kubernetesClusters) {
 
         if (kubernetesClusters == null) {
             return null;
         }
-        KubernetesCluster[] kubernetesClustersBean = new KubernetesCluster[kubernetesClusters.length];
+        KubernetesClusterBean[] kubernetesClustersBean = new KubernetesClusterBean[kubernetesClusters.length];
         for (int i = 0; i < kubernetesClusters.length; i++) {
             kubernetesClustersBean[i] = convertStubKubernetesClusterToKubernetesCluster(kubernetesClusters[i]);
         }
         return kubernetesClustersBean;
     }
 
-    public static KubernetesCluster convertStubKubernetesClusterToKubernetesCluster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster) {
+    public static KubernetesClusterBean convertStubKubernetesClusterToKubernetesCluster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesCluster kubernetesCluster) {
         if (kubernetesCluster == null) {
             return null;
         }
-        KubernetesCluster kubernetesClusterBean = new KubernetesCluster();
+        KubernetesClusterBean kubernetesClusterBean = new KubernetesClusterBean();
         kubernetesClusterBean.setClusterId(kubernetesCluster.getClusterId());
         kubernetesClusterBean.setDescription(kubernetesCluster.getDescription());
         kubernetesClusterBean.setPortRange(convertStubPortRangeToPortRange(kubernetesCluster.getPortRange()));
@@ -1035,11 +1005,11 @@ public class ObjectConverter {
         return kubernetesClusterBean;
     }
 
-    public static KubernetesMaster convertStubKubernetesMasterToKubernetesMaster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster kubernetesMaster) {
+    public static KubernetesMasterBean convertStubKubernetesMasterToKubernetesMaster(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster kubernetesMaster) {
         if (kubernetesMaster == null) {
             return null;
         }
-        KubernetesMaster kubernetesMasterBean = new KubernetesMaster();
+        KubernetesMasterBean kubernetesMasterBean = new KubernetesMasterBean();
         kubernetesMasterBean.setHostId(kubernetesMaster.getHostId());
         kubernetesMasterBean.setHostname(kubernetesMaster.getHostname());
         kubernetesMasterBean.setHostIpAddress(kubernetesMaster.getHostIpAddress());
@@ -1048,23 +1018,23 @@ public class ObjectConverter {
         return kubernetesMasterBean;
     }
 
-    public static List<KubernetesHost> convertStubKubernetesHostsToKubernetesHosts(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[] kubernetesHosts) {
+    public static List<KubernetesHostBean> convertStubKubernetesHostsToKubernetesHosts(org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost[] kubernetesHosts) {
         if (kubernetesHosts == null) {
             return null;
         }
-        List<KubernetesHost> kubernetesHostList = new ArrayList<KubernetesHost>();
+        List<KubernetesHostBean> kubernetesHostList = new ArrayList<KubernetesHostBean>();
         for (int i = 0; i < kubernetesHosts.length; i++) {
             kubernetesHostList.add(convertStubKubernetesHostToKubernetesHost(kubernetesHosts[i]));
         }
         return kubernetesHostList;
     }
 
-    private static KubernetesHost convertStubKubernetesHostToKubernetesHost(
+    private static KubernetesHostBean convertStubKubernetesHostToKubernetesHost(
             org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost kubernetesHost) {
         if (kubernetesHost == null) {
             return null;
         }
-        KubernetesHost kubernetesHostBean = new KubernetesHost();
+        KubernetesHostBean kubernetesHostBean = new KubernetesHostBean();
         kubernetesHostBean.setHostId(kubernetesHost.getHostId());
         kubernetesHostBean.setHostname(kubernetesHost.getHostname());
         kubernetesHostBean.setHostIpAddress(kubernetesHost.getHostIpAddress());
@@ -1072,49 +1042,49 @@ public class ObjectConverter {
         return kubernetesHostBean;
     }
     
-    private static List<PropertyBean> convertCCStubPropertiesToPropertyBeans(org.apache.stratos.cloud.controller.stub.Properties properties) {
+    private static List<org.apache.stratos.common.beans.cartridge.PropertyBean> convertCCStubPropertiesToPropertyBeans(org.apache.stratos.cloud.controller.stub.Properties properties) {
         if (properties == null || properties.getProperties() == null) {
             return null;
         }
-        List<PropertyBean> propertyBeanList = new ArrayList<PropertyBean>();
+        List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
         for (int i = 0; i < properties.getProperties().length; i++) {
             propertyBeanList.add(convertStubPropertyToPropertyBean(properties.getProperties()[i]));
         }
         return propertyBeanList;
     }
 
-    private static PropertyBean convertAsStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property propertyE) {
+    private static org.apache.stratos.common.beans.cartridge.PropertyBean convertAsStubPropertyToPropertyBean(org.apache.stratos.autoscaler.stub.Property propertyE) {
         if ((propertyE == null) || (!(propertyE.getValue() instanceof String))) {
             return null;
         }
 
-        PropertyBean propertyBean = new PropertyBean();
+        org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean = new org.apache.stratos.common.beans.cartridge.PropertyBean();
         propertyBean.setName(propertyE.getName());
         propertyBean.setValue(String.valueOf(propertyE.getValue()));
         return propertyBean;
     }
     
-    private static PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.cloud.controller.stub.Property propertyE) {
+    private static org.apache.stratos.common.beans.cartridge.PropertyBean convertStubPropertyToPropertyBean(org.apache.stratos.cloud.controller.stub.Property propertyE) {
         if (propertyE == null) {
             return null;
         }
-        PropertyBean propertyBean = new PropertyBean();
+        org.apache.stratos.common.beans.cartridge.PropertyBean propertyBean = new org.apache.stratos.common.beans.cartridge.PropertyBean();
         propertyBean.setName(propertyE.getName());
         propertyBean.setValue(propertyE.getValue());
         return propertyBean;
     }
 
-    private static PortRange convertStubPortRangeToPortRange(org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange portRange) {
+    private static PortRangeBean convertStubPortRangeToPortRange(org.apache.stratos.cloud.controller.stub.domain.kubernetes.PortRange portRange) {
         if (portRange == null) {
             return null;
         }
-        PortRange portRangeBean = new PortRange();
+        PortRangeBean portRangeBean = new PortRangeBean();
         portRangeBean.setUpper(portRange.getUpper());
         portRangeBean.setLower(portRange.getLower());
         return portRangeBean;
     }
 
-    public static ApplicationContext convertApplicationDefinitionToStubApplicationContext(ApplicationDefinition applicationDefinition) {
+    public static ApplicationContext convertApplicationDefinitionToStubApplicationContext(ApplicationBean applicationDefinition) {
 
         org.apache.stratos.autoscaler.stub.pojo.ApplicationContext applicationContext =
                 new org.apache.stratos.autoscaler.stub.pojo.ApplicationContext();
@@ -1150,13 +1120,13 @@ public class ObjectConverter {
         return applicationContext;
     }
 
-    public static ApplicationDefinition convertStubApplicationContextToApplicationDefinition(
+    public static ApplicationBean convertStubApplicationContextToApplicationDefinition(
             ApplicationContext applicationContext) {
         if(applicationContext == null) {
             return null;
         }
 
-        ApplicationDefinition applicationDefinition = new ApplicationDefinition();
+        ApplicationBean applicationDefinition = new ApplicationBean();
         applicationDefinition.setApplicationId(applicationContext.getApplicationId());
         applicationDefinition.setAlias(applicationContext.getAlias());
         applicationDefinition.setMultiTenant(applicationContext.getMultiTenant());
@@ -1166,7 +1136,7 @@ public class ObjectConverter {
 
         // convert and set components
         if (applicationContext.getComponents() != null) {
-            applicationDefinition.setComponents(new ComponentDefinition());
+            applicationDefinition.setComponents(new ComponentBean());
             // top level Groups
             if (applicationContext.getComponents().getGroupContexts() != null) {
                 applicationDefinition.getComponents().setGroups(
@@ -1186,12 +1156,12 @@ public class ObjectConverter {
         return applicationDefinition;
     }
 
-    private static List<GroupDefinition> convertStubGroupContextsToGroupDefinitions(GroupContext[] groupContexts) {
-        List<GroupDefinition> groupDefinitions = new ArrayList<GroupDefinition>();
+    private static List<GroupReferenceBean> convertStubGroupContextsToGroupDefinitions(GroupContext[] groupContexts) {
+        List<GroupReferenceBean> groupDefinitions = new ArrayList<GroupReferenceBean>();
         if(groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
                 if(groupContext != null) {
-                    GroupDefinition groupDefinition = new GroupDefinition();
+                    GroupReferenceBean groupDefinition = new GroupReferenceBean();
                     groupDefinition.setAlias(groupContext.getAlias());
                     groupDefinition.setGroupMaxInstances(groupContext.getGroupMaxInstances());
                     groupDefinition.setGroupMinInstances(groupContext.getGroupMinInstances());
@@ -1207,8 +1177,8 @@ public class ObjectConverter {
         return groupDefinitions;
     }
 
-    private static DependencyDefinitions convertStubDependencyContextsToDependencyDefinitions(DependencyContext dependencyContext) {
-        DependencyDefinitions dependencyDefinitions = new DependencyDefinitions();
+    private static DependencyBean convertStubDependencyContextsToDependencyDefinitions(DependencyContext dependencyContext) {
+        DependencyBean dependencyDefinitions = new DependencyBean();
         dependencyDefinitions.setTerminationBehaviour(dependencyContext.getTerminationBehaviour());
 
             if(dependencyContext.getStartupOrdersContexts() != null) {
@@ -1228,12 +1198,12 @@ public class ObjectConverter {
         return dependencyDefinitions;
     }
 
-    private static List<CartridgeDefinition> convertStubCartridgeContextsToCartridgeDefinitions(CartridgeContext[] cartridgeContexts) {
-        List<CartridgeDefinition> cartridgeDefinitions = new ArrayList<CartridgeDefinition>();
+    private static List<CartridgeReferenceBean> convertStubCartridgeContextsToCartridgeDefinitions(CartridgeContext[] cartridgeContexts) {
+        List<CartridgeReferenceBean> cartridgeDefinitions = new ArrayList<CartridgeReferenceBean>();
         if(cartridgeContexts != null) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
                 if(cartridgeContext != null) {
-                    CartridgeDefinition cartridgeDefinition = new CartridgeDefinition();
+                    CartridgeReferenceBean cartridgeDefinition = new CartridgeReferenceBean();
                     cartridgeDefinition.setType(cartridgeContext.getType());
                     cartridgeDefinition.setCartridgeMin(cartridgeContext.getCartridgeMin());
                     cartridgeDefinition.setCartridgeMax(cartridgeContext.getCartridgeMax());
@@ -1293,11 +1263,11 @@ public class ObjectConverter {
     }
 
     private static CartridgeContext[] convertCartridgeDefinitionsToStubCartridgeContexts(
-            List<CartridgeDefinition> cartridges) {
+            List<CartridgeReferenceBean> cartridges) {
 
     	CartridgeContext[] cartridgeContextArray = new CartridgeContext[cartridges.size()];
     	int i = 0;
-    	for (CartridgeDefinition cartridgeDefinition : cartridges) {
+    	for (CartridgeReferenceBean cartridgeDefinition : cartridges) {
     		CartridgeContext context = new CartridgeContext();
     		context.setCartridgeMax(cartridgeDefinition.getCartridgeMax());
     		context.setCartridgeMin(cartridgeDefinition.getCartridgeMin());
@@ -1351,7 +1321,7 @@ public class ObjectConverter {
     }
 
 	
-    private static DependencyContext convertDependencyDefinitionsToDependencyContexts(DependencyDefinitions dependencyDefinitions) {
+    private static DependencyContext convertDependencyDefinitionsToDependencyContexts(DependencyBean dependencyDefinitions) {
         DependencyContext dependencyContext = new DependencyContext();
         dependencyContext.setTerminationBehaviour(dependencyDefinitions.getTerminationBehaviour());
 
@@ -1371,11 +1341,11 @@ public class ObjectConverter {
     }
 
     private static org.apache.stratos.autoscaler.stub.pojo.GroupContext[]
-        convertGroupDefinitionsToStubGroupContexts(List<GroupDefinition> groupDefinitions) {
+        convertGroupDefinitionsToStubGroupContexts(List<GroupReferenceBean> groupDefinitions) {
 
         GroupContext[] groupContexts = new GroupContext[groupDefinitions.size()];
         int i = 0;
-        for (GroupDefinition groupDefinition : groupDefinitions) {
+        for (GroupReferenceBean groupDefinition : groupDefinitions) {
             GroupContext groupContext = new GroupContext();
             groupContext.setName(groupDefinition.getName());
             groupContext.setAlias(groupDefinition.getAlias());
@@ -1485,12 +1455,12 @@ public class ObjectConverter {
         return groupInstanceBeans;
     }
 
-    private static List<Instance> convertGroupInstancesToInstances(Group group) {
-	    List<Instance> instanceList = new ArrayList<Instance>();
+    private static List<InstanceBean> convertGroupInstancesToInstances(Group group) {
+	    List<InstanceBean> instanceList = new ArrayList<InstanceBean>();
 	    Collection<GroupInstance> instancesInTopology = group.getInstanceIdToInstanceContextMap().values();
 	    if(instancesInTopology != null) {
 	    	for (GroupInstance groupInstance : instancesInTopology) {
-	            Instance instance = new Instance();
+	            InstanceBean instance = new InstanceBean();
 	            instance.setStatus(groupInstance.getStatus().toString());
 	            instance.setInstanceId(groupInstance.getInstanceId());
 	            instanceList.add(instance);
@@ -1544,18 +1514,18 @@ public class ObjectConverter {
         return carbonTenantInfoBean;
     }
 
-    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(ServiceGroupDefinition serviceGroupDefinition) throws ServiceGroupDefinitionException {
+    public static ServiceGroup convertServiceGroupDefinitionToASStubServiceGroup(GroupBean serviceGroupDefinition) throws ServiceGroupDefinitionException {
         ServiceGroup servicegroup = new ServiceGroup();
 
         // implement conversion (mostly List -> Array)
         servicegroup.setGroupscalingEnabled(serviceGroupDefinition.isGroupScalingEnabled());
-        List<ServiceGroupDefinition> groupsDef = serviceGroupDefinition.getGroups();
+        List<GroupBean> groupsDef = serviceGroupDefinition.getGroups();
         List<String> cartridgesDef = serviceGroupDefinition.getCartridges();
 
         servicegroup.setName(serviceGroupDefinition.getName());
 
         if (groupsDef == null) {
-            groupsDef = new ArrayList<ServiceGroupDefinition>(0);
+            groupsDef = new ArrayList<GroupBean>(0);
         }
 
         if (cartridgesDef == null) {
@@ -1566,7 +1536,7 @@ public class ObjectConverter {
         String[] cartridges = new String[cartridgesDef.size()];
 
         int i = 0;
-        for (ServiceGroupDefinition groupDefinition : groupsDef) {
+        for (GroupBean groupDefinition : groupsDef) {
             subGroups[i] = convertServiceGroupDefinitionToASStubServiceGroup(groupDefinition);
             ++i;
         }
@@ -1575,7 +1545,7 @@ public class ObjectConverter {
         cartridges = cartridgesDef.toArray(cartridges);
         servicegroup.setCartridges(cartridges);
 
-        DependencyDefinitions depDefs = serviceGroupDefinition.getDependencies();
+        DependencyBean depDefs = serviceGroupDefinition.getDependencies();
 
         if (depDefs != null) {
             Dependencies dependencies = new Dependencies();
@@ -1598,18 +1568,18 @@ public class ObjectConverter {
         return servicegroup;
     }
 
-    public static ServiceGroupDefinition convertStubServiceGroupToServiceGroupDefinition(ServiceGroup serviceGroup) {
+    public static GroupBean convertStubServiceGroupToServiceGroupDefinition(ServiceGroup serviceGroup) {
         if(serviceGroup == null) {
             return null;
         }
 
-        ServiceGroupDefinition servicegroupDef = new ServiceGroupDefinition();
+        GroupBean servicegroupDef = new GroupBean();
         servicegroupDef.setName(serviceGroup.getName());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
 
-        List<ServiceGroupDefinition> groupDefinitions = new ArrayList<ServiceGroupDefinition>(groups.length);
+        List<GroupBean> groupDefinitions = new ArrayList<GroupBean>(groups.length);
         for (ServiceGroup group : groups) {
             if (group != null) {
                 groupDefinitions.add(convertStubServiceGroupToServiceGroupDefinition(group));
@@ -1617,7 +1587,7 @@ public class ObjectConverter {
         }
 
         if (deps != null) {
-            DependencyDefinitions depsDef = new DependencyDefinitions();
+            DependencyBean depsDef = new DependencyBean();
             String[] startupOrders = deps.getStartupOrders();
             if (startupOrders != null && startupOrders[0] != null) {
                 List<String> startupOrdersDef = Arrays.asList(startupOrders);
@@ -1663,34 +1633,6 @@ public class ObjectConverter {
                     terminationBehavior + " ], should be one of 'terminate-none', 'terminate-dependents', " +
                     " 'terminate-all' ");
         }
-    }
-
-    public static org.apache.stratos.common.beans.Persistence convertStubPersistenceToPersistence(Persistence stubPersistence) {
-        org.apache.stratos.common.beans.Persistence persistence = new org.apache.stratos.common.beans.Persistence();
-        persistence.setPersistanceRequired(stubPersistence.getPersistanceRequired());
-        List<org.apache.stratos.common.beans.Volume> volumes = new ArrayList<org.apache.stratos.common.beans.Volume>();
-        for(org.apache.stratos.cloud.controller.stub.domain.Volume stubVolume : stubPersistence.getVolumes()) {
-            org.apache.stratos.common.beans.Volume volume = convertStubVolumeToVolume(stubVolume);
-            if(volume != null) {
-                volumes.add(volume);
-            }
-        }
-        org.apache.stratos.common.beans.Volume[] volumesArray = volumes.toArray(new org.apache.stratos.common.beans.Volume[volumes.size()]);
-        persistence.setVolumes(volumesArray);
-        return persistence;
-    }
-
-    private static org.apache.stratos.common.beans.Volume convertStubVolumeToVolume(Volume stubVolume) {
-        org.apache.stratos.common.beans.Volume volume = new org.apache.stratos.common.beans.Volume();
-        volume.setId(stubVolume.getId());
-        volume.setDevice(stubVolume.getDevice());
-        volume.setIaasType(stubVolume.getIaasType());
-        volume.setMappingPath(stubVolume.getMappingPath());
-        volume.setRemoveOntermination(stubVolume.getRemoveOntermination());
-        volume.setSnapshotId(stubVolume.getSnapshotId());
-        volume.setVolumeId(stubVolume.getVolumeId());
-        volume.setSize(stubVolume.getSize());
-        return volume;
     }
 
     public static ApplicationSignUp convertApplicationSignUpBeanToStubApplicationSignUp(ApplicationSignUpBean applicationSignUpBean) {
