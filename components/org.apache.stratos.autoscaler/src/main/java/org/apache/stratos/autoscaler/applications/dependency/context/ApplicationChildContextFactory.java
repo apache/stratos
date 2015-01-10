@@ -50,10 +50,10 @@ public class ApplicationChildContextFactory {
             id = getGroupFromStartupOrder(order);
             applicationContext = getGroupChildContext(id, hasDependents);
         } else if (order.startsWith(Constants.CARTRIDGE + ".")) {
-            //getting the cluster alias
+            //getting the cartridge type
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
-            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
+            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
             applicationContext = getClusterChildContext(clusterDataHolder, hasDependents);
 
         } else {

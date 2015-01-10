@@ -52,7 +52,7 @@ public class Application extends ParentComponent<ApplicationInstance> {
         super();
         this.id = id;
         this.key = RandomStringUtils.randomAlphanumeric(16);
-        this.instanceIdToInstanceContextMap = new HashMap<String, ApplicationInstance>();
+        this.setInstanceIdToInstanceContextMap(new HashMap<String, ApplicationInstance>());
         //this.applicationStateManager =
         //new LifeCycleStateManager<ApplicationStatus>(ApplicationStatus.Created, id);
     }
@@ -128,7 +128,7 @@ public class Application extends ParentComponent<ApplicationInstance> {
             return null;
         }
 
-        for (Instance instance : instanceIdToInstanceContextMap.values()) {
+        for (Instance instance : getInstanceIdToInstanceContextMap().values()) {
             if (instance.getNetworkPartitionId().equals(networkPartitionId)) {
                 return instance;
             }

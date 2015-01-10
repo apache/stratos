@@ -36,8 +36,10 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     protected final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
     protected final Map<String, ClusterDataHolder> aliasToClusterDataMap;
+	// Cluster Id map, key = cartridge type
+	private final Map<String, ClusterDataHolder> typeToClusterDataMap;
     // Group/Cluster Instance Context map, key = instance id
-    protected Map<String, T> instanceIdToInstanceContextMap;
+    private Map<String, T> instanceIdToInstanceContextMap;
     // Dependency Order
     private DependencyOrder dependencyOrder;
     // flag for Group level scaling
@@ -55,6 +57,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         this.isGroupInstanceMonitoringEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
+	    typeToClusterDataMap=new HashMap<String, ClusterDataHolder>();
         instanceIdSequence = new AtomicInteger();
     }
 
@@ -270,7 +273,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * @param instance   InstanceContext object
      */
     public void addInstance(String instanceId, T instance) {
-        instanceIdToInstanceContextMap.put(instanceId, instance);
+        getInstanceIdToInstanceContextMap().put(instanceId, instance);
     }
 
     /**
@@ -279,7 +282,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * @param instanceId instance id of child
      */
     public void removeInstance(String instanceId) {
-        instanceIdToInstanceContextMap.remove(instanceId);
+        getInstanceIdToInstanceContextMap().remove(instanceId);
     }
 
     /**
@@ -328,7 +331,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
 
         // if instanceId is null, just get the first InstanceContext
         if (parentInstanceId != null) {
-            for (Instance context : instanceIdToInstanceContextMap.values()) {
+            for (Instance context : getInstanceIdToInstanceContextMap().values()) {
                 if (parentInstanceId.equals(context.getParentId())) {
                     contexts.add(context);
                 }
@@ -398,4 +401,22 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         String instanceId = alias + "-" + nextSequence;
         return instanceId;
     }
+
+	public void setInstanceIdToInstanceContextMap(Map<String, T> instanceIdToInstanceContextMap) {
+		this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+	}
+
+	public Map<String, ClusterDataHolder> getClusterDataForType() {
+		return typeToClusterDataMap;
+	}
+
+	/**
+	 * Setter for alias to Cluster Data map
+	 *
+	 * @param typeToClusterData Map, key = alias given to the cluster, value =  ClusterData object
+	 */
+	public void setClusterDataForType(Map<String, ClusterDataHolder> typeToClusterData) {
+		this.typeToClusterDataMap.putAll(typeToClusterData);
+	}
+
 }

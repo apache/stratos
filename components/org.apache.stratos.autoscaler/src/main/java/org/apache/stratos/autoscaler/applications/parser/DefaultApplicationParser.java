@@ -176,14 +176,15 @@ public class DefaultApplicationParser implements ApplicationParser {
         application.setTenantAdminUserName(applicationContext.getTeantAdminUsername());
 
         // following keeps track of all Clusters created for this application
-        Map<String, ClusterDataHolder> clusterDataMap;
+        Map<String,Map<String, ClusterDataHolder>> clusterDataMap;
 
         if (applicationContext.getComponents() != null) {
             // get top level Subscribables
             if (applicationContext.getComponents().getCartridgeContexts() != null) {
                 clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationId(), applicationContext.getTenantId(),
                         application.getKey(), null, Arrays.asList(applicationContext.getComponents().getCartridgeContexts()),null);
-                application.setClusterData(clusterDataMap);
+                application.setClusterData(clusterDataMap.get("alias"));
+	            application.setClusterDataForType(clusterDataMap.get("type"));
             }
 
             // get Groups
@@ -248,12 +249,13 @@ public class DefaultApplicationParser implements ApplicationParser {
      *
      * @throws ApplicationDefinitionException
      */
-    private Map<String, ClusterDataHolder> parseLeafLevelSubscriptions(
+    private Map<String,Map<String, ClusterDataHolder>> parseLeafLevelSubscriptions(
     		String appId, int tenantId, String key, String groupName,
             List<CartridgeContext> cartridgeContextList,Set<StartupOrder> dependencyOrder) throws ApplicationDefinitionException {
 
-    	 Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
-	    Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
+    	 Map<String, Map <String, ClusterDataHolder>> completeDataHolder=new HashMap<String, Map<String, ClusterDataHolder>>();
+	     Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
+	     Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
     	 for (CartridgeContext cartridgeContext : cartridgeContextList) {
 		     List<String> dependencyClusterIDs = new ArrayList<String>();
@@ -328,7 +330,9 @@ public class DefaultApplicationParser implements ApplicationParser {
 		     clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
          }
-         return clusterDataMap;
+	     completeDataHolder.put("type",clusterDataMapByType);
+	     completeDataHolder.put("alias",clusterDataMap);
+         return completeDataHolder;
     }
 
 	/**
@@ -465,13 +469,15 @@ public class DefaultApplicationParser implements ApplicationParser {
         //dependencyOrder.setScalingDependents(scalingDependents);
         group.setDependencyOrder(dependencyOrder);
 
-        Map<String, ClusterDataHolder> clusterDataMap;
+        Map<String,Map<String, ClusterDataHolder>> clusterDataMap;
 
         // get group level CartridgeContexts
         if (groupCtxt.getCartridgeContexts() != null) {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
                     Arrays.asList(groupCtxt.getCartridgeContexts()),setStartUpOrder);
-            group.setClusterData(clusterDataMap);
+            group.setClusterData(clusterDataMap.get("alias"));
+	        group.setClusterDataForType(clusterDataMap.get("type"));
+
         }
 
         // get nested groups

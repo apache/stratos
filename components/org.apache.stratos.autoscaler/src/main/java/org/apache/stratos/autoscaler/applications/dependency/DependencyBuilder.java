@@ -185,7 +185,7 @@ public class DependencyBuilder {
                     //getting the cluster alias
                     String id = getClusterFromStartupOrder(string);
                     //getting the cluster-id from cluster alias
-                    ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataMap().get(id);
+                    ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
                     scalingDependencies.add(clusterDataHolder.getClusterId());
                 } else {
                     log.warn("[Scaling Dependency]: " + string + " contains unknown reference");

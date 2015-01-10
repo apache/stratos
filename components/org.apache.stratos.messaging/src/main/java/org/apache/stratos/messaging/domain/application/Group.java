@@ -53,7 +53,7 @@ public class Group extends ParentComponent<GroupInstance> {
         this.applicationId = applicationId;
         this.name = name;
         this.alias = alias;
-        this.instanceIdToInstanceContextMap = new HashMap<String, GroupInstance>();
+        this.setInstanceIdToInstanceContextMap(new HashMap<String, GroupInstance>());
         //instanceIdToInstanceContextMap = new HashMap<String, Set<InstanceContext>>();
         //this.groupStateManager = new LifeCycleStateManager<GroupStatus>(GroupStatus.Created, alias);
     }
