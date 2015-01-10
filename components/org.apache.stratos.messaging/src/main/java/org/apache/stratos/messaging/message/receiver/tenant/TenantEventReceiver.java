@@ -25,16 +25,18 @@ import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.Util;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * A thread for receiving tenant information from message broker and
  * build tenant information in tenant manager.
  */
-public class TenantEventReceiver{
+public class TenantEventReceiver {
     private static final Log log = LogFactory.getLog(TenantEventReceiver.class);
     private TenantEventMessageDelegator messageDelegator;
     private TenantEventMessageListener messageListener;
     private TopicSubscriber topicSubscriber;
-    private boolean terminated;
+    private ExecutorService executorService;
 
     public TenantEventReceiver() {
         TenantEventMessageQueue messageQueue = new TenantEventMessageQueue();
@@ -46,20 +48,22 @@ public class TenantEventReceiver{
         messageDelegator.addEventListener(eventListener);
     }
 
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 
     public void execute() {
         try {
             // Start topic subscriber thread
             topicSubscriber = new TopicSubscriber(Util.Topics.TENANT_TOPIC.getTopicName(), messageListener);
-            Thread subscriberThread = new Thread(topicSubscriber);
-            subscriberThread.start();
+            executorService.execute(topicSubscriber);
+
             if (log.isDebugEnabled()) {
                 log.debug("Tenant event message receiver thread started");
             }
 
             // Start tenant event message delegator thread
-            Thread receiverThread = new Thread(messageDelegator);
-            receiverThread.start();
+            executorService.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("Tenant event message delegator thread started");
             }
@@ -75,6 +79,5 @@ public class TenantEventReceiver{
     public void terminate() {
         topicSubscriber.terminate();
         messageDelegator.terminate();
-        terminated = true;
     }
 }

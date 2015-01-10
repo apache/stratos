@@ -38,7 +38,7 @@ public class AutoscalerServiceClient {
     private AutoScalerServiceStub stub;
 
     private static final Log log = LogFactory.getLog(AutoscalerServiceClient.class);
-    private static volatile AutoscalerServiceClient serviceClient;
+    private static volatile AutoscalerServiceClient instance;
 
     private AutoscalerServiceClient(String epr) throws AxisFault {
 
@@ -64,15 +64,15 @@ public class AutoscalerServiceClient {
         }
     }
 
-    public static AutoscalerServiceClient getServiceClient() throws AxisFault {
-        if (serviceClient == null) {
+    public static AutoscalerServiceClient getInstance() throws AxisFault {
+        if (instance == null) {
             synchronized (AutoscalerServiceClient.class) {
-                if (serviceClient == null) {
-                    serviceClient = new AutoscalerServiceClient(System.getProperty(StratosConstants.AUTOSCALER_SERVICE_URL));
+                if (instance == null) {
+                    instance = new AutoscalerServiceClient(System.getProperty(StratosConstants.AUTOSCALER_SERVICE_URL));
                 }
             }
         }
-        return serviceClient;
+        return instance;
     }
 
     public void undeployServiceGroupDefinition(String serviceGroupName)

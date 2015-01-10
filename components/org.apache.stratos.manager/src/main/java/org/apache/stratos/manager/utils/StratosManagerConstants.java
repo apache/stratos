@@ -17,28 +17,16 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.event.application.signup;
-
-import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
-import org.apache.stratos.messaging.event.Event;
-
-import java.io.Serializable;
-import java.util.List;
+package org.apache.stratos.manager.utils;
 
 /**
- * Complete application signup event.
+ * Stratos manager constants.
  */
-public class CompleteApplicationSignUpsEvent extends Event implements Serializable {
+public class StratosManagerConstants {
 
-    private static final long serialVersionUID = 417310788611446084L;
-
-    private final List<ApplicationSignUp> applicationSignUps;
-
-    public CompleteApplicationSignUpsEvent(List<ApplicationSignUp> applicationSignUps) {
-        this.applicationSignUps = applicationSignUps;
-    }
-
-    public List<ApplicationSignUp> getApplicationSignUps() {
-        return applicationSignUps;
-    }
+    public static final String DEFAULT_CRON = "1 * * * * ? *";
+    public static final String TENANT_SYNC_TASK_TYPE = "TENANT_SYNC_TASK_TYPE";
+    public static final String TENANT_SYNC_TASK_NAME = "TENANT_SYNC_TASK";
+    public static final String APPLICATION_SIGNUP_SYNC_TASK_TYPE = "APPLICATION_SIGNUP_SYNC_TASK_TYPE";
+    public static final String APPLICATION_SIGNUP_SYNC_TASK_NAME = "APPLICATION_SIGNUP_SYNC_TASK";
 }

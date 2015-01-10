@@ -438,7 +438,7 @@ public class StratosApiV41Utils {
 
     private static AutoscalerServiceClient getAutoscalerServiceClient() throws RestAPIException {
         try {
-            return AutoscalerServiceClient.getServiceClient();
+            return AutoscalerServiceClient.getInstance();
         } catch (AxisFault axisFault) {
             String errorMsg = "Error while getting AutoscalerServiceClient instance to connect to the "
                     + "Autoscaler. Cause: " + axisFault.getMessage();
@@ -693,7 +693,7 @@ public class StratosApiV41Utils {
 
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(serviceGroupDefinition);
 
-            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getServiceClient();
+            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             asServiceClient.addServiceGroup(serviceGroup);
         } catch (Exception e) {
             String message = "Could not add service group";
@@ -728,7 +728,7 @@ public class StratosApiV41Utils {
         }
 
         try {
-            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getServiceClient();
+            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup serviceGroup = asServiceClient.getServiceGroup(name);
             if (serviceGroup == null) {
                 return null;
@@ -751,7 +751,7 @@ public class StratosApiV41Utils {
         }
 
         try {
-            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getServiceClient();
+            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             ServiceGroup[] serviceGroups = asServiceClient.getServiceGroups();
             if (serviceGroups == null || serviceGroups.length == 0) {
                 return null;
@@ -775,7 +775,7 @@ public class StratosApiV41Utils {
                 log.debug("Removing service group: [name] " + name);
             }
 
-            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getServiceClient();
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
             autoscalerServiceClient.undeployServiceGroupDefinition(name);
 
         } catch (Exception e) {
@@ -801,7 +801,7 @@ public class StratosApiV41Utils {
 
         // check if an application with same id already exists
         try {
-            if (AutoscalerServiceClient.getServiceClient().getApplication(appDefinition.getApplicationId()) != null) {
+            if (AutoscalerServiceClient.getInstance().getApplication(appDefinition.getApplicationId()) != null) {
                 String msg = "Application already exists: [application-id] " + appDefinition.getApplicationId();
                 throw new RestAPIException(msg);
             }
@@ -826,7 +826,7 @@ public class StratosApiV41Utils {
         }
 
         try {
-            AutoscalerServiceClient.getServiceClient().addApplication(applicationContext);
+            AutoscalerServiceClient.getInstance().addApplication(applicationContext);
         } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         } catch (RemoteException e) {
@@ -899,7 +899,7 @@ public class StratosApiV41Utils {
     public static void removeApplication(String applicationId) throws RestAPIException {
 
         try {
-            AutoscalerServiceClient.getServiceClient().deleteApplication(applicationId);
+            AutoscalerServiceClient.getInstance().deleteApplication(applicationId);
         } catch (RemoteException e) {
             String message = "Could not delete application: [application-id] " + applicationId;
             log.error(message, e);
@@ -910,7 +910,7 @@ public class StratosApiV41Utils {
     public static ApplicationDefinition getApplication(String applicationId) throws RestAPIException {
         try {
             return ObjectConverter.convertStubApplicationContextToApplicationDefinition(
-                    AutoscalerServiceClient.getServiceClient().getApplication(applicationId));
+                    AutoscalerServiceClient.getInstance().getApplication(applicationId));
         } catch (RemoteException e) {
             String message = "Could not read application: [application-id] " + applicationId;
             log.error(message, e);
@@ -921,7 +921,7 @@ public class StratosApiV41Utils {
     public static List<ApplicationDefinition> getApplications() throws RestAPIException {
         try {
             List<ApplicationDefinition> applicationDefinitions = new ArrayList<ApplicationDefinition>();
-            ApplicationContext[] applicationContexts = AutoscalerServiceClient.getServiceClient().getApplications();
+            ApplicationContext[] applicationContexts = AutoscalerServiceClient.getInstance().getApplications();
             if(applicationContexts != null) {
                 for (ApplicationContext applicationContext : applicationContexts) {
                     if(applicationContext != null) {

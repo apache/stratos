@@ -17,10 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.messaging;
+package org.apache.stratos.manager.messaging.publisher.synchronizer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.manager.internal.ServiceReferenceHolder;
+import org.apache.stratos.manager.utils.StratosManagerConstants;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
@@ -29,47 +31,41 @@ import org.wso2.carbon.ntask.core.service.TaskService;
 import java.util.HashMap;
 
 /**
- * Tenant synchronizer task scheduler for scheduling the tenant synchronizer task
- * using carbon task service.
+ * Synchronizer task scheduler for scheduling tasks using carbon task service.
  */
-public class TenantSynchronizerTaskScheduler {
+public class SynchronizerTaskScheduler {
 
-    private static final Log log = LogFactory.getLog(TenantSynzhronizerTask.class);
+    private static final Log log = LogFactory.getLog(SynchronizerTaskScheduler.class);
 
-    private static final String TENANT_SYNC_TASK_TYPE = "TENANT_SYNC_TASK_TYPE";
-    private static final String TENANT_SYNC_TASK_NAME = "TENANT_SYNC_TASK";
-    private static final String DEFAULT_CRON = "1 * * * * ? *";
-
-    public static void schedule(TaskService taskService) {
+    public static void schedule(String taskType, String taskName, Class taskClass) {
         TaskManager taskManager = null;
         try {
+            TaskService taskService = ServiceReferenceHolder.getInstance().getTaskService();
 
-            if (!taskService.getRegisteredTaskTypes().contains(TENANT_SYNC_TASK_TYPE)) {
+            if (!taskService.getRegisteredTaskTypes().contains(taskType)) {
                 // Register task type
-                taskService.registerTaskType(TENANT_SYNC_TASK_TYPE);
+                taskService.registerTaskType(taskType);
 
                 // Register task
-                taskManager = taskService.getTaskManager(TENANT_SYNC_TASK_TYPE);
-                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(DEFAULT_CRON);
-                TaskInfo taskInfo = new TaskInfo(TENANT_SYNC_TASK_NAME,
-                        TenantSynzhronizerTask.class.getName(),
-                        new HashMap<String, String>(), triggerInfo);
+                taskManager = taskService.getTaskManager(taskType);
+                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(StratosManagerConstants.DEFAULT_CRON);
+                TaskInfo taskInfo = new TaskInfo(taskName, taskClass.getName(), new HashMap<String, String>(), triggerInfo);
                 taskManager.registerTask(taskInfo);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Tenant synchronization task scheduled: %s", TENANT_SYNC_TASK_NAME));
+                    log.info(String.format("Synchronization task scheduled: %s", taskName));
                 }
             }
         } catch (Exception e) {
             if (taskManager != null) {
                 try {
-                    taskManager.deleteTask(TENANT_SYNC_TASK_NAME);
+                    taskManager.deleteTask(taskName);
                 } catch (TaskException te) {
                     if (log.isErrorEnabled()) {
                         log.error(te);
                     }
                 }
             }
-            throw new RuntimeException(String.format("Could not schedule tenant synchronization task: %s", TENANT_SYNC_TASK_NAME), e);
+            throw new RuntimeException(String.format("Could not schedule synchronization task: %s", taskName), e);
         }
     }
 }

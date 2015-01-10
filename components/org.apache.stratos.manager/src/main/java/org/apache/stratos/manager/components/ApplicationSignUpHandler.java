@@ -23,6 +23,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.messaging.publisher.ApplicationSignUpEventPublisher;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.exception.ApplicationSignUpException;
@@ -53,20 +55,21 @@ public class ApplicationSignUpHandler {
      * @throws ApplicationSignUpException
      */
     public void addApplicationSignUp(ApplicationSignUp applicationSignUp) throws ApplicationSignUpException {
-        try {
-            if (applicationSignUp == null) {
-                throw new RuntimeException("Application signup is null");
-            }
+        if (applicationSignUp == null) {
+            throw new ApplicationSignUpException("Application signup is null");
+        }
 
-            String applicationId = applicationSignUp.getApplicationId();
-            int tenantId = applicationSignUp.getTenantId();
+        String applicationId = applicationSignUp.getApplicationId();
+        int tenantId = applicationSignUp.getTenantId();
+
+        try {
+            ApplicationManager.acquireReadLockForApplication(applicationId);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Adding application signup: [application-id] %s [tenant-id] %d",
                         applicationId, tenantId));
             }
 
-            // Encrypt artifact repository passwords
             Application application = ApplicationManager.getApplications().getApplication(applicationId);
             if (application == null) {
                 throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
@@ -77,11 +80,16 @@ public class ApplicationSignUpHandler {
                         "[application-id] %s [tenant-id] %d", applicationId, tenantId));
             }
 
+            // Encrypt artifact repository passwords
             encryptRepositoryPasswords(applicationSignUp, application.getKey());
 
             // Persist application signup
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
             RegistryManager.getInstance().persist(resourcePath, applicationSignUp);
+
+            // TODO: Add logic to filter cluster ids based on tenant id, tenant range
+            List<String> clusterIds = findClusterIds(application);
+            ApplicationSignUpEventPublisher.publishApplicationSignUpAddedEvent(applicationId, tenantId, clusterIds);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application signup added successfully: [application-id] %s [tenant-id] %d",
@@ -91,7 +99,17 @@ public class ApplicationSignUpHandler {
             String message = "Could not add application signup";
             log.error(message, e);
             throw new ApplicationSignUpException(message, e);
+        } finally {
+            ApplicationManager.releaseReadLockForApplication(applicationId);
         }
+    }
+
+    private List<String> findClusterIds(Application application) {
+        List<String> clusterIds = new ArrayList<String>();
+        for(ClusterDataHolder clusterData : application.getClusterDataRecursively()) {
+            clusterIds.add(clusterData.getClusterId());
+        }
+        return clusterIds;
     }
 
     /**
@@ -158,6 +176,8 @@ public class ApplicationSignUpHandler {
 
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
             RegistryManager.getInstance().remove(resourcePath);
+
+            ApplicationSignUpEventPublisher.publishApplicationSignUpRemovedEvent(applicationId, tenantId);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application signup removed successfully: [application-id] %s [tenant-id] %d",
@@ -240,7 +260,7 @@ public class ApplicationSignUpHandler {
      * @return
      * @throws ApplicationSignUpException
      */
-    List<ApplicationSignUp> getApplicationSignUps() throws ApplicationSignUpException {
+    public List<ApplicationSignUp> getApplicationSignUps() throws ApplicationSignUpException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Reading application signups"));

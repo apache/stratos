@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.event.application.signup;
 import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.event.Event;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Application signup added event.
@@ -30,18 +31,11 @@ public class ApplicationSignUpAddedEvent extends Event implements Serializable {
 
     private final String applicationId;
     private final int tenantId;
-    private ArtifactRepository[] artifactRepositories;
+    private final List<String> clusterIds;
 
-    public ApplicationSignUpAddedEvent(String applicationId, int tenantId) {
+    public ApplicationSignUpAddedEvent(String applicationId, int tenantId, List<String> clusterIds) {
         this.applicationId = applicationId;
         this.tenantId = tenantId;
-    }
-
-    public ArtifactRepository[] getArtifactRepositories() {
-        return artifactRepositories;
-    }
-
-    public void setArtifactRepositories(ArtifactRepository[] artifactRepositories) {
-        this.artifactRepositories = artifactRepositories;
+        this.clusterIds = clusterIds;
     }
 }

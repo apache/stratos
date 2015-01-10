@@ -300,11 +300,10 @@ public class StratosApiV40Utils {
     private static AutoscalerServiceClient getAutoscalerServiceClient () throws RestAPIException {
 
         try {
-            return AutoscalerServiceClient.getServiceClient();
-
+            return AutoscalerServiceClient.getInstance();
         } catch (AxisFault axisFault) {
             String errorMsg = "Error while getting AutoscalerServiceClient instance to connect to the "
-                    + "Autoscaler. Cause: "+axisFault.getMessage();
+                    + "Autoscaler";
             log.error(errorMsg, axisFault);
             throw new RestAPIException(errorMsg, axisFault);
         }

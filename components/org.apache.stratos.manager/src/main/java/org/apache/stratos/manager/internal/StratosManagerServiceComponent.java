@@ -20,14 +20,18 @@ package org.apache.stratos.manager.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.manager.messaging.publisher.synchronizer.ApplicationSignUpSynchronizerTask;
+import org.apache.stratos.manager.messaging.publisher.synchronizer.TenantSynzhronizerTask;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerApplicationEventReceiver;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerInstanceStatusEventReceiver;
 import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.messaging.publisher.TenantEventPublisher;
-import org.apache.stratos.manager.messaging.TenantSynchronizerTaskScheduler;
+import org.apache.stratos.manager.messaging.publisher.synchronizer.SynchronizerTaskScheduler;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerTopologyEventReceiver;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
+import org.apache.stratos.manager.utils.StratosManagerConstants;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.Util;
@@ -82,18 +86,26 @@ public class StratosManagerServiceComponent {
             if(log.isDebugEnabled()) {
                 log.debug("Scheduling tenant synchronizer task...");
             }
-            TenantSynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
+            SynchronizerTaskScheduler.schedule(StratosManagerConstants.TENANT_SYNC_TASK_TYPE,
+                    StratosManagerConstants.TENANT_SYNC_TASK_NAME, TenantSynzhronizerTask.class);
+
+            // Schedule complete application signup event synchronizer
+            if(log.isDebugEnabled()) {
+                log.debug("Scheduling application signup synchronizer task...");
+            }
+            SynchronizerTaskScheduler.schedule(StratosManagerConstants.APPLICATION_SIGNUP_SYNC_TASK_TYPE,
+                    StratosManagerConstants.APPLICATION_SIGNUP_SYNC_TASK_NAME, ApplicationSignUpSynchronizerTask.class);
 
             // Register tenant event publisher
             if(log.isDebugEnabled()) {
-                log.debug("Starting tenant event publisher...");
+                log.debug("Initializing tenant event publisher...");
             }
             TenantEventPublisher tenantEventPublisher = new TenantEventPublisher();
             componentContext.getBundleContext().registerService(
                     org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                     tenantEventPublisher, null);
             if(log.isInfoEnabled()) {
-                log.info("Tenant event publisher started");
+                log.info("Tenant event publisher initialized");
             }
 
             instanceStatusEventReceiver = new StratosManagerInstanceStatusEventReceiver();
