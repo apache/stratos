@@ -850,9 +850,7 @@ public class StratosApiV41Utils {
      * @param deploymentPolicy
      * @throws RestAPIException
      */
-    public static void deployApplication(
-            String applicationId,
-            DeploymentPolicyBean deploymentPolicy)
+    public static void deployApplication(String applicationId, DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
 
         try {
@@ -873,16 +871,8 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            if (!applicationId.equals(deploymentPolicy.getApplicationId())) {
-                String message = String.format("Application id %s does not match with the deployment policy %s",
-                        applicationId, deploymentPolicy.getApplicationId());
-                log.error(message);
-                throw new RestAPIException(message);
-            }
-
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy =
-                    ObjectConverter.convetToASDeploymentPolicyPojo(deploymentPolicy);
-
+                    ObjectConverter.convetToASDeploymentPolicyPojo(applicationId, deploymentPolicy);
             autoscalerServiceClient.deployApplication(applicationId, stubDeploymentPolicy);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));

@@ -21,7 +21,9 @@ package org.apache.stratos.rest.endpoint.mock;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.*;
+import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.TenantInfoBean;
+import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
@@ -303,8 +305,7 @@ public class StratosApiV40Mock {
     @SuperTenantService(true)
     public ApiResponseBean deployDeploymentPolicyDefinition (DeploymentPolicyBean deploymentPolicy)
             throws RestAPIException {
-           return MockContext.getInstance().addDeploymentPolicyDefinition(deploymentPolicy);
-
+           throw new RestAPIException("Not supported");
     }
 
     @GET

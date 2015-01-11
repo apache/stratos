@@ -358,12 +358,12 @@ public class ObjectConverter {
     }
 
     public static org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy convetToASDeploymentPolicyPojo(
-            DeploymentPolicyBean deploymentPolicyBean) {
+            String applicationId, DeploymentPolicyBean deploymentPolicyBean) {
 
         org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy deploymentPolicy =
                 new org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy();
 
-        deploymentPolicy.setApplicationId(deploymentPolicyBean.getApplicationId());
+        deploymentPolicy.setApplicationId(applicationId);
         deploymentPolicy.setDescription(deploymentPolicyBean.getDescription());
         deploymentPolicy.setIsPublic(deploymentPolicyBean.isPublic());
         if (deploymentPolicyBean.getApplicationPolicy() != null
@@ -390,7 +390,6 @@ public class ObjectConverter {
         }
 
         DeploymentPolicyBean deploymentPolicy = new DeploymentPolicyBean();
-        deploymentPolicy.setApplicationId(stubDeploymentPolicy.getApplicationId());
         deploymentPolicy.setDescription(stubDeploymentPolicy.getDescription());
         deploymentPolicy.setPublic(stubDeploymentPolicy.getIsPublic());
         if (stubDeploymentPolicy.getApplicationLevelNetworkPartitions() != null) {

@@ -481,7 +481,7 @@ public class MockContext {
         return stratosApiResponse;
     }
 
-    public ApiResponseBean addDeploymentPolicyDefinition(DeploymentPolicyBean deploymentPolicy) {
+    public ApiResponseBean addDeploymentPolicyDefinition(String applicationId, DeploymentPolicyBean deploymentPolicy) {
     	int tenantId = getTenantId();
     	Map<String,DeploymentPolicyBean> policies;
     	
@@ -504,7 +504,7 @@ public class MockContext {
     		}
     	}
     	
-    	policies.put(deploymentPolicy.getApplicationId() +UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
+    	policies.put(applicationId + UUID.randomUUID().getLeastSignificantBits(),deploymentPolicy);
         ApiResponseBean stratosApiResponse = new ApiResponseBean();
         stratosApiResponse.setMessage("Successfully deployed deployment policy definition");
         return stratosApiResponse;

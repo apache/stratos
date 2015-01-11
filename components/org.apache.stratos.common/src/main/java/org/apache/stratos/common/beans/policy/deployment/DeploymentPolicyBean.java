@@ -26,19 +26,10 @@ import java.util.List;
 @XmlRootElement
 public class DeploymentPolicyBean {
 
-    private String applicationId;
     private String description;
     private boolean isPublic;
     private ApplicationPolicyBean applicationPolicy;
     private List<ChildPolicyBean> childPolicies;
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
 
     public boolean getIsPublic() {
         return isPublic();
