@@ -174,29 +174,39 @@ public class DependencyBuilder {
      */
 	public Set<ScalingDependentList> buildScalingDependencies(ParentComponent component) {
 		Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
-		if(component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
-		for (ScalingDependentList dependentList : component.getDependencyOrder().getScalingDependents()) {
-            List<String> scalingDependencies = new ArrayList<String>();
-            for(String string : dependentList.getScalingDependentListComponents()) {
-                if (string.startsWith(Constants.GROUP + ".")) {
-                    //getting the group alias
-                    scalingDependencies.add(getGroupFromStartupOrder(string));
-                } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
-                    //getting the cluster alias
-                    String id = getClusterFromStartupOrder(string);
-                    //getting the cluster-id from cluster alias
-                    ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
-                    scalingDependencies.add(clusterDataHolder.getClusterId());
-                } else {
-                    log.warn("[Scaling Dependency]: " + string + " contains unknown reference");
+
+        if (component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
+
+            for (ScalingDependentList dependentList : component.getDependencyOrder().getScalingDependents()) {
+                List<String> scalingDependencies = new ArrayList<String>();
+                for (String string : dependentList.getScalingDependentListComponents()) {
+                    if (string.startsWith(Constants.GROUP + ".")) {
+                        //getting the group alias
+                        scalingDependencies.add(getGroupFromStartupOrder(string));
+                    } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
+                        //getting the cluster alias
+                        String id = getClusterFromStartupOrder(string);
+                        //getting the cluster-id from cluster alias
+
+                        if(component.getClusterDataForType().containsKey(id)) {
+                            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
+                            scalingDependencies.add(clusterDataHolder.getClusterId());
+                        } else{
+
+                            log.warn("[Scaling Dependency Id]: " + id + " is not a defined cartridge or group. " +
+                                    "Therefore scaling dependent will not be effective");
+                        }
+                    } else {
+                        log.warn("[Scaling Dependency]: " + string + " contains unknown reference. Therefore scaling " +
+                                "dependent will not be effective");
+                    }
                 }
+                ScalingDependentList scalingDependentList = new ScalingDependentList(scalingDependencies);
+                scalingDependentLists.add(scalingDependentList);
+
+
             }
-            ScalingDependentList scalingDependentList = new ScalingDependentList(scalingDependencies);
-            scalingDependentLists.add(scalingDependentList);
-
-
         }
-		}
 	    return scalingDependentLists;
     }
 

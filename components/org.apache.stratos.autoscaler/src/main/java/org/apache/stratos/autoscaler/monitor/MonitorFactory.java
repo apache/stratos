@@ -173,9 +173,12 @@ public class MonitorFactory {
             application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application != null) {
                 applicationMonitor = new ApplicationMonitor(application);
-                applicationMonitor.setHasStartupDependents(false);
-                //starting the scheduler of the application monitor
-                applicationMonitor.startScheduler();
+
+                if(null != applicationMonitor){
+                    applicationMonitor.setHasStartupDependents(false);
+                    //starting the scheduler of the application monitor
+                    applicationMonitor.startScheduler();
+                }
             } else {
                 String msg = "Application not found in the topology: [application-id] " + applicationId;
                 throw new TopologyInConsistentException(msg);
