@@ -33,16 +33,7 @@ public class ApplicationSignUpBean implements Serializable {
 
     private static final long serialVersionUID = -3055522170914869018L;
 
-    private String applicationId;
     private List<ArtifactRepositoryBean> artifactRepositories;
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
 
     public List<ArtifactRepositoryBean> getArtifactRepositories() {
         return artifactRepositories;

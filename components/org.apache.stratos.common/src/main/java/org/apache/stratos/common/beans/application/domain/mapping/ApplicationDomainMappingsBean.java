@@ -28,16 +28,7 @@ public class ApplicationDomainMappingsBean implements Serializable {
 
     private static final long serialVersionUID = 8896916017135654616L;
 
-    private String applicationId;
     private List<DomainMappingBean> domainMappings;
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
 
     public List<DomainMappingBean> getDomainMappings() {
         return domainMappings;

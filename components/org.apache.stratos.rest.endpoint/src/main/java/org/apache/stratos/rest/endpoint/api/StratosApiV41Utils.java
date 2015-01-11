@@ -1354,14 +1354,6 @@ public class StratosApiV41Utils {
             throw new RestAPIException("Application signup is null");
         }
 
-        if(StringUtils.isBlank(applicationSignUpBean.getApplicationId())) {
-            throw new RestAPIException("Application id in applicationBean signup is null");
-        }
-
-        if(!applicationId.equals(applicationSignUpBean.getApplicationId())) {
-            throw new RestAPIException("Application id does not match with applicationBean id in applicationBean signup");
-        }
-
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Adding applicationBean signup: [application-id] %s", applicationId));
@@ -1370,6 +1362,7 @@ public class StratosApiV41Utils {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
 
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
+            applicationSignUp.setApplicationId(applicationId);
             applicationSignUp.setTenantId(tenantId);
 
             // Encrypt artifact repository passwords
@@ -1522,8 +1515,8 @@ public class StratosApiV41Utils {
 
         try {
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
-            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
             if(domainMapppingsBean.getDomainMappings() != null) {
+                StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
 
                 for(DomainMappingBean domainMappingBean : domainMapppingsBean.getDomainMappings()) {
                     ClusterDataHolder clusterDataHolder = findClusterDataHolder(applicationId, domainMappingBean.getCartridgeAlias());

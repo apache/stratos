@@ -1639,7 +1639,6 @@ public class ObjectConverter {
 
     public static ApplicationSignUp convertApplicationSignUpBeanToStubApplicationSignUp(ApplicationSignUpBean applicationSignUpBean) {
         ApplicationSignUp applicationSignUp = new ApplicationSignUp();
-        applicationSignUp.setApplicationId(applicationSignUpBean.getApplicationId());
 
         if(applicationSignUpBean.getArtifactRepositories() != null) {
             List<ArtifactRepository> artifactRepositoryList = new ArrayList<ArtifactRepository>();
@@ -1663,7 +1662,6 @@ public class ObjectConverter {
 
     public static ApplicationSignUpBean convertStubApplicationSignUpToApplicationSignUpBean(ApplicationSignUp applicationSignUp) {
         ApplicationSignUpBean applicationSignUpBean = new ApplicationSignUpBean();
-        applicationSignUpBean.setApplicationId(applicationSignUp.getApplicationId());
 
         if(applicationSignUp.getArtifactRepositories() != null) {
             List<ArtifactRepositoryBean> artifactRepositoryBeanList = new ArrayList<ArtifactRepositoryBean>();
