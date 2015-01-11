@@ -163,7 +163,8 @@ public class DefaultRestClient implements RestClient {
             stringEntity = new StringEntity(payloadText);
             stringEntity.setContentType(APPLICATION_JSON);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            String message = String.format("Could not add string to payload: [payload] %s", payloadText);
+            log.error(message, e);
         }
 
         post.setEntity(stringEntity);

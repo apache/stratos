@@ -693,9 +693,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
     }
 
-    public String  createToken(String appid) throws AutoScalerException {
+    public String  createToken(String applicationId) throws AutoScalerException {
         String token = null;
-        String ouathAppName = appid + Math.random();
+        String ouathAppName = applicationId + Math.random();
         String serviceProviderName = ouathAppName;
 
         try {
@@ -705,16 +705,24 @@ public class DefaultApplicationParser implements ApplicationParser {
         } catch (OAuthAdminServiceException e) {
             throw new AutoScalerException(e);
         }
+
+        String errorMessage = String.format("Could not create oauth token: [application-id] %s", applicationId);
+
         try {
-            token = IdentityApplicationManagementServiceClient.getServiceClient().createServiceProvider(ouathAppName, serviceProviderName, appid);
+            token = IdentityApplicationManagementServiceClient.getServiceClient().createServiceProvider(ouathAppName,
+                    serviceProviderName, applicationId);
         } catch (RemoteException e) {
-            throw new AutoScalerException(e);
+            log.error(errorMessage, e);
+            throw new AutoScalerException(errorMessage, e);
         } catch (OAuthAdminServiceException e) {
-            e.printStackTrace();
+            log.error(errorMessage, e);
+            throw new AutoScalerException(errorMessage, e);
         } catch (OAuthProblemException e) {
-            throw new AutoScalerException(e);
+            log.error(errorMessage, e);
+            throw new AutoScalerException(errorMessage, e);
         } catch (OAuthSystemException e) {
-            throw new AutoScalerException(e);
+            log.error(errorMessage, e);
+            throw new AutoScalerException(errorMessage, e);
         }
 
         return token;

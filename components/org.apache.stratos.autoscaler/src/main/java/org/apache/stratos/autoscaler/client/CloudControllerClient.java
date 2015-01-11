@@ -278,7 +278,6 @@ public class CloudControllerClient {
             log.error(msg, e);
             //throw new TerminationException(msg, e);
         } catch (CloudControllerServiceApplicationClusterRegistrationExceptionException e) {
-            //e.printStackTrace();
             String msg = e.getMessage();
             log.error(msg, e);
         }

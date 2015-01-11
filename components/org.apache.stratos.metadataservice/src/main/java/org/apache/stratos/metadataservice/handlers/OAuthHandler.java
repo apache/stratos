@@ -125,7 +125,8 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            String message = "Could not extract application id from id token";
+            log.error(message, e);
         }
         return appId;
     }

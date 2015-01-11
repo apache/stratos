@@ -437,7 +437,6 @@ public class AutoScalerServiceImpl implements AutoScalerService {
             log.error(String.format("Error ocured while deleting oAuth application %s", applicationId), e);
             throw new AutoScalerException(e);
         } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
-            e.printStackTrace();
         }
         */
 

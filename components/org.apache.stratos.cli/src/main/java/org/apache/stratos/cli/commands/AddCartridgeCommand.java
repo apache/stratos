@@ -105,7 +105,6 @@ public class AddCartridgeCommand implements Command<StratosCommandContext> {
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             } catch (IOException e) {
-                //e.printStackTrace();
                 System.out.println("Invalid resource path");
                 return CliConstants.COMMAND_FAILED;
             }

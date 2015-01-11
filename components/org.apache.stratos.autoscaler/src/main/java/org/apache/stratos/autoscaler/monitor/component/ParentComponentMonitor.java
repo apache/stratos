@@ -458,15 +458,18 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         if ((terminationList.isEmpty() || allDependentTerminated) &&
                 (parentContexts.isEmpty() || parentsTerminated || allParentsActive)) {
             //Find the non existent monitor by traversing dependency tree
+
+            String errorMessage = String.format("Could not start dependency on termination: [instance-id] %s", instanceId);
+
             try {
                 try {
                     this.startDependencyOnTermination(instanceId);
                 } catch (MonitorNotFoundException e) {
-                    e.printStackTrace();
+                    log.error(errorMessage, e);
                 } catch (PolicyValidationException e) {
-                    e.printStackTrace();
+                    log.error(errorMessage, e);
                 } catch (PartitionValidationException e) {
-                    e.printStackTrace();
+                    log.error(errorMessage, e);
                 }
             } catch (TopologyInConsistentException e) {
                 //TODO revert the siblings and notify parent, change a flag for reverting/un-subscription

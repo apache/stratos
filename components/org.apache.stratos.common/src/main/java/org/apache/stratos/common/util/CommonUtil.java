@@ -642,7 +642,8 @@ public class CommonUtil {
             byte[] cipherText = cipher.doFinal(repoUserPassword.getBytes());
             encryptPassword = new String(coder.encode(cipherText));
         } catch (Exception e) {
-            e.printStackTrace();
+            String message = "Could not encrypt password";
+            log.error(message, e);
         }
         return encryptPassword;
     }

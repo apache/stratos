@@ -484,8 +484,7 @@ public class OpenstackIaas extends JcloudsIaas {
         try {
             // waiting 5seconds till volumes are actually attached.
             Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ignore) {
         }
 
         if (attachment == null) {
