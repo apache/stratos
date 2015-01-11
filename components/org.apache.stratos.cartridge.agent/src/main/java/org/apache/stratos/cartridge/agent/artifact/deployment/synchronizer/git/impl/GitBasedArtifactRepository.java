@@ -125,7 +125,7 @@ public class GitBasedArtifactRepository {
             localRepo = new FileRepository(new File(gitRepoCtx.getGitLocalRepoPath() + "/.git"));
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e);
         }
 
         gitRepoCtx.setLocalRepo(localRepo);
@@ -690,7 +690,6 @@ public class GitBasedArtifactRepository {
 
         } catch (TransportException e) {
             log.error("Accessing remote git repository " + gitRepoCtx.getGitRemoteRepoUrl() + " failed for tenant " + gitRepoCtx.getTenantId(), e);
-            e.printStackTrace();
             return false;
 
         } catch (CheckoutConflictException e) { //TODO: handle conflict efficiently. Currently the whole directory is deleted and re-cloned
@@ -703,7 +702,6 @@ public class GitBasedArtifactRepository {
 
         } catch (GitAPIException e) {
             log.error("Git pull operation for tenant " + gitRepoCtx.getTenantId() + " failed", e);
-            e.printStackTrace();
             return false;
         }
         return true;
@@ -796,9 +794,9 @@ public class GitBasedArtifactRepository {
                     // storedConfig.load();
 
                 } catch (IOException e) {
-                    log.error("Error saving git configuration file in local repo at " + gitRepoCtx.getGitLocalRepoPath(), e);
-                    e.printStackTrace();
-
+                    String message = "Error saving git configuration file in local repo at " + gitRepoCtx.getGitLocalRepoPath();
+                    System.out.println(message);
+                    log.error(message, e);
                 }
             }
         }
@@ -842,11 +840,9 @@ public class GitBasedArtifactRepository {
 
         } catch (TransportException e) {
             log.error("Accessing remote git repository failed for tenant " + gitRepoCtx.getTenantId(), e);
-            e.printStackTrace();
 
         } catch (GitAPIException e) {
             log.error("Git clone operation for tenant " + gitRepoCtx.getTenantId() + " failed", e);
-            e.printStackTrace();
         }
     }*/
 

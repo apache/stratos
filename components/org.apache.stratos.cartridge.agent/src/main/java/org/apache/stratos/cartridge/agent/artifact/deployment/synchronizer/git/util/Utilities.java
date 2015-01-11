@@ -70,7 +70,6 @@ public class Utilities {
 
         } catch (IOException e) {
             log.error("Deletion of existing non-git repository structure failed");
-            e.printStackTrace();
         }
     }
 }

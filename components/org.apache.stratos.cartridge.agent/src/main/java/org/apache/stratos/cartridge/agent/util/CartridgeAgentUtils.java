@@ -71,8 +71,7 @@ public class CartridgeAgentUtils {
             byte[] decrypted = cipher.doFinal(encrypted);
             decryptPassword = new String(decrypted);
         } catch (Exception e) {
-        	log.error("Exception has occurred. " + e.getMessage());
-            e.printStackTrace();
+        	log.error("An error has occurred", e);
         }
 		if (log.isDebugEnabled()) {
 			log.debug("Decrypted PWD : [" + decryptPassword + "] ");

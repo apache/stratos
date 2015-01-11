@@ -131,7 +131,7 @@ public class LogPublisherManager {
 		try {
 			alias = clusterId.split("\\.")[0];
 		} catch (Exception e) {
-			e.printStackTrace();
+            log.error(e);
 			alias = clusterId;
 		}
 		return alias;
