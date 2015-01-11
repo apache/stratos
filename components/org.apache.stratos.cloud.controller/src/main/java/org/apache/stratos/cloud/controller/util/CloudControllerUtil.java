@@ -104,6 +104,7 @@ public class CloudControllerUtil {
         	cartridge.setPersistence(config.getPersistence());
         }
         cartridge.setMultiTenant(config.isMultiTenant());
+        cartridge.setTenantPartitions(config.getTenantPartitions());
         cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
         cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
         cartridge.setServiceGroup(config.getServiceGroup());
@@ -212,6 +213,7 @@ public class CloudControllerUtil {
 		cartridgeInfo.setMultiTenant(cartridge.isMultiTenant());
 		cartridgeInfo.setBaseDir(cartridge.getBaseDir());
 		cartridgeInfo.setLbConfig(cartridge.getLbConfig());
+        cartridgeInfo.setTenantPartitions(cartridge.getTenantPartitions());
 		cartridgeInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
         cartridgeInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
 		cartridgeInfo.setPortMappings(cartridge.getPortMappings()

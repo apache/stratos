@@ -43,7 +43,8 @@ public class ApplicationClusterContext {
     private Properties properties;
 
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
-                                      String textPayload, String deploymentPolicyName, boolean isLbCluster) {
+                                      String textPayload, String deploymentPolicyName, boolean isLbCluster,
+                                      String tenantRange) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -51,7 +52,7 @@ public class ApplicationClusterContext {
         this.textPayload = textPayload;
         this.deploymentPolicyName = deploymentPolicyName;
         this.isLbCluster = isLbCluster;
-        this.tenantRange = "*";
+        this.tenantRange = tenantRange;
     }
 
     public String getClusterId() {

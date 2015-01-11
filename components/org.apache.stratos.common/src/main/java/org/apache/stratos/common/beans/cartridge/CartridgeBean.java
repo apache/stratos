@@ -39,6 +39,7 @@ public class CartridgeBean {
 	private boolean isPublic;
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
+    private String tenantPartitions;
     private PersistenceBean persistence;
     private List<IaasProviderBean> iaasProvider;
     private String defaultAutoscalingPolicy;
@@ -240,5 +241,13 @@ public class CartridgeBean {
 
     public void setServiceGroup(String serviceGroup) {
         this.serviceGroup = serviceGroup;
+    }
+
+    public String getTenantPartitions() {
+        return tenantPartitions;
+    }
+
+    public void setTenantPartitions(String tenantPartitions) {
+        this.tenantPartitions = tenantPartitions;
     }
 }

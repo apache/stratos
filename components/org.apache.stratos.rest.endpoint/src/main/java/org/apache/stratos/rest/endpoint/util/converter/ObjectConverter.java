@@ -64,53 +64,54 @@ import java.util.*;
 
 public class ObjectConverter {
 
-    public static CartridgeConfig convertCartridgeDefinitionBeanToStubCartridgeConfig(
-            CartridgeBean cartridgeDefinitionBean) {
+    public static CartridgeConfig convertCartridgeBeanToStubCartridgeConfig(
+            CartridgeBean cartridgeBean) {
 
         CartridgeConfig cartridgeConfig = new CartridgeConfig();
 
-	    cartridgeConfig.setType(cartridgeDefinitionBean.getType());
-	    cartridgeConfig.setHostName(cartridgeDefinitionBean.getHost());
-	    cartridgeConfig.setProvider(cartridgeDefinitionBean.getProvider());
-	    cartridgeConfig.setCategory(cartridgeDefinitionBean.getCategory());
-	    cartridgeConfig.setVersion(cartridgeDefinitionBean.getVersion());
-	    cartridgeConfig.setMultiTenant(cartridgeDefinitionBean.isMultiTenant());
-	    cartridgeConfig.setIsPublic(cartridgeDefinitionBean.isPublic());
-	    cartridgeConfig.setDisplayName(cartridgeDefinitionBean.getDisplayName());
-	    cartridgeConfig.setDescription(cartridgeDefinitionBean.getDescription());
-	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeDefinitionBean.getDefaultAutoscalingPolicy());
-	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeDefinitionBean.getDefaultDeploymentPolicy());
-	    cartridgeConfig.setServiceGroup(cartridgeDefinitionBean.getServiceGroup());
+	    cartridgeConfig.setType(cartridgeBean.getType());
+	    cartridgeConfig.setHostName(cartridgeBean.getHost());
+	    cartridgeConfig.setProvider(cartridgeBean.getProvider());
+	    cartridgeConfig.setCategory(cartridgeBean.getCategory());
+	    cartridgeConfig.setVersion(cartridgeBean.getVersion());
+	    cartridgeConfig.setMultiTenant(cartridgeBean.isMultiTenant());
+	    cartridgeConfig.setIsPublic(cartridgeBean.isPublic());
+	    cartridgeConfig.setDisplayName(cartridgeBean.getDisplayName());
+	    cartridgeConfig.setDescription(cartridgeBean.getDescription());
+	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeBean.getDefaultAutoscalingPolicy());
+	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeBean.getDefaultDeploymentPolicy());
+	    cartridgeConfig.setServiceGroup(cartridgeBean.getServiceGroup());
+        cartridgeConfig.setTenantPartitions(cartridgeBean.getTenantPartitions());
 
         //deployment information
-        if (cartridgeDefinitionBean.getDeployment() != null) {
-            cartridgeConfig.setBaseDir(cartridgeDefinitionBean.getDeployment().getBaseDir());
-            if (cartridgeDefinitionBean.getDeployment().getDir() != null && !cartridgeDefinitionBean.getDeployment().getDir().isEmpty()) {
-                cartridgeConfig.setDeploymentDirs(cartridgeDefinitionBean.getDeployment().getDir().
-                        toArray(new String[cartridgeDefinitionBean.getDeployment().getDir().size()]));
+        if (cartridgeBean.getDeployment() != null) {
+            cartridgeConfig.setBaseDir(cartridgeBean.getDeployment().getBaseDir());
+            if (cartridgeBean.getDeployment().getDir() != null && !cartridgeBean.getDeployment().getDir().isEmpty()) {
+                cartridgeConfig.setDeploymentDirs(cartridgeBean.getDeployment().getDir().
+                        toArray(new String[cartridgeBean.getDeployment().getDir().size()]));
             }
         }
         //port mapping
-        if (cartridgeDefinitionBean.getPortMapping() != null && !cartridgeDefinitionBean.getPortMapping().isEmpty()) {
-            cartridgeConfig.setPortMappings(convertPortMappingBeansToStubPortMappings(cartridgeDefinitionBean.getPortMapping()));
+        if (cartridgeBean.getPortMapping() != null && !cartridgeBean.getPortMapping().isEmpty()) {
+            cartridgeConfig.setPortMappings(convertPortMappingBeansToStubPortMappings(cartridgeBean.getPortMapping()));
         }
 
         //persistance mapping
-        if (cartridgeDefinitionBean.getPersistence() != null) {
-            cartridgeConfig.setPersistence(convertPersistenceBeanToStubPersistence(cartridgeDefinitionBean.getPersistence()));
+        if (cartridgeBean.getPersistence() != null) {
+            cartridgeConfig.setPersistence(convertPersistenceBeanToStubPersistence(cartridgeBean.getPersistence()));
         }
 
         //IaaS
-        if (cartridgeDefinitionBean.getIaasProvider() != null && !cartridgeDefinitionBean.getIaasProvider().isEmpty()) {
-            cartridgeConfig.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeDefinitionBean.getIaasProvider()));
+        if (cartridgeBean.getIaasProvider() != null && !cartridgeBean.getIaasProvider().isEmpty()) {
+            cartridgeConfig.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider()));
         }
         //Properties
-        if (cartridgeDefinitionBean.getProperty() != null && !cartridgeDefinitionBean.getProperty().isEmpty()) {
-            cartridgeConfig.setProperties(convertPropertyBeansToCCStubProperties(cartridgeDefinitionBean.getProperty()));
+        if (cartridgeBean.getProperty() != null && !cartridgeBean.getProperty().isEmpty()) {
+            cartridgeConfig.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty()));
         }
 
-        if (cartridgeDefinitionBean.getExportingProperties() != null) {
-            List<String> propertiesList = cartridgeDefinitionBean.getExportingProperties();
+        if (cartridgeBean.getExportingProperties() != null) {
+            List<String> propertiesList = cartridgeBean.getExportingProperties();
             String[] propertiesArray = propertiesList.toArray(new String[propertiesList.size()]);
             cartridgeConfig.setExportingProperties(propertiesArray);
         }
@@ -1114,7 +1115,7 @@ public class ObjectConverter {
             // top level cartridge context information
             if (applicationDefinition.getComponents().getCartridges() != null) {
                 componentContext.setCartridgeContexts(
-                        convertCartridgeDefinitionsToStubCartridgeContexts(applicationDefinition.getComponents().getCartridges()));
+                        convertCartridgeReferenceBeansToStubCartridgeContexts(applicationDefinition.getComponents().getCartridges()));
             }
             applicationContext.setComponents(componentContext);
         }
@@ -1151,7 +1152,7 @@ public class ObjectConverter {
             // top level cartridge context information
             if (applicationContext.getComponents().getCartridgeContexts() != null) {
                 applicationDefinition.getComponents().setCartridges(
-                        convertStubCartridgeContextsToCartridgeDefinitions(applicationContext.getComponents().getCartridgeContexts()));
+                        convertStubCartridgeContextsToCartridgeReferenceBeans(applicationContext.getComponents().getCartridgeContexts()));
             }
         }
         return applicationDefinition;
@@ -1169,7 +1170,7 @@ public class ObjectConverter {
                     groupDefinition.setGroupScalingEnabled(groupContext.getGroupScalingEnabled());
                     groupDefinition.setName(groupContext.getName());
                     groupDefinition.setGroups(convertStubGroupContextsToGroupDefinitions(groupContext.getGroupContexts()));
-                    groupDefinition.setCartridges(convertStubCartridgeContextsToCartridgeDefinitions(
+                    groupDefinition.setCartridges(convertStubCartridgeContextsToCartridgeReferenceBeans(
                             groupContext.getCartridgeContexts()));
                     groupDefinitions.add(groupDefinition);
                 }
@@ -1199,7 +1200,7 @@ public class ObjectConverter {
         return dependencyDefinitions;
     }
 
-    private static List<CartridgeReferenceBean> convertStubCartridgeContextsToCartridgeDefinitions(CartridgeContext[] cartridgeContexts) {
+    private static List<CartridgeReferenceBean> convertStubCartridgeContextsToCartridgeReferenceBeans(CartridgeContext[] cartridgeContexts) {
         List<CartridgeReferenceBean> cartridgeDefinitions = new ArrayList<CartridgeReferenceBean>();
         if(cartridgeContexts != null) {
             for (CartridgeContext cartridgeContext : cartridgeContexts) {
@@ -1263,7 +1264,7 @@ public class ObjectConverter {
         return propertyBeanList;
     }
 
-    private static CartridgeContext[] convertCartridgeDefinitionsToStubCartridgeContexts(
+    private static CartridgeContext[] convertCartridgeReferenceBeansToStubCartridgeContexts(
             List<CartridgeReferenceBean> cartridges) {
 
     	CartridgeContext[] cartridgeContextArray = new CartridgeContext[cartridges.size()];
@@ -1359,7 +1360,7 @@ public class ObjectConverter {
                 groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups()));
             }
             
-            groupContext.setCartridgeContexts(convertCartridgeDefinitionsToStubCartridgeContexts(groupDefinition.getCartridges()));
+            groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges()));
             groupContexts[i++] = groupContext;
         }
 

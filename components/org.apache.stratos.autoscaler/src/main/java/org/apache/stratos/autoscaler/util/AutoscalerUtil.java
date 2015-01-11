@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -446,6 +447,34 @@ public class AutoscalerUtil {
                         "[application] %s", applicationMonitor.getId()));
             }
         }
+    }
+
+    public static String findTenantRange(int tenantId, String tenantPartitions) {
+        if(StringUtils.isNotBlank(tenantPartitions)) {
+            String[] tenantRanges = tenantPartitions.trim().split(",");
+            if(tenantRanges != null) {
+                for(String tenantRange : tenantRanges) {
+                    if((tenantRange != null) && (tenantRange.contains("-"))) {
+                        String[] tenantValues = tenantRange.trim().split("-");
+                        if((tenantValues != null) && (tenantValues.length == 2)) {
+                            if((!tenantValues[0].equals("*")) && (!tenantValues[1].equals("*"))) {
+                                int startValue = Integer.parseInt(tenantValues[0]);
+                                int endValue = Integer.parseInt(tenantValues[1]);
+                                if ((tenantId >= startValue) && (tenantId <= endValue)) {
+                                    return tenantRange;
+                                }
+                            } else if((!tenantValues[0].equals("*")) && (tenantValues[1].equals("*"))) {
+                                int startValue = Integer.parseInt(tenantValues[0]);
+                                if(tenantId >= startValue) {
+                                    return tenantRange;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return "*";
     }
 
 

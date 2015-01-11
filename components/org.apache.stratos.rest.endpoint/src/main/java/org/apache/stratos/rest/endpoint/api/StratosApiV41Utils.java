@@ -95,7 +95,7 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
             }
 
-            CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeDefinitionBeanToStubCartridgeConfig(cartridgeDefinition);
+            CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
             if (cartridgeConfig == null) {
                 throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
             }

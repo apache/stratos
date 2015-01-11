@@ -34,45 +34,26 @@ public class CartridgeConfig implements Serializable {
 	private static final long serialVersionUID = 3455721779991902731L;
 
 	private String type;
-
 	private String hostName;
-
 	private String provider;
-
 	private String category;
-
 	private String displayName;
-
 	private String description;
-
 	private String version;
-
 	private boolean multiTenant;
-
-	private boolean isPublic;
-
+    private String tenantPartitions;
+    private boolean isPublic;
 	private String baseDir;
-
 	private String[] deploymentDirs;
-
 	private PortMapping[] portMappings;
-
 	private Persistence persistence;
-
 	private String defaultAutoscalingPolicy;
-
 	private String defaultDeploymentPolicy;
-
     private Properties properties;
-
-    private IaasConfig[] iaasConfigs;    
-    
+    private IaasConfig[] iaasConfigs;
     private LoadbalancerConfig lbConfig;
-    
     private String serviceGroup;
-    
     private String[] exportingProperties;
-
     private String deployerType;
 
     public String getType() {
@@ -313,4 +294,12 @@ public class CartridgeConfig implements Serializable {
 	public void setCategory(String category) {
 		this.category = category;
 	}
+
+    public String getTenantPartitions() {
+        return tenantPartitions;
+    }
+
+    public void setTenantPartitions(String tenantPartitions) {
+        this.tenantPartitions = tenantPartitions;
+    }
 }

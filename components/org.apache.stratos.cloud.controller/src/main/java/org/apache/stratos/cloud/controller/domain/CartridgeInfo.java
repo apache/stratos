@@ -30,50 +30,34 @@ import org.apache.stratos.common.Property;
 public class CartridgeInfo {
 
     private String type;
-    
     private String hostName;
-    
     private String displayName;
-    
     private String description;
-    
     private String[] deploymentDirs;
-    
     private PortMapping[] portMappings;
-    
     private AppType[] appTypes;
-    
     private String provider;
-
 	private String category;
-    
     private String version;
-    
     private boolean multiTenant;
-    
     private boolean isPublic;
-    
     private String baseDir;
-    
     private Property[] properties;
-    
     private String defaultAutoscalingPolicy;
-
     private String defaultDeploymentPolicy;
-    
     private LoadbalancerConfig lbConfig;
-
+    private String tenantPartitions;
     private Persistence persistence;
-
     private String serviceGroup;
 
     public CartridgeInfo(){
-    	
+        this.tenantPartitions = "*";
     }
     
     public CartridgeInfo(String type, String host, String desc, List<String> deploymentDirs, String provider) {
         this.type = type;
         this.hostName = host;
+        this.tenantPartitions = "*";
     }
 
     public String getType() {
@@ -238,5 +222,13 @@ public class CartridgeInfo {
 
 	public void setCategory(String category) {
 		this.category = category;
+    }
+
+    public String getTenantPartitions() {
+        return tenantPartitions;
+    }
+
+    public void setTenantPartitions(String tenantPartitions) {
+        this.tenantPartitions = tenantPartitions;
     }
 }

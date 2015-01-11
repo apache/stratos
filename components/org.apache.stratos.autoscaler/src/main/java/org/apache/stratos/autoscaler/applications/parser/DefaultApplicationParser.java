@@ -38,6 +38,7 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.messaging.domain.application.*;
@@ -260,11 +261,12 @@ public class DefaultApplicationParser implements ApplicationParser {
     	 for (CartridgeContext cartridgeContext : cartridgeContextList) {
 		     List<String> dependencyClusterIDs = new ArrayList<String>();
     		 String cartridgeType = cartridgeContext.getType();
-    		 String subscriptionAlias = cartridgeContext.getSubscribableInfoContext().getAlias();
+             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+             String subscriptionAlias = subscribableInfoContext.getAlias();
 
 
     		 // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
-             CartridgeInfo cartridgeInfo =  getCartridge(cartridgeType);
+             CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
              if (cartridgeInfo == null) {
                  handleError("No deployed Cartridge found with type [ " + cartridgeType +
                          " ] for Composite Application");
@@ -282,8 +284,8 @@ public class DefaultApplicationParser implements ApplicationParser {
              String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
              String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
              String repoUrl = null;
-             if(cartridgeContext.getSubscribableInfoContext().getArtifactRepositoryContext() != null) {
-                 repoUrl = cartridgeContext.getSubscribableInfoContext().getArtifactRepositoryContext().getRepoUrl();
+             if(subscribableInfoContext.getArtifactRepositoryContext() != null) {
+                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
              }
 
 		     // add relevant information to the map
@@ -306,21 +308,23 @@ public class DefaultApplicationParser implements ApplicationParser {
 						     }
 					     }
 		    		 }
-		    		 
 		    	 }
 			}
 		     String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
 		     arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
 
+             // Find tenant range of cluster
+             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridgeInfo.getTenantPartitions());
+
 		     // create and collect this cluster's information
              ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                      key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
-                     cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy(), false,
-                     cartridgeContext.getSubscribableInfoContext().getDependencyAliases(),
-                     cartridgeContext.getSubscribableInfoContext().getProperties(), arrDependencyClusterIDs);
+                     subscribableInfoContext.getDeploymentPolicy(), false,
+                     tenantRange, subscribableInfoContext.getDependencyAliases(),
+                     subscribableInfoContext.getProperties(), arrDependencyClusterIDs);
 
-             appClusterCtxt.setAutoscalePolicyName(cartridgeContext.getSubscribableInfoContext().getAutoscalingPolicy());
-             appClusterCtxt.setProperties(cartridgeContext.getSubscribableInfoContext().getProperties());
+             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
+             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
              this.applicationClusterContexts.add(appClusterCtxt);
 
 		     // add relevant information to the map
@@ -335,7 +339,7 @@ public class DefaultApplicationParser implements ApplicationParser {
          return completeDataHolder;
     }
 
-	/**
+    /**
      * Validates terminationBehavior. The terminationBehavior should be one of the following:
      *      1. terminate-none
      *      2. terminate-dependents
@@ -681,7 +685,8 @@ public class DefaultApplicationParser implements ApplicationParser {
     private ApplicationClusterContext createApplicationClusterContext (String appId, String groupName, CartridgeInfo cartridgeInfo,
                                                                        String subscriptionKey, int tenantId, String repoUrl,
                                                                        String alias, String clusterId, String hostname,
-                                                                       String deploymentPolicy, boolean isLB, String[] dependencyAliases, Properties properties,String[] dependencyClustorIDs)
+                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
+                                                                       String[] dependencyAliases, Properties properties,String[] dependencyClustorIDs)
             throws ApplicationDefinitionException {
 
         // Create text payload
@@ -690,7 +695,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         String textPayload = payloadData.toString();
 		log.debug("Payload :: " + textPayload);
-        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB);
+        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange);
     }
 
     public String  createToken(String applicationId) throws AutoScalerException {

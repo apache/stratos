@@ -35,35 +35,21 @@ public class Cartridge implements Serializable{
     private static final long serialVersionUID = 6637409027085059072L;
 
 	private String type;
-    
     private String hostName;
-    
     private String provider;
-
 	private String category;
-    
     private String displayName;
-    
     private String description;
-    
     private String baseDir;
-    
     private String version;
-    
     private boolean multiTenant;
-    
+    private String tenantPartitions;
     private String defaultAutoscalingPolicy;
-
     private String defaultDeploymentPolicy;
-    
     private LoadbalancerConfig lbConfig;
-    
     private List<PortMapping> portMappings;
-    
     private Persistence persistence;
-    
     private List<AppType> appTypeMappings;
-    
     private String serviceGroup;
 
     /**
@@ -75,11 +61,8 @@ public class Cartridge implements Serializable{
      * A Cartridge can have 1..n {@link IaasProvider}s
      */
     private List<IaasProvider> iaases;
-    
     private List<String> deploymentDirs;
-    
     private IaasProvider lastlyUsedIaas;
-
     private String[] exportingProperties;
 
     /**
@@ -109,6 +92,7 @@ public class Cartridge implements Serializable{
     	properties = new HashMap<String, String>();
     	iaases = new ArrayList<IaasProvider>();
     	deploymentDirs = new ArrayList<String>();
+        tenantPartitions = "*";
     }
 
     public String getType() {
@@ -389,4 +373,12 @@ public class Cartridge implements Serializable{
 	public void setCategory(String category) {
 		this.category = category;
 	}
+
+    public String getTenantPartitions() {
+        return tenantPartitions;
+    }
+
+    public void setTenantPartitions(String tenantPartitions) {
+        this.tenantPartitions = tenantPartitions;
+    }
 }
