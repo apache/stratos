@@ -94,8 +94,9 @@ public class CloudControllerServiceComponent {
                         ServiceReferenceHolder.getInstance().getHazelcastInstance()
                                 .getLock(CLOUD_CONTROLLER_COORDINATOR_LOCK).lock();
 
-                        log.info("Elected this member [" + ServiceReferenceHolder.getInstance().getHazelcastInstance()
-                                .getCluster().getLocalMember().getUuid() + "] " +
+                        String localMemberId = ServiceReferenceHolder.getInstance().getHazelcastInstance()
+                                .getCluster().getLocalMember().getUuid();
+                        log.info("Elected this member [" + localMemberId + "] " +
                                 "as the cloud controller coordinator for the cluster");
 
                         CloudControllerContext.getInstance().setCoordinator(true);
@@ -112,8 +113,8 @@ public class CloudControllerServiceComponent {
                 // Start mock members if they were in running state earlier
                 MockIaasService.getInstance().startMockMembers();
             }
-		} catch (Throwable e) {
-			log.error("******* Cloud Controller Service bundle is failed to activate ****", e);
+		} catch (Exception e) {
+			log.error("Could not activate cloud controller service component", e);
         }
     }
 

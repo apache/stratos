@@ -19,7 +19,9 @@
 
 package org.apache.stratos.manager.internal;
 
+import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -36,6 +38,8 @@ public class ServiceReferenceHolder {
     private static RealmService realmService;
     private static RegistryService registryService;
     private TaskService taskService;
+    private HazelcastInstance hazelcastInstance;
+    private AxisConfiguration axisConfiguration;
 
     private ServiceReferenceHolder() {       }
 
@@ -90,5 +94,21 @@ public class ServiceReferenceHolder {
 
     public TaskService getTaskService() {
         return taskService;
+    }
+
+    public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
+        this.hazelcastInstance = hazelcastInstance;
+    }
+
+    public HazelcastInstance getHazelcastInstance() {
+        return hazelcastInstance;
+    }
+
+    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
+        this.axisConfiguration = axisConfiguration;
+    }
+
+    public AxisConfiguration getAxisConfiguration() {
+        return axisConfiguration;
     }
 }
