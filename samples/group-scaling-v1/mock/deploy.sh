@@ -27,5 +27,5 @@ curl -X POST -H "Content-Type: application/json" -d @'artifacts/composite_applic
 
 sleep 3
 # Deploy application
-curl -X POST -H "Content-Type: application/json" -d@'artifacts/app_deployment_policy.json' -k -v -u admin:admin https://localhost:9443/api/application/appscaling/deploy
+curl -X POST -H "Content-Type: application/json" -d@'artifacts/app_deployment_policy.json' -k -v -u admin:admin https://localhost:9443/api/applications/appscaling/deploy
 
