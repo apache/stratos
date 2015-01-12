@@ -100,7 +100,7 @@ public class AutoscalerServerComponent {
 
                         AutoscalerContext.getInstance().setCoordinator(true);
                         try {
-                        	executeStartupTasks();
+                        	executeCoordinatorTasks();
                         } catch (Throwable e) {
                 			log.error("Error in activating the autoscaler component ", e);
                         }
@@ -109,7 +109,7 @@ public class AutoscalerServerComponent {
                 coordinatorElectorThread.setName("Autoscaler coordinator elector thread");
                 executorService.submit(coordinatorElectorThread);
             } else {
-            	executeStartupTasks();
+            	executeCoordinatorTasks();
             }
 
 			if (log.isInfoEnabled()) {
@@ -120,7 +120,7 @@ public class AutoscalerServerComponent {
 		}
 	}
 	
-	private void executeStartupTasks() throws Exception{
+	private void executeCoordinatorTasks() throws Exception{
 		
 		// Start topology receiver
 		asTopologyReceiver = new AutoscalerTopologyEventReceiver();

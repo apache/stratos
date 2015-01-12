@@ -124,7 +124,7 @@ public class CloudControllerServiceComponent {
         applicationEventReceiver.execute();
 
         if (log.isInfoEnabled()) {
-            log.info("Application Receiver thread started");
+            log.info("Application event receiver thread started");
         }
 
         clusterStatusTopicReceiver = new ClusterStatusTopicReceiver();
@@ -132,7 +132,7 @@ public class CloudControllerServiceComponent {
         clusterStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
-            log.info("Cluster status Receiver thread started");
+            log.info("Cluster status event receiver thread started");
         }
 
         instanceStatusTopicReceiver = new InstanceStatusTopicReceiver();
@@ -140,7 +140,7 @@ public class CloudControllerServiceComponent {
         instanceStatusTopicReceiver.execute();
 
         if (log.isInfoEnabled()) {
-            log.info("Instance status message receiver thread started");
+            log.info("Instance status event receiver thread started");
         }
 
         if (log.isInfoEnabled()) {
@@ -151,14 +151,14 @@ public class CloudControllerServiceComponent {
 
     protected void setTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
-            log.debug("Setting the Task Service");
+            log.debug("Setting the task service");
         }
         ServiceReferenceHolder.getInstance().setTaskService(taskService);
     }
 
     protected void unsetTaskService(TaskService taskService) {
         if (log.isDebugEnabled()) {
-            log.debug("Unsetting the Task Service");
+            log.debug("Un-setting the task service");
         }
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
