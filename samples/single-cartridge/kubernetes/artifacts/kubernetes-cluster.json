@@ -33,7 +33,7 @@
     "property":[
        {
           "name":"payload_parameter.MB_IP",
-          "value":"10.100.0.136"
+          "value":"172.17.8.1"
        },
        {
           "name":"payload_parameter.MB_PORT",
@@ -41,7 +41,7 @@
        },
        {
           "name":"payload_parameter.CEP_IP",
-          "value":"10.100.0.136"
+          "value":"172.17.8.1"
        },
        {
           "name":"payload_parameter.CEP_PORT",

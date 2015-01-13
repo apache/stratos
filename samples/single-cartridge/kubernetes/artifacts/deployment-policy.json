@@ -1,5 +1,4 @@
 {
-   "applicationId":"single-cartridge-app",
    "applicationPolicy":{
       "networkPartition":[
          {

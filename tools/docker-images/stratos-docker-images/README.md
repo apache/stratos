@@ -1,7 +1,7 @@
-stratos-docker
-==============
+Apache Stratos - Stratos Docker Images
+======================================
 
-docker images for installing stratos
+This folder contains docker image files for installing stratos.
 
 ### Building
 
