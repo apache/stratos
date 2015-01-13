@@ -37,7 +37,7 @@ public class ApplicationContext implements Serializable {
     private String description;
     private int tenantId;
     private String tenantDomain;
-    private String teantAdminUsername;
+    private String tenantAdminUsername;
     private ComponentContext componentContext;
     private Properties properties;
     private String status;
@@ -93,12 +93,12 @@ public class ApplicationContext implements Serializable {
         this.tenantDomain = tenantDomain;
     }
 
-    public String getTeantAdminUsername() {
-        return teantAdminUsername;
+    public String getTenantAdminUsername() {
+        return tenantAdminUsername;
     }
 
-    public void setTeantAdminUsername(String teantAdminUsername) {
-        this.teantAdminUsername = teantAdminUsername;
+    public void setTenantAdminUsername(String tenantAdminUsername) {
+        this.tenantAdminUsername = tenantAdminUsername;
     }
 
     public Properties getProperties() {
