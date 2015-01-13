@@ -62,7 +62,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mygroup1,cartridge.myc4"
+                "group.group1,cartridge.c4"
             ],
             "terminationBehaviour": "terminate-dependents"
         }
