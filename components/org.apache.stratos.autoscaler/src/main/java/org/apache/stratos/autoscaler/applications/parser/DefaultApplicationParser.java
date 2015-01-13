@@ -174,8 +174,8 @@ public class DefaultApplicationParser implements ApplicationParser {
         // set tenant related information
         application.setTenantId(applicationContext.getTenantId());
         application.setTenantDomain(applicationContext.getTenantDomain());
-        application.setTenantAdminUserName(applicationContext.getTeantAdminUsername());
-
+        application.setTenantAdminUserName(applicationContext.getTenantAdminUsername());
+te
         // following keeps track of all Clusters created for this application
         Map<String,Map<String, ClusterDataHolder>> clusterDataMap;
 
