@@ -787,7 +787,7 @@ public class StratosApiV41Utils {
         ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
         applicationContext.setTenantDomain(tenantDomain);
-        applicationContext.setTeantAdminUsername(userName);
+        applicationContext.setTenantAdminUsername(userName);
 
         if (appDefinition.getProperty() != null) {
             org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
