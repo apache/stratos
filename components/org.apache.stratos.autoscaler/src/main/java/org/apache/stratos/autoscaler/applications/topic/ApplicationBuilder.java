@@ -65,6 +65,11 @@ public class ApplicationBuilder {
         }
     }
 
+    /**
+     * Create application clusters in cloud controller and send application created event.
+     * @param application
+     * @param appClusterContexts
+     */
     public static synchronized void handleApplicationCreatedEvent(Application application,
                                                                   Set<ApplicationClusterContext> appClusterContexts) {
         if (log.isDebugEnabled()) {
