@@ -1,10 +1,10 @@
 #!/bin/sh 
 
 # Create autoscale policy
-curl -X POST -H "Content-Type: application/json" -d @'autoscale-policy.json' -k -v -u admin:admin https://localhost:9443/api/autoscalingPolicies
+curl -X POST -H "Content-Type: application/json" -d @'artifacts/autoscale-policy.json' -k -v -u admin:admin https://localhost:9443/api/autoscalingPolicies
 
 # Create tomcat cartridge
-curl -X POST -H "Content-Type: application/json" -d @'tomcat.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
+curl -X POST -H "Content-Type: application/json" -d @'artifacts/tomcat.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
 
 # Deploy tomcat1 cartride
 curl -X POST -H "Content-Type: application/json" -d @'artifacts/tomcat1.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
