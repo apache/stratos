@@ -24,7 +24,7 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.c1, group.group2"
+            "cartridge.c1,group.group2"
         ],
         "scalingDependants": [
             "cartridge.c1, group.group2"

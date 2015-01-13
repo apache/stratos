@@ -180,10 +180,10 @@ public class DependencyBuilder {
             for (ScalingDependentList dependentList : component.getDependencyOrder().getScalingDependents()) {
                 List<String> scalingDependencies = new ArrayList<String>();
                 for (String string : dependentList.getScalingDependentListComponents()) {
-                    if (string.startsWith(Constants.GROUP + ".")) {
+                    if (string.trim().startsWith(Constants.GROUP + ".")) {
                         //getting the group alias
                         scalingDependencies.add(getGroupFromStartupOrder(string));
-                    } else if (string.startsWith(Constants.CARTRIDGE + ".")) {
+                    } else if (string.trim().startsWith(Constants.CARTRIDGE + ".")) {
                         //getting the cluster alias
                         String id = getClusterFromStartupOrder(string);
                         //getting the cluster-id from cluster alias

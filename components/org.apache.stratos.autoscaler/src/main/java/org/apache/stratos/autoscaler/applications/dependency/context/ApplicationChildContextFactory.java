@@ -45,11 +45,11 @@ public class ApplicationChildContextFactory {
         String id;
         ApplicationChildContext applicationContext = null;
         boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
-        if (order.startsWith(Constants.GROUP + ".")) {
+        if (order.trim().startsWith(Constants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);
             applicationContext = getGroupChildContext(id, hasDependents);
-        } else if (order.startsWith(Constants.CARTRIDGE + ".")) {
+        } else if (order.trim().startsWith(Constants.CARTRIDGE + ".")) {
             //getting the cartridge type
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
