@@ -33,7 +33,7 @@
     <url>http://apache.org</url>
 
     <modules>
-        <module>stratos-docker-images</module>
+        <module>docker-images/stratos-docker-images</module>
     </modules>
 </project>
 
