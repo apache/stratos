@@ -542,8 +542,7 @@ public class StratosApiV41Utils {
         return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
-    public static DeploymentPolicyBean
-        getDeploymentPolicy(String applicationId) throws RestAPIException {
+    public static DeploymentPolicyBean getDeploymentPolicy(String applicationId) throws RestAPIException {
 
         try {
             AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -575,39 +574,6 @@ public class StratosApiV41Utils {
 
         return ObjectConverter.convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(partitionGroups);
     }
-
-//    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenant(ConfigurationContext configurationContext) {
-//
-//        Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
-//                getTenantId(configurationContext), null);
-//        ArrayList<org.apache.stratos.common.beans.topology.Cluster> clusters =
-//                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
-//        for (Cluster cluster : clusterSet) {
-//            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
-//        }
-//        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
-//                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
-//        arrCluster = clusters.toArray(arrCluster);
-//        return arrCluster;
-//
-//    }
-
-//    public static org.apache.stratos.common.beans.topology.Cluster[] getClustersForTenantAndCartridgeType(ConfigurationContext configurationContext,
-//                                                                                                                String cartridgeType) {
-//
-//        Set<Cluster> clusterSet = TopologyClusterInformationModel.getInstance().getClusters(ApplicationManagementUtil.
-//                getTenantId(configurationContext), cartridgeType);
-//        List<org.apache.stratos.common.beans.topology.Cluster> clusters =
-//                new ArrayList<org.apache.stratos.common.beans.topology.Cluster>();
-//        for (Cluster cluster : clusterSet) {
-//            clusters.add(ObjectConverter.convertClusterToClusterBean(cluster, null));
-//        }
-//        org.apache.stratos.common.beans.topology.Cluster[] arrCluster =
-//                new org.apache.stratos.common.beans.topology.Cluster[clusters.size()];
-//        arrCluster = clusters.toArray(arrCluster);
-//        return arrCluster;
-//
-//    }
 
     // Util methods for repo actions
 
@@ -983,23 +949,6 @@ public class StratosApiV41Utils {
         return applicationBeanList.toArray(new ApplicationInfoBean[applicationBeanList.size()]);
     }
 
-    /*public static ApplicationBean getApplicationRuntime(String applicationId) {
-        ApplicationBean applicationBean = null;
-        try {
-            ApplicationManager.acquireReadLockForApplication(applicationId);
-            Application application = ApplicationManager.getApplications().getApplication(applicationId);
-            if (application == null) {
-                return null;
-            }
-            applicationBean = ObjectConverter.convertApplicationToApplicationBean(application);
-            addClustersToApplicationBean(applicationBean, application);
-            addGroupsToApplicationBean(applicationBean, application);
-        } finally {
-            ApplicationManager.releaseReadLockForApplication(applicationId);
-        }
-        return applicationBean;
-    }*/
-
     public static ApplicationInfoBean getApplicationInstanceRuntime(String applicationId) {
         ApplicationInfoBean applicationBean = null;
         try {
@@ -1034,18 +983,6 @@ public class StratosApiV41Utils {
         }
 
     }
-
-//    private static void addClustersToApplicationBean(ApplicationBean applicationBean, Application application) {
-//        Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
-//        for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
-//            ClusterDataHolder clusterDataHolder = entry.getValue();
-//            String clusterId = clusterDataHolder.getClusterId();
-//            String serviceType = clusterDataHolder.getServiceType();
-//            TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-//            Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-//            applicationBean.getClusters().add(ObjectConverter.convertClusterToClusterBean(topLevelCluster, entry.getKey()));
-//        }
-//    }
 
     private static void addClustersInstancesToApplicationInstanceBean(
             ApplicationInstanceBean applicationInstanceBean,
