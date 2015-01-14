@@ -1577,6 +1577,7 @@ public class ObjectConverter {
 
         GroupBean servicegroupDef = new GroupBean();
         servicegroupDef.setName(serviceGroup.getName());
+        servicegroupDef.setGroupScalingEnabled(serviceGroup.getGroupscalingEnabled());
         String[] cartridges = serviceGroup.getCartridges();
         ServiceGroup[] groups = serviceGroup.getGroups();
         org.apache.stratos.autoscaler.stub.pojo.Dependencies deps = serviceGroup.getDependencies();
