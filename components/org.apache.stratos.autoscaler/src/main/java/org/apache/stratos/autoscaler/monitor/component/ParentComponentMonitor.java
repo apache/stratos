@@ -704,15 +704,15 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 				    }
 			    }
 		    }
-	    } else {
-		    if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
-			    pendingMonitorsList.add(context.getId());
-			    executorService.submit(new MonitorAdder(parent, context, this.appId, instanceIds));
-			    if (log.isDebugEnabled()) {
-				    log.debug(String.format("Monitor Adder has been added: [cluster] %s ", context.getId()));
-			    }
+	    }
+	    if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+		    pendingMonitorsList.add(context.getId());
+		    executorService.submit(new MonitorAdder(parent, context, this.appId, instanceIds));
+		    if (log.isDebugEnabled()) {
+			    log.debug(String.format("Monitor Adder has been added: [cluster] %s ", context.getId()));
 		    }
 	    }
+
     }
 
     public Map<String, Monitor> getAliasToActiveMonitorsMap() {
