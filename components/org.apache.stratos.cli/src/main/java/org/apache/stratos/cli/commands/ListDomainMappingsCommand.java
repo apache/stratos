@@ -16,72 +16,52 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.stratos.cli.Command;
-import org.apache.stratos.cli.CommandLineService;
+import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class AddDomainMappingCommand implements Command<StratosCommandContext> {
+public class ListDomainMappingsCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(AddDomainMappingCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListDomainMappingsCommand.class);
 
-	public AddDomainMappingCommand() {
+	public ListDomainMappingsCommand() {
 	}
 
-	@Override
 	public String getName() {
-		return CliConstants.ADD_DOMAIN_MAPPING_ACTION;
+		return "list-domain-mappings";
 	}
 
-	@Override
 	public String getDescription() {
-		return "Map domain for the subscribed cartridge";
+		return "List domain mappings";
 	}
 
-	@Override
 	public String getArgumentSyntax() {
-		return "[Cartridge alias] [Domain]";
+		return "[application-id]";
 	}
 
-	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+			logger.debug("Executing command: ", getName());
 		}
-		if (args != null && args.length == 2) {
-			String alias = args[0];
-			String domain = args[1];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Adding domain mapping {} for alias {}", domain, alias);
-			}
-
-			String domainToDisplay = null;
-
-			domainToDisplay = CommandLineService.getInstance().addDomainMapping(domain, alias);
-
-			if (StringUtils.isBlank(domainToDisplay)) {
-				System.out.println("Error adding domain mapping.");
-				return CliConstants.COMMAND_FAILED;
-			} else {
-				System.out.format("Your own domain is added. Please CNAME it to systems domain %s.%n", domainToDisplay);
-				return CliConstants.COMMAND_SUCCESSFULL;
-			}
-		} else {
+		if ((args == null) || (args.length == 0)) {
 			context.getStratosApplication().printUsage(getName());
 			return CliConstants.COMMAND_FAILED;
+		} else {
+			String applicationId = args[0];
+			RestCommandLineService.getInstance().listDomainMappings(applicationId);
+			return CliConstants.COMMAND_SUCCESSFULL;
 		}
 	}
 
-	@Override
 	public Options getOptions() {
 		return null;
 	}
-
 }

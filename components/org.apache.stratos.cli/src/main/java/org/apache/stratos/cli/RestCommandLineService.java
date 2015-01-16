@@ -36,15 +36,16 @@ import org.apache.stratos.cli.utils.CliUtils;
 import org.apache.stratos.cli.utils.RowMapper;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
+import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
+import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
-import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,6 +78,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups";
     private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications/{applicationId}/deploy";
 
+
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER= API_CONTEXT + "/kubernetesCluster/{id}";
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts/{id}";
     private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups/{id}";
@@ -92,6 +94,8 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
     private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/groups/{groupDefinitionName}";
     private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
+
+    private static final String ENDPOINT_DOMAIN_MAPPINGS = API_CONTEXT + "/applications/{applicationId}/domainMappings";
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
@@ -111,7 +115,6 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies";
-
 
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -846,6 +849,47 @@ public class RestCommandLineService {
             String message = "Could not list kubernetes hosts";
             printError(message, e);
         }
+    }
+
+    public void addDomainMappings(String resourceFileContent) {
+        restClient.deployEntity(ENDPOINT_DOMAIN_MAPPINGS, resourceFileContent, "domain mappings");
+    }
+
+    public void listDomainMappings(String applicationId) {
+        try {
+            Type listType = new TypeToken<ArrayList<DomainMappingBean>>() {
+            }.getType();
+            List<DomainMappingBean> list = (List<DomainMappingBean>) restClient.listEntity(
+                    ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId),
+                    listType, "domain mappings");
+            if ((list != null) && (list.size() > 0)) {
+                RowMapper<DomainMappingBean> rowMapper = new RowMapper<DomainMappingBean>() {
+                    public String[] getData(DomainMappingBean domainMappingBean) {
+                        String[] data = new String[3];
+                        data[0] = domainMappingBean.getCartridgeAlias();
+                        data[1] = domainMappingBean.getDomainName();
+                        data[2] = domainMappingBean.getContextPath();
+                        return data;
+                    }
+                };
+
+                DomainMappingBean[] array = new DomainMappingBean[list.size()];
+                array = list.toArray(array);
+                System.out.println("Domain mappings found in application: [application-id] " + applicationId);
+                CliUtils.printTable(array, rowMapper, "Cartridge Alias", "Domain Name", "Context Path");
+            } else {
+                System.out.println("No domain mappings found in application: [application-id] " + applicationId);
+                return;
+            }
+        } catch (Exception e) {
+            String message = "Could not list domain mappings in application: [application-id] " + applicationId;
+            printError(message, e);
+        }
+    }
+
+    public void removeDomainMappings(String applicationId) {
+        String endpoint = ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId);
+        restClient.undeployEntity(endpoint, "domain mappings", applicationId);
     }
 
     public void undeployKubernetesHost(String clusterId, String hostId) {
