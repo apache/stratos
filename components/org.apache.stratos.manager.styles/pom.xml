@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ui</artifactId>
-            <version>4.2.0</version>
+            <version>${wso2carbon.version}</version>
         </dependency>
 
         <dependency>
