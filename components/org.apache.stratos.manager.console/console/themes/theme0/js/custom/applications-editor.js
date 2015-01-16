@@ -563,9 +563,9 @@ var groupBlockTemplate = {
             "default":1,
             "required":false
         },
-        "isGroupScalingEnabled": {
+        "groupScalingEnabled": {
             "type":"boolean",
-            "id": "root/isGroupScalingEnabled",
+            "id": "root/groupScalingEnabled",
             "default": "false",
             "required":false
         }
@@ -577,7 +577,7 @@ var groupBlockDefault = {
     "alias":"group2alias",
     "groupMinInstances":1,
     "groupMaxInstances":2,
-    "isGroupScalingEnabled":"false"
+    "groupScalingEnabled":"false"
 };
 
 //create cartridge list
