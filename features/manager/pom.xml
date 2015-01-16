@@ -18,7 +18,8 @@
   ~ under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -35,11 +36,11 @@
     <url>http://apache.org</url>
 
     <modules>
-	<module>stratos-mgt</module>
+        <module>stratos-mgt</module>
         <module>common</module>
-<!--
-        <module>tenant-mgt</module>
--->
+        <!--
+                <module>tenant-mgt</module>
+        -->
         <module>gapp</module>
         <!--module>throttling</module-->
         <!--module>usage</module-->
@@ -54,12 +55,12 @@
 
     <properties>
         <stratos.version>2.1.0</stratos.version>
-	<synapse.version>2.1.0-wso2v6</synapse.version>
+        <synapse.version>2.1.0-wso2v6</synapse.version>
         <carbon.version>4.2.0</carbon.version>
         <quartz.wso2.version>2.1.1.wso2v1</quartz.wso2.version>
-	<carbon.p2.plugin.version>1.5</carbon.p2.plugin.version>
+        <carbon.p2.plugin.version>1.5</carbon.p2.plugin.version>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -77,17 +78,17 @@
                 <artifactId>org.wso2.carbon.redirector.servlet</artifactId>
                 <version>2.2.1</version>
             </dependency>
-            <dependency>
+            <!-- dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.redirector.servlet.ui</artifactId>
                 <version>2.2.0</version>
-            </dependency>
+            </dependency -->
             <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.common</artifactId>
                 <version>${project.version}</version>
-	    </dependency>
-	    <dependency>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.stratos.landing.page.deployer</artifactId>
                 <version>${stratos.version}</version>
@@ -102,7 +103,7 @@
                 <artifactId>org.apache.stratos.tenant.activity</artifactId>
                 <version>${project.version}</version>
             </dependency>
-	    <dependency>
+            <dependency>
                 <groupId>org.apache.stratos</groupId>
                 <artifactId>org.apache.stratos.throttling.agent.stub</artifactId>
                 <version>${project.version}</version>

@@ -17,7 +17,8 @@
   #  specific language governing permissions and limitations
   #  under the License.
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -32,48 +33,48 @@
     <url>http://apache.org</url>
     <description>This feature contains the bundles required for Front-end servlet functionality</description>
 
-        <dependencies>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.redirector.servlet.ui</artifactId>
-    		<version>2.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.sso.redirector.ui</artifactId>
-            	<version>2.2.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.wso2.carbon</groupId>
-                <artifactId>org.wso2.carbon.google.analytics.ui</artifactId>
-            </dependency>
-            <dependency>
-            	<groupId>org.wso2.carbon</groupId>
-            	<artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
-            	<version>4.2.0</version>
-            </dependency>
-            <!--  Tenant Mgmt  -->
-            <dependency>
-            	<groupId>org.wso2.carbon</groupId>
-            	<artifactId>org.wso2.carbon.tenant.mgt.ui</artifactId>
-            	<version>2.2.0</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.apache.stratos</groupId>
-            	<artifactId>org.apache.stratos.common.stub</artifactId>
-            	<version>${project.version}</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.wso2.carbon</groupId>
-            	<artifactId>org.wso2.carbon.theme.mgt.ui</artifactId>
-            	<version>2.2.0</version>
-            </dependency>
-            <dependency>
-            	<groupId>org.wso2.carbon</groupId>
-            	<artifactId>org.wso2.carbon.theme.mgt.stub</artifactId>
-            	<version>4.2.0</version>
-            </dependency>
-        </dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.redirector.servlet.ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.sso.redirector.ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.google.analytics.ui</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.tenant.mgt.stub</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+        <!--  Tenant Mgmt  -->
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.tenant.mgt.ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.common.stub</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.theme.mgt.ui</artifactId>
+            <version>2.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.theme.mgt.stub</artifactId>
+            <version>4.2.0</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
@@ -93,25 +94,27 @@
                             <adviceFile>
                                 <properties>
                                     <propertyDef>org.wso2.carbon.p2.category.type:console</propertyDef>
-				    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
+                                    <propertyDef>org.eclipse.equinox.p2.type.group:false</propertyDef>
                                 </properties>
                             </adviceFile>
                             <bundles>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet.ui</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet.stub:4.2.0</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.redirector.servlet.stub:4.2.0</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.sso.redirector.ui</bundleDef>
                                 <bundleDef>org.wso2.carbon:org.wso2.carbon.google.analytics.ui</bundleDef>
-                            	
-                            	<!-- Tenant Mgmt-->
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>
-				<bundleDef>org.apache.stratos:org.apache.stratos.common.stub</bundleDef>
-				<bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub</bundleDef>
-                            	<!-- Tenant Mgmt End-->
-                            	                            
+
+                                <!-- Tenant Mgmt-->
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.ui</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.common.stub</bundleDef>
+                                <bundleDef>org.wso2.carbon:org.wso2.carbon.tenant.mgt.stub</bundleDef>
+                                <!-- Tenant Mgmt End-->
+
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.ui:${wso2carbon.version}</importFeatureDef>
-                                <importFeatureDef>org.wso2.carbon.identity.authenticator.saml2.sso.ui:${wso2carbon.version}</importFeatureDef>
+                                <importFeatureDef>
+                                    org.wso2.carbon.identity.authenticator.saml2.sso.ui:${wso2carbon.version}
+                                </importFeatureDef>
                             </importFeatures>
                         </configuration>
                     </execution>

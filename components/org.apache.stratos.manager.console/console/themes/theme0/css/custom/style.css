@@ -226,3 +226,14 @@
     -webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.05);
     box-shadow: inset 0 0px 0px rgba(0,0,0,.05);
 }
+
+.hide-pass{
+    float: right;
+    margin-top: -27px;
+    margin-right: 7px;
+    cursor: pointer;
+}
+
+.hide-pass>i{
+    font-size: 1.5em;
+}

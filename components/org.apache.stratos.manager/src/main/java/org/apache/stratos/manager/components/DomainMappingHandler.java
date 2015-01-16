@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.exception.DomainMappingException;
 import org.apache.stratos.manager.messaging.publisher.DomainMappingEventPublisher;
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 
 import java.util.ArrayList;
 import java.util.Iterator;

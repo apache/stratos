@@ -29,7 +29,7 @@ import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
 import org.apache.stratos.manager.exception.DomainMappingException;
 import org.apache.stratos.manager.services.StratosManagerService;
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 
 /**
  * Stratos manager service implementation.

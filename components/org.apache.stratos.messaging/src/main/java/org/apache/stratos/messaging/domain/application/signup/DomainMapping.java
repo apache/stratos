@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.domain.mapping;
+package org.apache.stratos.messaging.domain.application.signup;
 
 import java.io.Serializable;
 
@@ -28,22 +28,12 @@ public class DomainMapping implements Serializable {
 
     private static final long serialVersionUID = -3718485901172753504L;
 
-    private final int tenantId;
-    private final String applicationId;
-    private final String serviceName;
-    private final String clusterId;
-    private final String domainName;
-    private final String contextPath;
-
-    public DomainMapping(int tenantId, String applicationId, String serviceName, String clusterId,
-                         String domainName, String contextPath) {
-        this.tenantId = tenantId;
-        this.applicationId = applicationId;
-        this.serviceName = serviceName;
-        this.clusterId = clusterId;
-        this.domainName = domainName;
-        this.contextPath = contextPath;
-    }
+    private int tenantId;
+    private String applicationId;
+    private String serviceName;
+    private String clusterId;
+    private String domainName;
+    private String contextPath;
 
     public int getTenantId() {
         return tenantId;
@@ -67,5 +57,29 @@ public class DomainMapping implements Serializable {
 
     public String getContextPath() {
         return contextPath;
+    }
+
+    public void setTenantId(int tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public void setApplicationId(String applicationId) {
+        this.applicationId = applicationId;
+    }
+
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
+
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 }

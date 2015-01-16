@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.message.processor.domain.mapping;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
@@ -81,8 +81,15 @@ public class DomainMappingAddedMessageProcessor extends MessageProcessor {
 
                 try {
                     DomainMappingManager.acquireWriteLock();
-                    DomainMapping domainMapping = new DomainMapping(event.getTenantId(), event.getApplicationId(),
-                            event.getServiceName(), event.getClusterId(), event.getDomainName(), event.getContextPath());
+
+                    DomainMapping domainMapping = new DomainMapping();
+                    domainMapping.setTenantId(event.getTenantId());
+                    domainMapping.setApplicationId(event.getApplicationId());
+                    domainMapping.setServiceName(event.getServiceName());
+                    domainMapping.setClusterId(event.getClusterId());
+                    domainMapping.setDomainName(event.getDomainName());
+                    domainMapping.setContextPath(event.getContextPath());
+
                     DomainMappingManager.getInstance().addDomainMapping(domainMapping);
 
                     if (log.isInfoEnabled()) {

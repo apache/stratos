@@ -19,8 +19,6 @@
 
 package org.apache.stratos.messaging.domain.application.signup;
 
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
-
 import java.io.Serializable;
 import java.util.List;
 
