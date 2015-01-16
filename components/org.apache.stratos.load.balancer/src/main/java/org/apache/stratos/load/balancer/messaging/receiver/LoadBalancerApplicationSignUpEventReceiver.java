@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
-import org.apache.stratos.messaging.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
 import org.apache.stratos.messaging.listener.application.signup.CompleteApplicationSignUpsEventListener;

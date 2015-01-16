@@ -30,7 +30,7 @@ import org.apache.stratos.manager.service.stub.StratosManagerServiceArtifactDist
 import org.apache.stratos.manager.service.stub.StratosManagerServiceDomainMappingExceptionException;
 import org.apache.stratos.manager.service.stub.StratosManagerServiceStub;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
-import org.apache.stratos.manager.service.stub.domain.domain.mapping.DomainMapping;
+import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 
 import java.rmi.RemoteException;
 
