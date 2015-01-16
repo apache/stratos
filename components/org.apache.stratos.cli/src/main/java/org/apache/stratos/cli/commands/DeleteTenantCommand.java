@@ -37,7 +37,7 @@ public class DeleteTenantCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getDescription() {
-        return "Delete Tenant";
+        return "Remove Tenant";
     }
 
     @Override

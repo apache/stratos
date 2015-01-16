@@ -83,7 +83,7 @@ public class CliConstants {
     /**
      * Add application
      */
-    public static final String ADD_APPLICATION = "add-application";
+    public static final String ADD_APPLICATION = "create-application";
     
     /**
      * Add application signup
@@ -198,20 +198,20 @@ public class CliConstants {
     /**
      * Undeploy deployed service
      */
-    public static final String UNDEPLOY_SERVICE = "undeploy-service";
+    public static final String UNDEPLOY_SERVICE = "remove-service";
     /**
      * Undeploy cartridge definition
      */
-    public static final String UNDEPLOY_CARTRIDGE_DEFINITION = "undeploy-cartridge";
+    public static final String UNDEPLOY_CARTRIDGE_DEFINITION = "remove-cartridge";
     
     /**
      * Delete tenant
      */
-    public static final String DELETE_TENANT = "delete-tenant";
+    public static final String DELETE_TENANT = "remove-tenant";
     /**
      * Delete user
      */
-    public static final String DELETE_USER= "delete-user";
+    public static final String DELETE_USER= "remove-user";
     /**
      * Deactivate tenant
      */
@@ -244,12 +244,12 @@ public class CliConstants {
 	/**
      * Delete application
      */
-    public static final String DELETE_APPLICATION= "delete-application";
+    public static final String DELETE_APPLICATION= "remove-application";
     
     /**
      * Delete application signup
      */
-    public static final String DELETE_APPLICATION_SIGNUP= "delete-application-signup";
+    public static final String DELETE_APPLICATION_SIGNUP= "remove-application-signup";
 
 	/**
 	 * Exit action

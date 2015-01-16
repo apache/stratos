@@ -49,12 +49,12 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getName() {
-        return "deploy-application";
+        return "remove-application";
     }
 
     @Override
     public String getDescription() {
-        return "Deploy application";
+        return "remove application";
     }
 
     @Override

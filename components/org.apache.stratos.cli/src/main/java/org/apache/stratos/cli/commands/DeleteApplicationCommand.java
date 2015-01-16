@@ -37,7 +37,7 @@ public class DeleteApplicationCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getDescription() {
-        return "Delete Application";
+        return "Remove Application";
     }
 
     @Override

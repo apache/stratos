@@ -40,17 +40,17 @@ public class UndeployServiceGroupCommand implements Command<StratosCommandContex
 
     @Override
     public String getName() {
-        return "undeploy-service-group";
+        return "remove-cartridge-group";
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy service group";
+        return "Remove cartridge group";
     }
 
     @Override
     public String getArgumentSyntax() {
-        return "[service-group-name]";
+        return "[cartridge-group-name]";
     }
 
     @Override

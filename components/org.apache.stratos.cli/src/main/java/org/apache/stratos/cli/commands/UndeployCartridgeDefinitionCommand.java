@@ -37,7 +37,7 @@ public class UndeployCartridgeDefinitionCommand implements Command<StratosComman
 
     @Override
     public String getDescription() {
-        return "Undeploy cartridge definition";
+        return "Remove cartridge definition";
     }
 
     @Override
@@ -58,7 +58,7 @@ public class UndeployCartridgeDefinitionCommand implements Command<StratosComman
 		if (args != null && args.length == 1) {
 			String id = args[0];
 			if (logger.isDebugEnabled()) {
-				logger.debug("Getting undeploy cartridge definition info {}", id);
+				logger.debug("Getting Remove cartridge definition info {}", id);
 			}
 			RestCommandLineService.getInstance().undeployCartrigdeDefinition(id);
 			return CliConstants.COMMAND_SUCCESSFULL;

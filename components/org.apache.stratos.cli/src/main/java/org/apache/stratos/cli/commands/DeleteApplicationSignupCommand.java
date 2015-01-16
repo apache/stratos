@@ -37,7 +37,7 @@ public class DeleteApplicationSignupCommand implements Command<StratosCommandCon
 
     @Override
     public String getDescription() {
-        return "Delete Application Signup";
+        return "Remove Application Signup";
     }
 
     @Override

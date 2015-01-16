@@ -40,12 +40,12 @@ public class UnDeployKubernetesClusterCommand implements Command<StratosCommandC
 
     @Override
     public String getName() {
-        return "undeploy-kubernetes-cluster";
+        return "remove-kubernetes-cluster";
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy kubernetes cluster";
+        return "Remove kubernetes cluster";
     }
 
     @Override

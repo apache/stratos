@@ -40,12 +40,12 @@ public class UndeployKubernetesHostCommand implements Command<StratosCommandCont
 
     @Override
     public String getName() {
-        return "undeploy-kubernetes-host";
+        return "remove-kubernetes-host";
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy kubernetes host";
+        return "Remove kubernetes host";
     }
 
     @Override
