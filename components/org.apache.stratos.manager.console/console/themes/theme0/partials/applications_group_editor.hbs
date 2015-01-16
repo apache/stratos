@@ -1,0 +1,147 @@
+<div id="centered">
+    <div class="row title">
+        <div class="title-main text-center">
+            <h1>Create New Group</h1>
+        </div>
+    </div>
+    <div class='container' id='content'>
+        <div class='row'>
+            <div class='container text-center form-toolbar'>
+                <div class='col-md-5'>
+                    <div class="editor-button">
+
+                    </div>
+
+                </div>
+                <div class='col-md-7'>
+                    <button class='btn btn-info btn-lg pull-right' type='button' id='deploy'
+                            disabled="disabled" data-form='{{formContext}}'> Add {{formTitle}}</button>
+                    <button class='btn btn-default btn-lg pull-right button-gap' type='button'
+                            onclick='window.location.replace(document.referrer)'> Cancel</button>
+
+                </div>
+            </div>
+        </div>
+        <div class="left-side">
+            <div class="components">
+                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                    <div class="panel panel-default">
+                        <div class="panel-heading" role="tab" id="headingOne">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
+                                   aria-expanded="true" aria-controls="collapseOne">
+                                    Cartridges
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
+                             aria-labelledby="headingOne">
+                            <div class="panel-body component-section" id="cartridge-list">
+                                <!-- Automatic content will be added -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default ">
+                        <div class="panel-heading" role="tab" id="headingTwo">
+                            <h4 class="panel-title">
+                                <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
+                                   aria-expanded="false" aria-controls="collapseTwo">
+                                    Group Template
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
+                             aria-labelledby="headingTwo">
+                            <div class="panel-body component-section" id="group-list">
+                                <div class="block-group">Group</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="description" >
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Information</h3>
+                    </div>
+                    <div class="panel-body description-section">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="right-side">
+            <div class="app-creator">
+                <div class="reposition" data-toggle="tooltip" data-placement="left" title="Click to reposition nodes">
+                    <i class="fa fa-refresh fa-2x"></i>
+                </div>
+                <div id="whiteboard">
+                    <div id="group-base" class="stepnode input-false" data-type="group">
+                        Group
+                        <div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="app-details">
+                <div role="tabpanel app-details-tab" >
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#general" aria-controls="general" role="tab"
+                                                                  data-toggle="tab">Group Details</a></li>
+
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content app-details-tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="general">
+                            <button type="button" class="btn btn-primary" id="component-info-update" >Update</button>
+                            <div id="general-data"></div>
+<!--                            <div class="form-group">
+                                <label class="control-label" for="name">Group Name:</label>
+                                <input type="text" class="form-control level-root" placeholder="" id="name">
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label" for="isGroupScalingEnabled">Is Group Scaling Enabled:</label>
+                                <select class="form-control level-components" id="isGroupScalingEnabled">
+                                    <option value="true">True</option>
+                                    <option value="false">False</option>
+                                </select>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Dependencies</div>
+                                <div class="panel-body">
+                                    <div class="form-group">
+                                        <label class="control-label" for="alias">Startup Orders:</label>
+                                        <input type="text" class="form-control level-components" placeholder="" id="startupOrders">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="alias">Scaling Dependents:</label>
+                                        <input type="text" class="form-control level-components" placeholder="" id="scalingDependents">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label" for="alias">Termination Behaviour:</label>
+                                        <select class="form-control level-components" id="terminationBehaviour">
+                                            <option value="terminate-none">terminate-none</option>
+                                            <option value="terminate-dependents">terminate-dependents</option>
+                                            <option value="terminate-all">terminate-all</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>-->
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    //use for application generation;
+    var cartridgeList = {{{editorCartridges}}};
+</script>

@@ -112,6 +112,7 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
     var divRoot = $('<div>').attr({'id':cartridgeCounter+'-'+groupJSON.alias,'data-type':'group','data-ctype':groupJSON.alias})
         .text(groupJSON.alias)
         .addClass('input-false')
+        .addClass('application')
         .addClass('stepnode')
         .appendTo('#whiteboard');
     $(divRoot).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
@@ -135,7 +136,9 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .addClass('input-false')
                 .addClass('stepnode')
                 .appendTo('#whiteboard');
+
             $(divCartridge).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
+
             jsPlumb.addEndpoint($(divCartridge), {
                 anchor: "TopCenter"
             }, generatedCartridgeEndpointOptions);
@@ -161,7 +164,9 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .addClass('stepnode')
                 .addClass('input-false')
                 .appendTo('#whiteboard');
+
             $(divGroup).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
+
             jsPlumb.addEndpoint($(divGroup), {
                 anchor:"BottomCenter"
             }, bottomConnectorOptions);
@@ -202,9 +207,177 @@ jsPlumb.bind("ready", function() {
     dagrePosition();
 });
 
+//use to activate tab
+function activateTab(tab){
+    $('.nav-tabs a[href="#' + tab + '"]').tab('show');
+};
 
+var applicationPolicyTemplate = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "root",
+    "type": "object",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "properties": {
+        "applicationId": {
+            "id": "root/applicationId",
+            "type": "string",
+            "title":"Application Id"
+        },
+        "applicationPolicy": {
+            "id": "root/applicationPolicy",
+            "type": "object",
+            "options": {
+                "disable_properties": true,
+                "disable_collapse": true
+            },
+            "properties": {
+                "networkPartition": {
+                    "id": "root/applicationPolicy/networkPartition",
+                    "type": "array",
+                    "items": {
+                        "id": "root/applicationPolicy/networkPartition/0",
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "id": "root/applicationPolicy/networkPartition/0/id",
+                                "type": "string"
+                            },
+                            "activeByDefault": {
+                                "id": "root/applicationPolicy/networkPartition/0/activeByDefault",
+                                "type": "boolean"
+                            },
+                            "partitions": {
+                                "id": "root/applicationPolicy/networkPartition/0/partitions",
+                                "type": "array",
+                                "items": {
+                                    "id": "root/applicationPolicy/networkPartition/0/partitions/0",
+                                    "type": "object",
+                                    "properties": {
+                                        "id": {
+                                            "id": "root/applicationPolicy/networkPartition/0/partitions/0/id",
+                                            "type": "string"
+                                        },
+                                        "provider": {
+                                            "id": "root/applicationPolicy/networkPartition/0/partitions/0/provider",
+                                            "type": "string"
+                                        },
+                                        "property": {
+                                            "id": "root/applicationPolicy/networkPartition/0/partitions/0/property",
+                                            "type": "array",
+                                            "items": {
+                                                "id": "root/applicationPolicy/networkPartition/0/partitions/0/property/0",
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "id": "root/applicationPolicy/networkPartition/0/partitions/0/property/0/name",
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "id": "root/applicationPolicy/networkPartition/0/partitions/0/property/0/value",
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+};
+
+var applicationPolicyDefault = {
+    "applicationId": "app_cartridge_v1",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "openstack_R1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "mock",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "RegionOne"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+};
 // Document ready events
 $(document).ready(function(){
+
+    //*******************Adding JSON editor *************//
+    JSONEditor.defaults.theme = 'bootstrap3';
+    JSONEditor.defaults.iconlib = 'fontawesome4';
+    JSONEditor.defaults.show_errors = "always";
+    var applicationPolicyEditor, childPolicyEditor;
+
+/*    applicationPolicyDefault['applicationId']= applicationJSON.applicationId;
+
+    applicationPolicyEditor = new JSONEditor(document.getElementById('deploy-ui'), {
+        ajax: false,
+        disable_edit_json: true,
+        schema: applicationPolicyTemplate,
+        format: "grid",
+        startval: applicationPolicyDefault
+    });
+    applicationPolicyEditor.getEditor('root.applicationId').disable();*/
+
+    $('#whiteboard').on('click', '.stepnode', function(){
+        tabData($(this));
+        treeActivation($(this));
+    });
+
+    function tabData(node){
+        //get tab activated
+        if(node.hasClass( "application" )){
+            activateTab('general');
+        }else{
+            activateTab('components');
+        }
+
+    }
+
+    function treeActivation(node){
+        var treePath = jsPlumb.getAllConnections();
+
+        for (var i = 0; i < treePath.length; i++) {
+            var nodeitem = treePath[i];
+            var nodeid = node.attr('id');
+            if(nodeitem.source.id == nodeid){
+                $('#'+nodeitem.target.id).addClass('stepnode-disable');
+            }else if(nodeitem.target.id == nodeid){
+                $('#'+nodeitem.source.id).addClass('stepnode-disable');
+            }
+        }
+
+    }
+
+    function generateHtmlBlock(schema, startval){
+        // Initialize the editor
+        childPolicyEditor = new JSONEditor(document.getElementById('component-data'), {
+            ajax: false,
+            disable_edit_json: true,
+            schema: schema,
+            format: "grid",
+            startval: startval
+        });
+
+    }
+
     //trigger deploy button
     $('#deploy').click(function(){
         var deployjson = $('textarea#deployjsonedit').val();
@@ -233,4 +406,6 @@ $(document).ready(function(){
             });
 
     });
+
+
 });

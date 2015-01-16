@@ -20,6 +20,7 @@
         "adminPassword": {
             "type":"string",
             "id": "root/adminPassword",
+            "format":"password",
             "default": "admin123",
             "title": "Admin user password",
             "name": "Admin user password"

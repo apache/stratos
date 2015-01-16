@@ -1,5 +1,5 @@
 {
-    "groupId": "KubGrp1",
+    "clusterId": "KubGrp1",
     "description": "Kubernetes CoreOS cluster on EC2 ",
     "kubernetesMaster": {
         "hostId": "KubHostMaster1",

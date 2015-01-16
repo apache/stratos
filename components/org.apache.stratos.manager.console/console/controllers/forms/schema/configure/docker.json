@@ -11,9 +11,9 @@
             "default": "Kubernetes CoreOS cluster on EC2 ",
             "required":false
         },
-        "groupId": {
+        "clusterId": {
             "type":"string",
-            "id": "root/groupId",
+            "id": "root/clusterId",
             "default": "KubGrp1",
             "required":false
         },

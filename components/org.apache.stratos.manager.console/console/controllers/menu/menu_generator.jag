@@ -30,6 +30,7 @@ var log = new Log("controller.menu_generator");
 function menuGenerator(context, jsonobject, permissions) {
     var menupermission,
             link='',
+            target = '_self',
             menu_html = '';
 
     if (permissions instanceof Array) {
@@ -40,10 +41,11 @@ function menuGenerator(context, jsonobject, permissions) {
             if (hasPermission.length > 0) {
                 if(jsonPermission.linkexternal){
                     link = jsonPermission.link;
+                    target = "_blank";
                 }else{
                     link = context + '/' + jsonPermission.link;
                 }
-                menu_html += '<li><a href="'+ link + '">' +
+                menu_html += '<li><a href="'+ link + '" target="'+target+'">' +
                         '<i class="fa ' + jsonPermission.icon + '"></i>' +
                         jsonPermission.title + '</a>';
                 if (jsonPermission.hasOwnProperty('sub-menu')) {
@@ -55,7 +57,7 @@ function menuGenerator(context, jsonobject, permissions) {
 
                         if (hasSubmenuPermission.length > 0) {
                             menu_html += '<li><a href="' + context + '/' + jsonSubmenuPermission.link +
-                                    '"><i class="fa ' + jsonSubmenuPermission.icon + '"></i>' + jsonSubmenuPermission.title + '</a></li>';
+                                    '" target="'+target+'"><i class="fa ' + jsonSubmenuPermission.icon + '"></i>' + jsonSubmenuPermission.title + '</a></li>';
                         }
                     }
                     menu_html += '</ul></li>';

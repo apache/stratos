@@ -156,12 +156,16 @@
 
                             <div class="toggle-menu-description">{{description}} </div>
                             <div class="list-button" style="display: none;">
+                                <button class="btn btn-danger btn-lg hover-delete-group" type="button"
+                                        id="{{name}}"> Delete</button>
                                 <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
                                         data-url="{{url ""}}/applications/groups/{{name}}/" > Details
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-delete-group" type="button"
+                                            id="{{name}}"> Delete</button>
                                     <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
                                             data-url="{{url ""}}/applications/groups/{{name}}/" > Details
                                     </button>
@@ -358,6 +362,49 @@
             buttons: [
                 {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
                     var formtype = 'deleteapplication';
+                    $noty.close();
+
+                    $.ajax({
+                        type: "POST",
+                        url: caramel.context + "/controllers/applications/application_requests.jag",
+                        dataType: 'json',
+                        data: { "formPayload": payload, "formtype": formtype },
+                        success: function (data) {
+                            if (data.status == 'error') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                            } else if (data.status == 'warning') {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                            } else {
+                                var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                            }
+                            window.setTimeout(function(){
+                                location.reload();
+                            }, 1000);
+                        }
+                    }).always(function () {
+
+                    });
+
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+    });
+
+    $('.general-table').on('click', '.hover-delete-group', function (event) {
+
+        var payload =$(this).attr("id");
+        noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text: 'Are you sure you want to delete group: <strong>'+$(this).attr("id") + "</strong> ?",
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    var formtype = 'deletegroups';
                     $noty.close();
 
                     $.ajax({

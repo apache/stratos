@@ -49,81 +49,86 @@ if (!elements) {
     if (elements.action != 'new') {
         isEdit = true;
     }
+    //load schema files to JSON editor
+    try {
+        var formData = require('controllers/forms/schema/configure/' + elements.formtype + '.json'),
+                formDataRaw = require('controllers/forms/default/configure/' + elements.formtype + '.json'),
+                formTitle = formData.title,
+                buttonText = formData.name;
+    } catch (e) {
+            log.error(e.message);
+            error.push({"errorMessage": e.message});
+    }
+
 }
 
-try {
-    var formData = require('controllers/forms/schema/configure/' + elements.formtype + '.json'),
-            formDataRaw = require('controllers/forms/default/configure/' + elements.formtype + '.json'),
-            formTitle = formData.title,
-            buttonText = formData.name;
-} catch (e) {
-    log.error(e.message);
-    error.push({"errorMessage": e.message});
-}
+//get data for listing pages
+if(isEdit == false && elements.action != 'new') {
+    var formtype = elements.formtype;
 
-//get the title for view option
-if (elements.action != 'new' && isEdit) {
-    formTitle = formData.title + ' Details - ' + elements.action;
-}
+    switch (formtype) {
 
-var formtype = elements.formtype;
-
-switch (formtype) {
-
-    case "autoscalingpolicies":
-        list_data = util.RESTCalls.getPolicyAutoScale();
-        if (list_data && list_data.length === 0) {
-            list_data = null;
-        }else{
-            formDataEdit = list_data;
-            for (specNumber in list_data) {
-                if (list_data[specNumber].id == elements.action) {
-                    formDataEdit = list_data[specNumber];
-                }
-
+        case "autoscalingpolicies":
+            formTitle = "Auto-scaling Policie",
+                    buttonText = "Auto-scaling Policy";
+            list_data = util.RESTCalls.getPolicyAutoScales();
+            if (list_data && list_data.length === 0) {
+                list_data = null;
             }
-        }
-        break;
+            break;
 
-    case "cartridges":
-        list_data = util.RESTCalls.getCartridges();
-        if (list_data && list_data.length === 0) {
-            list_data = null;
-        } else{
-            formDataEdit = list_data;
-            for (specNumber in list_data) {
-                if (list_data[specNumber].type == elements.action) {
-                    formDataEdit = list_data[specNumber];
-                }
-
+        case "cartridges":
+            formTitle = "Cartridge",
+                    buttonText = "Cartridge";
+            list_data = util.RESTCalls.getCartridges();
+            if (list_data && list_data.length === 0) {
+                list_data = null;
             }
-        }
-        break;
+            break;
 
-    case "docker":
-        list_data = util.RESTCalls.getKubernetesClusters();
-        if(list_data == null){
-            list_data = null; //TODO endpoint doesn't return correct info
-        }else{
-            formDataEdit = list_data.kubernetesCluster;
-            for (specNumber in list_data) {
-                if (list_data[specNumber].groupId == elements.action) {
-                    formDataEdit = list_data[specNumber];
-                }
-
+        case "docker":
+            formTitle = "Docker Cluster",
+                    buttonText = "Docker Cluster";
+            list_data = util.RESTCalls.getKubernetesClusters();
+            if (list_data == null) {
+                list_data = null; //TODO endpoint doesn't return correct info
             }
-        }
-        break;
+            break;
 
-    default:
-        error.push({"errorMessage":"Incorrect resource path found"});
+        default:
+            error.push({"errorMessage": "Incorrect resource path found"});
 
-}
+    }
 
 //check user has permission to access endpoints
-if (list_data != null && list_data.hasOwnProperty('Error')) {
-    error.push(list_data.Error);
+    if (list_data != null && list_data.hasOwnProperty('Error')) {
+        error.push(list_data.Error);
+    }
+
 }
+
+//get the detail view for each listing
+if (elements.action != 'new' && isEdit) {
+    formTitle = formData.title + ' Details - ' + elements.action;
+
+    var formtype = elements.formtype,
+            id = escape(elements.action);
+
+    switch (formtype) {
+        case "autoscalingpolicies":
+            formDataEdit = util.RESTCalls.getPolicyAutoScale(id);
+            break;
+
+        case "cartridges":
+            formDataEdit = util.RESTCalls.getCartridge(id);
+            break;
+
+        case "docker":
+            formDataEdit = util.RESTCalls.getKubernetesCluster(id);
+            break;
+    }
+}
+
 
 var caramelData = {
     breadcrumbPathLevelOne: breadcrumbPathLevelOne,

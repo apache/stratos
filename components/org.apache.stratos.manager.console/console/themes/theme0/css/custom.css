@@ -192,6 +192,6 @@ a.btn:hover {
     margin-top: 0.7em;
 }
 
-button.hover-unsubscribe, button.hover-details, button.hover-delete, button.hover-undeploy{
+button.hover-unsubscribe, button.hover-details, button.hover-delete,button.hover-delete-group, button.hover-undeploy{
     margin-top: .7em;
 }

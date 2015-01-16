@@ -18,7 +18,7 @@
                 <div class='row'>
                     <div class='container text-center form-toolbar'>
                         {{#if isEdit}}
-                            <div class='col-md-4'><button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button></div>
+                            <div class='col-md-1'><button class='btn btn-default btn-lg' type='button' onclick='window.location.replace(document.referrer)'> Back</button></div>
                         {{else}}
                         <div class='col-md-5'>
                             <div class="editor-button">
@@ -30,7 +30,7 @@
 
                         </div>
                         <div class='col-md-7'>
-                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form='{{formContext}}'> Deploy {{formTitle}}</button>
+                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form='{{formContext}}'> Add {{formTitle}}</button>
                             <button class='btn btn-default btn-lg pull-right button-gap' type='button' onclick='window.location.replace(document.referrer)'> Cancel</button>
 
                         </div>
@@ -97,18 +97,18 @@
                             <div class="toggle-menu-icon">
                                 <i class="fa fa-gears "></i>
                             </div>
-                            <h2 class="truncate">{{groupId}} </h2>
+                            <h2 class="truncate">{{clusterId}} </h2>
 
                             <div class="toggle-menu-description">{{description}}</div>
                             <div class="list-button" style="display: none;">
                                 <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                        data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
+                                        data-url="{{url ""}}/configure/docker/{{clusterId}}/" > Details
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
                                     <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
-                                            data-url="{{url ""}}/configure/docker/{{groupId}}/" > Details
+                                            data-url="{{url ""}}/configure/docker/{{clusterId}}/" > Details
                                     </button>
                                 </div>
                             </div>
@@ -313,7 +313,7 @@
             var payload = editor.getValue();
             var btn = $(this);
             var formtype = '{{formContext}}';
-                    btn.html("<i class='fa fa-spinner fa-spin'></i> Deploying...");
+                    btn.html("<i class='fa fa-spinner fa-spin'></i> Adding...");
             $.ajax({
                 type: "POST",
                 url: caramel.context + "/controllers/configure/configure_requests.jag",
@@ -330,7 +330,7 @@
                 }
             })
                     .always(function () {
-                        btn.html('Deploy');
+                        btn.html('Add' + '{{formTitle}}');
                     });
 
         });//end of deploy button trigger

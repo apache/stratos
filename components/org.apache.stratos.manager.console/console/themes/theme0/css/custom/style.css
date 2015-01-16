@@ -219,3 +219,10 @@
 .editor-button{margin-top: 0.4em;font-size: 18px;}
 
 .auto-correct{display: none}
+
+.well {
+    border: none !important;
+    border-radius: 0px !important;
+    -webkit-box-shadow: inset 0 0px 0px rgba(0,0,0,.05);
+    box-shadow: inset 0 0px 0px rgba(0,0,0,.05);
+}

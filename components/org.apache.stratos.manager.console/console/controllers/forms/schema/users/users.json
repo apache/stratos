@@ -2,7 +2,7 @@
     "type":"object",
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "root",
-    "title": "Users",
+    "title": "User",
     "options": {
         "disable_properties": true,
         "disable_collapse": true
@@ -14,11 +14,15 @@
             "id": "root/userName",
             "title": "User Name",
             "name": "User Name",
+            "minLength":4,
+            "required":true,
             "default": ""
         },
         "credential": {
             "type":"string",
             "id": "root/credential",
+            "minLength":6,
+            "format":"password",
             "title": "Password",
             "name": "Password",
             "default": ""

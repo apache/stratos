@@ -1,3 +1,7 @@
+
+#general>div>h3{
+    display: none;
+}
 .left-side{
     float: left;
     width: 20%;
@@ -8,7 +12,7 @@
     width: 79%;
     margin-top:20px;
 }
-#applicationId{
+#group-base{
     left: 318px;
     top: 33px;
 }
@@ -77,7 +81,6 @@
     min-height: 300px;
     max-height: 400px;
 }
-
 .component-section{
     max-height: 200px;
     overflow: auto;
@@ -106,41 +109,20 @@
 
 }
 
-.node-disable{
-    background-color: #bdc3c7;
-}
-
-
-.node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 3px;
-}
-
-.node text { font: 12px sans-serif; }
-
-.link {
-    fill: none;
-    stroke: rgb(0, 0, 255);
-    stroke-width: 0.5px;
-}
-
 .input-false{
     background-color: #CCC;
     border-color: #ddd;
     border-width: 1px;
 }
 
-#component-data>div>h3{
-    display: none;
-}
-
 #component-info-update{
-    margin-top:-5px;margin-bottom: 20px;
+    margin-top: -5px;
+    margin-bottom: 20px;
     float: right;
+    z-index: 100;
+    position: relative;
 }
 
-#component-data{margin-top: 20px}
 .stepnode i {
     margin-top: 2px;
     color: #e67e22;

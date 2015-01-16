@@ -32,9 +32,8 @@ var log = new Log("apachestratos.applications_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
-        formDataEdit = topology_data = editorGroups = editorCartridges = '',
-        isEdit = applicationView = applicationEditor = isForm = false,
-        applicationDeploy = false,
+        formDataEdit = topologyData = editorGroups = editorCartridges = applicationHbs ='',
+        isEdit  = isForm = false,
         userPermissions = session.get('PERMISSIONS');
 
 //create left menu
@@ -46,27 +45,34 @@ if (!elements) {
 
     if(!elements){
         elements = uriMatcher.match('/{context}/applications/{formtype}/{applicationId}/{action}');
-        if(elements.action == 'view'){
+        var applicationName = elements.applicationId;
+        //get application json
+        var applicationJSON = util.RESTCalls.getApplicationJSON(applicationName);
 
+        if(elements.action == 'view'){
+            applicationHbs = 'applicationView';
         }else if(elements.action == 'deploy'){
-            var applicationName = elements.applicationId;
-            applicationDeploy = true;
-            //get application json
-            var applicationJSON = util.RESTCalls.getApplicationJSON(applicationName);
+            applicationHbs = 'applicationDeploy';
         }
 
     }else{
         isForm = true;
         if (elements.formtype == 'applications' && elements.action != 'new') {
-            applicationView = true;
-            topology_data = util.RESTCalls.getApplicationTopology(elements.action);
+
+            applicationHbs = 'applicationTopology';
+            topologyData = util.RESTCalls.getApplicationTopology(elements.action);
         }else if(elements.formtype == 'applications' && elements.action == 'new'){
-            applicationEditor = true;
+            applicationHbs = 'applicationEditor';
             editorGroups =  util.RESTCalls.getGroups();
             editorCartridges = util.RESTCalls.getCartridges();
-        }else  if(elements.action != 'new'){
+        }else  if(elements.formtype == 'groups' && elements.action == 'new'){
+            applicationHbs = 'applicationsGroupEditor';
+            editorCartridges = util.RESTCalls.getCartridges();
+        }else  if(elements.formtype == 'groups' && elements.action != 'new'){
             isEdit = true;
+
         }
+
     }
 
 }
@@ -103,21 +109,6 @@ switch (formtype) {
             list_data = null;
         }
         break;
-    case "deployments":
-        list_data = util.RESTCalls.getPolicyDeployment(); //TODO fix with correct JSON
-        if(list_data == null) {
-            list_data = null;
-        }else{
-            formDataEdit = list_data;
-            for (specNumber in list_data) {
-                if (list_data[specNumber].id == elements.action) {
-                    formDataEdit = list_data[specNumber];
-                }
-
-            }
-            //TODO need to add listing with corrected JSON
-        }
-        break;
     default:
         error.push({"errorMessage":"Incorrect resource path found"});
 }
@@ -128,12 +119,10 @@ var caramelData = {
     isForm: isForm,
     isEdit: isEdit,
     appName: elements.action,
-    topology_data: JSON.stringify(topology_data),
+    topologyData: JSON.stringify(topologyData),
     editorGroups: JSON.stringify(editorGroups),
     editorCartridges: JSON.stringify(editorCartridges),
-    applicationView: applicationView,
-    applicationEditor: applicationEditor,
-    applicationDeploy:applicationDeploy,
+    applicationHbs: applicationHbs,
     applicationName:applicationName,
     applicationJSON:JSON.stringify(applicationJSON),
     formTitle: formTitle,

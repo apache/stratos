@@ -16,6 +16,7 @@
             "id": "root/type",
             "title": "Type",
             "name": "Type",
+            "minLength":2,
             "default": "php",
             "propertyOrder": 1,
             "maxItems": 1
@@ -46,6 +47,7 @@
             "title": "Provider",
             "name": "Provider",
             "default": "apache",
+            "minLength":2,
             "propertyOrder": 3,
             "maxItems": 1
         },
@@ -56,6 +58,7 @@
             "name": "Host",
             "default": "stratos.org",
             "propertyOrder": 4,
+            "minLength":2,
             "maxItems": 1
         },
         "displayName": {
@@ -73,6 +76,7 @@
             "title": "Description",
             "name": "Description",
             "default": "LB Cartridge",
+            "minLength":5,
             "propertyOrder": 6,
             "maxItems": 1
         },

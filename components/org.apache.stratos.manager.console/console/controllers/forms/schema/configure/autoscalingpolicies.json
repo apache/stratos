@@ -2,8 +2,8 @@
     "type":"object",
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "root",
-    "title":"Auto Scaling Policy Definition",
-    "name": "Auto Scaling Policy",
+    "title":"Auto-scaling Policy Definition",
+    "name": "Auto-scaling Policy",
     "options": {
         "disable_properties": true,
         "disable_collapse": true

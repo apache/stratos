@@ -305,7 +305,7 @@ function generateGroupPreview(data) {
         links = tree.links(nodes);
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * 100; });
+    nodes.forEach(function(d) { d.y = d.depth * 60; });
 
     // Declare the nodesâ€¦
     var node = svg.selectAll("g.node")
@@ -317,8 +317,15 @@ function generateGroupPreview(data) {
         .attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")"; });
 
-    nodeEnter.append("circle")
-        .attr("r", 4)
+    nodeEnter.append("rect")
+        .attr("x", -10)
+        .attr("y", -10)
+        .attr("rx",2)
+        .attr("ry",2)
+        .attr("width", 20)
+        .attr("height", 20)
+        .attr("stroke-width", 1)
+        .attr("stroke", "silver")
         .style("fill", "#fff");
 
     nodeEnter.append("text")
@@ -339,46 +346,6 @@ function generateGroupPreview(data) {
         .attr("d", diagonal);
 
 }
-
-// ************* Add context menu for nodes ******************
-//remove nodes from workarea
-function deleteNode(endPoint){
-    if(endPoint.attr('id') != 'applicationId'){
-        var that=endPoint;      //get all of your DIV tags having endpoints
-        for (var i=0;i<that.length;i++) {
-            var endpoints = jsPlumb.getEndpoints($(that[i])); //get all endpoints of that DIV
-            for (var m=0;m<endpoints.length;m++) {
-                // if(endpoints[m].anchor.type=="TopCenter") //Endpoint on right side
-                jsPlumb.deleteEndpoint(endpoints[m]);  //remove endpoint
-            }
-        }
-        jsPlumb.detachAllConnections(endPoint);
-        endPoint.remove();
-    }
-
-}
-
-//genrate context menu for nodes
-$(function(){
-    /*$.contextMenu({
-        selector: '.stepnode',
-        callback: function(key, options) {
-            var m = "clicked: " + key + $(this);
-            if(key == 'delete'){
-                deleteNode($(this));
-            }else if(key == 'edit'){
-
-            }
-        },
-        items: {
-            "edit": {name: "Edit", icon: "edit"},
-            "delete": {name: "Delete", icon: "delete"},
-            "sep1": "---------",
-            "quit": {name: "Quit", icon: "quit"}
-        }
-    });*/
-
-});
 
 var applicationJson = {};
 //Definition JSON builder
@@ -616,15 +583,20 @@ var groupBlockDefault = {
 //create cartridge list
 var cartridgeListHtml='';
 function generateCartridges(data){
-    for(var cartridge in data){
-        var cartridgeData = data[cartridge];
-        cartridgeListHtml += '<div class="block-cartridge" ' +
-            'data-info="'+cartridgeData.description+ '"'+
-            'data-toggle="tooltip" data-placement="bottom" title="Single Click to view details. Double click to add"'+
-            'id="'+cartridgeData.type+'">'
-            + cartridgeData.displayName+
-            '</div>'
+    if(data.length == 0){
+        cartridgeListHtml = 'No Cartridges found..';
+    }else{
+        for(var cartridge in data){
+            var cartridgeData = data[cartridge];
+            cartridgeListHtml += '<div class="block-cartridge" ' +
+                'data-info="'+cartridgeData.description+ '"'+
+                'data-toggle="tooltip" data-placement="bottom" title="Single Click to view details. Double click to add"'+
+                'id="'+cartridgeData.type+'">'
+                + cartridgeData.displayName+
+                '</div>'
+        }
     }
+
     //append cartridge into html content
     $('#cartridge-list').append(cartridgeListHtml);
 }
@@ -632,13 +604,17 @@ function generateCartridges(data){
 //create group list
 var groupListHtml='';
 function generateGroups(data){
-    for(var group in data){
-        var groupData = data[group];
-        groupListHtml += '<div class="block-group" ' +
-            ' data-info="'+encodeURIComponent(JSON.stringify(groupData))+'"'+
-            'id="'+groupData.name+'">'
-            + groupData.name+
-            '</div>'
+    if(data.length == 0){
+        groupListHtml = 'No Groups found..';
+    }else {
+        for (var group in data) {
+            var groupData = data[group];
+            groupListHtml += '<div class="block-group" ' +
+                ' data-info="' + encodeURIComponent(JSON.stringify(groupData)) + '"' +
+                'id="' + groupData.name + '">'
+                + groupData.name +
+                '</div>'
+        }
     }
     //append cartridge into html content
     $('#group-list').append(groupListHtml);
@@ -666,7 +642,6 @@ function dagrePosition(){
 
     // Applying the calculated layout
     g.nodes().forEach(function(v) {
-        console.log(g.nodes(v).x)
         $("#" + v).css("left", g.node(v).x + "px");
         $("#" + v).css("top", g.node(v).y + "px");
     });
@@ -715,18 +690,22 @@ $(document).ready(function(){
     Repaint();
 
     $('#whiteboard').on('click', '.stepnode', function(){
+        tabData($(this));
+    });
+
+    function tabData(node){
         //get tab activated
-        if($(this).attr('id') == 'applicationId'){
+        if(node.attr('id') == 'applicationId'){
             activateTab('general');
         }else{
             activateTab('components');
             $('#component-info-update').prop("disabled", false);
         }
 
-        blockId = $(this).attr('id');
-        var blockType = $(this).attr('data-type');
+        blockId = node.attr('id');
+        var blockType = node.attr('data-type');
         var startval;
-        var ctype = $(this).attr('data-ctype');
+        var ctype = node.attr('data-ctype');
         if(blockType == 'cartridge' || blockType == 'group-cartridge'){
             startval = cartridgeBlockDefault;
             startval['type'] = ctype;
@@ -735,8 +714,8 @@ $(document).ready(function(){
             startval['name'] = ctype;
         }
 
-        if($(this).attr('data-generated')) {
-            startval = JSON.parse(decodeURIComponent($(this).attr('data-generated')));
+        if(node.attr('data-generated')) {
+            startval = JSON.parse(decodeURIComponent(node.attr('data-generated')));
         }
         $('#component-data').html('');
 
@@ -753,8 +732,7 @@ $(document).ready(function(){
                 generateHtmlBlock(cartridgeBlockTemplate, startval);
                 break;
         }
-
-    });
+    }
 
     function generateHtmlBlock(schema, startval){
         // Initialize the editor
@@ -822,9 +800,93 @@ $(document).ready(function(){
         dagrePosition();
     });
 
+    //genrate context menu for nodes
+    $.contextMenu({
+        selector: '.stepnode',
+        callback: function(key, options) {
+            var m = "clicked: " + key + $(this);
+            if(key == 'delete'){
+                deleteNode($(this));
+            }else if(key == 'edit'){
+                document.getElementById('component-data').scrollIntoView();
+                tabData($(this));
+            }
+        },
+        items: {
+            "edit": {name: "Edit", icon: "edit"},
+            "delete": {name: "Delete", icon: "delete"}
+        }
+    });
+
 });
 
 //bootstrap tooltip added
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
 })
+
+
+// ************* Add context menu for nodes ******************
+//remove nodes from workarea
+function deleteNode(endPoint){
+    if(endPoint.attr('id') != 'applicationId'){
+        var allnodes = $(".stepnode");
+        var superParent = endPoint.attr('id').split("-")[0]+endPoint.attr('id').split("-")[1];
+        var nodeName = endPoint.attr('data-ctype');
+        var nodeType = endPoint.attr('data-type');
+        var notyText = '';
+
+        if(nodeType == 'group'){
+            notyText = 'This will remove related nodes from the Editor. Are you sure you want to delete '
+                            +nodeType + ': '+nodeName+'?';
+        }else{
+            notyText = 'Are you sure you want to delete '+nodeType + ': '+nodeName+'?';
+        }
+        noty({
+            layout: 'bottomRight',
+            type: 'warning',
+            text:  notyText,
+            buttons: [
+                {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                    $noty.close();
+
+                    allnodes.each(function(){
+                        var currentId = $(this).attr('id').split("-")[0]+$(this).attr('id').split("-")[1];
+                        if(currentId == superParent){
+                            var that=$(this);      //get all of your DIV tags having endpoints
+                            for (var i=0;i<that.length;i++) {
+                                var endpoints = jsPlumb.getEndpoints($(that[i])); //get all endpoints of that DIV
+                                if(endpoints){
+                                    for (var m=0;m<endpoints.length;m++) {
+                                        // if(endpoints[m].anchor.type=="TopCenter") //Endpoint on right side
+                                        jsPlumb.deleteEndpoint(endpoints[m]);  //remove endpoint
+                                    }
+                                }
+
+                            }
+                            jsPlumb.detachAllConnections($(this));
+                            $(this).remove();
+                        }
+
+                    });
+
+                    //clear html area
+                    $('#component-data').html('');
+                    activateTab('general');
+                }
+                },
+                {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                    $noty.close();
+                }
+                }
+            ]
+        });
+
+
+
+    }else{
+        var n = noty({text: 'Sorry you can\'t remove application node' , layout: 'bottomRight', type: 'warning'});
+    }
+
+}
+

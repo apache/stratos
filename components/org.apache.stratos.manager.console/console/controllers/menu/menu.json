@@ -13,7 +13,7 @@
                     "link": "configure/autoscalingpolicies/",
                     "linkexternal": false,
                     "context": "/configure",
-                    "title": "Autoscaling Policies",
+                    "title": "Auto-scaling Policies",
                     "icon": "fa-expand",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/autoscalingpolicy"],
                     "description": "Define policies which specify inbound requests, memory usage and CPU usage etc."

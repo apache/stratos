@@ -3,7 +3,7 @@
         <div class="row title">
             <div class="title-main text-center">
                 {{#if isForm}}
-                    <h1>Add new {{formTitle}}</h1>
+                    <h1>Add New {{formTitle}}</h1>
                 {{else}}
                     <h1>{{formTitle}}</h1>
                 {{/if}}
@@ -15,7 +15,7 @@
                     <div class='container text-center form-toolbar'>
                         <div class='col-md-5'></div>
                         <div class='col-md-7 '>
-                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''> Add {{formContext}}</button>
+                            <button class='btn btn-info btn-lg pull-right' type='button' id='deploy' data-form=''> Add New {{formTitle}}</button>
                             <button class='btn btn-default btn-lg pull-right button-gap' type='button' onclick='window.location.replace(document.referrer)'> Cancel
                             </button>
                         </div>
@@ -34,7 +34,7 @@
 {{else}}
     <div class="row title">
         <div class="title-main text-center">
-            <h1>{{formTitle}}</h1>
+            <h1>{{formTitle}}s</h1>
         </div>
     </div>
     <div class="container content">
@@ -101,7 +101,7 @@
                             </div>
                             <h2>{{tenantDomain}} </h2>
 
-                            <div class="toggle-menu-description">{{email}} - {{createdDate}} </div>
+                            <div class="toggle-menu-description">{{email}} - {{#UnixConvert createdDate}}{{/UnixConvert}} </div>
                         </div>
                     {{/each}}
                 {{/ifCond}}
@@ -142,7 +142,13 @@
             editor.on('change', function () {
                 // Get an array of errors from the validator
                 var errors = editor.validate();
-                //       var indicator = document.getElementById('valid_indicator');
+                if (errors.length) {
+                    for (var i = 0; i < errors.length; i++) {
+                        var n = noty({text: errors[i].message + ' in ' + errors[i].path, layout: 'bottomRight',
+                            type: 'error', timeout: 2000});
+                    }
+
+                }
             });
 
         {{else}}
@@ -222,7 +228,7 @@
                 }
             })
                     .always(function () {
-                        btn.html('Add '+formtype);
+                        btn.html('Add New '+formtype);
                     });
         });//end of deploy button trigger
 
