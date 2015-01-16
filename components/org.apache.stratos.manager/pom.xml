@@ -18,66 +18,48 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-		<groupId>org.apache.stratos</groupId>
-		<artifactId>stratos-components-parent</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-components-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.apache.stratos.manager</artifactId>
-	<packaging>bundle</packaging>
-	<name>Apache Stratos - Manager</name>
-	<description>Stratos Manager (SM)</description>
-	<url>http://apache.org</url>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.stratos.manager</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Stratos - Manager</name>
+    <description>Stratos Manager (SM)</description>
+    <url>http://apache.org</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.registry.ws.client</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.wso2.carbon</groupId>
-			<artifactId>org.wso2.carbon.utils</artifactId>
-			<version>${wso2carbon.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.stratos</groupId>
-			<artifactId>org.apache.stratos.cartridge.agent.stub</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.tomcat.wso2</groupId>
-			<artifactId>jdbc-pool</artifactId>
-			<version>${version.tomcat}.wso2v1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.gitblit</groupId>
-			<artifactId>gitblit</artifactId>
-			<version>1.2.0.wso2v1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.ntask.core</artifactId>
+            <version>4.2.0</version>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.jgit</groupId>
-            <artifactId>org.eclipse.jgit</artifactId>
-            <version>2.1.0.wso2v1</version>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.utils</artifactId>
+            <version>${wso2carbon.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.49.wso2v1</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.cartridge.agent.stub</artifactId>
+            <version>${project.version}</version>
         </dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -93,73 +75,67 @@
             <artifactId>org.apache.stratos.messaging</artifactId>
             <version>${project.version}</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.tenant.mgt</artifactId>
             <version>2.2.2</version>
-            <scope>provided</scope>
         </dependency>
-         <dependency>
-		        <groupId>org.eclipse.paho</groupId>
-		        <artifactId>mqtt-client</artifactId>
-		        <version>0.4.0</version>
-   		 </dependency>
     </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-scr-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.felix</groupId>
-				<artifactId>maven-bundle-plugin</artifactId>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
 
-				<extensions>true</extensions>
-				<configuration>
-					<instructions>
-						<Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-						<Bundle-Name>${project.artifactId}</Bundle-Name>
-						<Private-Package>org.apache.stratos.manager.internal.*</Private-Package>
-						<Export-Package>
-							org.apache.stratos.manager.domain.*,
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Name>${project.artifactId}</Bundle-Name>
+                        <Private-Package>org.apache.stratos.manager.internal.*</Private-Package>
+                        <Export-Package>
+                            org.apache.stratos.manager.domain.*,
                             org.apache.stratos.manager.utils.*,
                             org.apache.stratos.manager.service.*,
                             org.apache.stratos.manager.*
                         </Export-Package>
-						<Import-Package>
-							org.apache.stratos.cloud.controller.registry.*; version="${project.version}",
-							org.apache.axis2.*; version="1.6.1-wso2v10",
-							org.apache.axiom.*; version="${axiom.osgi.version.range}",
-							org.apache.stratos.autoscaler.stub; version="${project.version}",
-							org.apache.neethi.*; version="2.0.4.wso2v4",
-							javax.xml.stream.*; version="1.0.1",
-							javax.wsdl.*; version="1.6.2",
-							org.osgi.framework.*,
-							*;resolution:=optional
-						</Import-Package>
-						<DynamicImport-Package>*</DynamicImport-Package>
-					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.axis2</groupId>
-				<artifactId>axis2-java2wsdl-maven-plugin</artifactId>
-				<version>1.6.1-wso2v10</version>
-				<configuration>
-					<className>org.apache.stratos.manager.services.impl.StratosManagerServiceImpl</className>
-					<outputFileName>target/generated-resources/wsdl/StratosManagerService.wsdl</outputFileName>
-					<serviceName>StratosManagerService</serviceName>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>java2wsdl</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
+                        <Import-Package>
+                            org.apache.stratos.cloud.controller.registry.*; version="${project.version}",
+                            org.apache.axis2.*; version="1.6.1-wso2v10",
+                            org.apache.axiom.*; version="${axiom.osgi.version.range}",
+                            org.apache.stratos.autoscaler.stub; version="${project.version}",
+                            org.apache.neethi.*; version="2.0.4.wso2v4",
+                            javax.xml.stream.*; version="1.0.1",
+                            javax.wsdl.*; version="1.6.2",
+                            org.osgi.framework.*,
+                            *;resolution:=optional
+                        </Import-Package>
+                        <DynamicImport-Package>*</DynamicImport-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+                <version>1.6.1-wso2v10</version>
+                <configuration>
+                    <className>org.apache.stratos.manager.services.impl.StratosManagerServiceImpl</className>
+                    <outputFileName>target/generated-resources/wsdl/StratosManagerService.wsdl</outputFileName>
+                    <serviceName>StratosManagerService</serviceName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java2wsdl</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
