@@ -89,7 +89,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mygroup8,cartridge.mytomcat,group.mygroup6"
+                "group.group8,cartridge.tomcat,group.group6"
             ],
             "terminationBehaviour": "terminate-all"
         }
