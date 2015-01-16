@@ -83,6 +83,12 @@ public class ApplicationChildContextFactory {
         return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
     }
 
+	/**
+	 * Get cluster child context
+	 * @param dataHolder Cluster Data holder
+	 * @param isKillDependent Whether is this a kill dependant or not
+	 * @return ApplicationChildContext
+	 */
     public static ApplicationChildContext getClusterChildContext(ClusterDataHolder dataHolder,
                                                        boolean isKillDependent) {
         ApplicationChildContext applicationContext;
@@ -92,6 +98,12 @@ public class ApplicationChildContextFactory {
         return  applicationContext;
     }
 
+	/**
+	 * Get the group child context
+	 * @param id ID of the group
+	 * @param isDependent Whether is this a dependant or not
+	 * @return ApplicationChildContext
+	 */
     public static ApplicationChildContext getGroupChildContext(String id, boolean isDependent) {
         ApplicationChildContext applicationContext;
         applicationContext = new GroupChildContext(id,
