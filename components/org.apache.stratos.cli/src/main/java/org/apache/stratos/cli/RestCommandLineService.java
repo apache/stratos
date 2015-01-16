@@ -46,6 +46,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
+import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,7 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenants";
     private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/users";
+    private static final String ENDPOINT_ADD_APPLICATION = API_CONTEXT + "/applications";
 
     private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
@@ -84,6 +86,8 @@ public class RestCommandLineService {
     private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/groups/{id}";
     private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/applications/{id}";
     private static final String ENDPOINT_UNDEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges/{id}";
+    
+    private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
 
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
@@ -112,6 +116,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_SYNCHRONIZE_ARTIFACTS = API_CONTEXT + "/repo/synchronize/{subscriptionAlias}";
     private static final String ENDPOINT_ACTIVATE_TENANT = API_CONTEXT + "/tenants/activate/{tenantDomain}";
     private static final String ENDPOINT_DEACTIVATE_TENANT = API_CONTEXT + "/tenants/deactivate/{tenantDomain}";
+    private static final String ENDPOINT_APPLICATION_SIGNUP = API_CONTEXT + "/applications/{applicationId}/signup";
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalePolicies";
@@ -673,18 +678,6 @@ public class RestCommandLineService {
         }
     }
 
-    /**
-     * Print error on console and log
-     * @param message
-     * @param e
-     */
-    private void printError(String message, Throwable e) {
-        // CLI console only get system output
-        System.out.println(message);
-        // Log error
-        log.error(message, e);
-    }
-
     public void listAutoscalingPolicies() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<AutoscalePolicyBean>>() {
@@ -961,6 +954,11 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to add applications
+    public void addApplication (String entityBody) {
+        restClient.deployEntity(ENDPOINT_ADD_APPLICATION, entityBody, "application");
+    }
+    
     // This method helps to deploy applications
     public void deployApplication (String applicationId, String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId), entityBody,
@@ -968,11 +966,41 @@ public class RestCommandLineService {
     }
 
     // This method helps to undeploy applications
-    public void undeployApplication(String id) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_APPLICATION, "applicationId", id);
+    public void undeployApplication(String applicationId) throws CommandException {
+    	DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_UNDEPLOY_APPLICATION + "/" + applicationId, "");
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("You have succesfully undelopyed application: " + applicationId);
+                return;
+            } else {
+                String resultString = CliUtils.getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+            }
+
+        } catch (Exception e) {
+            String message = "Could not undeploy application";
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+    
+    // This method helps to remove applications
+    public void deleteApplication (String applicationId) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
+                "application");
     }
 
-    // This method helps to describe applications
+    // This method helps to describe an application
     public void describeApplication (String applicationID) {
         try {
             Type listType = new TypeToken<ApplicationBean>() {
@@ -994,6 +1022,36 @@ public class RestCommandLineService {
         }
     }
 
+    // This method helps to add application signup
+    public void addApplicationSignup (String entityBody, String applicationId) {
+        restClient.deployEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), entityBody, "application");
+    }
+    
+    // This method helps to describe application signup
+    public void describeApplicationSignup (String applicationId) {
+        try {
+        	ApplicationSignUpBean bean = (ApplicationSignUpBean) restClient.listEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId),
+        			ApplicationSignUpBean.class, "applicationSignup");
+
+            if (bean == null) {
+                System.out.println("Applicationsign up not found for application: " + applicationId);
+                return;
+            }
+
+            System.out.println("Application signup for application : " + applicationId);
+            System.out.println(getGson().toJson(bean));
+        } catch (Exception e) {
+            String message = "Could not describe application signup for application: " + applicationId;
+            printError(message, e);
+        }
+    }
+    
+    // This method helps to remove application signup
+    public void deleteApplicationSignup (String applicationId) {
+        restClient.deleteEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), applicationId,
+                "application signup");
+    }
+    
     // This is for handle exception
     private void handleException(String key, Exception e, Object... args) throws CommandException {
         if (log.isDebugEnabled()) {
@@ -1008,5 +1066,17 @@ public class RestCommandLineService {
 
         System.out.println(message);
         throw new CommandException(message, e);
+    }
+    
+    /**
+     * Print error on console and log
+     * @param message
+     * @param e
+     */
+    private void printError(String message, Throwable e) {
+        // CLI console only get system output
+        System.out.println(message);
+        // Log error
+        log.error(message, e);
     }
 }

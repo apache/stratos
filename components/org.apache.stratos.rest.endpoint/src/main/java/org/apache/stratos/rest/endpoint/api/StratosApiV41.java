@@ -454,7 +454,6 @@ public class StratosApiV41 extends AbstractApi {
      * Gets the application sign up.
      *
      * @param applicationId the application id
-     * @param signUpId the sign up id
      * @return the application sign up
      * @throws RestAPIException the rest api exception
      */
@@ -463,8 +462,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getApplicationSignUp(@PathParam("applicationId") String applicationId,
-                                         @PathParam("signUpId") String signUpId) throws RestAPIException {
+    public Response getApplicationSignUp(@PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationSignUpBean applicationSignUpBean = StratosApiV41Utils.getApplicationSignUp(applicationId);
         if (applicationSignUpBean == null) {
             return Response.status(Response.Status.NOT_FOUND).build();

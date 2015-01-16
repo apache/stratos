@@ -36,7 +36,7 @@ public class DescribeApplicationCommand implements Command<StratosCommandContext
 	}
 
 	public String getName() {
-		return "describe-application";
+		return CliConstants.DESCRIBE_APPLICATION;
 	}
 
 	public String getDescription() {

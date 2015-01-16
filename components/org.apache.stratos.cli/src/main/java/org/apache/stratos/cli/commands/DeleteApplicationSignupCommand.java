@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
@@ -28,29 +27,22 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Un-deploy application command.
- */
-public class UndeployApplicationCommand implements Command<StratosCommandContext> {
-
-    private static final Logger logger = LoggerFactory.getLogger(UndeployApplicationCommand.class);
-
-    public UndeployApplicationCommand() {
-    }
+public class DeleteApplicationSignupCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(DeleteApplicationSignupCommand.class);
 
     @Override
     public String getName() {
-        return CliConstants.UNDEPLOY_APPLICATION;
+        return CliConstants.DELETE_APPLICATION_SIGNUP;
     }
 
     @Override
     public String getDescription() {
-        return "Undeploy application";
+        return "Delete Application Signup";
     }
 
     @Override
     public String getArgumentSyntax() {
-        return "[application-id]";
+        return "[Application Id]";
     }
 
     @Override
@@ -61,16 +53,19 @@ public class UndeployApplicationCommand implements Command<StratosCommandContext
     @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Executing command: ", getName());
-        }
-
-        if ((args == null) || (args.length <= 0)) {
-            context.getStratosApplication().printUsage(getName());
-            return CliConstants.COMMAND_FAILED;
-        }
-
-        String applicationId = args[0];
-        RestCommandLineService.getInstance().undeployApplication(applicationId);
-        return CliConstants.COMMAND_SUCCESSFULL;
+			logger.debug("Executing {} command...", getName());
+		}
+		if (args != null && args.length == 1) {
+			String id = args[0];
+			if (logger.isDebugEnabled()) {
+				logger.debug("Getting delete application id {}", id);
+			}
+			RestCommandLineService.getInstance().deleteApplicationSignup(id);
+			return CliConstants.COMMAND_SUCCESSFULL;
+		} else {
+			context.getStratosApplication().printUsage(getName());
+			return CliConstants.COMMAND_FAILED;
+		}
     }
 }
+

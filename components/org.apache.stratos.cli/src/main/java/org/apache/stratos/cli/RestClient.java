@@ -201,7 +201,9 @@ public class RestClient implements GenericRestClient {
     public void deleteEntity(String serviceEndpoint, String identifier, String entityName) {
         try {
             int responseCode = executeDelete(serviceEndpoint, identifier);
-            if (responseCode == 200) {
+            if (responseCode == 404) {
+                System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
+            } else if (responseCode == 200) {
                 System.out.println(String.format("Successfully deleted %s", entityName));
             }
         } catch (Exception e) {
