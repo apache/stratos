@@ -31,6 +31,7 @@ public interface DataStore {
 
     public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties)
             throws RegistryException;
+
     public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId)
             throws RegistryException;
 

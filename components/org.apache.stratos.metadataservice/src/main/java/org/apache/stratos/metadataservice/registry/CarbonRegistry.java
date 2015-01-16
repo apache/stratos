@@ -45,9 +45,7 @@ public class CarbonRegistry implements DataStore {
 
     private static final String mainResource = "/stratos/";
 
-
     public CarbonRegistry() {
-
     }
 
 

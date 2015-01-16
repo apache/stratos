@@ -24,13 +24,10 @@ package org.apache.stratos.metadataservice.registry;
 public class DataRegistryFactory {
 
 	public static DataStore getDataStore(String registryName) {
-		if (registryName.equals("greg")) {
-			return new GRegRegistry();
-		} else if (registryName.equals("carbon")) {
+		if (registryName.equals("carbon")) {
 			return new CarbonRegistry();
 		} else {
 			return null;
 		}
 	}
-
 }
