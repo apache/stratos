@@ -60,7 +60,7 @@ public class AddDomainMappingsCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getArgumentSyntax() {
-        return null;
+        return "[application-id]";
     }
 
     @Override
@@ -89,8 +89,10 @@ public class AddDomainMappingsCommand implements Command<StratosCommandContext> 
                             + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
                     return CliConstants.COMMAND_FAILED;
                 }
+
+                String applicationId = args[0];
                 String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().addDomainMappings(resourceFileContent);
+                RestCommandLineService.getInstance().addDomainMappings(applicationId, resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
             } else {
                 System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " "

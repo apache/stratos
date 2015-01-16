@@ -851,8 +851,9 @@ public class RestCommandLineService {
         }
     }
 
-    public void addDomainMappings(String resourceFileContent) {
-        restClient.deployEntity(ENDPOINT_DOMAIN_MAPPINGS, resourceFileContent, "domain mappings");
+    public void addDomainMappings(String applicationId, String resourceFileContent) {
+        String endpoint = ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId);
+        restClient.deployEntity(endpoint, resourceFileContent, "domain mappings");
     }
 
     public void listDomainMappings(String applicationId) {
