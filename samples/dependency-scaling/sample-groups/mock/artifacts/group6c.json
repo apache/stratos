@@ -1,6 +1,6 @@
 {
     "name": "group6",
-    "isGroupScalingEnabled": "true",
+    "groupScalingEnabled": "true",
     "cartridges": [
         "esb",
         "php"

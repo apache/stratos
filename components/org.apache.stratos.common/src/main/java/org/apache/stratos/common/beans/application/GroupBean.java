@@ -29,7 +29,7 @@ public class GroupBean implements Serializable {
     private String name;
     private List<GroupBean> groups;
     private List<String> cartridges;
-    private boolean isGroupScalingEnabled;
+    private boolean groupScalingEnabled;
     private DependencyBean dependencies;
 
     public String getName() {
@@ -65,10 +65,10 @@ public class GroupBean implements Serializable {
     }
 
     public boolean isGroupScalingEnabled() {
-        return isGroupScalingEnabled;
+        return groupScalingEnabled;
     }
 
     public void setGroupScalingEnabled(boolean isGroupScalingEnabled) {
-        this.isGroupScalingEnabled = isGroupScalingEnabled;
+        this.groupScalingEnabled = isGroupScalingEnabled;
     }
 }
