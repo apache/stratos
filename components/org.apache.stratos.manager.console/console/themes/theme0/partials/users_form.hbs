@@ -151,6 +151,21 @@
                 }
             });
 
+        //add show /hide option on user passsword field
+            $('input[type=password]').after('<span class="hide-pass"><i class="fa fa-eye"></i> </span>');
+            $('.hide-pass').click(function(){
+                if($(this).find('i').hasClass("fa-eye-slash")){
+                    console.log('hit me w22')
+                    $('input[data-schemaformat=password]').attr('type', 'password');
+                    $(this).find('i').removeClass( "fa-eye-slash" );
+                }else{
+                    console.log('hit me')
+                    $(this).find('i').addClass( "fa-eye-slash" );
+                    $('input[data-schemaformat=password]').attr('type', 'text');
+                }
+
+            });
+
         {{else}}
             $('.general-table .grid-group-item').hover(function () {
                 if($(this).hasClass('grid-group-item')) {
