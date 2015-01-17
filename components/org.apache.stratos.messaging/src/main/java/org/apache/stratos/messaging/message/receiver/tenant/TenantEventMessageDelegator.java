@@ -73,6 +73,9 @@ class TenantEventMessageDelegator implements Runnable {
                         log.debug(String.format("Delegating tenant event message: %s", type));
                     }
                     processorChain.process(type, json, null);
+                } catch (InterruptedException ignore) {
+                    log.info("Shutting down tenant event message delegator...");
+                    terminate();
                 } catch (Exception e) {
                     log.error("Failed to retrieve tenant event message", e);
                 }

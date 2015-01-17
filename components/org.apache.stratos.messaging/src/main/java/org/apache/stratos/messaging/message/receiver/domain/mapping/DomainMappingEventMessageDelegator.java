@@ -71,8 +71,8 @@ class DomainMappingEventMessageDelegator implements Runnable {
                     }
                     processorChain.process(type, json, DomainMappingManager.getInstance());
                 } catch (InterruptedException e) {
-                    log.info("Domain mapping event message delegator is shutting down...");
-                    return;
+                    log.info("Shutting down domain mapping event message delegator...");
+                    terminate();
                 } catch (Exception e) {
                     log.error("Failed to retrieve domain mapping event message", e);
                 }

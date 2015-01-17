@@ -82,6 +82,9 @@ class HealthStatEventMessageDelegator implements Runnable {
                         log.debug(String.format("Delegating instance notifier event message: %s", type));
                     }
                     processorChain.process(type, json, null);
+                } catch (InterruptedException ignore) {
+                    log.info("Shutting down health statistics event message delegator...");
+                    terminate();
                 } catch (Exception e) {
                     log.error("Failed to retrieve instance notifier event message", e);
                 }

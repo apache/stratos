@@ -71,9 +71,9 @@ class TopologyEventMessageDelegator implements Runnable {
                         log.debug(String.format("Delegating topology event message: %s", type));
                     }
                     processorChain.process(type, json, TopologyManager.getTopology());
-                } catch (InterruptedException e) {
-                    log.info("TopologyEventMessageDelegator is shutting down ..");
-                    return;
+                } catch (InterruptedException ignore) {
+                    log.info("Shutting down topology event message delegator...");
+                    terminate();
                 } catch (Exception e) {
                     log.error("Failed to retrieve topology event message", e);
                 }

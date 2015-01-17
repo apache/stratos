@@ -61,16 +61,19 @@ class ClusterStatusEventMessageDelegator implements Runnable {
                     // Retrieve the actual message
                     String json = message.getText();
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Cluster Status event message received from queue: %s", type));
+                        log.debug(String.format("Cluster status event message received from queue: %s", type));
                     }
 
                     // Delegate message to message processor chain
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Delegating Cluster Status event message: %s", type));
+                        log.debug(String.format("Delegating cluster status event message: %s", type));
                     }
                     processorChain.process(type, json, null);
+                } catch (InterruptedException ignore) {
+                    log.info("Shutting down cluster status event message delegator...");
+                    terminate();
                 } catch (Exception e) {
-                    log.error("Failed to retrieve Cluster Status event message", e);
+                    log.error("Failed to retrieve cluster status event message", e);
                 }
             }
         } catch (Exception e) {

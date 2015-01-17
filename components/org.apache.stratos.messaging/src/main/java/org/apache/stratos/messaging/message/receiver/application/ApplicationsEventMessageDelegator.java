@@ -69,6 +69,9 @@ public class ApplicationsEventMessageDelegator implements Runnable {
                         }
                         processorChain.process(type, json, ApplicationManager.getApplications());
                     }
+                } catch (InterruptedException ignore) {
+                    log.info("Shutting down application event message delegator...");
+                    terminate();
                 } catch (Exception e) {
                     log.error("Failed to retrieve application status event message", e);
                 }
