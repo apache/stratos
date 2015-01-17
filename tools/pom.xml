@@ -32,8 +32,6 @@
     <description>Apache Stratos plafrom tools</description>
     <url>http://apache.org</url>
 
-    <modules>
-        <module>docker-images/stratos-docker-images</module>
-    </modules>
+    <modules/>
 </project>
 
