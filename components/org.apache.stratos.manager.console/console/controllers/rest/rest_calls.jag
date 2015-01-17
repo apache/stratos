@@ -64,7 +64,7 @@ RESTCalls = new function(){
     };
 
     this.deployGroupDefinition = function(groupDefinition){
-        return this.send("POST","/groups", groupDefinition);
+        return this.send("POST","/cartridgeGroups", groupDefinition);
     };
 
     this.deployApplicationDefinition = function(applicationDefinition){
@@ -80,7 +80,7 @@ RESTCalls = new function(){
     };
 
     this.deleteGroup = function(groupName){
-        return this.send("DELETE","/groups/" + groupName,{});
+        return this.send("DELETE","/cartridgeGroups/" + groupName,{});
     };
 
     this.subscribeToCartridge = function(cartridgeBeanInfo){
@@ -151,7 +151,7 @@ RESTCalls = new function(){
     };
 
     this.getGroups = function(){
-        return this.sendReceive("GET","/groups",{});
+        return this.sendReceive("GET","/cartridgeGroups",{});
     };
 
     this.getApplications = function(){
