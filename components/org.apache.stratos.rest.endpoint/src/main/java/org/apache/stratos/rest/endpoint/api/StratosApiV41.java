@@ -243,17 +243,17 @@ public class StratosApiV41 extends AbstractApi {
         return Response.noContent().build();
     }
 
-    // API methods for service groups
+    // API methods for cartridge groups
 
     /**
-     * Creates the service group definition.
+     * Creates the cartridge group definition.
      *
-     * @param serviceGroupDefinition the service group definition
+     * @param serviceGroupDefinition the cartridge group definition
      * @return the response
      * @throws RestAPIException the rest api exception
      */
     @POST
-    @Path("/groups")
+    @Path("/cartridgeGroups")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -266,14 +266,14 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Gets the service group definition.
+     * Gets the cartridge group definition.
      *
      * @param groupDefinitionName the group definition name
-     * @return the service group definition
+     * @return the cartridge group definition
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/groups/{groupDefinitionName}")
+    @Path("/cartridgeGroups/{groupDefinitionName}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -291,13 +291,13 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Gets all service groups created.
+     * Gets all cartridge groups created.
      *
-     * @return the service groups
+     * @return the cartridge groups
      * @throws RestAPIException the rest api exception
      */
     @GET
-    @Path("/groups")
+    @Path("/cartridgeGroups")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
@@ -314,14 +314,14 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Delete service group definition.
+     * Delete cartridge group definition.
      *
      * @param groupDefinitionName the group definition name
      * @return the response
      * @throws RestAPIException the rest api exception
      */
     @DELETE
-    @Path("/groups/{groupDefinitionName}")
+    @Path("/cartridgeGroups/{groupDefinitionName}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")

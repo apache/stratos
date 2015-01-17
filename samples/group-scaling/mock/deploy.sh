@@ -19,7 +19,7 @@ curl -X POST -H "Content-Type: application/json" -d @'artifacts/c1.json' -k -v -
 curl -X POST -H "Content-Type: application/json" -d @'artifacts/c2.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
 
 # Deploy group
-curl -X POST -H "Content-Type: application/json" -d @'artifacts/group1.json' -k -v -u admin:admin https://localhost:9443/api/groups
+curl -X POST -H "Content-Type: application/json" -d @'artifacts/group1.json' -k -v -u admin:admin https://localhost:9443/api/cartridgeGroups
 
 sleep 3
 # Create application

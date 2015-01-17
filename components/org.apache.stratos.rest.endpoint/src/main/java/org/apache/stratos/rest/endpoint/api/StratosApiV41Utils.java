@@ -588,7 +588,7 @@ public class StratosApiV41Utils {
         }
     }
 
-    // Util methods for service groups
+    // Util methods for cartridge groups
 
     public static void addServiceGroup(GroupBean serviceGroupDefinition) throws RestAPIException {
         try {
@@ -600,7 +600,7 @@ public class StratosApiV41Utils {
             if (serviceGroupDefinition.getCartridges() != null) {
 
                 if (log.isDebugEnabled()) {
-                    log.debug("checking cartridges in service group " + serviceGroupDefinition.getName());
+                    log.debug("checking cartridges in cartridge group " + serviceGroupDefinition.getName());
                 }
 
                 List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
@@ -629,7 +629,7 @@ public class StratosApiV41Utils {
                     try {
                         if (ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
                             // cartridge is not deployed, can't continue
-                            log.error("invalid cartridge found in service group " + cartridgeType);
+                            log.error("invalid cartridge found in cartridge group " + cartridgeType);
                             throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
                         }
                     } catch (RemoteException e) {
@@ -643,7 +643,7 @@ public class StratosApiV41Utils {
             // if any sub groups are specified in the group, they should be already deployed
             if (serviceGroupDefinition.getGroups() != null) {
                 if (log.isDebugEnabled()) {
-                    log.debug("checking subGroups in service group " + serviceGroupDefinition.getName());
+                    log.debug("checking subGroups in cartridge group " + serviceGroupDefinition.getName());
                 }
 
                 List<GroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
@@ -671,7 +671,7 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
             asServiceClient.addServiceGroup(serviceGroup);
         } catch (Exception e) {
-            String message = "Could not add service group";
+            String message = "Could not add cartridge group";
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
@@ -699,7 +699,7 @@ public class StratosApiV41Utils {
     public static GroupBean getServiceGroupDefinition(String name) throws RestAPIException {
 
         if (log.isDebugEnabled()) {
-            log.debug("Reading service group: [group-name] " + name);
+            log.debug("Reading cartridge group: [group-name] " + name);
         }
 
         try {
@@ -713,7 +713,7 @@ public class StratosApiV41Utils {
             return serviceGroupDef;
 
         } catch (Exception e) {
-            String message = "Could not get service group: [group-name] " + name;
+            String message = "Could not get cartridge group: [group-name] " + name;
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
@@ -722,7 +722,7 @@ public class StratosApiV41Utils {
     public static GroupBean[] getServiceGroupDefinitions() throws RestAPIException {
 
         if (log.isDebugEnabled()) {
-            log.debug("Reading service groups...");
+            log.debug("Reading cartridge groups...");
         }
 
         try {
@@ -747,7 +747,7 @@ public class StratosApiV41Utils {
 
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Removing service group: [name] " + name);
+                log.debug("Removing cartridge group: [name] " + name);
             }
 
             AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
@@ -757,7 +757,7 @@ public class StratosApiV41Utils {
             throw new RestAPIException(e);
         }
 
-        log.info("Successfully removed the service group: [group-name] " + name);
+        log.info("Successfully removed the cartridge group: [group-name] " + name);
     }
 
     // Util methods for Applications

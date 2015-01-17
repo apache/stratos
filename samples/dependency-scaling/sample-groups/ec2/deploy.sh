@@ -5,7 +5,7 @@ curl -X POST -H "Content-Type: application/json" -d @'artifacts/autoscale-policy
 curl -X POST -H "Content-Type: application/json" -d @'artifacts/tomcat.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
 curl -X POST -H "Content-Type: application/json" -d @'artifacts/esb.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
 curl -X POST -H "Content-Type: application/json" -d @'artifacts/php.json' -k -v -u admin:admin https://localhost:9443/api/cartridges
-curl -X POST -H "Content-Type: application/json" -d @'artifacts/group6c.json' -k -v -u admin:admin https://localhost:9443/api/groups
+curl -X POST -H "Content-Type: application/json" -d @'artifacts/group6c.json' -k -v -u admin:admin https://localhost:9443/api/cartridgeGroups
 
 sleep 3
 
