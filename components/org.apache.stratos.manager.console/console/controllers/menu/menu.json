@@ -80,10 +80,10 @@
                     "link": "applications/groups/",
                     "linkexternal": false,
                     "context": "/applications",
-                    "title": "Groups",
+                    "title": "Cartridge Groups",
                     "icon": "fa-briefcase",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Add cartridge groups."
+                    "description": "Manage cartridge groups"
                 },
                 {
                     "link": "applications/applications/",
@@ -92,7 +92,7 @@
                     "title": "Applications",
                     "icon": "fa-archive",
                     "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
-                    "description": "Add applications"
+                    "description": "Manage applications"
                 }
             ]
         },
