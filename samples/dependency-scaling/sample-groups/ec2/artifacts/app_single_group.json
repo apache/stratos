@@ -43,7 +43,7 @@
         ],
         "dependencies": {
             "scalingDependants": [
-                "group.mygroup6,cartridge.mytomcat"
+                "group.group6,cartridge.tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }

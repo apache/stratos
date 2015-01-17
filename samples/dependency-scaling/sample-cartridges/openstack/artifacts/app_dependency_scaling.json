@@ -24,7 +24,7 @@
         ],
         "dependencies": {
             "scalingDependants": [
-                "cartridge.mytomcat, cartridge.mytomcat1"
+                "cartridge.tomcat, cartridge.tomcat1"
             ],
             "terminationBehaviour": "terminate-none"
         }
