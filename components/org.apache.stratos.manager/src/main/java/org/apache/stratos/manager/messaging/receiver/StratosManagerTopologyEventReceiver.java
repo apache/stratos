@@ -21,25 +21,13 @@ package org.apache.stratos.manager.messaging.receiver;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
-import java.util.concurrent.ExecutorService;
 
 public class StratosManagerTopologyEventReceiver extends TopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(StratosManagerTopologyEventReceiver.class);
 
     public StratosManagerTopologyEventReceiver() {
-        addEventListeners();
-    }
-
-    private void addEventListeners() {
     }
 
     @Override

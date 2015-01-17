@@ -73,7 +73,7 @@ import java.util.concurrent.ExecutorService;
 public class StratosManagerServiceComponent {
 
 	private static final Log log = LogFactory.getLog(StratosManagerServiceComponent.class);
-	private static final String THREAD_EXECUTOR_ID = "STRATOS_MANAGER";
+	private static final String THREAD_EXECUTOR_ID = "stratos.manager.thread.pool";
     private static final String STRATOS_MANAGER_COORDINATOR_LOCK = "STRATOS_MANAGER_COORDINATOR_LOCK";
     private static final int THREAD_POOL_SIZE = 20;
 

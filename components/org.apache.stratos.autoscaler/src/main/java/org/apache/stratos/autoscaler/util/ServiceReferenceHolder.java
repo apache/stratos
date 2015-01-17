@@ -31,6 +31,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 
 import com.hazelcast.core.HazelcastInstance;
 
+import java.util.concurrent.ExecutorService;
+
 public class ServiceReferenceHolder {
 	
 	private static ServiceReferenceHolder instance;
@@ -41,8 +43,9 @@ public class ServiceReferenceHolder {
     private AxisConfiguration axisConfiguration;
     private DistributedObjectProvider distributedObjectProvider;
     private HazelcastInstance hazelcastInstance;
+    private ExecutorService executorService;
 
-	private ServiceReferenceHolder() {
+    private ServiceReferenceHolder() {
 	}
 	 
 	public static ServiceReferenceHolder getInstance() {
@@ -106,5 +109,13 @@ public class ServiceReferenceHolder {
 
     public void setGroupStatusProcessorChain(GroupStatusProcessorChain groupStatusProcessorChain) {
         this.groupStatusProcessorChain = groupStatusProcessorChain;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 }

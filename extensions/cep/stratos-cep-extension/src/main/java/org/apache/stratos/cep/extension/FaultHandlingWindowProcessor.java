@@ -60,10 +60,14 @@ import java.util.concurrent.TimeUnit;
 @SiddhiExtension(namespace = "stratos", function = "faultHandling")
 public class FaultHandlingWindowProcessor extends WindowProcessor implements RunnableWindowProcessor {
 
-	private static final int TIME_OUT = 60 * 1000;
-	static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
-	public static final String IDENTIFIER = "AutoScaler";
-	private ScheduledExecutorService faultHandleScheduler;
+	private static final Logger log = Logger.getLogger(FaultHandlingWindowProcessor.class);
+
+    private static final int TIME_OUT = 60 * 1000;
+    public static final String CEP_EXTENSION_THREAD_POOL_KEY = "cep.extension.thread.pool";
+    public static final int CEP_EXTENSION_THREAD_POOL_SIZE = 10;
+
+    private ExecutorService executorService;
+    private ScheduledExecutorService faultHandleScheduler;
 	private ThreadBarrier threadBarrier;
 	private long timeToKeep;
 	private ISchedulerSiddhiQueue<StreamEvent> window;
@@ -278,7 +282,8 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         }
         MemberFaultEventMap.put("org.apache.stratos.messaging.event.health.stat.MemberFaultEvent", memberFaultEventMessageMap);
 
-	    ExecutorService executorService= StratosThreadPool.getExecutorService("AutoScaler",10);
+	    executorService = StratosThreadPool.getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY,
+                CEP_EXTENSION_THREAD_POOL_SIZE);
 	    cepTopologyEventReceiver.setExecutorService(executorService);
 	    executorService.execute(cepTopologyEventReceiver);
 
@@ -316,6 +321,15 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
         // terminate topology listener thread
         cepTopologyEventReceiver.terminate();
         window = null;
+
+        // Shutdown executor service
+        if(executorService != null) {
+            try {
+                executorService.shutdownNow();
+            } catch (Exception e) {
+                log.warn("An error occurred while shutting down cep extension executor service", e);
+            }
+        }
     }
 
     public ConcurrentHashMap<String, Long> getMemberTimeStampMap() {

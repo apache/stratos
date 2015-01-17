@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer.util;
 
-public class Constants {
+public class LoadBalancerConstants {
 
     public static final String CLUSTER_ID = "cluster_id";
     public static final String MEMBER_ID = "member_id";
@@ -34,5 +34,7 @@ public class Constants {
     public static final String LB_HTTP_PORT = "LB_HTTP_PORT";
     public static final String LB_HTTPS_PORT = "LB_HTTPS_PORT";
 
-    public static final String ALGORITHM_CONTEXT_CACHE = "algorithm.context.cache";
+    public static final String LOAD_BALANCER_THREAD_POOL_ID = "load.balancer.thread.pool";
+    public static final String LOAD_BALANCER_THREAD_POOL_SIZE_KEY = "load.balancer.thread.pool.size";
+    public static final int LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE = 20;
 }

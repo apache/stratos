@@ -71,10 +71,7 @@ public class CloudControllerServiceComponent {
 	private ApplicationEventReceiver applicationEventReceiver;
     private ExecutorService executorService;
 
-    private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
 	private static final String DEFAULT_IDENTIFIER = "Cloud-Controller";
-	private static final String THREAD_POOL_SIZE_KEY = "threadPool.cloudcontroller.threadPoolSize";
-	private static final String COMPONENTS_CONFIG = "stratos-config";
 	private static final int THREAD_POOL_SIZE = 10;
     private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "CLOUD_CONTROLLER_COORDINATOR_LOCK";
 
@@ -212,6 +209,19 @@ public class CloudControllerServiceComponent {
 
 	protected void deactivate(ComponentContext ctx) {
         // Close event publisher connections to message broker
-        EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
+        try {
+            EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
+        } catch (Exception e) {
+            log.warn("An error occurred while closing cloud controller topology event publisher", e);
+        }
+
+        // Shutdown executor service
+        if(executorService != null) {
+            try {
+                executorService.shutdownNow();
+            } catch (Exception e) {
+                log.warn("An error occurred while shutting down cloud controller executor service", e);
+            }
+        }
 	}
 }

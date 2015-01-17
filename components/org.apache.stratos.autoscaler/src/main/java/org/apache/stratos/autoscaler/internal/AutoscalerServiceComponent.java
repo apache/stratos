@@ -26,12 +26,14 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
+import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
@@ -52,7 +54,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 /**
- * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServerComponent" immediate="true"
+ * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServiceComponent" immediate="true"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
  * 			      cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
@@ -65,14 +67,10 @@ import java.util.concurrent.ExecutorService;
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 
-public class AutoscalerServerComponent {
+public class AutoscalerServiceComponent {
 
-	private static final String THREAD_IDENTIFIER_KEY = "threadPool.autoscaler.identifier";
-	private static final String DEFAULT_IDENTIFIER = "Auto-Scaler";
-	private static final String THREAD_POOL_SIZE_KEY = "threadPool.autoscaler.threadPoolSize";
-	private static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath()+ File.separator+"stratos-config.xml";
-	private static final int THREAD_POOL_SIZE = 10;
-	private static final Log log = LogFactory.getLog(AutoscalerServerComponent.class);
+    private static final Log log = LogFactory.getLog(AutoscalerServiceComponent.class);
+
 	private static final String AUTOSCALER_COORDINATOR_LOCK = "AUTOSCALER_COORDINATOR_LOCK";
 
 	private AutoscalerTopologyEventReceiver asTopologyReceiver;
@@ -82,10 +80,13 @@ public class AutoscalerServerComponent {
 	protected void activate(ComponentContext componentContext) throws Exception {
 		try {
 			
-			XMLConfiguration conf = ConfUtil.getInstance(COMPONENTS_CONFIG).getConfiguration();
-			int threadPoolSize = conf.getInt(THREAD_POOL_SIZE_KEY, THREAD_POOL_SIZE);
-			String threadIdentifier = conf.getString(THREAD_IDENTIFIER_KEY, DEFAULT_IDENTIFIER);
-			executorService = StratosThreadPool.getExecutorService(threadIdentifier, threadPoolSize);
+			XMLConfiguration conf = ConfUtil.getInstance(AutoScalerConstants.COMPONENTS_CONFIG).getConfiguration();
+            int threadPoolSize = conf.getInt(AutoScalerConstants.THREAD_POOL_SIZE_KEY,
+                    AutoScalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
+			executorService = StratosThreadPool.getExecutorService(AutoScalerConstants.AUTOSCALER_THREAD_POOL_ID,
+                    threadPoolSize);
+
+            ServiceReferenceHolder.getInstance().setExecutorService(executorService);
 			
 			if(AutoscalerContext.getInstance().isClustered()) {
                 Thread coordinatorElectorThread = new Thread() {
@@ -101,7 +102,7 @@ public class AutoscalerServerComponent {
                         AutoscalerContext.getInstance().setCoordinator(true);
                         try {
                         	executeCoordinatorTasks();
-                        } catch (Throwable e) {
+                        } catch (Exception e) {
                 			log.error("Error in activating the autoscaler component ", e);
                         }
                     }
@@ -113,14 +114,14 @@ public class AutoscalerServerComponent {
             }
 
 			if (log.isInfoEnabled()) {
-				log.info("Autoscaler server Component activated");
+				log.info("Autoscaler service component activated");
 			}
-		} catch (Throwable e) {
-			log.error("Error in activating the autoscaler component ", e);
+		} catch (Exception e) {
+			log.error("Error in activating the autoscaler service component ", e);
 		}
 	}
 	
-	private void executeCoordinatorTasks() throws Exception{
+	private void executeCoordinatorTasks() throws InvalidPolicyException {
 		
 		// Start topology receiver
 		asTopologyReceiver = new AutoscalerTopologyEventReceiver();
@@ -188,8 +189,26 @@ public class AutoscalerServerComponent {
 	}
 
     protected void deactivate(ComponentContext context) {
-        asTopologyReceiver.terminate();
-        autoscalerHealthStatEventReceiver.terminate();
+        try {
+            asTopologyReceiver.terminate();
+        } catch (Exception e) {
+            log.warn("An error occurred while terminating autoscaler topology event receiver", e);
+        }
+
+        try {
+            autoscalerHealthStatEventReceiver.terminate();
+        } catch (Exception e) {
+            log.warn("An error occurred while terminating autoscaler health statistics event receiver", e);
+        }
+
+        // Shutdown executor service
+        if(executorService != null) {
+            try {
+                executorService.shutdownNow();
+            } catch (Exception e) {
+                log.warn("An error occurred while shutting down autoscaler executor service", e);
+            }
+        }
     }
 
     protected void setRegistryService(RegistryService registryService) {

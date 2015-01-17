@@ -19,13 +19,6 @@
 
 package org.apache.stratos.autoscaler.util;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -39,13 +32,17 @@ import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
+import javax.xml.namespace.QName;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 
 /**
@@ -54,25 +51,13 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 public class AutoscalerUtil {
 
 	private static final Log log = LogFactory.getLog(AutoscalerUtil.class);
-	public static final String IDENTIFIER = "Auto-Scaler";
-	public static final int THREAD_POOL_SIZE = 10;
-	private ExecutorService executorService= StratosThreadPool.getExecutorService(IDENTIFIER, THREAD_POOL_SIZE);
 
     private AutoscalerUtil() {
-
     }
 
     public static AutoscalerUtil getInstance() {
         return Holder.INSTANCE;
     }
-
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
-
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 
 	private static class Holder {
         private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
@@ -95,8 +80,8 @@ public class AutoscalerUtil {
     }
 
     public static Application getApplication (String appId) {
-        return getApplicationFromPath(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
-                "/" + appId);
+        return getApplicationFromPath(AutoScalerConstants.AUTOSCALER_RESOURCE +
+                AutoScalerConstants.APPLICATIONS_RESOURCE + "/" + appId);
     }
 
     public static void persistApplication (Application application) {
@@ -153,128 +138,6 @@ public class AutoscalerUtil {
         }
         return allClustersInitialized;
     }
-
-
-
-    /*public static LbClusterMonitor getLBClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
-        // FIXME fix the following code to correctly update
-        // AutoscalerContext context = AutoscalerContext.getInstance();
-        if (null == cluster) {
-            return null;
-        }
-
-        String autoscalePolicyName = cluster.getAutoscalePolicyName();
-        String deploymentPolicyName = cluster.getDeploymentPolicyName();
-
-        if (log.isDebugEnabled()) {
-            log.debug("Deployment policy name: " + deploymentPolicyName);
-            log.debug("Autoscaler policy name: " + autoscalePolicyName);
-        }
-
-        AutoscalePolicy policy =
-                                 PolicyManager.getInstance()
-                                              .getAutoscalePolicy(autoscalePolicyName);
-        DeploymentPolicy deploymentPolicy =
-                                            PolicyManager.getInstance()
-                                                         .getDeploymentPolicy(deploymentPolicyName);
-
-        if (deploymentPolicy == null) {
-            String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-            log.error(msg);
-            throw new PolicyValidationException(msg);
-        }
-
-        String clusterId = cluster.getClusterId();
-        LbClusterMonitor clusterMonitor =
-                                        new LbClusterMonitor(clusterId,
-                                                           cluster.getServiceName(),
-                                                           deploymentPolicy, policy);
-        clusterMonitor.notifyParentMonitor(Status.Created);
-        // partition group = network partition context
-        for (NetworkPartition partitionGroup : deploymentPolicy.gNetworkPartitionups()) {
-
-            NetworkPartitionLbHolder networkPartitionLbHolder =
-                                                              PartitionManager.getInstance()
-                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
-//                                                              PartitionManager.getInstance()
-//                                                                              .getNetworkPartitionLbHolder(partitionGroup.getPartitionId());
-            // FIXME pick a random partition
-            Partition partition =
-                                  partitionGroup.getPartitions()[new Random().nextInt(partitionGroup.getPartitions().length)];
-            PartitionContext partitionContext = new PartitionContext(partition);
-            partitionContext.setServiceName(cluster.getServiceName());
-            partitionContext.setProperties(cluster.getProperties());
-            partitionContext.setNetworkPartitionId(partitionGroup.getPartitionId());
-            partitionContext.setMinimumMemberCount(1);//Here it hard codes the minimum value as one for LB cartridge partitions
-
-            NetworkPartitionContext networkPartitionContext = new NetworkPartitionContext(partitionGroup.getPartitionId(),
-                    partitionGroup.getPartitionAlgo(), partitionGroup.getPartitions()) ;
-            for (Member member : cluster.getMembers()) {
-                String memberId = member.getMemberId();
-                if (member.getNetworkPartitionId().equalsIgnoreCase(networkPartitionContext.getPartitionId())) {
-                    MemberContext memberContext = new MemberContext();
-                    memberContext.setClusterId(member.getClusterId());
-                    memberContext.setMemberId(memberId);
-                    memberContext.setPartition(partition);
-
-                    if (MemberStatus.Activated.equals(member.getStatus())) {
-                        partitionContext.addActiveMember(memberContext);
-//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
-//                        partitionContext.incrementCurrentActiveMemberCount(1);
-                    } else if (MemberStatus.Created.equals(member.getStatus()) ||
-                               MemberStatus.Starting.equals(member.getStatus())) {
-                        partitionContext.addPendingMember(memberContext);
-//                        networkPartitionContext.increaseMemberCountOfPartition(partition.getNetworkPartitionId(), 1);
-                    } else if (MemberStatus.Suspended.equals(member.getStatus())) {
-//                        partitionContext.addFaultyMember(memberId);
-                    }
-
-                    partitionContext.addMemberStatsContext(new MemberStatsContext(memberId));
-                    if(log.isInfoEnabled()){
-                        log.info(String.format("Member stat context has been added: [member] %s", memberId));
-                    }
-                }
-
-            }
-            networkPartitionContext.addPartitionContext(partitionContext);
-            
-            // populate lb cluster id in network partition context.
-            java.util.Properties props = cluster.getProperties();
-
-            // get service type of load balanced cluster
-            String loadBalancedServiceType = props.getProperty(Constants.LOAD_BALANCED_SERVICE_TYPE);
-            
-            if(props.containsKey(Constants.LOAD_BALANCER_REF)) {
-                String value = props.getProperty(Constants.LOAD_BALANCER_REF);
-                
-                if (value.equals(org.apache.stratos.messaging.util.Constants.DEFAULT_LOAD_BALANCER)) {
-                    networkPartitionLbHolder.setDefaultLbClusterId(clusterId);
-
-                } else if (value.equals(org.apache.stratos.messaging.util.Constants.SERVICE_AWARE_LOAD_BALANCER)) {
-                    String serviceName = cluster.getServiceName();
-                    // TODO: check if this is correct
-                    networkPartitionLbHolder.addServiceLB(serviceName, clusterId);
-
-                    if (loadBalancedServiceType != null && !loadBalancedServiceType.isEmpty()) {
-                        networkPartitionLbHolder.addServiceLB(loadBalancedServiceType, clusterId);
-                        if (log.isDebugEnabled()) {
-                            log.debug("Added cluster id " + clusterId + " as the LB cluster id for service type " + loadBalancedServiceType);
-                        }
-                    }
-                }
-            }
-
-            clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-        }
-
-        log.info("LB Cluster monitor created: "+clusterMonitor.toString());
-        return clusterMonitor;
-    }*/
-
-    //TODO moving it into factory class
-
-
-
 
     public static Properties getProperties(final OMElement elt) {
 
@@ -382,12 +245,11 @@ public class AutoscalerUtil {
 	    AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
 	    if (autoscalerContext.getAppMonitor(applicationId) == null) {
 		    autoscalerContext.addPendingMonitor(applicationId);
-		    executorService.submit(new ApplicationMonitorAdder(applicationId));
+		    ServiceReferenceHolder.getInstance().getExecutorService().submit(new ApplicationMonitorAdder(applicationId));
 	    } else {
 		    if (log.isDebugEnabled()) {
-			    log.debug(String
-					              .format("Application monitor thread already exists: " +
-					                      "[application] %s ", applicationId));
+			    log.debug(String.format("Application monitor thread already exists: " +
+                        "[application] %s ", applicationId));
 		    }
 	    }
     }

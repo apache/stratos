@@ -20,23 +20,26 @@ package org.apache.stratos.load.balancer.statistics;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * An executor service to asynchronously execute statistics update calls without blocking the
  * mediation flow.
  */
 public class LoadBalancerStatisticsExecutor {
+
     private static final Log log = LogFactory.getLog(LoadBalancerStatisticsExecutor.class);
+
     private static volatile LoadBalancerStatisticsExecutor instance;
 
-    private ExecutorService service;
+    private ExecutorService executorService;
 
     private LoadBalancerStatisticsExecutor() {
-        // TODO: Move thread pool count to loadbalancer.conf
-        service = Executors.newFixedThreadPool(10);
+        executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
+                LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
     }
 
     public static LoadBalancerStatisticsExecutor getInstance() {
@@ -51,6 +54,6 @@ public class LoadBalancerStatisticsExecutor {
     }
 
     public ExecutorService getService() {
-        return service;
+        return executorService;
     }
 }

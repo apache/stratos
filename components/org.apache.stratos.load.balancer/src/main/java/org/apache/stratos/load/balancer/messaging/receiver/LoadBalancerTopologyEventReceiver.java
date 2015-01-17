@@ -35,26 +35,20 @@ import org.apache.stratos.messaging.listener.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * Load balancer topology receiver updates load balancer context according to
  * incoming topology events.
  */
-public class LoadBalancerTopologyEventReceiver {
+public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerTopologyEventReceiver.class);
-	private ExecutorService executorService;
-    private TopologyEventReceiver topologyEventReceiver;
 
     public LoadBalancerTopologyEventReceiver() {
-        this.topologyEventReceiver = new TopologyEventReceiver();
         addEventListeners();
     }
 
     public void execute() {
-		topologyEventReceiver.setExecutorService(executorService);
-	    topologyEventReceiver.execute();
+	    super.execute();
         if (log.isInfoEnabled()) {
             log.info("Load balancer topology receiver thread started");
         }
@@ -62,12 +56,12 @@ public class LoadBalancerTopologyEventReceiver {
 
     private void addEventListeners() {
         // Listen to topology events that affect clusters
-        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+        addEventListener(new CompleteTopologyEventListener() {
             private boolean initialized;
 
             @Override
             protected void onEvent(Event event) {
-                if(!initialized) {
+                if (!initialized) {
                     try {
                         TopologyManager.acquireReadLock();
                         for (Service service : TopologyManager.getTopology().getServices()) {
@@ -105,7 +99,7 @@ public class LoadBalancerTopologyEventReceiver {
                 return false;
             }
         });
-        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
+        addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -144,7 +138,7 @@ public class LoadBalancerTopologyEventReceiver {
                     }
 
                     // Add member to member-ip -> hostname map
-                    addMemberIpsToMemberIpHostnameMap(cluster,  member);
+                    addMemberIpsToMemberIpHostnameMap(cluster, member);
 
                     if (LoadBalancerContext.getInstance().getClusterIdClusterMap().containsCluster(
                             member.getClusterId())) {
@@ -168,7 +162,7 @@ public class LoadBalancerTopologyEventReceiver {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new MemberMaintenanceListener() {
+        addEventListener(new MemberMaintenanceListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -195,7 +189,7 @@ public class LoadBalancerTopologyEventReceiver {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
+        addEventListener(new MemberSuspendedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -220,7 +214,7 @@ public class LoadBalancerTopologyEventReceiver {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+        addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -246,7 +240,7 @@ public class LoadBalancerTopologyEventReceiver {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new ClusterRemovedEventListener() {
+        addEventListener(new ClusterRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -283,7 +277,7 @@ public class LoadBalancerTopologyEventReceiver {
                 }
             }
         });
-        topologyEventReceiver.addEventListener(new ServiceRemovedEventListener() {
+        addEventListener(new ServiceRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
 
@@ -399,19 +393,4 @@ public class LoadBalancerTopologyEventReceiver {
             }
         }
     }
-
-    /**
-     * Terminate load balancer topology receiver thread.
-     */
-    public void terminate() {
-        topologyEventReceiver.terminate();
-    }
-
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
-
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 }

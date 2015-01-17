@@ -21,7 +21,7 @@ package org.apache.stratos.load.balancer.mediators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
-import org.apache.stratos.load.balancer.util.Constants;
+import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -46,7 +46,7 @@ public class ResponseInterceptor extends AbstractMediator implements ManagedLife
             if (log.isDebugEnabled()) {
                 log.debug("Response interceptor mediation started");
             }
-            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            String clusterId = (String) messageContext.getProperty(LoadBalancerConstants.CLUSTER_ID);
             if (StringUtils.isNotBlank(clusterId)) {
                 FutureTask<Object> task = new FutureTask<Object>(new InFlightRequestDecrementCallable(clusterId));
                 LoadBalancerStatisticsExecutor.getInstance().getService().submit(task);

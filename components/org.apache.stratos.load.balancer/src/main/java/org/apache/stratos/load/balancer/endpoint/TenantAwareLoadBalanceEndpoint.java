@@ -31,7 +31,7 @@ import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestIncrementCallable;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
-import org.apache.stratos.load.balancer.util.Constants;
+import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
@@ -169,12 +169,12 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         TransportInDescription httpsTransportIn = axis2MsgCtx.getConfigurationContext().getAxisConfiguration().getTransportIn(httpsTransportName);
         String lbHttpPort = (String) httpTransportIn.getParameter("port").getValue();
         String lbHttpsPort = (String) httpsTransportIn.getParameter("port").getValue();
-        String clusterId = currentMember.getProperties().getProperty(Constants.CLUSTER_ID);
+        String clusterId = currentMember.getProperties().getProperty(LoadBalancerConstants.CLUSTER_ID);
 
-        synCtx.setProperty(Constants.LB_TARGET_HOSTNAME, targetHostname);
-        synCtx.setProperty(Constants.LB_HTTP_PORT, lbHttpPort);
-        synCtx.setProperty(Constants.LB_HTTPS_PORT, lbHttpsPort);
-        synCtx.setProperty(Constants.CLUSTER_ID, clusterId);
+        synCtx.setProperty(LoadBalancerConstants.LB_TARGET_HOSTNAME, targetHostname);
+        synCtx.setProperty(LoadBalancerConstants.LB_HTTP_PORT, lbHttpPort);
+        synCtx.setProperty(LoadBalancerConstants.LB_HTTPS_PORT, lbHttpsPort);
+        synCtx.setProperty(LoadBalancerConstants.CLUSTER_ID, clusterId);
     }
     
 	protected String getTransportId(String incomingTransportName) {
@@ -263,8 +263,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         axis2Member.setDomain(member.getClusterId());
         axis2Member.setActive(member.isActive());
         // Set cluster id and member id in member properties
-        axis2Member.getProperties().setProperty(Constants.CLUSTER_ID, member.getClusterId());
-        axis2Member.getProperties().setProperty(Constants.MEMBER_ID, member.getMemberId());
+        axis2Member.getProperties().setProperty(LoadBalancerConstants.CLUSTER_ID, member.getClusterId());
+        axis2Member.getProperties().setProperty(LoadBalancerConstants.MEMBER_ID, member.getMemberId());
         // Update axis2 member ports
         updateAxis2MemberPorts(synCtx, axis2Member);
         return axis2Member;
@@ -288,13 +288,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         if (outgoingPort == null) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Could not find the port for proxy port %d in member %s", incomingPort,
-                        axis2Member.getProperties().getProperty(Constants.MEMBER_ID)));
+                        axis2Member.getProperties().getProperty(LoadBalancerConstants.MEMBER_ID)));
             }
             throwSynapseException(synCtx, 500, "Internal server error");
         }
-        if (Constants.HTTP.equals(transport)) {
+        if (LoadBalancerConstants.HTTP.equals(transport)) {
             axis2Member.setHttpPort(outgoingPort.getValue());
-        } else if (Constants.HTTPS.equals(transport)) {
+        } else if (LoadBalancerConstants.HTTPS.equals(transport)) {
             axis2Member.setHttpsPort(outgoingPort.getValue());
         }
     }
@@ -310,10 +310,10 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         org.apache.axis2.context.MessageContext msgCtx =
                 ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         try {
-            String servicePrefix = (String) msgCtx.getProperty(Constants.AXIS2_MSG_CTX_SERVICE_PREFIX);
+            String servicePrefix = (String) msgCtx.getProperty(LoadBalancerConstants.AXIS2_MSG_CTX_SERVICE_PREFIX);
             if (servicePrefix == null) {
                 if (log.isErrorEnabled()) {
-                    log.error(String.format("%s property not found in axis2 message context", Constants.AXIS2_MSG_CTX_SERVICE_PREFIX));
+                    log.error(String.format("%s property not found in axis2 message context", LoadBalancerConstants.AXIS2_MSG_CTX_SERVICE_PREFIX));
                 }
                 throwSynapseException(synCtx, 500, "Internal server error");
             }
@@ -370,8 +370,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @return
      */
     private Member findMemberFromAxis2Member(MessageContext synCtx, org.apache.axis2.clustering.Member axis2Member) {
-        String clusterId = axis2Member.getProperties().getProperty(Constants.CLUSTER_ID);
-        String memberId = axis2Member.getProperties().getProperty(Constants.MEMBER_ID);
+        String clusterId = axis2Member.getProperties().getProperty(LoadBalancerConstants.CLUSTER_ID);
+        String memberId = axis2Member.getProperties().getProperty(LoadBalancerConstants.MEMBER_ID);
         if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(memberId)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Could not find cluster id and/or member id properties in axis2 member: [cluster-id] %s " +
@@ -446,7 +446,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private String extractUrl(MessageContext synCtx) {
         Axis2MessageContext axis2smc = (Axis2MessageContext) synCtx;
         org.apache.axis2.context.MessageContext axis2MessageCtx = axis2smc.getAxis2MessageContext();
-        return (String) axis2MessageCtx.getProperty(Constants.AXIS2_MSG_CTX_TRANSPORT_IN_URL);
+        return (String) axis2MessageCtx.getProperty(LoadBalancerConstants.AXIS2_MSG_CTX_TRANSPORT_IN_URL);
     }
 
     /**
@@ -571,10 +571,10 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     private EndpointReference getEndpointReferenceAfterURLRewrite(MessageContext synCtx, org.apache.axis2.clustering.Member currentMember,
                                                                   String transport) {
         try {
-            if (transport.startsWith(Constants.HTTPS)) {
-                transport = Constants.HTTPS;
-            } else if (transport.startsWith(Constants.HTTP)) {
-                transport = Constants.HTTP;
+            if (transport.startsWith(LoadBalancerConstants.HTTPS)) {
+                transport = LoadBalancerConstants.HTTPS;
+            } else if (transport.startsWith(LoadBalancerConstants.HTTP)) {
+                transport = LoadBalancerConstants.HTTP;
             } else {
                 String msg = "Cannot load balance for non-HTTP/S transport " + transport;
                 log.error(msg);
@@ -582,7 +582,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             }
 
             String address = synCtx.getTo().getAddress();
-            if (address.startsWith(Constants.HTTP + "://") || address.startsWith(Constants.HTTPS + "://")) {
+            if (address.startsWith(LoadBalancerConstants.HTTP + "://") || address.startsWith(LoadBalancerConstants.HTTPS + "://")) {
                 // Remove protocol, hostname and port found in address
                 try {
                     URL addressUrl = new URL(address);
@@ -611,7 +611,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             }
 
             String memberHostName = currentMember.getHostName();
-            int memberPort = (transport.startsWith(Constants.HTTPS)) ? currentMember.getHttpsPort() : currentMember.getHttpPort();
+            int memberPort = (transport.startsWith(LoadBalancerConstants.HTTPS)) ? currentMember.getHttpsPort() : currentMember.getHttpPort();
             return new EndpointReference(new URL(transport, memberHostName, memberPort, address).toString());
 
         } catch (MalformedURLException e) {
@@ -735,7 +735,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private void incrementInFlightRequestCount(MessageContext messageContext) {
         try {
-            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            String clusterId = (String) messageContext.getProperty(LoadBalancerConstants.CLUSTER_ID);
             if (StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }
@@ -750,7 +750,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
 
     private void decrementInFlightRequestCount(MessageContext messageContext) {
         try {
-            String clusterId = (String) messageContext.getProperty(Constants.CLUSTER_ID);
+            String clusterId = (String) messageContext.getProperty(LoadBalancerConstants.CLUSTER_ID);
             if (StringUtils.isBlank(clusterId)) {
                 throw new RuntimeException("Cluster id not found in message context");
             }

@@ -39,6 +39,7 @@ import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
+import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
@@ -86,16 +87,16 @@ import java.util.concurrent.ExecutorService;
  */
 @SuppressWarnings({"UnusedDeclaration", "JavaDoc"})
 public class LoadBalancerServiceComponent {
+
     private static final Log log = LogFactory.getLog(LoadBalancerServiceComponent.class);
 
     private boolean activated = false;
+    private ExecutorService executorService;
     private LoadBalancerTopologyEventReceiver topologyReceiver;
     private LoadBalancerTenantEventReceiver tenantReceiver;
     private LoadBalancerApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
-	private static final String LOAD_BALANCER_IDENTIFIER = "Load-Balancer";
-	private static final int THREAD_POOL_SIZE = 20;
 
     protected void activate(ComponentContext ctxt) {
         try {
@@ -123,7 +124,10 @@ public class LoadBalancerServiceComponent {
             // Configure topology filters
             TopologyFilterConfigurator.configure(configuration);
 
-            ExecutorService executorService = StratosThreadPool.getExecutorService(LOAD_BALANCER_IDENTIFIER,THREAD_POOL_SIZE);
+            int threadPoolSize = Integer.getInteger(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_SIZE_KEY,
+                    LoadBalancerConstants.LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE);
+            executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
+                    threadPoolSize);
 
             startApplicationSignUpEventReceiver(executorService);
             startDomainMappingEventReceiver(executorService);
@@ -277,16 +281,38 @@ public class LoadBalancerServiceComponent {
                         .getSynapseEnvironment());
             }
         } catch (Exception e) {
-            log.warn("Couldn't remove the endpoint deployer");
+            log.warn("An error occurred while removing endpoint deployer", e);
         }
+
         // Terminate tenant receiver
-        tenantReceiver.terminate();
+        try {
+            tenantReceiver.terminate();
+        } catch (Exception e) {
+            log.warn("An error occurred while terminating tenant event receiver", e);
+        }
+
         // Terminate topology receiver
-        topologyReceiver.terminate();
+        try {
+            topologyReceiver.terminate();
+        } catch (Exception e) {
+            log.warn("An error occurred while terminating topology event receiver", e);
+        }
+
         // Terminate statistics notifier
-        statisticsNotifier.terminate();
+        try {
+            statisticsNotifier.terminate();
+        } catch (Exception e) {
+            log.warn("An error occurred while terminating health statistics notifier", e);
+        }
 
-
+        // Shutdown executor service
+        if(executorService != null) {
+            try {
+                executorService.shutdownNow();
+            } catch (Exception e) {
+                log.warn("An error occurred while shutting down load balancer executor service", e);
+            }
+        }
     }
 
     /**

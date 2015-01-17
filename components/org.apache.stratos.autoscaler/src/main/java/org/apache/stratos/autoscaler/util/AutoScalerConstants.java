@@ -18,10 +18,14 @@
  */
 package org.apache.stratos.autoscaler.util;
 
+import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+
 public final class AutoScalerConstants {
 
     /**
-     * Constant values for Auto Scaler
+     * Constant values for Autoscaler
      */
     public static final String ID_ELEMENT = "id";
     public static final String PARTITION_ELEMENT = "partition";
@@ -29,6 +33,11 @@ public final class AutoScalerConstants {
     public static final String PROPERTY_ELEMENT = "property";
     public static final String PROPERTY_NAME_ATTR= "name";
     public static final String PROPERTY_VALUE_ATTR = "value";
+    public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
+    public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
+    public static final int AUTOSCALER_THREAD_POOL_SIZE = 10;
+    public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
+            File.separator + "stratos-config.xml";
     
     /**
 	 * Persistence

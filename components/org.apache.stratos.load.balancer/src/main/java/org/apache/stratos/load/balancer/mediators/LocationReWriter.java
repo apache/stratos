@@ -21,7 +21,7 @@ package org.apache.stratos.load.balancer.mediators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
-import org.apache.stratos.load.balancer.util.Constants;
+import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
 import org.apache.synapse.mediators.AbstractMediator;
@@ -84,9 +84,9 @@ public class LocationReWriter extends AbstractMediator {
 
                     int targetPort = -1;
                     if (HTTP.equals(inLocationUrl.getProtocol())) {
-                        targetPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTP_PORT));
+                        targetPort = Integer.valueOf((String) messageContext.getProperty(LoadBalancerConstants.LB_HTTP_PORT));
                     } else if (HTTPS.equals(inLocationUrl.getProtocol())) {
-                        targetPort = Integer.valueOf((String) messageContext.getProperty(Constants.LB_HTTPS_PORT));
+                        targetPort = Integer.valueOf((String) messageContext.getProperty(LoadBalancerConstants.LB_HTTPS_PORT));
                     } else {
                         if (log.isWarnEnabled()) {
                             log.warn(String.format("An unknown protocol found: %s", inLocationUrl.getProtocol()));
