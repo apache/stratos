@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- * Deploy service group command.
+ * Deploy cartridge group command.
  */
 public class AddCartridgeGroupCommand implements Command<StratosCommandContext> {
 

@@ -925,31 +925,31 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deploy service groups
+    // This method helps to deploy cartridge groups
     public void addCartridgeGroup(String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "service group");
+        restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "cartridge group");
     }
 
-    // This method helps to undeploy service groups
+    // This method helps to undeploy cartridge groups
     public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
-        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "service group", groupDefinitionName);
+        restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "cartridge group", groupDefinitionName);
     }
 
-    // This method helps to describe service group definition
+    // This method helps to describe cartridge group definition
     public void describeServiceGroup (String groupDefinitionName) {
         try {
             GroupBean bean = (GroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
                     GroupBean.class, "serviceGroup");
 
             if (bean == null) {
-                System.out.println("Service group not found: " + groupDefinitionName);
+                System.out.println("Cartridge group not found: " + groupDefinitionName);
                 return;
             }
 
             System.out.println("Service Group : " + groupDefinitionName);
             System.out.println(getGson().toJson(bean));
         } catch (Exception e) {
-            String message = "Could not describe service group: " + groupDefinitionName;
+            String message = "Could not describe cartridge group: " + groupDefinitionName;
             printError(message, e);
         }
     }

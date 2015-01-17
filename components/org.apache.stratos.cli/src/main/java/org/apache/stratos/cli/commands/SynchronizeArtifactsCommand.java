@@ -16,7 +16,6 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
-
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
@@ -28,39 +27,48 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DescribeServiceGroupCommand implements Command<StratosCommandContext> {
+public class SynchronizeArtifactsCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(DescribeServiceGroupCommand.class);
+	private static final Logger logger = LoggerFactory.getLogger(SynchronizeArtifactsCommand.class);
 
-	public DescribeServiceGroupCommand() {
+	public SynchronizeArtifactsCommand() {
 	}
 
+	@Override
 	public String getName() {
-		return "describe-service-group";
+		return "synchronize-artifacts";
 	}
 
+	@Override
 	public String getDescription() {
-		return "Describe service groups";
+		return "Synchronize artifacts with Git repository for cartridge subscriptions";
 	}
 
+	@Override
 	public String getArgumentSyntax() {
-		return "[group-definition-name]";
+		return "[cartridge-subscription-alias]";
 	}
 
+	@Override
 	public int execute(StratosCommandContext context, String[] args) throws CommandException {
 		if (logger.isDebugEnabled()) {
-			logger.debug("Executing command: ", getName());
+			logger.debug("Executing {} command...", getName());
 		}
-		if ((args == null) || (args.length == 0)) {
-            context.getStratosApplication().printUsage(getName());
-            return CliConstants.COMMAND_FAILED;
+		if (args != null && args.length == 1) {
+			String cartridgeSubscriptionAlias = args[0];
+			if (logger.isDebugEnabled()) {
+				logger.debug("Synchronizing repository for cartridge subscription alias {}", cartridgeSubscriptionAlias);
+			}
+
+			RestCommandLineService.getInstance().synchronizeArtifacts(cartridgeSubscriptionAlias);
+			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
-            String groupId = args[0];
-            RestCommandLineService.getInstance().describeServiceGroup(groupId);
-            return CliConstants.COMMAND_SUCCESSFULL;
+			context.getStratosApplication().printUsage(getName());
+			return CliConstants.COMMAND_FAILED;
 		}
 	}
 
+	@Override
 	public Options getOptions() {
 		return null;
 	}

@@ -29,28 +29,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Un-deploy kubernetes host command.
+ * Un-deploy cartridge group command.
  */
-public class UndeployKubernetesHostCommand implements Command<StratosCommandContext> {
+public class RemoveCartridgeGroupCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UndeployKubernetesHostCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(RemoveCartridgeGroupCommand.class);
 
-    public UndeployKubernetesHostCommand() {
+    public RemoveCartridgeGroupCommand() {
     }
 
     @Override
     public String getName() {
-        return "remove-kubernetes-host";
+        return "remove-cartridge-group";
     }
 
     @Override
     public String getDescription() {
-        return "Remove kubernetes host";
+        return "Remove cartridge group";
     }
 
     @Override
     public String getArgumentSyntax() {
-        return "[cluster-id] [host-id]";
+        return "[cartridge-group-name]";
     }
 
     @Override
@@ -69,9 +69,8 @@ public class UndeployKubernetesHostCommand implements Command<StratosCommandCont
             return CliConstants.COMMAND_FAILED;
         }
 
-        String clusterId = args[0];
-        String hostId = args[1];
-        RestCommandLineService.getInstance().undeployKubernetesHost(clusterId, hostId);
+        String serviceGroupName = args[0];
+        RestCommandLineService.getInstance().undeployServiceGroup(serviceGroupName);
         return CliConstants.COMMAND_SUCCESSFULL;
     }
 }

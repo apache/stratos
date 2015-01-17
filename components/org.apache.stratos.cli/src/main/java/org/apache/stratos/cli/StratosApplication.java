@@ -123,7 +123,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ListApplicationsCommand();
         commands.put(command.getName(), command);
 
-        command = new UndeployCartridgeDefinitionCommand();
+        command = new RemoveCartridgeCommand();
         commands.put(command.getName(), command);
 
         command = new ListAutoscalePolicyCommand();
@@ -138,7 +138,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeAutoScalingPolicyCommand();
         commands.put(command.getName(), command);
 		
-		command = new SyncCommand();
+		command = new SynchronizeArtifactsCommand();
 		commands.put(command.getName(), command);
 
         command = new AddKubernetesClusterCommand();
@@ -153,10 +153,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddKubernetesHostCommand();
         commands.put(command.getName(), command);
 
-        command = new UnDeployKubernetesClusterCommand();
+        command = new RemoveKubernetesClusterCommand();
         commands.put(command.getName(), command);
 
-        command = new UndeployKubernetesHostCommand();
+        command = new RemoveKubernetesHostCommand();
         commands.put(command.getName(), command);
 
         command = new UpdateKubernetesMasterCommand();
@@ -168,10 +168,10 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddCartridgeGroupCommand();
         commands.put(command.getName(), command);
 
-        command = new DescribeServiceGroupCommand();
+        command = new DescribeCartridgeGroupCommand();
         commands.put(command.getName(), command);
 
-        command = new UndeployServiceGroupCommand();
+        command = new RemoveCartridgeGroupCommand();
         commands.put(command.getName(), command);
 
         command = new DeployApplicationCommand();
