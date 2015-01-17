@@ -132,9 +132,9 @@ public class CloudControllerContext implements Serializable {
     private Map<String, Cartridge> cartridgeTypeToCartridgeMap;
 
     /**
-     * Map of deployed service groups
-     * Key - service group name
-     * Value service group
+     * Map of deployed cartridge groups
+     * Key - cartridge group name
+     * Value cartridge group
      */
     private Map<String, ServiceGroup> serviceGroupNameToServiceGroupMap;
 

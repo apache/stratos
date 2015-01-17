@@ -124,20 +124,20 @@ public interface AutoScalerService {
     void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
 
     /**
-     * Add a service group
+     * Add a cartridge group
      * @param servicegroup
      * @throws InvalidServiceGroupException
      */
     public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
 
     /**
-     * Remove a service group
+     * Remove a cartridge group
      * @param groupName
      */
     public void removeServiceGroup(String groupName);
 
     /**
-     * Get service group
+     * Get cartridge group
      * @param name
      * @return
      */

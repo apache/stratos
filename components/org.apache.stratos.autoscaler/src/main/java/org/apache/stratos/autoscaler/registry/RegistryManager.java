@@ -318,12 +318,12 @@ public class RegistryManager {
 
     public void persistServiceGroup(ServiceGroup servicegroup) {
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
-            throw new IllegalArgumentException("Service group or group name can not be null");
+            throw new IllegalArgumentException("Cartridge group or group name can not be null");
         }
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
         persist(servicegroup, resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Persisted service group %s at path %s", servicegroup.getName(), resourcePath));
+            log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getName(), resourcePath));
         }
     }
 
@@ -492,9 +492,9 @@ public class RegistryManager {
                             serviceGroupList.add(serviceGroup);
                         }
                     } catch (IOException e) {
-                        throw new AutoScalerException("Error occurred while retrieving service group from Registry");
+                        throw new AutoScalerException("Error occurred while retrieving cartridge group from Registry");
                     } catch (ClassNotFoundException e) {
-                        throw new AutoScalerException("Error occurred while retrieving service group from Registry");
+                        throw new AutoScalerException("Error occurred while retrieving cartridge group from Registry");
                     }
 
                 }
@@ -508,7 +508,7 @@ public class RegistryManager {
 
     public void removeServiceGroup(String name) throws RegistryException {
         if (StringUtils.isEmpty(name)) {
-            throw new IllegalArgumentException("Name of the service group can not be empty");
+            throw new IllegalArgumentException("Name of the cartridge group can not be empty");
         }
 
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
@@ -516,10 +516,10 @@ public class RegistryManager {
         if (registryService.resourceExists(resourcePath)) {
             registryService.delete(resourcePath);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Service group %s is removed from registry", name));
+                log.debug(String.format("Cartridge group %s is removed from registry", name));
             }
         } else {
-            throw new AutoScalerException("No service group is found with name" + name);
+            throw new AutoScalerException("No cartridge group is found with name" + name);
         }
     }
 

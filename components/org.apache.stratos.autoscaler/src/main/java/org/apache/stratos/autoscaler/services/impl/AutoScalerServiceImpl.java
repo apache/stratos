@@ -468,22 +468,22 @@ public class AutoScalerServiceImpl implements AutoScalerService {
     public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException {
 
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
-            String msg = "Service group can not be null service name can not be empty.";
+            String msg = "Cartridge group can not be null service name can not be empty.";
             log.error(msg);
             throw new IllegalArgumentException(msg);
 
         }
 
         if(log.isInfoEnabled()) {
-            log.info(String.format("Adding service group: [group-name] %s", servicegroup.getName()));
+            log.info(String.format("Adding cartridge group: [group-name] %s", servicegroup.getName()));
         }
         String groupName = servicegroup.getName();
         if (RegistryManager.getInstance().serviceGroupExist(groupName)) {
-            throw new InvalidServiceGroupException("Service group with the name " + groupName + " already exist.");
+            throw new InvalidServiceGroupException("Cartridge group with the name " + groupName + " already exist.");
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(MessageFormat.format("Adding service group {0}", servicegroup.getName()));
+            log.debug(MessageFormat.format("Adding cartridge group {0}", servicegroup.getName()));
         }
 
         String[] subGroups = servicegroup.getCartridges();
@@ -528,7 +528,7 @@ public class AutoScalerServiceImpl implements AutoScalerService {
 
         RegistryManager.getInstance().persistServiceGroup(servicegroup);
         if(log.isInfoEnabled()) {
-            log.info(String.format("Service group successfully added: [group-name] %s", servicegroup.getName()));
+            log.info(String.format("Cartridge group successfully added: [group-name] %s", servicegroup.getName()));
         }
     }
 
@@ -536,20 +536,20 @@ public class AutoScalerServiceImpl implements AutoScalerService {
     public void removeServiceGroup(String groupName) {
         try {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Starting to remove service group: [group-name] %s", groupName));
+                log.info(String.format("Starting to remove cartridge group: [group-name] %s", groupName));
             }
             if(RegistryManager.getInstance().serviceGroupExist(groupName)) {
                 RegistryManager.getInstance().removeServiceGroup(groupName);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Service group removed: [group-name] %s", groupName));
+                    log.info(String.format("Cartridge group removed: [group-name] %s", groupName));
                 }
             } else {
                 if(log.isWarnEnabled()) {
-                    log.warn(String.format("Service group not found: [group-name] %s", groupName));
+                    log.warn(String.format("Cartridge group not found: [group-name] %s", groupName));
                 }
             }
         } catch (org.wso2.carbon.registry.core.exceptions.RegistryException e) {
-            String message = "Could not remove service group: " + groupName;
+            String message = "Could not remove cartridge group: " + groupName;
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -562,7 +562,7 @@ public class AutoScalerServiceImpl implements AutoScalerService {
         try {
             return RegistryManager.getInstance().getServiceGroup(name);
         } catch (Exception e) {
-            throw new AutoScalerException("Error occurred while retrieving service group", e);
+            throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
         }
     }
 
@@ -578,7 +578,7 @@ public class AutoScalerServiceImpl implements AutoScalerService {
         try {
             RegistryManager.getInstance().removeServiceGroup(name);
         } catch (RegistryException e) {
-            throw new AutoScalerException("Error occurred while removing the service groups", e);
+            throw new AutoScalerException("Error occurred while removing the cartridge groups", e);
         }
 
     }

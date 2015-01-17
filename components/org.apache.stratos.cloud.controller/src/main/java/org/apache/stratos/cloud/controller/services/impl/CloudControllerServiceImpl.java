@@ -230,13 +230,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (CloudControllerContext.getInstance().getServiceGroups().remove(serviceGroup)) {
                 CloudControllerContext.getInstance().persist();
                 if (log.isInfoEnabled()) {
-                    log.info("Successfully removed the service group: [group-name] " + serviceGroup);
+                    log.info("Successfully removed the cartridge group: [group-name] " + serviceGroup);
                 }
                 return;
             }
         }
 
-        String msg = "Service group not found: [group-name] " + name;
+        String msg = "Cartridge group not found: [group-name] " + name;
         log.error(msg);
         throw new InvalidServiceGroupException(msg);
 
@@ -252,7 +252,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         ServiceGroup serviceGroup = CloudControllerContext.getInstance().getServiceGroup(name);
 
         if (serviceGroup == null) {
-            String message = "Service group not found: [group-name] " + name;
+            String message = "Cartridge group not found: [group-name] " + name;
             if (log.isDebugEnabled()) {
                 log.debug(message);
             }
@@ -265,7 +265,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupSubGroups(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
         }
 
         return serviceGroup.getSubGroups();
@@ -277,7 +277,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public String[] getServiceGroupCartridges(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
         }
         String[] cs = serviceGroup.getCartridges();
         return cs;
@@ -287,7 +287,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     public Dependencies getServiceGroupDependencies(String name) throws InvalidServiceGroupException {
         ServiceGroup serviceGroup = this.getServiceGroup(name);
         if (serviceGroup == null) {
-            throw new InvalidServiceGroupException("Invalid service group: [group-name] " + serviceGroup);
+            throw new InvalidServiceGroupException("Invalid cartridge group: [group-name] " + serviceGroup);
         }
         return serviceGroup.getDependencies();
     }

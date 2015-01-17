@@ -50,21 +50,21 @@ public interface CloudControllerService {
     public void removeCartridge(String cartridgeType) throws InvalidCartridgeTypeException;
 
     /**
-     * Add a service group
+     * Add a cartridge group
      * @param servicegroup
      * @throws InvalidServiceGroupException
      */
     public void addServiceGroup(ServiceGroup servicegroup) throws InvalidServiceGroupException;
 
     /**
-     * Remove a service group
+     * Remove a cartridge group
      * @param name
      * @throws InvalidServiceGroupException
      */
     public void removeServiceGroup(String name) throws InvalidServiceGroupException;
 
     /**
-     * Get service group
+     * Get cartridge group
      * @param groupName
      * @return
      * @throws InvalidServiceGroupException
@@ -72,7 +72,7 @@ public interface CloudControllerService {
     public ServiceGroup getServiceGroup(String groupName) throws InvalidServiceGroupException;
 
     /**
-     * Get service group sub group
+     * Get cartridge group sub group
      * @param groupName
      * @return
      * @throws InvalidServiceGroupException
@@ -80,7 +80,7 @@ public interface CloudControllerService {
     public String[] getServiceGroupSubGroups(String groupName) throws InvalidServiceGroupException;
 
     /**
-     * Get cartridges of a service group
+     * Get cartridges of a cartridge group
      * @param groupName
      * @return
      * @throws InvalidServiceGroupException
@@ -88,7 +88,7 @@ public interface CloudControllerService {
     public String[] getServiceGroupCartridges(String groupName) throws InvalidServiceGroupException;
 
     /**
-     * Get service group dependencies
+     * Get cartridge group dependencies
      * @param groupName
      * @return
      * @throws InvalidServiceGroupException

@@ -248,7 +248,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         String lbClusterId = cluster.getMember(memberActivatedEvent.getMemberId()).getLbClusterId();
         Member member = cluster.getMember(memberActivatedEvent.getMemberId());
 
-        // check whether member activated event is received from the same cluster, lbcluster or service group
+        // check whether member activated event is received from the same cluster, lbcluster or cartridge group
         if (ExtensionUtils.isRelevantMemberEvent(memberActivatedEvent.getServiceName(), memberActivatedEvent.getClusterId(), lbClusterId)) {
             Map<String, String> env = new HashMap<String, String>();
             env.put("STRATOS_MEMBER_ACTIVATED_MEMBER_IP", memberActivatedEvent.getDefaultPrivateIP());
@@ -412,7 +412,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         Member terminatedMember = cluster.getMember(memberTerminatedEvent.getMemberId());
         String lbClusterId = cluster.getMember(memberTerminatedEvent.getClusterId()).getLbClusterId();
 
-        // check whether terminated member is within the same cluster, LB cluster or service group
+        // check whether terminated member is within the same cluster, LB cluster or cartridge group
         if (ExtensionUtils.isRelevantMemberEvent(memberTerminatedEvent.getServiceName(),
                 memberTerminatedEvent.getClusterId(), lbClusterId)) {
 
