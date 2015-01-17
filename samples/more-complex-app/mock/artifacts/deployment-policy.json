@@ -68,7 +68,7 @@
             ]
         },
         {
-            "alias": "mygroup88",
+            "alias": "mygroup8",
             "networkPartition": [
                 {
                     "id": "openstack_R1",

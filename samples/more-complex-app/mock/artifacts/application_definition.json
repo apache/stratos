@@ -67,7 +67,7 @@
             },
             {
                 "name": "group8",
-                "alias": "mygroup88",
+                "alias": "mygroup8",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
                 "groups": [
@@ -133,7 +133,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mygroup6,group.mygroup88,cartridge.mytomcat1"
+                "group.group6,cartridge.tomcat,group.group8"
             ],
             "terminationBehaviour": "terminate-all"
         }
