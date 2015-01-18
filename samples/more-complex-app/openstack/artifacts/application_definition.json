@@ -1,0 +1,141 @@
+{
+    "applicationId": "app_boo",
+    "alias": "app_boo_r2",
+    "components": {
+        "groups": [
+            {
+                "name": "group6",
+                "alias": "mygroup6",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 1,
+                "groups": [
+                    {
+                        "name": "group7",
+                        "alias": "mygroup7",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat1",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "group7tom1",
+                                    "autoscalingPolicy": "autoscale_policy_1"
+                                }
+                            },
+                            {
+                                "type": "tomcat2",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "group7tom2",
+                                    "autoscalingPolicy": "autoscale_policy_1"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "group8",
+                        "alias": "mygroup8",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat1",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "group8tom",
+                                    "autoscalingPolicy": "autoscale_policy_1"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "cartridges": [
+                    {
+                        "type": "tomcat2",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "group6tom",
+                            "autoscalingPolicy": "autoscale_policy_1"
+                        }
+                    }
+                ]
+            },
+            {
+                "name": "group8",
+                "alias": "mygroup8",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 1,
+                "groups": [
+                    {
+                        "name": "group9",
+                        "alias": "mygroup9",
+                        "groupMinInstances": 1,
+                        "groupMaxInstances": 1,
+                        "cartridges": [
+                            {
+                                "type": "tomcat1",
+                                "cartridgeMin": 1,
+                                "cartridgeMax": 2,
+                                "subscribableInfo": {
+                                    "alias": "group9tom",
+                                    "autoscalingPolicy": "autoscale_policy_1"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "cartridges": [
+                    {
+                        "type": "tomcat1",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "group8tom1",
+                            "autoscalingPolicy": "autoscale_policy_1"
+                        }
+                    },
+                    {
+                        "type": "tomcat2",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "group8tom2",
+                            "autoscalingPolicy": "autoscale_policy_1"
+                        }
+                    }
+                ]
+            }
+        ],
+        "cartridges": [
+            {
+                "type": "tomcat",
+                "cartridgeMin": 1,
+                "cartridgeMax": 2,
+                "subscribableInfo": {
+                    "alias": "mytomcat1",
+                    "autoscalingPolicy": "autoscale_policy_1"
+                }
+            },
+            {
+                "type": "tomcat1",
+                "cartridgeMin": 1,
+                "cartridgeMax": 2,
+                "subscribableInfo": {
+                    "alias": "mytomcat2",
+                    "autoscalingPolicy": "autoscale_policy_1"
+                }
+            }
+        ],
+        "dependencies": {
+            "startupOrders": [
+                "group.group6,cartridge.tomcat,group.group8"
+            ],
+            "terminationBehaviour": "terminate-all"
+        }
+    }
+}

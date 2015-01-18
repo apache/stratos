@@ -1,0 +1,35 @@
+{
+    "name": "group1",
+    "groups": [
+        {
+            "name": "group2",
+            "groupScalingEnabled": "true",
+            "cartridges": [
+                "c2",
+                "c3"
+            ],
+            "dependencies": {
+                "startupOrders": [
+                    "cartridge.c3,cartridge.c2"
+                ],
+                "scalingDependants": [
+                    "cartridge.c3, cartridge.c2"
+                ],
+                "terminationBehaviour": "terminate-all"
+            }
+        }
+    ],
+    "cartridges": [
+        "c1"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            "cartridge.c1,group.group2"
+        ],
+        "scalingDependants": [
+            "cartridge.c1, group.group2"
+        ],
+        "terminationBehaviour": "terminate-dependents"
+    }
+}
+

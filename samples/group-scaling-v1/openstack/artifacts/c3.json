@@ -1,10 +1,10 @@
 {
-    "type": "tomcat",
+    "type": "c3",
     "provider": "apache",
+    "host": "stratos.apache.org",
     "category": "data",
-    "host": "isuruh.lk",
-    "displayName": "tomcat",
-    "description": "tomcat Cartridge",
+    "displayName": "c3",
+    "description": "c3 Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
@@ -19,13 +19,14 @@
     "iaasProvider": [
         {
             "type": "openstack",
-            "imageId": "RegionOne/a63609be-61df-436f-80bc-d2b6068a4c3a",
+            "imageId": "RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e",
             "networkInterfaces": [
                 {
                     "name": "network-non-routable",
                     "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
                 }
             ],
+            "maxInstanceLimit": "2",
             "property": [
                 {
                     "name": "instanceType",
@@ -41,11 +42,5 @@
                 }
             ]
         }
-    ],
-    "loadBalancer": {
-        "property": {
-            "name": "no.load.balancer",
-            "value": "true"
-        }
-    },
+    ]
 }

@@ -1,0 +1,23 @@
+{
+    "name": "group8",
+    "groups": [
+        {
+            "name": "group9",
+            "cartridges": [
+                "tomcat1"
+            ]
+        }
+    ],
+    "cartridges": [
+        "tomcat2",
+        "tomcat1"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            "group.group9,cartridge.tomcat2",
+            "group.group9,cartridge.tomcat1"
+        ],
+        "terminationBehaviour": "terminate-all"
+    }
+}
+
