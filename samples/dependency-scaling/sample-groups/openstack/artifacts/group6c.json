@@ -1,0 +1,15 @@
+{
+    "name": "group6",
+    "groupScalingEnabled": "true",
+    "cartridges": [
+        "esb",
+        "php"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            "cartridge.esb,cartridge.php"
+        ],
+        "terminationBehaviour": "terminate-all"
+    }
+}
+

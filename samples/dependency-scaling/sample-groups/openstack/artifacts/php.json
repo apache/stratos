@@ -1,0 +1,51 @@
+{
+    "type": "php",
+    "provider": "apache",
+    "category": "data",
+    "host": "isuruh.lk",
+    "displayName": "php",
+    "description": "php Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "protocol": "http",
+            "port": "22",
+            "proxyPort": "8280"
+        }
+    ],
+    "deployment": {
+    },
+    "iaasProvider": [
+        {
+            "type": "openstack",
+            "imageId": "RegionOne/a63609be-61df-436f-80bc-d2b6068a4c3a",
+            "networkInterfaces": [
+                {
+                    "name": "network-non-routable",
+                    "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
+                }
+            ],
+            "property": [
+                {
+                    "name": "instanceType",
+                    "value": "RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+                },
+                {
+                    "name": "keyPair",
+                    "value": "lahiru-key"
+                },
+                {
+                    "name": "securityGroups",
+                    "value": "default"
+                }
+            ]
+        }
+    ],
+    "loadBalancer": {
+        "property": {
+            "name": "no.load.balancer",
+            "value": "true"
+        }
+    },
+}
