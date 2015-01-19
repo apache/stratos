@@ -494,6 +494,7 @@ var cartridgeBlockTemplate = {
                     "id": "root/subscribableInfo/autoscalingPolicy",
                     "default": "autoscale_policy_1",
                     "title":"Auto-scaling Policy: ",
+                    "enum": [],
                     "required":false
                 },
                 "artifactRepository": {
@@ -534,7 +535,7 @@ var cartridgeBlockDefault = {
     "cartridgeMax":2,
     "subscribableInfo":{
         "alias":"alias2",
-        "autoscalingPolicy":"autoscale_policy_1",
+        "autoscalingPolicy":"",
         "artifactRepository":{
             "privateRepo":"true",
             "repoUrl":"http://xxx:10080/git/default.git",
@@ -721,6 +722,15 @@ $(document).ready(function(){
         if(blockType == 'cartridge' || blockType == 'group-cartridge'){
             startval = cartridgeBlockDefault;
             startval['type'] = ctype;
+            //get list of autosacles
+            var policies = editorAutoscalePolicies;
+            var policiesEnum = [];
+            for(var i=0; i<policies.length; i++){
+                policiesEnum.push(policies[i].id);
+            }
+
+            cartridgeBlockTemplate['properties']['subscribableInfo']['properties']['autoscalingPolicy']['enum']
+                =policiesEnum;
         }else{
             startval = groupBlockDefault;
             startval['name'] = ctype;
