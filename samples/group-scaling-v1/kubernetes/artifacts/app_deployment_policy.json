@@ -1,0 +1,68 @@
+{
+    "applicationId": "appscaling",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id":"network-p1",
+                "kubernetesClusterId":"kubernetes-cluster-1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "kubernetes",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "network-p2",
+                "activeByDefault": "false",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "kubernetes",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mygroup2",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "id": "network-p2",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

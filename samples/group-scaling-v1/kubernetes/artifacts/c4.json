@@ -1,0 +1,34 @@
+{
+    "type": "c4",
+    "provider": "apache",
+    "host": "stratos.apache.org",
+    "category": "data",
+    "displayName": "c4",
+    "description": "c4 Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "protocol": "http",
+            "port": "22",
+            "proxyPort": "8280"
+        }
+    ],
+    "deployment":{
+        "baseDir":"/var/www"
+    },
+        "iaasProvider":[
+        {
+            "type":"kubernetes",
+            "imageId":"stratos/cartridge:4.1.0-alpha",
+            "networkInterfaces":[
+            {
+               "name":"network-non-routable",
+               "networkUuid":""
+            }
+            ],
+            "property":[
+            ]
+        }
+    ]
+}

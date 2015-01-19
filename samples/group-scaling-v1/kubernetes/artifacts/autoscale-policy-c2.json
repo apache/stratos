@@ -1,0 +1,14 @@
+{
+    "id": "autoscale_policy_c2",
+    "loadThresholds": {
+        "requestsInFlight": {
+            "threshold": 90
+        },
+        "memoryConsumption": {
+            "threshold": 5
+        },
+        "loadAverage": {
+            "threshold": 50
+        }
+    }
+}
