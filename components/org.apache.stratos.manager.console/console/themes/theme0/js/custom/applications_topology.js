@@ -5,6 +5,7 @@ function genTree(data){
     var rootnode ={};
     rootnode.name = data.id;
     rootnode.parent = null;
+    rootnode.status = data.status;
     //create initial root node
     rawout.push(rootnode);
 
@@ -13,8 +14,9 @@ function genTree(data){
         for(var prop in items){
             if (items.hasOwnProperty(prop)) {
                 var cur_name = items[prop].instanceId,
-                    status = items[prop].status;
-                rawout.push({"name": cur_name, "parent": parent, "status": status});
+                    status = items[prop].status,
+                    type = 'applicationInstances';
+                rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status});
 
                 clusterInstances(items[prop].clusterInstances, collector, cur_name);
                 groupInstances(items[prop].groupInstances, collector, cur_name)
@@ -164,7 +166,6 @@ function update(source) {
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-
             if (d.type == 'clusters') {
                 div.html(
                         "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
@@ -190,9 +191,17 @@ function update(source) {
                         "<strong>Status: </strong>" + d.status
                 ).style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
+            } else if (d.type == 'applicationInstances') {
+                div.html(
+                        "<strong>Instance Id: </strong>" + d.name + "<br/>" +
+                        "<strong>Status: </strong>" + d.status
+                ).style("left", (d3.event.pageX) + "px")
+                    .style("top", (d3.event.pageY - 28) + "px");
+
             } else {
                 div.html(
-                        "<strong>Alias: </strong>" + d.name + "<br/>"
+                        "<strong>Alias: </strong>" + d.name + "<br/>"+
+                        "<strong>Status: </strong>" + d.status
                 ).style("left", (d3.event.pageX) + "px")
                     .style("top", (d3.event.pageY - 28) + "px");
             }
