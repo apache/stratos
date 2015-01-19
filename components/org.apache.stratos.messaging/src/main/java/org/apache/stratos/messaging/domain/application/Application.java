@@ -97,6 +97,21 @@ public class Application extends ParentComponent<ApplicationInstance> {
         return this.getInstanceIdToInstanceContextMap().get(applicationInstancetId).getTransitionedStates();
     }
 
+    public ApplicationStatus getStatus() {
+        if((getInstanceIdToInstanceContextMap() != null) && (getInstanceIdToInstanceContextMap().size() > 0)) {
+            boolean applicationActive = true;
+            for (ApplicationInstance applicationInstance : getInstanceIdToInstanceContextMap().values()) {
+                if(applicationInstance.getStatus() != ApplicationStatus.Active) {
+                    applicationActive = false;
+                }
+            }
+            if(applicationActive) {
+                return ApplicationStatus.Active;
+            }
+        }
+        return ApplicationStatus.Inactive;
+    }
+
     public ApplicationStatus getStatus(String applicationInstanceId) {
         return this.getInstanceIdToInstanceContextMap().get(applicationInstanceId).getStatus();
     }

@@ -949,7 +949,7 @@ public class StratosApiV41Utils {
         return applicationBeanList.toArray(new ApplicationInfoBean[applicationBeanList.size()]);
     }
 
-    public static ApplicationInfoBean getApplicationInstanceRuntime(String applicationId) {
+    public static ApplicationInfoBean getApplicationRuntime(String applicationId) {
         ApplicationInfoBean applicationBean = null;
         try {
             ApplicationManager.acquireReadLockForApplication(applicationId);

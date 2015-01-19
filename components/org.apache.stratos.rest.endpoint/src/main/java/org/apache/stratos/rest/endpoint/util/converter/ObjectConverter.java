@@ -1388,10 +1388,10 @@ public class ObjectConverter {
             return null;
         }
 
-        ApplicationInfoBean applicationBean = new
-                ApplicationInfoBean();
+        ApplicationInfoBean applicationBean = new ApplicationInfoBean();
         applicationBean.setId(application.getUniqueIdentifier());
         applicationBean.setName(application.getName());
+        applicationBean.setStatus(application.getStatus().name());
         applicationBean.setDescription(application.getDescription());
         applicationBean.setTenantDomain(application.getTenantDomain());
         applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
