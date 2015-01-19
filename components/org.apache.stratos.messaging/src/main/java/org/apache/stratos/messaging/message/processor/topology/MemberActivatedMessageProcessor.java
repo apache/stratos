@@ -148,7 +148,7 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
             }
         }
 
-        if (member.getStatus() == MemberStatus.Activated) {
+        if (member.getStatus() == MemberStatus.Active) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member already activated: [service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
@@ -161,10 +161,10 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
             member.addPorts(event.getPorts());
             member.setDefaultPrivateIP(event.getDefaultPrivateIP());
             member.setMemberPrivateIPs(event.getMemberPrivateIPs());
-            if (!member.isStateTransitionValid(MemberStatus.Activated)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Activated);
+            if (!member.isStateTransitionValid(MemberStatus.Active)) {
+                log.error("Invalid State Transition from " + member.getStatus() + " to " + MemberStatus.Active);
             }
-            member.setStatus(MemberStatus.Activated);
+            member.setStatus(MemberStatus.Active);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Member activated: [service] %s [cluster] %s [member] %s",

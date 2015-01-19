@@ -578,7 +578,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
                 List<Member> apistoreMemberList = new ArrayList<Member>();
                 for (Member member : apistoreClusterCollection.iterator().next().getMembers()) {
-                    if (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated)) {
+                    if (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Active)) {
                         apistoreMemberList.add(member);
                         this.wkMembers.add(member);
                     }
@@ -597,7 +597,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
                 List<Member> publisherMemberList = new ArrayList<Member>();
                 for (Member member : publisherClusterCollection.iterator().next().getMembers()) {
-                    if (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated)) {
+                    if (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Active)) {
                         publisherMemberList.add(member);
                         this.wkMembers.add(member);
                     }
@@ -659,7 +659,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 if (member.getProperties() != null &&
                         member.getProperties().containsKey("PRIMARY") &&
                         member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
-                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))
+                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Active))
                         ) {
                     wkMembers.add(member);
                     this.wkMembers.add(member);
@@ -734,7 +734,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
                 if (member.getProperties() != null && member.getProperties().containsKey("PRIMARY") &&
                         member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
-                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))) {
+                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Active))) {
 
                     managerWkaMembers.add(member);
                     this.wkMembers.add(member);
@@ -807,7 +807,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
                 if (member.getProperties() != null &&
                         member.getProperties().containsKey("PRIMARY") &&
                         member.getProperties().getProperty("PRIMARY").toLowerCase().equals("true") &&
-                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Activated))) {
+                        (member.getStatus().equals(MemberStatus.Starting) || member.getStatus().equals(MemberStatus.Active))) {
                     if (log.isDebugEnabled()) {
                         log.debug("Added worker member " + member.getMemberId());
                     }

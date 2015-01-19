@@ -495,7 +495,7 @@ public class LoadBalancerConfiguration {
                                 Port port = new Port(portNode.getName(), Integer.valueOf(value), Integer.valueOf(proxy));
                                 member.addPort(port);
                             }
-                            member.setStatus(MemberStatus.Activated);
+                            member.setStatus(MemberStatus.Active);
                             cluster.addMember(member);
                         }
                         // Add cluster to service

@@ -319,7 +319,7 @@ public class ClusterContext extends AbstractClusterContext {
                 memberContext.setPartition(partition);
                 memberContext.setProperties(AutoscalerUtil.toStubProperties(member.getProperties()));
 
-                if (MemberStatus.Activated.equals(member.getStatus())) {
+                if (MemberStatus.Active.equals(member.getStatus())) {
                     clusterLevelPartitionContext.addActiveMember(memberContext);
                     if (log.isDebugEnabled()) {
                         String msg = String.format("Active member read from topology and added to active member list: %s", member.toString());

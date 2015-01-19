@@ -593,7 +593,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      *                 the topology if needed.
      */
     private boolean fixMemberStatus(Member member, Topology topology) {
-        if (member.getStatus() == MemberStatus.Activated) {
+        if (member.getStatus() == MemberStatus.Active) {
             MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
                     member.getServiceName(),
                     member.getClusterId(),
@@ -752,7 +752,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     //finding the responding members from the existing members in the topology.
                     int sizeOfRespondingMembers = 0;
                     for (Member member : members) {
-                        if (member.getStatus().getCode() >= MemberStatus.Activated.getCode()) {
+                        if (member.getStatus().getCode() >= MemberStatus.Active.getCode()) {
                             sizeOfRespondingMembers++;
                         }
                     }

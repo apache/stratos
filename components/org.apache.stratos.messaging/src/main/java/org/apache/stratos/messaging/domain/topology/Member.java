@@ -108,7 +108,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     }
 
     public boolean isActive () {
-        return memberStateManager.getCurrentState().equals(MemberStatus.Activated);
+        return memberStateManager.getCurrentState().equals(MemberStatus.Active);
     }
 
     public Collection<Port> getPorts() {

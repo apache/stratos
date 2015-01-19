@@ -746,7 +746,7 @@ public class StratosApiV40Utils {
 //        }
 //
 //        for(Member member : cluster.getMembers()) {
-//            if(member.getStatus().toString().equals(MemberStatus.Activated)) {
+//            if(member.getStatus().toString().equals(MemberStatus.Active)) {
 //                noOfActiveInstances ++;
 //            }
 //        }

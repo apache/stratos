@@ -625,12 +625,12 @@ public class TopologyBuilder {
         try {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
-            if (!member.isStateTransitionValid(MemberStatus.Activated)) {
+            if (!member.isStateTransitionValid(MemberStatus.Active)) {
                 log.error("Invalid State Transition from " + member.getStatus() + " to " +
-                        MemberStatus.Activated);
+                        MemberStatus.Active);
                 return;
             } else {
-                member.setStatus(MemberStatus.Activated);
+                member.setStatus(MemberStatus.Active);
                 log.info("member started event adding status activated");
                 Cartridge cartridge = CloudControllerContext.getInstance().
                         getCartridge(instanceActivatedEvent.getServiceName());
@@ -659,7 +659,7 @@ public class TopologyBuilder {
                         memberActivatedEvent.getNetworkPartitionId(),
                         memberActivatedEvent.getClusterId(),
                         memberActivatedEvent.getServiceName(),
-                        MemberStatus.Activated.toString(),
+                        MemberStatus.Active.toString(),
                         null);
             }
         } finally {

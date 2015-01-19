@@ -74,7 +74,7 @@ public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
                                     }
                                 }
                                 for (Member member : cluster.getMembers()) {
-                                    if (member.getStatus() == MemberStatus.Activated) {
+                                    if (member.getStatus() == MemberStatus.Active) {
                                         addMemberIpsToMemberIpHostnameMap(cluster, member);
                                     }
 
@@ -92,7 +92,7 @@ public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
 
             private boolean clusterHasActiveMembers(Cluster cluster) {
                 for (Member member : cluster.getMembers()) {
-                    if (member.getStatus() == MemberStatus.Activated) {
+                    if (member.getStatus() == MemberStatus.Active) {
                         return true;
                     }
                 }

@@ -156,7 +156,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
                     if (cluster.getMembers() != null) {
                         for (Member member : cluster.getMembers()) {
                             // we are checking faulty status only in previously activated members
-                            if (member != null && MemberStatus.Activated.equals(member.getStatus())) {
+                            if (member != null && MemberStatus.Active.equals(member.getStatus())) {
                                 // Initialize the member time stamp map from the topology at the beginning
                                 memberTimeStampMap.putIfAbsent(member.getMemberId(), currentTimeStamp);
                             }

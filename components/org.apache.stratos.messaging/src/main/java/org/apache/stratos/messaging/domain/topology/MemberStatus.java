@@ -47,13 +47,13 @@ public enum MemberStatus implements LifeCycleState {
     Starting(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting, MemberStatus.Activated));
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Starting, MemberStatus.Active));
         }
     },
-    Activated(3) {
+    Active(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
-            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Activated, MemberStatus.Suspended,
+            return new HashSet<LifeCycleState>(Arrays.asList(MemberStatus.Active, MemberStatus.Suspended,
                     MemberStatus.In_Maintenance, MemberStatus.Starting));
         }
     },
