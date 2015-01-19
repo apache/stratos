@@ -25,7 +25,6 @@
         {
             "type":"ec2",
             "imageId":"ap-southeast-1/ami-2e0d5a7c",
-            "maxInstanceLimit":"4",
             "property":[
                 {
                     "name":"instanceType",

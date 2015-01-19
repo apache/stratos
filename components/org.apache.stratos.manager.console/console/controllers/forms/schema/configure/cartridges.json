@@ -185,7 +185,7 @@
                 "type": "object",
                 "id": "root/iaasProvider/0",
                 "format": "grid",
-                "required": ["type", "imageId", "maxInstanceLimit"],
+                "required": ["type", "imageId"],
                 "properties": {
                     "type": {
                         "type": "string",
@@ -200,14 +200,6 @@
                         "title": "Image ID",
                         "name": "Image ID",
                         "default": "ap-southeast-1/ami­-70326522"
-                    },
-                    "maxInstanceLimit": {
-                        "type": "number",
-                        "id": "root/iaasProvider/0/maxInstanceLimit",
-                        "title": "Max Instance Limit",
-                        "name": "Max Instance Limit",
-                        "default": "5",
-                        "format": "number"
                     },
                     "property": {
                         "type": "array",
