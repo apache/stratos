@@ -9,11 +9,11 @@
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "mock",
+                        "provider": "kubernetes",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
