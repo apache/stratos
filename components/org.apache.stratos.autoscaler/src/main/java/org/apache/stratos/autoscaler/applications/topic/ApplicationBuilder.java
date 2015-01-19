@@ -76,21 +76,16 @@ public class ApplicationBuilder {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
+	    Applications applications = ApplicationHolder.getApplications();
+	    if (applications.getApplication(application.getUniqueIdentifier()) == null) {
+		    CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+		                                                                  appClusterContexts);
+		    ApplicationHolder.persistApplication(application);
+	    } else {
+		    log.warn("Application already exists: [application-id] " + application.getUniqueIdentifier());
+	    }
 
-        ApplicationHolder.acquireWriteLock();
-        try {
-            Applications applications = ApplicationHolder.getApplications();
-            if (applications.getApplication(application.getUniqueIdentifier()) == null) {
-                CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
-                        appClusterContexts);
-                ApplicationHolder.persistApplication(application);
-            } else {
-                log.warn("Application already exists: [application-id] " + application.getUniqueIdentifier());
-            }
-        } finally {
-            ApplicationHolder.releaseWriteLock();
-        }
-        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+	    ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
     public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,

@@ -118,6 +118,7 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
                 }
             }
             finally {
+	            ApplicationManager.releaseReadLockForApplication(applicationId);
                 TenantManager.releaseWriteLock();
             }
         }
