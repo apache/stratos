@@ -31,6 +31,10 @@ RESTCalls = new function(){
         return this.send("POST","/cartridges", cartridgeDefinition);
     };
 
+    this.deleteCartridgeDefinition = function(cartridgeType){
+        return this.send("DELETE","/cartridges/" + cartridgeType,{});
+    };
+
     this.activateTenant = function(tenantDomain){
         return this.send("POST","/tenant/activate/" + tenantDomain,{});
     };

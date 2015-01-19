@@ -39,6 +39,9 @@ try {
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
             break;
+        case "delete-cartridge":
+            formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 
