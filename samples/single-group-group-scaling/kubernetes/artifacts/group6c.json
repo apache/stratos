@@ -1,0 +1,11 @@
+{
+    "name": "group6",
+    "groupScalingEnabled": "true",
+    "cartridges": [
+        "tomcat"
+    ],
+    "dependencies": {
+        "terminationBehaviour": "terminate-all"
+    }
+}
+
