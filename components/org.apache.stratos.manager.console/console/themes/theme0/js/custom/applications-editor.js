@@ -683,6 +683,9 @@ $(document).ready(function(){
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
                 } else {
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                    window.setTimeout(function(){
+                        window.location.href = '../';
+                    }, 1500);
                 }
             }
         })
