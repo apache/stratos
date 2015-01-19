@@ -508,7 +508,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully deactivate " + tenantDomain + " tenant");
+                System.out.println("You have succesfully deactivated " + tenantDomain + " tenant");
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -537,7 +537,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully activated tenant: " + tenantDomain);
+                System.out.println("You have succesfully activated " + tenantDomain + " tenant");
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);

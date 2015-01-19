@@ -159,10 +159,10 @@ public class RestClient implements GenericRestClient {
         try {
             int responseCode = executePost(serviceEndpoint, entityBody);
             if (responseCode == 201) {
-                System.out.println(String.format("Successfully deployed %s", entityName));
+                System.out.println(String.format("Successfully added %s", entityName));
             }
         } catch (Exception e) {
-            String message = String.format("Error in deploying %s", entityName);
+            String message = String.format("Error in adding %s", entityName);
             System.out.println(message);
             logger.error(message, e);
         }

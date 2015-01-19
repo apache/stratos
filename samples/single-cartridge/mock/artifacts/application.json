@@ -1,0 +1,24 @@
+{  
+   "applicationId":"single-cartridge-app",
+   "alias":"single-cartridge-app",
+   "multiTenant":true,
+   "components":{  
+      "cartridges":[  
+         {  
+            "type":"tomcat",
+                "cartridgeMin": 1,
+                "cartridgeMax": 10,    
+				"subscribableInfo":{  
+               	"alias":"tomcat",
+               	"autoscalingPolicy":"autoscale-policy-1",
+                "artifactRepository":{
+                   "privateRepo":false,
+                   "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
+                   "repoUsername":"",
+                   "repoPassword":""
+                }
+            }
+         }
+      ]
+   }
+}

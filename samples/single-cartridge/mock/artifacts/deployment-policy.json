@@ -1,19 +1,18 @@
 {
-    "applicationId": "app_cartridge_v1",
+	"applicationId":"single-cartridge-app",
     "applicationPolicy": {
-        "applicationId": "app_cartridge_v1",
         "networkPartition": [
             {
-                "id": "openstack_R1",
+                "id": "network-p1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "P1",
+                        "id": "p1",
                         "provider": "mock",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
@@ -23,15 +22,15 @@
     },
     "childPolicies": [
         {
-            "alias": "mytomcat",
+            "alias": "tomcat",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "network-p1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
-                            "max": 8
+                            "id": "p1",
+                            "max": 5
                         }
                     ]
                 }

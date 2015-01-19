@@ -1,0 +1,46 @@
+{
+   "type":"tomcat",
+   "category":"framework",
+   "provider":"apache",
+   "host":"tomcat.apache.org",
+   "displayName":"tomcat",
+   "description":"Apache Tomcat",
+   "version":"7",
+   "multiTenant":"false",
+   "portMapping":[
+      {
+         "protocol":"http",
+         "port":"22",
+         "proxyPort":"8280"
+      }
+   ],
+   "deployment":{
+
+   },
+   "iaasProvider":[
+      {
+         "type":"mock",
+         "imageId":"",
+         "networkInterfaces":[
+            {
+               "name":"network-non-routable",
+               "networkUuid":""
+            }
+         ],
+         "property":[
+            {
+               "name":"instanceType",
+               "value":"RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+            },
+            {
+               "name":"keyPair",
+               "value":"imesh-key"
+            },
+            {
+               "name":"securityGroups",
+               "value":"default"
+            }
+         ]
+      }
+   ]
+}
