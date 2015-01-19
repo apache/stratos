@@ -10,6 +10,12 @@
                 "subscribableInfo": {
                     "alias": "mytomcat",
                     "autoscalingPolicy": "autoscale_policy_1"
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
                 }
             },
             {
@@ -19,6 +25,12 @@
                 "subscribableInfo": {
                     "alias": "myphp",
                     "autoscalingPolicy": "autoscale_policy_1"
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
                 }
             }
         ],
