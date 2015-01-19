@@ -82,6 +82,7 @@ class AgentGitHandler:
                 else:
                     #not empty
                     if AgentGitHandler.sync_initial_local_artifacts(repo_context):
+                        AgentGitHandler.log.debug("Cloning in to a directory which is not empty.")
                         AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
                         AgentGitHandler.pull(repo_context)
                         AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
@@ -89,6 +90,7 @@ class AgentGitHandler:
                         repo_context = None
         else:
             #subscribing run.. need to clone
+            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time", repo_info.repo_url)
             subscribe_run = True
             AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s", repo_info.tenant_id, repo_info.repo_url)
             repo_context = AgentGitHandler.clone(repo_info)
