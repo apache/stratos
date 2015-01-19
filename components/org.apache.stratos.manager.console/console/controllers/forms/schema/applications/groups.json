@@ -2,8 +2,8 @@
     "type":"object",
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "root",
-    "title": "Group Definition",
-    "name": "Group",
+    "title": "Cartridge Group Definition",
+    "name": "Cartridge Group",
     "options": {
         "disable_properties": true,
         "disable_collapse": true
