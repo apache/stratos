@@ -327,7 +327,7 @@ var groupBlockTemplate = {
         },
         "required": [
             "name",
-            "isGroupScalingEnabled",
+            "groupScalingEnabled",
             "dependencies"
         ]
     }
@@ -367,11 +367,14 @@ $(document).ready(function(){
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
                 } else {
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                    window.setTimeout(function(){
+                        window.location.href = '../';
+                    }, 1500);
                 }
             }
         })
             .always(function () {
-                btn.html('Add Group Definition');
+                btn.html('Add Cartridge Group Definition');
             });
 
     });
