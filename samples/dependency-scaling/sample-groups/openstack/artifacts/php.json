@@ -42,10 +42,4 @@
             ]
         }
     ],
-    "loadBalancer": {
-        "property": {
-            "name": "no.load.balancer",
-            "value": "true"
-        }
-    },
 }

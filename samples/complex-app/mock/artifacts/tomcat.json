@@ -1,8 +1,8 @@
 {
     "type": "tomcat",
     "provider": "apache",
-    "host": "isuruh.lk",
     "category": "data",
+    "host": "isuruh.lk",
     "displayName": "tomcat",
     "description": "tomcat Cartridge",
     "version": "7",
