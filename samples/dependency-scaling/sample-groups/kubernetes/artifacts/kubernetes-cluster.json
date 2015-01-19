@@ -1,0 +1,55 @@
+{
+      "clusterId": "kubernetes-cluster-1",
+      "description": "Kubernetes CoreOS cluster",
+      "kubernetesMaster": {
+                  "hostId" : "KubHostMaster1",
+                  "hostname" : "master.dev.kubernetes.example.org",
+                  "hostIpAddress" : "172.17.8.100",
+                  "property" : [
+                  ]
+        },
+
+        "portRange" : {
+           "upper": "5000",
+           "lower": "4500"
+        },
+
+        "kubernetesHosts": [
+              {
+                     "hostId" : "KubHostSlave1",
+                     "hostname" : "slave1.dev.kubernetes.example.org",
+                     "hostIpAddress" : "172.17.8.101",
+                     "property" : [
+                     ]
+                },
+                {
+                     "hostId" : "KubHostSlave2",
+                     "hostname" : "slave2.dev.kubernetes.example.org",
+                     "hostIpAddress" : "172.17.8.102",
+                     "property" : [
+                     ]
+                }
+    ],
+    "property":[
+       {
+          "name":"payload_parameter.MB_IP",
+          "value":"172.17.8.1"
+       },
+       {
+          "name":"payload_parameter.MB_PORT",
+          "value":"1883"
+       },
+       {
+          "name":"payload_parameter.CEP_IP",
+          "value":"172.17.8.1"
+       },
+       {
+          "name":"payload_parameter.CEP_PORT",
+          "value":"7711"
+       },
+       {
+          "name":"payload_parameter.LOG_LEVEL",
+          "value":"DEBUG"
+       }
+    ]
+}
