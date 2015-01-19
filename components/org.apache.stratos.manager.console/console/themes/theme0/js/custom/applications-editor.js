@@ -459,60 +459,69 @@ var cartridgeBlockTemplate = {
             "type":"string",
             "id": "root/type",
             "default": "name",
+            "title": "Cartridge Type: ",
             "required":false
         },
         "cartridgeMax": {
             "type":"number",
             "id": "root/cartridgeMax",
             "default":2,
+            "title":"Cartridge Max",
             "required":false
         },
         "cartridgeMin": {
             "type":"number",
             "id": "root/cartridgeMin",
+            "title":"Cartridge Min",
             "default":1,
             "required":false
         },
         "subscribableInfo": {
             "type":"object",
             "id": "root/subscribableInfo",
+            "title":"Subscribable Info: ",
             "required":false,
             "properties":{
                 "alias": {
                     "type":"string",
                     "id": "root/subscribableInfo/alias",
                     "default": "alias2",
+                    "title":"Alias: ",
                     "required":false
                 },
                 "autoscalingPolicy": {
                     "type":"string",
                     "id": "root/subscribableInfo/autoscalingPolicy",
                     "default": "autoscale_policy_1",
+                    "title":"Auto-scaling Policy: ",
                     "required":false
                 },
-                "privateRepo": {
-                    "type":"string",
-                    "id": "root/subscribableInfo/privateRepo",
-                    "default": "true",
-                    "required":false
-                },
-                "repoPassword": {
-                    "type":"string",
-                    "id": "root/subscribableInfo/repoPassword",
-                    "default": "password",
-                    "required":false
-                },
-                "repoURL": {
-                    "type":"string",
-                    "id": "root/subscribableInfo/repoURL",
-                    "default": "http://xxx:10080/git/default.git",
-                    "required":false
-                },
-                "repoUsername": {
-                    "type":"string",
-                    "id": "root/subscribableInfo/repoUsername",
-                    "default": "user",
-                    "required":false
+                "artifactRepository": {
+                    "id": "root/subscribableInfo/artifactRepository",
+                    "type": "object",
+                    "properties": {
+                        "privateRepo": {
+                            "id": "root/subscribableInfo/artifactRepository/privateRepo",
+                            "title":"Private Repository: ",
+                            "type": "boolean"
+                        },
+                        "repoUrl": {
+                            "id": "root/subscribableInfo/artifactRepository/repoUrl",
+                            "title":"Repository URL: ",
+                            "type": "string"
+                        },
+                        "repoUsername": {
+                            "id": "root/subscribableInfo/artifactRepository/repoUsername",
+                            "title":"Repository Username: ",
+                            "type": "string"
+                        },
+                        "repoPassword": {
+                            "id": "root/subscribableInfo/artifactRepository/repoPassword",
+                            "title":"Repository Password: ",
+                            "type": "string",
+                            "format":"password"
+                        }
+                    }
                 }
             }
         }
@@ -526,10 +535,13 @@ var cartridgeBlockDefault = {
     "subscribableInfo":{
         "alias":"alias2",
         "autoscalingPolicy":"autoscale_policy_1",
-        "privateRepo":"true",
-        "repoPassword":"password",
-        "repoURL":"http://xxx:10080/git/default.git",
-        "repoUsername":"user"
+        "artifactRepository":{
+            "privateRepo":"true",
+            "repoUrl":"http://xxx:10080/git/default.git",
+            "repoUsername":"user",
+            "repoPassword":"password",
+        }
+
     }
 };
 
