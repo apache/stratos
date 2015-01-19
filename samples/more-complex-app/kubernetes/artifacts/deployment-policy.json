@@ -1,0 +1,88 @@
+{
+    "applicationId": "app_boo",
+    "applicationPolicy": {
+        "applicationId": "app_boo_r4",
+        "networkPartition": [
+            {
+                "id":"network-p1",
+                "kubernetesClusterId":"kubernetes-cluster-1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "kubernetes",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat2",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mytomcat1",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup6",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup8",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
