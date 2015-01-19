@@ -16,6 +16,12 @@
                         "subscribableInfo": {
                             "alias": "tom2group6",
                             "autoscalingPolicy": "autoscale_policy_1"
+                            "artifactRepository":{
+                                "privateRepo":false,
+                                "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
+                                "repoUsername":"",
+                                "repoPassword":""
+                            }
                         }
                     },
                     {
@@ -25,6 +31,12 @@
                         "subscribableInfo": {
                             "alias": "tom1group6",
                             "autoscalingPolicy": "autoscale_policy_1"
+                            "artifactRepository":{
+                                "privateRepo":false,
+                                "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                                "repoUsername":"",
+                                "repoPassword":""
+                            }
                         }
                     }
                 ]
@@ -38,6 +50,12 @@
                 "subscribableInfo": {
                     "alias": "mytomcat",
                     "autoscalingPolicy": "autoscale_policy_1"
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
                 }
             }
         ]
