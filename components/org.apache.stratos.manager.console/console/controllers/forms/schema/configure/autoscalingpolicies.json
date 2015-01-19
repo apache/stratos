@@ -33,14 +33,14 @@
             "default": false,
             "maxItems":1
         },
-        "instanceRoundingFactor": {
+/*        "instanceRoundingFactor": {
             "type":"number",
             "id": "root/instanceRoundingFactor",
             "title": "Instance Rounding Factor",
             "name": "Instance Rounding Factor",
             "default": false,
             "maxItems":1
-        },
+        },*/
         "loadThresholds": {
             "type":"object",
             "title":"Load Thresholds",
