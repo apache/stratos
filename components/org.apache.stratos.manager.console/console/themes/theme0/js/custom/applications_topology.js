@@ -112,7 +112,7 @@ function update(source) {
 
     // ************** Generate the tree diagram	 *****************
     var margin = {top: 40, right: 120, bottom: 20, left: 120},
-        width = 960 - margin.right - margin.left,
+        width = 900 - margin.right - margin.left,
         height = 900 - margin.top - margin.bottom;
 
     var i = 0;
