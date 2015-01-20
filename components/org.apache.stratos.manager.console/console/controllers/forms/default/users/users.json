@@ -4,6 +4,5 @@
     "role":"Internal/user",
     "firstName":"FirstName",
     "lastName":"LastName",
-    "email":"user@apache.org",
-    "profileName":"profilename"
+    "email":"user@apache.org"
 }
