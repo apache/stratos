@@ -200,10 +200,11 @@
                                         var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
                                     } else {
                                         var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                                        window.setTimeout(function(){
+                                            location.reload();
+                                        }, 1500);
                                     }
-                                    window.setTimeout(function(){
-                                        location.reload();
-                                    }, 1000);
+
                                 }
                                 }).always(function () {
 
@@ -239,6 +240,9 @@
                         var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
                     } else {
                         var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                        window.setTimeout(function(){
+                            window.location.href = '../';
+                        }, 1500);
                     }
                 }
             })
