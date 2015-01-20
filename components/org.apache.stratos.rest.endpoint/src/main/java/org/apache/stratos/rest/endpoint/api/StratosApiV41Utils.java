@@ -513,10 +513,8 @@ public class StratosApiV41Utils {
 		AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 		if (autoscalerServiceClient != null) {
 
-			org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
-					                                                                                                     convertToCCAutoscalerPojo(
-
-							                                                                                                     autoscalePolicyBean);
+			org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy =
+					ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean);
 
 			try {
 				autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicy);
