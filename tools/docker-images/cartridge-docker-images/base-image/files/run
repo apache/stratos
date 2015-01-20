@@ -159,10 +159,10 @@ else
 	sed -i "s#LOG_FILE_PATHS#${LOG_FILE_PATHS}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
 fi
 
-if [ -z "${APP_PATH}" ]; then
-	sed -i "s/APP-PATH/ /g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+if [ -z "${APPLICATION_PATH}" ]; then
+	sed -i "s/APPLICATION_PATH/ /g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
 else
-	sed -i "s#APP-PATH#${APP_PATH}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+	sed -i "s#APPLICATION_PATH#${APPLICATION_PATH}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
 fi
 
 if [ -z "${LOG_LEVEL}" ]; then
