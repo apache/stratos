@@ -37,9 +37,9 @@ public class ApplicationClusterContext {
     private String autoscalePolicyName;
     // deployment policy
     private String deploymentPolicyName;
-    // tenant rance
+    // tenant range
     private String tenantRange;
-    // propertis
+    // properties
     private Properties properties;
 
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
