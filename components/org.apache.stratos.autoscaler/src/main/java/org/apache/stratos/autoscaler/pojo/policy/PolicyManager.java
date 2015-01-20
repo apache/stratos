@@ -19,20 +19,20 @@
 
 package org.apache.stratos.autoscaler.pojo.policy;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
+
+import java.util.Map;
+
+//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 
 /**
  * Manager class for the purpose of managing Autoscale/Deployment policy definitions.
@@ -98,6 +98,18 @@ public class PolicyManager {
         return true;
     }
 
+	public boolean removeAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
+		if (StringUtils.isEmpty(policy.getId())) {
+			throw new AutoScalerException("Autoscaling policy id cannot be empty");
+		}
+		this.removeASPolicyInInformationModel(policy);
+		RegistryManager.getInstance().removeAutoscalerPolicy(policy);
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Autoscaling policy is removed successfully: [id] %s", policy.getId()));
+		}
+		return true;
+	}
+
     /**
      * Add deployment policy to in memory map and persist.
      * @param policy
@@ -150,6 +162,14 @@ public class PolicyManager {
         }
     }
 
+	public void removeASPolicyInInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
+		if (autoscalePolicyListMap.containsKey(asPolicy.getId())) {
+			if (log.isDebugEnabled()) {
+				log.debug("Updating autoscaling policy: " + asPolicy.getId());
+			}
+			autoscalePolicyListMap.remove(asPolicy.getId());
+		}
+	}
     /**
      * Removes the specified policy
      *

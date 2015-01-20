@@ -506,6 +506,31 @@ public class StratosApiV41Utils {
         }
     }
 
+	public static void removeAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
+
+		log.info(String.format("Removing autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
+
+		AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+		if (autoscalerServiceClient != null) {
+
+			org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy = ObjectConverter.
+					                                                                                                     convertToCCAutoscalerPojo(
+
+							                                                                                                     autoscalePolicyBean);
+
+			try {
+				autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicy);
+			} catch (RemoteException e) {
+				log.error(e.getMessage(), e);
+				throw new RestAPIException(e.getMessage(), e);
+			} catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+				String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
+				log.error(message, e);
+				throw new RestAPIException(message, e);
+			}
+		}
+	}
+
     public static AutoscalePolicyBean[] getAutoScalePolicies() throws RestAPIException {
 
         org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] autoscalePolicies = null;
@@ -993,17 +1018,14 @@ public class StratosApiV41Utils {
                 ClusterDataHolder clusterDataHolder = entry.getValue();
                 String clusterId = clusterDataHolder.getClusterId();
                 String serviceType = clusterDataHolder.getServiceType();
-                try {
-                    TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                    Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-                    applicationInstanceBean.getClusterInstances().add(ObjectConverter.
-                            convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
-                                    topLevelCluster, entry.getKey()));
-                } finally {
-                    TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
-                }
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                applicationInstanceBean.getClusterInstances().add(ObjectConverter.
+                        convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
+                                topLevelCluster, entry.getKey()));
             }
         }
+
     }
 
     private static void addClustersInstancesToGroupInstanceBean(
@@ -1015,15 +1037,11 @@ public class StratosApiV41Utils {
                 ClusterDataHolder clusterDataHolder = entry.getValue();
                 String clusterId = clusterDataHolder.getClusterId();
                 String serviceType = clusterDataHolder.getServiceType();
-                try {
-                    TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                    Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
-                    groupInstanceBean.getClusterInstances().add(ObjectConverter.
-                            convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
-                                    topLevelCluster, entry.getKey()));
-                } finally {
-                    TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
-                }
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                groupInstanceBean.getClusterInstances().add(ObjectConverter.
+                        convertClusterToClusterInstanceBean(groupInstanceBean.getInstanceId(),
+                                topLevelCluster, entry.getKey()));
             }
         }
 
