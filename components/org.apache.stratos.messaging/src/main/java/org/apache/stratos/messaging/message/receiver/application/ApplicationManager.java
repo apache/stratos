@@ -51,7 +51,7 @@ public class ApplicationManager {
     /**
      * Acquires read lock for all Applications
      */
-    public static void acquireReadLockForApplications() {
+    public static synchronized void acquireReadLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired for applications");
         }
@@ -61,7 +61,7 @@ public class ApplicationManager {
     /**
      * Releases read lock for all Applications
      */
-    public static void releaseReadLockForApplications() {
+    public static synchronized void releaseReadLockForApplications() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released for applications");
         }
@@ -73,10 +73,10 @@ public class ApplicationManager {
      *
      * @param applicationId Application Id to acquire read lock
      */
-    public static void acquireReadLockForApplication(String applicationId) {
+    public static synchronized void acquireReadLockForApplication(String applicationId) {
 
         // acquire read lock for all Applications
-        acquireReadLockForApplications();
+        //acquireReadLockForApplications();
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
         if (applicationLock == null) {
@@ -95,7 +95,7 @@ public class ApplicationManager {
      *
      * @param applicationId Application Id to release read lock
      */
-    public static void releaseReadLockForApplication(String applicationId) {
+    public static synchronized void releaseReadLockForApplication(String applicationId) {
 
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
         if (applicationLock == null) {
@@ -109,7 +109,7 @@ public class ApplicationManager {
         }
 
         // release read lock for all Applications
-        releaseReadLockForApplications();
+        //releaseReadLockForApplications();
     }
 
     private static void handleLockNotFound (String errorMsg) {

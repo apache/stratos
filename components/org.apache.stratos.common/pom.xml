@@ -49,6 +49,7 @@
                             org.apache.stratos.common.client.*,
                             org.apache.stratos.common.clustering.*,
                             org.apache.stratos.common.statistics.publisher.*,
+                            org.apache.stratos.common.concurrent.locks.*,
                         </Export-Package>
                         <Import-Package>
                             org.wso2.carbon.registry.core.*;version=1.0.1,

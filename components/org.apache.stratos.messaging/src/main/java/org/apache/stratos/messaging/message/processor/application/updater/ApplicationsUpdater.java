@@ -81,7 +81,7 @@ public class ApplicationsUpdater {
         if (log.isDebugEnabled()) {
             log.debug("Write lock released for Applications");
         }
-        applicationLockHierarchy.getApplicationLock().releaseWritelock();
+        applicationLockHierarchy.getApplicationLock().releaseWriteLock();
     }
 
     /**
@@ -120,7 +120,7 @@ public class ApplicationsUpdater {
 
         } else {
             // release App lock
-            applicationLock.releaseWritelock();
+            applicationLock.releaseWriteLock();
             if (log.isDebugEnabled()) {
                 log.debug("Write lock released for Application " + appId);
             }

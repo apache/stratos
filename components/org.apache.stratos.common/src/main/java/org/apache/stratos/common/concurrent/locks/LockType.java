@@ -17,14 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.application.locking;
+package org.apache.stratos.common.concurrent.locks;
 
-
-import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
-
-public class ApplicationLock extends ReadWriteLock {
-
-    public ApplicationLock() {
-        super("application");
-    }
+/**
+ * Lock type enumeration.
+ */
+enum LockType {
+    Read, Write
 }

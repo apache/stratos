@@ -80,7 +80,7 @@ public class TopologyUpdater {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released for Topology");
         }
-        topologyLockHierarchy.getCompleteTopologyLock().releaseWritelock();
+        topologyLockHierarchy.getCompleteTopologyLock().releaseWriteLock();
     }
 
     // Service write locks
@@ -101,7 +101,7 @@ public class TopologyUpdater {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released for Services");
         }
-        topologyLockHierarchy.getServiceLock().releaseWritelock();
+        topologyLockHierarchy.getServiceLock().releaseWriteLock();
     }
 
     /**
@@ -138,7 +138,7 @@ public class TopologyUpdater {
             handleLockNotFound("Topology lock not found for Service " + serviceName);
 
         } else {
-            topologyServiceLock.releaseWritelock();
+            topologyServiceLock.releaseWriteLock();
             if(log.isDebugEnabled()) {
                 log.debug("Write lock released for Service " + serviceName);
             }
@@ -188,7 +188,7 @@ public class TopologyUpdater {
             handleLockNotFound("Topology lock not found for Cluster " + clusterId);
 
         } else {
-            topologyClusterLock.releaseWritelock();
+            topologyClusterLock.releaseWriteLock();
             if(log.isDebugEnabled()) {
                 log.debug("Write lock released for Cluster " + clusterId);
             }

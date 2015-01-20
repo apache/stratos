@@ -23,48 +23,48 @@ import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
+import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ApplicationHolder {
 
     private static final Log log = LogFactory.getLog(ApplicationHolder.class);
 
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
     private static volatile Applications applications;
 
-    private ApplicationHolder () {}
+    private static ReadWriteLock lock = new ReadWriteLock("application-holder");
+
+    private ApplicationHolder () {
+    }
 
     public static void acquireReadLock() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
-        readLock.lock();
+        lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
-        readLock.unlock();
+        lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
-        writeLock.lock();
+        lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
-        writeLock.unlock();
+        lock.releaseWriteLock();
     }
 
     public static Applications getApplications () {

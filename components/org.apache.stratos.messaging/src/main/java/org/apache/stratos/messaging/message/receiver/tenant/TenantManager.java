@@ -21,13 +21,13 @@ package org.apache.stratos.messaging.message.receiver.tenant;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.wso2.carbon.base.MultitenantConstants;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  *  A singleton class for managing the tenant information.
@@ -40,9 +40,7 @@ public class TenantManager {
     private static final Log log = LogFactory.getLog(TenantManager.class);
 
     private static volatile TenantManager instance;
-    private static volatile ReentrantReadWriteLock lock = new ReentrantReadWriteLock(true);
-    private static volatile ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private static volatile ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private static volatile ReadWriteLock lock = new ReadWriteLock("tenant-manager");
 
     private Map<Integer, Tenant> tenantIdTenantMap;
     private Map<String, Tenant> tenantDomainTenantMap;
@@ -52,28 +50,28 @@ public class TenantManager {
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
-        readLock.lock();
+        lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
         if(log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
-        readLock.unlock();
+        lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
-        writeLock.lock();
+        lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
         if(log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
-        writeLock.unlock();
+        lock.releaseWriteLock();
     }
 
     private TenantManager() {
