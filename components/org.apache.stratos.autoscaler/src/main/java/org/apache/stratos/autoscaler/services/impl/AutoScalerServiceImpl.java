@@ -35,7 +35,6 @@ import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentE
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
-import org.apache.stratos.autoscaler.services.AutoScalerService;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -47,6 +46,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ap
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.services.AutoScalerService;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -63,10 +63,7 @@ import org.apache.stratos.metadata.client.exception.MetaDataServiceClientExcepti
 import org.wso2.carbon.registry.api.RegistryException;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -151,7 +148,32 @@ public class AutoScalerServiceImpl implements AutoScalerService {
 
 	@Override
 	public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws InvalidPolicyException {
-		return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
+		if(validateAutoScalerPolicy(autoscalePolicyId)) {
+			return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
+		}
+		else{
+			throw new InvalidPolicyException("This auto-scalar policy cannot remove, since it is used in applications.");
+		}
+	}
+
+	/**
+	 * Validate the Auto Scalar policy removal
+	 * @param autoscalePolicyId Auto Scalar policy id boolean
+	 * @return
+	 */
+	private boolean validateAutoScalerPolicy(String autoscalePolicyId) {
+		boolean canRemove=true;
+		Collection<ApplicationContext> appContexts= AutoscalerContext.getInstance().getApplicationContexts();
+		for(ApplicationContext app:appContexts){
+			CartridgeContext[] cartrideContexts=app.getComponents().getCartridgeContexts();
+			for(CartridgeContext cartridgeContext: cartrideContexts) {
+				SubscribableInfoContext subscribableInfoContexts = cartridgeContext.getSubscribableInfoContext();
+				if (subscribableInfoContexts.getAutoscalingPolicy().equals(autoscalePolicyId)) {
+						canRemove=false;
+				}
+			}
+		}
+		return canRemove;
 	}
 
 	@Override
