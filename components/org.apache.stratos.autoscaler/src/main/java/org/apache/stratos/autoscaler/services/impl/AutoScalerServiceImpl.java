@@ -150,8 +150,8 @@ public class AutoScalerServiceImpl implements AutoScalerService {
     }
 
 	@Override
-	public boolean removeAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException {
-		return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicy);
+	public boolean removeAutoScalingPolicy(String autoscalePolicyId) throws InvalidPolicyException {
+		return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
 	}
 
 	@Override

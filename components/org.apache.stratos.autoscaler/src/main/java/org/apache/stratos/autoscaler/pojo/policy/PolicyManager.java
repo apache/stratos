@@ -98,14 +98,14 @@ public class PolicyManager {
         return true;
     }
 
-	public boolean removeAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
-		if (StringUtils.isEmpty(policy.getId())) {
+	public boolean removeAutoscalePolicy(String policyID) throws InvalidPolicyException {
+		if (StringUtils.isEmpty(policyID)) {
 			throw new AutoScalerException("Autoscaling policy id cannot be empty");
 		}
-		this.removeASPolicyInInformationModel(policy);
-		RegistryManager.getInstance().removeAutoscalerPolicy(policy);
+		this.removeASPolicyInInformationModel(policyID);
+		RegistryManager.getInstance().removeAutoscalerPolicy(policyID);
 		if (log.isInfoEnabled()) {
-			log.info(String.format("Autoscaling policy is removed successfully: [id] %s", policy.getId()));
+			log.info(String.format("Autoscaling policy is removed successfully: [id] %s", policyID));
 		}
 		return true;
 	}
@@ -162,29 +162,29 @@ public class PolicyManager {
         }
     }
 
-	public void removeASPolicyInInformationModel(AutoscalePolicy asPolicy) throws InvalidPolicyException {
-		if (autoscalePolicyListMap.containsKey(asPolicy.getId())) {
+	public void removeASPolicyInInformationModel(String policyID) throws InvalidPolicyException {
+		if (autoscalePolicyListMap.containsKey(policyID)) {
 			if (log.isDebugEnabled()) {
-				log.debug("Updating autoscaling policy: " + asPolicy.getId());
+				log.debug("Updating autoscaling policy: " + policyID);
 			}
-			autoscalePolicyListMap.remove(asPolicy.getId());
+			autoscalePolicyListMap.remove(policyID);
 		}
 	}
     /**
      * Removes the specified policy
      *
-     * @param policy
+     * @param policyId
      * @throws InvalidPolicyException
      */
-    public void undeployAutoscalePolicy(String policy) throws InvalidPolicyException {
-        if (autoscalePolicyListMap.containsKey(policy)) {
+    public void undeployAutoscalePolicy(String policyId) throws InvalidPolicyException {
+        if (autoscalePolicyListMap.containsKey(policyId)) {
             if (log.isDebugEnabled()) {
-                log.debug("Removing policy :" + policy);
+                log.debug("Removing policy :" + policyId);
             }
-            autoscalePolicyListMap.remove(policy);
-            RegistryManager.getInstance().removeAutoscalerPolicy(this.getAutoscalePolicy(policy));
+            autoscalePolicyListMap.remove(policyId);
+            RegistryManager.getInstance().removeAutoscalerPolicy(policyId);
         } else {
-            throw new InvalidPolicyException("No such policy [" + policy + "] exists");
+            throw new InvalidPolicyException("No such policy ID [" + policyId + "] exists");
         }
     }
 

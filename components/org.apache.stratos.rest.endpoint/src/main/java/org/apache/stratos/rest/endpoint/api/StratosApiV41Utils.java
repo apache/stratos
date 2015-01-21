@@ -506,18 +506,15 @@ public class StratosApiV41Utils {
         }
     }
 
-	public static void removeAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
+	public static void removeAutoscalingPolicy(String autoscalePolicyId) throws RestAPIException {
 
-		log.info(String.format("Removing autoscaling policy: [id] %s", autoscalePolicyBean.getId()));
+		log.info(String.format("Removing autoscaling policy: [id] %s", autoscalePolicyId));
 
 		AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
 		if (autoscalerServiceClient != null) {
 
-			org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy autoscalePolicy =
-					ObjectConverter.convertToCCAutoscalerPojo(autoscalePolicyBean);
-
-			try {
-				autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicy);
+		    try {
+				autoscalerServiceClient.removeAutoscalingPolicy(autoscalePolicyId);
 			} catch (RemoteException e) {
 				log.error(e.getMessage(), e);
 				throw new RestAPIException(e.getMessage(), e);

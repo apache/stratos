@@ -688,19 +688,19 @@ public class StratosApiV41 extends AbstractApi {
 	/**
 	 * Remove autoscaling policy defintion.
 	 *
-	 * @param autoscalePolicy the autoscale policy
+	 * @param autoscalePolicyId the autoscale policy
 	 * @return the response
 	 * @throws RestAPIException the rest api exception
 	 */
 	@DELETE
-	@Path("/autoscalingPolicies")
+	@Path("/autoscalingPolicies/{autoscalePolicyId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-	public Response removeAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
+	public Response removeAutoscalingPolicyDefintion(@PathParam("autoscalePolicyId") String autoscalePolicyId)
 			throws RestAPIException {
 
-		StratosApiV41Utils.removeAutoscalingPolicy(autoscalePolicy);
+		StratosApiV41Utils.removeAutoscalingPolicy(autoscalePolicyId);
 		return Response.ok().build();
 	}
     // API methods for tenants

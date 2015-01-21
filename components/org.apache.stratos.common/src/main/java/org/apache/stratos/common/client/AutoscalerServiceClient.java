@@ -135,9 +135,9 @@ public class AutoscalerServiceClient {
         return stub.updateAutoScalingPolicy(autoScalePolicy);
     }
 
-	public boolean removeAutoscalingPolicy(AutoscalePolicy autoScalePolicy) throws RemoteException,
+	public boolean removeAutoscalingPolicy(String autoScalePolicyId) throws RemoteException,
 	                                                                               AutoScalerServiceInvalidPolicyExceptionException {
-		return stub.removeAutoScalingPolicy(autoScalePolicy);
+		return stub.removeAutoScalingPolicy(autoScalePolicyId);
 	}
 
     public ServiceGroup getServiceGroup(String serviceGroupDefinitionName) throws RemoteException {

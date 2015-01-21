@@ -523,12 +523,12 @@ public class RegistryManager {
         }
     }
 
-    public void removeAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+    public void removeAutoscalerPolicy(String policyID) {
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" +
+                              policyID;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Autoscaler policy deleted from registry: [id] %s [name] %s [description] %s",
-                    autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+            log.debug(String.format("Autoscaler policy deleted from registry: [id]",policyID));
         }
 
     }

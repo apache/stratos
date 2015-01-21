@@ -63,11 +63,11 @@ public interface AutoScalerService {
 
 	/**
 	 * Remove autoscaling policy
-	 * @param autoscalePolicy
+	 * @param autoscalingPolicyId
 	 * @return
 	 * @throws InvalidPolicyException
 	 */
-	public boolean removeAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException;
+	public boolean removeAutoScalingPolicy(String autoscalingPolicyId) throws InvalidPolicyException;
 
     /**
      * Add an application
