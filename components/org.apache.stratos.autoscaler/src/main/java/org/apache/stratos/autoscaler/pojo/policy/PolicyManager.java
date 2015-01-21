@@ -169,6 +169,9 @@ public class PolicyManager {
 			}
 			autoscalePolicyListMap.remove(policyID);
 		}
+		else{
+			throw new InvalidPolicyException("No such policy ID [" + policyID + "] exists");
+		}
 	}
     /**
      * Removes the specified policy
