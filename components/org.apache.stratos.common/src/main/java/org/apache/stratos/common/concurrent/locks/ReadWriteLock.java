@@ -47,17 +47,21 @@ public class ReadWriteLock {
     private final String name;
     private final ReentrantReadWriteLock lock;
     private final Map<Long, Map<LockType, LockMetadata>> threadToLockSetMap;
-    private final boolean readWriteLockMonitorEnabled = Boolean.getBoolean("read.write.lock.monitor.enabled");
-    private final int readWriteLockMonitorInterval = Integer.getInteger("read.write.lock.monitor.interval", 30000);
-    private final int threadPoolSize = Integer.getInteger(READ_WRITE_LOCK_MONITOR_THREAD_POOL_SIZE_KEY, 10);
+    private boolean readWriteLockMonitorEnabled;
+    private int readWriteLockMonitorInterval;
+    private int threadPoolSize;
 
     public ReadWriteLock(String name) {
         this.name = name;
         this.lock = new ReentrantReadWriteLock(true);
         this.threadToLockSetMap = new ConcurrentHashMap<Long, Map<LockType, LockMetadata>>();
 
+        readWriteLockMonitorEnabled = Boolean.getBoolean("read.write.lock.monitor.enabled");
         if (readWriteLockMonitorEnabled) {
             // Schedule read write lock monitor
+            readWriteLockMonitorInterval = Integer.getInteger("read.write.lock.monitor.interval", 30000);
+            threadPoolSize = Integer.getInteger(READ_WRITE_LOCK_MONITOR_THREAD_POOL_SIZE_KEY, 10);
+
             ScheduledExecutorService scheduledExecutorService = StratosThreadPool.getScheduledExecutorService(
                     READ_WRITE_LOCK_MONITOR_THREAD_POOL, threadPoolSize);
             scheduledExecutorService.scheduleAtFixedRate(new ReadWriteLockMonitor(this),
@@ -100,22 +104,27 @@ public class ReadWriteLock {
                     getName(), currentThread.getId(), currentThread.getName()));
         }
 
-        // Check whether the thread has already taken a read lock before requesting a write lock
-        Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
-        if (lockTypeLongMap.containsKey(LockType.Read)) {
-            String message = String.format("System error, cannot acquire a write lock while having a " +
-                            "read lock on the same thread: [lock-name] %s [thread-id] %d [thread-name] %s",
-                    getName(), currentThread.getId(), currentThread.getName());
-            InvalidLockRequestedException exception = new InvalidLockRequestedException(message);
-            log.error(exception);
-            throw exception;
+        if (readWriteLockMonitorEnabled) {
+            // Check whether the thread has already taken a read lock before requesting a write lock
+            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+            if (lockTypeLongMap.containsKey(LockType.Read)) {
+                String message = String.format("System error, cannot acquire a write lock while having a " +
+                                "read lock on the same thread: [lock-name] %s [thread-id] %d [thread-name] %s",
+                        getName(), currentThread.getId(), currentThread.getName());
+                InvalidLockRequestedException exception = new InvalidLockRequestedException(message);
+                log.error(exception);
+                throw exception;
+            }
         }
 
         lock.writeLock().lock();
 
-        LockMetadata lockMetadata = new LockMetadata(getName(), LockType.Write, currentThread.getId(),
-                currentThread.getName(), currentThread.getStackTrace(), System.currentTimeMillis());
-        lockTypeLongMap.put(lockMetadata.getLockType(), lockMetadata);
+        if (readWriteLockMonitorEnabled) {
+            LockMetadata lockMetadata = new LockMetadata(getName(), LockType.Write, currentThread.getId(),
+                    currentThread.getName(), currentThread.getStackTrace(), System.currentTimeMillis());
+            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+            lockTypeLongMap.put(lockMetadata.getLockType(), lockMetadata);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Write lock acquired: [lock-name] %s [thread-id] %d [thread-name] %s",
@@ -135,8 +144,10 @@ public class ReadWriteLock {
 
         lock.writeLock().unlock();
 
-        Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
-        lockTypeLongMap.remove(LockType.Write);
+        if (readWriteLockMonitorEnabled) {
+            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+            lockTypeLongMap.remove(LockType.Write);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Write lock released: [lock-name] %s [thread-id] %d [thread-name] %s",
@@ -156,10 +167,12 @@ public class ReadWriteLock {
 
         lock.readLock().lock();
 
-        Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
-        LockMetadata lockMetadata = new LockMetadata(getName(), LockType.Read, currentThread.getId(),
-                currentThread.getName(), currentThread.getStackTrace(), System.currentTimeMillis());
-        lockTypeLongMap.put(lockMetadata.getLockType(), lockMetadata);
+        if (readWriteLockMonitorEnabled) {
+            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+            LockMetadata lockMetadata = new LockMetadata(getName(), LockType.Read, currentThread.getId(),
+                    currentThread.getName(), currentThread.getStackTrace(), System.currentTimeMillis());
+            lockTypeLongMap.put(lockMetadata.getLockType(), lockMetadata);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Read lock acquired: [lock-name] %s [thread-id] %d [thread-name] %s",
@@ -179,8 +192,10 @@ public class ReadWriteLock {
 
         lock.readLock().unlock();
 
-        Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
-        lockTypeLongMap.remove(LockType.Read);
+        if (readWriteLockMonitorEnabled) {
+            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+            lockTypeLongMap.remove(LockType.Read);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Read lock released: [lock-name] %s [thread-id] %d [thread-name] %s",

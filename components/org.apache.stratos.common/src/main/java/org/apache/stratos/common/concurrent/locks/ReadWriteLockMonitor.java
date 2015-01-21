@@ -32,10 +32,11 @@ class ReadWriteLockMonitor implements Runnable {
 
     private static final Log log = LogFactory.getLog(ReadWriteLockMonitor.class);
 
-    private static final long LOCK_TIMEOUT = Long.getLong("read.write.lock.timeout", 30000); // 30 seconds
+    private long lockTimeout;
     private ReadWriteLock readWriteLock;
 
     ReadWriteLockMonitor(ReadWriteLock readWriteLock) {
+        lockTimeout = Long.getLong("read.write.lock.timeout", 30000); // 30 seconds
         this.readWriteLock = readWriteLock;
     }
 
@@ -62,10 +63,10 @@ class ReadWriteLockMonitor implements Runnable {
     }
 
     private void checkTimeout(LockMetadata lockMetadata) {
-        if ((System.currentTimeMillis() - lockMetadata.getCreatedTime()) > LOCK_TIMEOUT) {
+        if ((System.currentTimeMillis() - lockMetadata.getCreatedTime()) > lockTimeout) {
             String message = String.format("System error, lock has not released for %d seconds: " +
                             "[lock-name] %s [lock-type] %s [thread-id] %d [thread-name] %s [stack-trace] \n%s",
-                    LOCK_TIMEOUT / (1000), lockMetadata.getLockName(), lockMetadata.getLockType(),
+                    lockTimeout / (1000), lockMetadata.getLockName(), lockMetadata.getLockType(),
                     lockMetadata.getThreadId(), lockMetadata.getThreadName(), stackTraceToString(
                             lockMetadata.getStackTrace()));
             LockNotReleasedException exception = new LockNotReleasedException();

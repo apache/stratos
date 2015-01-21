@@ -19,14 +19,14 @@
 
 package org.apache.stratos.common.test;
 
-import org.apache.log4j.AppenderSkeleton;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
 import org.apache.stratos.common.concurrent.locks.ReadWriteLock;
 import org.apache.stratos.common.exception.InvalidLockRequestedException;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
@@ -37,31 +37,14 @@ import static org.junit.Assert.assertNotNull;
  */
 public class ReadWriteLockTest {
 
-    public static class TestAppender extends AppenderSkeleton {
-
-        public List<LoggingEvent> getEvents() {
-            return events;
-        }
-
-        private List<LoggingEvent> events = new ArrayList<LoggingEvent>();
-
-        public void close() {}
-
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        protected void append(LoggingEvent event) {
-            events.add(event);
-        }
-    }
-
+    private static final Log log = LogFactory.getLog(ReadWriteLockTest.class);
 
     @Test
     public void testInvalidLock() {
         Exception exception = null;
         try {
+            System.setProperty("read.write.lock.monitor.enabled", "true");
+
             ReadWriteLock lock = new ReadWriteLock("lock-test");
             lock.acquireReadLock();
             lock.acquireWriteLock();
@@ -74,35 +57,24 @@ public class ReadWriteLockTest {
 
     @Test
     public void testUnreleasedLocks() {
-        final TestAppender testAppender = new TestAppender();
-        Logger.getRootLogger().addAppender(testAppender);
+        final TestLogAppender testLogAppender = new TestLogAppender();
+        Logger.getRootLogger().addAppender(testLogAppender);
+        Logger.getRootLogger().setLevel(Level.DEBUG);
 
         System.setProperty("read.write.lock.monitor.enabled", "true");
         System.setProperty("read.write.lock.monitor.interval", "2000");
-        System.setProperty("read.write.lock.timeout", "2000");
+        System.setProperty("read.write.lock.timeout", "1500");
 
-        Runnable r1 = new Runnable() {
-            @Override
-            public void run() {
-                ReadWriteLock lock = new ReadWriteLock("unrelased-lock-test");
-                lock.acquireReadLock();
-                sleep(5000);
-                List<LoggingEvent> events = testAppender.getEvents();
-                assertTrue(containsMessage(events, "System error, lock has not released"));
-            }
-        };
-        Thread thread = new Thread(r1);
-        thread.start();
-
-        try {
-            thread.join();
-        } catch (InterruptedException ignore) {
-        }
+        ReadWriteLock lock = new ReadWriteLock("unrelased-lock-test");
+        lock.acquireReadLock();
+        sleep(5000);
+        List<String> messages = testLogAppender.getMessages();
+        assertTrue(containsMessage(messages, "System error, lock has not released"));
     }
 
-    private boolean containsMessage(List<LoggingEvent> events, String message) {
-        for(LoggingEvent event : events) {
-            if((event.getMessage() != null) && (event.getMessage().toString().contains(message))) {
+    private boolean containsMessage(List<String> messages, String text) {
+        for (String message : messages) {
+            if ((message != null) && (message.contains(text))) {
                 return true;
             }
         }
