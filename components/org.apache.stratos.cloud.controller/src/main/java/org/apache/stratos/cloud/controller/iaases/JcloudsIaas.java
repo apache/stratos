@@ -196,24 +196,22 @@ public abstract class JcloudsIaas extends Iaas {
                     }
 
                     if (!CloudControllerServiceUtil.isValidIpAddress(preDefinedPublicIp)) {
-                        String msg = String.format("Predefined public IP address is not valid, hence terminating member: " +
+                        String msg = String.format("Predefined public IP address is not valid: " +
                                         "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId(),
                                 preDefinedPublicIp);
                         log.error(msg);
-                        terminateInstance(memberContext);
                         throw new CloudControllerException(msg);
                     }
 
                     String allocatedIp = associatePredefinedAddress(nodeMetadata, preDefinedPublicIp);
                     if ((StringUtils.isBlank(allocatedIp)) || (!preDefinedPublicIp.equals(allocatedIp))) {
-                        String msg = String.format("Could not allocate predefined public IP address, " +
-                                        "hence terminating member: [cartridge-type] %s [member-id] %s " +
+                        String msg = String.format("Could not allocate predefined public IP address: " +
+                                        "[cartridge-type] %s [member-id] %s " +
                                         "[pre-defined-ip] %s [allocated-ip] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId(),
                                 preDefinedPublicIp, allocatedIp);
                         log.error(msg);
-                        terminateInstance(memberContext);
                         throw new CloudControllerException(msg);
                     }
                     associatedIPs.add(allocatedIp);
@@ -230,12 +228,11 @@ public abstract class JcloudsIaas extends Iaas {
                     // checking for null and empty is enough. If there are elements in this list, they are valid IPs
                     // because we are validating before putting into the list
                     if (associatedIPs == null || associatedIPs.isEmpty()) {
-                        String msg = String.format("Could not allocate dynamic public IP addresses, " +
-                                        "hence terminating member: [cartridge-type] %s [member-id] %s",
+                        String msg = String.format("Could not allocate dynamic public IP addresses: " +
+                                        "[cartridge-type] %s [member-id] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId(),
                                 preDefinedPublicIp);
                         log.error(msg);
-                        terminateInstance(memberContext);
                         throw new CloudControllerException(msg);
                     }
                 }

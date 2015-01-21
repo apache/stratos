@@ -304,27 +304,18 @@ public class KubernetesIaas extends Iaas {
         String message;
         if (podCreated) {
             // Pod created but status did not change to running
-            message = String.format("Pod status did not change to running within %d sec, hence terminating member: " +
+            message = String.format("Pod status did not change to running within %d sec: " +
                             "[cluster-id] %s [member-id] %s [replication-controller-id] %s [pod-id] %s",
                     (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
                     replicationControllerId, podId);
             log.error(message);
         } else {
             // Pod did not create
-            message = String.format("Pod did not create within %d sec, hence terminating member: " +
+            message = String.format("Pod did not create within %d sec: " +
                             "[cluster-id] %s [member-id] %s [replication-controller-id] %s",
                     (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
                     replicationControllerId);
             log.error(message);
-        }
-
-        // Terminate container
-        try {
-            terminateContainer(memberContext.getMemberId());
-        } catch (MemberTerminationFailedException e) {
-            String error = String.format("Could not terminate partially created member: [cluster-id] %s " +
-                    "[member-id] %s", memberContext.getClusterId(), memberContext.getMemberId());
-            log.warn(error, e);
         }
 
         throw new RuntimeException(message);
