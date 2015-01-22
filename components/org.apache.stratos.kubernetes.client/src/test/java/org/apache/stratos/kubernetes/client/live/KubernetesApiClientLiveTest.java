@@ -92,8 +92,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
 
         String podId = "stratos-test-pod-1";
         String podName = "stratos-test-pod";
+        String containerPortName = "http-1";
 
-        List<Port> ports = createPorts();
+        List<Port> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
@@ -112,12 +113,12 @@ public class KubernetesApiClientLiveTest extends TestCase{
         log.info("Pod deleted successfully: " + pod.getId());
     }
 
-    private List<Port> createPorts() {
+    private List<Port> createPorts(String containerPortName) {
         List<Port> ports = new ArrayList<Port>();
         Port port = new Port();
-        port.setName("port-1");
+        port.setName(containerPortName);
         port.setContainerPort(CONTAINER_PORT);
-        port.setHostPort(PROXY_PORT);
+        port.setHostPort(SERVICE_PORT);
         ports.add(port);
         return ports;
     }
@@ -135,9 +136,10 @@ public class KubernetesApiClientLiveTest extends TestCase{
     public void testReplicationControllerCreationAndDeletion() throws Exception {
         String replicationControllerId = "stratos-test-rc-1";
         String replicationControllerName = "stratos-test-rc";
+        String containerPortName = "http-1";
         int replicas = 2;
 
-        List<Port> ports = createPorts();
+        List<Port> ports = createPorts(containerPortName);
         client.createReplicationController(replicationControllerId, replicationControllerName,
                 dockerImage, ports, null, replicas);
 
@@ -174,24 +176,26 @@ public class KubernetesApiClientLiveTest extends TestCase{
         String podName = "stratos-test-pod";
         String serviceId = "stratos-test-service-1";
         String serviceName = "stratos-test-service";
+        String containerPortName = "http-1";
+
         InetAddress address = InetAddress.getByName(new URL(endpoint).getHost());
         String publicIp = address.getHostAddress();
 
-        List<Port> ports = createPorts();
+        List<Port> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
         Pod podCreated = client.getPod(podId);
         assertNotNull(podCreated);
 
-        client.createService(serviceId, serviceName, SERVICE_PORT, "port-1", publicIp);
+        client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName, publicIp);
 
         Thread.sleep(2000);
         Service service = client.getService(serviceId);
         assertNotNull(service);
 
         // test recreation using same id
-        client.createService(serviceId, serviceName, SERVICE_PORT, "port-1", publicIp);
+        client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName, publicIp);
 
         Thread.sleep(2000);
         service = client.getService(serviceId);
