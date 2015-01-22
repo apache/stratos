@@ -49,11 +49,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     }
 
     @Override
-    public void createPod(String podId, String podName, String dockerImage, List<Integer> containerPorts)
+    public void createPod(String podId, String podName, String dockerImage, List<Port> ports)
             throws KubernetesClientException {
         if (log.isInfoEnabled()) {
-            log.info(String.format("Creating pod: [pod-id] %s [pod-name] %s [docker-image] %s [container-ports] %s",
-                    podId, podName, dockerImage, containerPorts));
+            log.info(String.format("Creating pod: [pod-id] %s [pod-name] %s [docker-image] %s [ports] %s",
+                    podId, podName, dockerImage, ports));
         }
 
         // Create pod definition
@@ -76,7 +76,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
         Container containerTemplate = new Container();
         containerTemplate.setName(podName);
         containerTemplate.setImage(dockerImage);
-        containerTemplate.setPorts(convertIntPortListToPortList(containerPorts));
+        containerTemplate.setPorts(ports);
         containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
 
         manifest.addContainer(containerTemplate);
@@ -137,9 +137,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             PodList result = gson.fromJson(content, PodList.class);
 
             List<Pod> podList = new ArrayList<Pod>();
-            if((result != null) && (result.getItems() != null)) {
-                for(Pod pod : result.getItems()) {
-                    if(pod != null) {
+            if ((result != null) && (result.getItems() != null)) {
+                for (Pod pod : result.getItems()) {
+                    if (pod != null) {
                         podList.add(pod);
                     }
                 }
@@ -171,7 +171,8 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
                     response.getStatusCode() != HttpStatus.SC_OK) {
-                String msg = String.format("Could not create pod: [pod-id] %s [message] %s", pod.getId());
+                String msg = String.format("Could not create pod: [pod-id] %s [message] %s", pod.getId(),
+                        response.getKubernetesResponse().getMessage());
                 log.error(msg);
                 throw new KubernetesClientException(msg);
             }
@@ -187,7 +188,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
     @Override
     public void deletePod(String podId) throws KubernetesClientException {
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Deleting pod: [pod-id] %s", podId));
             }
 
@@ -210,7 +211,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 throw new KubernetesClientException(message);
             }
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Pod deleted successfully: [pod-id] %s", podId));
             }
         } catch (KubernetesClientException e) {
@@ -271,7 +272,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             ReplicationControllerList controllerList = gson.fromJson(content, ReplicationControllerList.class);
 
             List<ReplicationController> replicationControllers = new ArrayList<ReplicationController>();
-            if((controllerList != null) && (controllerList.getItems() != null)) {
+            if ((controllerList != null) && (controllerList.getItems() != null)) {
                 for (ReplicationController replicationController : controllerList.getItems()) {
                     if (replicationController != null) {
                         replicationControllers.add(replicationController);
@@ -288,13 +289,13 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     @Override
     public void createReplicationController(String replicationControllerId, String replicationControllerName,
-                                            String dockerImage, List<Integer> containerPorts,
+                                            String dockerImage, List<Port> ports,
                                             EnvironmentVariable[] environmentVariables, int replicas) throws KubernetesClientException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Creating replication controller: [replication-controller-id] %s [name] %s " +
-                                "[docker-image] %s [container-ports] %s [replicas] %d", replicationControllerId, replicationControllerName,
-                        dockerImage, containerPorts, replicas));
+                                "[docker-image] %s [ports] %s [replicas] %d", replicationControllerId, replicationControllerName,
+                        dockerImage, ports, replicas));
             }
 
             // Create replication controller
@@ -323,12 +324,12 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             containerTemplate.setName(replicationControllerName);
             containerTemplate.setImage(dockerImage);
             containerTemplate.setImagePullPolicy(KubernetesConstants.POLICY_PULL_IF_NOT_PRESENT);
-            if(environmentVariables != null) {
+            if (environmentVariables != null) {
                 containerTemplate.setEnv(environmentVariables);
             }
 
             // Set container ports
-            List<Port> ports = convertIntPortListToPortList(containerPorts);
+//            List<Port> ports = convertIntPortListToPortList(portMappings);
             containerTemplate.setPorts(ports);
             manifest.addContainer(containerTemplate);
 
@@ -352,27 +353,14 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Replication controller created successfully: [replication-controller-id] " +
-                                "%s [name] %s [docker-image] %s [container-port] %s [replicas] %d",
-                        replicationControllerId, replicationControllerName, dockerImage, containerPorts, replicas));
+                                "%s [name] %s [docker-image] %s [port-mappings] %s [replicas] %d",
+                        replicationControllerId, replicationControllerName, dockerImage, ports, replicas));
             }
         } catch (Exception e) {
             String message = "Could not create replication controller: [replication-controller-id] " + replicationControllerId;
             log.error(message, e);
             throw new KubernetesClientException(message, e);
         }
-    }
-
-    private List<Port> convertIntPortListToPortList(List<Integer> containerPorts) {
-        List<Port> ports = new ArrayList<Port>();
-        for (int containerPort : containerPorts) {
-            Port port = new Port();
-            port.setContainerPort(containerPort);
-            // A known issue related to setting host port:
-            // https://github.com/openshift/origin/issues/210
-            port.setHostPort(containerPort);
-            ports.add(port);
-        }
-        return ports;
     }
 
     private void createReplicationController(ReplicationController replicationController)
@@ -460,7 +448,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throws KubernetesClientException {
 
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Deleting replication controller: [replication-controller-id] " +
                         replicationControllerId);
             }
@@ -486,7 +474,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 throw new KubernetesClientException(message);
             }
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Replication controller deleted successfully: [replication-controller-id] " +
                         replicationControllerId);
             }
@@ -505,20 +493,21 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
     @Override
     public void createService(String serviceId, String serviceName, int servicePort,
-                              int containerPort, String publicIp) throws KubernetesClientException {
+                              String containerPortName, String publicIp) throws KubernetesClientException {
         try {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Creating service: [service-id] %s [service-name] %s [service-port] %d " +
-                        "[container-port] %d, [public-ip] %s", serviceId, serviceName, servicePort, containerPort, publicIp));
+                        "[container-port-name] %s, [public-ip] %s", serviceId, serviceName, servicePort,
+                        containerPortName, publicIp));
             }
 
             // Create service definition
             Service service = new Service();
             service.setApiVersion(KubernetesConstants.KUBERNETES_API_VERSION);
-            service.setContainerPort(String.valueOf(containerPort));
-            service.setPort(servicePort);
-            service.setId(serviceId);
             service.setKind(KubernetesConstants.KIND_SERVICE);
+            service.setId(serviceId);
+            service.setPort(servicePort);
+            service.setContainerPort(containerPortName);
             service.setPublicIPs(new String[]{publicIp});
 
             // Set service labels
@@ -537,11 +526,11 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Service created successfully: [service-id] %s [service-name] %s [service-port] %d " +
-                        "[container-port] %d, [public-ip] %s", serviceId, serviceName, servicePort, containerPort, publicIp));
+                        "[container-port-name] %s, [public-ip] %s", serviceId, serviceName, servicePort, containerPortName, publicIp));
             }
         } catch (Exception e) {
             String message = String.format("Service created successfully: [service-id] %s [service-name] %s [service-port] %d " +
-                    "[container-port] %d, [public-ip] %s", serviceId, serviceName, servicePort, containerPort, publicIp);
+                    "[container-port-name] %s, [public-ip] %s", serviceId, serviceName, servicePort, containerPortName, publicIp);
             log.error(message, e);
             throw new KubernetesClientException(message, e);
         }
@@ -594,9 +583,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             ServiceList result = gson.fromJson(content, ServiceList.class);
 
             List<Service> serviceList = new ArrayList<Service>();
-            if((result != null) && (result.getItems() != null)) {
-                for(Service pod : result.getItems()) {
-                    if(pod != null) {
+            if ((result != null) && (result.getItems() != null)) {
+                for (Service pod : result.getItems()) {
+                    if (pod != null) {
                         serviceList.add(pod);
                     }
                 }
@@ -651,7 +640,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             throws KubernetesClientException {
 
         try {
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Deleting service: [service-id] %s", serviceId));
             }
 
@@ -674,7 +663,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 throw new KubernetesClientException(msg);
             }
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info(String.format("Service deleted successfully: [service-id] %s", serviceId));
             }
         } catch (KubernetesClientException e) {
@@ -707,9 +696,9 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             PodList result = gson.fromJson(content, PodList.class);
 
             List<Pod> podList = new ArrayList<Pod>();
-            if((result != null) && (result.getItems() != null)) {
-                for(Pod pod : result.getItems()) {
-                    if(pod != null) {
+            if ((result != null) && (result.getItems() != null)) {
+                for (Pod pod : result.getItems()) {
+                    if (pod != null) {
                         podList.add(pod);
                     }
                 }

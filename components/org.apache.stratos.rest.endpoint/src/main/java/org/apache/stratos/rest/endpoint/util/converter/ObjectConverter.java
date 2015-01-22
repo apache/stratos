@@ -128,8 +128,8 @@ public class ObjectConverter {
         for (int i = 0; i < portMappingBeanArray.length; i++) {
             PortMapping portMapping = new PortMapping();
             portMapping.setProtocol(portMappingBeanArray[i].getProtocol());
-            portMapping.setPort(Integer.toString(portMappingBeanArray[i].getPort()));
-            portMapping.setProxyPort(Integer.toString(portMappingBeanArray[i].getProxyPort()));
+            portMapping.setPort(portMappingBeanArray[i].getPort());
+            portMapping.setProxyPort(portMappingBeanArray[i].getProxyPort());
             portMappingArray[i] = portMapping;
         }
 

@@ -362,15 +362,14 @@ public class KubernetesIaas extends Iaas {
 
         // Create replication controller
         String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
-        String replicationControllerName = replicationControllerId;
+        String replicationControllerName = memberContext.getClusterId();
         String dockerImage = iaasProvider.getImage();
-        List<Integer> containerPorts = KubernetesIaasUtil.prepareCartridgePorts(cartridge);
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
         int replicas = 1;
 
         kubernetesApi.createReplicationController(replicationControllerId, replicationControllerName,
-                dockerImage, containerPorts, environmentVariables, replicas);
+                dockerImage, KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings()), environmentVariables, replicas);
         if (log.isInfoEnabled()) {
             log.info(String.format("Replication controller created successfully: [cartridge-type] %s [member-id] %s",
                     memberContext.getCartridgeType(), memberContext.getClusterId()));
@@ -400,9 +399,9 @@ public class KubernetesIaas extends Iaas {
             throw new RuntimeException(message);
         }
 
-        List<PortMapping> portMappings = cartridge.getPortMappings();
-        for (PortMapping portMapping : portMappings) {
-            String serviceId = KubernetesIaasUtil.prepareKubernetesServiceId(
+        boolean kubernetesServicePortsAdded = false;
+        for (PortMapping portMapping : cartridge.getPortMappings()) {
+            String serviceId = KubernetesIaasUtil.generateKubernetesServiceId(
                     CloudControllerUtil.replaceDotsWithDash(clusterId), portMapping);
             int nextServicePort = kubernetesClusterContext.getNextServicePort();
             if (nextServicePort == -1) {
@@ -412,17 +411,16 @@ public class KubernetesIaas extends Iaas {
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Creating kubernetes service: [cluster-id] %s [service-id] %s " +
-                                "[protocol] %s [service-port] %d [container-port] %s [proxy-port] %s", clusterId,
-                        serviceId, portMapping.getProtocol(), nextServicePort, portMapping.getPort(),
-                        portMapping.getProxyPort()));
+                                "[protocol] %s [service-port] %d [container-port] %s", clusterId,
+                        serviceId, portMapping.getProtocol(), nextServicePort, portMapping.getPort()));
             }
 
-            String serviceName = serviceId;
+            String serviceName = clusterId;
             int servicePort = nextServicePort;
-            int containerPort = Integer.parseInt(portMapping.getPort());
+            String containerPortName = KubernetesIaasUtil.generatePortName(portMapping);
             String publicIp = kubernetesClusterContext.getMasterIp();
 
-            kubernetesApi.createService(serviceId, serviceName, servicePort, containerPort, publicIp);
+            kubernetesApi.createService(serviceId, serviceName, servicePort, containerPortName, publicIp);
 
             try {
                 Thread.sleep(1000);
@@ -431,13 +429,18 @@ public class KubernetesIaas extends Iaas {
 
             Service service = kubernetesApi.getService(serviceId);
             services.add(service);
+            portMapping.setKubernetesServicePort(nextServicePort);
+            kubernetesServicePortsAdded = true;
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [service-id] %s " +
-                                "[protocol] %s [service-port] %d [container-port] %s [proxy-port] %s", clusterId,
-                        service.getId(), portMapping.getProtocol(), service.getPort(), portMapping.getPort(),
-                        portMapping.getProxyPort()));
+                                "[protocol] %s [service-port] %d [container-port] %s", clusterId,
+                        serviceId, portMapping.getProtocol(), nextServicePort, portMapping.getPort()));
             }
+        }
+        if(kubernetesServicePortsAdded) {
+            // Persist service ports added to port mappings
+            CloudControllerContext.getInstance().persist();
         }
         return services;
     }

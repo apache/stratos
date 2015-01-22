@@ -31,8 +31,6 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.application.ApplicationInstanceTerminatedEvent;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -76,9 +74,7 @@ public class TopologyBuilder {
                     Port port;
                     //adding ports to the event
                     for (PortMapping portMapping : portMappings) {
-                        port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(portMapping.getPort()),
-                                Integer.parseInt(portMapping.getProxyPort()));
+                        port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
                         service.addPort(port);
                     }
                     topology.addService(service);
@@ -429,8 +425,7 @@ public class TopologyBuilder {
                             // Adding ports to the member
                             for (PortMapping portMapping : portMappings) {
                                 port = new Port(portMapping.getProtocol(),
-                                        findServicePort(clusterId, services, portMapping),
-                                        Integer.parseInt(portMapping.getProxyPort()));
+                                        findServicePort(clusterId, services, portMapping), portMapping.getProxyPort());
                                 member.addPort(port);
                             }
                         }
@@ -439,9 +434,7 @@ public class TopologyBuilder {
                 } else {
                     // Adding ports to the member
                     for (PortMapping portMapping : portMappings) {
-                        port = new Port(portMapping.getProtocol(),
-                                Integer.parseInt(portMapping.getPort()),
-                                Integer.parseInt(portMapping.getProxyPort()));
+                        port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
                         member.addPort(port);
                     }
                 }
@@ -639,9 +632,7 @@ public class TopologyBuilder {
                 Port port;
                 //adding ports to the event
                 for (PortMapping portMapping : portMappings) {
-                    port = new Port(portMapping.getProtocol(),
-                            Integer.parseInt(portMapping.getPort()),
-                            Integer.parseInt(portMapping.getProxyPort()));
+                    port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
                     member.addPort(port);
                     memberActivatedEvent.addPort(port);
                 }

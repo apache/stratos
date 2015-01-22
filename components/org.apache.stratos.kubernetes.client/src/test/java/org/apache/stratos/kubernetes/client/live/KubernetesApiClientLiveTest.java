@@ -26,33 +26,38 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.Labels;
-import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.ReplicationController;
-import org.apache.stratos.kubernetes.client.model.Service;
-import org.junit.*;
+import org.apache.stratos.kubernetes.client.model.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Notes:
- * Initially it would take some time to pull the docker image and create a pod.
- * As a result live test would fail when running for the first time on a fresh
+ * Please ssh into the kubernetes custer and pull the docker image before running
+ * the live tests. Otherwise tests would fail when running for the first time on a fresh
  * kubernetes cluster.
+ *
+ * Caution!
+ * At the end of the tests it will remove all the replication controllers, pods and services
+ * available in the given kubernetes environment.
  */
 @Category(org.apache.stratos.kubernetes.client.LiveTests.class)
 public class KubernetesApiClientLiveTest extends TestCase{
 
     private static final Log log = LogFactory.getLog(KubernetesApiClientLiveTest.class);
 
-    private static final int CONTAINER_PORT = 6379;
+    private static final int CONTAINER_PORT = 80;
+    private static final int PROXY_PORT = 9280;
     private static final int SERVICE_PORT = 4500;
     private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
-    private static final String DEFAULT_DOCKER_IMAGE =  "gurpartap/redis";
+    private static final String DEFAULT_DOCKER_IMAGE =  "stratos/php:4.1.0-alpha";
     private static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
 
     private KubernetesApiClient client;
@@ -88,8 +93,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         String podId = "stratos-test-pod-1";
         String podName = "stratos-test-pod";
 
-        List<Integer> ports = new ArrayList<Integer>();
-        ports.add(CONTAINER_PORT);
+        List<Port> ports = createPorts();
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
@@ -108,6 +112,16 @@ public class KubernetesApiClientLiveTest extends TestCase{
         log.info("Pod deleted successfully: " + pod.getId());
     }
 
+    private List<Port> createPorts() {
+        List<Port> ports = new ArrayList<Port>();
+        Port port = new Port();
+        port.setName("port-1");
+        port.setContainerPort(CONTAINER_PORT);
+        port.setHostPort(PROXY_PORT);
+        ports.add(port);
+        return ports;
+    }
+
     @Test
     public void testDeletingAnNonExistingPod() {
         try {
@@ -123,8 +137,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         String replicationControllerName = "stratos-test-rc";
         int replicas = 2;
 
-        List<Integer> ports = new ArrayList<Integer>();
-        ports.add(CONTAINER_PORT);
+        List<Port> ports = createPorts();
         client.createReplicationController(replicationControllerId, replicationControllerName,
                 dockerImage, ports, null, replicas);
 
@@ -164,25 +177,29 @@ public class KubernetesApiClientLiveTest extends TestCase{
         InetAddress address = InetAddress.getByName(new URL(endpoint).getHost());
         String publicIp = address.getHostAddress();
 
-        List<Integer> ports = new ArrayList<Integer>();
-        ports.add(CONTAINER_PORT);
+        List<Port> ports = createPorts();
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
         Pod podCreated = client.getPod(podId);
         assertNotNull(podCreated);
 
-        client.createService(serviceId, serviceName, SERVICE_PORT, CONTAINER_PORT, publicIp);
+        client.createService(serviceId, serviceName, SERVICE_PORT, "port-1", publicIp);
 
         Thread.sleep(2000);
         Service service = client.getService(serviceId);
+        assertNotNull(service);
 
         // test recreation using same id
-        client.createService(serviceId, serviceName, SERVICE_PORT, CONTAINER_PORT, publicIp);
+        client.createService(serviceId, serviceName, SERVICE_PORT, "port-1", publicIp);
 
         Thread.sleep(2000);
         service = client.getService(serviceId);
         assertNotNull(service);
+
+        // test service proxy is accessibility
+        Socket socket = new Socket(publicIp, SERVICE_PORT);
+        assertTrue(socket.isConnected());
 
         client.deleteService(serviceId);
         assertNull(client.getService(serviceId));

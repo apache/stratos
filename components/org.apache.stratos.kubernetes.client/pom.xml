@@ -18,7 +18,8 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <parent>
         <groupId>org.apache.stratos</groupId>
@@ -26,53 +27,53 @@
         <version>4.1.0-SNAPSHOT</version>
     </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<artifactId>org.apache.stratos.kubernetes.client</artifactId>
-	<packaging>bundle</packaging>
-	<name>Apache Stratos - Kubernetes API Java Client</name>
-	<description>A Java client library written for Kubernetes API</description>
-	<url>http://apache.org</url>
-	
-	<properties>
-	    <kubernetes.api.endpoint>http://localhost:8080/api/v1beta1/</kubernetes.api.endpoint>
-	    <docker.image>gurpartap/redis</docker.image>
-  	</properties>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>org.apache.stratos.kubernetes.client</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache Stratos - Kubernetes API Java Client</name>
+    <description>A Java client library written for Kubernetes API</description>
+    <url>http://apache.org</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents.wso2</groupId>
-			<artifactId>httpcore</artifactId>
-			<version>4.3.0.wso2v1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents.wso2</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.2.5.wso2v1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-		</dependency>
-		<dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <scope>test</scope>
-      	</dependency>
-	</dependencies>
+    <properties>
+        <kubernetes.api.endpoint>http://localhost:8080/api/v1beta1/</kubernetes.api.endpoint>
+        <docker.image>gurpartap/redis</docker.image>
+    </properties>
 
-	<build>
-		<plugins>
-			<plugin>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>4.3.0.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents.wso2</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.2.5.wso2v1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
@@ -84,44 +85,44 @@
                     </instructions>
                 </configuration>
             </plugin>
-		</plugins>
-	</build>
-	
-	<profiles>
-	<profile>
-        <id>unit</id>
-        <activation>
-            <activeByDefault>true</activeByDefault>
-        </activation>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <groups>org.apache.stratos.kubernetes.client.UnitTests</groups>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-    <profile>
-        <id>live</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <configuration>
-                        <groups>org.apache.stratos.kubernetes.client.LiveTests</groups>
-                        <systemPropertyVariables>
-                    		<kubernetes.api.endpoint>${kubernetes.api.endpoint}</kubernetes.api.endpoint>
-                    		<docker.image>${docker.image}</docker.image>
-                  		</systemPropertyVariables>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile>
-  </profiles>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>unit</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>org.apache.stratos.kubernetes.client.UnitTests</groups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>live</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <groups>org.apache.stratos.kubernetes.client.LiveTests</groups>
+                            <systemPropertyVariables>
+                                <kubernetes.api.endpoint>${kubernetes.api.endpoint}</kubernetes.api.endpoint>
+                                <docker.image>${docker.image}</docker.image>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

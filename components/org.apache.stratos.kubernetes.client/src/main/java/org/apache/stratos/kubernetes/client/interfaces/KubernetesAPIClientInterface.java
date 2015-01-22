@@ -33,10 +33,10 @@ public interface KubernetesAPIClientInterface {
 	 * @param podId
 	 * @param podName
 	 * @param dockerImage
-	 * @param containerPorts
+	 * @param ports
 	 * @throws KubernetesClientException
 	 */
-	public void createPod(String podId, String podName, String dockerImage, List<Integer> containerPorts)
+	public void createPod(String podId, String podName, String dockerImage, List<Port> ports)
 			throws KubernetesClientException;
 
 	/**
@@ -74,14 +74,14 @@ public interface KubernetesAPIClientInterface {
 	 * @param replicationControllerId
 	 * @param replicationControllerName
 	 * @param dockerImage
-	 * @param containerPorts
+	 * @param ports
 	 * @param replicas
 	 * @throws KubernetesClientException
 	 */
 	public void createReplicationController(String replicationControllerId,
 															 String replicationControllerName,
 															 String dockerImage,
-															 List<Integer> containerPorts,
+															 List<Port> ports,
 															 EnvironmentVariable[] environmentVariables,
 															 int replicas) throws KubernetesClientException;
 
@@ -119,12 +119,12 @@ public interface KubernetesAPIClientInterface {
 	 * @param serviceId
 	 * @param serviceName
 	 * @param servicePort
-	 * @param containerPort
+	 * @param containerPortName
 	 * @param publicIp
 	 * @throws KubernetesClientException
 	 */
 	public void createService(String serviceId, String serviceName, int servicePort,
-								 int containerPort, String publicIp) throws KubernetesClientException;
+								 String containerPortName, String publicIp) throws KubernetesClientException;
 
 	/**
 	 * Get the Service with the given id.

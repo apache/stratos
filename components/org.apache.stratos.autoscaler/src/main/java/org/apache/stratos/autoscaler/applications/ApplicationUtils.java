@@ -147,7 +147,7 @@ public class ApplicationUtils {
         StringBuilder portMapBuilder = new StringBuilder();
         PortMapping[] portMappings = cartridge.getPortMappings();
         for (PortMapping portMapping : portMappings) {
-            String port = portMapping.getPort();
+            int port = portMapping.getPort();
             portMapBuilder.append(port).append("|");
         }
 

@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.iaases.kubernetes;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.ClusterContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
 import org.apache.stratos.cloud.controller.domain.PortMapping;
@@ -30,6 +29,7 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
+import org.apache.stratos.kubernetes.client.model.Port;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,24 +42,11 @@ public class KubernetesIaasUtil {
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
 
     /**
-     * Prepare and returns the list of ports defined in the given cartridge.
-     * @param cartridge
-     * @return
-     */
-    public static List<Integer> prepareCartridgePorts(Cartridge cartridge) {
-        List<Integer> portList = new ArrayList<Integer>();
-        for (PortMapping portMapping : cartridge.getPortMappings()) {
-            portList.add(Integer.valueOf(portMapping.getPort()));
-        }
-        return portList;
-    }
-
-    /**
-     * Prepare and returns kubernetes service id using clusterId, port protocol and port.
+     * Generate kubernetes service id using clusterId, port protocol and port.
      * @param portMapping
      * @return
      */
-    public static String prepareKubernetesServiceId(String clusterId, PortMapping portMapping) {
+    public static String generateKubernetesServiceId(String clusterId, PortMapping portMapping) {
         return String.format("%s-%s-%s", clusterId, portMapping.getProtocol(), portMapping.getPort());
     }
 
@@ -105,23 +92,42 @@ public class KubernetesIaasUtil {
         return environmentVariables.toArray(array);
     }
 
-    private static void addToEnvironment(List<EnvironmentVariable> envVars, String payload) {
-        if (payload != null) {
-            String[] entries = payload.split(",");
-            for (String entry : entries) {
-                String[] var = entry.split("=");
-                if (var.length != 2) {
-                    continue;
-                }
-                addToEnvironmentVariables(envVars, var[0], var[1]);
-            }
-        }
+    /**
+     * Add name value pair to kubernetes environment variables.
+     * @param environmentVariables
+     * @param name
+     * @param value
+     */
+    private static void addToEnvironmentVariables(List<EnvironmentVariable> environmentVariables, String name, String value) {
+        EnvironmentVariable environmentVariable = new EnvironmentVariable();
+        environmentVariable.setName(name);
+        environmentVariable.setValue(value);
+        environmentVariables.add(environmentVariable);
     }
 
-    private static void addToEnvironmentVariables(List<EnvironmentVariable> envVars, String name, String value) {
-        EnvironmentVariable var = new EnvironmentVariable();
-        var.setName(name);
-        var.setValue(value);
-        envVars.add(var);
+    /**
+     * Convert stratos port mappings to kubernetes ports
+     * @param portMappings
+     * @return
+     */
+    public static List<Port> convertPortMappings(List<PortMapping> portMappings) {
+        List<Port> ports = new ArrayList<Port>();
+        for(PortMapping portMapping : portMappings) {
+            Port port = new Port();
+            port.setName(generatePortName(portMapping));
+            port.setContainerPort(portMapping.getPort());
+            port.setHostPort(portMapping.getKubernetesServicePort());
+            ports.add(port);
+        }
+        return ports;
+    }
+
+    /**
+     * Generate port name for port mapping.
+     * @param portMapping
+     * @return
+     */
+    public static String generatePortName(PortMapping portMapping) {
+        return String.format("%s-%d", portMapping.getProtocol(), portMapping.getPort());
     }
 }
