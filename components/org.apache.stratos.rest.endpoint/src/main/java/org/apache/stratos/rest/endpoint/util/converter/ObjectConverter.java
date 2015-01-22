@@ -695,20 +695,21 @@ public class ObjectConverter {
 	            try {
 		            ClusterContext clusterContext =
 				            CloudControllerServiceClient.getInstance().getClusterContext(member.getClusterId());
-		           // if(clusterContext.getCartridgeType().equals("LB")) {
+		          //  if(clusterContext.getCartridgeType().equals("LB")) {
 			            CartridgeInfo cartridgeInfo =
 					            CloudControllerServiceClient.getInstance()
 					                                        .getCartridgeInfo(clusterContext.getCartridgeType());
 			            PortMapping[] portMappings = cartridgeInfo.getPortMappings();
 			            for (PortMapping portMapping : portMappings) {
 				            if (clusterContext.isKubernetesClusterIdSpecified()) {
-					            String accessUrl = portMapping.getProtocol() + clusterContext.getHostName() +
+					            String accessUrl = portMapping.getProtocol()+"://" + clusterContext.getHostName() +":"+
 					                               portMapping.getProxyPort();
 					            accessUrls.add(accessUrl);
 				            }
 				            else {
-					            String accessUrl = portMapping.getProtocol() + clusterContext.getHostName() +
-					                               portMapping.getProxyPort();
+					            String accessUrl =
+							            portMapping.getProtocol() + "://" + clusterContext.getHostName() + ":" +
+							            portMapping.getProxyPort();
 					            accessUrls.add(accessUrl);
 				            }
 			            }
