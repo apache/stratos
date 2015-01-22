@@ -34,6 +34,7 @@ public class ClusterInstanceBean implements Serializable {
     private List<MemberBean> member;
     private String tenantRange;
     private List<String> hostNames;
+	private List<String> accessUrls;
 
 	public String getStatus() {
 		return status;
@@ -112,4 +113,12 @@ public class ClusterInstanceBean implements Serializable {
     public void setParentInstanceId(String parentInstanceId) {
         this.parentInstanceId = parentInstanceId;
     }
+
+	public List<String> getAccessUrls() {
+		return accessUrls;
+	}
+
+	public void setAccessUrls(List<String> accessUrls) {
+		this.accessUrls = accessUrls;
+	}
 }
