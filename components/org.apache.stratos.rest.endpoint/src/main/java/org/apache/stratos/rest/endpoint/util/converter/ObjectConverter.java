@@ -703,7 +703,7 @@ public class ObjectConverter {
 			            for (PortMapping portMapping : portMappings) {
 				            if (clusterContext.isKubernetesClusterIdSpecified()) {
 					            String accessUrl = portMapping.getProtocol()+"://" + clusterContext.getHostName() +":"+
-					                               portMapping.getProxyPort();
+					                               portMapping.getKubernetesServicePort();
 					            accessUrls.add(accessUrl);
 				            }
 				            else {
