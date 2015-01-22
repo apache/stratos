@@ -362,7 +362,7 @@ public class KubernetesIaas extends Iaas {
 
         // Create replication controller
         String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
-        String replicationControllerName = memberContext.getClusterId();
+        String replicationControllerName = CloudControllerUtil.replaceDotsWithDash(memberContext.getClusterId());
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
@@ -401,8 +401,8 @@ public class KubernetesIaas extends Iaas {
 
         boolean kubernetesServicePortsAdded = false;
         for (PortMapping portMapping : cartridge.getPortMappings()) {
-            String serviceId = KubernetesIaasUtil.generateKubernetesServiceId(
-                    CloudControllerUtil.replaceDotsWithDash(clusterId), portMapping);
+            String serviceName = CloudControllerUtil.replaceDotsWithDash(clusterId);
+            String serviceId = KubernetesIaasUtil.generateKubernetesServiceId(serviceName, portMapping);
             int nextServicePort = kubernetesClusterContext.getNextServicePort();
             if (nextServicePort == -1) {
                 throw new RuntimeException(String.format("Could not generate service port: [cluster-id] %s ",
@@ -415,7 +415,6 @@ public class KubernetesIaas extends Iaas {
                         serviceId, portMapping.getProtocol(), nextServicePort, portMapping.getPort()));
             }
 
-            String serviceName = clusterId;
             int servicePort = nextServicePort;
             String containerPortName = KubernetesIaasUtil.generatePortName(portMapping);
             String publicIp = kubernetesClusterContext.getMasterIp();
