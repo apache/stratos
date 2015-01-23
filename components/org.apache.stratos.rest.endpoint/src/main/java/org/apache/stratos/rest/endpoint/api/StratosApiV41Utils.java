@@ -620,7 +620,9 @@ public class StratosApiV41Utils {
             }
             
             List<String> cartridgeTypes = null;
+            String[] cartridgeNames = null;
             List<String> groupNames = null;
+            String[] cartridgeGroupNames = null;
 
             // if any cartridges are specified in the group, they should be already deployed
             if (serviceGroupDefinition.getCartridges() != null) {
@@ -644,13 +646,18 @@ public class StratosApiV41Utils {
                 }
 
                 CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
-
+                
+                cartridgeNames = new String[cartridgeTypes.size()];
+                int i=0;
                 for (String cartridgeType : cartridgeTypes) {
                     try {
                         if (ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
                             // cartridge is not deployed, can't continue
                             log.error("invalid cartridge found in cartridge group " + cartridgeType);
                             throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
+                        } else {
+                        	cartridgeNames[i] = cartridgeType;
+                        	i++;
                         }
                     } catch (RemoteException e) {
                         throw new RestAPIException(e);
@@ -668,8 +675,12 @@ public class StratosApiV41Utils {
 
                 List<GroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
                 groupNames = new ArrayList<String>();
+                cartridgeGroupNames = new String[groupNames.size()];
+                int i=0;
                 for (GroupBean groupList : groupDefinitions) {
                     groupNames.add(groupList.getName());
+                    cartridgeGroupNames[i] = groupList.getName();
+                    i++;
                 }
 
                 Set<String> duplicates = findDuplicates(groupNames);
@@ -694,10 +705,10 @@ public class StratosApiV41Utils {
             // Add cartridge group elements to SM cache - done after service group has been added
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             if(cartridgeTypes != null) {
-            	smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), (String[]) cartridgeTypes.toArray());
+            	smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
             }
             if(groupNames != null) {
-            	smServiceClient.addUsedCartridgeGroupsInCartridgeSubGroups(serviceGroupDefinition.getName(), (String[]) groupNames.toArray());
+            	smServiceClient.addUsedCartridgeGroupsInCartridgeSubGroups(serviceGroupDefinition.getName(), cartridgeGroupNames);
             }
             
         } catch (Exception e) {
@@ -783,6 +794,13 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             
+            // Check whether cartridge group exists
+            if(asServiceClient.getServiceGroup(name) == null) {
+            	String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+            
             // Validate whether cartridge group can be removed
             if(!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
             	String message = "Cannot remove cartridge group: [group-name] " + name + " since it is used in another cartridge group or an application";
@@ -802,11 +820,17 @@ public class StratosApiV41Utils {
             
             if (serviceGroup.getGroups() != null) {
             	ServiceGroup[] cartridgeGroups = serviceGroup.getGroups();
-            	Set<String> cartridgeGroupNames = new HashSet<String>();
+            	String[] cartridgeGroupNames = new String[cartridgeGroups.length];
+            	int i = 0;
             	for(ServiceGroup cartridgeGroup : cartridgeGroups) {
-            		cartridgeGroupNames.add(cartridgeGroup.getName());
+            		if(cartridgeGroup != null) {
+                		cartridgeGroupNames[i] = cartridgeGroup.getName();
+                		i++;
+            		} else {
+            			break;
+            		}
             	}
-            	smServiceClient.removeUsedCartridgeGroupsInCartridgeSubGroups(name, (String[]) cartridgeGroupNames.toArray());
+            	smServiceClient.removeUsedCartridgeGroupsInCartridgeSubGroups(name, cartridgeGroupNames);
             }
 
         } catch (Exception e) {
@@ -860,29 +884,33 @@ public class StratosApiV41Utils {
             AutoscalerServiceClient.getInstance().addApplication(applicationContext);
             
             // Add application elements to SM cache - done after application has been added
-            Set<String> cartridgeNames;
-            Set<String> cartridgeGroupNames;
+            String[] cartridgeNames;
+            String[] cartridgeGroupNames;
                         
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             
             List<CartridgeReferenceBean> cartridges = appDefinition.getComponents().getCartridges();
             if(cartridges != null) {
-            	cartridgeNames = new HashSet<String>();
+            	cartridgeNames = new String[cartridges.size()];
+            	int i=0;
             	for(CartridgeReferenceBean cartridge : cartridges) {
-            		cartridgeNames.add(cartridge.getType());
+            		cartridgeNames[i] = cartridge.getType();
+            		i++;
             	}
             	
-            	smServiceClient.addUsedCartridgesInApplications(appDefinition.getApplicationId(), (String[]) cartridgeNames.toArray());
+            	smServiceClient.addUsedCartridgesInApplications(appDefinition.getApplicationId(), cartridgeNames);
             }
             
             List<GroupReferenceBean> cartridgeGroups = appDefinition.getComponents().getGroups();
             if(cartridgeGroups != null) {
-            	cartridgeGroupNames = new HashSet<String>();
+            	cartridgeGroupNames = new String[cartridgeGroups.size()];
+            	int i=0;
             	for(GroupReferenceBean cartridgeGroup : cartridgeGroups) {
-            		cartridgeGroupNames.add(cartridgeGroup.getName());
+            		cartridgeGroupNames[i] = cartridgeGroup.getName();
+            		i++;
             	}
             	
-            	smServiceClient.addUsedCartridgeGroupsInApplications(appDefinition.getApplicationId(), (String[]) cartridgeGroupNames.toArray());
+            	smServiceClient.addUsedCartridgeGroupsInApplications(appDefinition.getApplicationId(), cartridgeGroupNames);
             }
             
         } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
@@ -949,28 +977,32 @@ public class StratosApiV41Utils {
         	asServiceClient.deleteApplication(applicationId);
             
             // Remove application elements in SM cache - done after deleting
-        	Set<String> cartridgeNames;
-            Set<String> cartridgeGroupNames;
+        	String[] cartridgeNames;
+            String[] cartridgeGroupNames;
             StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
             
             List<CartridgeReferenceBean> cartridges = application.getComponents().getCartridges();
             if(cartridges != null) {
-            	cartridgeNames = new HashSet<String>();
+            	cartridgeNames = new String[cartridges.size()];
+            	int i=0;
             	for(CartridgeReferenceBean cartridge : cartridges) {
-            		cartridgeNames.add(cartridge.getType());
+            		cartridgeNames[i] = cartridge.getType();
+            		i++;
             	}
             	
-            	smServiceClient.removeUsedCartridgesInApplications(application.getApplicationId(), (String[]) cartridgeNames.toArray());
+            	smServiceClient.removeUsedCartridgesInApplications(application.getApplicationId(), cartridgeNames);
             }
             
             List<GroupReferenceBean> cartridgeGroups = application.getComponents().getGroups();
             if(cartridgeGroups != null) {
-            	cartridgeGroupNames = new HashSet<String>();
+            	cartridgeGroupNames = new String[cartridgeGroups.size()];
+            	int i=0;
             	for(GroupReferenceBean cartridgeGroup : cartridgeGroups) {
-            		cartridgeGroupNames.add(cartridgeGroup.getName());
+            		cartridgeGroupNames[i] = cartridgeGroup.getName();
+            		i++;
             	}
             	
-            	smServiceClient.removeUsedCartridgeGroupsInApplications(application.getApplicationId(), (String[]) cartridgeGroupNames.toArray());
+            	smServiceClient.removeUsedCartridgeGroupsInApplications(application.getApplicationId(), cartridgeGroupNames);
             }
             
         } catch (RemoteException e) {
