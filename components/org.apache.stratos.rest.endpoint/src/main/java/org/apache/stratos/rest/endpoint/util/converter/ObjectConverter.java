@@ -695,7 +695,7 @@ public class ObjectConverter {
 	            try {
 		            ClusterContext clusterContext =
 				            CloudControllerServiceClient.getInstance().getClusterContext(member.getClusterId());
-		          //  if(clusterContext.getCartridgeType().equals("LB")) {
+		            if(clusterContext.getLbCluster()) {
 			            CartridgeInfo cartridgeInfo =
 					            CloudControllerServiceClient.getInstance()
 					                                        .getCartridgeInfo(clusterContext.getCartridgeType());
@@ -713,7 +713,7 @@ public class ObjectConverter {
 					            accessUrls.add(accessUrl);
 				            }
 			            }
-		           // }
+		            }
 	            } catch (Exception e) {
 		            if (log.isWarnEnabled()) {
 			            log.warn("Error when calling getCartridgeInfo for " + member.getServiceName() + ", Error: "
