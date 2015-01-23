@@ -63,6 +63,10 @@ RESTCalls = new function(){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
+    this.deleteAutoscalePolicyDefinition = function(autoscalePolicyId){
+        return this.send("DELETE","/autoscalingPolicies/" + autoscalePolicyId,{});
+    };
+
     this.deployKubernetesClusterDefinition = function(clusterDefinition){
         return this.send("POST","/kubernetesClusters",clusterDefinition);
     };

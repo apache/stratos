@@ -42,6 +42,9 @@ try {
         case "delete-cartridge":
             formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
             break;
+        case "delete-autoscalingpolicy":
+            formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
+            break;
         default:
             session.put("deploy-status", { "message": "Sorry Endpoint Error", "status": "error" });
 

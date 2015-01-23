@@ -155,12 +155,16 @@
 
                             <div class="toggle-menu-description">{{description}}</div>
                             <div class="list-button" style="display: none;">
+                                <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                        id="{{id}}" data-formtype="delete-autoscalingpolicy"> Delete</button>
                                 <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{id}}"
                                         data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                            id="{{id}}" data-formtype="delete-autoscalingpolicy"> Delete</button>
                                     <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{id}}"
                                             data-url="{{url ""}}/configure/autoscalingpolicies/{{id}}/" > Details
                                     </button>
