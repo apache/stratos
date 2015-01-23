@@ -20,14 +20,38 @@
 package org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network;
 
 import java.io.Serializable;
+import java.util.Arrays;
+
 /**
 * The model class for NetworkPartition definition.
 */
-public abstract class NetworkPartition implements Serializable {
+public class NetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
-    private String id;
 
+    private String id;
+    private String kubernetesClusterId;
+    private boolean activeByDefault;
+    private Partition[] partitions;
+
+    public void setPartitions(Partition[] partitions) {
+        if(partitions == null) {
+            this.partitions = partitions;
+        } else {
+            this.partitions = Arrays.copyOf(partitions, partitions.length);
+        }
+    }
+
+    /**
+     * Gets the value of the partitions.
+     */
+    public Partition[] getPartitions() {
+        if (partitions == null) {
+            partitions = new Partition[0];
+        }
+        return this.partitions;
+    }
+    
     /**
      * Gets the value of the id.
      */
@@ -40,5 +64,30 @@ public abstract class NetworkPartition implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isActiveByDefault() {
+        return activeByDefault;
+    }
+
+    public void setActiveByDefault(boolean activeByDefault) {
+        this.activeByDefault = activeByDefault;
+    }
+
+    public Partition getPartition(String partitionId) {
+        for(Partition partition : partitions) {
+            if(partition.getId().equals(partitionId)) {
+                return partition;
+            }
+        }
+        return null;
+    }
+
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
+
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
     }
 }

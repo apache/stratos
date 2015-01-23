@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
@@ -46,7 +47,7 @@ import org.apache.stratos.common.beans.cartridge.VolumeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
@@ -575,26 +576,6 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static ApplicationLevelNetworkPartitionBean[] getPartitionGroups(String deploymentPolicyId)
-            throws RestAPIException {
-
-        org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] partitionGroups = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                partitionGroups = autoscalerServiceClient.getApplicationLevelNetworkPartition(deploymentPolicyId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error getting available partition groups for deployment policy id "
-                        + deploymentPolicyId + ". Cause: " + e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return ObjectConverter.convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(partitionGroups);
-    }
-
     // Util methods for repo actions
 
     public static void notifyArtifactUpdatedEvent(GitNotificationPayloadBean payload) throws RestAPIException {
@@ -1007,6 +988,7 @@ public class StratosApiV41Utils {
     private static void addClustersInstancesToApplicationInstanceBean(
             ApplicationInstanceBean applicationInstanceBean,
             Application application) {
+
         Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
         if(topLevelClusterDataMap != null) {
             for (Map.Entry<String, ClusterDataHolder> entry : topLevelClusterDataMap.entrySet()) {
@@ -1555,6 +1537,52 @@ public class StratosApiV41Utils {
             String message = "Could not get domain mappings: [application-id] " + applicationId;
             log.error(message, e);
             throw new RestAPIException(message, e);
+        }
+    }
+
+    public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            serviceClient.addNetworkPartition(ObjectConverter.convertNetworkPartitionToStubNetworkPartition(networkPartitionBean));
+        } catch (Exception e) {
+            String message = "Could not add network partition";
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public static NetworkPartitionBean[] getNetworkPartitions() {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            NetworkPartition[] networkPartitions = serviceClient.getNetworkPartitions();
+            return ObjectConverter.convertStubNetworkPartitionsToNetworkPartitions(networkPartitions);
+        } catch (Exception e) {
+            String message = "Could not get network partitions";
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public static void removeNetworkPartition(String networkPartitionId) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            serviceClient.removeNetworkPartition(networkPartitionId);
+        } catch (Exception e) {
+            String message = String.format("Could not remove network partition: [network-partition-id] %s", networkPartitionId);
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
+
+    public static NetworkPartitionBean getNetworkPartition(String networkPartitionId) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            NetworkPartition networkPartition = serviceClient.getNetworkPartition(networkPartitionId);
+            return ObjectConverter.convertStubNetworkPartitionToNetworkPartition(networkPartition);
+        } catch (Exception e) {
+            String message = String.format("Could not get network partition: [network-partition-id] %s", networkPartitionId);
+            log.error(message);
+            throw new RuntimeException(message, e);
         }
     }
 }

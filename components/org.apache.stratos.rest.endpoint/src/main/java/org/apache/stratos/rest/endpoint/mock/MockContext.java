@@ -22,7 +22,7 @@ import org.apache.stratos.common.beans.ApiResponseBean;
 import org.apache.stratos.common.beans.TenantInfoBean;
 import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -568,7 +568,7 @@ public class MockContext {
                 get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().get(0).getPartitions().toArray(new PartitionBean[0]);
     }
 
-    public ApplicationLevelNetworkPartitionBean[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
+    public NetworkPartitionBean[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
     	int tenantId = getTenantId();
     	if(!deploymentPolicyMap.containsKey(tenantId)){
     		if(!deploymentPolicyMap.containsKey(PUBLIC_DEFINITION)){
@@ -578,14 +578,14 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new ApplicationLevelNetworkPartitionBean[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new NetworkPartitionBean[0]);
     		}
     	}
         	
     	if(!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)){
     		throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         }
-    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new ApplicationLevelNetworkPartitionBean[0]);
+    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getApplicationPolicy().getNetworkPartition().toArray(new NetworkPartitionBean[0]);
     }
 
     public AutoscalePolicyBean[] getAutoscalePolicies()  throws RestAPIException{
@@ -719,7 +719,7 @@ public class MockContext {
     	}
         	  	
         PartitionBean[] partitions = null;
-         for(ApplicationLevelNetworkPartitionBean networkPartition : deploymentPolicy.getApplicationPolicy().getNetworkPartition()){
+         for(NetworkPartitionBean networkPartition : deploymentPolicy.getApplicationPolicy().getNetworkPartition()){
              if(networkPartition.getId().equals(partitionGroupId)){
                  partitions =  networkPartition.getPartitions().toArray(new PartitionBean[0]);
              }

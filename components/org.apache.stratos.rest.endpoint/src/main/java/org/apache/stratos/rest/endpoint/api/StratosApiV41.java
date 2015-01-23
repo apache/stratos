@@ -26,6 +26,7 @@ import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -331,6 +332,77 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
         return Response.noContent().build();
+    }
+
+    // API methods for network partitions
+
+    /**
+     * Add network partition
+     * @param networkPartitionBean
+     * @return
+     * @throws RestAPIException
+     */
+    @POST
+    @Path("/networkPartitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addNetworkPartition(NetworkPartitionBean networkPartitionBean)
+            throws RestAPIException {
+        NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionBean.getId());
+        if(networkPartition != null) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+        StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionBean.getId()).build();
+        return Response.created(url).build();
+    }
+
+    /**
+     * Get network partitions
+     * @return
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/networkPartitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getNetworkPartitions() throws RestAPIException {
+        NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
+        return Response.ok(networkPartitions).build();
+    }
+
+    /**
+     * Get network partition by network partition id
+     * @return
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/networkPartitions/{networkPartitionId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getNetworkPartition(@PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
+        NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
+        return Response.ok(networkPartition).build();
+    }
+
+    /**
+     * Remove network partition by network partition id
+     * @return
+     * @throws RestAPIException
+     */
+    @DELETE
+    @Path("/networkPartitions/{networkPartitionId}")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response removeNetworkPartition(@PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
+        NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
+        if(networkPartition == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        StratosApiV41Utils.removeNetworkPartition(networkPartitionId);
+        return Response.ok().build();
     }
 
     // API methods for applications
@@ -667,7 +739,7 @@ public class StratosApiV41 extends AbstractApi {
     }
 
     /**
-     * Update autoscaling policy defintion.
+     * Update autoscaling policy.
      *
      * @param autoscalePolicy the autoscale policy
      * @return the response
@@ -678,7 +750,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-    public Response updateAutoscalingPolicyDefintion(AutoscalePolicyBean autoscalePolicy)
+    public Response updateAutoscalingPolicy(AutoscalePolicyBean autoscalePolicy)
             throws RestAPIException {
 
         StratosApiV41Utils.updateAutoscalingPolicy(autoscalePolicy);
@@ -686,21 +758,21 @@ public class StratosApiV41 extends AbstractApi {
     }
 
 	/**
-	 * Remove autoscaling policy defintion.
+	 * Remove autoscaling policy.
 	 *
-	 * @param autoscalePolicyId the autoscale policy
+	 * @param autoscalingPolicyId the autoscale policy
 	 * @return the response
 	 * @throws RestAPIException the rest api exception
 	 */
 	@DELETE
-	@Path("/autoscalingPolicies/{autoscalePolicyId}")
+	@Path("/autoscalingPolicies/{autoscalingPolicyId}")
 	@Produces("application/json")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/admin/manage/add/autoscalingPolicy")
-	public Response removeAutoscalingPolicyDefintion(@PathParam("autoscalePolicyId") String autoscalePolicyId)
+	public Response removeAutoscalingPolicy(@PathParam("autoscalingPolicyId") String autoscalingPolicyId)
 			throws RestAPIException {
 
-		StratosApiV41Utils.removeAutoscalingPolicy(autoscalePolicyId);
+		StratosApiV41Utils.removeAutoscalingPolicy(autoscalingPolicyId);
 		return Response.ok().build();
 	}
     // API methods for tenants

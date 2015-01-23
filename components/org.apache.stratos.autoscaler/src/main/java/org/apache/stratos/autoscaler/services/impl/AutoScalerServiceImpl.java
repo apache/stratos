@@ -42,8 +42,8 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoScalerService;
@@ -184,11 +184,6 @@ public class AutoScalerServiceImpl implements AutoScalerService {
     @Override
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId) {
         return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
-    }
-
-    @Override
-    public ApplicationLevelNetworkPartition[] getNetworkPartitions(String deploymentPolicyId) {
-        return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId).getApplicationLevelNetworkPartitions();
     }
 
     @Override
@@ -389,10 +384,10 @@ public class AutoScalerServiceImpl implements AutoScalerService {
      * @param deploymentPolicy
      */
     private void updateKubernetesClusterIds(DeploymentPolicy deploymentPolicy) {
-        ApplicationLevelNetworkPartition[] networkPartitions =
+        NetworkPartition[] networkPartitions =
                 deploymentPolicy.getApplicationLevelNetworkPartitions();
         if(networkPartitions != null) {
-            for(ApplicationLevelNetworkPartition networkPartition : networkPartitions) {
+            for(NetworkPartition networkPartition : networkPartitions) {
                 if(StringUtils.isNotBlank(networkPartition.getKubernetesClusterId())) {
                     Partition[] partitions = networkPartition.getPartitions();
                     if(partitions != null) {
@@ -590,6 +585,70 @@ public class AutoScalerServiceImpl implements AutoScalerService {
             return RegistryManager.getInstance().getServiceGroup(name);
         } catch (Exception e) {
             throw new AutoScalerException("Error occurred while retrieving cartridge group", e);
+        }
+    }
+
+    @Override
+    public void addNetworkPartition(NetworkPartition networkPartition) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
+            }
+
+            // TODO: Add validation logic
+            RegistryManager.getInstance().persistNetworkPartition(networkPartition);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Network partition added successfully: [network-partition-id] %s", networkPartition.getId()));
+            }
+        } catch (Exception e) {
+            String message = "Could not add network partition";
+            log.error(message);
+            throw new AutoScalerException(message, e);
+        }
+    }
+
+    @Override
+    public void removeNetworkPartition(String networkPartitionId) {
+        try {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Removing network partition: [network-partition-id] %s", networkPartitionId));
+            }
+
+            // TODO: Add validation logic
+            RegistryManager.getInstance().removeNetworkPartition(networkPartitionId);
+
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Network partition removed successfully: [network-partition-id] %s", networkPartitionId));
+            }
+        } catch (Exception e) {
+            String message = "Could not remove network partition";
+            log.error(message);
+            throw new AutoScalerException(message, e);
+        }
+    }
+
+    @Override
+    public NetworkPartition[] getNetworkPartitions() {
+        try {
+            List<NetworkPartition> networkPartitionList = RegistryManager.getInstance().getNetworkPartitions();
+            return networkPartitionList.toArray(new NetworkPartition[networkPartitionList.size()]);
+        } catch (Exception e) {
+            String message = "Could not get network partitions";
+            log.error(message);
+            throw new AutoScalerException(message, e);
+        }
+    }
+
+    @Override
+    public NetworkPartition getNetworkPartition(String networkPartitionId) {
+        try {
+            return RegistryManager.getInstance().getNetworkPartition(networkPartitionId);
+        } catch (Exception e) {
+            String message = String.format("Could not get network partition: [network-partition-id] %s",
+                    networkPartitionId);
+            log.error(message);
+            throw new AutoScalerException(message, e);
         }
     }
 

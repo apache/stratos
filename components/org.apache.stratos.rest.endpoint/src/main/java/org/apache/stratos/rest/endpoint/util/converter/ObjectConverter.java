@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition;
+import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
@@ -40,7 +41,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.ChildLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.ChildLevelPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
@@ -215,7 +216,7 @@ public class ObjectConverter {
         properties.setProperties(propertyArray);
         return properties;
     }
-    
+
     public static org.apache.stratos.cloud.controller.stub.Properties convertPropertyBeansToCCStubProperties(
             List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans) {
         if (propertyBeans == null) {
@@ -284,7 +285,7 @@ public class ObjectConverter {
         networkInterfaces.setNetworkInterfaces(networkInterfacesArray);
         return networkInterfaces;
     }
-    
+
     private static FloatingNetworks convertFloatingNetworkBeansToFloatingNetworks(List<FloatingNetworkBean> floatingNetworkBeans) {
 
         FloatingNetwork[] floatingNetworksArray = new FloatingNetwork[floatingNetworkBeans.size()];
@@ -376,10 +377,9 @@ public class ObjectConverter {
         if (deploymentPolicyBean.getApplicationPolicy() != null
                 && deploymentPolicyBean.getApplicationPolicy().getNetworkPartition() != null
                 && !deploymentPolicyBean.getApplicationPolicy().getNetworkPartition().isEmpty()) {
-            deploymentPolicy
-                    .setApplicationLevelNetworkPartitions(
-                            convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(
-                                    deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
+            deploymentPolicy.setApplicationLevelNetworkPartitions(
+                    convertNetworkPartitionsToStubNetworkPartitions(
+                            deploymentPolicyBean.getApplicationPolicy().getNetworkPartition()));
         }
 
         if (deploymentPolicyBean.getChildPolicies() != null && !deploymentPolicyBean.getChildPolicies().isEmpty()) {
@@ -400,12 +400,12 @@ public class ObjectConverter {
         deploymentPolicy.setDescription(stubDeploymentPolicy.getDescription());
         deploymentPolicy.setPublic(stubDeploymentPolicy.getIsPublic());
         if (stubDeploymentPolicy.getApplicationLevelNetworkPartitions() != null) {
-            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
+            org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition[]
                     networkPartitions = stubDeploymentPolicy.getApplicationLevelNetworkPartitions();
             if(networkPartitions != null) {
                 deploymentPolicy.setApplicationPolicy(new ApplicationPolicyBean());
-                List<ApplicationLevelNetworkPartitionBean> networkPartitionList = new ArrayList<ApplicationLevelNetworkPartitionBean>();
-                for(org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition
+                List<NetworkPartitionBean> networkPartitionList = new ArrayList<NetworkPartitionBean>();
+                for(org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition
                         networkPartition : networkPartitions) {
                     if(networkPartition != null) {
                         networkPartitionList.add(convertStubNetworkPartitionToNetworkPartition(networkPartition));
@@ -482,13 +482,13 @@ public class ObjectConverter {
         return childLevelPartition;
     }
 
-    private static ApplicationLevelNetworkPartitionBean convertStubNetworkPartitionToNetworkPartition(
-            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition stubNetworkPartition) {
+    public static NetworkPartitionBean convertStubNetworkPartitionToNetworkPartition(
+            org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition stubNetworkPartition) {
         if(stubNetworkPartition == null) {
             return null;
         }
 
-        ApplicationLevelNetworkPartitionBean networkPartition = new ApplicationLevelNetworkPartitionBean();
+        NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
         networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
@@ -537,32 +537,32 @@ public class ObjectConverter {
         return propertyBean;
     }
 
-    private static org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
-        convertApplicationLevelNetworkPartitionToStubApplicationLevelNetworkPartition(
-            List<ApplicationLevelNetworkPartitionBean> networkPartitionBeans) {
+    private static org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition[]
+        convertNetworkPartitionsToStubNetworkPartitions(List<NetworkPartitionBean> networkPartitionBeans) {
 
-        org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[]
+        org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition[]
                 appNWPartitions = new
-                org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition
+                org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition
                 [networkPartitionBeans.size()];
 
         for (int i = 0; i < networkPartitionBeans.size(); i++) {
-            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition appNWPartition = new
-                    org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition();
-
-            ApplicationLevelNetworkPartitionBean networkPartition = networkPartitionBeans.get(i);
-
-            appNWPartition.setId(networkPartition.getId());
-            appNWPartition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
-            appNWPartition.setActiveByDefault(networkPartition.isActiveByDefault());
-            if (networkPartition.getPartitions() != null && !networkPartition.getPartitions().isEmpty()) {
-                appNWPartition.setPartitions(convertToCCPartitionPojos(networkPartition.getPartitions()));
-            }
-
-            appNWPartitions[i] = appNWPartition;
+            appNWPartitions[i] = convertNetworkPartitionToStubNetworkPartition(networkPartitionBeans.get(i));
         }
 
         return appNWPartitions;
+    }
+
+    public static NetworkPartition convertNetworkPartitionToStubNetworkPartition(NetworkPartitionBean networkPartitionBean) {
+
+        org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition networkPartition =
+                new NetworkPartition();
+        networkPartition.setId(networkPartitionBean.getId());
+        networkPartition.setKubernetesClusterId(networkPartitionBean.getKubernetesClusterId());
+        networkPartition.setActiveByDefault(networkPartitionBean.isActiveByDefault());
+        if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
+            networkPartition.setPartitions(convertToCCPartitionPojos(networkPartitionBean.getPartitions()));
+        }
+        return networkPartition;
     }
 
     private static ChildPolicy[] convertChildPoliciesToStubChildPolicies(List<ChildPolicyBean> childPolicies) {
@@ -788,7 +788,7 @@ public class ObjectConverter {
         partitionBeans.setProvider(partition.getProvider());
         /*partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();*/
-        //properties 
+        //properties
         if (partition.getProperties() != null) {
             List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeans = convertCCStubPropertiesToPropertyBeans(partition.getProperties());
             partitionBeans.setProperty(propertyBeans);
@@ -875,40 +875,19 @@ public class ObjectConverter {
         return loadThresholdBean;
     }
 
-    public static ApplicationLevelNetworkPartitionBean convertStubApplicationLevelNetworkPartitionToApplicationLevelNetworkPartition(
-            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition stubApplicationLevelNetworkPartition) {
+    public static NetworkPartitionBean[] convertStubNetworkPartitionsToNetworkPartitions(
+            org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition[] partitionGroups) {
 
-        ApplicationLevelNetworkPartitionBean networkPartitionBean = new ApplicationLevelNetworkPartitionBean();
-        if (stubApplicationLevelNetworkPartition == null) {
-            return networkPartitionBean;
-        }
-
-        networkPartitionBean.setId(stubApplicationLevelNetworkPartition.getId());
-        networkPartitionBean.setKubernetesClusterId(stubApplicationLevelNetworkPartition.getKubernetesClusterId());
-        networkPartitionBean.setActiveByDefault(stubApplicationLevelNetworkPartition.getActiveByDefault());
-
-        //FIXME update with new deployment policy pattern
-//        networkPartitionBean.partitionAlgo = partitionGroup.getPartitionAlgo();
-//        if (partitionGroup.getPartitions() != null && partitionGroup.getPartitions().length > 0) {
-//            partitionGroupBean.partition = convertStubPartitionsToPartitions(partitionGroup.getPartitions());
-//        }
-
-        return networkPartitionBean;
-    }
-
-    public static ApplicationLevelNetworkPartitionBean[] convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(
-            org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] partitionGroups) {
-
-        ApplicationLevelNetworkPartitionBean[] networkPartitionGroupsBeans;
+        NetworkPartitionBean[] networkPartitionGroupsBeans;
         if (partitionGroups == null) {
-            networkPartitionGroupsBeans = new ApplicationLevelNetworkPartitionBean[0];
+            networkPartitionGroupsBeans = new NetworkPartitionBean[0];
             return networkPartitionGroupsBeans;
         }
 
-        networkPartitionGroupsBeans = new ApplicationLevelNetworkPartitionBean[partitionGroups.length];
+        networkPartitionGroupsBeans = new NetworkPartitionBean[partitionGroups.length];
 
         for (int i = 0; i < partitionGroups.length; i++) {
-            networkPartitionGroupsBeans[i] = convertStubApplicationLevelNetworkPartitionToApplicationLevelNetworkPartition(partitionGroups[i]);
+            networkPartitionGroupsBeans[i] = convertStubNetworkPartitionToNetworkPartition(partitionGroups[i]);
         }
 
         return networkPartitionGroupsBeans;

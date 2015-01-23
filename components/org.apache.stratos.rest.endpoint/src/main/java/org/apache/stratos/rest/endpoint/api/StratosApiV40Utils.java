@@ -36,7 +36,6 @@ import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
 import org.apache.stratos.common.beans.ApiResponseBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -368,26 +367,6 @@ public class StratosApiV40Utils {
         }
 
         return ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
-    }
-
-    public static ApplicationLevelNetworkPartitionBean[] getPartitionGroups (String deploymentPolicyId)
-            throws RestAPIException{
-
-        org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition[] applicationLevelNetworkPartitions = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                applicationLevelNetworkPartitions = autoscalerServiceClient.getApplicationLevelNetworkPartition(deploymentPolicyId);
-
-            } catch (RemoteException e) {
-                String errorMsg = "Error getting available partition groups for deployment policy id "
-                        + deploymentPolicyId+". Cause: "+e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
-
-        return ObjectConverter.convertStubApplicationLevelNetworkPartitionsToApplicationLevelNetworkPartitions(applicationLevelNetworkPartitions);
     }
 
     static CartridgeBean getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {

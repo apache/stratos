@@ -18,7 +18,7 @@
  */
 package org.apache.stratos.common.beans.policy.deployment;
 
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -26,13 +26,13 @@ import java.util.List;
 @XmlRootElement
 public class ApplicationPolicyBean {
 
-    private List<ApplicationLevelNetworkPartitionBean> networkPartition;
+    private List<NetworkPartitionBean> networkPartition;
 
-    public List<ApplicationLevelNetworkPartitionBean> getNetworkPartition() {
+    public List<NetworkPartitionBean> getNetworkPartition() {
         return networkPartition;
     }
 
-    public void setNetworkPartition(List<ApplicationLevelNetworkPartitionBean> networkPartition) {
+    public void setNetworkPartition(List<NetworkPartitionBean> networkPartition) {
         this.networkPartition = networkPartition;
     }
 }

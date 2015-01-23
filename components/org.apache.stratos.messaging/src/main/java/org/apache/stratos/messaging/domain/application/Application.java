@@ -33,6 +33,7 @@ import java.util.Stack;
 public class Application extends ParentComponent<ApplicationInstance> {
 
     private static final long serialVersionUID = -5092959597171649688L;
+
     // Unique id for the Application, defined in Application Definition
     private String id;
     private String name;

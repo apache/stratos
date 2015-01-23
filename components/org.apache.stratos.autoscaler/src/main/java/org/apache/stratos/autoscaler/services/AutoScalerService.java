@@ -29,6 +29,8 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.common.Properties;
 
 public interface AutoScalerService {
@@ -117,14 +119,6 @@ public interface AutoScalerService {
     public DeploymentPolicy getDeploymentPolicy(String applicationId);
 
     /**
-     * Returns network partitions of a deployment policy
-     * @param deploymentPolicyId
-     * @return
-     */
-    public org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition[]
-        getNetworkPartitions(String deploymentPolicyId);
-
-    /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor
      * @param clusterId id of the cluster.
      * @param properties updated properties.
@@ -150,4 +144,29 @@ public interface AutoScalerService {
      * @return
      */
     public ServiceGroup getServiceGroup(String name);
+
+    /**
+     * Add network partition
+     * @param networkPartition
+     */
+    public void addNetworkPartition(NetworkPartition networkPartition);
+
+    /**
+     * Remove network partition
+     * @param networkPartitionId
+     */
+    public void removeNetworkPartition(String networkPartitionId);
+
+    /**
+     * Get network partitions
+     * @return
+     */
+    public NetworkPartition[] getNetworkPartitions();
+
+    /**
+     * Get network partition by network partition id
+     * @param networkPartitionId
+     * @return
+     */
+    public NetworkPartition getNetworkPartition(String networkPartitionId);
 }

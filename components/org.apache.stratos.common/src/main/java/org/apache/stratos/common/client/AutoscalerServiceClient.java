@@ -25,7 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
-import org.apache.stratos.autoscaler.stub.deployment.partition.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
@@ -80,9 +80,20 @@ public class AutoscalerServiceClient {
         stub.removeServiceGroup(serviceGroupName);
     }
 
-    public ApplicationLevelNetworkPartition[] getApplicationLevelNetworkPartition(
-            String deploymentPolicyId) throws RemoteException {
-        return stub.getNetworkPartitions(deploymentPolicyId);
+    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException {
+        stub.addNetworkPartition(networkPartition);
+    }
+
+    public NetworkPartition[] getNetworkPartitions() throws RemoteException {
+        return stub.getNetworkPartitions();
+    }
+
+    public NetworkPartition getNetworkPartition(String networkPartitionId) throws RemoteException {
+        return stub.getNetworkPartition(networkPartitionId);
+    }
+
+    public void removeNetworkPartition(String networkPartitionId) throws RemoteException {
+        stub.removeNetworkPartition(networkPartitionId);
     }
 
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()

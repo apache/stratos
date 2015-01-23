@@ -35,7 +35,7 @@ import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ApplicationLevelNetworkPartition;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -297,7 +297,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             ApplicationInstance appInstance = createApplicationInstance(application, null);
             instanceIds.add(appInstance.getInstanceId());
         } else {
-            for (ApplicationLevelNetworkPartition networkPartition :
+            for (NetworkPartition networkPartition :
                     deploymentPolicy.getApplicationLevelNetworkPartitions()) {
                 if (networkPartition.isActiveByDefault()) {
                     ApplicationLevelNetworkPartitionContext context =
@@ -373,7 +373,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             instanceId = appInstance.getInstanceId();
 
         } else {
-            for (ApplicationLevelNetworkPartition networkPartition : deploymentPolicy.
+            for (NetworkPartition networkPartition : deploymentPolicy.
                     getApplicationLevelNetworkPartitions()) {
                 //Checking whether any not active NP found
                 if (!networkPartition.isActiveByDefault()) {

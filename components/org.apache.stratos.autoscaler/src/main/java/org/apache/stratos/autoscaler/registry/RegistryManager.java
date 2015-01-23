@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.AutoScalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
@@ -129,7 +130,96 @@ public class RegistryManager {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getApplicationId();
         persist(deploymentPolicy, resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(deploymentPolicy.toString());
+            log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
+        }
+    }
+
+    public void persistNetworkPartition(NetworkPartition networkPartition) {
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartition.getId();
+        persist(networkPartition, resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Network partition written to registry: %s", networkPartition.toString()));
+        }
+    }
+
+    private String[] getNetworkPartitionResourcePaths() {
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+            Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
+                    AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE);
+
+            if (obj != null) {
+                if (obj instanceof String[]) {
+                    return (String[]) obj;
+                } else {
+                    log.warn("Expected object type not found for network partitions in registry");
+                    return null;
+                }
+            }
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+        return null;
+    }
+
+    public List<NetworkPartition> getNetworkPartitions() {
+        List<NetworkPartition> networkPartitions = new ArrayList<NetworkPartition>();
+        String[] networkPartitionResourcePaths = getNetworkPartitionResourcePaths();
+        if(networkPartitionResourcePaths != null) {
+            for (String resourcePath : networkPartitionResourcePaths) {
+                if(StringUtils.isNotBlank(resourcePath)) {
+                    NetworkPartition networkPartition = getNetworkPatitionByResourcePath(resourcePath);
+                    networkPartitions.add(networkPartition);
+                }
+            }
+        }
+        return networkPartitions;
+    }
+
+    public NetworkPartition getNetworkPartition(String networkPartitionId) {
+
+        try {
+            PrivilegedCarbonContext.startTenantFlow();
+            PrivilegedCarbonContext carbonContext = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+            carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+
+            String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
+                    AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
+            return getNetworkPatitionByResourcePath(resourcePath);
+        } finally {
+            PrivilegedCarbonContext.endTenantFlow();
+        }
+    }
+
+    private NetworkPartition getNetworkPatitionByResourcePath(String resourcePath) {
+        Object obj = retrieve(resourcePath);
+        if (obj != null) {
+            try {
+                Object dataObj = Deserializer.deserializeFromByteArray((byte[]) obj);
+                if (dataObj instanceof Application) {
+                    return (NetworkPartition) dataObj;
+                } else {
+                    return null;
+                }
+            } catch (Exception e) {
+                String msg = "Could not read network partition from registry: [resource-path] " + resourcePath;
+                log.warn(msg, e);
+            }
+        }
+        return null;
+    }
+
+    public void removeNetworkPartition(String networkPartitionId) {
+        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
+                AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
+        this.delete(resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Network partition deleted from registry: [id] %s", networkPartitionId));
         }
     }
 
@@ -336,7 +426,6 @@ public class RegistryManager {
         try {
             Resource resource = registryService.get(resourcePath);
             return resource.getContent();
-
         } catch (ResourceNotFoundException ignore) {
             // this means, we've never persisted info in registry
             return null;
@@ -532,17 +621,6 @@ public class RegistryManager {
         }
 
     }
-
-
-    public void removeNetworkPartition(String networkPartition) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITION_LB_HOLDER_RESOURCE;
-        this.delete(resourcePath);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Network partition deleted from registry: [id] %s",
-                    networkPartition));
-        }
-    }
-
 
     public void removeDeploymentPolicy(DeploymentPolicy depPolicy) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE;

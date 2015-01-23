@@ -52,24 +52,6 @@ public class ChildLevelNetworkPartition implements Serializable {
         this.partitionAlgo = value;
     }
 
-//    public void setPartitions(Partition[] partitions) {
-//        if (partitions == null) {
-//            this.partitions = partitions;
-//        } else {
-//            this.partitions = Arrays.copyOf(partitions, partitions.length);
-//        }
-//    }
-//
-//    /**
-//     * Gets the value of the partitions.
-//     */
-//    public Partition[] getPartitions() {
-//        if (partitions == null) {
-//            partitions = new Partition[0];
-//        }
-//        return this.partitions;
-//    }
-
     /**
      * Gets the value of the id.
      */

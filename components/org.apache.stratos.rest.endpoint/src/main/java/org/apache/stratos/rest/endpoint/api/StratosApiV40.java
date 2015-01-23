@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.ApiResponseBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.partition.ApplicationLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -188,10 +187,9 @@ public class StratosApiV40 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApplicationLevelNetworkPartitionBean[] getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
+    public Response getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
-
-        return StratosApiV40Utils.getPartitionGroups(deploymentPolicyId);
+        return Response.status(404).build();
     }
 
     @GET
