@@ -18,19 +18,21 @@
  */
 package org.apache.stratos.manager.internal;
 
-import com.hazelcast.core.HazelcastInstance;
+import java.util.concurrent.ExecutorService;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.manager.context.StratosManagerContext;
+import org.apache.stratos.manager.messaging.publisher.TenantEventPublisher;
 import org.apache.stratos.manager.messaging.publisher.synchronizer.ApplicationSignUpSynchronizerTask;
+import org.apache.stratos.manager.messaging.publisher.synchronizer.SynchronizerTaskScheduler;
 import org.apache.stratos.manager.messaging.publisher.synchronizer.TenantSynzhronizerTask;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerApplicationEventReceiver;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerInstanceStatusEventReceiver;
-import org.apache.stratos.manager.user.management.TenantUserRoleManager;
-import org.apache.stratos.manager.messaging.publisher.TenantEventPublisher;
-import org.apache.stratos.manager.messaging.publisher.synchronizer.SynchronizerTaskScheduler;
 import org.apache.stratos.manager.messaging.receiver.StratosManagerTopologyEventReceiver;
+import org.apache.stratos.manager.user.management.TenantUserRoleManager;
 import org.apache.stratos.manager.user.management.exception.UserManagerException;
 import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.StratosManagerConstants;
@@ -46,7 +48,7 @@ import org.wso2.carbon.user.core.UserStoreException;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
-import java.util.concurrent.ExecutorService;
+import com.hazelcast.core.HazelcastInstance;
 
 /**
  * @scr.component name="org.wso2.carbon.hosting.mgt.internal.StratosManagerServiceComponent"
@@ -69,6 +71,8 @@ import java.util.concurrent.ExecutorService;
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService"
  *                unbind="unsetTaskService"
+ * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.clustering.DistributedObjectProvider"
+ *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  */
 public class StratosManagerServiceComponent {
 
@@ -276,6 +280,14 @@ public class StratosManagerServiceComponent {
             log.debug("Un-setting the task service");
         }
         ServiceReferenceHolder.getInstance().setTaskService(null);
+    }
+    
+    protected void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(distributedObjectProvider);
+    }
+
+    protected void unsetDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
     }
 
     protected void deactivate(ComponentContext context) {

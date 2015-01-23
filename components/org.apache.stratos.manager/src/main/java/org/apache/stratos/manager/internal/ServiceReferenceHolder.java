@@ -22,6 +22,7 @@ package org.apache.stratos.manager.internal;
 import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
@@ -40,6 +41,7 @@ public class ServiceReferenceHolder {
     private TaskService taskService;
     private HazelcastInstance hazelcastInstance;
     private AxisConfiguration axisConfiguration;
+    private DistributedObjectProvider distributedObjectProvider;
 
     private ServiceReferenceHolder() {       }
 
@@ -111,4 +113,13 @@ public class ServiceReferenceHolder {
     public AxisConfiguration getAxisConfiguration() {
         return axisConfiguration;
     }
+    
+    public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
+        this.distributedObjectProvider = distributedObjectProvider;
+    }
+
+    public DistributedObjectProvider getDistributedObjectProvider() {
+        return distributedObjectProvider;
+    }
+    
 }
