@@ -89,6 +89,8 @@ public class RestCommandLineService {
     
     private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
 
+	private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
+
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
@@ -999,6 +1001,11 @@ public class RestCommandLineService {
         restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
                 "application");
     }
+
+	public void deleteAutoSclaingPolicy(String policyId) {
+		restClient.deleteEntity(ENDPOINT_REMOVE_AUTOSCALINGPOLICY.replace("{policyId}", policyId), policyId,
+		                        "Auto-scaling policy");
+	}
 
     // This method helps to describe an application
     public void describeApplication (String applicationID) {
