@@ -2,8 +2,8 @@
     "type":"object",
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "root",
-    "title": "Docker Definition",
-    "name": "Docker",
+    "title": "Kubernetes Definition",
+    "name": "Kubernetes",
     "properties":{
         "description": {
             "type":"string",

@@ -87,8 +87,8 @@ if(isEdit == false && elements.action != 'new') {
             break;
 
         case "docker":
-            formTitle = "Docker Cluster",
-                    buttonText = "Docker Cluster";
+            formTitle = "Kubernetes Cluster",
+                    buttonText = "Kubernetes Cluster";
             list_data = util.RESTCalls.getKubernetesClusters();
             if (list_data == null) {
                 list_data = null; //TODO endpoint doesn't return correct info

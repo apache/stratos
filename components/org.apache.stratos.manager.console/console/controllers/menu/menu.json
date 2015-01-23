@@ -31,7 +31,7 @@
                     "link": "configure/docker/",
                     "linkexternal": false,
                     "context": "/configure",
-                    "title": "Docker Clusters",
+                    "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
                     "permissionPaths": ["/permission", "/permission/admin"],
                     "description": "Define and manage docker clusters."
