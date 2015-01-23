@@ -42,6 +42,8 @@ public class ApplicationClusterContext {
     private String tenantRange;
     // properties
     private Properties properties;
+	//dependencyclusterid
+	private String[] dependencyCluterIds;
 
     public ApplicationClusterContext() {
     }
@@ -137,4 +139,12 @@ public class ApplicationClusterContext {
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+
+	public String[] getDependencyCluterIds() {
+		return dependencyCluterIds;
+	}
+
+	public void setDependencyCluterIds(String[] dependencyCluterIds) {
+		this.dependencyCluterIds = dependencyCluterIds;
+	}
 }

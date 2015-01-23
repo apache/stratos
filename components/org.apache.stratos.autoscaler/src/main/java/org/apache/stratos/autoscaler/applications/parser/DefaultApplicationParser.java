@@ -695,7 +695,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         String textPayload = payloadData.toString();
 		log.debug("Payload :: " + textPayload);
-        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange);
+        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange,dependencyClustorIDs);
     }
 
     public String  createToken(String applicationId) throws AutoScalerException {

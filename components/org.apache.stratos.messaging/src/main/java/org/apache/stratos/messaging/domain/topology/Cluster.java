@@ -62,6 +62,7 @@ public class Cluster implements Serializable {
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
+	private List accessUrls;
 
     public Cluster(Cluster cluster) {
         this.serviceName = cluster.getServiceName();
@@ -337,7 +338,15 @@ public class Cluster implements Serializable {
     public Collection<ClusterInstance> getClusterInstances() {
         return this.instanceIdToInstanceContextMap.values();
     }
-//    public ClusterStatus getTempStatus() {
+
+	public List getAccessUrls() {
+		return accessUrls;
+	}
+
+	public void setAccessUrls(List accessUrls) {
+		this.accessUrls = accessUrls;
+	}
+	//    public ClusterStatus getTempStatus() {
 //        return status;
 //    }
 //

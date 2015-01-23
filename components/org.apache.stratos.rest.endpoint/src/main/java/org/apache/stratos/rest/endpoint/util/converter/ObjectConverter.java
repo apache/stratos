@@ -724,7 +724,7 @@ public class ObjectConverter {
             }
 
         }
-		clusterInstanceBean.setAccessUrls(accessUrls);
+		clusterInstanceBean.setAccessUrls(cluster.getAccessUrls());
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }

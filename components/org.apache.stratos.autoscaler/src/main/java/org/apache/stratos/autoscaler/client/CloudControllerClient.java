@@ -239,6 +239,7 @@ public class CloudControllerClient {
             dto.setTextPayload(applicationClusterContext.getTextPayload());
             dto.setLbCluster(applicationClusterContext.isLbCluster());
             dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
+			dto.setDependencyCluterIds(applicationClusterContext.getDependencyCluterId());
             contextDTOs.add(dto);
         }
 

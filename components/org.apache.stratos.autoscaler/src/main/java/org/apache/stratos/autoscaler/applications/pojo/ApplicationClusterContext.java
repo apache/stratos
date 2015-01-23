@@ -42,9 +42,11 @@ public class ApplicationClusterContext {
     // properties
     private Properties properties;
 
+	private String[] dependencyCluterIds;
+
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
                                       String textPayload, String deploymentPolicyName, boolean isLbCluster,
-                                      String tenantRange) {
+                                      String tenantRange, String[] dependencyCluterIds) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -53,6 +55,7 @@ public class ApplicationClusterContext {
         this.deploymentPolicyName = deploymentPolicyName;
         this.isLbCluster = isLbCluster;
         this.tenantRange = tenantRange;
+	    this.dependencyCluterIds=dependencyCluterIds;
     }
 
     public String getClusterId() {
@@ -147,4 +150,11 @@ public class ApplicationClusterContext {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 
+	public String[] getDependencyCluterId() {
+		return dependencyCluterIds;
+	}
+
+	public void setDependencyCluterId(String[] dependencyCluterIds) {
+		this.dependencyCluterIds = dependencyCluterIds;
+	}
 }

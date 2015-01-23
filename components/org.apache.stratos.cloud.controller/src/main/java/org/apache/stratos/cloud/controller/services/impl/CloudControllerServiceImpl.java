@@ -28,6 +28,9 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.Dependencies;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
@@ -38,9 +41,6 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
-import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
-import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 
@@ -997,6 +997,23 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create a Cluster Context obj. for each of the Clusters in the Application
             List<Cluster> clusters = new ArrayList<Cluster>();
+	        Map<String,List> accessUrls= new HashMap<String, List>();
+
+	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
+		        if(appClusterCtxt.getCartridgeType().equals("lb")) {
+			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyCluterIds();
+			        for (String dependencyClusterID : dependencyClusterIDs) {
+				        Cartridge cartridge= CloudControllerContext.getInstance().getCartridge(appClusterCtxt.getCartridgeType());
+						List accessUrlPerCluster=new ArrayList();
+				        List<PortMapping> portMappings=cartridge.getPortMappings();
+				        for(PortMapping portMap: portMappings){
+					        String accessUrl=portMap.getProtocol()+"://"+appClusterCtxt.getHostName()+":"+portMap.getPort();
+					        accessUrlPerCluster.add(accessUrl);
+				        }
+				        accessUrls.put(dependencyClusterID, accessUrlPerCluster);
+			        }
+		        }
+	        }
 
             for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
                 ClusterContext clusterContext = new ClusterContext(
@@ -1006,12 +1023,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
+	            Cartridge cartridge=CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
+	            if(cartridge.getCategory().equals("lb")){
+
+	            }
+
                 // Create cluster object
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
                 cluster.setLbCluster(false);
                 cluster.setTenantRange(appClusterCtxt.getTenantRange());
                 cluster.setHostNames(Arrays.asList(appClusterCtxt.getHostName()));
+	            cluster.setAccessUrls(accessUrls.get(appClusterCtxt.getClusterId()));
 
                 if (appClusterCtxt.getProperties() != null) {
                     Properties properties = CloudControllerUtil.toJavaUtilProperties(appClusterCtxt.getProperties());
