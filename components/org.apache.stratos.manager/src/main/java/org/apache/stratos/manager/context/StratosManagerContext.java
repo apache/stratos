@@ -40,8 +40,6 @@ import org.wso2.carbon.registry.core.exceptions.RegistryException;
  */
 public class StratosManagerContext implements Serializable {
 
-	
-
 	private static volatile StratosManagerContext instance;
     
     private static final String SM_CARTRIDGE_TYPE_TO_CARTIDGE_GROUPS_MAP = "SM_CARTRIDGE_TYPE_TO_CARTIDGE_GROUPS_MAP";
@@ -191,8 +189,8 @@ public class StratosManagerContext implements Serializable {
     }
     
     public boolean isCartridgeIncludedInCartridgeGroups(String cartridgeName) {
-    	if(cartridgeTypeToApplicationsMap.containsKey(cartridgeName)) {
-    		if(!cartridgeTypeToApplicationsMap.get(cartridgeName).isEmpty()) {
+    	if(cartridgeTypeToCartridgeGroupsMap.containsKey(cartridgeName)) {
+    		if(!cartridgeTypeToCartridgeGroupsMap.get(cartridgeName).isEmpty()) {
         		return true;
     		}
     		return false;
@@ -255,7 +253,7 @@ public class StratosManagerContext implements Serializable {
     	for(String cartridgeGroupName : cartridgeGroupNames) {
     		Set<String> cartridgeSubGroupNames = null;
     		if(cartridgeGroupToCartridgeSubGroupsMap.containsKey(cartridgeGroupName)) {
-    			cartridgeSubGroupNames = cartridgeTypeToCartridgeGroupsMap.get(cartridgeGroupName);
+    			cartridgeSubGroupNames = cartridgeGroupToCartridgeSubGroupsMap.get(cartridgeGroupName);
     		} else {
     			cartridgeSubGroupNames = new HashSet<String>();
     			cartridgeGroupToCartridgeSubGroupsMap.put(cartridgeSubGroupName, cartridgeSubGroupNames);
