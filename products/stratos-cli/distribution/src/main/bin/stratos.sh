@@ -21,11 +21,12 @@
 #
 #  Environment Variable Prerequisites
 #
-#   STRATOS_CLI_HOME   Home of Stratos CLI Tool
-#
-#   STRATOS_URL        The URL of the Stratos Controller
+#   STRATOS_URL: The URL of the Stratos Manager
+#   Example: https://<hostname>:9443
+# ----------------------------------------------------------------------------
 
-echo "Starting Stratos CLI..."
+set -e
+
 if [ -z "$STRATOS_URL" ]; then
     echo "STRATOS_URL environment variable is not set"
 fi
@@ -35,6 +36,7 @@ lib_path=${script_path}/../lib/
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 
 properties="-Dlog4j.configuration=file://${script_path}/../conf/log4j.properties"
+# Uncomment following line to enable remote debugging
 #debug="-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=5005"
 
-java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cli.Main
+java -cp "${class_path}" ${properties} ${debug} org.apache.stratos.cli.Main $*

@@ -30,13 +30,13 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class AddApplicationCommand implements Command<StratosCommandContext> {
+public class CreateApplicationCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddApplicationCommand.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateApplicationCommand.class);
 
     private final Options options;
 
-    public AddApplicationCommand(){
+    public CreateApplicationCommand(){
         options = constructOptions();
     }
 
@@ -52,11 +52,11 @@ public class AddApplicationCommand implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-    	return CliConstants.ADD_APPLICATION;
+    	return "create-application";
     }
 
     public String getDescription() {
-        return "Add application definition";
+        return "Create an application using cartridge groups/cartridges.";
     }
 
     public String getArgumentSyntax() {
@@ -79,7 +79,7 @@ public class AddApplicationCommand implements Command<StratosCommandContext> {
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Application definition addition");
+                    logger.debug("Creating application...");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
