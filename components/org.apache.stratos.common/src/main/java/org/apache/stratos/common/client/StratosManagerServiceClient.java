@@ -33,6 +33,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.DomainMapping;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 /**
  * Stratos manager service client.
@@ -154,5 +155,115 @@ public class StratosManagerServiceClient {
 
     public DomainMapping[] getDomainMappings(String applicationId, int tenantId) throws RemoteException, StratosManagerServiceDomainMappingExceptionException {
         return stub.getDomainMappings(applicationId, tenantId);
+    }
+    
+    /**
+     * Adds the used cartridges in cartridge groups to cache.
+     *
+     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeNames the cartridge names
+     * @throws RemoteException the remote exception
+     */
+    public void addUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws RemoteException {
+    	stub.addUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
+    }
+    
+    /**
+     * Removes the used cartridges in cartridge groups from cache.
+     *
+     * @param cartridgeGroupName the cartridge group name
+     * @param cartridgeNames the cartridge names
+     * @throws RemoteException the remote exception
+     */
+    public void removeUsedCartridgesInCartridgeGroups(String cartridgeGroupName, String[] cartridgeNames) throws RemoteException {
+    	stub.removeUsedCartridgesInCartridgeGroups(cartridgeGroupName, cartridgeNames);
+    }
+    
+    /**
+     * Adds the used cartridges in applications to cache.
+     *
+     * @param applicationName the application name
+     * @param cartridgeNames the cartridge names
+     * @throws RemoteException the remote exception
+     */
+    public void addUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws RemoteException {
+    	stub.addUsedCartridgesInApplications(applicationName, cartridgeNames);
+    }
+    
+    /**
+     * Removes the used cartridges in applications from cache.
+     *
+     * @param applicationName the application name
+     * @param cartridgeNames the cartridge names
+     * @throws RemoteException the remote exception
+     */
+    public void removeUsedCartridgesInApplications(String applicationName, String[] cartridgeNames) throws RemoteException {
+    	stub.removeUsedCartridgesInApplications(applicationName, cartridgeNames);
+    }
+    
+    /**
+     * Validates whether a cartridge can be removed.
+     *
+     * @param cartridgeName the cartridge name
+     * @return true, if successful
+     * @throws RemoteException the remote exception
+     */
+    public boolean canCartridgeBeRemoved(String cartridgeName) throws RemoteException {
+    	return stub.canCartridgeBeRemoved(cartridgeName);
+    }
+    
+    /**
+     * Adds the used cartridge groups in cartridge sub groups to cache.
+     *
+     * @param cartridgeSubGroupName the cartridge sub group name
+     * @param cartridgeGroupNames the cartridge group names
+     * @throws RemoteException the remote exception
+     */
+    public void addUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) throws RemoteException {
+    	stub.addUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
+    }
+        
+    /**
+     * Removes the used cartridge groups in cartridge sub groups from cache.
+     *
+     * @param cartridgeSubGroupName the cartridge sub group name
+     * @param cartridgeGroupNames the cartridge group names
+     * @throws RemoteException the remote exception
+     */
+    public void removeUsedCartridgeGroupsInCartridgeSubGroups(String cartridgeSubGroupName, String[] cartridgeGroupNames) throws RemoteException {
+    	stub.removeUsedCartridgeGroupsInCartridgeSubGroups(cartridgeSubGroupName, cartridgeGroupNames);
+    }
+    
+    /**
+     * Adds the used cartridge groups in applications to cache.
+     *
+     * @param applicationName the application name
+     * @param cartridgeGroupNames the cartridge group names
+     * @throws RemoteException the remote exception
+     */
+    public void addUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws RemoteException {
+    	stub.addUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
+    }
+    
+    /**
+     * Removes the used cartridge groups in applications from cache.
+     *
+     * @param applicationName the application name
+     * @param cartridgeGroupNames the cartridge group names
+     * @throws RemoteException the remote exception
+     */
+    public void removeUsedCartridgeGroupsInApplications(String applicationName, String[] cartridgeGroupNames) throws RemoteException {
+    	stub.removeUsedCartridgeGroupsInApplications(applicationName, cartridgeGroupNames);
+    }
+    
+    /**
+     * Validates whether a cartridge group can be removed.
+     *
+     * @param cartridgeGroupName the cartridge group name
+     * @return true, if successful
+     * @throws RemoteException the remote exception
+     */
+    public boolean canCartirdgeGroupBeRemoved(String cartridgeGroupName) throws RemoteException {
+    	return stub.canCartirdgeGroupBeRemoved(cartridgeGroupName);
     }
 }
