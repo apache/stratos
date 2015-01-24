@@ -39,7 +39,9 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelPartition;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.Group;
@@ -53,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * This is GroupMonitor to monitor the group which consists of
@@ -61,6 +64,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GroupMonitor extends ParentComponentMonitor {
 
     private static final Log log = LogFactory.getLog(GroupMonitor.class);
+
+    private final ExecutorService executorService;
     //has scaling dependents
     protected boolean hasScalingDependents;
     //Indicates whether groupScaling enabled or not
@@ -77,6 +82,11 @@ public class GroupMonitor extends ParentComponentMonitor {
                         boolean hasScalingDependents) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(group);
+
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_SIZE, 10);
+        this.executorService = StratosThreadPool.getExecutorService(
+                AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_ID, threadPoolSize);
+
         this.groupScalingEnabled = group.isGroupScalingEnabled();
         this.appId = appId;
         this.hasScalingDependents = hasScalingDependents;
@@ -127,7 +137,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        monitoringRunnable.run();
+        executorService.execute(monitoringRunnable);
     }
 
     private void handleScalingMaxOut(InstanceContext instanceContext,
@@ -223,7 +233,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                                     appId);
                         }
                     };
-                    sendScaleMaxOut.run();
+                    executorService.execute(sendScaleMaxOut);
                 }
             } else {
                 if (log.isDebugEnabled()) {
@@ -243,8 +253,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                             appId);
                 }
             };
-            sendScaleMaxOut.run();
-
+            executorService.execute(sendScaleMaxOut);
         }
     }
 

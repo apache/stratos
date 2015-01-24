@@ -70,4 +70,12 @@ public final class AutoscalerConstants {
      * Payload values
      */
     public static final String PAYLOAD_DEPLOYMENT = "default";
+
+    public static final String APPLICATION_MONITOR_THREAD_POOL_ID = "application.monitor.thread.pool";
+    public static final String APPLICATION_MONITOR_THREAD_POOL_SIZE = "application.monitor.thread.pool.size";
+    public static final String GROUP_MONITOR_THREAD_POOL_ID = "group.monitor.thread.pool";
+    public static final String GROUP_MONITOR_THREAD_POOL_SIZE = "group.monitor.thread.pool.size";
+    public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
+    public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
+    public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
 }

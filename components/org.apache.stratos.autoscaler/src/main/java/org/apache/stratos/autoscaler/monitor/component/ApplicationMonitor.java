@@ -36,7 +36,9 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
@@ -44,22 +46,33 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
 /**
  * ApplicationMonitor is to control the child monitors
  */
 public class ApplicationMonitor extends ParentComponentMonitor {
+
     private static final Log log = LogFactory.getLog(ApplicationMonitor.class);
+
+    private final ExecutorService executorService;
 
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
-
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(application);
+
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_SIZE, 10);
+        this.executorService = StratosThreadPool.getExecutorService(
+                AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID, threadPoolSize);
+
         //setting the appId for the application
         this.appId = application.getUniqueIdentifier();
     }
@@ -109,7 +122,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                 }
             }
         };
-        monitoringRunnable.run();
+        executorService.execute(monitoringRunnable);
     }
 
     private void handleScalingMaxOut(InstanceContext instanceContext,

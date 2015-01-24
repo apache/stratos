@@ -54,6 +54,7 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
@@ -70,7 +71,7 @@ import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
 
 import java.util.*;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -82,7 +83,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class ClusterMonitor extends Monitor implements Runnable {
 
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler;
+    private final ExecutorService executorService;
+
     protected FactHandle minCheckFactHandle;
     protected FactHandle obsoleteCheckFactHandle;
     protected FactHandle scaleCheckFactHandle;
@@ -113,7 +116,12 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
-        this.networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
+        scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 1);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 10);
+        executorService = StratosThreadPool.getExecutorService(
+                AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
+
+        networkPartitionIdToClusterLevelNetworkPartitionCtxts = new HashMap<String, ClusterLevelNetworkPartitionContext>();
         readConfigurations();
         autoscalerRuleEvaluator = new AutoscalerRuleEvaluator();
         autoscalerRuleEvaluator.parseAndBuildKnowledgeBaseForDroolsFile(StratosConstants.OBSOLETE_CHECK_DROOL_FILE);
@@ -140,10 +148,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     public void startScheduler() {
         scheduler.scheduleAtFixedRate(this, 0, getMonitorIntervalMilliseconds(), TimeUnit.MILLISECONDS);
-    }
-
-    protected void stopScheduler() {
-        scheduler.shutdownNow();
     }
 
     @Override
@@ -578,7 +582,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
                         }
                     };
-                    monitoringRunnable.run();
+                    executorService.execute(monitoringRunnable);
                 }
 
                 for (final ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
@@ -589,11 +593,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                     getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
                         }
                     };
-
-                    monitoringRunnable.run();
-
+                    executorService.execute(monitoringRunnable);
                 }
-
             }
         }
     }
@@ -613,7 +614,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
         getObsoleteCheckKnowledgeSession().dispose();
         getScaleCheckKnowledgeSession().dispose();
         setDestroyed(true);
-        stopScheduler();
         if (log.isDebugEnabled()) {
             log.debug("ClusterMonitor Drools session has been disposed. " + this.toString());
         }

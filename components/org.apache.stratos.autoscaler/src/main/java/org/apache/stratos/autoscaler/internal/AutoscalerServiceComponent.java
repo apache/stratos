@@ -201,11 +201,41 @@ public class AutoscalerServiceComponent {
 
         // Shutdown executor service
         if(executorService != null) {
-            try {
-                executorService.shutdownNow();
-            } catch (Exception e) {
-                log.warn("An error occurred while shutting down autoscaler executor service", e);
-            }
+            shutdownExecutorService(executorService);
+        }
+
+        // Shutdown application monitor executor service
+        shutdownExecutorService(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID);
+
+        // Shutdown group monitor executor service
+        shutdownExecutorService(AutoscalerConstants.GROUP_MONITOR_THREAD_POOL_ID);
+
+        // Shutdown cluster monitor scheduler executor service
+        shutdownScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID);
+
+        // Shutdown cluster monitor executor service
+        shutdownExecutorService(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID);
+    }
+
+    private void shutdownExecutorService(String executorServiceId) {
+        ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
+        if(executorService != null) {
+            shutdownExecutorService(executorService);
+        }
+    }
+
+    private void shutdownScheduledExecutorService(String executorServiceId) {
+        ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
+        if(executorService != null) {
+            shutdownExecutorService(executorService);
+        }
+    }
+
+    private void shutdownExecutorService(ExecutorService executorService) {
+        try {
+            executorService.shutdownNow();
+        } catch (Exception e) {
+            log.warn("An error occurred while shutting down executor service", e);
         }
     }
 
