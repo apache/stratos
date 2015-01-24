@@ -46,7 +46,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ch
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
-import org.apache.stratos.autoscaler.services.AutoScalerService;
+import org.apache.stratos.autoscaler.services.AutoscalerService;
 import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
@@ -70,9 +70,9 @@ import java.util.*;
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
  */
-public class AutoScalerServiceImpl implements AutoScalerService {
+public class AutoscalerServiceImpl implements AutoscalerService {
 
-    private static final Log log = LogFactory.getLog(AutoScalerServiceImpl.class);
+    private static final Log log = LogFactory.getLog(AutoscalerServiceImpl.class);
 
     public AutoscalePolicy[] getAutoScalingPolicies() {
         return PolicyManager.getInstance().getAutoscalePolicyList();

@@ -22,7 +22,7 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 
-public final class AutoScalerConstants {
+public final class AutoscalerConstants {
 
     /**
      * Constant values for Autoscaler

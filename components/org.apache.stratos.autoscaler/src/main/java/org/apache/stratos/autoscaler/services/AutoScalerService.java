@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ch
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.common.Properties;
 
-public interface AutoScalerService {
+public interface AutoscalerService {
     /**
      * Add autoscaling policy
      * @param autoscalePolicy
