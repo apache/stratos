@@ -22,10 +22,10 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
@@ -145,35 +145,6 @@ public class StratosApiV40Utils {
         return stratosApiResponse;
     }
 
-
-    public static ApiResponseBean deployPartition(PartitionBean partitionBean) throws RestAPIException {
-
-        //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
-
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-
-           /* FIXME add 4040 org.apache.stratos.cloud.controller.stub.domain.Partition partition =
-                    PojoConverter.convertStubPartitionToPartition(partitionBean);*/
-
-//            try {
-//                autoscalerServiceClient.deployPartition(partition);
-//            } catch (RemoteException e) {
-//                log.error(e.getMessage(), e);
-//                throw new RestAPIException(e.getMessage(), e);
-//            } catch (AutoScalerServiceInvalidPartitionExceptionException e) {
-//                String message = e.getFaultMessage().getInvalidPartitionException().getMessage();
-//                log.error(message, e);
-//                throw new RestAPIException(message, e);
-//            }
-
-        }
-
-        ApiResponseBean stratosApiResponse = new ApiResponseBean();
-        stratosApiResponse.setMessage("Successfully deployed partition definition with id " + partitionBean.getId());
-        return stratosApiResponse;
-    }
-
     public static ApiResponseBean deployAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
 
         //log.info("***** " + cartridgeDefinitionBean.toString() + " *****");
@@ -190,7 +161,7 @@ public class StratosApiV40Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
                 String message = e.getFaultMessage()
                         .getInvalidPolicyException().getMessage();
                 log.error(message, e);

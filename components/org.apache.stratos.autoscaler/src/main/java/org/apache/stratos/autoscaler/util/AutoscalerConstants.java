@@ -1,0 +1,73 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one 
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ * 
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY 
+ * KIND, either express or implied.  See the License for the 
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.apache.stratos.autoscaler.util;
+
+import org.wso2.carbon.utils.CarbonUtils;
+
+import java.io.File;
+
+public final class AutoscalerConstants {
+
+    /**
+     * Constant values for Autoscaler
+     */
+    public static final String ID_ELEMENT = "id";
+    public static final String PARTITION_ELEMENT = "partition";
+    public static final String PARTITIONS_ELEMENT = "partitions";
+    public static final String PROPERTY_ELEMENT = "property";
+    public static final String PROPERTY_NAME_ATTR= "name";
+    public static final String PROPERTY_VALUE_ATTR = "value";
+    public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
+    public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
+    public static final int AUTOSCALER_THREAD_POOL_SIZE = 10;
+    public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
+            File.separator + "stratos-config.xml";
+    
+    /**
+	 * Persistence
+	 */
+	public static final String AUTOSCALER_RESOURCE = "/autoscaler";
+	public static final String PARTITION_RESOURCE = "/partitions";
+	public static final String NETWORK_PARTITIONS_RESOURCE = "/networkPartitions";
+	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
+	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
+    public static final String APPLICATIONS_RESOURCE = "/applications";
+    public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
+
+    /**
+     * Cluster monitoring  interval
+     */
+    public static final String AUTOSCALER_MONITOR_INTERVAL = "autoscaler.monitorInterval";
+
+    public static final String SERVICE_GROUP = "/groups";
+    public static final String VMService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.service";
+    public static final String VMLb_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.lb";
+    public static final String KubernetesService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.kubernetes.service";
+
+    /**
+     * PortRange min max
+     */
+    public static final int PORT_RANGE_MAX = 65535;
+    public static final int PORT_RANGE_MIN = 1;
+    
+    /**
+     * Payload values
+     */
+    public static final String PAYLOAD_DEPLOYMENT = "default";
+}

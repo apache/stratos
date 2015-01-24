@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications.payload;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 
 import java.io.Serializable;
 
@@ -84,7 +84,7 @@ public class BasicPayloadData implements Serializable {
         payloadBuilder.append(",");
         payloadBuilder.append("CARTRIDGE_KEY=" + getSubscriptionKey());
         payloadBuilder.append(",");
-        payloadBuilder.append("DEPLOYMENT=" + AutoScalerConstants.PAYLOAD_DEPLOYMENT);
+        payloadBuilder.append("DEPLOYMENT=" + AutoscalerConstants.PAYLOAD_DEPLOYMENT);
         if (getApplicationPath() != null) {
             payloadBuilder.append(",");
             payloadBuilder.append("APPLICATION_PATH=" + getApplicationPath());

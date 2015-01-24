@@ -43,7 +43,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ScalingDownBeyondMinEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingEvent;
 import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
@@ -103,8 +103,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             scalingDependencies = new HashSet<ScalingDependentList>();
         }
         //Create the executor service with identifier and thread pool size
-        executorService = StratosThreadPool.getExecutorService(AutoScalerConstants.AUTOSCALER_THREAD_POOL_ID,
-                AutoScalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
+        executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
+                AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
         networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();
     }
 

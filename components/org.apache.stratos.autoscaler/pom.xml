@@ -243,9 +243,9 @@
                 <groupId>org.apache.axis2</groupId>
                 <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
                 <configuration>
-                    <className>org.apache.stratos.autoscaler.services.impl.AutoScalerServiceImpl</className>
-                    <outputFileName>target/generated-resources/wsdl/AutoScalerService.wsdl</outputFileName>
-                    <serviceName>AutoScalerService</serviceName>
+                    <className>org.apache.stratos.autoscaler.services.impl.AutoscalerServiceImpl</className>
+                    <outputFileName>target/generated-resources/wsdl/AutoscalerService.wsdl</outputFileName>
+                    <serviceName>AutoscalerService</serviceName>
                 </configuration>
                 <executions>
                     <execution>

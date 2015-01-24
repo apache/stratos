@@ -30,7 +30,7 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
@@ -55,14 +55,14 @@ public class RegistryManager {
 
     private RegistryManager() {
         try {
-            if (!registryService.resourceExists(AutoScalerConstants.AUTOSCALER_RESOURCE)) {
-                registryService.put(AutoScalerConstants.AUTOSCALER_RESOURCE,
+            if (!registryService.resourceExists(AutoscalerConstants.AUTOSCALER_RESOURCE)) {
+                registryService.put(AutoscalerConstants.AUTOSCALER_RESOURCE,
                         registryService.newCollection());
             }
         } catch (RegistryException e) {
             String msg =
                     "Failed to create the registry resource " +
-                            AutoScalerConstants.AUTOSCALER_RESOURCE;
+                            AutoscalerConstants.AUTOSCALER_RESOURCE;
             log.error(msg, e);
             throw new AutoScalerException(msg, e);
         }
@@ -118,7 +118,7 @@ public class RegistryManager {
     }
 
     public void persistAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
         persist(autoscalePolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
@@ -127,7 +127,7 @@ public class RegistryManager {
     }
 
     public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getApplicationId();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getApplicationId();
         persist(deploymentPolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
@@ -139,7 +139,7 @@ public class RegistryManager {
      * @param networkPartition
      */
     public void persistNetworkPartition(NetworkPartition networkPartition) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartition.getId();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartition.getId();
         persist(networkPartition, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Network partition written to registry: %s", networkPartition.toString()));
@@ -157,8 +157,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE);
+            Object obj = retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.NETWORK_PARTITIONS_RESOURCE);
 
             if (obj != null) {
                 if (obj instanceof String[]) {
@@ -205,8 +205,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
             return getNetworkPartitionByResourcePath(resourcePath);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
@@ -241,8 +241,8 @@ public class RegistryManager {
      * @param networkPartitionId
      */
     public void removeNetworkPartition(String networkPartitionId) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                AutoscalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Network partition deleted from registry: [id] %s", networkPartitionId));
@@ -257,7 +257,7 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATIONS_RESOURCE +
                     "/" + application.getUniqueIdentifier();
             persist(application, resourcePath);
             if (log.isDebugEnabled()) {
@@ -276,8 +276,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.APPLICATIONS_RESOURCE);
+            Object obj = retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.APPLICATIONS_RESOURCE);
 
             if (obj != null) {
                 if (obj instanceof String[]) {
@@ -328,7 +328,7 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            delete(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATIONS_RESOURCE +
+            delete(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATIONS_RESOURCE +
                     "/" + applicationId);
 
         } finally {
@@ -344,8 +344,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationId();
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationContext.getApplicationId();
             persist(applicationContext, resourcePath);
             if (log.isDebugEnabled()) {
                 log.debug("Application context [" + applicationContext.getApplicationId() + "] " +
@@ -363,8 +363,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            Object obj = retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.APPLICATION_CONTEXTS_RESOURCE);
+            Object obj = retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE);
 
             if (obj != null) {
                 if (obj instanceof String[]) {
@@ -388,8 +388,8 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            String applicationResourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                    AutoScalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationId;
+            String applicationResourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE + "/" + applicationId;
             return getApplicationContextByResourcePath(applicationResourcePath);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
@@ -425,7 +425,7 @@ public class RegistryManager {
             carbonContext.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
             carbonContext.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
 
-            delete(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.APPLICATION_CONTEXTS_RESOURCE +
+            delete(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_CONTEXTS_RESOURCE +
                     "/" + applicationId);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
@@ -436,7 +436,7 @@ public class RegistryManager {
         if (servicegroup == null || StringUtils.isEmpty(servicegroup.getName())) {
             throw new IllegalArgumentException("Cartridge group or group name can not be null");
         }
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + servicegroup.getName();
         persist(servicegroup, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Persisted cartridge group %s at path %s", servicegroup.getName(), resourcePath));
@@ -444,7 +444,7 @@ public class RegistryManager {
     }
 
     public boolean serviceGroupExist(String serviceGroupName) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + serviceGroupName;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + serviceGroupName;
         return this.resourceExist(resourcePath);
     }
 
@@ -469,7 +469,7 @@ public class RegistryManager {
     public List<Partition> retrievePartitions() {
         List<Partition> partitionList = new ArrayList<Partition>();
         RegistryManager registryManager = RegistryManager.getInstance();
-        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.PARTITION_RESOURCE);
+        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.PARTITION_RESOURCE);
 
         if (partitionsResourceList != null) {
             Partition partition;
@@ -502,7 +502,7 @@ public class RegistryManager {
     public List<AutoscalePolicy> retrieveASPolicies() {
         List<AutoscalePolicy> asPolicyList = new ArrayList<AutoscalePolicy>();
         RegistryManager registryManager = RegistryManager.getInstance();
-        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE);
+        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.AS_POLICY_RESOURCE);
 
         if (partitionsResourceList != null) {
             AutoscalePolicy asPolicy;
@@ -534,7 +534,7 @@ public class RegistryManager {
     public List<DeploymentPolicy> retrieveDeploymentPolicies() {
         List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
         RegistryManager registryManager = RegistryManager.getInstance();
-        String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE);
+        String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE);
 
         if (depPolicyResourceList != null) {
             DeploymentPolicy depPolicy;
@@ -563,7 +563,7 @@ public class RegistryManager {
     }
 
     public ServiceGroup getServiceGroup(String name) throws Exception {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + name;
         Object serializedObj = registryManager.retrieve(resourcePath);
         ServiceGroup group = null;
         if (serializedObj != null) {
@@ -585,7 +585,7 @@ public class RegistryManager {
     public ServiceGroup[] getServiceGroups() {
         Object serializedObj;
         List<ServiceGroup> serviceGroupList = new ArrayList<ServiceGroup>();
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.SERVICE_GROUP;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP;
         if (registryManager.resourceExist(resourcePath)) {
             serializedObj = registryManager.retrieve(resourcePath);
         } else {
@@ -626,8 +626,8 @@ public class RegistryManager {
             throw new IllegalArgumentException("Name of the cartridge group can not be empty");
         }
 
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.SERVICE_GROUP + "/" + name;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                AutoscalerConstants.SERVICE_GROUP + "/" + name;
         if (registryService.resourceExists(resourcePath)) {
             registryService.delete(resourcePath);
             if (log.isDebugEnabled()) {
@@ -639,7 +639,7 @@ public class RegistryManager {
     }
 
     public void removeAutoscalerPolicy(String policyID) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.AS_POLICY_RESOURCE + "/" +
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.AS_POLICY_RESOURCE + "/" +
                               policyID;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
@@ -649,7 +649,7 @@ public class RegistryManager {
     }
 
     public void removeDeploymentPolicy(DeploymentPolicy depPolicy) {
-        String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.DEPLOYMENT_POLICY_RESOURCE;
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Deployment policy deleted from registry: [id] %s",

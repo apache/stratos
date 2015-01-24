@@ -33,7 +33,7 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
-import org.apache.stratos.autoscaler.util.AutoScalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
@@ -78,10 +78,10 @@ public class AutoscalerServiceComponent {
 	protected void activate(ComponentContext componentContext) throws Exception {
 		try {
 			
-			XMLConfiguration conf = ConfUtil.getInstance(AutoScalerConstants.COMPONENTS_CONFIG).getConfiguration();
-            int threadPoolSize = conf.getInt(AutoScalerConstants.THREAD_POOL_SIZE_KEY,
-                    AutoScalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
-			executorService = StratosThreadPool.getExecutorService(AutoScalerConstants.AUTOSCALER_THREAD_POOL_ID,
+			XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
+            int threadPoolSize = conf.getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY,
+                    AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
+			executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
                     threadPoolSize);
 
             ServiceReferenceHolder.getInstance().setExecutorService(executorService);

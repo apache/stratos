@@ -80,8 +80,8 @@ public class AutoscalerUtil {
     }
 
     public static Application getApplication (String appId) {
-        return getApplicationFromPath(AutoScalerConstants.AUTOSCALER_RESOURCE +
-                AutoScalerConstants.APPLICATIONS_RESOURCE + "/" + appId);
+        return getApplicationFromPath(AutoscalerConstants.AUTOSCALER_RESOURCE +
+                AutoscalerConstants.APPLICATIONS_RESOURCE + "/" + appId);
     }
 
     public static void persistApplication (Application application) {
@@ -141,14 +141,14 @@ public class AutoscalerUtil {
 
     public static Properties getProperties(final OMElement elt) {
 
-        Iterator<?> it = elt.getChildrenWithName(new QName(AutoScalerConstants.PROPERTY_ELEMENT));
+        Iterator<?> it = elt.getChildrenWithName(new QName(AutoscalerConstants.PROPERTY_ELEMENT));
         ArrayList<Property> propertyList = new ArrayList<Property>();
 
         while (it.hasNext()) {
             OMElement prop = (OMElement) it.next();
 
-            if (prop.getAttribute(new QName(AutoScalerConstants.PROPERTY_NAME_ATTR)) == null ||
-                prop.getAttribute(new QName(AutoScalerConstants.PROPERTY_VALUE_ATTR)) == null) {
+            if (prop.getAttribute(new QName(AutoscalerConstants.PROPERTY_NAME_ATTR)) == null ||
+                prop.getAttribute(new QName(AutoscalerConstants.PROPERTY_VALUE_ATTR)) == null) {
 
                 String msg =
                              "Property element's, name and value attributes should be specified. "
@@ -158,10 +158,10 @@ public class AutoscalerUtil {
             }
 
             String name =
-                          prop.getAttribute(new QName(AutoScalerConstants.PROPERTY_NAME_ATTR))
+                          prop.getAttribute(new QName(AutoscalerConstants.PROPERTY_NAME_ATTR))
                               .getAttributeValue();
             String value =
-                           prop.getAttribute(new QName(AutoScalerConstants.PROPERTY_VALUE_ATTR))
+                           prop.getAttribute(new QName(AutoscalerConstants.PROPERTY_VALUE_ATTR))
                                .getAttributeValue();
 
             Property property = new Property();

@@ -132,10 +132,10 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
-    public ApiResponseBean deployPartition (PartitionBean partition)
+    public Response deployPartition (PartitionBean partition)
             throws RestAPIException {
-
-        return StratosApiV40Utils.deployPartition(partition);
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @POST
@@ -189,7 +189,8 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getPartitionGroups (@PathParam("deploymentPolicyId") String deploymentPolicyId)
             throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -303,7 +304,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscribedCartridgeBeans() throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -312,7 +314,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscribedCartridgeBeansForServiceGroup(@PathParam("serviceGroup") String serviceGroup) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -321,7 +324,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getCartridgeBeanInfo(@PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -351,7 +355,8 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getActiveInstances(@PathParam("cartridgeType") String cartridgeType,
                                        @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @POST
@@ -360,7 +365,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response subscribe(Object cartridgeInfoBean) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -369,7 +375,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClustersForTenant() throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -378,7 +385,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -387,8 +395,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getServiceClusters(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
-
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -399,7 +407,8 @@ public class StratosApiV40 extends AbstractApi {
     public Response getCluster(@PathParam("cartridgeType") String cartridgeType,
                                @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException, RestAPIException {
 
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -408,7 +417,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getCluster(@PathParam("clusterId") String clusterId) throws RestAPIException {
-        throw new RestAPIException("Not implemented");
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @POST
@@ -889,7 +899,8 @@ public class StratosApiV40 extends AbstractApi {
     @SuperTenantService(true)
     public Response deployService(Object serviceDefinitionBean)
             throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -898,8 +909,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getServices() throws RestAPIException {
-        return Response.status(404).build();
-
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -908,7 +919,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getService(@PathParam("serviceType") String serviceType)throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -917,7 +929,8 @@ public class StratosApiV40 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getActiveService()throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @DELETE
@@ -928,7 +941,8 @@ public class StratosApiV40 extends AbstractApi {
     @SuperTenantService(true)
     public Response unDeployService (@PathParam("serviceType") String serviceType)
             throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @POST
@@ -945,17 +959,9 @@ public class StratosApiV40 extends AbstractApi {
     @Path("/cartridge/sync")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean synchronizeRepository(String alias) throws RestAPIException {
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Synchronizing Git repository for alias '%s'", alias));
-        }
-//        CartridgeBeanSubscription cartridgeSubscription = StratosApiV40Utils.getCartridgeBeanSubscription(alias, getConfigContext());
-//        if (cartridgeSubscription != null && cartridgeSubscription.getRepository() != null && log.isDebugEnabled()) {
-//            log.debug(String.format("Found subscription for '%s'. Git repository: %s", alias, cartridgeSubscription
-//                    .getRepository().getUrl()));
-//        }
-//        return StratosApiV40Utils.synchronizeRepository(cartridgeSubscription);
-        throw new RestAPIException("Not implemented");
+    public Response synchronizeRepository(String alias) throws RestAPIException {
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     private List<TenantInfoBean> getAllTenants() throws RestAPIException {
@@ -1005,7 +1011,8 @@ public class StratosApiV40 extends AbstractApi {
                                            @PathParam("subscriptionAlias") String subscriptionAlias,
                                            Object request) throws RestAPIException {
 
-        throw new RestAPIException("Not implemented");
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -1014,14 +1021,8 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscriptionDomains(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-//        SubscriptionDomainBean[] subscriptionDomainBean = StratosApiV40Utils.getSubscriptionDomains(getConfigContext(), cartridgeType, subscriptionAlias).toArray(new SubscriptionDomainBean[0]);
-//
-//        if(subscriptionDomainBean.length == 0){
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }else{
-//            return Response.ok().entity(subscriptionDomainBean).build();
-//        }
-        throw new RestAPIException("Not implemented");
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -1030,23 +1031,19 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                           @PathParam("subscriptionAlias") String subscriptionAlias, @PathParam("domainName") String domainName) throws RestAPIException {
-//        SubscriptionDomainBean subscriptionDomainBean = StratosApiV40Utils.getSubscriptionDomain(getConfigContext(), cartridgeType, subscriptionAlias, domainName);
-//        if(subscriptionDomainBean.getDomainName() == null){
-//            return Response.status(Response.Status.NOT_FOUND).build();
-//        }else{
-//            return Response.ok().entity(subscriptionDomainBean).build();
-//        }
-        throw new RestAPIException("Not implemented");
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @DELETE
     @Path("/cartridge/{cartridgeType}/subscription/{subscriptionAlias}/domains/{domainName}")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public ApiResponseBean removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
+    public Response removeSubscriptionDomain(@PathParam("cartridgeType") String cartridgeType,
                                                          @PathParam("subscriptionAlias") String subscriptionAlias,
                                                          @PathParam("domainName") String domainName) throws RestAPIException {
-        throw new RestAPIException("Not implemented");
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 
     @GET
@@ -1055,6 +1052,7 @@ public class StratosApiV40 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response getLoadBalancerCluster(@PathParam("cartridgeType") String cartridgeType,
                                            @PathParam("subscriptionAlias") String subscriptionAlias) throws RestAPIException {
-        return Response.status(404).build();
+        // Not supported in 4.1.0
+        return Response.status(Response.Status.GONE).build();
     }
 }

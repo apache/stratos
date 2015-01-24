@@ -23,8 +23,8 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceApplicationDefinitionExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoScalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
@@ -475,7 +475,7 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
                 String message = e.getFaultMessage()
                         .getInvalidPolicyException().getMessage();
                 log.error(message, e);
@@ -499,7 +499,7 @@ public class StratosApiV41Utils {
             } catch (RemoteException e) {
                 log.error(e.getMessage(), e);
                 throw new RestAPIException(e.getMessage(), e);
-            } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+            } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
                 String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
@@ -519,7 +519,7 @@ public class StratosApiV41Utils {
 			} catch (RemoteException e) {
 				log.error(e.getMessage(), e);
 				throw new RestAPIException(e.getMessage(), e);
-			} catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+			} catch (AutoscalerServiceInvalidPolicyExceptionException e) {
 				String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
 				log.error(message, e);
 				throw new RestAPIException(message, e);
@@ -803,7 +803,7 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient.getInstance().addApplication(applicationContext);
-        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
+        } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         } catch (RemoteException e) {
             throw new RestAPIException(e);
@@ -847,11 +847,11 @@ public class StratosApiV41Utils {
         } catch (RemoteException e) {
             log.error(e.getMessage(), e);
             throw new RestAPIException(e.getMessage(), e);
-        } catch (AutoScalerServiceInvalidPolicyExceptionException e) {
+        } catch (AutoscalerServiceInvalidPolicyExceptionException e) {
             String message = e.getFaultMessage().getInvalidPolicyException().getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
-        } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
+        } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
             String message = e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
@@ -922,7 +922,7 @@ public class StratosApiV41Utils {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
                 throw new RestAPIException(message, e);
-            } catch (AutoScalerServiceApplicationDefinitionExceptionException e) {
+            } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
                 throw new RestAPIException(message, e);
