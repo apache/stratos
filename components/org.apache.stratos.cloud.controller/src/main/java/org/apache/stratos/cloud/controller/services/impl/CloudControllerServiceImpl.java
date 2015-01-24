@@ -990,7 +990,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create a Cluster Context obj. for each of the Clusters in the Application
             List<Cluster> clusters = new ArrayList<Cluster>();
-	        Map<String,List> accessUrls= new HashMap<String, List>();
+	        Map<String,List<String>> accessUrls= new HashMap<String, List<String>>();
 
 	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
 		        if(appClusterCtxt.getCartridgeType().equals("lb")) {
@@ -999,7 +999,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				        for (int i = 0; i < dependencyClusterIDs.length; i++) {
 					        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
 							        appClusterCtxt.getCartridgeType());
-					        List accessUrlPerCluster = new ArrayList();
+					        List<String> accessUrlPerCluster = new ArrayList();
 					        List<PortMapping> portMappings = cartridge.getPortMappings();
 					        for (PortMapping portMap : portMappings) {
 						        if (portMap.isKubernetesServicePortMapping()) {
