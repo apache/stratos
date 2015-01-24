@@ -142,7 +142,7 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
-        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridge(cartridgeType);
+        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
         if(cartridgeBean != null) {
             log.warn(String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType));
             return Response.status(Response.Status.CONFLICT).build();

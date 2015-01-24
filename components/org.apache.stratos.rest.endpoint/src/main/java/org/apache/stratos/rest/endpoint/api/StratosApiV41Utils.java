@@ -354,6 +354,25 @@ public class StratosApiV41Utils {
         }
     }
 
+	public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException {
+		try {
+			CartridgeInfo cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+			if (cartridgeInfo == null) {
+				return null;
+			}
+			return convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
+		}
+		catch(CloudControllerServiceCartridgeNotFoundExceptionException e){
+			return null;
+		}
+		catch (RemoteException e) {
+			String message = e.getMessage();
+			log.error(message, e);
+			throw new RestAPIException(message, e);
+		}
+
+	}
+
     private static CartridgeBean convertCartridgeToCartridgeDefinitionBean(CartridgeInfo cartridgeInfo) {
         CartridgeBean cartridge = new CartridgeBean();
         cartridge.setType(cartridgeInfo.getType());
