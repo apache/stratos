@@ -110,7 +110,7 @@ public class RegistryManager {
                 registryService.rollbackTransaction();
             } catch (RegistryException e1) {
                 if (log.isErrorEnabled()) {
-                    log.error("Could not rollback transaction", e);
+                    log.error("Could not rollback transaction", e1);
                 }
             }
             throw new AutoScalerException("Could not persist data in registry", e);
