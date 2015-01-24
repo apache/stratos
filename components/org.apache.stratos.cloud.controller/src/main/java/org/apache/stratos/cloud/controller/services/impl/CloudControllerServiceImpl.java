@@ -67,7 +67,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     public void addCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
-            InvalidIaasProviderException {
+            InvalidIaasProviderException, CartridgeAlreadyExistsException {
 
         handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
@@ -82,22 +82,16 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         try {
             cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
         } catch (Exception e) {
-            String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
-            log.error(msg, e);
-            throw new InvalidCartridgeDefinitionException(msg, e);
+            String message = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
+            log.error(message, e);
+            throw new InvalidCartridgeDefinitionException(message, e);
         }
 
-        // TODO transaction begins
         String cartridgeType = cartridge.getType();
-        // Undeploy if already deployed
         if (cloudControllerContext.getCartridge(cartridgeType) != null) {
-            Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
-            // undeploy
-            try {
-                removeCartridge(cartridgeToBeRemoved.getType());
-            } catch (InvalidCartridgeTypeException ignore) {
-            }
-            copyIaasProviders(cartridge, cartridgeToBeRemoved);
+            String message = "Cartridge already exists: [cartridge-type] " + cartridgeType;
+            log.error(message);
+            throw new CartridgeAlreadyExistsException(message);
         }
 
         // Add cartridge to the cloud controller context and persist
@@ -108,7 +102,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         cartridgeList.add(cartridge);
 
         TopologyBuilder.handleServiceCreated(cartridgeList);
-        // transaction ends
 
         if(log.isInfoEnabled()) {
             log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);

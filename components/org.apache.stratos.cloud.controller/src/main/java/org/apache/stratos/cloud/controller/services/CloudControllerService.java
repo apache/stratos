@@ -40,7 +40,7 @@ public interface CloudControllerService {
 	 * @throws IllegalArgumentException  if the provided argument is not valid.
 	 */
     void addCartridge(CartridgeConfig cartridgeConfig)
-            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException;
+            throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, CartridgeAlreadyExistsException;
     
     /**
      * Remove a cartridge

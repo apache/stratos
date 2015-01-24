@@ -24,27 +24,29 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeAlreadyExistsExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
+import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.partition.PartitionBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.manager.utils.ApplicationManagementUtil;
 import org.apache.stratos.manager.utils.CartridgeConstants;
-import org.apache.stratos.common.beans.ApiResponseBean;
-import org.apache.stratos.common.beans.partition.PartitionBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.common.beans.cartridge.CartridgeBean;
-import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
-import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
+import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -85,6 +87,10 @@ public class StratosApiV40Utils {
                 throw new RestAPIException(e.getMessage(), e);
             } catch (CloudControllerServiceInvalidCartridgeDefinitionExceptionException e) {
                 String message = e.getFaultMessage().getInvalidCartridgeDefinitionException().getMessage();
+                log.error(message, e);
+                throw new RestAPIException(message, e);
+            } catch (CloudControllerServiceCartridgeAlreadyExistsExceptionException e) {
+                String message = e.getMessage();
                 log.error(message, e);
                 throw new RestAPIException(message, e);
             } catch (CloudControllerServiceInvalidIaasProviderExceptionException e) {

@@ -140,10 +140,17 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
     public Response addCartridge(CartridgeBean cartridgeDefinitionBean)
             throws RestAPIException {
-        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
-        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
-        return Response.created(url).build();
 
+        String cartridgeType = cartridgeDefinitionBean.getType();
+        CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridge(cartridgeType);
+        if(cartridgeBean != null) {
+            log.warn(String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType));
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+
+        StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
+        return Response.created(url).build();
     }
 
     /**
@@ -349,12 +356,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     public Response addNetworkPartition(NetworkPartitionBean networkPartitionBean)
             throws RestAPIException {
-        NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionBean.getId());
+        String networkPartitionId = networkPartitionBean.getId();
+        NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
         if(networkPartition != null) {
+            log.warn(String.format("Network partition already exists: [network-partition-id] %s", networkPartitionId));
             return Response.status(Response.Status.CONFLICT).build();
         }
         StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
-        URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionBean.getId()).build();
+        URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).build();
     }
 
