@@ -1002,15 +1002,27 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
 		        if(appClusterCtxt.getCartridgeType().equals("lb")) {
 			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyCluterIds();
-			        for (String dependencyClusterID : dependencyClusterIDs) {
-				        Cartridge cartridge= CloudControllerContext.getInstance().getCartridge(appClusterCtxt.getCartridgeType());
-						List accessUrlPerCluster=new ArrayList();
-				        List<PortMapping> portMappings=cartridge.getPortMappings();
-				        for(PortMapping portMap: portMappings){
-					        String accessUrl=portMap.getProtocol()+"://"+appClusterCtxt.getHostName()+":"+portMap.getPort();
-					        accessUrlPerCluster.add(accessUrl);
+			        if(dependencyClusterIDs!=null) {
+				        for (int i = 0; i < dependencyClusterIDs.length; i++) {
+					        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(
+							        appClusterCtxt.getCartridgeType());
+					        List accessUrlPerCluster = new ArrayList();
+					        List<PortMapping> portMappings = cartridge.getPortMappings();
+					        for (PortMapping portMap : portMappings) {
+						        if (portMap.isKubernetesServicePortMapping()) {
+							        String accessUrl =
+									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
+									        portMap.getKubernetesServicePort();
+							        accessUrlPerCluster.add(accessUrl);
+						        } else {
+							        String accessUrl =
+									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
+									        portMap.getProxyPort();
+							        accessUrlPerCluster.add(accessUrl);
+						        }
+					        }
+					        accessUrls.put(dependencyClusterIDs[i], accessUrlPerCluster);
 				        }
-				        accessUrls.put(dependencyClusterID, accessUrlPerCluster);
 			        }
 		        }
 	        }

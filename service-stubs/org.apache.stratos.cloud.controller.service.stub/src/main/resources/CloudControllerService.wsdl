@@ -78,6 +78,27 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="CloudControllerServiceInvalidServiceGroupException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax21:InvalidServiceGroupException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ServiceGroup"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getCartridges">
                 <xs:complexType>
                     <xs:sequence/>
@@ -87,6 +108,104 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupDependencies">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupDependenciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:Dependencies"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax21:InvalidCartridgeDefinitionException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupSubGroups">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupSubGroupsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupCartridges">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfo">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgeInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:CartridgeInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getClusterContext">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getClusterContextResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ClusterContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -164,125 +283,6 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidServiceGroupException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax21:InvalidServiceGroupException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroup">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ServiceGroup"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax21:InvalidCartridgeDefinitionException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupSubGroups">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupSubGroupsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupCartridges">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupDependencies">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupDependenciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:Dependencies"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgeInfo">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgeInfoResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:CartridgeInfo"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContext">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContextResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ClusterContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -564,6 +564,21 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="InvalidServiceGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeDefinitionException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeTypeException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="InvalidKubernetesMasterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
@@ -585,21 +600,6 @@
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NonExistingKubernetesHostException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidServiceGroupException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeDefinitionException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -853,6 +853,7 @@
             <xs:complexType name="PortMapping">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="kubernetesServicePort" type="xs:int"/>
+                    <xs:element minOccurs="0" name="kubernetesServicePortMapping" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="port" type="xs:int"/>
                     <xs:element minOccurs="0" name="protocol" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="proxyPort" type="xs:int"/>

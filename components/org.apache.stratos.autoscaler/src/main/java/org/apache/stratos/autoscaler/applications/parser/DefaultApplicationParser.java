@@ -175,6 +175,24 @@ public class DefaultApplicationParser implements ApplicationParser {
         application.setTenantId(applicationContext.getTenantId());
         application.setTenantDomain(applicationContext.getTenantDomain());
         application.setTenantAdminUserName(applicationContext.getTenantAdminUsername());
+	    DependencyOrder dependencyOrder=new DependencyOrder();
+	    Set<StartupOrder> startupOrderSet=new HashSet<StartupOrder>();
+
+
+	    String[] arrayOrder= applicationContext.getComponents().getDependencyContext().getStartupOrdersContexts();
+	    for(int i=0;i<arrayOrder.length;i++) {
+
+		    List<String> startedOrder = new ArrayList<String>();
+		    String[] component = arrayOrder[i].split(",");
+		    for (int j = 0;j<component.length;j++) {
+			    startedOrder.add(component[j]);
+		    }
+
+		    startupOrderSet.add(new StartupOrder(startedOrder));
+	    }
+
+	    dependencyOrder.setStartupOrders(startupOrderSet);
+	    application.setDependencyOrder(dependencyOrder);
 
         // following keeps track of all Clusters created for this application
         Map<String,Map<String, ClusterDataHolder>> clusterDataMap;
@@ -183,7 +201,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // get top level Subscribables
             if (applicationContext.getComponents().getCartridgeContexts() != null) {
                 clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationId(), applicationContext.getTenantId(),
-                        application.getKey(), null, Arrays.asList(applicationContext.getComponents().getCartridgeContexts()),null);
+                        application.getKey(), null, Arrays.asList(applicationContext.getComponents().getCartridgeContexts()),application.getDependencyOrder().getStartupOrders());
                 application.setClusterData(clusterDataMap.get("alias"));
 	            application.setClusterDataForType(clusterDataMap.get("type"));
             }

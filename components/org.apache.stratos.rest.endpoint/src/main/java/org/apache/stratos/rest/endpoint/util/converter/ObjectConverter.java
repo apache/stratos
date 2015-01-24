@@ -702,13 +702,13 @@ public class ObjectConverter {
 			            PortMapping[] portMappings = cartridgeInfo.getPortMappings();
 			            for (PortMapping portMapping : portMappings) {
 				            if (clusterContext.isKubernetesClusterIdSpecified()) {
-					            String accessUrl = portMapping.getProtocol()+"://" + clusterContext.getHostName() +":"+
+					            String accessUrl = portMapping.getProtocol()+"\\://" + clusterContext.getHostName() +":"+
 					                               portMapping.getKubernetesServicePort();
 					            accessUrls.add(accessUrl);
 				            }
 				            else {
 					            String accessUrl =
-							            portMapping.getProtocol() + "://" + clusterContext.getHostName() + ":" +
+							            portMapping.getProtocol() + "\\://" + clusterContext.getHostName() + ":" +
 							            portMapping.getProxyPort();
 					            accessUrls.add(accessUrl);
 				            }

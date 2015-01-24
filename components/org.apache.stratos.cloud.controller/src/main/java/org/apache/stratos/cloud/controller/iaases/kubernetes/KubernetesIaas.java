@@ -449,6 +449,7 @@ public class KubernetesIaas extends Iaas {
                     }
                     portMapping.setKubernetesServicePort(nextServicePort);
                     servicePortsUpdated = true;
+	                portMapping.setKubernetesServicePortMapping(true);
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Kubernetes service port generated: [cluster-id] %s [port] %d " +
                                 "[service-port] %d", clusterId, portMapping.getPort(), nextServicePort));

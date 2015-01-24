@@ -28,6 +28,7 @@ public class PortMapping implements Serializable{
 	private int port;
 	private int proxyPort;
 	private int kubernetesServicePort;
+	private boolean isKubernetesServicePortMapping;
 	
 	public PortMapping() {
 	}
@@ -73,5 +74,13 @@ public class PortMapping implements Serializable{
 
 	public int getKubernetesServicePort() {
 		return kubernetesServicePort;
+	}
+
+	public boolean isKubernetesServicePortMapping() {
+		return isKubernetesServicePortMapping;
+	}
+
+	public void setKubernetesServicePortMapping(boolean isKubernetesServicePortMapping) {
+		this.isKubernetesServicePortMapping = isKubernetesServicePortMapping;
 	}
 }
