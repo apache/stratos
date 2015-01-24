@@ -35,6 +35,7 @@ import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
+import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
@@ -158,7 +159,7 @@ public class RuleTasksDelegator {
             InstanceNotificationPublisher.getInstance().sendInstanceCleanupEventForMember(memberId);
             log.info("Instance clean up event sent for [member] " + memberId);
 
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Cannot terminate instance", e);
         }
     }
@@ -207,7 +208,7 @@ public class RuleTasksDelegator {
                     log.error("Member context returned from cloud controller is null");
                 }
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             String message = String.format("Could not start instance: [cluster-id] %s [instance-id] %s",
                     clusterId, clusterInstanceId);
             log.error(message, e);
@@ -269,7 +270,7 @@ public class RuleTasksDelegator {
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
                 clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Cannot terminate instance", e);
         }
     }
@@ -283,7 +284,7 @@ public class RuleTasksDelegator {
             //InstanceNotificationClient.getInstance().sendMemberCleanupEvent(memberId);
             //partitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
             //CloudControllerClient.getInstance().terminate(memberId);
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Cannot terminate instance", e);
         }
     }
@@ -291,7 +292,9 @@ public class RuleTasksDelegator {
     public void terminateObsoleteInstance(String memberId) {
         try {
             CloudControllerClient.getInstance().terminateInstance(memberId);
-        } catch (Throwable e) {
+        } catch (Exception e) {
+            log.error("Cannot terminate instance", e);
+        } catch (TerminationException e) {
             log.error("Cannot terminate instance", e);
         }
     }
@@ -306,7 +309,9 @@ public class RuleTasksDelegator {
             if (log.isDebugEnabled()) {
                 log.debug("delegateTerminateAll - done");
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
+            log.error("Cannot terminate instance", e);
+        } catch (TerminationException e) {
             log.error("Cannot terminate instance", e);
         }
     }
