@@ -18,18 +18,16 @@
  */
 package org.apache.stratos.tenant.activity.internal;
 
-import org.apache.stratos.tenant.activity.util.Util;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.transport.local.LocalTransportReceiver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.tenant.activity.util.Util;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.registry.core.service.RegistryService;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.utils.ConfigurationContextService;
-
-import java.lang.Throwable;
 
 /**
  * @scr.component name="org.apache.stratos.tenant.activity" immediate="true"
@@ -53,7 +51,7 @@ public class TenantActivityServiceComponent {
             if(log.isDebugEnabled()){
                 log.debug("******* Tenant Activity bundle is activated ******* ");
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("******* Error in activating Tenant Activity bundle ******* ", e);
         }
     }

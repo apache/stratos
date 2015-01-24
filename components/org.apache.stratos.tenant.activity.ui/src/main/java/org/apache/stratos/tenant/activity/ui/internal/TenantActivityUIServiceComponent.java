@@ -44,7 +44,7 @@ public class TenantActivityUIServiceComponent {
             if (log.isDebugEnabled()) {
                 log.error("******* Tenant Activity UI bundle is activated ******* ");
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("******* Error in activating Tenant Activity UI bundle ******* ", e);
         }
     }

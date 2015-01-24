@@ -26,18 +26,18 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerApplicationSignUpEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerDomainMappingEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTenantEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTopologyEventReceiver;
-import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
+import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
+import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerApplicationSignUpEventReceiver;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerDomainMappingEventReceiver;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTenantEventReceiver;
+import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
@@ -413,7 +413,7 @@ public class LoadBalancerServiceComponent {
                     if (log.isDebugEnabled()) {
                         log.debug("Endpoint admin bundle is activated ");
                     }
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     log.error("Failed to activate endpoint admin bundle ", e);
                 }
             }

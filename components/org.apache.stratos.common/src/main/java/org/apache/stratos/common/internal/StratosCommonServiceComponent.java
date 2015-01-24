@@ -109,9 +109,9 @@ public class StratosCommonServiceComponent {
             }
 
             if (log.isInfoEnabled()) {
-                log.info("Stratos common service bundle is activated");
+                log.info("Stratos common service component is activated");
             }
-        } catch (Throwable e) {
+        } catch (Exception e) {
             log.error("Error in activating stratos common service component", e);
         }
     }
