@@ -134,6 +134,10 @@ public class RegistryManager {
         }
     }
 
+    /**
+     * Persist network partition in the registry
+     * @param networkPartition
+     */
     public void persistNetworkPartition(NetworkPartition networkPartition) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE + AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartition.getId();
         persist(networkPartition, resourcePath);
@@ -142,6 +146,10 @@ public class RegistryManager {
         }
     }
 
+    /**
+     * Get network partition resource paths
+     * @return
+     */
     private String[] getNetworkPartitionResourcePaths() {
         try {
             PrivilegedCarbonContext.startTenantFlow();
@@ -166,13 +174,17 @@ public class RegistryManager {
         return null;
     }
 
+    /**
+     * Get network partitions
+     * @return
+     */
     public List<NetworkPartition> getNetworkPartitions() {
         List<NetworkPartition> networkPartitions = new ArrayList<NetworkPartition>();
         String[] networkPartitionResourcePaths = getNetworkPartitionResourcePaths();
         if(networkPartitionResourcePaths != null) {
             for (String resourcePath : networkPartitionResourcePaths) {
                 if(StringUtils.isNotBlank(resourcePath)) {
-                    NetworkPartition networkPartition = getNetworkPatitionByResourcePath(resourcePath);
+                    NetworkPartition networkPartition = getNetworkPartitionByResourcePath(resourcePath);
                     networkPartitions.add(networkPartition);
                 }
             }
@@ -180,6 +192,11 @@ public class RegistryManager {
         return networkPartitions;
     }
 
+    /**
+     * Get network partition by network partition id
+     * @param networkPartitionId
+     * @return
+     */
     public NetworkPartition getNetworkPartition(String networkPartitionId) {
 
         try {
@@ -190,18 +207,23 @@ public class RegistryManager {
 
             String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
                     AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
-            return getNetworkPatitionByResourcePath(resourcePath);
+            return getNetworkPartitionByResourcePath(resourcePath);
         } finally {
             PrivilegedCarbonContext.endTenantFlow();
         }
     }
 
-    private NetworkPartition getNetworkPatitionByResourcePath(String resourcePath) {
+    /**
+     * Get network partition by resource path
+     * @param resourcePath
+     * @return
+     */
+    private NetworkPartition getNetworkPartitionByResourcePath(String resourcePath) {
         Object obj = retrieve(resourcePath);
         if (obj != null) {
             try {
                 Object dataObj = Deserializer.deserializeFromByteArray((byte[]) obj);
-                if (dataObj instanceof Application) {
+                if (dataObj instanceof NetworkPartition) {
                     return (NetworkPartition) dataObj;
                 } else {
                     return null;
@@ -214,6 +236,10 @@ public class RegistryManager {
         return null;
     }
 
+    /**
+     * Remove network partition from the registry
+     * @param networkPartitionId
+     */
     public void removeNetworkPartition(String networkPartitionId) {
         String resourcePath = AutoScalerConstants.AUTOSCALER_RESOURCE +
                 AutoScalerConstants.NETWORK_PARTITIONS_RESOURCE + "/" + networkPartitionId;
