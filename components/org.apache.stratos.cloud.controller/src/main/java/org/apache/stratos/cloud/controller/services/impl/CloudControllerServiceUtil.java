@@ -98,7 +98,7 @@ public class CloudControllerServiceUtil {
             return iaasProvider;
 
         } else {
-            String msg = "Invalid partition found: [partition-id] " + partition.getId();
+            String msg = "Partition is not valid: [partition-id] " + partition.getId();
             log.error(msg);
             throw new InvalidPartitionException(msg);
         }

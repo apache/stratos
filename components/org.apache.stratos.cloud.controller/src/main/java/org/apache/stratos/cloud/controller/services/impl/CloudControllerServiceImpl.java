@@ -964,36 +964,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
 
         return CloudControllerServiceUtil.validatePartition(partition, iaasProvider);
-
     }
 
     public ClusterContext getClusterContext(String clusterId) {
         return CloudControllerContext.getInstance().getClusterContext(clusterId);
     }
-
-//    private String validateProperty(String property, ClusterContext ctxt) {
-//
-//        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-//        handleNullObject(propVal, "Property validation failed. Cannot find '" + property + "' in " + ctxt);
-//        return propVal;
-//    }
-//
-//    private String validateProperty(String property, ContainerClusterContext ctxt) {
-//
-//        String propVal = CloudControllerUtil.getProperty(ctxt.getProperties(), property);
-//        handleNullObject(propVal, "Property validation failed. Cannot find '" + property + "' in " + ctxt);
-//        return propVal;
-//
-//    }
-//    
-//    private String validateProperty(String property, Partition partition) {
-//
-//        String propVal = CloudControllerUtil.getProperty(partition.getProperties(), property);
-//        handleNullObject(propVal, "Property validation failed. Cannot find property: '" + property);
-//        return propVal;
-//
-//    }
-
 
     @Override
     public void updateClusterStatus(String serviceName, String clusterId, String instanceId, ClusterStatus status) {

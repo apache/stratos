@@ -43,12 +43,10 @@ import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.api.RegistryException;
 import org.wso2.carbon.registry.core.service.RegistryService;
-import org.wso2.carbon.utils.CarbonUtils;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 import com.hazelcast.core.HazelcastInstance;
 
-import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

@@ -47,9 +47,11 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Ne
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoScalerService;
+import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
@@ -595,11 +597,30 @@ public class AutoScalerServiceImpl implements AutoScalerService {
                 log.info(String.format("Adding network partition: [network-partition-id] %s", networkPartition.getId()));
             }
 
-            // TODO: Add validation logic
+            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+            if(networkPartition.getPartitions() != null) {
+                for(Partition partition : networkPartition.getPartitions()) {
+                    if(partition != null) {
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
+                                    networkPartition.getId(), partition.getId()));
+                        }
+
+                        cloudControllerServiceClient.validatePartition(
+                                AutoscalerObjectConverter.convertASPartitionToCCPartition(partition));
+
+                        if(log.isInfoEnabled()) {
+                            log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
+                                            "[partition-id] %s", networkPartition.getId(), partition.getId()));
+                        }
+                    }
+                }
+            }
             RegistryManager.getInstance().persistNetworkPartition(networkPartition);
 
             if(log.isInfoEnabled()) {
-                log.info(String.format("Network partition added successfully: [network-partition-id] %s", networkPartition.getId()));
+                log.info(String.format("Network partition added successfully: [network-partition-id] %s",
+                        networkPartition.getId()));
             }
         } catch (Exception e) {
             String message = "Could not add network partition";
@@ -619,7 +640,8 @@ public class AutoScalerServiceImpl implements AutoScalerService {
             RegistryManager.getInstance().removeNetworkPartition(networkPartitionId);
 
             if(log.isInfoEnabled()) {
-                log.info(String.format("Network partition removed successfully: [network-partition-id] %s", networkPartitionId));
+                log.info(String.format("Network partition removed successfully: [network-partition-id] %s",
+                        networkPartitionId));
             }
         } catch (Exception e) {
             String message = "Could not remove network partition";

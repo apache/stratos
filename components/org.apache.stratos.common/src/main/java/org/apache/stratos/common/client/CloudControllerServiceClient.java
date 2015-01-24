@@ -175,4 +175,9 @@ public class CloudControllerServiceClient {
             CloudControllerServiceNonExistingKubernetesHostExceptionException {
         return stub.updateKubernetesHost(kubernetesHost);
     }
+
+    public void validatePartition(Partition partition) throws RemoteException,
+            CloudControllerServiceInvalidPartitionExceptionException {
+        stub.validatePartition(partition);
+    }
 }

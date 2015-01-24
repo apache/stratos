@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationExc
 import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -91,7 +92,8 @@ public class CloudControllerClient {
                 log.info(String.format("Validating partitions of policy via cloud controller: [cartridge-type] %s", cartridgeType));
             }
             long startTime = System.currentTimeMillis();
-            boolean result = stub.validateDeploymentPolicy(cartridgeType, getAllCCPartitions(partitions));
+            boolean result = stub.validateDeploymentPolicy(cartridgeType,
+                    AutoscalerObjectConverter.convertASPartitionsToCCStubPartitions(partitions));
             if (log.isDebugEnabled()) {
                 long endTime = System.currentTimeMillis();
                 log.debug(String.format("Service call validateDeploymentPolicy() returned in %dms", (endTime - startTime)));
@@ -108,34 +110,6 @@ public class CloudControllerClient {
             throw new PartitionValidationException(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage());
         }
 
-    }
-
-    public org.apache.stratos.cloud.controller.stub.domain.Partition[]
-    getAllCCPartitions(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] partitions) {
-
-        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions1 =
-                new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
-
-        for(int i = 0; i < partitions.length; i++) {
-            partitions1[i] = convertASPartitionTOCCPartition(partitions[i]);
-        }
-        return partitions1;
-    }
-
-    private org.apache.stratos.cloud.controller.stub.domain.Partition
-        convertASPartitionTOCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
-
-        org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition = new
-                org.apache.stratos.cloud.controller.stub.domain.Partition();
-
-        ccPartition.setId(partition.getId());
-        ccPartition.setProvider(partition.getProvider());
-        ccPartition.setDescription(partition.getDescription());
-        ccPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
-        ccPartition.setIsPublic(partition.getIsPublic());
-        ccPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
-
-        return ccPartition;
     }
 
     /*
