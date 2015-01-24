@@ -18,21 +18,22 @@
        under the License.
 -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<parent>
-            <groupId>org.apache.stratos</groupId>
-            <artifactId>stratos-parent</artifactId>
-            <version>4.1.0-SNAPSHOT</version>
-            <relativePath>../pom.xml</relativePath>
-        </parent>
+    <parent>
+        <groupId>org.apache.stratos</groupId>
+        <artifactId>stratos-parent</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
 
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache.stratos</groupId>
-	<artifactId>stratos-components-parent</artifactId>
-	<packaging>pom</packaging>
-	<name>Apache Stratos - Components</name>
-	<url>http://apache.org</url>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.stratos</groupId>
+    <artifactId>stratos-components-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>Apache Stratos - Components</name>
+    <url>http://apache.org</url>
 
     <modules>
         <!-- Common -->
@@ -57,14 +58,6 @@
         <module>org.apache.stratos.load.balancer.common</module>
         <module>org.apache.stratos.load.balancer</module>
         <module>org.apache.stratos.load.balancer.extension.api</module>
-        <!-- Tenant Mgt -->
-        <module>org.apache.stratos.register.ui</module>
-<!--
-        <module>org.apache.stratos.tenant.mgt.core</module>
-        <module>org.apache.stratos.tenant.mgt</module>
-        <module>org.apache.stratos.tenant.mgt.ui</module>
-        <module>org.apache.stratos.tenant.mgt.email.sender</module>
--->
         <!-- Tenant Activity -->
         <module>org.apache.stratos.tenant.activity</module>
         <module>org.apache.stratos.tenant.activity.ui</module>
@@ -75,47 +68,19 @@
         <!-- Domain Validation -->
         <module>org.apache.stratos.validate.domain</module>
         <module>org.apache.stratos.validate.domain.ui</module>
-        <!-- Throttling -->
-        <!--module>org.apache.stratos.throttling.agent</module>
-        <module>org.apache.stratos.throttling.manager</module>
-        <module>org.apache.stratos.throttling.ui</module-->
         <!-- Redirector -->
         <module>org.apache.stratos.sso.redirector.ui</module>
-<!--
-        <module>org.apache.stratos.redirector.servlet</module>
-        <module>org.apache.stratos.redirector.servlet.ui</module>
--->
-        <!-- Status Monitor -->
-        <module>org.apache.stratos.status.monitor.core</module>
-        <module>org.apache.stratos.status.monitor</module>
-        <module>org.apache.stratos.status.monitor.agent</module>
-        <module>org.apache.stratos.status.monitor.ui</module>
-        <!-- Usage -->
-        <!--module>org.apache.stratos.usage.agent</module>
-        <module>org.apache.stratos.usage</module>
-        <module>org.apache.stratos.usage.summary.helper</module>
-        <module>org.apache.stratos.usage.ui</module-->
-
-        <!--<module>org.apache.stratos.tenant.dispatcher</module>-->
         <module>org.apache.stratos.keystore.mgt</module>
         <module>org.apache.stratos.activation</module>
-        <!-- Theme mgt -->
-<!--
-        <module>org.apache.stratos.theme.mgt.ui</module>
-        <module>org.apache.stratos.theme.mgt</module>
--->
         <!--Logging mgt-->
         <module>org.apache.stratos.logging.view.ui</module>
         <!-- RESTful admin services -->
         <module>org.apache.stratos.rest.endpoint</module>
         <!-- Stratos manager styles bundle -->
         <module>org.apache.stratos.manager.styles</module>
-
         <module>org.apache.stratos.custom.handlers</module>
-		
-	<module>org.apache.stratos.metadataservice</module>
-	<!-- meta data client -->
-        <module>org.apache.stratos.metadata.client</module>	
+        <module>org.apache.stratos.metadataservice</module>
+        <module>org.apache.stratos.metadata.client</module>
     </modules>
 
     <build>
@@ -171,19 +136,19 @@
 
     <dependencyManagement>
         <dependencies>
-	<!-- OSGi dependencies -->
-        <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>${version.equinox.osgi}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi.services</artifactId>
-            <version>${version.equinox.osgi.services}</version>
-        </dependency>
+            <!-- OSGi dependencies -->
+            <dependency>
+                <groupId>org.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi</artifactId>
+                <version>${version.equinox.osgi}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.osgi</groupId>
+                <artifactId>org.eclipse.osgi.services</artifactId>
+                <version>${version.equinox.osgi.services}</version>
+            </dependency>
 
-	    <!-- Carbon Core dependencies -->
+            <!-- Carbon Core dependencies -->
             <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.logging</artifactId>
@@ -199,96 +164,96 @@
                 <artifactId>org.wso2.carbon.core.services</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
-	    <dependency>
-	    <groupId>org.wso2.carbon</groupId>
-		<artifactId>org.wso2.carbon.application.deployer</artifactId>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.application.deployer</artifactId>
                 <version>${carbon.platform.version}</version>
-		     <exclusions>
-			<exclusion>
-			  <groupId>org.wso2.carbon</groupId>
-			  <artifactId>org.wso2.carbon.feature.mgt.core</artifactId>
-			</exclusion>
-			<exclusion>
-			  <groupId>org.wso2.carbon</groupId>
-			  <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
-			</exclusion>
-		     </exclusions>
-	    </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.server</artifactId>
-       	    <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.server.admin.common</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.server.admin.ui</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.base</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.core</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.user.core</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.user.mgt</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
-	
-	<!-- Axis2 -->
-        <dependency>
-            <groupId>org.apache.axis2.wso2</groupId>
-            <artifactId>axis2</artifactId>
-            <version>${axis2.wso2.version}</version>
-        </dependency>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.wso2.carbon</groupId>
+                        <artifactId>org.wso2.carbon.feature.mgt.core</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.wso2.carbon</groupId>
+                        <artifactId>org.wso2.carbon.feature.mgt.services</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.server</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.server.admin.common</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.server.admin.ui</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.base</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.core</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.user.core</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.user.mgt</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.utils</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
+
+            <!-- Axis2 -->
+            <dependency>
+                <groupId>org.apache.axis2.wso2</groupId>
+                <artifactId>axis2</artifactId>
+                <version>${axis2.wso2.version}</version>
+            </dependency>
 
 
-        <!-- Registry dependencies  -->
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
-            <version>${carbon.platform.version}</version>
-        </dependency>
+            <!-- Registry dependencies  -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
+                <artifactId>org.wso2.carbon.registry.ws.client</artifactId>
+                <version>${carbon.platform.version}</version>
+            </dependency>
 
-        <!-- Other -->
-           <dependency>
-             <groupId>log4j</groupId>
-             <artifactId>log4j</artifactId>
-             <version>${version.log4j}</version>
-           </dependency>
-           <dependency>
+            <!-- Other -->
+            <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+                <version>${version.log4j}</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
                 <version>${version.commons.logging}</version>
             </dependency>
 
-	<!-- Service Stubs -->  
-	   <dependency>
-                 <groupId>org.wso2.carbon</groupId>
+            <!-- Service Stubs -->
+            <dependency>
+                <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.autoscaler.service.jvm.agentmgt.stub</artifactId>
                 <version>${carbon.platform.version}</version>
             </dependency>
-	<!-- Test Scope -->
+            <!-- Test Scope -->
 
             <dependency>
                 <groupId>junit</groupId>
