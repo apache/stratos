@@ -148,7 +148,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             createGroupInstanceOnScaling(networkPartitionContext,
                     instanceContext.getParentInstanceId());
         } else {
-            notifyParentOnMaxOut(networkPartitionContext, instanceContext);
+            notifyParentOnScalingUpBeyondMax(networkPartitionContext, instanceContext);
         }
         //Resetting the max events
         instanceContext.setIdToScalingOverMaxEvent(
@@ -257,8 +257,8 @@ public class GroupMonitor extends ParentComponentMonitor {
         }
     }
 
-    private void notifyParentOnMaxOut(NetworkPartitionContext networkPartitionContext,
-                                      InstanceContext instanceContext) {
+    private void notifyParentOnScalingUpBeyondMax(NetworkPartitionContext networkPartitionContext,
+                                                  InstanceContext instanceContext) {
         //has scaling dependents. Should notify the parent
         if (log.isDebugEnabled()) {
             log.debug("This [Group] " + id + " [scale-up] dependencies. " +
