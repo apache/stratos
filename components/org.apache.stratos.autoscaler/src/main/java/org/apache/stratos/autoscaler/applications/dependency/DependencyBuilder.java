@@ -20,10 +20,10 @@ package org.apache.stratos.autoscaler.applications.dependency;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.*;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContextFactory;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.messaging.domain.application.*;
 
 import java.util.*;
@@ -64,11 +64,11 @@ public class DependencyBuilder {
             //Parsing the kill behaviour
             String terminationBehaviour = dependencyOrder.getTerminationBehaviour();
 
-            if (Constants.TERMINATE_NONE.equals(terminationBehaviour)) {
+            if (AutoscalerConstants.TERMINATE_NONE.equals(terminationBehaviour)) {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_NONE);
-            } else if (Constants.TERMINATE_ALL.equals(terminationBehaviour)) {
+            } else if (AutoscalerConstants.TERMINATE_ALL.equals(terminationBehaviour)) {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_ALL);
-            } else if (Constants.TERMINATE_DEPENDENTS.equals(terminationBehaviour)) {
+            } else if (AutoscalerConstants.TERMINATE_DEPENDENTS.equals(terminationBehaviour)) {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_DEPENDENT);
             }
 
@@ -180,10 +180,10 @@ public class DependencyBuilder {
             for (ScalingDependentList dependentList : component.getDependencyOrder().getScalingDependents()) {
                 List<String> scalingDependencies = new ArrayList<String>();
                 for (String string : dependentList.getScalingDependentListComponents()) {
-                    if (string.trim().startsWith(Constants.GROUP + ".")) {
+                    if (string.trim().startsWith(AutoscalerConstants.GROUP + ".")) {
                         //getting the group alias
                         scalingDependencies.add(getGroupFromStartupOrder(string));
-                    } else if (string.trim().startsWith(Constants.CARTRIDGE + ".")) {
+                    } else if (string.trim().startsWith(AutoscalerConstants.CARTRIDGE + ".")) {
                         //getting the cluster alias
                         String id = getClusterFromStartupOrder(string);
                         //getting the cluster-id from cluster alias
@@ -217,7 +217,7 @@ public class DependencyBuilder {
      * @return group alias
      */
     public static String getGroupFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(Constants.GROUP.length() + 1);
+        return startupOrder.substring(AutoscalerConstants.GROUP.length() + 1);
     }
 
     /**
@@ -227,7 +227,7 @@ public class DependencyBuilder {
      * @return cluster alias
      */
     public static String getClusterFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
+        return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
     }
 
 

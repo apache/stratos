@@ -20,8 +20,8 @@ package org.apache.stratos.autoscaler.applications.dependency.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.ParentComponent;
 
@@ -45,11 +45,11 @@ public class ApplicationChildContextFactory {
         String id;
         ApplicationChildContext applicationContext = null;
         boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
-        if (order.trim().startsWith(Constants.GROUP + ".")) {
+        if (order.trim().startsWith(AutoscalerConstants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);
             applicationContext = getGroupChildContext(id, hasDependents);
-        } else if (order.trim().startsWith(Constants.CARTRIDGE + ".")) {
+        } else if (order.trim().startsWith(AutoscalerConstants.CARTRIDGE + ".")) {
             //getting the cartridge type
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
@@ -70,7 +70,7 @@ public class ApplicationChildContextFactory {
      * @return group alias
      */
     public static String getGroupFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(Constants.GROUP.length() + 1);
+        return startupOrder.substring(AutoscalerConstants.GROUP.length() + 1);
     }
 
     /**
@@ -80,7 +80,7 @@ public class ApplicationChildContextFactory {
      * @return cluster alias
      */
     public static String getClusterFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(Constants.CARTRIDGE.length() + 1);
+        return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
     }
 
 	/**

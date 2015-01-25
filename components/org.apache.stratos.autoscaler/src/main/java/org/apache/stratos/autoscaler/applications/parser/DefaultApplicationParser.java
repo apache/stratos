@@ -24,7 +24,6 @@ import org.apache.amber.oauth2.common.exception.OAuthSystemException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.applications.ApplicationUtils;
 import org.apache.stratos.autoscaler.applications.ClusterInformation;
 import org.apache.stratos.autoscaler.applications.MTClusterInformation;
@@ -39,6 +38,7 @@ import org.apache.stratos.autoscaler.exception.application.ApplicationDefinition
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
@@ -236,9 +236,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // Set groups
             if (components.getGroupContexts() != null) {
-                application.setGroups(parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
-                        application.getKey(), Arrays.asList(components.getGroupContexts()),
-                        subscribableInfoCtxts));
+                application.setGroups(
+		                parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
+		                            application.getKey(), Arrays.asList(components.getGroupContexts()),
+		                            subscribableInfoCtxts));
             }
         }
 
@@ -361,14 +362,14 @@ public class DefaultApplicationParser implements ApplicationParser {
     private static void validateTerminationBehavior(String terminationBehavior) throws ApplicationDefinitionException {
 
         if (!(terminationBehavior == null ||
-                Constants.TERMINATE_NONE.equals(terminationBehavior) ||
-                Constants.TERMINATE_DEPENDENTS.equals(terminationBehavior) ||
-                Constants.TERMINATE_ALL.equals(terminationBehavior))) {
+                AutoscalerConstants.TERMINATE_NONE.equals(terminationBehavior) ||
+                AutoscalerConstants.TERMINATE_DEPENDENTS.equals(terminationBehavior) ||
+                AutoscalerConstants.TERMINATE_ALL.equals(terminationBehavior))) {
             throw new ApplicationDefinitionException("Invalid termination behaviour found: [ " +
                     terminationBehavior + " ], should be one of '" +
-                    Constants.TERMINATE_NONE + "', '" +
-                    Constants.TERMINATE_DEPENDENTS + "', '" +
-                    Constants.TERMINATE_ALL + "'");
+                    AutoscalerConstants.TERMINATE_NONE + "', '" +
+                    AutoscalerConstants.TERMINATE_DEPENDENTS + "', '" +
+                    AutoscalerConstants.TERMINATE_ALL + "'");
         }
     }
 

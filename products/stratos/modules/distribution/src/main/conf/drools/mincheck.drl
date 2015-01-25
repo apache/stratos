@@ -22,7 +22,7 @@ package org.apache.stratos.autoscaler.rule;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;

@@ -30,7 +30,7 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.application.common.model.xsd.InboundAuthenticationRequestConfig;
@@ -87,8 +87,8 @@ public class IdentityApplicationManagementServiceClient {
                 if (serviceClient == null) {
                     XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
                     String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
-                    int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
-                    String epr = "https://" + hostname + ":" + port + "/" + Constants.IDENTITY_APPLICATION_SERVICE_SFX;
+                    int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
+                    String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.IDENTITY_APPLICATION_SERVICE_SFX;
                     serviceClient = new IdentityApplicationManagementServiceClient(epr);
                 }
             }
@@ -186,8 +186,8 @@ public class IdentityApplicationManagementServiceClient {
     private String getIdToken(String compositeAppId, String consumerKey, String consumerSecret) throws OAuthSystemException, OAuthProblemException {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
-        int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
-        String tokenEndpoint = "https://" + hostname + ":" + port + "/" + Constants.TOKEN_ENDPOINT_SFX;
+        int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
+        String tokenEndpoint = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.TOKEN_ENDPOINT_SFX;
             OAuthClientRequest accessRequest = OAuthClientRequest.tokenLocation(tokenEndpoint)
                     .setGrantType(GrantType.CLIENT_CREDENTIALS)
                     .setClientId(consumerKey)

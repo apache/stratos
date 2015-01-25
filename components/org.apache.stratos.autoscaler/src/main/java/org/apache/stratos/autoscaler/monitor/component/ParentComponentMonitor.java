@@ -20,7 +20,6 @@ package org.apache.stratos.autoscaler.monitor.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
@@ -772,10 +771,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
-        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (AutoscalerConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new RoundRobin();
-        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (AutoscalerConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new OneAfterAnother();
         } else {

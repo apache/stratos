@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
@@ -43,7 +43,7 @@ public class ApplicationSynchronizerTaskScheduler {
 
             //if (!taskService.getRegisteredTaskTypes().contains(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE)) {
             // Register task type
-            taskService.registerTaskType(Constants.APPLICATION_SYNC_TASK_TYPE);
+            taskService.registerTaskType(AutoscalerConstants.APPLICATION_SYNC_TASK_TYPE);
 
                 /*// Register task
                 taskManager = taskService.getTaskManager(CloudControllerConstants.TOPOLOGY_SYNC_TASK_TYPE);
@@ -55,22 +55,22 @@ public class ApplicationSynchronizerTaskScheduler {
                         new HashMap<String, String>(), triggerInfo);
                 taskManager.registerTask(taskInfo);*/
 
-            taskManager = taskService.getTaskManager(Constants.APPLICATION_SYNC_TASK_TYPE);
-            String cronProp = Constants.APPLICATION_SYNC_CRON;
+            taskManager = taskService.getTaskManager(AutoscalerConstants.APPLICATION_SYNC_TASK_TYPE);
+            String cronProp = AutoscalerConstants.APPLICATION_SYNC_CRON;
             TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(cronProp);
-            TaskInfo taskInfo = new TaskInfo(Constants.APPLICATION_SYNC_TASK_NAME,
+            TaskInfo taskInfo = new TaskInfo(AutoscalerConstants.APPLICATION_SYNC_TASK_NAME,
                     ApplicationSynchronizeTask.class.getName(),
                     new HashMap<String, String>(), triggerInfo);
             taskManager.registerTask(taskInfo);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Topology synchronization task scheduled: %s", Constants.APPLICATION_SYNC_TASK_NAME));
+                log.debug(String.format("Topology synchronization task scheduled: %s", AutoscalerConstants.APPLICATION_SYNC_TASK_NAME));
             }
             //}
 
         } catch (Exception e) {
             if (taskManager != null) {
                 try {
-                    taskManager.deleteTask(Constants.APPLICATION_SYNC_TASK_NAME);
+                    taskManager.deleteTask(AutoscalerConstants.APPLICATION_SYNC_TASK_NAME);
                 } catch (TaskException te) {
                     if (log.isErrorEnabled()) {
                         log.error(te);
@@ -79,7 +79,7 @@ public class ApplicationSynchronizerTaskScheduler {
             }
 
             String msg = String.format("Could not schedule topology synchronization task: %s",
-                    Constants.APPLICATION_SYNC_TASK_NAME);
+                    AutoscalerConstants.APPLICATION_SYNC_TASK_NAME);
             log.error(msg, e);
             throw new RuntimeException(msg, e);
         }

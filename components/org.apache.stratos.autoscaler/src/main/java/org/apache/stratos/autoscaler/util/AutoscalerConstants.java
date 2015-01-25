@@ -78,4 +78,50 @@ public final class AutoscalerConstants {
     public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
     public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
     public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
+	public static final String ROUND_ROBIN_ALGORITHM_ID = "round-robin";
+	public static final String ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+	public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
+	//scheduler
+	public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;
+	public static final int SCHEDULE_DEFAULT_PERIOD = 15;
+	public static final String APPLICATION_SYNC_CRON = "1 * * * * ? *";
+	public static final String APPLICATION_SYNC_TASK_NAME = "APPLICATION_SYNC_TASK";
+	public static final String APPLICATION_SYNC_TASK_TYPE = "APPLICATION_SYNC_TASK_TYPE";
+	public static final String AUTOSCALER_CONFIG_FILE_NAME = "autoscaler.xml";
+	public static final String CLOUD_CONTROLLER_SERVICE_SFX = "services/CloudControllerService";
+	public static final int CLOUD_CONTROLLER_DEFAULT_PORT = 9444;
+	public static final String STRATOS_MANAGER_SERVICE_SFX = "services/InstanceCleanupNotificationService";
+	public static final int STRATOS_MANAGER_DEFAULT_PORT = 9445;
+	public static final String STRATOS_MANAGER_HOSTNAME_ELEMENT = "autoscaler.stratosManager.hostname";
+	public static final String STRATOS_MANAGER_DEFAULT_PORT_ELEMENT = "autoscaler.stratosManager.port";
+	public static final String STRATOS_MANAGER_CLIENT_TIMEOUT_ELEMENT= "autoscaler.stratosManager.clientTimeout";
+	// partition properties
+	public static final String REGION_PROPERTY = "region";
+	public static final String MEMBER_AVERAGE_LOAD_AVERAGE = "member_average_load_average";
+	public static final String MEMBER_AVERAGE_MEMORY_CONSUMPTION = "member_average_memory_consumption";
+	public static final String AVERAGE_REQUESTS_IN_FLIGHT = "average_in_flight_requests";
+	public static final String MEMBER_GRADIENT_LOAD_AVERAGE = "member_gradient_load_average";
+	public static final String MEMBER_GRADIENT_MEMORY_CONSUMPTION = "member_gradient_memory_consumption";
+	public static final String GRADIENT_OF_REQUESTS_IN_FLIGHT = "gradient_in_flight_requests";
+	public static final String MEMBER_SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION = "member_second_derivative_memory_consumption";
+	public static final String MEMBER_SECOND_DERIVATIVE_OF_LOAD_AVERAGE = "member_second_derivative_load_average";
+	public static final String SECOND_DERIVATIVE_OF_REQUESTS_IN_FLIGHT = "second_derivative_in_flight_requests";
+	public static final String AVERAGE_LOAD_AVERAGE = "average_load_average";
+	public static final String AVERAGE_MEMORY_CONSUMPTION = "average_memory_consumption";
+	public static final String GRADIENT_LOAD_AVERAGE = "gradient_load_average";
+	public static final String GRADIENT_MEMORY_CONSUMPTION = "gradient_memory_consumption";
+	public static final String SECOND_DERIVATIVE_OF_MEMORY_CONSUMPTION = "second_derivative_memory_consumption";
+	public static final String SECOND_DERIVATIVE_OF_LOAD_AVERAGE = "second_derivative_load_average";
+	//member expiry interval
+	public static final String MEMBER_EXPIRY_INTERVAL = "member.expiry.interval";
+	//Grouping
+	public static final String TERMINATE_NONE = "terminate-none";
+	public static final String TERMINATE_ALL = "terminate-all";
+	public static final String GROUP = "group";
+	public static final String CARTRIDGE = "cartridge";
+	public static final int IS_DEFAULT_PORT = 9443;
+	public static final String OAUTH_SERVICE_SFX = "services/OAuthAdminService";
+	public static final String IDENTITY_APPLICATION_SERVICE_SFX = "services/IdentityApplicationManagementService";
+	public static final String TOKEN_ENDPOINT_SFX = "oauth2/token";
+	public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
 }

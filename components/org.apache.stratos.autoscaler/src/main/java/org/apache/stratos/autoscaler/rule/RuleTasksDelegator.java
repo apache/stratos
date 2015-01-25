@@ -23,7 +23,6 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
@@ -37,6 +36,7 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
 /**
@@ -136,14 +136,14 @@ public class RuleTasksDelegator {
 
         if(partitionAlgorithm == null) {
             //Send one after another as default
-            partitionAlgorithm = Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID;
+            partitionAlgorithm = AutoscalerConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Retrieving partition algorithm [Partition algorithm]: ", partitionAlgorithm));
         }
-        if (Constants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (AutoscalerConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
             autoscaleAlgorithm = new RoundRobin();
-        } else if (Constants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (AutoscalerConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
             autoscaleAlgorithm = new OneAfterAnother();
         } else {
             if (log.isErrorEnabled()) {

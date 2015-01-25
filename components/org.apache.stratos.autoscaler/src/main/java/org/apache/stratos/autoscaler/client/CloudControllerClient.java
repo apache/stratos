@@ -23,12 +23,12 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
@@ -69,9 +69,9 @@ public class CloudControllerClient {
     private CloudControllerClient() {
         try {
             XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-            int port = conf.getInt("autoscaler.cloudController.port", Constants.CLOUD_CONTROLLER_DEFAULT_PORT);
+            int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.CLOUD_CONTROLLER_DEFAULT_PORT);
             String hostname = conf.getString("autoscaler.cloudController.hostname", "localhost");
-            String epr = "https://" + hostname + ":" + port + "/" + Constants.CLOUD_CONTROLLER_SERVICE_SFX;
+            String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.CLOUD_CONTROLLER_SERVICE_SFX;
             int cloudControllerClientTimeout = conf.getInt("autoscaler.cloudController.clientTimeout", 180000);
 
             stub = new CloudControllerServiceStub(epr);

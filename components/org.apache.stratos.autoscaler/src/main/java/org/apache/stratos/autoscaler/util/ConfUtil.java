@@ -23,7 +23,6 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
 import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
@@ -49,7 +48,7 @@ public class ConfUtil {
 				confFile = new File(configFilePath);
 
 			} else {
-				confFile = new File(CarbonUtils.getCarbonConfigDirPath(), Constants.AUTOSCALER_CONFIG_FILE_NAME);
+				confFile = new File(CarbonUtils.getCarbonConfigDirPath(), AutoscalerConstants.AUTOSCALER_CONFIG_FILE_NAME);
 			}
 			config = new XMLConfiguration(confFile);
 		} catch (ConfigurationException e) {

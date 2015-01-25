@@ -23,7 +23,7 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
@@ -77,8 +77,8 @@ public class OAuthAdminServiceClient {
                 if (serviceClient == null) {
                     XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
                     String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
-                    int port = conf.getInt("autoscaler.cloudController.port", Constants.IS_DEFAULT_PORT);
-                    String epr = "https://" + hostname + ":" + port + "/" + Constants.OAUTH_SERVICE_SFX;
+                    int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
+                    String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.OAUTH_SERVICE_SFX;
                     serviceClient = new OAuthAdminServiceClient(epr);
                 }
             }

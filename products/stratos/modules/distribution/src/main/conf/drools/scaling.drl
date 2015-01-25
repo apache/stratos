@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
-import org.apache.stratos.autoscaler.Constants;
+import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
