@@ -626,12 +626,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                                         networkPartitionContext.getId(),
                                         instanceContext.getId(),
                                         highestScalingEventOfChild.getFactor());
-                                if (log.isDebugEnabled()) {
-                                    log.debug("Notifying the [child] " + scalingEvent.getId() +
-                                            " [instance] " + scalingEvent.getInstanceId() +
-                                            " with the highest [factor] " + scalingEvent.getFactor() +
-                                            " upon decision of dependent scaling");
-                                }
+
+                                log.info("Notifying the [child] " + scalingEvent.getId() + " [instance] " +
+                                        scalingEvent.getInstanceId() + " with the highest [factor] " +
+                                        scalingEvent.getFactor() + " upon decision of dependent scaling");
+
                                 monitor.onParentScalingEvent(scalingEvent);
                             }
                         }
