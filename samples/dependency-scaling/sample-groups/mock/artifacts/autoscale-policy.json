@@ -8,7 +8,7 @@
             "threshold": 70
         },
         "loadAverage": {
-            "threshold": 1000
+            "threshold": 70
         }
     }
 }
