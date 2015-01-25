@@ -96,13 +96,8 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
             }
 
-            CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
-            if (cartridgeConfig == null) {
-                throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
-            }
-            if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
-                throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-type] %s",cartridgeConfig.getType()));
-            }
+	        CartridgeConfig cartridgeConfig =
+			        createCartridgeConfig(cartridgeDefinition);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
@@ -123,30 +118,40 @@ public class StratosApiV41Utils {
 				log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
 			}
 
-			CartridgeConfig cartridgeConfig =
-					ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
-			if (cartridgeConfig == null) {
-				throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
-			}
-			if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
-				throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-type] %s",
-				                                         cartridgeConfig.getType()));
-			}
+			CartridgeConfig cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
 			cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
 			if (log.isDebugEnabled()) {
-				log.debug(String.format("Successfully added cartridge: [cartridge-type] %s ",
+				log.debug(String.format("Successfully update cartridge: [cartridge-type] %s ",
 				                        cartridgeDefinition.getType()));
 			}
-		} catch (Exception e) {
+		} catch (CloudControllerServiceCartridgeDefinitionNotExistsExceptionException e) {
 			String msg = "No cartridge definition exists with this definition.Please use the POST method to add the cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		} catch (Exception e) {
+			String msg = "Could not add cartridge";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}
 	}
 
-    public static void removeCartridge(String cartridgeType) throws RestAPIException {
+	private static CartridgeConfig createCartridgeConfig(CartridgeBean cartridgeDefinition)
+			throws RestAPIException {
+		CartridgeConfig cartridgeConfig =
+				ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
+		if (cartridgeConfig == null) {
+			throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
+		}
+		if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
+			throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-type] %s",
+			                                         cartridgeConfig.getType()));
+		}
+		return cartridgeConfig;
+	}
+
+	public static void removeCartridge(String cartridgeType) throws RestAPIException {
 
         try {
             if(log.isDebugEnabled()) {
