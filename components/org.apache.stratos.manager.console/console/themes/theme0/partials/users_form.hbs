@@ -78,14 +78,14 @@
                             <div class="toggle-menu-description">{{role}}</div>
                             {{#ifCond userName "!=" "admin"}}
                             <div class="list-button" style="display: none;">
-                                <button class="btn btn-danger btn-lg hover-details" type="button" id="details_list_{{id}}"
-                                        data-user="{{userName}}" > Delete
+                                <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                        id="{{userName}}" data-formtype="user-delete"> Delete
                                 </button>
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
-                                    <button class="btn btn-danger btn-lg hover-details" type="button" id="details_{{id}}"
-                                            data-user="{{userName}}" > Delete
+                                    <button class="btn btn-danger btn-lg  hover-delete" type="button"
+                                            id="{{userName}}" data-formtype="user-delete"> Delete
                                     </button>
                                 </div>
                             </div>
@@ -102,6 +102,35 @@
                             <h2>{{tenantDomain}} </h2>
 
                             <div class="toggle-menu-description">{{email}} - {{#UnixConvert createdDate}}{{/UnixConvert}} </div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-danger btn-lg hover-delete b-top" type="button"
+                                        id="{{tenantDomain}}" data-formtype="tenant-delete"> Delete</button>
+                                {{#if active}}
+                                    <button class="btn btn-warning btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
+                                            data-formtype="tenant-deactivate" > Deactivate
+                                    </button>
+                                {{else}}
+                                    <button class="btn btn-info btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
+                                            data-formtype="tenant-activate" > Activate
+                                    </button>
+                                {{/if}}
+
+                            </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-delete b-top" type="button"
+                                            id="{{tenantDomain}}" data-formtype="tenant-delete"> Delete</button>
+                                    {{#if active}}
+                                        <button class="btn btn-warning btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
+                                                data-formtype="tenant-deactivate" > Deactivate
+                                        </button>
+                                    {{else}}
+                                        <button class="btn btn-info btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
+                                                data-formtype="tenant-activate" > Activate
+                                        </button>
+                                    {{/if}}
+                                </div>
+                            </div>
                         </div>
                     {{/each}}
                 {{/ifCond}}
@@ -177,22 +206,25 @@
                 }
             });
 
-            $('.general-table').on('click', '.hover-details', function (event) {
-                var payload =$(this).attr("data-user");
+            //use to handle user and tenant delete actions
+            $('.general-table').on('click', '.hover-delete', function (event) {
+
+                var payload =$(this).attr("id");
+                var formtype = $(this).attr("data-formtype");
+                var configType = '{{formtype}}';
                 noty({
                     layout: 'bottomRight',
                     type: 'warning',
-                    text: 'Are you sure you want to delete user '+$(this).attr("data-user"),
+                    text: 'Are you sure you want to delete '+configType+': <strong>'+$(this).attr("id") + "</strong> ?",
                     buttons: [
                         {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
-                            var formtype = 'deleteusers';
                             $noty.close();
 
                             $.ajax({
                                 type: "POST",
                                 url: caramel.context + "/controllers/users/users_requests.jag",
                                 dataType: 'json',
-                                data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
+                                data: { "formPayload": payload, "formtype": formtype },
                                 success: function (data) {
                                     if (data.status == 'error') {
                                         var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
@@ -202,13 +234,63 @@
                                         var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
                                         window.setTimeout(function(){
                                             location.reload();
-                                        }, 1500);
+                                        }, 1000);
                                     }
-
                                 }
-                                }).always(function () {
+                            }).always(function () {
 
-                             });
+                            });
+
+                        }
+                        },
+                        {addClass: 'btn btn-danger', text: 'No', onClick: function($noty) {
+                            $noty.close();
+                        }
+                        }
+                    ]
+                });
+            });
+
+            //use to handle tenant
+            $('.general-table').on('click', '.hover-active', function (event) {
+
+                var payload =$(this).attr("id");
+                var formtype = $(this).attr("data-formtype");
+                var configType = '{{formtype}}';
+                var text ='';
+                if(formtype == 'tenant-activate'){
+                    text = 'activate ';
+                }else{
+                    text = 'deactivate ';
+                }
+                noty({
+                    layout: 'bottomRight',
+                    type: 'warning',
+                    text: 'Are you sure you want to  ' + text +configType+': <strong>'+$(this).attr("id") + "</strong> ?",
+                    buttons: [
+                        {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
+                            $noty.close();
+
+                            $.ajax({
+                                type: "POST",
+                                url: caramel.context + "/controllers/users/users_requests.jag",
+                                dataType: 'json',
+                                data: { "formPayload": payload, "formtype": formtype },
+                                success: function (data) {
+                                    if (data.status == 'error') {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'error'});
+                                    } else if (data.status == 'warning') {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
+                                    } else {
+                                        var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+                                        window.setTimeout(function(){
+                                            location.reload();
+                                        }, 1000);
+                                    }
+                                }
+                            }).always(function () {
+
+                            });
 
                         }
                         },

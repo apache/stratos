@@ -33,8 +33,14 @@ try {
         formSubmit = util.RESTCalls.addUser(JSON.parse(formPayload));
     }else if(formtype == 'tenants'){
         formSubmit = util.RESTCalls.addTenant(JSON.parse(formPayload));
-    }else if(formtype == 'deleteusers'){
-        formSubmit = util.RESTCalls.deleteUser(JSON.parse(formPayload));
+    }else if(formtype == 'user-delete'){
+        formSubmit = util.RESTCalls.deleteUser(formPayload);
+    }else if(formtype == 'tenant-delete'){
+        formSubmit = util.RESTCalls.deleteTenant(formPayload);
+    }else if(formtype == 'tenant-activate'){
+    formSubmit = util.RESTCalls.activateTenant(formPayload);
+    }else if(formtype == 'tenant-deactivate'){
+    formSubmit = util.RESTCalls.deactivateTenant(formPayload);
     }
 
 }catch(e){
