@@ -281,7 +281,7 @@
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.rm.server.feature:${carbon.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.manager.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.apache.stratos:org.apache.stratos.rest.endpoint.feature:${project.version}</featureArtifactDef>
-                                <featureArtifactDef>org.apache.stratos:org.apache.stratos.metadataservice.feature:${project.version}</featureArtifactDef>
+                                <featureArtifactDef>org.apache.stratos:org.apache.stratos.metadata.service.feature:${project.version}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.server.feature:${carbon.platform.patch.version.4.2.1}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.authenticator.saml2.sso.ui.feature:${carbon.platform.patch.version.4.2.2}</featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.identity.application.authentication.framework.server.feature:${carbon.platform.patch.version.4.2.2}</featureArtifactDef>
@@ -493,7 +493,7 @@
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
-                                    <id>org.apache.stratos.metadataservice.feature.group</id>
+                                    <id>org.apache.stratos.metadata.service.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
@@ -620,7 +620,7 @@
                             <version>${carbon.platform.patch.version.4.2.1}</version>
                         </feature>
                         <feature>
-                             <id>org.apache.stratos.metadataservice.feature.group</id>
+                             <id>org.apache.stratos.metadata.service.feature.group</id>
                              <version>${project.version}</version>
                         </feature>
 			<feature>
@@ -712,7 +712,7 @@
                             <version>${carbon.platform.patch.version.4.2.1}</version>
                         </feature>
                             <feature>
-                                    <id>org.apache.stratos.metadataservice.feature.group</id>
+                                    <id>org.apache.stratos.metadata.service.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
 			<feature>
@@ -837,7 +837,7 @@
                                     <version>${project.version}</version>
                                 </feature>
                                  <feature>
-                                    <id>org.apache.stratos.metadataservice.feature.group</id>
+                                    <id>org.apache.stratos.metadata.service.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
                                 <feature>
@@ -993,7 +993,7 @@
                                     <version>${carbon.platform.version}</version>
                                 </feature>
                                <feature>
-                                    <id>org.apache.stratos.metadataservice.feature.group</id>
+                                    <id>org.apache.stratos.metadata.service.feature.group</id>
                                     <version>${project.version}</version>
                                 </feature>
 				<!-- Common features -->

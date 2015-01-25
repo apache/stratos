@@ -79,7 +79,7 @@
         <!-- Stratos manager styles bundle -->
         <module>org.apache.stratos.manager.styles</module>
         <module>org.apache.stratos.custom.handlers</module>
-        <module>org.apache.stratos.metadataservice</module>
+        <module>org.apache.stratos.metadata.service</module>
         <module>org.apache.stratos.metadata.client</module>
     </modules>
 
