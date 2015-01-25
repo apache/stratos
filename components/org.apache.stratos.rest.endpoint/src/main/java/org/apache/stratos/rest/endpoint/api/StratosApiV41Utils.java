@@ -131,7 +131,7 @@ public class StratosApiV41Utils {
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		} catch (Exception e) {
-			String msg = "Could not add cartridge";
+			String msg = "Could not update cartridge";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}
