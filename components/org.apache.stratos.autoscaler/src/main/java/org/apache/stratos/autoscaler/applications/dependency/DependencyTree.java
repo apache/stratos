@@ -70,8 +70,8 @@ public class DependencyTree {
      * @param id the alias/id of group/cluster
      * @return ApplicationContext of the given id
      */
-    public ApplicationChildContext findApplicationContextWithIdInPrimaryTree(String id) {
-        return findApplicationContextWithId(id, primaryApplicationContextList);
+    public ApplicationChildContext getApplicationChildContextByIdInPrimaryTree(String id) {
+        return getApplicationChildContextById(id, primaryApplicationContextList);
     }
 
     /**
@@ -81,7 +81,7 @@ public class DependencyTree {
      * @param contexts the list of contexts in the same level of the tree
      * @return ApplicationContext of the given id
      */
-    private ApplicationChildContext findApplicationContextWithId(String id, List<ApplicationChildContext> contexts) {
+    private ApplicationChildContext getApplicationChildContextById(String id, List<ApplicationChildContext> contexts) {
         for (ApplicationChildContext context : contexts) {
             //TODO check for the status
             if (context.getId().equals(id)) {
@@ -90,7 +90,7 @@ public class DependencyTree {
         }
         //if not found in the top level search recursively
         for (ApplicationChildContext context : contexts) {
-            return findApplicationContextWithId(id, context.getApplicationChildContextList());
+            return getApplicationChildContextById(id, context.getApplicationChildContextList());
         }
         return null;
     }
@@ -139,7 +139,7 @@ public class DependencyTree {
     public List<ApplicationChildContext> getStarAbleDependencies(String id) {
         //finding the application context which received the activated event and
         // returning it's immediate children as the dependencies.
-        ApplicationChildContext context = findApplicationContextWithIdInPrimaryTree(id);
+        ApplicationChildContext context = getApplicationChildContextByIdInPrimaryTree(id);
         return context.getApplicationChildContextList();
     }
 
@@ -190,7 +190,7 @@ public class DependencyTree {
      */
     public List<ApplicationChildContext> getTerminationDependencies(String id) {
         List<ApplicationChildContext> allChildrenOfAppContext = new ArrayList<ApplicationChildContext>();
-        ApplicationChildContext applicationContext = findApplicationContextWithIdInPrimaryTree(id);
+        ApplicationChildContext applicationContext = getApplicationChildContextByIdInPrimaryTree(id);
         if (getTerminationBehavior() == TerminationBehavior.TERMINATE_DEPENDENT) {
             //finding the ApplicationContext of the given id
             //finding all the children of the found application context

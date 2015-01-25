@@ -92,7 +92,7 @@ public class DependencyBuilder {
                             String id = applicationContext.getId();
 
                             ApplicationChildContext existingApplicationContext =
-                                    dependencyTree.findApplicationContextWithIdInPrimaryTree(id);
+                                    dependencyTree.getApplicationChildContextByIdInPrimaryTree(id);
                             if (existingApplicationContext == null) {
                                 if (parentContext != null) {
                                     //appending the start up order to already added parent group/cluster
@@ -150,14 +150,14 @@ public class DependencyBuilder {
         // as they can start in parallel.
         Collection<Group> groups = component.getAliasToGroupMap().values();
         for (Group group1 : groups) {
-            if (dependencyTree.findApplicationContextWithIdInPrimaryTree(group1.getAlias()) == null) {
+            if (dependencyTree.getApplicationChildContextByIdInPrimaryTree(group1.getAlias()) == null) {
                 ApplicationChildContext context = ApplicationChildContextFactory.getGroupChildContext(group1.getAlias(), dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
             }
         }
         Collection<ClusterDataHolder> clusterData = component.getClusterDataMap().values();
         for (ClusterDataHolder dataHolder : clusterData) {
-            if (dependencyTree.findApplicationContextWithIdInPrimaryTree(dataHolder.getClusterId()) == null) {
+            if (dependencyTree.getApplicationChildContextByIdInPrimaryTree(dataHolder.getClusterId()) == null) {
                 ApplicationChildContext context = ApplicationChildContextFactory.getClusterChildContext(dataHolder,
                         dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);

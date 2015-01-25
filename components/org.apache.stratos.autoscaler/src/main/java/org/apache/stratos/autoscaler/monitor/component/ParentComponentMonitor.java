@@ -435,7 +435,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         boolean allDependentTerminated = false;
 
         ApplicationChildContext context = this.startupDependencyTree.
-                findApplicationContextWithIdInPrimaryTree(eventId);
+                getApplicationChildContextByIdInPrimaryTree(eventId);
         context.setTerminated(true);
         terminationList = this.startupDependencyTree.getTerminationDependencies(eventId);
         //Make sure that all the dependents have been terminated properly to start the recovery
