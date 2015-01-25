@@ -140,7 +140,7 @@ public class StratosApiV41Utils {
 				                        cartridgeDefinition.getType()));
 			}
 		} catch (Exception e) {
-			String msg = "Could not add cartridge";
+			String msg = "No cartridge definition exists with this definition.Please use the POST method to add the cartridge";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}
