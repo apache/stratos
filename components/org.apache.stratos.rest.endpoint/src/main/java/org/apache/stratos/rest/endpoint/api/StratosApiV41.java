@@ -153,6 +153,25 @@ public class StratosApiV41 extends AbstractApi {
         return Response.created(url).build();
     }
 
+	/**
+	 * Updates the cartridge definition.
+	 *
+	 * @param cartridgeDefinitionBean the cartridge definition bean
+	 * @return the response
+	 * @throws RestAPIException the rest api exception
+	 */
+	@PUT
+	@Path("/cartridges")
+	@Produces("application/json")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/admin/manage/add/cartridgeDefinition")
+	public Response updateCartridge(CartridgeBean cartridgeDefinitionBean)
+			throws RestAPIException {
+		StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
+		URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
+		return Response.created(url).build();
+
+	}
     /**
      * Gets all available cartridges.
      *

@@ -41,6 +41,17 @@ public interface CloudControllerService {
 	 */
     void addCartridge(CartridgeConfig cartridgeConfig)
             throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, CartridgeAlreadyExistsException;
+
+	/**
+	 * Update a cartridge
+	 * @param cartridgeConfig
+	 * @throws InvalidCartridgeDefinitionException
+	 * @throws InvalidIaasProviderException
+	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeDefinitionNotExistsException
+	 */
+	public void updateCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
+	                                                             InvalidIaasProviderException,
+	                                                             CartridgeDefinitionNotExistsException;
     
     /**
      * Remove a cartridge

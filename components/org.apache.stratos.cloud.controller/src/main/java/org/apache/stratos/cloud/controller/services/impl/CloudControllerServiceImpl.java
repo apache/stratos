@@ -108,6 +108,60 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
+	@Override
+	public void updateCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
+	                                                                    InvalidIaasProviderException,
+	                                                                    CartridgeDefinitionNotExistsException {
+
+		handleNullObject(cartridgeConfig, "Cartridge definition is null");
+
+		if (log.isInfoEnabled()) {
+			log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("Cartridge definition: " + cartridgeConfig.toString());
+		}
+
+		Cartridge cartridge = null;
+		try {
+			cartridge = CloudControllerUtil.toCartridge(cartridgeConfig);
+		} catch (Exception e) {
+			String msg = "Invalid cartridge definition: [cartridge-type] " + cartridgeConfig.getType();
+			log.error(msg, e);
+			throw new InvalidCartridgeDefinitionException(msg, e);
+		}
+
+		// TODO transaction begins
+		String cartridgeType = cartridge.getType();
+		// Undeploy if already deployed
+		if (cloudControllerContext.getCartridge(cartridgeType) != null) {
+			Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
+			// undeploy
+			try {
+				removeCartridge(cartridgeToBeRemoved.getType());
+			} catch (InvalidCartridgeTypeException ignore) {
+			}
+			copyIaasProviders(cartridge, cartridgeToBeRemoved);
+		}
+		else{
+			throw new CartridgeDefinitionNotExistsException("This cartridge definition not exists");
+		}
+
+		// Add cartridge to the cloud controller context and persist
+		CloudControllerContext.getInstance().addCartridge(cartridge);
+		CloudControllerContext.getInstance().persist();
+
+		List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
+		cartridgeList.add(cartridge);
+
+		TopologyBuilder.handleServiceCreated(cartridgeList);
+		// transaction ends
+
+		if (log.isInfoEnabled()) {
+			log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
+		}
+	}
+
     private void copyIaasProviders(Cartridge destCartridge,
                                    Cartridge sourceCartridge) {
 

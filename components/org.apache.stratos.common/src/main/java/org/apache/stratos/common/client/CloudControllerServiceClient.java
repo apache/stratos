@@ -85,6 +85,13 @@ public class CloudControllerServiceClient {
 		stub.addCartridge(cartridgeConfig);
 	}
 
+	public void updateCartridge(CartridgeConfig cartridgeConfig)
+			throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
+			       CloudControllerServiceInvalidIaasProviderExceptionException,
+			       CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
+		stub.updateCartridge(cartridgeConfig);
+	}
+
     public void removeCartridge(String cartridgeType) throws RemoteException, CloudControllerServiceInvalidCartridgeTypeExceptionException {
 		stub.removeCartridge(cartridgeType);
 	}

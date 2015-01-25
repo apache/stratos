@@ -116,6 +116,36 @@ public class StratosApiV41Utils {
         }
     }
 
+	public static void updateCartridge(CartridgeBean cartridgeDefinition) throws RestAPIException {
+
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
+			}
+
+			CartridgeConfig cartridgeConfig =
+					ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
+			if (cartridgeConfig == null) {
+				throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
+			}
+			if (StringUtils.isEmpty(cartridgeConfig.getCategory())) {
+				throw new RestAPIException(String.format("Category is not specified in cartridge: [cartridge-type] %s",
+				                                         cartridgeConfig.getType()));
+			}
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			cloudControllerServiceClient.updateCartridge(cartridgeConfig);
+
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Successfully added cartridge: [cartridge-type] %s ",
+				                        cartridgeDefinition.getType()));
+			}
+		} catch (Exception e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+	}
+
     public static void removeCartridge(String cartridgeType) throws RestAPIException {
 
         try {
@@ -1604,4 +1634,5 @@ public class StratosApiV41Utils {
             throw new RuntimeException(message, e);
         }
     }
+
 }
