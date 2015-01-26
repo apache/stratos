@@ -112,6 +112,10 @@ RESTCalls = new function(){
         return this.send("POST","/cartridge/sync",alias);
     };
 
+    this.getPartitions = function(){
+        return this.sendReceive("GET","/networkPartitions/",{});
+    };
+
     this.getAutoScalePolicies = function(){
         return this.sendReceive("GET","/policy/autoscale",{});
     };

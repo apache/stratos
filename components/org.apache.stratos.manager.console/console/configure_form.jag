@@ -68,6 +68,15 @@ if(isEdit == false && elements.action != 'new') {
 
     switch (formtype) {
 
+        case "partitions":
+            formTitle = "Partition Definition",
+                    buttonText = "Partition Definition";
+            list_data = util.RESTCalls.getPartitions();
+            if (list_data && list_data.length === 0) {
+                list_data = null;
+            }
+            break;
+
         case "autoscalingpolicies":
             formTitle = "Auto-scaling Policie",
                     buttonText = "Auto-scaling Policy";
