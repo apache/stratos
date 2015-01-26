@@ -37,11 +37,13 @@ import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
+import org.apache.stratos.common.beans.application.GroupReferenceBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
+import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
 import org.apache.stratos.common.beans.cartridge.PersistenceBean;
 import org.apache.stratos.common.beans.cartridge.VolumeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
@@ -158,9 +160,18 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Removing cartridge: [cartridge-type] %s ", cartridgeType));
             }
 
-            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+            CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
             if(cloudControllerServiceClient.getCartridgeInfo(cartridgeType) == null) {
                 throw new RuntimeException("Cartridge not found: [cartridge-type] " + cartridgeType);
+            }
+            
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+            
+            // Validate whether cartridge can be removed
+            if(!smServiceClient.canCartridgeBeRemoved(cartridgeType)) {
+            	String message = "Cannot remove cartridge : [cartridge-type] " + cartridgeType + " since it is used in another cartridge group or an application";
+                log.error(message);
+                throw new RestAPIException(message);
             }
             cloudControllerServiceClient.removeCartridge(cartridgeType);
 
@@ -510,6 +521,17 @@ public class StratosApiV41Utils {
             throw new RestAPIException(errorMsg, axisFault);
         }
     }
+    
+    private static StratosManagerServiceClient getStratosManagerServiceClient() throws RestAPIException {
+        try {
+            return StratosManagerServiceClient.getInstance();
+        } catch (AxisFault axisFault) {
+            String errorMsg = "Error while getting StratosManagerServiceClient instance to connect to the "
+                    + "Stratos Manager. Cause: " + axisFault.getMessage();
+            log.error(errorMsg, axisFault);
+            throw new RestAPIException(errorMsg, axisFault);
+        }
+    }
 
     // Util methods for Autoscaling policies
 
@@ -650,15 +672,20 @@ public class StratosApiV41Utils {
             if (serviceGroupDefinition == null) {
                 throw new RuntimeException("Service Group definition is null");
             }
+            
+            List<String> cartridgeTypes = null;
+            String[] cartridgeNames = null;
+            List<String> groupNames = null;
+            String[] cartridgeGroupNames = null;
 
             // if any cartridges are specified in the group, they should be already deployed
             if (serviceGroupDefinition.getCartridges() != null) {
-
+            	
                 if (log.isDebugEnabled()) {
                     log.debug("checking cartridges in cartridge group " + serviceGroupDefinition.getName());
                 }
 
-                List<String> cartridgeTypes = serviceGroupDefinition.getCartridges();
+                cartridgeTypes = serviceGroupDefinition.getCartridges();
 
                 Set<String> duplicates = findDuplicates(cartridgeTypes);
                 if (duplicates.size() > 0) {
@@ -672,20 +699,19 @@ public class StratosApiV41Utils {
                     throw new RestAPIException("Invalid Service Group definition, duplicate cartridges defined:" + buf.toString());
                 }
 
-                CloudControllerServiceClient ccServiceClient = null;
-
-                try {
-                    ccServiceClient = CloudControllerServiceClient.getInstance();
-                } catch (AxisFault axisFault) {
-                    throw new RestAPIException(axisFault);
-                }
-
+                CloudControllerServiceClient ccServiceClient = getCloudControllerServiceClient();
+                
+                cartridgeNames = new String[cartridgeTypes.size()];
+                int i=0;
                 for (String cartridgeType : cartridgeTypes) {
                     try {
                         if (ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
                             // cartridge is not deployed, can't continue
                             log.error("invalid cartridge found in cartridge group " + cartridgeType);
                             throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);
+                        } else {
+                        	cartridgeNames[i] = cartridgeType;
+                        	i++;
                         }
                     } catch (RemoteException e) {
                         throw new RestAPIException(e);
@@ -702,9 +728,13 @@ public class StratosApiV41Utils {
                 }
 
                 List<GroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
-                List<String> groupNames = new ArrayList<String>();
+                groupNames = new ArrayList<String>();
+                cartridgeGroupNames = new String[groupNames.size()];
+                int i=0;
                 for (GroupBean groupList : groupDefinitions) {
                     groupNames.add(groupList.getName());
+                    cartridgeGroupNames[i] = groupList.getName();
+                    i++;
                 }
 
                 Set<String> duplicates = findDuplicates(groupNames);
@@ -718,13 +748,23 @@ public class StratosApiV41Utils {
                         log.debug("duplicate subGroups defined: " + buf.toString());
                     }
                     throw new RestAPIException("Invalid Service Group definition, duplicate subGroups defined:" + buf.toString());
-                }
+                } 
             }
 
             ServiceGroup serviceGroup = ObjectConverter.convertServiceGroupDefinitionToASStubServiceGroup(serviceGroupDefinition);
 
-            AutoscalerServiceClient asServiceClient = AutoscalerServiceClient.getInstance();
+            AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
             asServiceClient.addServiceGroup(serviceGroup);
+            
+            // Add cartridge group elements to SM cache - done after service group has been added
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+            if(cartridgeTypes != null) {
+            	smServiceClient.addUsedCartridgesInCartridgeGroups(serviceGroupDefinition.getName(), cartridgeNames);
+            }
+            if(groupNames != null) {
+            	smServiceClient.addUsedCartridgeGroupsInCartridgeSubGroups(serviceGroupDefinition.getName(), cartridgeGroupNames);
+            }
+            
         } catch (Exception e) {
             String message = "Could not add cartridge group";
             log.error(message, e);
@@ -804,9 +844,48 @@ public class StratosApiV41Utils {
             if (log.isDebugEnabled()) {
                 log.debug("Removing cartridge group: [name] " + name);
             }
-
-            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
-            autoscalerServiceClient.undeployServiceGroupDefinition(name);
+            
+            AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+            
+            // Check whether cartridge group exists
+            if(asServiceClient.getServiceGroup(name) == null) {
+            	String message = "Cartridge group: [group-name] " + name + " cannot be removed since it does not exist";
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+            
+            // Validate whether cartridge group can be removed
+            if(!smServiceClient.canCartirdgeGroupBeRemoved(name)) {
+            	String message = "Cannot remove cartridge group: [group-name] " + name + " since it is used in another cartridge group or an application";
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+            
+            ServiceGroup serviceGroup = asServiceClient.getServiceGroup(name);
+            
+            asServiceClient.undeployServiceGroupDefinition(name);
+            
+            // Remove the dependent cartridges and cartridge groups from Stratos Manager cache - done after service group has been removed
+            if (serviceGroup.getCartridges() != null) {
+            	String[] cartridgeNames = serviceGroup.getCartridges();
+            	smServiceClient.removeUsedCartridgesInCartridgeGroups(name, cartridgeNames);
+            }
+            
+            if (serviceGroup.getGroups() != null) {
+            	ServiceGroup[] cartridgeGroups = serviceGroup.getGroups();
+            	String[] cartridgeGroupNames = new String[cartridgeGroups.length];
+            	int i = 0;
+            	for(ServiceGroup cartridgeGroup : cartridgeGroups) {
+            		if(cartridgeGroup != null) {
+                		cartridgeGroupNames[i] = cartridgeGroup.getName();
+                		i++;
+            		} else {
+            			break;
+            		}
+            	}
+            	smServiceClient.removeUsedCartridgeGroupsInCartridgeSubGroups(name, cartridgeGroupNames);
+            }
 
         } catch (Exception e) {
             throw new RestAPIException(e);
@@ -857,6 +936,37 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient.getInstance().addApplication(applicationContext);
+            
+            // Add application elements to SM cache - done after application has been added
+            String[] cartridgeNames;
+            String[] cartridgeGroupNames;
+                        
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+            
+            List<CartridgeReferenceBean> cartridges = appDefinition.getComponents().getCartridges();
+            if(cartridges != null) {
+            	cartridgeNames = new String[cartridges.size()];
+            	int i=0;
+            	for(CartridgeReferenceBean cartridge : cartridges) {
+            		cartridgeNames[i] = cartridge.getType();
+            		i++;
+            	}
+            	
+            	smServiceClient.addUsedCartridgesInApplications(appDefinition.getApplicationId(), cartridgeNames);
+            }
+            
+            List<GroupReferenceBean> cartridgeGroups = appDefinition.getComponents().getGroups();
+            if(cartridgeGroups != null) {
+            	cartridgeGroupNames = new String[cartridgeGroups.size()];
+            	int i=0;
+            	for(GroupReferenceBean cartridgeGroup : cartridgeGroups) {
+            		cartridgeGroupNames[i] = cartridgeGroup.getName();
+            		i++;
+            	}
+            	
+            	smServiceClient.addUsedCartridgeGroupsInApplications(appDefinition.getApplicationId(), cartridgeGroupNames);
+            }
+            
         } catch (AutoscalerServiceApplicationDefinitionExceptionException e) {
             throw new RestAPIException(e);
         } catch (RemoteException e) {
@@ -915,7 +1025,40 @@ public class StratosApiV41Utils {
     public static void removeApplication(String applicationId) throws RestAPIException {
 
         try {
-            AutoscalerServiceClient.getInstance().deleteApplication(applicationId);
+        	AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
+        	
+        	ApplicationBean application = ObjectConverter.convertStubApplicationContextToApplicationDefinition(asServiceClient.getApplication(applicationId));
+        	asServiceClient.deleteApplication(applicationId);
+            
+            // Remove application elements in SM cache - done after deleting
+        	String[] cartridgeNames;
+            String[] cartridgeGroupNames;
+            StratosManagerServiceClient smServiceClient = getStratosManagerServiceClient();
+            
+            List<CartridgeReferenceBean> cartridges = application.getComponents().getCartridges();
+            if(cartridges != null) {
+            	cartridgeNames = new String[cartridges.size()];
+            	int i=0;
+            	for(CartridgeReferenceBean cartridge : cartridges) {
+            		cartridgeNames[i] = cartridge.getType();
+            		i++;
+            	}
+            	
+            	smServiceClient.removeUsedCartridgesInApplications(application.getApplicationId(), cartridgeNames);
+            }
+            
+            List<GroupReferenceBean> cartridgeGroups = application.getComponents().getGroups();
+            if(cartridgeGroups != null) {
+            	cartridgeGroupNames = new String[cartridgeGroups.size()];
+            	int i=0;
+            	for(GroupReferenceBean cartridgeGroup : cartridgeGroups) {
+            		cartridgeGroupNames[i] = cartridgeGroup.getName();
+            		i++;
+            	}
+            	
+            	smServiceClient.removeUsedCartridgeGroupsInApplications(application.getApplicationId(), cartridgeGroupNames);
+            }
+            
         } catch (RemoteException e) {
             String message = "Could not delete application: [application-id] " + applicationId;
             log.error(message, e);
