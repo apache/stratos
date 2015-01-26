@@ -1,0 +1,62 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "root",
+    "type": "object",
+    "title":"Partition Definition",
+    "name": "Partition Policy",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "properties": {
+        "id": {
+            "id": "root/id",
+            "type": "string"
+        },
+        "activeByDefault": {
+            "id": "root/activeByDefault",
+            "type": "string"
+        },
+        "partitions": {
+            "id": "root/partitions",
+            "type": "array",
+            "items": {
+                "id": "root/partitions/0",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "id": "root/partitions/0/id",
+                        "type": "string"
+                    },
+                    "provider": {
+                        "id": "root/partitions/0/provider",
+                        "type": "string"
+                    },
+                    "property": {
+                        "id": "root/partitions/0/property",
+                        "type": "array",
+                        "items": {
+                            "id": "root/partitions/0/property/0",
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "id": "root/partitions/0/property/0/name",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "id": "root/partitions/0/property/0/value",
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "id",
+        "activeByDefault",
+        "partitions"
+    ]
+}
