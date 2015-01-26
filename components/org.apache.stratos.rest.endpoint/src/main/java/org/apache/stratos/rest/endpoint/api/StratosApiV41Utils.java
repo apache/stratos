@@ -729,7 +729,7 @@ public class StratosApiV41Utils {
 
                 List<GroupBean> groupDefinitions = serviceGroupDefinition.getGroups();
                 groupNames = new ArrayList<String>();
-                cartridgeGroupNames = new String[groupNames.size()];
+                cartridgeGroupNames = new String[groupDefinitions.size()];
                 int i=0;
                 for (GroupBean groupList : groupDefinitions) {
                     groupNames.add(groupList.getName());
