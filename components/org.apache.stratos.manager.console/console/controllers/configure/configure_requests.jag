@@ -30,6 +30,9 @@ include('/controllers/login/validator.jag');
 
 try {
     switch (formtype) {
+        case "partitions":
+            formSubmit = util.RESTCalls.deployPartitionDefinition(formPayload);
+            break;
         case "autoscalingpolicies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
