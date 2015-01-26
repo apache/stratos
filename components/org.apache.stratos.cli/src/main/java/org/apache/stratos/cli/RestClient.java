@@ -30,7 +30,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-import org.apache.stratos.cli.exception.ExceptionMapper;
 import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,7 +187,7 @@ public class RestClient implements GenericRestClient {
             int responseCode = executePut(serviceEndpoint, entityBody);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 200) {
+            } else if (responseCode == 201) {
                 System.out.println(String.format("Successfully updated %s", entityName));
             }
         } catch (Exception e) {
