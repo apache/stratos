@@ -624,10 +624,15 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deploy cartridge definitions
+    // This method helps to add cartridge definitions
     public void addCartridge(String cartridgeDefinition) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
+
+	// This method helps to update cartridge definitions
+	public void updateCartridge(String cartridgeDefinition) throws CommandException {
+		restClient.updateEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
+	}
 
     // This method helps to undeploy cartridge definitions
     public void undeployCartrigdeDefinition(String id) throws CommandException {

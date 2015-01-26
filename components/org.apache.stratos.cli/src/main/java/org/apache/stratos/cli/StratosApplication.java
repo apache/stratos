@@ -117,6 +117,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new AddCartridgeCommand();
         commands.put(command.getName(), command);
 
+		command = new UpdateCartridgeCommand();
+		commands.put(command.getName(), command);
+
         command = new AddAutoscalingPolicyCommand();
         commands.put(command.getName(), command);
 

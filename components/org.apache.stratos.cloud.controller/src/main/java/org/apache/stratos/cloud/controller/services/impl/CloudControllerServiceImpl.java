@@ -1058,11 +1058,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					        for (PortMapping portMap : portMappings) {
 						        if (portMap.isKubernetesServicePortMapping()) {
 							        String accessUrl =
-									        portMap.getProtocol() + ":".concat("\\\\")+ appClusterCtxt.getHostName() + ":" + portMap.getKubernetesServicePort();
+									        portMap.getProtocol() + ":".concat("//")+ appClusterCtxt.getHostName() + ":" + portMap.getKubernetesServicePort();
 							        accessUrlPerCluster.add(accessUrl);
 						        } else {
 							        String accessUrl =
-									        portMap.getProtocol()+ ":".concat("\\\\") + appClusterCtxt.getHostName() + ":" +  portMap.getProxyPort();
+									        portMap.getProtocol()+ ":".concat("//") + appClusterCtxt.getHostName() + ":" +  portMap.getProxyPort();
 							        accessUrlPerCluster.add(accessUrl);
 						        }
 					        }
