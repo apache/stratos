@@ -31,6 +31,10 @@ RESTCalls = new function(){
         return this.send("POST","/cartridges", cartridgeDefinition);
     };
 
+    this.deletePartiions = function(networkPartitionId){
+        return this.send("DELETE","/networkPartitions/" + networkPartitionId,{});
+    };
+
     this.deleteCartridgeDefinition = function(cartridgeType){
         return this.send("DELETE","/cartridges/" + cartridgeType,{});
     };

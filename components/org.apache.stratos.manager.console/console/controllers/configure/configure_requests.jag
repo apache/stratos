@@ -39,6 +39,9 @@ try {
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
             break;
+        case "delete-partitions":
+            formSubmit = util.RESTCalls.deletePartiions(formPayload);
+            break;
         case "delete-cartridge":
             formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
             break;
