@@ -41,16 +41,15 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.ChildLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.ChildLevelPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.*;
 import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ChildPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.*;
-import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
@@ -63,7 +62,6 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
-
 
 import java.util.*;
 
@@ -666,7 +664,6 @@ public class ObjectConverter {
         clusterInstanceBean.setMember(new ArrayList<MemberBean>());
         clusterInstanceBean.setHostNames(new ArrayList<String>());
 
-	    List<String> accessUrls=new ArrayList<String>();
 
         for (org.apache.stratos.messaging.domain.topology.Member member : cluster.getMembers()) {
             if (member.getClusterInstanceId().equals(instanceId)) {
@@ -692,34 +689,6 @@ public class ObjectConverter {
                 memberBean.setStatus(member.getStatus().toString());
                 memberBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(member.getProperties()));
                 clusterInstanceBean.getMember().add(memberBean);
-	            try {
-		            ClusterContext clusterContext =
-				            CloudControllerServiceClient.getInstance().getClusterContext(member.getClusterId());
-		            if(clusterContext.getLbCluster()) {
-			            CartridgeInfo cartridgeInfo =
-					            CloudControllerServiceClient.getInstance()
-					                                        .getCartridgeInfo(clusterContext.getCartridgeType());
-			            PortMapping[] portMappings = cartridgeInfo.getPortMappings();
-			            for (PortMapping portMapping : portMappings) {
-				            if (clusterContext.isKubernetesClusterIdSpecified()) {
-					            String accessUrl = portMapping.getProtocol()+"\\://" + clusterContext.getHostName() +":"+
-					                               portMapping.getKubernetesServicePort();
-					            accessUrls.add(accessUrl);
-				            }
-				            else {
-					            String accessUrl =
-							            portMapping.getProtocol() + "\\://" + clusterContext.getHostName() + ":" +
-							            portMapping.getProxyPort();
-					            accessUrls.add(accessUrl);
-				            }
-			            }
-		            }
-	            } catch (Exception e) {
-		            if (log.isWarnEnabled()) {
-			            log.warn("Error when calling getCartridgeInfo for " + member.getServiceName() + ", Error: "
-			                     + e.getMessage());
-		            }
-	            }
 
             }
 

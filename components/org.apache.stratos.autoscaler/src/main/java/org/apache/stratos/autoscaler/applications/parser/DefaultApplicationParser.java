@@ -269,7 +269,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
         Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
-        for (CartridgeContext cartridgeContext : cartridgeContextList) {
+	    createClusterDataMap(cartridgeContextList, clusterDataMap, clusterDataMapByType);
+
+	    for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
             String cartridgeType = cartridgeContext.getType();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
@@ -299,13 +301,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
             }
 
-            // add relevant information to the map
-            ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
-            clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
-            clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
-            clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
-
-            //Get dependency cluster id
+           //Get dependency cluster id
             if (dependencyOrder != null) {
                 for (StartupOrder startupOrder : dependencyOrder) {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
@@ -338,11 +334,6 @@ public class DefaultApplicationParser implements ApplicationParser {
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
             this.applicationClusterContexts.add(appClusterCtxt);
 
-            // add relevant information to the map
-            ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
-            clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
-            clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
-            clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
         }
         completeDataHolder.put("type", clusterDataMapByType);
@@ -350,7 +341,48 @@ public class DefaultApplicationParser implements ApplicationParser {
         return completeDataHolder;
     }
 
-    /**
+	private void createClusterDataMap(List<CartridgeContext> cartridgeContextList,
+	                                  Map<String, ClusterDataHolder> clusterDataMap,
+	                                  Map<String, ClusterDataHolder> clusterDataMapByType)
+			throws ApplicationDefinitionException {
+		for (CartridgeContext cartridgeContext : cartridgeContextList) {
+
+			String cartridgeType = cartridgeContext.getType();
+			SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+			String subscriptionAlias = subscribableInfoContext.getAlias();
+
+			// check if a cartridgeInfo with relevant type is already deployed. else, can't continue
+			CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
+			if (cartridgeInfo == null) {
+				handleError("No deployed Cartridge found with type [ " + cartridgeType +
+				            " ] for Composite Application");
+			}
+
+			// get hostname and cluster id
+			ClusterInformation clusterInfo;
+			assert cartridgeInfo != null;
+			if (cartridgeInfo.getMultiTenant()) {
+				clusterInfo = new MTClusterInformation();
+			} else {
+				clusterInfo = new STClusterInformation();
+			}
+
+			String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
+			// add relevant information to the map
+			ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
+			clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
+			clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
+			clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
+			// add relevant information to the map
+			ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+			clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+			clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+			clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+
+		}
+	}
+
+	/**
      * Validates terminationBehavior. The terminationBehavior should be one of the following:
      * 1. terminate-none
      * 2. terminate-dependents
