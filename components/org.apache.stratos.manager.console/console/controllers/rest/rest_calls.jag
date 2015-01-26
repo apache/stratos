@@ -27,6 +27,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/tenants",{});
     };
 
+    this.deployPartitionDefinition = function(partitionDefinition){
+        return this.send("POST","/networkPartitions", partitionDefinition);
+    };
+
     this.deployCartridgeDefinition = function(cartridgeDefinition){
         return this.send("POST","/cartridges", cartridgeDefinition);
     };
@@ -340,7 +344,6 @@ RESTCalls = new function(){
             default :
                 log.error("Error in the programme flow.");
         }
-
         if (response.xhr.status >= 200 && response.xhr.status < 300) { //if success
             session.put("deploy-status", { "message": "success" , "status": "success" });
         } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
@@ -350,6 +353,8 @@ RESTCalls = new function(){
         } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
             if(response.data != null && response.data != undefined) {
                 session.put("deploy-status", { "message":  parse(response.data).Error.errorMessage, "status": "error"});
+            }else{
+                session.put("deploy-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "error"});
             }
         } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
             if(response.data != null && response.data != undefined) {
