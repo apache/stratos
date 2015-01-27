@@ -299,14 +299,20 @@ RESTCalls = new function(){
         } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
             if(response.data != null && response.data != undefined) {
                 session.put("get-status", { "message": parse(response.data).Error.errorMessage , "status": "warning" } );
+            }else{
+                session.put("get-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "warning"});
             }
         } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
             if(response.data != null && response.data != undefined) {
                 session.put("get-status",{ "message":  parse(response.data).Error.errorMessage, "status": "warning" } );
+            }else{
+                session.put("get-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "warning"});
             }
         } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
             if(response.data != null && response.data != undefined) {
                 session.put("get-status", { "message": parse(response.data).Error.errorMessage, "status": "warning" } );
+            }else{
+                session.put("get-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "warning"});
             }
         } else {
             session.put("get-status", "Unknown response!");
@@ -350,6 +356,8 @@ RESTCalls = new function(){
         } else if (response.xhr.status >= 300 && response.xhr.status < 400) { //if redirects
             if(response.data != null && response.data != undefined) {
                 session.put("deploy-status",{ "message": parse(response.data).Error.errorMessage, "status": "warning" } );
+            }else{
+                session.put("deploy-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "warning"});
             }
         } else if (response.xhr.status >= 400 && response.xhr.status < 500) { //if client error
             if(response.data != null && response.data != undefined) {
@@ -360,6 +368,8 @@ RESTCalls = new function(){
         } else if (response.xhr.status >= 500 && response.xhr.status < 600) { //if server error
             if(response.data != null && response.data != undefined) {
                 session.put("deploy-status", { "message": parse(response.data).Error.errorMessage, "status": "error"});
+            }else{
+                session.put("deploy-status", { "message":  response.xhr.status + ' '+ response.xhr.statusText , "status": "error"});
             }
         } else {
             session.put("deploy-status", "Unknown response!");
