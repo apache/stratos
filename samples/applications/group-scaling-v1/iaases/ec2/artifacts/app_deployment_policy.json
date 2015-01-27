@@ -1,0 +1,67 @@
+{
+    "applicationId": "appscaling",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "EC2-P1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "ec2",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "RegionOne"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "EC2-P2",
+                "activeByDefault": "false",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "ec2",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "RegionOne"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mygroup2",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 2
+                        }
+                    ]
+                },
+                {
+                    "id": "EC2-P2",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 2
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

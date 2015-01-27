@@ -1,0 +1,44 @@
+{
+    "applicationId": "app_group_v1",
+    "alias": "mytestapp1",
+    "components": {
+        "cartridges": [
+            {
+                "type": "tomcat",
+                "cartridgeMin": 1,
+                "cartridgeMax": 2,
+                "subscribableInfo": {
+                    "alias": "mytomcat",
+                    "autoscalingPolicy": "autoscale_policy_1",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
+                }
+            },
+            {
+                "type": "php",
+                "cartridgeMin": 2,
+                "cartridgeMax": 4,
+                "subscribableInfo": {
+                    "alias": "myphp",
+                    "autoscalingPolicy": "autoscale_policy_1",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
+                }
+            }
+        ],
+        "dependencies": {
+            "scalingDependants": [
+                "cartridge.tomcat, cartridge.php"
+            ],
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}

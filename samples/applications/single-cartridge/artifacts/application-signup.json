@@ -1,0 +1,18 @@
+{
+   "artifactRepositories":[
+      {
+         "alias":"php",
+         "privateRepo":false,
+         "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
+         "repoUsername":"",
+         "repoPassword":""
+      },
+      {
+         "alias":"tomcat",
+         "privateRepo":false,
+         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+         "repoUsername":"",
+         "repoPassword":""
+      }
+   ]
+}

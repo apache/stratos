@@ -1,0 +1,41 @@
+{
+    "applicationId": "single-cartridge-app",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "openstack_R1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "openstack",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "RegionOne"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat",
+            "networkPartition": [
+                {
+                    "id": "OS-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 8
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

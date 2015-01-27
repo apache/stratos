@@ -1,0 +1,87 @@
+{
+    "applicationId": "app_boo",
+    "applicationPolicy": {
+        "applicationId": "app_boo_r4",
+        "networkPartition": [
+            {
+                "id": "EC2-P1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "ec2",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "ap-southeast-1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat2",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mytomcat1",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup6",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup88",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

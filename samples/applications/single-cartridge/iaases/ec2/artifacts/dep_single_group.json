@@ -1,0 +1,41 @@
+{
+    "applicationId": "single-cartridge-app",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "EC2-P1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "ec2",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "ap-southeast-1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat",
+            "networkPartition": [
+                {
+                    "id": "EC2-P1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 8
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

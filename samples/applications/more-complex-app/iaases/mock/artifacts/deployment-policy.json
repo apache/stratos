@@ -1,0 +1,87 @@
+{
+    "applicationId": "app_boo",
+    "applicationPolicy": {
+        "applicationId": "app_boo_r4",
+        "networkPartition": [
+            {
+                "id": "openstack_R1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "mock",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "RegionOne"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat2",
+            "networkPartition": [
+                {
+                    "id": "openstack_R1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mytomcat1",
+            "networkPartition": [
+                {
+                    "id": "openstack_R1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup6",
+            "networkPartition": [
+                {
+                    "id": "openstack_R1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup8",
+            "networkPartition": [
+                {
+                    "id": "openstack_R1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

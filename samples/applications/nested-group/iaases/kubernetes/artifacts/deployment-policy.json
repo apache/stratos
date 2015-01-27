@@ -1,0 +1,56 @@
+{
+    "applicationId": "myapp1265",
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id":"network-p1",
+                "kubernetesClusterId":"kubernetes-cluster-1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "P1",
+                        "provider": "kubernetes",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mytomcat",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mygroup6",
+            "networkPartition": [
+                {
+                    "id": "network-p1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "P1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
