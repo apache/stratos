@@ -938,7 +938,13 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
-	<!--oauth2.war and authenticationendpoint.war is related to oAuth feature  -->
+        <!-- Mock iaas webapp -->
+        <file>
+            <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/mock-iaas-api.war</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
+	    <!--oauth2.war and authenticationendpoint.war is related to oAuth feature  -->
         <file>
             <source>../p2-profile-gen/target/wso2carbon-core-${carbon.kernel.version}/repository/deployment/server/webapps/oauth2.war</source>
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/deployment/server/webapps/</outputDirectory>

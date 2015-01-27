@@ -229,7 +229,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             ApplicationParser applicationParser = new DefaultApplicationParser();
             Application application = applicationParser.parse(applicationContext);
 
-
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationCreatedEvent(application, applicationParser.getApplicationClusterContexts());
 

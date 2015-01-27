@@ -52,7 +52,6 @@
         </profile>
     </profiles>
 
-
     <build>
         <plugins>
           <plugin>
@@ -80,6 +79,7 @@
     </build>
 
     <dependencies>
+        <!-- Dependency scope is set to provided to avoid dependent jar files being packaged with the war file -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-bundle</artifactId>
@@ -140,6 +140,5 @@
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
-
     </dependencies>
 </project>

@@ -21,19 +21,16 @@ package org.apache.stratos.cloud.controller.internal;
 */
 
 import com.hazelcast.core.HazelcastInstance;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.iaases.mock.service.MockIaasService;
-import org.apache.stratos.cloud.controller.iaases.mock.service.config.MockIaasConfig;
+import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
-import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
-import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
-import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
@@ -66,6 +63,7 @@ import java.util.concurrent.ExecutorService;
 public class CloudControllerServiceComponent {
 
 	private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
+
 	private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
 	private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
 	private ApplicationEventReceiver applicationEventReceiver;
@@ -104,11 +102,6 @@ public class CloudControllerServiceComponent {
                 executorService.submit(coordinatorElectorThread);
             } else {
                 executeCoordinatorTasks();
-            }
-
-            if(MockIaasConfig.getInstance().isEnabled()) {
-                // Start mock members if they were in running state earlier
-                MockIaasService.getInstance().startMockMembers();
             }
 		} catch (Exception e) {
 			log.error("Could not activate cloud controller service component", e);

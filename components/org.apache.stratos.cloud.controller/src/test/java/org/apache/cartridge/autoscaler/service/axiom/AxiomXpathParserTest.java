@@ -23,7 +23,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
-import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
+import org.apache.stratos.common.util.AxiomXpathParserUtil;
 
 import java.io.File;
 import java.util.List;

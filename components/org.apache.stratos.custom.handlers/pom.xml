@@ -20,7 +20,6 @@
             <artifactId>org.wso2.carbon.identity.oauth</artifactId>
             <version>4.2.3</version>
         </dependency>
-
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
@@ -36,7 +35,6 @@
             <artifactId>org.wso2.carbon.logging</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.core</artifactId>

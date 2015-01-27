@@ -325,7 +325,6 @@
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.databridge.datapublisher.feature:${carbon.version}
                                 </featureArtifactDef>
-                                <!--***********************************************-->
                                 <featureArtifactDef>
                                     org.wso2.carbon:org.wso2.carbon.event.server.feature:${carbon.version}
                                 </featureArtifactDef>
@@ -399,14 +398,6 @@
                                     <id>org.wso2.carbon.ntask.core.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--feature>
-                                    <id>org.wso2.carbon.coordination.server.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature>
-                                <feature>
-                                    <id>org.wso2.carbon.coordination.core.feature.group</id>
-                                    <version>${carbon.version}</version>
-                                </feature-->
                                 <feature>
                                     <id>org.wso2.carbon.registry.core.feature.group</id>
                                     <version>${carbon.version}</version>
@@ -427,12 +418,10 @@
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-                                <!--***********************************************-->
                                 <feature>
                                     <id>org.wso2.carbon.event.server.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-
                             </features>
                         </configuration>
                     </execution>

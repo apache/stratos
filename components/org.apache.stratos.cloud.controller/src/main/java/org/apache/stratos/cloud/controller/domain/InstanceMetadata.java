@@ -27,6 +27,7 @@ import java.io.Serializable;
 public class InstanceMetadata implements Serializable {
 
     private static final long serialVersionUID = 2121193151475197625L;
+
     private String hostname;
     private String hypervisor;
     private int ram;

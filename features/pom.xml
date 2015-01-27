@@ -29,19 +29,15 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stratos-features-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Features Aggregator Module</name>
+    <name>Apache Stratos - Features</name>
     <url>http://apache.org</url>
 
     <modules>
-        <!-- Load Balancer -->
         <module>load-balancer</module>
-        <!-- Auto-Scaler -->
         <module>autoscaler</module>
-        <!-- Coud Controller -->
+        <module>mock-iaas</module>
         <module>cloud-controller</module>
-        <!-- Manager -->
         <module>manager</module>
-        <!-- Messaging -->
         <module>messaging</module>
         <module>common</module>
     </modules>

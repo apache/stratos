@@ -247,17 +247,6 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-dependencies</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/runtime/cxf</outputDirectory>
-                            <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>pack-REST-webapp</id>
                         <phase>package</phase>
                         <goals>

@@ -30,7 +30,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
  */
 public class ServiceReferenceHolder {
 
-    private static ServiceReferenceHolder instance;
+    private static volatile ServiceReferenceHolder instance;
+
     private TaskService taskService;
     private Registry registry;
     private AxisConfiguration axisConfiguration;
@@ -42,7 +43,11 @@ public class ServiceReferenceHolder {
 
     public static ServiceReferenceHolder getInstance() {
         if (instance == null) {
-            instance = new ServiceReferenceHolder();
+            synchronized (ServiceReferenceHolder.class) {
+                if(instance == null) {
+                    instance = new ServiceReferenceHolder();
+                }
+            }
         }
         return instance;
     }

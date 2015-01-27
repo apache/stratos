@@ -1058,11 +1058,13 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					        for (PortMapping portMap : portMappings) {
 						        if (portMap.isKubernetesServicePortMapping()) {
 							        String accessUrl =
-									        portMap.getProtocol() + ":".concat("//")+ appClusterCtxt.getHostName() + ":" + portMap.getKubernetesServicePort();
+									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
+									        portMap.getKubernetesServicePort();
 							        accessUrlPerCluster.add(accessUrl);
 						        } else {
 							        String accessUrl =
-									        portMap.getProtocol()+ ":".concat("//") + appClusterCtxt.getHostName() + ":" +  portMap.getProxyPort();
+									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
+									        portMap.getProxyPort();
 							        accessUrlPerCluster.add(accessUrl);
 						        }
 					        }
@@ -1080,7 +1082,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
-	            // Create cluster object
+	            Cartridge cartridge=CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
+	            if(cartridge.getCategory().equals("lb")){
+
+	            }
+
+                // Create cluster object
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
                 cluster.setLbCluster(false);

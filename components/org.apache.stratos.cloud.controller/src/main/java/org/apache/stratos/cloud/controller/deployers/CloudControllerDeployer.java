@@ -26,8 +26,7 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
-import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.util.AxiomXpathParserUtil;
+import org.apache.stratos.common.util.AxiomXpathParserUtil;
 import org.apache.stratos.cloud.controller.config.parser.CloudControllerConfigParser;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 

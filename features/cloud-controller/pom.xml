@@ -28,14 +28,13 @@
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>cloud-controller-feature</artifactId>
+    <artifactId>cloud-controller-features</artifactId>
+    <name>Apache Stratos - Cloud Controller Features</name>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Cloud Controller Feature Aggregator Module</name>
     <url>http://apache.org</url>
 
     <modules>
         <module>org.apache.stratos.cloud.controller.feature</module>
     </modules>
-
 </project>
 

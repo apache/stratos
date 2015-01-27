@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>loadbalancer-features</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Load Balancer - Feature Aggregator Module</name>
+    <name>Apache Stratos - Load Balancer Features</name>
     <url>http://apache.org</url>
 
     <modules>

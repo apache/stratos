@@ -1,0 +1,43 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~  http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<mock-iaas enabled="true">
+    <health-statistics>
+        <cartridge type="tomcat">
+            <!-- factor:memory-consumption|load-average|request-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
+    </health-statistics>
+</mock-iaas>

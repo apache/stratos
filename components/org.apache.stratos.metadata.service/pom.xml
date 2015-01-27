@@ -27,7 +27,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.apache.stratos.metadata.service</artifactId>
     <packaging>war</packaging>
-    <name>Apache Stratos - Meta Data Service</name>
+    <name>Apache Stratos - Metadata Service</name>
 
     <profiles>
         <profile>
@@ -82,6 +82,7 @@
     </build>
 
     <dependencies>
+        <!-- Dependency scope is set to provided to avoid dependent jar files being packaged with the war file -->
         <dependency>
             <groupId>org.apache.cxf</groupId>
             <artifactId>cxf-bundle</artifactId>
@@ -146,6 +147,7 @@
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.ntask.core</artifactId>
             <version>${wso2carbon.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon</groupId>
@@ -157,6 +159,7 @@
             <groupId>com.nimbusds.wso2</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
             <version>2.26.1.wso2v2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>

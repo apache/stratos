@@ -75,6 +75,7 @@
             <provider>mock</provider>
             <identity svns:secretAlias="cloud.controller.mock.identity">identity</identity>
             <credential svns:secretAlias="cloud.controller.mock.credential">credential</credential>
+            <property name="api.endpoint" value="https://localhost:9443/mock-iaas-api" />
         </iaasProvider>
 	</iaasProviders>
 </cloudController>

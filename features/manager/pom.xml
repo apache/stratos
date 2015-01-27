@@ -37,20 +37,15 @@
 
     <modules>
         <module>stratos-mgt</module>
-        <module>common</module>
-        <!--
-                <module>tenant-mgt</module>
-        -->
         <module>gapp</module>
-        <!--module>throttling</module-->
-        <!--module>usage</module-->
         <module>deployment</module>
         <module>status-monitor</module>
         <module>tenant-activity</module>
         <module>logging-mgt</module>
         <module>rest-endpoint/org.apache.stratos.rest.endpoint.feature</module>
         <module>styles/org.apache.stratos.manager.styles.feature</module>
-        <module>metadataservice/org.apache.stratos.metadata.service.feature</module>
+        <module>metadata-service/org.apache.stratos.metadata.service.feature</module>
+        <module>metadata-service/org.apache.stratos.metadata.client.feature</module>
     </modules>
 
     <properties>

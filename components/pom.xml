@@ -81,6 +81,10 @@
         <module>org.apache.stratos.custom.handlers</module>
         <module>org.apache.stratos.metadata.service</module>
         <module>org.apache.stratos.metadata.client</module>
+        <!-- Mock IaaS -->
+        <module>org.apache.stratos.mock.iaas</module>
+        <module>org.apache.stratos.mock.iaas.api</module>
+        <module>org.apache.stratos.mock.iaas.client</module>
     </modules>
 
     <build>

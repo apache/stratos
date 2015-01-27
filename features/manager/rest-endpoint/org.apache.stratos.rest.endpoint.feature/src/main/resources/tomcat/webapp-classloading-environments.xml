@@ -30,17 +30,14 @@
      1) Delegated environment - This is a virtual environment where all the resources belongs to these environments are loaded from the parent. This way you can control whats being loaded from the parent classloader. Only the packages and resources specified in the delegated environments are loaded from the parent. All the others are loaded from the local webapp's classpath. If a webapps has speficied two or more delegated environments, they all get merged at runtime.
      -->
     <DelegatedEnvironments>
-
         <DelegatedEnvironment>
             <Name>Tomcat</Name>
             <DelegatedPackages>javax.annotation.*,javax.ejb,javax.el,javax.persistence,javax.servlet.*,javax.xml,javax.xml.ws,org.apache.catalina.*,org.apache.coyote.*,org.apache.el.*,com.sun.el.*,org.apache.jasper.*,org.apache.naming.*,org.apache.tomcat.*,org.wso2.carbon.tomcat.jndi.*</DelegatedPackages>
         </DelegatedEnvironment>
-
         <DelegatedEnvironment>
             <Name>Carbon</Name>
             <DelegatedPackages>*,!org.springframework.*</DelegatedPackages>
         </DelegatedEnvironment>
-
     </DelegatedEnvironments>
 
 
@@ -64,5 +61,4 @@
             <Classpath>${carbon.home}/lib/runtimes/cxf/*.jar;${carbon.home}/lib/runtimes/cxf/</Classpath>
         </ExclusiveEnvironment>
     </ExclusiveEnvironments>
-
 </Classloading>

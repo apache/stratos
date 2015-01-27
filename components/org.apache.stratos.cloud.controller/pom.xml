@@ -49,11 +49,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-			    !org.apache.stratos.cloud.controller.internal.*,
-			    org.apache.stratos.cloud.controller.*,
+			                !org.apache.stratos.cloud.controller.internal.*,
+			                org.apache.stratos.cloud.controller.*,
                         </Export-Package>
                         <Private-Package>
-			    org.apache.stratos.cloud.controller.internal.*,
+			                org.apache.stratos.cloud.controller.internal.*,
                         </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
@@ -65,9 +65,7 @@
                             *; resolution:=optional
                         </Import-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-
                         <Axis2Deployer>CloudControllerDeployer</Axis2Deployer>
-
                     </instructions>
                 </configuration>
             </plugin>
@@ -161,7 +159,6 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
-
         </dependency>
         <dependency>
             <groupId>org.wso2.andes.wso2</groupId>
@@ -173,13 +170,11 @@
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>${orbit.version.geronimo-jms_1.1_spec}</version>
         </dependency>
-
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.analytics.hive.stub</artifactId>
             <version>${wso2carbon.version}</version>
         </dependency>
-
         <!-- jclouds dependencies -->
         <dependency>
             <groupId>org.apache.jclouds</groupId>
@@ -310,6 +305,11 @@
         <dependency>
             <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.metadata.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>org.apache.stratos.mock.iaas.client</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -50,7 +50,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                unbind="unsetRealmService"
  * @scr.reference name="configuration.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
-
+ *
  */
 public class StratosCommonServiceComponent {
 

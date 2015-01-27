@@ -18,21 +18,20 @@
  */
 package org.apache.stratos.cloud.controller.config.parser;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
-
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.exception.MalformedConfigurationFileException;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.common.exception.MalformedConfigurationFileException;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
+
+import javax.xml.namespace.QName;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Parse the iaas providers.
