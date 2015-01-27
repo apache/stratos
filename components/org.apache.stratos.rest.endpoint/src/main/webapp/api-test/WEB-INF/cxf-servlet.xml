@@ -93,6 +93,7 @@
                 <value>networkPartition</value>
                 <value>partitions</value>
                 <value>instances</value>
+                <value>accessUrls</value>
             </list>
         </property>
     </bean>

@@ -132,7 +132,7 @@
                 <value>groupInstances</value>
                 <value>clusterInstances</value>
                 <value>applicationInstances</value>
-
+                <value>accessUrls</value>
             </list>
         </property>
     </bean>
