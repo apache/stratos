@@ -103,8 +103,6 @@
 
                             <div class="toggle-menu-description">{{email}} - {{#UnixConvert createdDate}}{{/UnixConvert}} </div>
                             <div class="list-button" style="display: none;">
-                                <button class="btn btn-danger btn-lg hover-delete b-top" type="button"
-                                        id="{{tenantDomain}}" data-formtype="tenant-delete"> Delete</button>
                                 {{#if active}}
                                     <button class="btn btn-warning btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
                                             data-formtype="tenant-deactivate" > Deactivate
@@ -118,8 +116,6 @@
                             </div>
                             <div class="bottom-bar-wrapper">
                                 <div class="bottom-bar">
-                                    <button class="btn btn-danger btn-lg hover-delete b-top" type="button"
-                                            id="{{tenantDomain}}" data-formtype="tenant-delete"> Delete</button>
                                     {{#if active}}
                                         <button class="btn btn-warning btn-lg hover-active b-top" type="button" id="{{tenantDomain}}"
                                                 data-formtype="tenant-deactivate" > Deactivate

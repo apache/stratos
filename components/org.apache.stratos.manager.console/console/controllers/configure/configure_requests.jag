@@ -30,6 +30,9 @@ include('/controllers/login/validator.jag');
 
 try {
     switch (formtype) {
+        case "partitions":
+            formSubmit = util.RESTCalls.deployPartitionDefinition(formPayload);
+            break;
         case "autoscalingpolicies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
@@ -38,6 +41,9 @@ try {
             break;
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
+            break;
+        case "delete-partitions":
+            formSubmit = util.RESTCalls.deletePartiions(formPayload);
             break;
         case "delete-cartridge":
             formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
