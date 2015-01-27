@@ -61,7 +61,7 @@
                             <directory>src/main/webapp/${appName}</directory>
                         </resource>
                     </webResources>
-                    <warName>mock-iaas-api</warName>
+                    <warName>mock-iaas</warName>
                 </configuration>
             </plugin>
         </plugins>

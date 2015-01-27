@@ -34,7 +34,7 @@
 	</metadataservice>
 	-->
      <metadataService>
-         <baseUrl>https://localhost:9443/stratosmetadataservice/</baseUrl>
+         <baseUrl>https://localhost:9443/metadata/api/</baseUrl>
          <username>admin</username>
          <password>admin</password>
      </metadataService>

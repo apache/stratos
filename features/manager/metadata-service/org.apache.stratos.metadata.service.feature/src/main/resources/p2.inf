@@ -16,7 +16,7 @@
 # under the License.
 
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.metadata.service_${feature.version}/web-app/stratosmetadataservice.war,target:${installFolder}/../../deployment/server/webapps/stratosmetadataservice.war,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.metadata.service_${feature.version}/web-app/metadata.war,target:${installFolder}/../../deployment/server/webapps/metadata.war,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.metadata.service_${feature.version}/tomcat/webapp-classloading.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.metadata.service_${feature.version}/tomcat/webapp-classloading-environments.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading-environments.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.metadata.service_${feature.version}/tomcat/context.xml,target:${installFolder}/../../conf/tomcat/context.xml,overwrite:true);\

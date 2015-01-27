@@ -16,7 +16,7 @@
 # under the License.
 
 instructions.configure = \
-org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.mock.iaas.api_${feature.version}/web-app/mock-iaas-api.war,target:${installFolder}/../../deployment/server/webapps/mock-iaas-api.war,overwrite:true);\
+org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.mock.iaas.api_${feature.version}/web-app/mock-iaas.war,target:${installFolder}/../../deployment/server/webapps/mock-iaas.war,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.mock.iaas.api_${feature.version}/tomcat/webapp-classloading.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.mock.iaas.api_${feature.version}/tomcat/webapp-classloading-environments.xml,target:${installFolder}/../../conf/tomcat/webapp-classloading-environments.xml,overwrite:true);\
 org.eclipse.equinox.p2.touchpoint.natives.copy(source:${installFolder}/../features/org.apache.stratos.mock.iaas.api_${feature.version}/tomcat/context.xml,target:${installFolder}/../../conf/tomcat/context.xml,overwrite:true);\

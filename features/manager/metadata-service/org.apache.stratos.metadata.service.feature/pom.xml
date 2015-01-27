@@ -263,7 +263,7 @@
                                     <type>war</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>${project.build.directory}/web-app/web-app</outputDirectory>
-                                    <destFileName>stratosmetadataservice.war</destFileName>
+                                    <destFileName>metadata.war</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

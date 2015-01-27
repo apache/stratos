@@ -329,7 +329,6 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             }
 
             // Set container ports
-//            List<Port> ports = convertIntPortListToPortList(portMappings);
             containerTemplate.setPorts(ports);
             manifest.addContainer(containerTemplate);
 

@@ -82,7 +82,7 @@ my_password = generate_mysql_password()
 set_mysql_password(my_password)
 app_id= get_paylod_property('APP_ID')
 
-resource_url = get_metadataserviceurl()+ "/stratosmetadataservice/application/" + app_id + "/cluster/" + my_alias + "/property"
+resource_url = get_metadataserviceurl()+ "/metadata/api/application/" + app_id + "/cluster/" + my_alias + "/property"
 data = {"key":"MYSQL_IP","values":my_ip}
 do_post(resource_url, data)
 data = {"key":"MYSQL_PASS","values":my_password}
