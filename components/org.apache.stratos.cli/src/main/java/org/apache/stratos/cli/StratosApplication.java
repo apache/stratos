@@ -177,6 +177,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeCartridgeGroupCommand();
         commands.put(command.getName(), command);
 
+		command = new ListCartridgeGroupsCommand();
+		commands.put(command.getName(), command);
+
         command = new RemoveCartridgeGroupCommand();
         commands.put(command.getName(), command);
 

@@ -94,6 +94,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
+	private static final String ENDPOINT_LIST_CARTRIDGE_GROUPS = API_CONTEXT + "/cartridgeGroups";
     private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenants";
     private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/users";
     private static final String ENDPOINT_LIST_KUBERNETES_CLUSTERS = API_CONTEXT + "/kubernetesCluster";
@@ -292,6 +293,44 @@ public class RestCommandLineService {
         }
     }
 
+	/**
+	 * List cartridge groups
+	 *
+	 * @throws CommandException
+	 */
+	public void listCartridgeGroups() throws CommandException {
+		try {
+			Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
+			}.getType();
+			List<GroupBean> cartridgeGroupList = (List<GroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
+			                                                                                listType, "cartridgeGroups");
+
+			if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
+				System.out.println("No cartridges found");
+				return;
+			}
+
+			RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
+				public String[] getData(GroupBean cartridgeGroup) {
+					String[] data = new String[6];
+					data[0] = cartridgeGroup.getName();
+					data[1] = String.valueOf(cartridgeGroup.getCartridges().size());
+					data[2] = String.valueOf(cartridgeGroup.getGroups().size());
+					data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());;
+					return data;
+				}
+			};
+
+			GroupBean[] cartridgeGroups = new GroupBean[cartridgeGroupList.size()];
+			cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
+
+			System.out.println("Cartridge Groups found:");
+			CliUtils.printTable(cartridgeGroups, cartridgeGroupMapper, "Name", "No. of Cartridges", "No of Groups", "Dependency scaling");
+		} catch (Exception e) {
+			String message = "Error in listing cartridge groups";
+			printError(message, e);
+		}
+	}
     /**
      * Describe a cartridge
      * @param cartridgeType
