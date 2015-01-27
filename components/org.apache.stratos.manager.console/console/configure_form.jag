@@ -128,6 +128,10 @@ if (elements.action != 'new' && isEdit) {
             formDataEdit = util.RESTCalls.getPolicyAutoScale(id);
             break;
 
+        case "partitions":
+            formDataEdit = util.RESTCalls.getPartition(id);
+            break;
+
         case "cartridges":
             formDataEdit = util.RESTCalls.getCartridge(id);
             break;

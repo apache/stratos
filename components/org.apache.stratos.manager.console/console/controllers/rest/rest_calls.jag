@@ -121,6 +121,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/networkPartitions/",{});
     };
 
+    this.getPartition = function(networkpartionId){
+        return this.sendReceive("GET","/networkPartitions/"+networkpartionId,{});
+    };
+
     this.getAutoScalePolicies = function(){
         return this.sendReceive("GET","/policy/autoscale",{});
     };
