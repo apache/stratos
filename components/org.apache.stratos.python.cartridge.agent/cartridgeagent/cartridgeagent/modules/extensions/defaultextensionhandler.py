@@ -156,8 +156,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         if not consistant:
             return
-        else:
-            self.cartridge_agent_config.initialized = True
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)

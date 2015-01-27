@@ -75,7 +75,7 @@ class CartridgeAgent(threading.Thread):
         #Start tenant event receiver thread
         self.register_tenant_event_listeners()
 
-        #wait for intance spawned event
+        #wait for member initialized event
         while not self.cartridge_agent_config.initialized:
             self.log.debug("Waiting for cartridge agent to be initialized...")
             time.sleep(1)
