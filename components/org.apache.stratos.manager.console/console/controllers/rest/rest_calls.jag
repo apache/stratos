@@ -51,9 +51,6 @@ RESTCalls = new function(){
         return this.send("PUT","/tenants/deactivate/" + tenantDomain,{});
     };
 
-    this.deleteTenant = function(tenantDomain){
-        return this.send("DELETE","/tenants/" + tenantDomain,{});
-    };
 
     this.deleteUser = function(userName){
         return this.send("DELETE","/users/" + userName,{});
