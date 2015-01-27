@@ -15,7 +15,7 @@
         },
         "activeByDefault": {
             "id": "root/activeByDefault",
-            "type": "string"
+            "type": "boolean"
         },
         "partitions": {
             "id": "root/partitions",
