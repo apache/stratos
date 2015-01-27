@@ -300,10 +300,10 @@ public class RestCommandLineService {
 	 */
 	public void listCartridgeGroups() throws CommandException {
 		try {
-			Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
+			Type listType = new TypeToken<ArrayList<GroupBean>>() {
 			}.getType();
 			List<GroupBean> cartridgeGroupList = (List<GroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
-			                                                                                listType, "cartridgeGroups");
+			                                                                                listType, "Cartridge Groups");
 
 			if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
 				System.out.println("No cartridges found");
@@ -312,11 +312,11 @@ public class RestCommandLineService {
 
 			RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
 				public String[] getData(GroupBean cartridgeGroup) {
-					String[] data = new String[6];
+					String[] data = new String[4];
 					data[0] = cartridgeGroup.getName();
 					data[1] = String.valueOf(cartridgeGroup.getCartridges().size());
 					data[2] = String.valueOf(cartridgeGroup.getGroups().size());
-					data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());;
+					data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());
 					return data;
 				}
 			};
