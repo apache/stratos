@@ -568,7 +568,7 @@
                     </execution>
 
                     <execution>
-                        <id>p2 profile generation for sm</id>
+                        <id>p2 profile generation for stratos manager</id>
                         <phase>package</phase>
                         <goals>
                             <goal>p2-profile-gen</goal>
@@ -736,7 +736,7 @@
                     </execution>
 
                     <execution>
-                        <id>p2 profile generation for as</id>
+                        <id>p2 profile generation for autoscaler</id>
                         <phase>package</phase>
                         <goals>
                             <goal>p2-profile-gen</goal>
@@ -795,7 +795,7 @@
                     </execution>
 
                     <execution>
-                        <id>p2 profile generation for CC</id>
+                        <id>p2 profile generation for cloud controller</id>
                         <phase>package</phase>
                         <goals>
                             <goal>p2-profile-gen</goal>
@@ -849,17 +849,14 @@
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
-
                                 <feature>
                                     <id>org.wso2.carbon.registry.core.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
                                 </feature>
-
                                 <feature>
                                     <id>org.wso2.carbon.registry.ui.menu.feature.group</id>
                                     <version>${carbon.version}</version>
                                 </feature>
-
                                 <feature>
                                     <id>org.wso2.carbon.registry.resource.properties.feature.group</id>
                                     <version>${carbon.platform.patch.version.4.2.1}</version>
@@ -900,8 +897,8 @@
                             <deleteOldProfileFiles>true</deleteOldProfileFiles>
                             <features>
                                 <feature>
-                                    <id>org.wso2.carbon.webapp.mgt.server.feature.group</id>
-                                    <version>${carbon.platform.patch.version.4.2.2}</version>
+                                    <id>org.wso2.carbon.security.mgt.feature.group</id>
+                                    <version>${carbon.platform.patch.version.4.2.4}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.databridge.datapublisher.feature.group</id>
