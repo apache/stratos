@@ -32,9 +32,16 @@ function genTree(data){
                     hostNames = items[prop].hostNames.toString(),
                     serviceName = items[prop].serviceName,
                     status = items[prop].status;
+
+                if(items[prop].accessUrls){
+                    accessUrls = items[prop].accessUrls.toString();
+                }else{
+                    accessUrls = '';
+                }
                 var type = 'clusters';
                 rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "alias":alias, "hostNames": hostNames, "serviceName": serviceName
+                    "alias":alias, "hostNames": hostNames, "serviceName": serviceName,
+                    "accessUrls":accessUrls
                 });
                 clustermembers(items[prop].member, collector, cur_name)
             }
@@ -166,10 +173,17 @@ function update(source) {
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
+            console.log(d)
             if (d.type == 'clusters') {
+                if(d.accessUrls != ''){
+                    var accessURLHTML = "<strong>Access URLs: </strong>" + d.accessUrls + "<br/>" ;
+                }else{
+                    var accessURLHTML ='';
+                }
                 div.html(
                         "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
                         "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
+                            accessURLHTML +
                         "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
                         "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
                         "<strong>Status: </strong>" + d.status
