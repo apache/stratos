@@ -1135,31 +1135,9 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
     @SuperTenantService(true)
     public Response removeTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
-        TenantManager tenantManager = ServiceHolder.getTenantManager();
-        int tenantId = 0;
-        try {
-            tenantId = tenantManager.getTenantId(tenantDomain);
-        } catch (org.wso2.carbon.user.api.UserStoreException e) {
-            String msg = "Error in deleting tenant " + tenantDomain;
-            log.error(msg, e);
-            //throw new RestAPIException(msg);
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        try {
-            //TODO: billing related info cleanup
-            TenantMgtUtil.deleteTenantRegistryData(tenantId);
-            TenantMgtUtil.deleteTenantUMData(tenantId);
-            tenantManager.deleteTenant(tenantId);
-            log.info("Deleted tenant with domain: " + tenantDomain + " and tenant id: " + tenantId +
-                    " from the system.");
-        } catch (Exception e) {
-            String msg = "Error deleting tenant with domain: " + tenantDomain + " and tenant id: " +
-                    tenantId + ".";
-            log.error(msg, e);
-            throw new RestAPIException(msg);
-        }
 
-        return Response.noContent().build();
+	    return Response.status(Response.Status.NOT_ACCEPTABLE).entity("Please use the tenant deactivate method").build();
+
     }
 
     /**
