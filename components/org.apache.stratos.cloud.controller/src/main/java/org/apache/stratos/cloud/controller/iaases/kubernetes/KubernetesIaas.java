@@ -365,7 +365,7 @@ public class KubernetesIaas extends Iaas {
 
         // Create replication controller
         String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
-        String replicationControllerName = CloudControllerUtil.replaceDotsWithDash(memberContext.getClusterId());
+        String replicationControllerName = replicationControllerId;
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
