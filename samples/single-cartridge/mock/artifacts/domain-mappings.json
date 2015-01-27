@@ -1,9 +1,0 @@
-{
-	"domainMappings": [
-		{
-			"cartridgeAlias":"tomcat",
-			"domainName":"abc.com",
-			"contextPath":"/abc/app"
-		}
-	]
-}

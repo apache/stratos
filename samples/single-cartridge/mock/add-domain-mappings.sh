@@ -1,2 +1,0 @@
-echo "Adding domain mappings..."
-curl -X POST -H "Content-Type: application/json" -d @'artifacts/domain-mappings.json' -k -u admin:admin https://localhost:9443/api/applications/single-cartridge-app/domainMappings
