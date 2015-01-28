@@ -67,8 +67,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.info("Executing git checkout")
 
             # create repo object
-            repo_info = RepositoryInformation(repo_url, repo_username, repo_password, local_repo_path, tenant_id,
-                                              is_multitenant, commit_enabled)
+            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id,
+                                    is_multitenant, commit_enabled)
 
             # checkout code
             subscribe_run, repo_context = agentgithandler.AgentGitHandler.checkout(repo_info)
@@ -338,7 +338,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         return tenant.tenant_domain
 
 from ..artifactmgt.git import agentgithandler
-from ..artifactmgt.repositoryinformation import RepositoryInformation
+from ..artifactmgt.repository import Repository
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ..publisher import cartridgeagentpublisher
 from ..exception.parameternotfoundexception import ParameterNotFoundException

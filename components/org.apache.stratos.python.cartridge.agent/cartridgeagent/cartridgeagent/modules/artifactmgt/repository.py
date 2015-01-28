@@ -15,7 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-class RepositoryInformation:
+
+class Repository:
     """
     Holds repository information to be used in artifact management
     """

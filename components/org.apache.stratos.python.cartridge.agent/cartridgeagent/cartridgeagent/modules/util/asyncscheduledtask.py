@@ -18,6 +18,7 @@
 import time
 from threading import Thread
 
+
 class AbstractAsyncScheduledTask:
     """
     Exposes the contract to follow to implement a scheduled task to be executed by the ScheduledExecutor

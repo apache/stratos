@@ -25,10 +25,9 @@ import subprocess
 
 from ... util.log import LogFactory
 from ... util import cartridgeagentutils, extensionutils, cartridgeagentconstants
-from gitrepository import GitRepository
 from ... config import cartridgeagentconfiguration
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
-from ... artifactmgt.repositoryinformation import RepositoryInformation
+from ... artifactmgt.repository import Repository
 
 
 class AgentGitHandler:
@@ -60,7 +59,7 @@ class AgentGitHandler:
         they will be added to a git repository, the remote url added as origin, and then
         a pull operation will be performed.
 
-        :param RepositoryInformation repo_info: The repository information object
+        :param Repository repo_info: The repository information object
         :return: A tuple containing whether it was an initial clone or not, and the repository
         context object
         :rtype: tuple(bool, GitRepository)
@@ -206,7 +205,7 @@ class AgentGitHandler:
                     # invalid configuration, need to delete and reclone
                     AgentGitHandler.log.warn("Git pull unsuccessful for tenant %r, invalid configuration. %r" % (repo_context.tenant_id, p))
                     cartridgeagentutils.delete_folder_tree(repo_context.local_repo_path)
-                    AgentGitHandler.clone(RepositoryInformation(
+                    AgentGitHandler.clone(Repository(
                         repo_context.repo_url,
                         repo_context.repo_username,
                         repo_context.repo_password,
@@ -441,8 +440,8 @@ class AgentGitHandler:
             # result = push_op.expect([commit_hash + "  master -> master", "Authentication failed for"])
             # if result != 0:
             #     raise Exception
-            #TODO: handle push failure scenarios
-            #push_op.interact()
+            # TODO: handle push failure scenarios
+            # push_op.interact()
             push_op.expect(pexpect.EOF)
 
             AgentGitHandler.log.debug("Pushed artifacts for tenant : " + tenant_id)
@@ -573,3 +572,29 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
         if self.auto_commit:
             self.log.debug("Running commit job")
             AgentGitHandler.commit_and_push(self.repo_info)
+
+
+class GitRepository:
+    """
+    Represents a git repository inside a particular instance
+    """
+
+    def __init__(self):
+        self.repo_url = None
+        """ :type : str  """
+        self.local_repo_path = None
+        """ :type : str  """
+        self.cloned = False
+        """ :type : bool  """
+        self.tenant_id = None
+        """ :type : int  """
+        self.repo_username = None
+        """ :type : str  """
+        self.repo_password = None
+        """ :type : str  """
+        self.is_multitenant = False
+        """ :type : bool  """
+        self.commit_enabled = False
+        """ :type : bool  """
+        self.scheduled_update_task = None
+        """:type : ScheduledExecutor """
