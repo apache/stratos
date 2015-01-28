@@ -27,7 +27,7 @@
          http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
 
-    <jaxrs:server id="mockIaasApi" address="/">
+    <jaxrs:server id="mockIaasApi" address="/api">
         <jaxrs:serviceBeans>
             <ref bean="mockIaasApiBean"/>
         </jaxrs:serviceBeans>
