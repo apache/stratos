@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash
 
 export iaas="openstack"						#[openstack, ec2, mock, kubernetes]
 export host_ip="localhost"

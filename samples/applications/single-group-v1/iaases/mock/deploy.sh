@@ -1,4 +1,4 @@
-#!/bin/sh 
+#!/bin/bash
 
 export iaas="mock"						#[openstack, ec2, mock, kubernetes]
 export host_ip="localhost"
@@ -28,6 +28,7 @@ curl -X POST -H "Content-Type: application/json" -d @'tomcat1.json' -k -v -u adm
     # Adding tomcat2 cartridge
 echo "Adding tomcat2 cartridge..."
 curl -X POST -H "Content-Type: application/json" -d @'tomcat2.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridges
+popd
 
 # Adding groups
 pushd ${cartridges_groups_path}

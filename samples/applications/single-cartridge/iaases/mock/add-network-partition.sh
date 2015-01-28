@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 export host_ip="localhost"
 export artifacts_path="../../artifacts"

@@ -1,4 +1,4 @@
-undeploy.sh#!/bin/sh
+#!/bin/bash
 
 export host_ip="localhost"
 
