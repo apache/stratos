@@ -344,6 +344,9 @@ function update(source) {
 
     // Enter the links.
     link.enter().insert("path", "g")
+        .style('fill','none')
+        .style('stroke-width','2')
+        .style('stroke','#ccc')
         .attr("class", "link")
         .attr("d", diagonal);
 
