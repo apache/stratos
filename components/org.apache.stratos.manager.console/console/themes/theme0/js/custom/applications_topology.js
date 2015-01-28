@@ -34,7 +34,7 @@ function genTree(data){
                     status = items[prop].status;
 
                 if(items[prop].accessUrls){
-                    accessUrls = items[prop].accessUrls.toString();
+                    accessUrls = items[prop].accessUrls;
                 }else{
                     accessUrls = '';
                 }
@@ -163,17 +163,60 @@ function update(source) {
         });
 
     // Enter the nodes.
+    var div_html;
     var nodeEnter = node.enter().append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
         })
+        .attr('data-content', function (d) {
+            if (d.type == 'clusters') {
+                if(d.accessUrls != ''){
+                    var accessURLHTML = "<strong>Access URLs: </strong>";
+                    for(var i=0;i<d.accessUrls.length;i++){
+                        accessURLHTML +=  "<a href='"+ d.accessUrls[i] +"' target='_blank'>"+ d.accessUrls[i] +
+                            "</a><br/>" ;
+                    }
+
+                }else{
+                    var accessURLHTML ='';
+                }
+                div_html = "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
+                            "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
+                            accessURLHTML +
+                            "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
+                            "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
+                            "<strong>Status: </strong>" + d.status;
+
+            } else if (d.type == 'members') {
+
+                div_html = "<strong>Member Id: </strong>" + d.name + "<br/>" +
+                        "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
+                        "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
+                        "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
+                        "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
+                        "<strong>Status: </strong>" + d.status;
+            } else if (d.type == 'groups') {
+
+                div_html = "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
+                        "<strong>Status: </strong>" + d.status;
+
+            } else if (d.type == 'applicationInstances') {
+                div_html = "<strong>Instance Id: </strong>" + d.name + "<br/>" +
+                        "<strong>Status: </strong>" + d.status;
+
+            } else {
+                div_html = "<strong>Alias: </strong>" + d.name + "<br/>"+
+                        "<strong>Status: </strong>" + d.status;
+
+            }
+           return div_html;
+        });
         // add tool tip for ps -eo pid,ppid,pcpu,size,comm,ruser,s
-        .on("mouseover", function (d) {
+/*        .on("mouseover", function (d) {
             div.transition()
                 .duration(200)
                 .style("opacity", .9);
-            console.log(d)
             if (d.type == 'clusters') {
                 if(d.accessUrls != ''){
                     var accessURLHTML = "<strong>Access URLs: </strong>" + d.accessUrls + "<br/>" ;
@@ -225,7 +268,7 @@ function update(source) {
             div.transition()
                 .duration(500)
                 .style("opacity", 0);
-        });
+        });*/
 
     nodeEnter.append("rect")
         .attr("x", -15)
@@ -304,4 +347,43 @@ function update(source) {
         .attr("class", "link")
         .attr("d", diagonal);
 
+    //enable popovers on nodes
+    $('svg .node').popover({
+        'trigger': 'manual'
+        ,'container': '.application-topology'
+        ,'placement': 'auto'
+        ,'white-space': 'nowrap'
+        ,'html':'true'
+        ,delay: {show: 50, hide: 400}
+    });
+
+    var timer,
+        popover_parent;
+    function hidePopover(elem) {
+        $(elem).popover('hide');
+    }
+    $('svg .node').hover(
+        function() {
+            var self = this;
+            clearTimeout(timer);
+            $('.popover').hide(); //Hide any open popovers on other elements.
+            popover_parent = self
+            $(self).popover('show');
+        },
+        function() {
+            var self = this;
+            timer = setTimeout(function(){hidePopover(self)},300);
+        });
+    $(document).on({
+        mouseenter: function() {
+            clearTimeout(timer);
+        },
+        mouseleave: function() {
+            var self = this;
+            timer = setTimeout(function(){hidePopover(popover_parent)},300);
+        }
+    }, '.popover');
+
 }
+
+
