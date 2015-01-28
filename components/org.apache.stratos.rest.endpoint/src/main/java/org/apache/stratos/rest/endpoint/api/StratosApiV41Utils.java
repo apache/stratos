@@ -908,6 +908,11 @@ public class StratosApiV41Utils {
                                                    String userName, String tenantDomain)
             throws RestAPIException {
 
+	    if (StringUtils.isBlank(appDefinition.getApplicationId())) {
+		    String message = "Please specify the application name";
+		    log.error(message);
+		    throw new RestAPIException(message);
+	    }
         // check if an application with same id already exists
         try {
             if (AutoscalerServiceClient.getInstance().getApplication(appDefinition.getApplicationId()) != null) {
@@ -917,6 +922,8 @@ public class StratosApiV41Utils {
         } catch (RemoteException e) {
             throw new RestAPIException("Could not read application", e);
         }
+
+	    validateApplication(appDefinition);
 
         ApplicationContext applicationContext = ObjectConverter.convertApplicationDefinitionToStubApplicationContext(appDefinition);
         applicationContext.setTenantId(ApplicationManagementUtil.getTenantId(ctxt));
@@ -974,7 +981,22 @@ public class StratosApiV41Utils {
         }
     }
 
-    /**
+	private static void validateApplication(ApplicationBean appDefinition) throws RestAPIException {
+
+		if(StringUtils.isBlank(appDefinition.getAlias())){
+			String message ="Please specify the application alias";
+			log.error(message);
+			throw new RestAPIException(message);
+		}
+		if(appDefinition.getComponents().getGroups().size()==0 && appDefinition.getComponents().getCartridges().size()==0){
+			String message ="No groups or cartridges attach with this application";
+			log.error(message);
+			throw new RestAPIException(message);
+		}
+
+	}
+
+	/**
      * Deploy application with a deployment policy.
      *
      * @param applicationId
@@ -991,6 +1013,12 @@ public class StratosApiV41Utils {
 
             AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
             ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
+
+	        if (StringUtils.isBlank(applicationId)) {
+		        String message ="Please specify the application id of the application";
+		        log.error(message);
+		        throw new RestAPIException(message);
+	        }
             if(application == null) {
                 String message = String.format("Application is not found: [application-id] %s", applicationId);
                 log.error(message);
@@ -1002,6 +1030,7 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
+			validateDeploymentPolicy(deploymentPolicy);
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy =
                     ObjectConverter.convetToASDeploymentPolicyPojo(applicationId, deploymentPolicy);
             autoscalerServiceClient.deployApplication(applicationId, stubDeploymentPolicy);
@@ -1022,7 +1051,25 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void removeApplication(String applicationId) throws RestAPIException {
+	/**
+	 * Validate deployment policy
+	 * @param deploymentPolicy
+	 */
+	private static void validateDeploymentPolicy(DeploymentPolicyBean deploymentPolicy) throws RestAPIException {
+		if(deploymentPolicy.getApplicationPolicy().getNetworkPartition().size()==0){
+			String message="No network partitions specify with the policy";
+			log.error(message);
+			throw new RestAPIException(message);
+		}
+		if(deploymentPolicy.getChildPolicies().size()==0){
+			String message = "No child policies specify with the policy";
+			log.error(message);
+			throw new RestAPIException(message);
+		}
+
+	}
+
+	public static void removeApplication(String applicationId) throws RestAPIException {
 
         try {
         	AutoscalerServiceClient asServiceClient = getAutoscalerServiceClient();
