@@ -22,6 +22,7 @@ package org.apache.stratos.manager.components;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
@@ -174,9 +175,20 @@ public class ArtifactDistributionCoordinator {
         }
 
         ClusterDataHolder clusterData = application.getClusterData(alias);
+
         if(clusterData == null) {
-            throw new RuntimeException(String.format("Cluster data not found for alias: [application-id] %s [alias] %s",
-                    applicationId, alias));
+	        for(Group group:application.getGroups()){
+		        clusterData=group.getClusterData(alias);
+		        if(clusterData!=null){
+			        break;
+		        }
+	        }
+	        if (clusterData == null) {
+		        throw new RuntimeException(
+				        String.format("Cluster data not found for alias: [application-id] %s [alias] %s",
+				                      applicationId, alias));
+	        }
+
         }
         return clusterData.getClusterId();
     }
