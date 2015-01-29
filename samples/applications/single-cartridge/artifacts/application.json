@@ -9,7 +9,7 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 10,    
 				"subscribableInfo":{  
-               	"alias":"tomcat",
+               	"alias":"tomcat1",
                	"autoscalingPolicy":"autoscale_policy_1",
                 "artifactRepository":{
                    "privateRepo":false,
