@@ -337,6 +337,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
+    private void removeApplicationSignUp(ApplicationContext applicationContext){
+        try {
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Removing application signup: [application-id] %s",
+                        applicationContext.getApplicationId()));
+            }
+
+            StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
+
+            ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
+            for(ApplicationSignUp appSignUp : applicationSignUp)
+            {
+                serviceClient.removeApplicationSignUp(appSignUp.getApplicationId(), appSignUp.getTenantId());
+            }
+
+        }catch(Exception e){
+            String message = "Could not remove application signup(s)";
+            log.error(message, e);
+            throw new RuntimeException(message, e);
+        }
+    }
+
     /**
      * Encrypt artifact repository passwords.
      * @param applicationSignUp
@@ -428,6 +450,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 log.error(message);
                 throw new RuntimeException(message);
             }
+
+            // Remove Application SignUp(s) in stratos manager
+            removeApplicationSignUp(application);
 
             ApplicationBuilder.handleApplicationUndeployed(applicationId);
 
