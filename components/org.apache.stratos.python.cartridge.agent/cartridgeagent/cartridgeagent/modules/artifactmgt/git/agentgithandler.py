@@ -226,10 +226,8 @@ class AgentGitHandler:
             GitUtils.delete_folder_tree(repo_context.local_repo_path)
             GitUtils.create_dir(repo_context.local_repo_path)
 
-        # TODO: authentication
-
         clone_op = pexpect.spawn("git clone " + repo_context.repo_url + " " + repo_context.local_repo_path)
-        # TODO: authentication add username and password to url, if pexpect username here, wrong url
+        # TODO: if pexpect username here, wrong url
         clone_output = clone_op.readlines()
         for p in clone_output:
             if "Checking connectivity... done." in p:
@@ -242,41 +240,6 @@ class AgentGitHandler:
                 AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
                 AgentGitHandler.log.exception("Error: %s" % p)
                 return None
-
-        # try:
-        #     repo_context = AgentGitHandler.create_git_repo_context(repo_info)
-        #
-        #     if os.path.isdir(repo_context.local_repo_path):
-        #         # delete local repo path if exists
-        #         cartridgeagentutils.delete_folder_tree(repo_context.local_repo_path)
-        #
-        #     # create local repo path
-        #     cartridgeagentutils.create_dir(repo_context.local_repo_path)
-        #
-        #     auth = AgentGitHandler.create_auth_configuration(repo_context)
-        #
-        #     if auth is not None:
-        #         # authentication is required, use Gittle
-        #         gittle_repo = Gittle.clone(repo_context.repo_url, repo_context.local_repo_path, auth=auth)
-        #         repo = Repo(repo_context.local_repo_path)
-        #     else:
-        #         # authentication is not required, use GitPython
-        #         repo = Repo.clone_from(repo_context.repo_url, repo_context.local_repo_path)
-        #         gittle_repo = Gittle(repo_context.local_repo_path)
-        #
-        #     repo_context.cloned = True
-        #     repo_context.gittle_repo = gittle_repo
-        #     repo_context.repo  = repo
-        #     AgentGitHandler.add_repo_context(repo_context)
-        #     AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
-        # except urllib2.URLError:
-        #     AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
-        # except OSError:
-        #     AgentGitHandler.log.exception("Permission denied for repository path for tenant %r" % repo_context.tenant_id)
-        # except:
-        #     AgentGitHandler.log.exception("Git clone operation for tenant %r failed" % repo_context.tenant_id)
-        # finally:
-        #     return repo_context
 
     @staticmethod
     def add_repo_context(repo_context):
@@ -474,7 +437,7 @@ class AgentGitHandler:
         # push to remote
         try:
             push_op = pexpect.spawn('git push origin master', cwd=repo_context.local_repo_path)
-            #push_op.logfile = sys.stdout
+            # push_op.logfile = sys.stdout
             push_op.expect("Username for .*")
             push_op.sendline(repo_context.repo_username)
             push_op.expect("Password for .*")
