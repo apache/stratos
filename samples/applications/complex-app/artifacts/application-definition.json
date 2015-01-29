@@ -1,6 +1,6 @@
 {
-    "applicationId": "app_boo",
-    "alias": "app_boo_r2",
+    "applicationId": "complex-app",
+    "alias": "complex-app-v1",
     "components": {
         "groups": [
             {

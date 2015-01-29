@@ -1,18 +1,18 @@
 {
-    "applicationId": "app_boo",
+    "applicationId": "complex-app",
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "openstack_R1",
+                "id": "EC2-P1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "mock",
+                        "provider": "ec2",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "ap-southeast-1"
                             }
                         ]
                     }
@@ -25,7 +25,7 @@
             "alias": "mytomcat",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "EC2-P1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
@@ -40,7 +40,7 @@
             "alias": "mygroup6",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "EC2-P1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
@@ -55,7 +55,7 @@
             "alias": "mygroup8",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "EC2-P1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
