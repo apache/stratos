@@ -21,7 +21,11 @@ package org.apache.stratos.autoscaler.applications.pojo;
 
 import org.apache.stratos.common.Properties;
 
-public class ApplicationClusterContext {
+import java.io.Serializable;
+
+public class ApplicationClusterContext implements Serializable {
+
+    private static final long serialVersionUID = -7971548249412362885L;
 
     // cluster id
     private String clusterId;
