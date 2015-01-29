@@ -20,7 +20,6 @@ import base64
 import os
 import time
 import socket
-import shutil
 
 from log import LogFactory
 
@@ -56,36 +55,6 @@ def decrypt_password(pass_str, secret):
 
     log.debug("Decrypted PWD: [%r]" % dec_pass)
     return dec_pass
-
-
-def create_dir(path):
-    """
-    mkdir the provided path
-    :param path: The path to the directory to be made
-    :return: True if mkdir was successful, False if dir already exists
-    :rtype: bool
-    """
-    try:
-        os.mkdir(path)
-        log.info("Successfully created directory [%r]" % path)
-        return True
-    except OSError:
-        log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
-
-    return False
-
-
-def delete_folder_tree(path):
-    """
-    Completely deletes the provided folder
-    :param str path: Full path of the folder
-    :return: void
-    """
-    try:
-        shutil.rmtree(path)
-        log.debug("Directory [%r] deleted." % path)
-    except OSError:
-        log.exception("Deletion of folder path %r failed." % path)
 
 
 def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
