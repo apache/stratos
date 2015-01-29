@@ -269,6 +269,8 @@ def check_topology_consistency(service_name, cluster_id, member_id):
     if activated_member is None:
         log.error("Member id not found in topology [member] %r" % member_id)
         return False
+    if activated_member.status != "Initialized":
+        return False
 
     return True
 
