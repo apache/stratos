@@ -22,7 +22,7 @@
     },
     "childPolicies": [
         {
-            "alias": "mytomcat",
+            "alias": "php1",
             "networkPartition": [
                 {
                     "id": "EC2-P1",
