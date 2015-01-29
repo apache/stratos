@@ -198,7 +198,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
-        applicationParser.parse(applicationContext);
+        Application application = applicationParser.parse(applicationContext);
+        RegistryManager.getInstance().persistApplication(application);
+
+        Set<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
+        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContexts);
+
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);
         if(log.isInfoEnabled()) {
@@ -221,16 +226,18 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws ApplicationDefinitionException {
         try {
-            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
-            if (applicationContext == null) {
+            Application application = RegistryManager.getInstance().getApplication(applicationId);
+            if (application == null) {
                 throw new RuntimeException("Application not found: " + applicationId);
             }
 
-            ApplicationParser applicationParser = new DefaultApplicationParser();
-            Application application = applicationParser.parse(applicationContext);
+            ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+            if (applicationContext == null) {
+                throw new RuntimeException("Application context not found: " + applicationId);
+            }
 
             // Create application clusters in cloud controller and send application created event
-            ApplicationBuilder.handleApplicationCreatedEvent(application, applicationParser.getApplicationClusterContexts());
+            ApplicationBuilder.handleApplicationCreatedEvent(application, applicationContext.getComponents().getApplicationClusterContexts());
 
             try {
                 // Update kubernetes cluster ids

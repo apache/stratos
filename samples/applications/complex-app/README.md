@@ -1,4 +1,4 @@
 Complex App
 ===========
 
-TODO: Add an description about the application
+TODO: Add a description about the application
