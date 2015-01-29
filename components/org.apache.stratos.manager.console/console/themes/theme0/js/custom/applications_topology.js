@@ -32,9 +32,16 @@ function genTree(data){
                     hostNames = items[prop].hostNames.toString(),
                     serviceName = items[prop].serviceName,
                     status = items[prop].status;
+
+                if(items[prop].accessUrls){
+                    accessUrls = items[prop].accessUrls;
+                }else{
+                    accessUrls = '';
+                }
                 var type = 'clusters';
                 rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "alias":alias, "hostNames": hostNames, "serviceName": serviceName
+                    "alias":alias, "hostNames": hostNames, "serviceName": serviceName,
+                    "accessUrls":accessUrls
                 });
                 clustermembers(items[prop].member, collector, cur_name)
             }
@@ -111,7 +118,7 @@ function genTree(data){
 function update(source) {
 
     // ************** Generate the tree diagram	 *****************
-    var margin = {top: 40, right: 120, bottom: 20, left: 120},
+    var margin = {top: 80, right: 120, bottom: 20, left: 120},
         width = 900 - margin.right - margin.left,
         height = 900 - margin.top - margin.bottom;
 
@@ -146,7 +153,7 @@ function update(source) {
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
-        d.y = d.depth * 100;
+        d.y = d.depth * 100 + 80;
     });
 
     // Declare the nodes…
@@ -156,63 +163,56 @@ function update(source) {
         });
 
     // Enter the nodes.
+    var div_html;
     var nodeEnter = node.enter().append("g")
         .attr("class", "node")
         .attr("transform", function (d) {
             return "translate(" + d.x + "," + d.y + ")";
         })
-        // add tool tip for ps -eo pid,ppid,pcpu,size,comm,ruser,s
-        .on("mouseover", function (d) {
-            div.transition()
-                .duration(200)
-                .style("opacity", .9);
+        .attr('data-content', function (d) {
             if (d.type == 'clusters') {
-                div.html(
-                        "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
-                        "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
-                        "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+                if(d.accessUrls != ''){
+                    var accessURLHTML = "<strong>Access URLs: </strong>";
+                    for(var i=0;i<d.accessUrls.length;i++){
+                        accessURLHTML +=  "<a href='"+ d.accessUrls[i] +"' target='_blank'>"+ d.accessUrls[i] +
+                            "</a><br/>" ;
+                    }
+
+                }else{
+                    var accessURLHTML ='';
+                }
+                div_html = "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
+                            "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
+                            accessURLHTML +
+                            "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
+                            "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
+                            "<strong>Status: </strong>" + d.status;
+
             } else if (d.type == 'members') {
-                div.html(
-                        "<strong>Member Id: </strong>" + d.name + "<br/>" +
+
+                div_html = "<strong>Member Id: </strong>" + d.name + "<br/>" +
                         "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
                         "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
                         "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
                         "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+                        "<strong>Status: </strong>" + d.status;
             } else if (d.type == 'groups') {
-                div.html(
-                        "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+
+                div_html = "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
+                        "<strong>Status: </strong>" + d.status;
+
             } else if (d.type == 'applicationInstances') {
-                div.html(
-                        "<strong>Instance Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+                div_html = "<strong>Instance Id: </strong>" + d.name + "<br/>" +
+                        "<strong>Status: </strong>" + d.status;
 
             } else {
-                div.html(
-                        "<strong>Alias: </strong>" + d.name + "<br/>"+
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+                div_html = "<strong>Alias: </strong>" + d.name + "<br/>"+
+                        "<strong>Status: </strong>" + d.status;
+
             }
-
-        })
-        .on("mouseout", function (d) {
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
+           return div_html;
         });
-
+        // add popover on nodes
     nodeEnter.append("rect")
         .attr("x", -15)
         .attr("y", -15)
@@ -274,11 +274,6 @@ function update(source) {
         })
         .style("fill-opacity", 1);
 
-    // add the tool tip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
     // Declare the links…
     var link = svg.selectAll("path.link")
         .data(links, function (d) {
@@ -287,7 +282,49 @@ function update(source) {
 
     // Enter the links.
     link.enter().insert("path", "g")
+        .style('fill','none')
+        .style('stroke-width','2')
+        .style('stroke','#ccc')
         .attr("class", "link")
         .attr("d", diagonal);
 
+    //enable popovers on nodes
+    $('svg .node').popover({
+        'trigger': 'manual'
+        ,'container': '.application-topology'
+        ,'placement': 'auto'
+        ,'white-space': 'nowrap'
+        ,'html':'true'
+        ,delay: {show: 50, hide: 400}
+    });
+
+    var timer,
+        popover_parent;
+    function hidePopover(elem) {
+        $(elem).popover('hide');
+    }
+    $('svg .node').hover(
+        function() {
+            var self = this;
+            clearTimeout(timer);
+            $('.popover').hide(); //Hide any open popovers on other elements.
+            popover_parent = self
+            $(self).popover('show');
+        },
+        function() {
+            var self = this;
+            timer = setTimeout(function(){hidePopover(self)},300);
+        });
+    $(document).on({
+        mouseenter: function() {
+            clearTimeout(timer);
+        },
+        mouseleave: function() {
+            var self = this;
+            timer = setTimeout(function(){hidePopover(popover_parent)},300);
+        }
+    }, '.popover');
+
 }
+
+

@@ -10,19 +10,6 @@
     stroke-width: 2px;
 }
 
-div.tooltip {
-    position: absolute;
-    text-align: left;
-    width: 20em;
-    padding: .8em;
-    margin:1em;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 8px;
-    pointer-events: none;
-}
-
 .application-topology {
     text-align: center;
     width: 82%;
@@ -48,3 +35,13 @@ div.tooltip {
 .keys>div {
     margin-top: 7px;
 }
+
+.popover-content {
+    font-size: 13px;
+}
+
+.popover.top>.arrow {
+    left: 60%;
+}
+
+#export{margin-right: 5px;}
