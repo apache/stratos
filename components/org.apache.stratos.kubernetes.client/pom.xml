@@ -34,11 +34,6 @@
     <description>A Java client library written for Kubernetes API</description>
     <url>http://apache.org</url>
 
-    <properties>
-        <kubernetes.api.endpoint>http://localhost:8080/api/v1beta1/</kubernetes.api.endpoint>
-        <docker.image>gurpartap/redis</docker.image>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -115,10 +110,7 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
                             <groups>org.apache.stratos.kubernetes.client.LiveTests</groups>
-                            <systemPropertyVariables>
-                                <kubernetes.api.endpoint>${kubernetes.api.endpoint}</kubernetes.api.endpoint>
-                                <docker.image>${docker.image}</docker.image>
-                            </systemPropertyVariables>
+                            <systemPropertyVariables></systemPropertyVariables>
                         </configuration>
                     </plugin>
                 </plugins>
