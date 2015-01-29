@@ -14,6 +14,7 @@
                 </div>
                 <div class='col-md-11'>
                     <button class='btn btn-info btn-lg pull-right' type='button' id='refresh' data-form=''>Refresh </button>
+                    <a class='btn btn-info btn-lg pull-right' type='button' id='export' data-form=''>Export As PNG </a>
                 </div>
             </div>
         </div>
@@ -36,6 +37,7 @@
         <div class="application-topology">
 
         </div>
+        <canvas id="canvasOriginal" height="190" width="190" style="display:none"></canvas>
     </div>
 
 </div>
@@ -64,9 +66,35 @@ $(document).ready(function () {
                 } else {
                     $(".application-topology").html('');
                     update(genTree(data));
+                    //call canvas update event
+                    canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
                 }
             }
         })
+    });
+
+    //make svg to canvas
+    var svg = $('svg')[0];
+    var canvasOriginal = $('#canvasOriginal')[0];
+    var ctxOriginal = canvasOriginal.getContext('2d');
+    // this saves the inline svg to canvas without external css
+    canvg('canvasOriginal', new XMLSerializer().serializeToString(svg));
+    /**
+     * This is the function that will take care of image extracting and
+     * setting proper filename for the download.
+     * IMPORTANT: Call it from within a onclick event.
+     */
+    function downloadCanvas(link, canvasId, filename) {
+        link.href = document.getElementById(canvasId).toDataURL();
+        link.download = filename;
+    }
+
+    /**
+     * The event handler for the link's onclick event. We give THIS as a
+     * parameter (=the link element), ID of the canvas and a filename.
+     */
+    $('#export').click(function() {
+        downloadCanvas(this, 'canvasOriginal', '{{{appName}}}.png');
     });
 
 
