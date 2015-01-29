@@ -70,6 +70,7 @@ import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.rest.endpoint.annotation.SuperTenantService;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.apache.stratos.rest.endpoint.util.converter.ObjectConverter;
 import org.wso2.carbon.context.CarbonContext;
@@ -1024,7 +1025,15 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-			validateDeploymentPolicy(deploymentPolicy);
+            ApplicationBean applicationBean = getApplication(applicationId);
+            int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
+            if (applicationBean.isMultiTenant() && (tenantId != -1234)) {
+                String message = String.format("Multi-tenant applications can only be deployed by super tenant: [application-id] %s", applicationId);
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+
+            validateDeploymentPolicy(deploymentPolicy);
             org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy =
                     ObjectConverter.convetToASDeploymentPolicyPojo(applicationId, deploymentPolicy);
             autoscalerServiceClient.deployApplication(applicationId, stubDeploymentPolicy);
