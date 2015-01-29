@@ -347,9 +347,13 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             StratosManagerServiceClient serviceClient = StratosManagerServiceClient.getInstance();
 
             ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
-            for(ApplicationSignUp appSignUp : applicationSignUp)
-            {
-                serviceClient.removeApplicationSignUp(appSignUp.getApplicationId(), appSignUp.getTenantId());
+            if ( applicationSignUp != null){
+                for(ApplicationSignUp appSignUp : applicationSignUp)
+                {
+                    if ( appSignUp != null) {
+                        serviceClient.removeApplicationSignUp(appSignUp.getApplicationId(), appSignUp.getTenantId());
+                    }
+                }
             }
 
         }catch(Exception e){
