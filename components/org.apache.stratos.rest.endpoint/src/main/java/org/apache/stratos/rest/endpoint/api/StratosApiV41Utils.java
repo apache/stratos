@@ -988,12 +988,6 @@ public class StratosApiV41Utils {
 			log.error(message);
 			throw new RestAPIException(message);
 		}
-		if(appDefinition.getComponents().getGroups().size()==0 && appDefinition.getComponents().getCartridges().size()==0){
-			String message ="No groups or cartridges attach with this application";
-			log.error(message);
-			throw new RestAPIException(message);
-		}
-
 	}
 
 	/**
