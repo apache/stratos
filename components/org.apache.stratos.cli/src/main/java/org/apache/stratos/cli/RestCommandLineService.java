@@ -39,14 +39,15 @@ import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
+import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
-import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_ADD_TENANT = API_CONTEXT + "/tenants";
     private static final String ENDPOINT_ADD_USER = API_CONTEXT + "/users";
     private static final String ENDPOINT_ADD_APPLICATION = API_CONTEXT + "/applications";
+    private static final String ENDPOINT_ADD_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions";
 
     private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
@@ -79,28 +81,30 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/minion";
     private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/cartridgeGroups";
     private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications/{applicationId}/deploy";
-
+    private static final String ENDPOINT_DEPLOY_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions";
 
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER= API_CONTEXT + "/kubernetesCluster/{id}";
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts/{id}";
     private static final String ENDPOINT_UNDEPLOY_SERVICE_GROUP = API_CONTEXT + "/cartridgeGroups/{id}";
     private static final String ENDPOINT_UNDEPLOY_APPLICATION = API_CONTEXT + "/applications/{id}";
     private static final String ENDPOINT_UNDEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges/{id}";
-    
-    private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
 
-	private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
+    private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
+    private static final String ENDPOINT_REMOVE_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{id}";
+
+    private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
 
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
-	private static final String ENDPOINT_LIST_CARTRIDGE_GROUPS = API_CONTEXT + "/cartridgeGroups";
+    private static final String ENDPOINT_LIST_CARTRIDGE_GROUPS = API_CONTEXT + "/cartridgeGroups";
     private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenants";
     private static final String ENDPOINT_LIST_USERS = API_CONTEXT + "/users";
     private static final String ENDPOINT_LIST_KUBERNETES_CLUSTERS = API_CONTEXT + "/kubernetesCluster";
     private static final String ENDPOINT_LIST_KUBERNETES_HOSTS = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
     private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/cartridgeGroups/{groupDefinitionName}";
     private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
+    private static final String ENDPOINT_LIST_NETWORK_PARTITIONS = API_CONTEXT + "/networkPartitions";
 
     private static final String ENDPOINT_DOMAIN_MAPPINGS = API_CONTEXT + "/applications/{applicationId}/domainMappings";
 
@@ -293,44 +297,44 @@ public class RestCommandLineService {
         }
     }
 
-	/**
-	 * List cartridge groups
-	 *
-	 * @throws CommandException
-	 */
-	public void listCartridgeGroups() throws CommandException {
-		try {
-			Type listType = new TypeToken<ArrayList<GroupBean>>() {
-			}.getType();
-			List<GroupBean> cartridgeGroupList = (List<GroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
-			                                                                                listType, "Cartridge Groups");
+    /**
+     * List cartridge groups
+     *
+     * @throws CommandException
+     */
+    public void listCartridgeGroups() throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<GroupBean>>() {
+            }.getType();
+            List<GroupBean> cartridgeGroupList = (List<GroupBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGE_GROUPS,
+                    listType, "Cartridge Groups");
 
-			if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
-				System.out.println("No cartridges found");
-				return;
-			}
+            if ((cartridgeGroupList == null) || (cartridgeGroupList.size() == 0)) {
+                System.out.println("No cartridges found");
+                return;
+            }
 
-			RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
-				public String[] getData(GroupBean cartridgeGroup) {
-					String[] data = new String[4];
-					data[0] = cartridgeGroup.getName();
-					data[1] = String.valueOf(cartridgeGroup.getCartridges().size());
-					data[2] = String.valueOf(cartridgeGroup.getGroups().size());
-					data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());
-					return data;
-				}
-			};
+            RowMapper<GroupBean> cartridgeGroupMapper = new RowMapper<GroupBean>() {
+                public String[] getData(GroupBean cartridgeGroup) {
+                    String[] data = new String[4];
+                    data[0] = cartridgeGroup.getName();
+                    data[1] = String.valueOf(cartridgeGroup.getCartridges().size());
+                    data[2] = String.valueOf(cartridgeGroup.getGroups().size());
+                    data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());
+                    return data;
+                }
+            };
 
-			GroupBean[] cartridgeGroups = new GroupBean[cartridgeGroupList.size()];
-			cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
+            GroupBean[] cartridgeGroups = new GroupBean[cartridgeGroupList.size()];
+            cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
 
-			System.out.println("Cartridge Groups found:");
-			CliUtils.printTable(cartridgeGroups, cartridgeGroupMapper, "Name", "No. of Cartridges", "No of Groups", "Dependency scaling");
-		} catch (Exception e) {
-			String message = "Error in listing cartridge groups";
-			printError(message, e);
-		}
-	}
+            System.out.println("Cartridge Groups found:");
+            CliUtils.printTable(cartridgeGroups, cartridgeGroupMapper, "Name", "No. of Cartridges", "No of Groups", "Dependency scaling");
+        } catch (Exception e) {
+            String message = "Error in listing cartridge groups";
+            printError(message, e);
+        }
+    }
     /**
      * Describe a cartridge
      * @param cartridgeType
@@ -668,10 +672,10 @@ public class RestCommandLineService {
         restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
 
-	// This method helps to update cartridge definitions
-	public void updateCartridge(String cartridgeDefinition) throws CommandException {
-		restClient.updateEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
-	}
+    // This method helps to update cartridge definitions
+    public void updateCartridge(String cartridgeDefinition) throws CommandException {
+        restClient.updateEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
+    }
 
     // This method helps to undeploy cartridge definitions
     public void undeployCartrigdeDefinition(String id) throws CommandException {
@@ -683,7 +687,7 @@ public class RestCommandLineService {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
-   // This method helps to update an autoscaling policy
+    // This method helps to update an autoscaling policy
     public void updateAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
@@ -762,17 +766,17 @@ public class RestCommandLineService {
             DeploymentPolicyBean policy = (DeploymentPolicyBean) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
                     DeploymentPolicyBean.class, "{applicationId}", applicationId, "deployment policy");
 
-	        if (policy == null) {
-	            System.out.println("Deployment policy not found: " + applicationId);
-	            return;
-	        }
+            if (policy == null) {
+                System.out.println("Deployment policy not found: " + applicationId);
+                return;
+            }
 
-	        System.out.println("Deployment policy: " + applicationId);
-	        System.out.println(getGson().toJson(policy));
-	    } catch (Exception e) {
-	        String message = "Error in describing deployment policy: " + applicationId;
-	        printError(message, e);
-	    }
+            System.out.println("Deployment policy: " + applicationId);
+            System.out.println(getGson().toJson(policy));
+        } catch (Exception e) {
+            String message = "Error in describing deployment policy: " + applicationId;
+            printError(message, e);
+        }
     }
 
     public void describeAutoScalingPolicy(String id) throws CommandException {
@@ -937,12 +941,12 @@ public class RestCommandLineService {
     }
 
     public void updateKubernetesMaster(String entityBody, String clusterId) {
-    	System.out.println(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId));
+        System.out.println(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId));
         restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId), entityBody, "kubernetes master");
     }
 
     public void updateKubernetesHost(String entityBody, String clusterId, String hostId) {
-    	System.out.println((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId));
+        System.out.println((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId));
         restClient.updateEntity((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId), entityBody, "kubernetes host");
     }
 
@@ -1004,7 +1008,7 @@ public class RestCommandLineService {
     public void addApplication (String entityBody) {
         restClient.deployEntity(ENDPOINT_ADD_APPLICATION, entityBody, "application");
     }
-    
+
     // This method helps to deploy applications
     public void deployApplication (String applicationId, String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId), entityBody,
@@ -1013,7 +1017,7 @@ public class RestCommandLineService {
 
     // This method helps to undeploy applications
     public void undeployApplication(String applicationId) throws CommandException {
-    	DefaultHttpClient httpClient = new DefaultHttpClient();
+        DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
                     + ENDPOINT_UNDEPLOY_APPLICATION + "/" + applicationId, "");
@@ -1039,17 +1043,17 @@ public class RestCommandLineService {
             httpClient.getConnectionManager().shutdown();
         }
     }
-    
+
     // This method helps to remove applications
     public void deleteApplication (String applicationId) {
         restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
                 "application");
     }
 
-	public void deleteAutoSclaingPolicy(String policyId) {
-		restClient.deleteEntity(ENDPOINT_REMOVE_AUTOSCALINGPOLICY.replace("{policyId}", policyId), policyId,
-		                        "Auto-scaling policy");
-	}
+    public void deleteAutoSclaingPolicy(String policyId) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_AUTOSCALINGPOLICY.replace("{policyId}", policyId), policyId,
+                "Auto-scaling policy");
+    }
 
     // This method helps to describe an application
     public void describeApplication (String applicationID) {
@@ -1077,12 +1081,12 @@ public class RestCommandLineService {
     public void addApplicationSignup (String entityBody, String applicationId) {
         restClient.deployEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), entityBody, "application");
     }
-    
+
     // This method helps to describe application signup
     public void describeApplicationSignup (String applicationId) {
         try {
-        	ApplicationSignUpBean bean = (ApplicationSignUpBean) restClient.listEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId),
-        			ApplicationSignUpBean.class, "applicationSignup");
+            ApplicationSignUpBean bean = (ApplicationSignUpBean) restClient.listEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId),
+                    ApplicationSignUpBean.class, "applicationSignup");
 
             if (bean == null) {
                 System.out.println("Applicationsign up not found for application: " + applicationId);
@@ -1096,13 +1100,13 @@ public class RestCommandLineService {
             printError(message, e);
         }
     }
-    
+
     // This method helps to remove application signup
     public void deleteApplicationSignup (String applicationId) {
         restClient.deleteEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), applicationId,
                 "application signup");
     }
-    
+
     // This is for handle exception
     private void handleException(String key, Exception e, Object... args) throws CommandException {
         if (log.isDebugEnabled()) {
@@ -1118,7 +1122,7 @@ public class RestCommandLineService {
         System.out.println(message);
         throw new CommandException(message, e);
     }
-    
+
     /**
      * Print error on console and log
      * @param message
@@ -1129,5 +1133,58 @@ public class RestCommandLineService {
         System.out.println(message);
         // Log error
         log.error(message, e);
+    }
+
+    // This method helps to add network partition definitions
+    public void addNetworkPartition(String networkPartitionDefinition) throws CommandException {
+        restClient.deployEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, networkPartitionDefinition, "network partition");
+    }
+
+    // This method helps to remove network partitions
+    public void removeNetworkPartition (String id) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_NETWORK_PARTITION.replace("{networkPartitionId}", id), id,
+                "network-partition");
+    }
+
+    /**
+     * List network partitions
+     * @throws CommandException
+     */
+    public void listNetworkPartitions() throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<NetworkPartitionBean>>() {
+            }.getType();
+            List<NetworkPartitionBean> networkPartitionsList = (List<NetworkPartitionBean>) restClient.listEntity(ENDPOINT_LIST_NETWORK_PARTITIONS,
+                    listType, "network-partitions");
+
+            if ((networkPartitionsList == null) || (networkPartitionsList.size() == 0)) {
+                System.out.println("No network partitions found");
+                return;
+            }
+
+            RowMapper<NetworkPartitionBean> networkPartitionMapper = new RowMapper<NetworkPartitionBean>() {
+                public String[] getData(NetworkPartitionBean partition) {
+                    String[] data = new String[3];
+                    data[0] = partition.getId();
+                    data[1] = (partition.getKubernetesClusterId() != null) ? partition.getKubernetesClusterId() : "";
+                    data[2] = String.valueOf(partition.getPartitions().size());;
+                    return data;
+                }
+            };
+
+            NetworkPartitionBean[] partitions = new NetworkPartitionBean[networkPartitionsList.size()];
+            partitions = networkPartitionsList.toArray(partitions);
+
+            System.out.println("Network partitions found:");
+            CliUtils.printTable(partitions, networkPartitionMapper, "PartitionId", "Kubernetes Cluster Id", "Partitions");
+        } catch (Exception e) {
+            String message = "Error in listing network partitions" + e;
+            printError(message, e);
+        }
+    }
+
+    // This method helps to update network partition definitions
+    public void updateNetworkPartition(String partitionDefinition) throws CommandException {
+        restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, partitionDefinition, "network-partition");
     }
 }
