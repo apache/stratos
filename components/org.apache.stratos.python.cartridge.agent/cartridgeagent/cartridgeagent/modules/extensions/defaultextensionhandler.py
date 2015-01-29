@@ -129,7 +129,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
     def on_member_activated_event(self, member_activated_event):
         self.log.info("Member activated event received: [service] %r [cluster] %r [member] %r"
-            % (member_activated_event.service_name, member_activated_event.cluster_id, member_activated_event.member_id))
+                      % (member_activated_event.service_name,
+                         member_activated_event.cluster_id,
+                         member_activated_event.member_id))
 
         topology_consistent = extensionutils.check_topology_consistency(
             member_activated_event.service_name,
@@ -140,7 +142,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.error("Topology is inconsistent...failed to execute member activated event")
             return
 
-        extensionutils.execute_member_activated_extension(env_params)
+
+        extensionutils.execute_member_activated_extension({})
 
     def on_complete_topology_event(self, complete_topology_event):
         self.log.debug("Complete topology event received")
