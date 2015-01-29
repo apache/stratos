@@ -44,6 +44,8 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
@@ -1056,18 +1058,22 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 					        List<String> accessUrlPerCluster = new ArrayList();
 					        List<PortMapping> portMappings = cartridge.getPortMappings();
 					        for (PortMapping portMap : portMappings) {
-						        if (portMap.isKubernetesServicePortMapping()) {
-							        String accessUrl =
-									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
-									        portMap.getKubernetesServicePort();
-							        accessUrlPerCluster.add(accessUrl);
-						        } else {
-							        String accessUrl =
-									        portMap.getProtocol() + "\\://" + appClusterCtxt.getHostName() + ":" +
-									        portMap.getProxyPort();
-							        accessUrlPerCluster.add(accessUrl);
-						        }
-					        }
+                                try {
+                                    if (portMap.isKubernetesServicePortMapping()) {
+                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
+                                                portMap.getKubernetesServicePort(), "");
+                                        accessUrlPerCluster.add(accessUrl.toString());
+                                    } else {
+                                        URL accessUrl = new URL(portMap.getProtocol(), appClusterCtxt.getHostName(),
+                                                portMap.getProxyPort(), "");
+                                        accessUrlPerCluster.add(accessUrl.toString());
+                                    }
+                                } catch (MalformedURLException e) {
+                                    String message = "Could not generate access URL";
+                                    log.error(message, e);
+                                    throw new ApplicationClusterRegistrationException(message, e);
+                                }
+                            }
 					        accessUrls.put(dependencyClusterIDs[i], accessUrlPerCluster);
 				        }
 			        }
