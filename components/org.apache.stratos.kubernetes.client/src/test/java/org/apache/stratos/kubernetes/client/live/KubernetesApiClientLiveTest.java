@@ -21,6 +21,7 @@
 package org.apache.stratos.kubernetes.client.live;
 
 import junit.framework.TestCase;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
@@ -53,8 +54,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
 
     private static final Log log = LogFactory.getLog(KubernetesApiClientLiveTest.class);
 
-    private static final int CONTAINER_PORT = 80;
-    private static final int PROXY_PORT = 9280;
+    private static final int DEFAULT_CONTAINER_PORT = 80;
     private static final int SERVICE_PORT = 4500;
     private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
     private static final String DEFAULT_DOCKER_IMAGE =  "stratos/php:4.1.0-alpha";
@@ -63,20 +63,31 @@ public class KubernetesApiClientLiveTest extends TestCase{
     private KubernetesApiClient client;
     private String dockerImage;
     private String endpoint;
+    private int containerPort;
 
     @BeforeClass
     public void setUp() {
+        log.info("Setting up live test...");
         endpoint = System.getProperty("kubernetes.api.endpoint");
         if (endpoint == null) {
             endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":8080/api/" + KubernetesConstants.KUBERNETES_API_VERSION + "/";
         }
-        log.info("Provided Kubernetes endpoint using system property [kubernetes.api.endpoint] : " +endpoint);
+        log.info("Kubernetes endpoint: " +endpoint);
         client = new KubernetesApiClient(endpoint);
 
         dockerImage = System.getProperty("docker.image");
         if (dockerImage == null) {
             dockerImage = DEFAULT_DOCKER_IMAGE;
         }
+        log.info("Docker image: " + dockerImage);
+
+        String containerPortStr = System.getProperty("container.port");
+        if(StringUtils.isNotBlank(containerPortStr)) {
+            containerPort = Integer.parseInt(containerPortStr);
+        } else {
+            containerPort = DEFAULT_CONTAINER_PORT;
+        }
+        log.info("Live test setup completed");
     }
 
     @AfterClass
@@ -87,7 +98,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
     }
 
     @Test
-    public void testPodCreationAndDeletion() throws Exception {
+    public void testPodCreation() throws Exception {
         log.info("Testing pod creation...");
 
         String podId = "stratos-test-pod-1";
@@ -117,7 +128,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         List<Port> ports = new ArrayList<Port>();
         Port port = new Port();
         port.setName(containerPortName);
-        port.setContainerPort(CONTAINER_PORT);
+        port.setContainerPort(containerPort);
         port.setHostPort(SERVICE_PORT);
         ports.add(port);
         return ports;
@@ -133,7 +144,9 @@ public class KubernetesApiClientLiveTest extends TestCase{
     }
 
     @Test
-    public void testReplicationControllerCreationAndDeletion() throws Exception {
+    public void testReplicationControllerCreation() throws Exception {
+        log.info("Testing replication controller creation...");
+
         String replicationControllerId = "stratos-test-rc-1";
         String replicationControllerName = "stratos-test-rc";
         String containerPortName = "http-1";
@@ -146,6 +159,8 @@ public class KubernetesApiClientLiveTest extends TestCase{
         // Wait 5s for Pods to be created
         Thread.sleep(5000);
         ReplicationController replicationController = client.getReplicationController(replicationControllerId);
+        assertNull(replicationController);
+        log.info("Replication controller created successfully");
 
         // Validate recreation using same id
         log.info("Testing replication controller re-creation with an existing id: " + replicationController.getId());
@@ -160,18 +175,24 @@ public class KubernetesApiClientLiveTest extends TestCase{
         assertEquals(replicas, pods.size());
 
         // Delete replication controller
+        log.info("Deleting replication controller: [replication-controller-id]" + replicationControllerId);
         client.deleteReplicationController(replicationControllerId);
         assertNull(client.getReplicationController(replicationControllerId));
+        log.info("Replication controller deleted successfully: [replication-controller-id]" + replicationControllerId);
 
         // Delete pods
         for(Pod pod : pods) {
+            log.info("Deleting pod: [pod-id] " + pod.getId());
             client.deletePod(pod.getId());
             assertNull(client.getPod(pod.getId()));
+            log.info("Pod deleted successfully: [pod-id] " + pod.getId());
         }
     }
 
     @Test
-    public void testServiceCreationAndDeletion() throws Exception {
+    public void testServiceCreation() throws Exception {
+        log.info("Testing service creation...");
+
         String podId = "stratos-test-pod-1";
         String podName = "stratos-test-pod";
         String serviceId = "stratos-test-service-1";
@@ -181,32 +202,42 @@ public class KubernetesApiClientLiveTest extends TestCase{
         InetAddress address = InetAddress.getByName(new URL(endpoint).getHost());
         String publicIp = address.getHostAddress();
 
+        log.info("Creating pod...");
         List<Port> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
         Pod podCreated = client.getPod(podId);
         assertNotNull(podCreated);
+        log.info("Pod created successfully");
 
+        log.info("Creating service...");
         client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName, publicIp);
 
         Thread.sleep(2000);
         Service service = client.getService(serviceId);
         assertNotNull(service);
+        log.info("Service creation successful");
 
         // test recreation using same id
+        log.info("Creating a service with an existing id...");
         client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName, publicIp);
 
         Thread.sleep(2000);
         service = client.getService(serviceId);
         assertNotNull(service);
+        log.info("Service re-creation with an existing id successful");
 
         // test service proxy is accessibility
+        log.info("Connecting to service proxy...");
         Socket socket = new Socket(publicIp, SERVICE_PORT);
         assertTrue(socket.isConnected());
+        log.info("Connecting to service proxy successful");
 
+        log.info("Deleting service...");
         client.deleteService(serviceId);
         assertNull(client.getService(serviceId));
+        log.info("Service deleted successfully");
     }
 
     public void deleteReplicationControllers() {
