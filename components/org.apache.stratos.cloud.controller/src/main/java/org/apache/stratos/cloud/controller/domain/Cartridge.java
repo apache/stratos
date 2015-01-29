@@ -51,6 +51,7 @@ public class Cartridge implements Serializable{
     private Persistence persistence;
     private List<AppType> appTypeMappings;
     private String serviceGroup;
+	private String[] metadataKeys;
 
     /**
      * Property map of this Cartridge.
@@ -381,4 +382,12 @@ public class Cartridge implements Serializable{
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
     }
+
+	public String[] getMetadataKeys() {
+		return metadataKeys;
+	}
+
+	public void setMetadataKeys(String[] metadataKeys) {
+		this.metadataKeys = metadataKeys;
+	}
 }

@@ -19,11 +19,11 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
-import java.io.Serializable;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+
+import java.io.Serializable;
 
 /**
  * This class is used as the pojo for supporting the service at CC,
@@ -55,6 +55,7 @@ public class CartridgeConfig implements Serializable {
     private String serviceGroup;
     private String[] exportingProperties;
     private String deployerType;
+	private String[] metadataKeys;
 
     public String getType() {
         return type;
@@ -302,4 +303,12 @@ public class CartridgeConfig implements Serializable {
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
     }
+
+	public String[] getMetadataKeys() {
+		return metadataKeys;
+	}
+
+	public void setMetadataKeys(String[] metadataKeys) {
+		this.metadataKeys = metadataKeys;
+	}
 }

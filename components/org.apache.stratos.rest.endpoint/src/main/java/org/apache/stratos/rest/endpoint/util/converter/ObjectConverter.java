@@ -87,6 +87,7 @@ public class ObjectConverter {
 	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeBean.getDefaultDeploymentPolicy());
 	    cartridgeConfig.setServiceGroup(cartridgeBean.getServiceGroup());
         cartridgeConfig.setTenantPartitions(cartridgeBean.getTenantPartitions());
+	    cartridgeConfig.setMetadataKeys(cartridgeBean.getMetadataKeys());
 
         //deployment information
         if (cartridgeBean.getDeployment() != null) {

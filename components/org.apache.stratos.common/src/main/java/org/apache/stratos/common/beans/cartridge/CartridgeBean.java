@@ -47,6 +47,7 @@ public class CartridgeBean {
     private String serviceGroup;
     private List<PropertyBean> property;
     private List<String> exportingProperties;
+	private String[] metadataKeys;
 
     public String toString () {
 
@@ -250,4 +251,12 @@ public class CartridgeBean {
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
     }
+
+	public String[] getMetadataKeys() {
+		return metadataKeys;
+	}
+
+	public void setMetadataKeys(String[] metadataKeys) {
+		this.metadataKeys = metadataKeys;
+	}
 }

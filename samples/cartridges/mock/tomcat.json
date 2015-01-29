@@ -42,5 +42,7 @@
                 }
             ]
         }
-    ]
+    ],
+    "metadataKeys":["writeparam1","writeparam2"]
+    
 }
