@@ -33,7 +33,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
 import java.util.ArrayList;
@@ -54,16 +53,18 @@ public class KubernetesApiClientLiveTest extends TestCase{
 
     private static final Log log = LogFactory.getLog(KubernetesApiClientLiveTest.class);
 
-    private static final int DEFAULT_CONTAINER_PORT = 80;
+    private static final int DEFAULT_CONTAINER_PORT = 6379; //80;
     private static final int SERVICE_PORT = 4500;
     private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
-    private static final String DEFAULT_DOCKER_IMAGE =  "stratos/php:4.1.0-alpha";
+    private static final String DEFAULT_DOCKER_IMAGE =  "gurpartap/redis"; //"stratos/php:4.1.0-alpha";
     private static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
 
     private KubernetesApiClient client;
     private String dockerImage;
     private String endpoint;
     private int containerPort;
+    private boolean testPodActivation;
+    private boolean testProxyServiceSocket;
 
     @BeforeClass
     public void setUp() {
@@ -87,14 +88,26 @@ public class KubernetesApiClientLiveTest extends TestCase{
         } else {
             containerPort = DEFAULT_CONTAINER_PORT;
         }
+
+        String testPodActivationStr = System.getProperty("test.pod.activation");
+        if(StringUtils.isNotBlank(testPodActivationStr)) {
+            testPodActivation = Boolean.parseBoolean(testPodActivationStr);
+        }
+
+        String testProxyServiceSocketStr = System.getProperty("test.proxy.service.socket");
+        if(StringUtils.isNotBlank(testProxyServiceSocketStr)) {
+            testProxyServiceSocket = Boolean.parseBoolean(testProxyServiceSocketStr);
+        }
         log.info("Live test setup completed");
     }
 
     @AfterClass
     public void tearDown() {
+        log.info("Cleaning kubernetes resources...");
         deleteReplicationControllers();
         deletePods();
         deleteServices();
+        log.info("Kubernetes resources cleaned");
     }
 
     @Test
@@ -105,18 +118,23 @@ public class KubernetesApiClientLiveTest extends TestCase{
         String podName = "stratos-test-pod";
         String containerPortName = "http-1";
 
+        log.info("Creating pod: [pod-id] " + podId);
         List<Port> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, ports);
 
         Thread.sleep(2000);
         Pod pod = client.getPod(podId);
         assertNotNull(pod);
+        log.info("Pod created successfully: [pod-id] " + podId);
 
-        Thread.sleep(POD_ACTIVATION_WAIT_TIME);
-        pod = client.getPod(podId);
-        assertNotNull(pod);
-        assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
-        log.info("Pod state changed to running: " + pod.getId());
+        if(testPodActivation) {
+            log.info("Waiting pod status to be changed to running: [pod-id] " + podId);
+            Thread.sleep(POD_ACTIVATION_WAIT_TIME);
+            pod = client.getPod(podId);
+            assertNotNull(pod);
+            assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
+            log.info("Pod state changed to running: [pod-id]" + pod.getId());
+        }
 
         log.info("Deleting pod: " + pod.getId());
         client.deletePod(pod.getId());
@@ -199,8 +217,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         String serviceName = "stratos-test-service";
         String containerPortName = "http-1";
 
-        InetAddress address = InetAddress.getByName(new URL(endpoint).getHost());
-        String publicIp = address.getHostAddress();
+        String publicIp = new URL(endpoint).getHost();
 
         log.info("Creating pod...");
         List<Port> ports = createPorts(containerPortName);
@@ -228,11 +245,13 @@ public class KubernetesApiClientLiveTest extends TestCase{
         assertNotNull(service);
         log.info("Service re-creation with an existing id successful");
 
-        // test service proxy is accessibility
-        log.info("Connecting to service proxy...");
-        Socket socket = new Socket(publicIp, SERVICE_PORT);
-        assertTrue(socket.isConnected());
-        log.info("Connecting to service proxy successful");
+        if(testProxyServiceSocket) {
+            // test service proxy is accessibility
+            log.info("Connecting to service proxy...");
+            Socket socket = new Socket(publicIp, SERVICE_PORT);
+            assertTrue(socket.isConnected());
+            log.info("Connecting to service proxy successful");
+        }
 
         log.info("Deleting service...");
         client.deleteService(serviceId);
