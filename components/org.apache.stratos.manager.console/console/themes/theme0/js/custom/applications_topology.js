@@ -118,7 +118,7 @@ function genTree(data){
 function update(source) {
 
     // ************** Generate the tree diagram	 *****************
-    var margin = {top: 40, right: 120, bottom: 20, left: 120},
+    var margin = {top: 80, right: 120, bottom: 20, left: 120},
         width = 900 - margin.right - margin.left,
         height = 900 - margin.top - margin.bottom;
 
@@ -153,7 +153,7 @@ function update(source) {
 
     // Normalize for fixed-depth.
     nodes.forEach(function (d) {
-        d.y = d.depth * 100;
+        d.y = d.depth * 100 + 80;
     });
 
     // Declare the nodes…
@@ -212,64 +212,7 @@ function update(source) {
             }
            return div_html;
         });
-        // add tool tip for ps -eo pid,ppid,pcpu,size,comm,ruser,s
-/*        .on("mouseover", function (d) {
-            div.transition()
-                .duration(200)
-                .style("opacity", .9);
-            if (d.type == 'clusters') {
-                if(d.accessUrls != ''){
-                    var accessURLHTML = "<strong>Access URLs: </strong>" + d.accessUrls + "<br/>" ;
-                }else{
-                    var accessURLHTML ='';
-                }
-                div.html(
-                        "<strong>Cluster Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Cluster Alias: </strong>" + d.alias + "<br/>" +
-                            accessURLHTML +
-                        "<strong>HostNames: </strong>" + d.hostNames + "<br/>" +
-                        "<strong>Service Name: </strong>" + d.serviceName + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            } else if (d.type == 'members') {
-                div.html(
-                        "<strong>Member Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
-                        "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
-                        "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
-                        "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            } else if (d.type == 'groups') {
-                div.html(
-                        "<strong>Group Instance Id: </strong>" + d.instanceId + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            } else if (d.type == 'applicationInstances') {
-                div.html(
-                        "<strong>Instance Id: </strong>" + d.name + "<br/>" +
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-
-            } else {
-                div.html(
-                        "<strong>Alias: </strong>" + d.name + "<br/>"+
-                        "<strong>Status: </strong>" + d.status
-                ).style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-            }
-
-        })
-        .on("mouseout", function (d) {
-            div.transition()
-                .duration(500)
-                .style("opacity", 0);
-        });*/
-
+        // add popover on nodes
     nodeEnter.append("rect")
         .attr("x", -15)
         .attr("y", -15)
@@ -330,11 +273,6 @@ function update(source) {
 
         })
         .style("fill-opacity", 1);
-
-    // add the tool tip
-    var div = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
 
     // Declare the links…
     var link = svg.selectAll("path.link")
