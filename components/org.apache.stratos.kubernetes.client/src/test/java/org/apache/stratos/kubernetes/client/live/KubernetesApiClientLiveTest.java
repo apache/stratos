@@ -115,7 +115,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         Thread.sleep(POD_ACTIVATION_WAIT_TIME);
         pod = client.getPod(podId);
         assertNotNull(pod);
-        assertEquals(pod.getCurrentState().getStatus(), KubernetesConstants.POD_STATUS_RUNNING);
+        assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
         log.info("Pod state changed to running: " + pod.getId());
 
         log.info("Deleting pod: " + pod.getId());
@@ -159,7 +159,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         // Wait 5s for Pods to be created
         Thread.sleep(5000);
         ReplicationController replicationController = client.getReplicationController(replicationControllerId);
-        assertNull(replicationController);
+        assertNotNull(replicationController);
         log.info("Replication controller created successfully");
 
         // Validate recreation using same id
