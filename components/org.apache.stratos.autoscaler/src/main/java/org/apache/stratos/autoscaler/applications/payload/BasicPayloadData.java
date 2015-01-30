@@ -355,7 +355,7 @@ public class BasicPayloadData implements Serializable {
 		StringBuilder exportMetadataKeysPayload = new StringBuilder();
 		for (int i = 0; i < exportMetadataKeys.length; i++) {
 			exportMetadataKeysPayload.append(exportMetadataKeys[i]);
-			if (i != dependencyClusterIDs.length - 1) {
+			if (i != exportMetadataKeys.length - 1) {
 				exportMetadataKeysPayload.append("|");
 			}
 		}
@@ -374,8 +374,8 @@ public class BasicPayloadData implements Serializable {
 
 		StringBuilder importMetadataKeysPayload = new StringBuilder();
 		for (int i = 0; i < importMetadataKeys.length; i++) {
-			importMetadataKeysPayload.append(dependencyClusterIDs[i]);
-			if (i != dependencyClusterIDs.length - 1) {
+			importMetadataKeysPayload.append(importMetadataKeys[i]);
+			if (i != importMetadataKeys.length - 1) {
 				importMetadataKeysPayload.append("|");
 			}
 		}
