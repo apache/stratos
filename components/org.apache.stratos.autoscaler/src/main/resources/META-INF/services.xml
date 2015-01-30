@@ -98,5 +98,8 @@
         <operation name="getMasterForKubernetesCluster">
             <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
         </operation>
+        <operation name="updateNetworkPartition">
+            <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/kubernetes</parameter>
+        </operation>
     </service>
 </serviceGroup> 

@@ -357,8 +357,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             ApplicationSignUp applicationSignUp[] = serviceClient.getApplicationSignUps(applicationContext.getApplicationId());
             if ( applicationSignUp != null){
-                for(ApplicationSignUp appSignUp : applicationSignUp)
-                {
+                for(ApplicationSignUp appSignUp : applicationSignUp) {
                     if ( appSignUp != null) {
                         serviceClient.removeApplicationSignUp(appSignUp.getApplicationId(), appSignUp.getTenantId());
                     }
@@ -682,6 +681,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
         } catch (Exception e) {
             String message = "Could not remove network partition";
+            log.error(message);
+            throw new AutoScalerException(message, e);
+        }
+    }
+
+    @Override
+    public void updateNetworkPartition(NetworkPartition networkPartition) {
+        try {
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Updating network partition: [network-partition-id] %s",
+                        networkPartition.getId()));
+            }
+
+            RegistryManager.getInstance().updateNetworkPartition(networkPartition);
+
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Network partition updated successfully: [network-partition-id] %s",
+                        networkPartition.getId()));
+            }
+        } catch (Exception e) {
+            String message = String.format("Could not update network partition: [network-partition-id] %s",
+                    networkPartition.getId());
             log.error(message);
             throw new AutoScalerException(message, e);
         }

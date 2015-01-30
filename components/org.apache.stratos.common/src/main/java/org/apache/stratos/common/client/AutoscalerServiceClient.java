@@ -96,6 +96,10 @@ public class AutoscalerServiceClient {
         stub.removeNetworkPartition(networkPartitionId);
     }
 
+    public void updateNetworkPartition(NetworkPartition networkPartition) throws RemoteException {
+        stub.updateNetworkPartition(networkPartition);
+    }
+
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()
             throws RemoteException {
         return stub.getAutoScalingPolicies();

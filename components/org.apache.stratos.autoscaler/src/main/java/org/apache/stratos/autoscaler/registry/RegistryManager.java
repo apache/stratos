@@ -249,6 +249,27 @@ public class RegistryManager {
         }
     }
 
+    /**
+     * Update network partition in the registry
+     * @param networkPartition
+     */
+    public void updateNetworkPartition(NetworkPartition networkPartition) {
+        try {
+            if (getNetworkPartition(networkPartition.getId()) == null) {
+                throw new AutoScalerException(String.format("Network partition does not exist: " +
+                        "[network-partition-id] %s", networkPartition.getId()));
+            }
+
+            persistNetworkPartition(networkPartition);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Network partition updated successfully: %s", networkPartition.toString()));
+            }
+        } catch (Exception e) {
+            log.error((String.format("Unable to update network partition [network-partition-id] %s",
+                    networkPartition.getId())), e);
+        }
+    }
+
     public void persistApplication(Application application) {
 
         try {

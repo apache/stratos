@@ -158,6 +158,12 @@ public interface AutoscalerService {
     public void removeNetworkPartition(String networkPartitionId);
 
     /**
+     * Update network partition
+     * @param networkPartition
+     */
+    public void updateNetworkPartition(NetworkPartition networkPartition);
+
+    /**
      * Get network partitions
      * @return
      */

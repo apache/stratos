@@ -1832,4 +1832,16 @@ public class StratosApiV41Utils {
         }
     }
 
+    public static void updateNetworkPartition(NetworkPartitionBean networkPartition) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            serviceClient.updateNetworkPartition(ObjectConverter.
+                    convertNetworkPartitionToStubNetworkPartition(networkPartition));
+        }catch (Exception e) {
+            String message = String.format("Could not update network partition: [network-partition-id] %s,",
+                    networkPartition.getId());
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
 }

@@ -788,6 +788,17 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok().build();
     }
 
+    @PUT
+    @Path("/networkPartitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response updateNetworkPartition(NetworkPartitionBean networkPartition) throws RestAPIException {
+
+        StratosApiV41Utils.updateNetworkPartition(networkPartition);
+        return Response.ok().build();
+    }
+
 	/**
 	 * Remove autoscaling policy.
 	 *
