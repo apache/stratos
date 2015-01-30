@@ -74,22 +74,34 @@ public class CartridgeAgentConfiguration {
     private String instanceId;
     private String clusterInstanceId;
     private String applicationId;
+    private String dependantClusterId;
 
 
     private CartridgeAgentConfiguration() {
         parameters = loadParametersFile();
 
         try {
+        	//self.application_id = self.read_property(cartridgeagentconstants.APPLICATION_ID)
+        	applicationId = readApplicationId(); 
             serviceGroup = readServiceGroup();
             isClustered = readClustering();
+          //self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
             serviceName = readParameterValue(CartridgeAgentConstants.SERVICE_NAME);
+            //self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
             clusterId = readParameterValue(CartridgeAgentConstants.CLUSTER_ID);
+            //self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID, False)
             networkPartitionId = readParameterValue(CartridgeAgentConstants.NETWORK_PARTITION_ID);
+            //self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID, False)
             partitionId = readParameterValue(CartridgeAgentConstants.PARTITION_ID);
+            //self.member_id = self.read_property(cartridgeagentconstants.MEMBER_ID)
             memberId = readMemberIdValue(CartridgeAgentConstants.MEMBER_ID);
+            //self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
             cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
+            //self.app_path = self.read_property(cartridgeagentconstants.APPLICATION_PATH, False)
             appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
+            //self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
             repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
+            //self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
             ports = readPorts();
             logFilePaths = readLogFilePaths();
             isMultitenant = readMultitenant(CartridgeAgentConstants.MULTITENANT);
@@ -114,6 +126,13 @@ public class CartridgeAgentConfiguration {
             isPrimary = readIsPrimary();
             kubernetesClusterId = readKubernetesClusterIdValue(CartridgeAgentConstants.KUBERNETES_CLUSTER_ID);
             
+            //self.cluster_instance_id= self.read_property(cartridgeagentconstants.CLUSTER_INSTANCE_ID)
+            clusterInstanceId = readClusterInstanceId();
+            //self.dependant_cluster_id = self.read_property(cartridgeagentconstants.DEPENDENCY_CLUSTER_IDS, False)
+            dependantClusterId = readDependantClusterId();
+            
+            
+            
         } catch (ParameterNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -123,6 +142,9 @@ public class CartridgeAgentConfiguration {
         }
 
         if (log.isDebugEnabled()) {
+        	log.debug(String.format("application-id: %s", applicationId));
+        	log.debug(String.format("service-group: %s", serviceGroup));
+            log.debug(String.format("cluster-id: %s", clusterId));
             log.debug(String.format("service-name: %s", serviceName));
             log.debug(String.format("cluster-id: %s", clusterId));
             log.debug(String.format("network-partition-id: %s", networkPartitionId));
@@ -134,6 +156,8 @@ public class CartridgeAgentConfiguration {
             log.debug(String.format("ports: %s", ports.toString()));
             log.debug(String.format("lb-private-ip: %s", lbPrivateIp));
             log.debug(String.format("lb-public-ip: %s", lbPublicIp));
+            log.debug(String.format("cluster-instance-id: %s", clusterInstanceId));
+            log.debug(String.format("dependant-cluster-id: %s", dependantClusterId));
         }
     }
 
@@ -364,10 +388,34 @@ public class CartridgeAgentConfiguration {
 
         return parameters;
     }
-
+    
+    private String readApplicationId() {
+        if (parameters.containsKey(CartridgeAgentConstants.APPLICATION_ID)) {
+            return parameters.get(CartridgeAgentConstants.APPLICATION_ID);
+        } else {
+            return null;
+        }
+    }
+    
     private String readServiceGroup() {
         if (parameters.containsKey(CartridgeAgentConstants.SERVICE_GROUP)) {
             return parameters.get(CartridgeAgentConstants.SERVICE_GROUP);
+        } else {
+            return null;
+        }
+    }
+    
+    private String readClusterInstanceId() {
+    	if (parameters.containsKey(CartridgeAgentConstants.CLUSTER_INSTANCE_ID)) {
+            return parameters.get(CartridgeAgentConstants.CLUSTER_INSTANCE_ID);
+        } else {
+            return null;
+        }
+    }
+    
+    private String readDependantClusterId() {
+    	if (parameters.containsKey(CartridgeAgentConstants.DEPENDENCY_CLUSTER_IDS)) {
+            return parameters.get(CartridgeAgentConstants.DEPENDENCY_CLUSTER_IDS);
         } else {
             return null;
         }

@@ -67,6 +67,8 @@ public class CartridgeAgent implements Runnable {
    	private static final Log log = LogFactory.getLog(CartridgeAgent.class);
     private static final ExtensionHandler extensionHandler = new DefaultExtensionHandler();
     private boolean terminated;
+    
+    private CartridgeAgentEventListeners eventListenerns;
 
     // We have an asynchronous activity running to respond to ADC updates. We want to ensure
     // that no publishInstanceActivatedEvent() call is made *before* the port activation test
@@ -78,18 +80,41 @@ public class CartridgeAgent implements Runnable {
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent started");
         }
+        
+        eventListenerns = new  CartridgeAgentEventListeners();
+        
+        log.debug("MArtin: before validating system properties");
 
         validateRequiredSystemProperties();
+        
+        log.debug("MArtin: after validating system properties");
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent validated system properties done");
+        }
 
         // Start instance notifier listener thread
         portsActivated = false;
         subscribeToTopicsAndRegisterListeners();
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent subscribeToTopicsAndRegisterListeners done");
+        }
 
         // Start topology event receiver thread
         registerTopologyEventListeners();
         
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent registerTopologyEventListeners done");
+        }
+        
         // Start tenant event receiver thread
         registerTenantEventListeners();
+        
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent registering all event listeners ... done");
+        }
         
 		// wait till the member spawned event
 		while (!CartridgeAgentConfiguration.getInstance().isInitialized()) {
@@ -101,9 +126,17 @@ public class CartridgeAgent implements Runnable {
 			} catch (InterruptedException ignore) {
 			}
 		}
+		
+		if (log.isInfoEnabled()) {
+            log.info("Cartridge agent initialized done");
+        }
 
         // Execute instance started shell script
         extensionHandler.onInstanceStartedEvent();
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent onInstanceStartedEvent done");
+        }
 
         // Publish instance started event
         CartridgeAgentEventPublisher.publishInstanceStartedEvent();
@@ -116,14 +149,26 @@ public class CartridgeAgent implements Runnable {
                 log.error("Error processing start servers event", e);
             }
         }
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent startServerExtension done");
+        }
 
         // Wait for all ports to be active
         CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
                 CartridgeAgentConfiguration.getInstance().getPorts());
         portsActivated = true;
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent portsActivated done");
+        }
 
         // Publish instance activated event
         CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent publishInstanceActivatedEvent done");
+        }
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
@@ -146,6 +191,10 @@ public class CartridgeAgent implements Runnable {
 			//		),
 			//		0, 10, TimeUnit.SECONDS);
         } */
+        
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent getRepoUrl done");
+        }
 
         if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
             if (log.isInfoEnabled()) {
@@ -153,10 +202,17 @@ public class CartridgeAgent implements Runnable {
             }
             // Execute instance activated shell script
             extensionHandler.onInstanceActivatedEvent();
+            
+            if (log.isInfoEnabled()) {
+                log.info("Cartridge agent onInstanceActivatedEvent done");
+            }
 
             // Publish instance activated event
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
         } else {
+        	if (log.isInfoEnabled()) {
+                log.info("Cartridge agent - artifact repository found");
+            }
             //Start periodical file processor task
             /*if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
                 log.info(" Commits enabled. Starting File listener ");
@@ -179,7 +235,7 @@ public class CartridgeAgent implements Runnable {
 //            		CartridgeAgentConstants.SUPERTENANT_TEMP_PATH), 0,
 //                    10, TimeUnit.SECONDS);
 //        }
-
+        
         String persistenceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
         if (persistenceMappingsPayload != null) {
             extensionHandler.volumeMountExtension(persistenceMappingsPayload);
@@ -188,7 +244,7 @@ public class CartridgeAgent implements Runnable {
         // start log publishing
         LogPublisherManager logPublisherManager = new LogPublisherManager();
         publishLogs(logPublisherManager);
-
+        
         // Keep the thread live until terminated
         while (!terminated) {
             try {
@@ -201,372 +257,79 @@ public class CartridgeAgent implements Runnable {
     }
 
     protected void subscribeToTopicsAndRegisterListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("Starting instance notifier event message receiver thread");
+    	if (log.isDebugEnabled()) {
+            log.debug("SsubscribeToTopicsAndRegisterListeners before");
         }
-
-        InstanceNotifierEventReceiver instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
-        instanceNotifierEventReceiver.addEventListener(new ArtifactUpdateEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    extensionHandler.onArtifactUpdatedEvent((ArtifactUpdatedEvent) event);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing artifact update event", e);
-                    }
-                }
-            }
-        });
-
-        instanceNotifierEventReceiver.addEventListener(new InstanceCleanupMemberEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
-                    InstanceCleanupMemberEvent instanceCleanupMemberEvent = (InstanceCleanupMemberEvent) event;
-                    if (memberIdInPayload.equals(instanceCleanupMemberEvent.getMemberId())) {
-                        extensionHandler.onInstanceCleanupMemberEvent(instanceCleanupMemberEvent);
-                    }
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing instance cleanup member event", e);
-                    }
-                }
-
-            }
-        });
-
-        instanceNotifierEventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
-                InstanceCleanupClusterEvent instanceCleanupClusterEvent = (InstanceCleanupClusterEvent) event;
-                if (clusterIdInPayload.equals(instanceCleanupClusterEvent.getClusterId())) {
-                    extensionHandler.onInstanceCleanupClusterEvent(instanceCleanupClusterEvent);
-                }
-            }
-        });
-
-	    instanceNotifierEventReceiver.execute();
-
-        if(log.isInfoEnabled()) {
-            log.info("Instance notifier event message receiver thread started");
-        }
-
-        // Wait until message receiver is subscribed to the topic to send the instance started event
-        while (!instanceNotifierEventReceiver.isSubscribed()) {
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-            }
+    	
+    	eventListenerns.startInstanceNotifierReceiver();
+    	
+    	if (log.isDebugEnabled()) {
+            log.debug("SsubscribeToTopicsAndRegisterListeners after");
         }
     }
 
     protected void registerTopologyEventListeners() {
-        if (log.isDebugEnabled()) {
-            log.debug("Starting topology event message receiver thread");
+    	if (log.isDebugEnabled()) {
+            log.debug("registerTopologyEventListeners before");
         }
-        
-        TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
-        
-        topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
-        	@Override
-        	protected void onEvent(Event event) {
-        		try {
-        			boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-        			if (initialized) {
-        				// no need to process this event, if the member is initialized.
-        				return;
-        			}
-        			TopologyManager.acquireReadLock();
-        			if (log.isDebugEnabled()) {
-        				log.debug("Member created event received");
-        			}
-        			MemberCreatedEvent memberCreatedEvent = (MemberCreatedEvent) event;
-        			extensionHandler.onMemberCreatedEvent(memberCreatedEvent);
-        		} catch (Exception e) {
-        			if (log.isErrorEnabled()) {
-        				log.error("Error processing member created event", e);
-        			}
-        		} finally {
-        			TopologyManager.releaseReadLock();
-        		}
-        	}
-        });
-        
-        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-            	if (!initialized) {
-            		return;
-            	}
-                try {
-                    TopologyManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Member activated event received");
-                    }
-                    MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
-                    extensionHandler.onMemberActivatedEvent(memberActivatedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing member activated event", e);
-                    }
-                } finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-        });
-
-        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-            	if (!initialized) {
-            		return;
-            	}
-                try {
-                    TopologyManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Member terminated event received");
-                    }
-                    MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
-                    extensionHandler.onMemberTerminatedEvent(memberTerminatedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing member terminated event", e);
-                    }
-                } finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-        });
-
-        topologyEventReceiver.addEventListener(new MemberSuspendedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-            	if (!initialized) {
-            		return;
-            	}
-                try {
-                    TopologyManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Member suspended event received");
-                    }
-                    MemberSuspendedEvent memberSuspendedEvent = (MemberSuspendedEvent) event;
-                    extensionHandler.onMemberSuspendedEvent(memberSuspendedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing member suspended event", e);
-                    }
-                } finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-        });
-
-        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
-
-            @Override
-            protected void onEvent(Event event) {
-            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-                if (!initialized) {
-                    try {
-                        TopologyManager.acquireReadLock();
-                        if (log.isDebugEnabled()) {
-                            log.debug("Complete topology event received");
-                        }
-                        CompleteTopologyEvent completeTopologyEvent = (CompleteTopologyEvent) event;
-                        extensionHandler.onCompleteTopologyEvent(completeTopologyEvent);
-                    } catch (Exception e) {
-                        if (log.isErrorEnabled()) {
-                            log.error("Error processing complete topology event", e);
-                        }
-                    } finally {
-                        TopologyManager.releaseReadLock();
-                    }
-                }
-            }
-        });
-
-        topologyEventReceiver.addEventListener(new MemberStartedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-            	boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-            	if (!initialized) {
-            		return;
-            	}
-                try {
-                    TopologyManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Member started event received");
-                    }
-                    MemberStartedEvent memberStartedEvent = (MemberStartedEvent) event;
-                    extensionHandler.onMemberStartedEvent(memberStartedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing member started event", e);
-                    }
-                } finally {
-                    TopologyManager.releaseReadLock();
-                }
-            }
-        });
-
-	    topologyEventReceiver.execute();
-
-        if (log.isDebugEnabled()) {
-            log.info("Cartridge Agent topology receiver thread started");
+    	eventListenerns.startTopologyEventReceiver();
+    	
+    	if (log.isDebugEnabled()) {
+            log.debug("registerTopologyEventListeners after");
         }
     }
 
     protected void registerTenantEventListeners() {
-
-        if (log.isDebugEnabled()) {
-            log.debug("Starting tenant event message receiver thread");
+    	if (log.isDebugEnabled()) {
+            log.debug("registerTenantEventListeners before X");
         }
-        TenantEventReceiver tenantEventReceiver = new TenantEventReceiver();
-        tenantEventReceiver.addEventListener(new DomainMappingAddedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    TenantManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Subscription domain added event received");
-                    }
-                    DomainMappingAddedEvent subscriptionDomainAddedEvent = (DomainMappingAddedEvent) event;
-                    extensionHandler.onSubscriptionDomainAddedEvent(subscriptionDomainAddedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing subscription domains added event", e);
-                    }
-                } finally {
-                    TenantManager.releaseReadLock();
-                }
-
-            }
-        });
-
-        tenantEventReceiver.addEventListener(new DomainMappingRemovedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    TenantManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Subscription domain removed event received");
-                    }
-                    DomainMappingRemovedEvent subscriptionDomainRemovedEvent = (DomainMappingRemovedEvent) event;
-                    extensionHandler.onSubscriptionDomainRemovedEvent(subscriptionDomainRemovedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing subscription domains removed event", e);
-                    }
-                } finally {
-                    TenantManager.releaseReadLock();
-                }
-            }
-        });
-
-        tenantEventReceiver.addEventListener(new CompleteTenantEventListener() {
-            private boolean initialized;
-            @Override
-            protected void onEvent(Event event) {
-                if (!initialized) {
-                    try {
-                        TenantManager.acquireReadLock();
-                        if (log.isDebugEnabled()) {
-                            log.debug("Complete tenant event received");
-                        }
-                        CompleteTenantEvent completeTenantEvent = (CompleteTenantEvent) event;
-                        extensionHandler.onCompleteTenantEvent(completeTenantEvent);
-                        initialized = true;
-                    } catch (Exception e) {
-                        if (log.isErrorEnabled()) {
-                            log.error("Error processing complete tenant event", e);
-                        }
-                    } finally {
-                        TenantManager.releaseReadLock();
-                    }
-
-                } else {
-                    if (log.isInfoEnabled()) {
-                        log.info("Complete tenant event updating task disabled");
-                    }
-                }
-            }
-        });
-
-        tenantEventReceiver.addEventListener(new TenantSubscribedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    TenantManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Tenant subscribed event received");
-                    }
-                    TenantSubscribedEvent tenantSubscribedEvent = (TenantSubscribedEvent) event;
-                    extensionHandler.onTenantSubscribedEvent(tenantSubscribedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing tenant subscribed event", e);
-                    }
-                } finally {
-                    TenantManager.releaseReadLock();
-                }
-            }
-        });
-
-        tenantEventReceiver.addEventListener(new TenantUnSubscribedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                try {
-                    TenantManager.acquireReadLock();
-                    if (log.isDebugEnabled()) {
-                        log.debug("Tenant unSubscribed event received");
-                    }
-                    TenantUnSubscribedEvent tenantUnSubscribedEvent = (TenantUnSubscribedEvent) event;
-                    extensionHandler.onTenantUnSubscribedEvent(tenantUnSubscribedEvent);
-                } catch (Exception e) {
-                    if (log.isErrorEnabled()) {
-                        log.error("Error processing tenant unSubscribed event", e);
-                    }
-                } finally {
-                    TenantManager.releaseReadLock();
-                }
-            }
-        });
-
-	    tenantEventReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Tenant event message receiver thread started");
+    	
+    	if (log.isDebugEnabled()) {
+            log.debug("skipping registerTenantEventListeners before X");
+        }
+    	
+    	eventListenerns.startTenantEventReceiver();
+    	
+    	if (log.isDebugEnabled()) {
+            log.debug("registerTenantEventListeners after");
         }
     }
 
     protected void validateRequiredSystemProperties() {
+    	log.debug("MArtin: validating system properties");
         String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
+        
+        log.debug("MArtin: validating system properties 0b: " + jndiPropertiesDir);
         if (StringUtils.isBlank(jndiPropertiesDir)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
             }
             return;
         }
+        
+        log.debug("MArtin: validating system properties 1");
 
         String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
+        log.debug("MArtin: validating system properties 1b: " + payloadPath);
         if (StringUtils.isBlank(payloadPath)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
             }
             return;
         }
+        
+        log.debug("MArtin: validating system properties 2");
 
         String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
+        log.debug("MArtin: validating system properties 2b: " + extensionsDir);
         if (StringUtils.isBlank(extensionsDir)) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
             }
         }
+        
+        
+        log.debug("MArtin: validating system properties 3");
     }
 
     private static void publishLogs(LogPublisherManager logPublisherManager) {

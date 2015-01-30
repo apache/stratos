@@ -49,13 +49,40 @@ public class CartridgeAgentEventPublisher {
 				log.info("Publishing instance started event");
 			}
 			InstanceStartedEvent event = new InstanceStartedEvent(
+					//application_id = CartridgeAgentConfiguration().application_id
 					CartridgeAgentConfiguration.getInstance().getApplicationId(),
+					//service_name = CartridgeAgentConfiguration().service_name
 					CartridgeAgentConfiguration.getInstance().getServiceName(),
+					//cluster_id = CartridgeAgentConfiguration().cluster_id
 					CartridgeAgentConfiguration.getInstance().getClusterId(),
+					// member_id = CartridgeAgentConfiguration().member_id
 					CartridgeAgentConfiguration.getInstance().getMemberId(),
+					
+					//cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+					//network_partition_id = CartridgeAgentConfiguration().network_partition_id
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+					//partition_id = CartridgeAgentConfiguration().partition_id
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
+			
+			/*
+			 * 
+        
+        public InstanceStartedEvent(String applicationId, String serviceName, String clusterId, String memberId,
+                                String clusterInstanceId, String networkPartitionId, String partitionId)
+       
+        //instance_id = CartridgeAgentConfiguration().instance_id
+        
+        
+        
+
+        instance_started_event = InstanceStartedEvent(application_id, service_name, cluster_id, cluster_instance_id, member_id,
+                                                      instance_id, network_partition_id, partition_id)
+        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_STARTED_EVENT)
+        publisher.publish(instance_started_event)
+        started = True
+        log.info("Instance started event published")
+			 */
 
 			String topic = Util.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
