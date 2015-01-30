@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.cloud.controller.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.common.Property;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Holds useful information for externals, regarding a Cartridge.
@@ -49,6 +49,7 @@ public class CartridgeInfo {
     private String tenantPartitions;
     private Persistence persistence;
     private String serviceGroup;
+	private String[] metadataKeys;
 
     public CartridgeInfo(){
         this.tenantPartitions = "*";
@@ -231,4 +232,12 @@ public class CartridgeInfo {
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
     }
+
+	public String[] getMetadataKeys() {
+		return metadataKeys;
+	}
+
+	public void setMetadataKeys(String[] metadataKeys) {
+		this.metadataKeys = metadataKeys;
+	}
 }

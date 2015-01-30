@@ -54,6 +54,8 @@ public class BasicPayloadData implements Serializable {
     private String[] dependencyAliases;
     private String[] exportingProperties;
 	private String[] dependencyClusterIDs;
+	private String[] exportMetadataKeys;
+	private String[] importMetadataKeys;
 
     protected StringBuilder payloadBuilder;
 
@@ -117,6 +119,14 @@ public class BasicPayloadData implements Serializable {
 	    payloadBuilder.append(",");
 	    if (getDependencyClusterIDPayloadString() != null) {
 		    payloadBuilder.append("DEPENDENCY_CLUSTER_IDS=" + getDependencyClusterIDPayloadString());
+	    }
+	    payloadBuilder.append(",");
+	    if (getExportMetadataKeys() != null) {
+		    payloadBuilder.append("EXPORT_METADATA_KEYS=" + getExportMetadataKeys());
+	    }
+	    payloadBuilder.append(",");
+	    if (getExportMetadataKeys() != null) {
+		    payloadBuilder.append("IMPORT_METADATA_KEYS=" + getImportMetadataKeys());
 	    }
     }
 
@@ -335,5 +345,45 @@ public class BasicPayloadData implements Serializable {
 
 	public void setDependencyClusterIDs(String[] dependencyClusterIDs) {
 		this.dependencyClusterIDs = dependencyClusterIDs;
+	}
+
+	public String getExportMetadataKeys() {
+		if (exportMetadataKeys == null) {
+			return null;
+		}
+
+		StringBuilder exportMetadataKeysPayload = new StringBuilder();
+		for (int i = 0; i < exportMetadataKeys.length; i++) {
+			exportMetadataKeysPayload.append(exportMetadataKeys[i]);
+			if (i != dependencyClusterIDs.length - 1) {
+				exportMetadataKeysPayload.append("|");
+			}
+		}
+		log.debug("Dependency Cluster IDs:  " + exportMetadataKeysPayload);
+		return exportMetadataKeysPayload.toString();
+	}
+
+	public void setExportMetadataKeys(String[] exportMetadataKeys) {
+		this.exportMetadataKeys = exportMetadataKeys;
+	}
+
+	public String getImportMetadataKeys() {
+		if (importMetadataKeys == null) {
+			return null;
+		}
+
+		StringBuilder importMetadataKeysPayload = new StringBuilder();
+		for (int i = 0; i < importMetadataKeys.length; i++) {
+			importMetadataKeysPayload.append(dependencyClusterIDs[i]);
+			if (i != dependencyClusterIDs.length - 1) {
+				importMetadataKeysPayload.append("|");
+			}
+		}
+		log.debug("Dependency Cluster IDs:  " + importMetadataKeysPayload);
+		return importMetadataKeysPayload.toString();
+	}
+
+	public void setImportMetadataKeys(String[] importMetadataKeys) {
+		this.importMetadataKeys = importMetadataKeys;
 	}
 }

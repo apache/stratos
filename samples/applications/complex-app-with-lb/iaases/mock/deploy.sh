@@ -35,11 +35,11 @@ popd
 pushd ${cartridges_groups_path}
 	# Adding group6c
 echo "Adding group6c group..."
-curl -X POST -H "Content-Type: application/json" -d @'artifacts/group6c.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridgeGroups
+curl -X POST -H "Content-Type: application/json" -d @'group6c.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridgeGroups
 
 	# Adding group8c
 echo "Adding group8c group..."
-curl -X POST -H "Content-Type: application/json" -d @'artifacts/group8c.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridgeGroups
+curl -X POST -H "Content-Type: application/json" -d @'group8c.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridgeGroups
 popd
 
 sleep 5

@@ -197,12 +197,13 @@ public class ApplicationUtils {
 
     public static PayloadData createPayload(String appId, String groupName, CartridgeInfo cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
-                                            org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs)
+                                            org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs,
+                                            String[] exportMetadata, String[] importMetadata)
             throws ApplicationDefinitionException {
 
         //Create the payload
         BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridgeInfo, subscriptionKey,
-                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs);
+                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs,exportMetadata,importMetadata);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -265,7 +266,8 @@ public class ApplicationUtils {
     private static BasicPayloadData createBasicPayload(String appId, String groupName, CartridgeInfo cartridge,
                                                        String subscriptionKey, String clusterId,
                                                        String hostName, String repoUrl, String alias,
-                                                       int tenantId, String[] dependencyAliases,String[] dependencyCLusterIDs) {
+                                                       int tenantId, String[] dependencyAliases,String[] dependencyCLusterIDs,
+                                                       String[] exportMetadata,String[] importMetadata) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setAppId(appId);
@@ -299,6 +301,8 @@ public class ApplicationUtils {
         basicPayloadData.setTenantRange("*");
         basicPayloadData.setDependencyAliases(dependencyAliases);
 	    basicPayloadData.setDependencyClusterIDs(dependencyCLusterIDs);
+	    basicPayloadData.setExportMetadataKeys(exportMetadata);
+	    basicPayloadData.setImportMetadataKeys(importMetadata);
 //        if(cartridge.getExportingProperties() != null){
 //            basicPayloadData.setExportingProperties(cartridge.getExportingProperties());
 //            log.info("testing1 getExportingProperties " + cartridge.getExportingProperties());

@@ -5,7 +5,7 @@
    "components":{  
       "cartridges":[  
          {  
-            "type":"php",
+            "type":"tomcat",
                 "cartridgeMin": 1,
                 "cartridgeMax": 10,    
 				"subscribableInfo":{  

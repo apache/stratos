@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.amber.oauth2.common.exception.OAuthProblemException;
 import org.apache.amber.oauth2.common.exception.OAuthSystemException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -273,6 +274,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 
 	    for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
+		    List<String> exportMetadataKeys = new ArrayList<String>();
+		    List<String> importMetadataKeys = new ArrayList<String>();
             String cartridgeType = cartridgeContext.getType();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
@@ -280,6 +283,9 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
             CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
+			String[] strMetaData=cartridgeInfo.getMetadataKeys();
+		    CollectionUtils.addAll(exportMetadataKeys,strMetaData);
+
             if (cartridgeInfo == null) {
                 handleError("No deployed Cartridge found with type [ " + cartridgeType +
                         " ] for Composite Application");
@@ -305,20 +311,33 @@ public class DefaultApplicationParser implements ApplicationParser {
             if (dependencyOrder != null) {
                 for (StartupOrder startupOrder : dependencyOrder) {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
-                        ClusterDataHolder dataHolder = clusterDataMapByType.get(startupOrderComponent.split("\\.")[1]);
-                        if (dataHolder != null) {
-                            if (!dataHolder.getClusterId().equals(clusterId)) {
-                                dependencyClusterIDs.add(dataHolder.getClusterId());
-                                if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
-                                    break;
-                                }
-                            }
-                        }
+
+	                    String[] arrStartUp= startupOrderComponent.split("\\.");
+	                    if(arrStartUp[0].equals("cartridge")) {
+		                    String dependencType = arrStartUp[1];
+		                    CartridgeInfo dependencyCartridge = getCartridge(dependencType);
+
+		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependencType);
+		                    if (dataHolder != null) {
+			                    if (!dataHolder.getClusterId().equals(clusterId)) {
+				                    dependencyClusterIDs.add(dataHolder.getClusterId());
+				                    CollectionUtils.addAll(importMetadataKeys, dependencyCartridge.getMetadataKeys());
+				                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
+					                    break;
+				                    }
+			                    }
+		                    }
+	                    }
                     }
                 }
             }
             String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
             arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
+
+		    String[] arrExportMetadata = new String[exportMetadataKeys.size()];
+		    arrExportMetadata = exportMetadataKeys.toArray(arrExportMetadata);
+		    String[] arrImportMetadata = new String[exportMetadataKeys.size()];
+		    arrImportMetadata = exportMetadataKeys.toArray(arrImportMetadata);
 
             // Find tenant range of cluster
             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridgeInfo.getTenantPartitions());
@@ -328,7 +347,8 @@ public class DefaultApplicationParser implements ApplicationParser {
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
                     subscribableInfoContext.getDeploymentPolicy(), false,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
-                    subscribableInfoContext.getProperties(), arrDependencyClusterIDs);
+                    subscribableInfoContext.getProperties(), arrDependencyClusterIDs, arrExportMetadata,
+                    arrImportMetadata);
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
@@ -727,12 +747,13 @@ public class DefaultApplicationParser implements ApplicationParser {
                                                                       String subscriptionKey, int tenantId, String repoUrl,
                                                                       String alias, String clusterId, String hostname,
                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
-                                                                      String[] dependencyAliases, Properties properties, String[] dependencyClustorIDs)
+                                                                      String[] dependencyAliases, Properties properties, String[] dependencyClustorIDs,
+                                                                      String[] exportMetadata, String[] importMetadata)
             throws ApplicationDefinitionException {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs,exportMetadata,importMetadata);
 
         String textPayload = payloadData.toString();
         log.debug("Payload :: " + textPayload);

@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:ax27="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax23="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://common.stratos.apache.org/xsd" xmlns:ax21="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:ax27="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax25="http://common.stratos.apache.org/xsd" xmlns:ax23="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax21="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
     <wsdl:types>
-        <xs:schema xmlns:ax28="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax26="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax211="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax22="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax28="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax211="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax24="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax22="http://exception.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://domain.controller.cloud.stratos.apache.org/xsd"/>
             <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"/>
@@ -8,6 +8,7 @@
             <xs:element name="getCartridges">
 =======
             <xs:import namespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd"/>
+<<<<<<< HEAD
             <xs:element name="CloudControllerServiceCartridgeNotFoundException">
 >>>>>>> Add metadataKeys to the cartridge
                 <xs:complexType>
@@ -30,12 +31,14 @@
             </xs:element>
 <<<<<<< HEAD
             <xs:element name="CloudControllerServiceInvalidIaasProviderException">
+=======
+            <xs:element name="getCartridges">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax21:InvalidIaasProviderException"/>
-                    </xs:sequence>
+                    <xs:sequence/>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <xs:complexType>
                     <xs:sequence>
@@ -49,34 +52,49 @@
                         <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
 =======
             <xs:element name="startInstances">
+=======
+            <xs:element name="getCartridgesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax26:InstanceContext"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="startInstancesResponse">
+            <xs:element name="CloudControllerServiceInvalidServiceGroupException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax26:MemberContext"/>
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax21:InvalidServiceGroupException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
+            <xs:element name="getServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax21:UnregisteredClusterException"/>
 >>>>>>> Add metadataKeys to the cartridge
+=======
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ServiceGroup"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="unregisterService">
+            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax21:CartridgeNotFoundException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="removeCartridge">
                 <xs:complexType>
@@ -98,51 +116,56 @@
                         <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
 =======
             <xs:element name="updateClusterStatus">
+=======
+            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="status" nillable="true" type="ax27:ClusterStatus"/>
+                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax21:InvalidIaasProviderException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="registerService">
+            <xs:element name="CloudControllerServiceCloudControllerException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax26:Registrant"/>
+                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax21:CloudControllerException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="registerServiceResponse">
+            <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
 >>>>>>> Add metadataKeys to the cartridge
+=======
+                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax23:InstanceContext"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidServiceGroupException">
+            <xs:element name="startInstanceResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax21:InvalidServiceGroupException"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroup">
+            <xs:element name="CloudControllerServiceInvalidMemberException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupResponse">
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ServiceGroup"/>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
@@ -260,16 +283,26 @@
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:KubernetesCluster"/>
 =======
             <xs:element name="getServiceGroupCartridges">
+=======
+            <xs:element name="terminateInstance">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupCartridgesResponse">
+            <xs:element name="getClusterContext">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getClusterContextResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ClusterContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -290,7 +323,7 @@
             <xs:element name="addCartridge">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax23:CartridgeConfig"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -304,14 +337,7 @@
             <xs:element name="updateCartridge">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax26:CartridgeConfig"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax21:InvalidCartridgeTypeException"/>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax23:CartridgeConfig"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -322,17 +348,17 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupDependencies">
+            <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax23:ServiceGroup"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupDependenciesResponse">
+            <xs:element name="removeServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:Dependencies"/>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -350,56 +376,61 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getCartridgeInfo">
+            <xs:element name="getServiceGroupCartridges">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
 >>>>>>> Add metadataKeys to the cartridge
+=======
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getCartridgeInfoResponse">
+            <xs:element name="getServiceGroupCartridgesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:CartridgeInfo"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getClusterContext">
+            <xs:element name="getServiceGroupDependencies">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getClusterContextResponse">
+            <xs:element name="getServiceGroupDependenciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:ClusterContext"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:Dependencies"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
+            <xs:element name="startInstances">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax21:InvalidKubernetesMasterException"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax23:InstanceContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
+            <xs:element name="startInstancesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax21:NonExistingKubernetesMasterException"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:MemberContext"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="updateKubernetesMaster">
+            <xs:element name="CloudControllerServiceInvalidPartitionException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax29:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax21:InvalidPartitionException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="CloudControllerServiceInvalidPartitionException">
                 <xs:complexType>
@@ -412,10 +443,17 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="partition" nillable="true" type="ax26:Partition"/>
+=======
+            <xs:element name="validatePartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax23:Partition"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="validatePartitionResponse">
+<<<<<<< HEAD
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
@@ -475,76 +513,84 @@
             <xs:element name="terminateInstances">
 =======
             <xs:element name="updateKubernetesMasterResponse">
+=======
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
+            <xs:element name="CloudControllerServiceInvalidClusterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax21:NonExistingKubernetesClusterException"/>
+                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax21:InvalidClusterException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getKubernetesCluster">
+            <xs:element name="terminateInstances">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getKubernetesClusterResponse">
+            <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:KubernetesCluster"/>
+                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax23:Registrant"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax21:InvalidKubernetesHostException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax21:NonExistingKubernetesHostException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax29:KubernetesHost"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHostResponse">
+            <xs:element name="registerServiceResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidPartitionException">
+            <xs:element name="getCartridgeInfo">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax21:InvalidPartitionException"/>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getCartridgeInfoResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:CartridgeInfo"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceUnregisteredClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax21:UnregisteredClusterException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unregisterService">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+<<<<<<< HEAD
             <xs:element name="validatePartition">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:element name="validateDeploymentPolicy">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax26:Partition"/>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax23:Partition"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="updateClusterStatus">
                 <xs:complexType>
@@ -583,66 +629,64 @@
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax26:CartridgeInfo"/>
 =======
             <xs:element name="validatePartitionResponse">
+=======
+            <xs:element name="validateDeploymentPolicyResponse">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceInvalidClusterException">
+            <xs:element name="updateClusterStatus">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax21:InvalidClusterException"/>
+                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="status" nillable="true" type="ax27:ClusterStatus"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateInstances">
+            <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
 >>>>>>> Add metadataKeys to the cartridge
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesClusterException" nillable="true" type="ax21:InvalidKubernetesClusterException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax29:KubernetesCluster"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesClusterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax29:KubernetesHost"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="getMasterForKubernetesCluster">
 =======
+                        <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" type="ax21:ApplicationClusterRegistrationException"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createApplicationClusters">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax23:ApplicationClusterContext"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceClusterInstanceCreationException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ClusterInstanceCreationException" nillable="true" type="ax21:ClusterInstanceCreationException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="createClusterInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getKubernetesClusters">
                 <xs:complexType>
                     <xs:sequence/>
@@ -655,28 +699,61 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeKubernetesCluster">
->>>>>>> Add metadataKeys to the cartridge
+            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax21:NonExistingKubernetesClusterException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+<<<<<<< HEAD
+<<<<<<< HEAD
+            <xs:element name="getMasterForKubernetesCluster">
+=======
+            <xs:element name="getKubernetesClusters">
+=======
+            <xs:element name="getMasterForKubernetesCluster">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeKubernetesClusterResponse">
+            <xs:element name="getMasterForKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:KubernetesMaster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeKubernetesHost">
+<<<<<<< HEAD
+            <xs:element name="removeKubernetesCluster">
+>>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:element name="getHostsForKubernetesCluster">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHostId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getHostsForKubernetesClusterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:KubernetesHost"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidKubernetesClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidKubernetesClusterException" nillable="true" type="ax21:InvalidKubernetesClusterException"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
                 <xs:complexType>
@@ -696,27 +773,35 @@
             <xs:element name="addKubernetesHostResponse">
 =======
             <xs:element name="removeKubernetesHostResponse">
+=======
+            <xs:element name="addKubernetesCluster">
+>>>>>>> Handling metadata imports & exports in Cartridges
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax29:KubernetesCluster"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getHostsForKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+<<<<<<< HEAD
             <xs:element name="getHostsForKubernetesClusterResponse">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:KubernetesHost"/>
+                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax21:InvalidKubernetesHostException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="updateKubernetesHost">
                 <xs:complexType>
@@ -770,82 +855,88 @@
             <xs:element name="startInstanceResponse">
 =======
             <xs:element name="getMasterForKubernetesCluster">
+=======
+            <xs:element name="addKubernetesHost">
+>>>>>>> Handling metadata imports & exports in Cartridges
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax29:KubernetesHost"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesHostResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeKubernetesCluster">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getMasterForKubernetesClusterResponse">
+            <xs:element name="removeKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:KubernetesMaster"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addServiceGroup">
+            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax26:ServiceGroup"/>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax21:NonExistingKubernetesHostException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeServiceGroup">
+            <xs:element name="removeKubernetesHost">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="kubernetesHostId" nillable="true" type="xs:string"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceClusterInstanceCreationException">
+            <xs:element name="removeKubernetesHostResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ClusterInstanceCreationException" nillable="true" type="ax21:ClusterInstanceCreationException"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="createClusterInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceType" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validateDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax26:Partition"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+<<<<<<< HEAD
             <xs:element name="validateDeploymentPolicyResponse">
 >>>>>>> Add metadataKeys to the cartridge
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax26:MemberContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidMemberException">
+=======
+            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax21:InvalidMemberException"/>
+                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax21:InvalidKubernetesMasterException"/>
+>>>>>>> Handling metadata imports & exports in Cartridges
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="terminateInstance">
+            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax21:NonExistingKubernetesMasterException"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="updateKubernetesMaster">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax29:KubernetesMaster"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:element name="registerService">
                 <xs:complexType>
@@ -857,32 +948,45 @@
             <xs:element name="registerServiceResponse">
 =======
             <xs:element name="startInstance">
+=======
+            <xs:element name="updateKubernetesMasterResponse">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax26:InstanceContext"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="startInstanceResponse">
+            <xs:element name="updateKubernetesHost">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax26:MemberContext"/>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax29:KubernetesHost"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
+            <xs:element name="updateKubernetesHostResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" type="ax21:ApplicationClusterRegistrationException"/>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="createApplicationClusters">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:element name="getKubernetesCluster">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax26:ApplicationClusterContext"/>
+                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getKubernetesClusterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:KubernetesCluster"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -901,7 +1005,7 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax24:Property"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax25:Property"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -912,7 +1016,16 @@
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
+<<<<<<< HEAD
             <xs:complexType name="InvalidCartridgeDefinitionException">
+=======
+            <xs:complexType name="InvalidServiceGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CartridgeNotFoundException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -926,19 +1039,27 @@
                 <xs:sequence/>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="InvalidCartridgeTypeException">
 =======
             <xs:complexType name="UnregisteredClusterException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="InvalidMemberException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="CartridgeDefinitionNotExistsException">
 =======
             <xs:complexType name="InvalidServiceGroupException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="InvalidCartridgeTypeException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -957,6 +1078,7 @@
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="NonExistingKubernetesHostException">
 =======
             <xs:complexType name="InvalidCartridgeTypeException">
@@ -975,19 +1097,26 @@
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+=======
+>>>>>>> Handling metadata imports & exports in Cartridges
             <xs:complexType name="InvalidPartitionException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
             <xs:complexType name="CartridgeNotFoundException">
 =======
             <xs:complexType name="NonExistingKubernetesMasterException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="InvalidClusterException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="CloudControllerException">
                 <xs:complexContent>
@@ -1000,62 +1129,85 @@
 =======
             <xs:complexType name="NonExistingKubernetesClusterException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="UnregisteredClusterException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidKubernetesHostException">
+            <xs:complexType name="ApplicationClusterRegistrationException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="NonExistingKubernetesHostException">
+            <xs:complexType name="ClusterInstanceCreationException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidPartitionException">
+            <xs:complexType name="NonExistingKubernetesClusterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="InvalidKubernetesHostException">
 =======
             <xs:complexType name="InvalidClusterException">
+=======
+            <xs:complexType name="InvalidKubernetesClusterException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
             <xs:complexType name="InvalidKubernetesClusterException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="InvalidKubernetesHostException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="InvalidKubernetesMasterException">
 =======
             <xs:complexType name="ClusterInstanceCreationException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="NonExistingKubernetesHostException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="NonExistingKubernetesMasterException">
 =======
             <xs:complexType name="InvalidMemberException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="InvalidKubernetesMasterException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="InvalidMemberException">
 =======
             <xs:complexType name="ApplicationClusterRegistrationException">
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="NonExistingKubernetesMasterException">
+>>>>>>> Handling metadata imports & exports in Cartridges
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -1063,6 +1215,16 @@
         </xs:schema>
         <xs:schema xmlns:ax210="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
+            <xs:complexType name="KubernetesCluster">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax29:KubernetesHost"/>
+                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax29:KubernetesMaster"/>
+                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax29:PortRange"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax210:Properties"/>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="KubernetesHost">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"/>
@@ -1080,16 +1242,6 @@
                     </xs:extension>
                 </xs:complexContent>
             </xs:complexType>
-            <xs:complexType name="KubernetesCluster">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="kubernetesHosts" nillable="true" type="ax29:KubernetesHost"/>
-                    <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax29:KubernetesMaster"/>
-                    <xs:element minOccurs="0" name="portRange" nillable="true" type="ax29:PortRange"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax210:Properties"/>
-                </xs:sequence>
-            </xs:complexType>
             <xs:complexType name="PortRange">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="lower" type="xs:int"/>
@@ -1097,10 +1249,27 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax25="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax26="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+            <xs:complexType name="ServiceGroup">
+                <xs:sequence>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax23:Dependencies"/>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+>>>>>>> Handling metadata imports & exports in Cartridges
             <xs:complexType name="InstanceContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
@@ -1162,22 +1331,19 @@
                     <xs:element minOccurs="0" name="ram" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="Registrant">
+            <xs:complexType name="ClusterContext">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="kubernetesServices" nillable="true" type="xs:anyType"/>
+                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Persistence">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"/>
+                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
@@ -1191,20 +1357,6 @@
                     <xs:element minOccurs="0" name="size" type="xs:int"/>
                     <xs:element minOccurs="0" name="snapshotId" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="volumeId" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ServiceGroup">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax23:Dependencies"/>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Dependencies">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
 >>>>>>> Add metadataKeys to the cartridge
@@ -1281,12 +1433,16 @@
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> Handling metadata imports & exports in Cartridges
             <xs:complexType name="Persistence">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
             <xs:complexType name="Volume">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="device" nillable="true" type="xs:string"/>
@@ -1301,6 +1457,8 @@
             </xs:complexType>
 =======
 >>>>>>> Add metadataKeys to the cartridge
+=======
+>>>>>>> Handling metadata imports & exports in Cartridges
             <xs:complexType name="PortMapping">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="kubernetesServicePort" type="xs:int"/>
@@ -1310,6 +1468,7 @@
                     <xs:element minOccurs="0" name="proxyPort" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="ServiceGroup">
                 <xs:sequence>
@@ -1404,6 +1563,21 @@
             </xs:complexType>
 =======
 >>>>>>> Add metadataKeys to the cartridge
+=======
+            <xs:complexType name="Registrant">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="autoScalerPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
+                    <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
+                </xs:sequence>
+            </xs:complexType>
+>>>>>>> Handling metadata imports & exports in Cartridges
             <xs:complexType name="CartridgeInfo">
                 <xs:sequence>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax23:AppType"/>
@@ -1417,6 +1591,7 @@
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax23:LoadbalancerConfig"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="persistence" nillable="true" type="ax23:Persistence"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax23:PortMapping"/>
@@ -1432,22 +1607,6 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="appSpecificMapping" type="xs:boolean"/>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ClusterContext">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesServices" nillable="true" type="xs:anyType"/>
-                    <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
-                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"/>
-                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationClusterContext">
@@ -1548,9 +1707,6 @@
     <wsdl:message name="CloudControllerServiceInvalidKubernetesClusterException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidKubernetesClusterException"/>
     </wsdl:message>
-    <wsdl:message name="addServiceGroupRequest">
-        <wsdl:part name="parameters" element="ns:addServiceGroup"/>
-    </wsdl:message>
     <wsdl:message name="registerServiceRequest">
         <wsdl:part name="parameters" element="ns:registerService"/>
     </wsdl:message>
@@ -1559,6 +1715,9 @@
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceCartridgeNotFoundException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeNotFoundException"/>
+    </wsdl:message>
+    <wsdl:message name="addServiceGroupRequest">
+        <wsdl:part name="parameters" element="ns:addServiceGroup"/>
     </wsdl:message>
     <wsdl:message name="terminateInstanceRequest">
         <wsdl:part name="parameters" element="ns:terminateInstance"/>
@@ -1641,23 +1800,23 @@
     <wsdl:message name="getMasterForKubernetesClusterResponse">
         <wsdl:part name="parameters" element="ns:getMasterForKubernetesClusterResponse"/>
     </wsdl:message>
+    <wsdl:message name="startInstancesRequest">
+        <wsdl:part name="parameters" element="ns:startInstances"/>
+    </wsdl:message>
+    <wsdl:message name="startInstancesResponse">
+        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
+    </wsdl:message>
     <wsdl:message name="updateCartridgeRequest">
         <wsdl:part name="parameters" element="ns:updateCartridge"/>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceInvalidCartridgeDefinitionException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidCartridgeDefinitionException"/>
     </wsdl:message>
-    <wsdl:message name="CloudControllerServiceInvalidIaasProviderException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidIaasProviderException"/>
-    </wsdl:message>
     <wsdl:message name="CloudControllerServiceCartridgeDefinitionNotExistsException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeDefinitionNotExistsException"/>
-    </wsdl:message>
-    <wsdl:message name="startInstancesRequest">
-        <wsdl:part name="parameters" element="ns:startInstances"/>
-    </wsdl:message>
-    <wsdl:message name="startInstancesResponse">
-        <wsdl:part name="parameters" element="ns:startInstancesResponse"/>
     </wsdl:message>
     <wsdl:message name="startInstanceRequest">
         <wsdl:part name="parameters" element="ns:startInstance"/>
@@ -1671,14 +1830,14 @@
     <wsdl:message name="CloudControllerServiceInvalidClusterException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceInvalidClusterException"/>
     </wsdl:message>
+    <wsdl:message name="updateClusterStatusRequest">
+        <wsdl:part name="parameters" element="ns:updateClusterStatus"/>
+    </wsdl:message>
     <wsdl:message name="getClusterContextRequest">
         <wsdl:part name="parameters" element="ns:getClusterContext"/>
     </wsdl:message>
     <wsdl:message name="getClusterContextResponse">
         <wsdl:part name="parameters" element="ns:getClusterContextResponse"/>
-    </wsdl:message>
-    <wsdl:message name="updateClusterStatusRequest">
-        <wsdl:part name="parameters" element="ns:updateClusterStatus"/>
     </wsdl:message>
     <wsdl:message name="updateKubernetesHostRequest">
         <wsdl:part name="parameters" element="ns:updateKubernetesHost"/>
@@ -1745,14 +1904,14 @@
             <wsdl:output message="ns:addKubernetesClusterResponse" wsaw:Action="urn:addKubernetesClusterResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidKubernetesClusterException" name="CloudControllerServiceInvalidKubernetesClusterException" wsaw:Action="urn:addKubernetesClusterCloudControllerServiceInvalidKubernetesClusterException"/>
         </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <wsdl:input message="ns:addServiceGroupRequest" wsaw:Action="urn:addServiceGroup"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:addServiceGroupCloudControllerServiceInvalidServiceGroupException"/>
-        </wsdl:operation>
         <wsdl:operation name="registerService">
             <wsdl:input message="ns:registerServiceRequest" wsaw:Action="urn:registerService"/>
             <wsdl:output message="ns:registerServiceResponse" wsaw:Action="urn:registerServiceResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeNotFoundException" name="CloudControllerServiceCartridgeNotFoundException" wsaw:Action="urn:registerServiceCloudControllerServiceCartridgeNotFoundException"/>
+        </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <wsdl:input message="ns:addServiceGroupRequest" wsaw:Action="urn:addServiceGroup"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidServiceGroupException" name="CloudControllerServiceInvalidServiceGroupException" wsaw:Action="urn:addServiceGroupCloudControllerServiceInvalidServiceGroupException"/>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <wsdl:input message="ns:terminateInstanceRequest" wsaw:Action="urn:terminateInstance"/>
@@ -1813,18 +1972,18 @@
             <wsdl:output message="ns:getMasterForKubernetesClusterResponse" wsaw:Action="urn:getMasterForKubernetesClusterResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceNonExistingKubernetesClusterException" name="CloudControllerServiceNonExistingKubernetesClusterException" wsaw:Action="urn:getMasterForKubernetesClusterCloudControllerServiceNonExistingKubernetesClusterException"/>
         </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <wsdl:input message="ns:updateCartridgeRequest" wsaw:Action="urn:updateCartridge"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"/>
-            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidIaasProviderException"/>
-            <wsdl:fault message="ns:CloudControllerServiceCartridgeDefinitionNotExistsException" name="CloudControllerServiceCartridgeDefinitionNotExistsException" wsaw:Action="urn:updateCartridgeCloudControllerServiceCartridgeDefinitionNotExistsException"/>
-        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <wsdl:input message="ns:startInstancesRequest" wsaw:Action="urn:startInstances"/>
             <wsdl:output message="ns:startInstancesResponse" wsaw:Action="urn:startInstancesResponse"/>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeNotFoundException" name="CloudControllerServiceCartridgeNotFoundException" wsaw:Action="urn:startInstancesCloudControllerServiceCartridgeNotFoundException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:startInstancesCloudControllerServiceInvalidIaasProviderException"/>
             <wsdl:fault message="ns:CloudControllerServiceCloudControllerException" name="CloudControllerServiceCloudControllerException" wsaw:Action="urn:startInstancesCloudControllerServiceCloudControllerException"/>
+        </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <wsdl:input message="ns:updateCartridgeRequest" wsaw:Action="urn:updateCartridge"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"/>
+            <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:updateCartridgeCloudControllerServiceInvalidIaasProviderException"/>
+            <wsdl:fault message="ns:CloudControllerServiceCartridgeDefinitionNotExistsException" name="CloudControllerServiceCartridgeDefinitionNotExistsException" wsaw:Action="urn:updateCartridgeCloudControllerServiceCartridgeDefinitionNotExistsException"/>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <wsdl:input message="ns:startInstanceRequest" wsaw:Action="urn:startInstance"/>
@@ -1837,12 +1996,12 @@
             <wsdl:input message="ns:terminateInstancesRequest" wsaw:Action="urn:terminateInstances"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidClusterException" name="CloudControllerServiceInvalidClusterException" wsaw:Action="urn:terminateInstancesCloudControllerServiceInvalidClusterException"/>
         </wsdl:operation>
+        <wsdl:operation name="updateClusterStatus">
+            <wsdl:input message="ns:updateClusterStatusRequest" wsaw:Action="urn:updateClusterStatus"/>
+        </wsdl:operation>
         <wsdl:operation name="getClusterContext">
             <wsdl:input message="ns:getClusterContextRequest" wsaw:Action="urn:getClusterContext"/>
             <wsdl:output message="ns:getClusterContextResponse" wsaw:Action="urn:getClusterContextResponse"/>
-        </wsdl:operation>
-        <wsdl:operation name="updateClusterStatus">
-            <wsdl:input message="ns:updateClusterStatusRequest" wsaw:Action="urn:updateClusterStatus"/>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <wsdl:input message="ns:updateKubernetesHostRequest" wsaw:Action="urn:updateKubernetesHost"/>
@@ -1968,6 +2127,15 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidKubernetesClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <soap:operation soapAction="urn:addServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap:operation soapAction="urn:registerService" style="document"/>
             <wsdl:input>
@@ -1978,15 +2146,6 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <soap:operation soapAction="urn:addServiceGroup" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
@@ -2130,6 +2289,21 @@
                 <soap:fault use="literal" name="CloudControllerServiceNonExistingKubernetesClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <soap:operation soapAction="urn:updateCartridge" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <soap:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <soap:operation soapAction="urn:startInstances" style="document"/>
             <wsdl:input>
@@ -2143,21 +2317,6 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <soap:operation soapAction="urn:updateCartridge" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <soap:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
@@ -2190,12 +2349,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="updateClusterStatus">
-            <soap:operation soapAction="urn:updateClusterStatus" style="document"/>
-            <wsdl:input>
-                <soap:body use="literal"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="getClusterContext">
             <soap:operation soapAction="urn:getClusterContext" style="document"/>
             <wsdl:input>
@@ -2204,6 +2357,12 @@
             <wsdl:output>
                 <soap:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateClusterStatus">
+            <soap:operation soapAction="urn:updateClusterStatus" style="document"/>
+            <wsdl:input>
+                <soap:body use="literal"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <soap:operation soapAction="urn:updateKubernetesHost" style="document"/>
@@ -2364,6 +2523,15 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidKubernetesClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <soap12:operation soapAction="urn:addServiceGroup" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <soap12:operation soapAction="urn:registerService" style="document"/>
             <wsdl:input>
@@ -2374,15 +2542,6 @@
             </wsdl:output>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <soap12:operation soapAction="urn:addServiceGroup" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceInvalidServiceGroupException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidServiceGroupException"/>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
@@ -2526,6 +2685,21 @@
                 <soap12:fault use="literal" name="CloudControllerServiceNonExistingKubernetesClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <soap12:operation soapAction="urn:updateCartridge" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
+            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <soap12:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
+            </wsdl:fault>
+            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
+                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
+            </wsdl:fault>
+        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <soap12:operation soapAction="urn:startInstances" style="document"/>
             <wsdl:input>
@@ -2539,21 +2713,6 @@
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceCartridgeNotFoundException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeNotFoundException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
-            </wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <soap12:operation soapAction="urn:updateCartridge" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-            <wsdl:fault name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <soap12:fault use="literal" name="CloudControllerServiceCartridgeDefinitionNotExistsException"/>
-            </wsdl:fault>
-            <wsdl:fault name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeDefinitionException"/>
             </wsdl:fault>
             <wsdl:fault name="CloudControllerServiceInvalidIaasProviderException">
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidIaasProviderException"/>
@@ -2586,12 +2745,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidClusterException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="updateClusterStatus">
-            <soap12:operation soapAction="urn:updateClusterStatus" style="document"/>
-            <wsdl:input>
-                <soap12:body use="literal"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="getClusterContext">
             <soap12:operation soapAction="urn:getClusterContext" style="document"/>
             <wsdl:input>
@@ -2600,6 +2753,12 @@
             <wsdl:output>
                 <soap12:body use="literal"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateClusterStatus">
+            <soap12:operation soapAction="urn:updateClusterStatus" style="document"/>
+            <wsdl:input>
+                <soap12:body use="literal"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <soap12:operation soapAction="urn:updateKubernetesHost" style="document"/>
@@ -2733,6 +2892,12 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="addServiceGroup">
+            <http:operation location="addServiceGroup"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="registerService">
             <http:operation location="registerService"/>
             <wsdl:input>
@@ -2741,12 +2906,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="addServiceGroup">
-            <http:operation location="addServiceGroup"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="terminateInstance">
             <http:operation location="terminateInstance"/>
@@ -2847,6 +3006,12 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
         </wsdl:operation>
+        <wsdl:operation name="updateCartridge">
+            <http:operation location="updateCartridge"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="startInstances">
             <http:operation location="startInstances"/>
             <wsdl:input>
@@ -2855,12 +3020,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="updateCartridge">
-            <http:operation location="updateCartridge"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="startInstance">
             <http:operation location="startInstance"/>
@@ -2877,12 +3036,6 @@
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:input>
         </wsdl:operation>
-        <wsdl:operation name="updateClusterStatus">
-            <http:operation location="updateClusterStatus"/>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
-            </wsdl:input>
-        </wsdl:operation>
         <wsdl:operation name="getClusterContext">
             <http:operation location="getClusterContext"/>
             <wsdl:input>
@@ -2891,6 +3044,12 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"/>
             </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="updateClusterStatus">
+            <http:operation location="updateClusterStatus"/>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"/>
+            </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="updateKubernetesHost">
             <http:operation location="updateKubernetesHost"/>

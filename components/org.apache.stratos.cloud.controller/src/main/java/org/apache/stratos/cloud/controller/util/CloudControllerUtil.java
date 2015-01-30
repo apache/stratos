@@ -239,6 +239,7 @@ public class CloudControllerUtil {
 		Property[] props = new Property[propList.size()];
 		
 		cartridgeInfo.setProperties(propList.toArray(props));
+	    cartridgeInfo.setMetadataKeys(cartridge.getMetadataKeys());
 
 		return cartridgeInfo;
 	}
