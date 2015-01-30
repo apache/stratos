@@ -20,7 +20,7 @@
 # --------------------------------------------------------------
 
 FROM debian:7.7
-MAINTAINER imesh@apache.org
+MAINTAINER dev@stratos.apache.org
 
 # ------------------
 # Setup ssh server

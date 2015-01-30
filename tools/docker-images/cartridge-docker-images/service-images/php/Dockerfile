@@ -20,7 +20,7 @@
 # --------------------------------------------------------------
 
 FROM stratos/base-image:4.1.0-alpha
-MAINTAINER imesh@apache.org
+MAINTAINER dev@stratos.apache.org
 
 ##################
 # Install PHP
