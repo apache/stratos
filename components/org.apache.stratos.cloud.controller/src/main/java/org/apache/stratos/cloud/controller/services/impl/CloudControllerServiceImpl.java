@@ -1050,7 +1050,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
 		        if(appClusterCtxt.getCartridgeType().equals("lb")) {
-			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyCluterIds();
+			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
 			        if(dependencyClusterIDs!=null) {
 				        for (int i = 0; i < dependencyClusterIDs.length; i++) {
 					        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(

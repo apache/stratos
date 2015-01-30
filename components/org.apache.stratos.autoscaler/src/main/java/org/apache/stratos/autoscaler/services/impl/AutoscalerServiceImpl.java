@@ -201,8 +201,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         Application application = applicationParser.parse(applicationContext);
         RegistryManager.getInstance().persistApplication(application);
 
-        Set<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
-        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContexts);
+        List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
+        ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts.toArray(
+                new ApplicationClusterContext[applicationClusterContexts.size()]);
+        applicationContext.getComponents().setApplicationClusterContexts(applicationClusterContextsArray);
 
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);

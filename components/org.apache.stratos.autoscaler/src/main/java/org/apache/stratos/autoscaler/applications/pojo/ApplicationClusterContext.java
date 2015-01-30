@@ -46,11 +46,11 @@ public class ApplicationClusterContext implements Serializable {
     // properties
     private Properties properties;
 
-	private String[] dependencyCluterIds;
+	private String[] dependencyClusterIds;
 
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
                                       String textPayload, String deploymentPolicyName, boolean isLbCluster,
-                                      String tenantRange, String[] dependencyCluterIds) {
+                                      String tenantRange, String[] dependencyClusterIds) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -59,7 +59,7 @@ public class ApplicationClusterContext implements Serializable {
         this.deploymentPolicyName = deploymentPolicyName;
         this.isLbCluster = isLbCluster;
         this.tenantRange = tenantRange;
-	    this.dependencyCluterIds=dependencyCluterIds;
+	    this.dependencyClusterIds = dependencyClusterIds;
     }
 
     public String getClusterId() {
@@ -154,11 +154,11 @@ public class ApplicationClusterContext implements Serializable {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 
-	public String[] getDependencyCluterId() {
-		return dependencyCluterIds;
+	public String[] getDependencyClusterIds() {
+		return dependencyClusterIds;
 	}
 
-	public void setDependencyCluterId(String[] dependencyCluterIds) {
-		this.dependencyCluterIds = dependencyCluterIds;
+	public void setDependencyClusterIds(String[] dependencyClusterIds) {
+		this.dependencyClusterIds = dependencyClusterIds;
 	}
 }

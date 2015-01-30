@@ -44,7 +44,6 @@ import org.apache.stratos.common.constants.StratosConstants;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * This class will call cloud controller web service to take the action decided by Autoscaler
@@ -225,22 +224,26 @@ public class CloudControllerClient {
     }
 
     public synchronized void createApplicationClusters(String appId,
-                                                       Set<ApplicationClusterContext> appClusterContexts) {
+                                                       ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
                                         new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
-        for(ApplicationClusterContext applicationClusterContext : appClusterContexts) {
-            org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
-            dto.setClusterId(applicationClusterContext.getClusterId());
-            dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
-            dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
-            dto.setCartridgeType(applicationClusterContext.getCartridgeType());
-            dto.setHostName(applicationClusterContext.getHostName());
-            dto.setTenantRange(applicationClusterContext.getTenantRange());
-            dto.setTextPayload(applicationClusterContext.getTextPayload());
-            dto.setLbCluster(applicationClusterContext.isLbCluster());
-            dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
-			dto.setDependencyCluterIds(applicationClusterContext.getDependencyCluterId());
-            contextDTOs.add(dto);
+        if(applicationClusterContexts != null) {
+            for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
+                if(applicationClusterContext != null) {
+                    org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
+                    dto.setClusterId(applicationClusterContext.getClusterId());
+                    dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
+                    dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
+                    dto.setCartridgeType(applicationClusterContext.getCartridgeType());
+                    dto.setHostName(applicationClusterContext.getHostName());
+                    dto.setTenantRange(applicationClusterContext.getTenantRange());
+                    dto.setTextPayload(applicationClusterContext.getTextPayload());
+                    dto.setLbCluster(applicationClusterContext.isLbCluster());
+                    dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
+                    dto.setDependencyClusterIds(applicationClusterContext.getDependencyClusterIds());
+                    contextDTOs.add(dto);
+                }
+            }
         }
 
         org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext[] applicationClusterContextDTOs =

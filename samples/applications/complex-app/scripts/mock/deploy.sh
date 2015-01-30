@@ -31,12 +31,12 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/
 echo "Adding group8c group..."
 curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/group8c.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups
 
-sleep 5
+sleep 1
 
 echo "Creating application..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-definition.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
-sleep 5
+sleep 1
 
 echo "Deploying application..."
 curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/complex-app/deploy

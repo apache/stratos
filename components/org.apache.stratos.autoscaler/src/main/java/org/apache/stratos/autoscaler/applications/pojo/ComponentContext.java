@@ -20,7 +20,6 @@
 package org.apache.stratos.autoscaler.applications.pojo;
 
 import java.io.Serializable;
-import java.util.Set;
 
 public class ComponentContext implements Serializable {
 
@@ -29,7 +28,7 @@ public class ComponentContext implements Serializable {
     private GroupContext[] groupContexts;
     private CartridgeContext[] cartridgeContexts;
     private DependencyContext dependencyContext;
-    private Set<ApplicationClusterContext> applicationClusterContexts;
+    private ApplicationClusterContext[] applicationClusterContexts;
 
     public GroupContext[] getGroupContexts() {
         return groupContexts;
@@ -55,11 +54,11 @@ public class ComponentContext implements Serializable {
         this.dependencyContext = dependencyContext;
     }
 
-    public void setApplicationClusterContexts(Set<ApplicationClusterContext> applicationClusterContexts) {
+    public void setApplicationClusterContexts(ApplicationClusterContext[] applicationClusterContexts) {
         this.applicationClusterContexts = applicationClusterContexts;
     }
 
-    public Set<ApplicationClusterContext> getApplicationClusterContexts() {
+    public ApplicationClusterContext[] getApplicationClusterContexts() {
         return applicationClusterContexts;
     }
 }

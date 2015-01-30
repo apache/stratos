@@ -89,7 +89,7 @@ public class AutoscalerUtil {
     }
 
     private static Application getApplicationFromPath (String appResourcePath) {
-        return RegistryManager.getInstance().getApplication(appResourcePath);
+        return RegistryManager.getInstance().getApplicationByResourcePath(appResourcePath);
     }
 
     public static void removeApplication (String applicationId) {

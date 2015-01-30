@@ -293,7 +293,13 @@ public class RegistryManager {
         return null;
     }
 
-    public Application getApplication(String applicationResourcePath) {
+    public Application getApplication(String applicationId) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATIONS_RESOURCE +
+                "/" + applicationId;
+        return getApplicationByResourcePath(resourcePath);
+    }
+
+    public Application getApplicationByResourcePath(String applicationResourcePath) {
 
         try {
             PrivilegedCarbonContext.startTenantFlow();

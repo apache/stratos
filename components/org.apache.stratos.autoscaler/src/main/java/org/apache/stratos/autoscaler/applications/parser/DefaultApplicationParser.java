@@ -56,13 +56,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
-    private Set<ApplicationClusterContext> applicationClusterContexts;
+    private List<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
     private Map<String, SubscribableInfoContext> subscribableInformation = new HashMap<String, SubscribableInfoContext>();
     private String oauthToken;
 
     public DefaultApplicationParser() {
-        this.applicationClusterContexts = new HashSet<ApplicationClusterContext>();
+        this.applicationClusterContexts = new ArrayList<ApplicationClusterContext>();
         this.setAliasToProperties(new HashMap<String, Properties>());
 
     }
@@ -103,7 +103,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
 
     @Override
-    public Set<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException {
+    public List<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException {
         return applicationClusterContexts;
     }
 

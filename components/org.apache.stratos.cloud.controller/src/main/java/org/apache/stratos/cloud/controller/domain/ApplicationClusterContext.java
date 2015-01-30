@@ -43,7 +43,7 @@ public class ApplicationClusterContext {
     // properties
     private Properties properties;
 	//dependencyclusterid
-	private String[] dependencyCluterIds;
+	private String[] dependencyClusterIds;
 
     public ApplicationClusterContext() {
     }
@@ -140,11 +140,11 @@ public class ApplicationClusterContext {
         this.properties = properties;
     }
 
-	public String[] getDependencyCluterIds() {
-		return dependencyCluterIds;
+	public String[] getDependencyClusterIds() {
+		return dependencyClusterIds;
 	}
 
-	public void setDependencyCluterIds(String[] dependencyCluterIds) {
-		this.dependencyCluterIds = dependencyCluterIds;
+	public void setDependencyClusterIds(String[] dependencyClusterIds) {
+		this.dependencyClusterIds = dependencyClusterIds;
 	}
 }
