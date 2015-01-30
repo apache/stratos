@@ -67,7 +67,7 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
      */
     @Override
     public String getDescription() {
-        return "add network partition deployment";
+        return "Add network partition deployment";
     }
 
     /**
@@ -104,7 +104,7 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
-            logger.info("Get name" + getName());
+            logger.debug("Get name" + getName());
         }
 
         if (args != null && args.length > 0) {

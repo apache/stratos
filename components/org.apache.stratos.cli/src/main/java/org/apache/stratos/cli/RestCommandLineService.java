@@ -410,7 +410,10 @@ public class RestCommandLineService {
         return gson.fromJson(resultString, ClusterBean.class);
     }
 
-    // This method helps to create the new tenant
+    /**
+     * Add new tenant
+     * @throws CommandException
+     */
     public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email)
             throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -445,7 +448,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to create the new user
+    /**
+     * Add user
+     * @throws CommandException
+     */
     public void addUser(String userName, String credential, String role, String firstName, String lastName, String email, String profileName)
             throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -482,7 +488,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to delete the created tenant
+    /**
+     * Delete tenant
+     * @throws CommandException
+     */
     public void deleteTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -511,7 +520,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to delete the created user
+    /**
+     * Delete user
+     * @throws CommandException
+     */
     public void deleteUser(String userName) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -540,7 +552,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deactivate the created tenant
+    /**
+     * Deactivate tenant
+     * @throws CommandException
+     */
     public void deactivateTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -569,7 +584,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to activate, deactivated tenant
+    /**
+     * Activate tenant
+     * @throws CommandException
+     */
     public void activateTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -598,7 +616,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to list all tenants
+    /**
+     * List tenants
+     * @throws CommandException
+     */
     public void listTenants() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<TenantInfoBean>>() {
@@ -634,7 +655,10 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to list all users
+    /**
+     * List all users
+     * @throws CommandException
+     */
     public void listAllUsers() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<UserInfoBean>>() {
@@ -667,32 +691,50 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to add cartridge definitions
+    /**
+     * Add cartridge
+     * @throws CommandException
+     */
     public void addCartridge(String cartridgeDefinition) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
 
-    // This method helps to update cartridge definitions
+    /**
+     * Update cartridge
+     * @throws CommandException
+     */
     public void updateCartridge(String cartridgeDefinition) throws CommandException {
         restClient.updateEntity(ENDPOINT_DEPLOY_CARTRIDGE, cartridgeDefinition, "cartridge");
     }
 
-    // This method helps to undeploy cartridge definitions
+    /**
+     * Undeploy cartridge
+     * @throws CommandException
+     */
     public void undeployCartrigdeDefinition(String id) throws CommandException {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_CARTRIDGE, "cartridge", id);
     }
 
-    // This method helps to deploy autoscalling polices
+    /**
+     * Deploy autoscaling policy
+     * @throws CommandException
+     */
     public void addAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.deployEntity(ENDPOINT_DEPLOY_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
-    // This method helps to update an autoscaling policy
+    /**
+     * Update autoscaling policy
+     * @throws CommandException
+     */
     public void updateAutoscalingPolicy(String autoScalingPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_AUTOSCALING_POLICY, autoScalingPolicy, "autoscaling policy");
     }
 
-    // This method helps to list applications
+    /**
+     * List applications
+     * @throws CommandException
+     */
     public void listApplications() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<ApplicationBean>>() {
@@ -728,6 +770,10 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * List autoscaling policies
+     * @throws CommandException
+     */
     public void listAutoscalingPolicies() throws CommandException {
         try {
             Type listType = new TypeToken<ArrayList<AutoscalePolicyBean>>() {
@@ -761,6 +807,10 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Describe deployment policy
+     * @throws CommandException
+     */
     public void describeDeploymentPolicy(String applicationId) throws CommandException {
         try {
             DeploymentPolicyBean policy = (DeploymentPolicyBean) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
@@ -779,6 +829,10 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Describe autoscaling policy
+     * @throws CommandException
+     */
     public void describeAutoScalingPolicy(String id) throws CommandException {
         try {
             AutoscalePolicyBean policy = (AutoscalePolicyBean) restClient.getEntity(ENDPOINT_GET_AUTOSCALING_POLICY,
@@ -797,10 +851,18 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Add Kubernetes Cluster
+     * @throws CommandException
+     */
     public void addKubernetesCluster(String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_KUBERNETES_CLUSTER, entityBody, "kubernetes cluster");
     }
 
+    /**
+     * List Kubernetes Clusters
+     * @throws CommandException
+     */
     public void listKubernetesClusters() {
         try {
             Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
@@ -831,10 +893,18 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Undeploy Kubernetes Cluster
+     * @throws CommandException
+     */
     public void undeployKubernetesCluster(String clusterId) {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER, "kubernetes cluster", clusterId);
     }
 
+    /**
+     * Add Kubernetes Host
+     * @throws CommandException
+     */
     public void addKubernetesHost(String entityBody, String clusterId) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -863,6 +933,10 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * List Kubernetes Hosts
+     * @throws CommandException
+     */
     public void listKubernetesHosts(String clusterId) {
         try {
             Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
@@ -894,11 +968,19 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Add Domain mappings
+     * @throws CommandException
+     */
     public void addDomainMappings(String applicationId, String resourceFileContent) {
         String endpoint = ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId);
         restClient.deployEntity(endpoint, resourceFileContent, "domain mappings");
     }
 
+    /**
+     * List domain mappings
+     * @throws CommandException
+     */
     public void listDomainMappings(String applicationId) {
         try {
             Type listType = new TypeToken<ArrayList<DomainMappingBean>>() {
@@ -931,25 +1013,45 @@ public class RestCommandLineService {
         }
     }
 
+    /**
+     * Remove Domain Mappings
+     * @throws CommandException
+     */
     public void removeDomainMappings(String applicationId) {
         String endpoint = ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId);
         restClient.undeployEntity(endpoint, "domain mappings", applicationId);
     }
 
+    /**
+     * Undeploy Kubernetes Host
+     * @throws CommandException
+     */
     public void undeployKubernetesHost(String clusterId, String hostId) {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId), "kubernetes host", hostId);
     }
 
+    /**
+     * Update Kubernetes Master
+     * @throws CommandException
+     */
     public void updateKubernetesMaster(String entityBody, String clusterId) {
         System.out.println(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId));
         restClient.updateEntity(ENDPOINT_UPDATE_KUBERNETES_MASTER.replace("{kubernetesClusterId}", clusterId), entityBody, "kubernetes master");
     }
 
+    /**
+     * Update Kubernetes Host
+     * @throws CommandException
+     */
     public void updateKubernetesHost(String entityBody, String clusterId, String hostId) {
         System.out.println((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId));
         restClient.updateEntity((ENDPOINT_UPDATE_KUBERNETES_HOST.replace("{kubernetesClusterId}", clusterId)).replace("{minionId}", hostId), entityBody, "kubernetes host");
     }
 
+    /**
+     * Synchronize artifacts
+     * @throws CommandException
+     */
     public void synchronizeArtifacts(String cartridgeAlias) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -975,17 +1077,26 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to deploy cartridge groups
+    /**
+     * Add cartridge group
+     * @throws CommandException
+     */
     public void addCartridgeGroup(String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_SERVICE_GROUP, entityBody, "cartridge group");
     }
 
-    // This method helps to undeploy cartridge groups
+    /**
+     * Undeploy Cartridge group
+     * @throws CommandException
+     */
     public void undeployServiceGroup (String groupDefinitionName) throws CommandException {
         restClient.undeployEntity(ENDPOINT_UNDEPLOY_SERVICE_GROUP, "cartridge group", groupDefinitionName);
     }
 
-    // This method helps to describe cartridge group definition
+    /**
+     * Describe service group
+     * @throws CommandException
+     */
     public void describeServiceGroup (String groupDefinitionName) {
         try {
             GroupBean bean = (GroupBean) restClient.listEntity(ENDPOINT_LIST_SERVICE_GROUP.replace("{groupDefinitionName}", groupDefinitionName),
@@ -1004,18 +1115,27 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to add applications
+    /**
+     * Add application
+     * @throws CommandException
+     */
     public void addApplication (String entityBody) {
         restClient.deployEntity(ENDPOINT_ADD_APPLICATION, entityBody, "application");
     }
 
-    // This method helps to deploy applications
+    /**
+     * Deploy application
+     * @throws CommandException
+     */
     public void deployApplication (String applicationId, String entityBody) {
         restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId), entityBody,
                 "application");
     }
 
-    // This method helps to undeploy applications
+    /**
+     * Undeploy application
+     * @throws CommandException
+     */
     public void undeployApplication(String applicationId) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
@@ -1044,18 +1164,28 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to remove applications
+    /**
+     * Remove application
+     * @throws CommandException
+     */// This method helps to remove applications
     public void deleteApplication (String applicationId) {
         restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
                 "application");
     }
 
+    /**
+     * Delete autoscaling policy
+     * @throws CommandException
+     */
     public void deleteAutoSclaingPolicy(String policyId) {
         restClient.deleteEntity(ENDPOINT_REMOVE_AUTOSCALINGPOLICY.replace("{policyId}", policyId), policyId,
                 "Auto-scaling policy");
     }
 
-    // This method helps to describe an application
+    /**
+     * Describe application
+     * @throws CommandException
+     */
     public void describeApplication (String applicationID) {
         try {
             Type listType = new TypeToken<ApplicationBean>() {
@@ -1077,12 +1207,18 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to add application signup
+    /**
+     * Add application signup
+     * @throws CommandException
+     */
     public void addApplicationSignup (String entityBody, String applicationId) {
         restClient.deployEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), entityBody, "application");
     }
 
-    // This method helps to describe application signup
+    /**
+     * Describe application signup
+     * @throws CommandException
+     */
     public void describeApplicationSignup (String applicationId) {
         try {
             ApplicationSignUpBean bean = (ApplicationSignUpBean) restClient.listEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId),
@@ -1101,13 +1237,19 @@ public class RestCommandLineService {
         }
     }
 
-    // This method helps to remove application signup
+    /**
+     * Delete application signup
+     * @throws CommandException
+     */
     public void deleteApplicationSignup (String applicationId) {
         restClient.deleteEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), applicationId,
                 "application signup");
     }
 
-    // This is for handle exception
+    /**
+     * Handle exception
+     * @throws CommandException
+     */
     private void handleException(String key, Exception e, Object... args) throws CommandException {
         if (log.isDebugEnabled()) {
             log.debug("Displaying message for {}. Exception thrown is {}", key, e.getClass());
@@ -1178,12 +1320,15 @@ public class RestCommandLineService {
             System.out.println("Network partitions found:");
             CliUtils.printTable(partitions, networkPartitionMapper, "PartitionId", "Kubernetes Cluster Id", "Partitions");
         } catch (Exception e) {
-            String message = "Error in listing network partitions" + e;
+            String message = "Error in listing network partitions";
             printError(message, e);
         }
     }
 
-    // This method helps to update network partition definitions
+    /**
+     * Update network partitions
+     * @throws CommandException
+     */
     public void updateNetworkPartition(String partitionDefinition) throws CommandException {
         restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, partitionDefinition, "network-partition");
     }
