@@ -21,11 +21,9 @@ package org.apache.stratos.manager.integration.tests;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Sample application tests.
@@ -39,13 +37,11 @@ public class SampleApplicationTests extends StratosTestServerManager {
 
     @Test
     public void testComplexApplication() {
-        startServer();
-        File deployFilePath = new File(SAMPLES_FOLDER_PATH + "/applications/complex-app/scripts/mock/deploy.sh");
-        deployFilePath.exists();
-
         try {
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (InterruptedException e) {
+            startServer();
+            File deployFilePath = new File(SAMPLES_FOLDER_PATH + "/applications/complex-app/scripts/mock/deploy.sh");
+            deployFilePath.exists();
+        } catch (Exception e) {
             log.error(e);
         }
     }

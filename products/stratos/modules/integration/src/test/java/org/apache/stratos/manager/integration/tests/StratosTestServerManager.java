@@ -20,7 +20,6 @@
 package org.apache.stratos.manager.integration.tests;
 
 import org.apache.activemq.broker.BrokerService;
-import org.apache.activemq.broker.TransportConnector;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,7 +32,6 @@ import org.wso2.carbon.integration.framework.utils.TestUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 
 import static org.testng.Assert.assertNotNull;
@@ -69,11 +67,8 @@ public class StratosTestServerManager extends TestServerManager {
             long time1 = System.currentTimeMillis();
             log.info("Starting ActiveMQ...");
             BrokerService broker = new BrokerService();
-
-            TransportConnector connector = new TransportConnector();
             broker.setBrokerName("testBroker");
             broker.addConnector(ACTIVEMQ_BIND_ADDRESS1);
-            broker.addConnector(connector);
             broker.start();
             long time2 = System.currentTimeMillis();
             log.info(String.format("ActiveMQ started in %d sec", (time2 - time1)/1000));
