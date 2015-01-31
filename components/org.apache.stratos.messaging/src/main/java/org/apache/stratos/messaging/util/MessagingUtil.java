@@ -218,7 +218,7 @@ public class MessagingUtil {
 	}
 
     public static String getMessagingProtocol() {
-        return System.getProperty(MessagingConstants.MESSAGING_PROTOCOL, MessagingConstants.AMQP);
+        return System.getProperty(MessagingConstants.MESSAGING_TRANSPORT, MessagingConstants.AMQP);
     }
 
 	/**

@@ -28,7 +28,7 @@ import java.io.File;
  */
 public class MessagingConstants {
 
-    public static final String MESSAGING_PROTOCOL = "messaging.protocol";
+    public static final String MESSAGING_TRANSPORT = "messaging.transport";
     public static final String AMQP = "amqp";
     public static final String MQTT = "mqtt";
     public static final String MQTT_URL_DEFAULT = "defaultValue";
