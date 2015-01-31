@@ -34,7 +34,7 @@ import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceI
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
@@ -203,7 +203,7 @@ public class CloudControllerServiceComponent {
 	protected void deactivate(ComponentContext ctx) {
         // Close event publisher connections to message broker
         try {
-            EventPublisherPool.close(Util.Topics.TOPOLOGY_TOPIC.getTopicName());
+            EventPublisherPool.close(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName());
         } catch (Exception e) {
             log.warn("An error occurred while closing cloud controller topology event publisher", e);
         }

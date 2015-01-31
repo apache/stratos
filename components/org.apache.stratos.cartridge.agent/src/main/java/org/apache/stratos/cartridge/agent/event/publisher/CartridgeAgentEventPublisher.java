@@ -30,7 +30,7 @@ import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Cartridge agent event publisher.
@@ -84,7 +84,7 @@ public class CartridgeAgentEventPublisher {
         log.info("Instance started event published")
 			 */
 
-			String topic = Util.getMessageTopicName(event);
+			String topic = MessagingUtil.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
 			eventPublisher.publish(event);
@@ -115,7 +115,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
 
 			// Event publisher connection will
-			String topic = Util.getMessageTopicName(event);
+			String topic = MessagingUtil.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
 			eventPublisher.publish(event);
@@ -151,7 +151,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
-			String topic = Util.getMessageTopicName(event);
+			String topic = MessagingUtil.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
 			eventPublisher.publish(event);
@@ -178,7 +178,7 @@ public class CartridgeAgentEventPublisher {
 					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
 					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
 					CartridgeAgentConfiguration.getInstance().getPartitionId());
-			String topic = Util.getMessageTopicName(event);
+			String topic = MessagingUtil.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool
 					.getPublisher(topic);
 			eventPublisher.publish(event);

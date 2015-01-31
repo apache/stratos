@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.user.core.tenant.TenantManager;
@@ -78,7 +78,7 @@ public class TenantSynzhronizerTask implements Task {
 				tenants.add(tenant);
 			}
 			CompleteTenantEvent event = new CompleteTenantEvent(tenants);
-			String topic = Util.getMessageTopicName(event);
+			String topic = MessagingUtil.getMessageTopicName(event);
 			EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 			eventPublisher.publish(event);
 		} catch (Exception e) {

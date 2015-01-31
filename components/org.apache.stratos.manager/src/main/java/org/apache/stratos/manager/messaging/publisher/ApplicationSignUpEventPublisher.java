@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpAddedEvent;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.List;
 
@@ -36,7 +36,7 @@ import java.util.List;
 public class ApplicationSignUpEventPublisher {
 
     private static void publish(Event event) {
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }

@@ -31,7 +31,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant event publisher to publish tenant events to the message broker by
@@ -43,7 +43,7 @@ public class TenantEventPublisher implements TenantMgtListener {
 	private static final int EXEC_ORDER = 1;
 
 	private void publish(Event event) {
-		String topic = Util.getMessageTopicName(event);
+		String topic = MessagingUtil.getMessageTopicName(event);
 		EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 		eventPublisher.publish(event);
 	}

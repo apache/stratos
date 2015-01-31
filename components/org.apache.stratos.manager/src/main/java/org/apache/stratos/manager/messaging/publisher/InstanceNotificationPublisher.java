@@ -24,9 +24,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Creating the relevant instance notification event and publish it to the
@@ -40,7 +38,7 @@ public class InstanceNotificationPublisher {
 	}
 
 	private void publish(Event event) {
-		String topic = Util.getMessageTopicName(event);
+		String topic = MessagingUtil.getMessageTopicName(event);
 		EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
 		eventPublisher.publish(event);
 	}

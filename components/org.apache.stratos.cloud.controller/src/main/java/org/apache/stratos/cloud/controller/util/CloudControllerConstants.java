@@ -138,7 +138,7 @@ public final class CloudControllerConstants {
 	public static final String AMQP_CONNECTION_URL_PROPERTY = "amqpConnectionUrl";
 	public static final String AMQP_INITIAL_CONTEXT_FACTORY_PROPERTY = "amqpInitialContextFactory";
 	public static final String AMQP_TOPIC_CONNECTION_FACTORY_PROPERTY = "amqpTopicConnectionFactory";
-	public static final String INSTANCE_TOPIC = "instance/#";
+	public static final String INSTANCE_TOPIC = "instance/*";
 	// pre define a floating ip
 	public static final String FLOATING_IP_PROPERTY = "floatingIp";
 	public static final String DEFAULT_FLOATING_IP_POOL = "defaultFloatingIpPool";

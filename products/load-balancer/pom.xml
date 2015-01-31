@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos.load.balancer</groupId>
     <artifactId>load-balancer-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Load Balancer</name>
+    <name>Apache Stratos - Load Balancer Product</name>
     <url>http://apache.org</url>
     <description>Apache Stratos Load Balancer</description>
 

@@ -29,7 +29,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>apache-stratos-cli-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - CLI - Distribution</name>
+    <name>Apache Stratos - CLI Product</name>
     <url>http://apache.org</url>
     <description>Apache Stratos CLI</description>
 

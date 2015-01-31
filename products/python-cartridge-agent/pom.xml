@@ -29,9 +29,9 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>python-cartridge-agent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Python Cartridge Agent</name>
+    <name>Apache Stratos - Python Cartridge Agent Product</name>
     <url>http://apache.org</url>
-    <description>Apache Stratos Python Cartridge Agent</description>
+    <description>Apache Stratos Python Cartridge Agent Product</description>
 
     <build>
         <plugins>

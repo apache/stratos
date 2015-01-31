@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>cartidge-agent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Cartridge Agent</name>
+    <name>Apache Stratos - Cartridge Agent Product</name>
     <url>http://apache.org</url>
 
     <modules>

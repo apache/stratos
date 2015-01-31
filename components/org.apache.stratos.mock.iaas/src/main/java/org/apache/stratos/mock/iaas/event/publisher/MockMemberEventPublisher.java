@@ -27,7 +27,7 @@ import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 
 /**
@@ -49,7 +49,7 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool
                 .getPublisher(topic);
         eventPublisher.publish(event);
@@ -72,7 +72,7 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getPartitionId());
 
         // Event publisher connection will
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
         if (log.isInfoEnabled()) {
@@ -92,7 +92,7 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool
                 .getPublisher(topic);
         eventPublisher.publish(event);
@@ -114,7 +114,7 @@ public class MockMemberEventPublisher {
                 mockMemberContext.getClusterInstanceId(),
                 mockMemberContext.getNetworkPartitionId(),
                 mockMemberContext.getPartitionId());
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
 

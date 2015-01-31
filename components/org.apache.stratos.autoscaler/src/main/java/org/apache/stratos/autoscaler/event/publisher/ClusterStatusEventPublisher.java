@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.cluster.status.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * This will publish cluster status events to cluster-status topic
@@ -240,7 +240,7 @@ public class ClusterStatusEventPublisher {
 
     public static void publishEvent(Event event) {
         //publishing events to application status topic
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }

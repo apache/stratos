@@ -36,7 +36,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -343,7 +343,7 @@ public class TopologyEventPublisher {
     }
 
     public static void publishEvent(Event event) {
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }

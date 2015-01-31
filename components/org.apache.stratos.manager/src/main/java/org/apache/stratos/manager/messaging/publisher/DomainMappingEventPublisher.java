@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Domain mapping event publisher.
@@ -36,7 +36,7 @@ public class DomainMappingEventPublisher {
     private static final Log log = LogFactory.getLog(DomainMappingEventPublisher.class);
 
     private static void publish(Event event) {
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topic);
         eventPublisher.publish(event);
     }

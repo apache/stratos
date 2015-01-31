@@ -38,7 +38,7 @@ import org.apache.stratos.manager.utils.CartridgeConfigFileReader;
 import org.apache.stratos.manager.utils.StratosManagerConstants;
 import org.apache.stratos.manager.utils.UserRoleCreator;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.osgi.service.component.ComponentContext;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.service.RegistryService;
@@ -292,8 +292,8 @@ public class StratosManagerServiceComponent {
 
     protected void deactivate(ComponentContext context) {
         // Close event publisher connections to message broker
-        EventPublisherPool.close(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
-        EventPublisherPool.close(Util.Topics.TENANT_TOPIC.getTopicName());
+        EventPublisherPool.close(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName());
+        EventPublisherPool.close(MessagingUtil.Topics.TENANT_TOPIC.getTopicName());
 
 	    executorService.shutdownNow();
     }

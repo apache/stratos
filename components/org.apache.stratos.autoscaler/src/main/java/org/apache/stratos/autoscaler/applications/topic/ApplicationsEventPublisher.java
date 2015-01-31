@@ -11,7 +11,7 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.application.*;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.Set;
 
@@ -139,7 +139,7 @@ public class ApplicationsEventPublisher {
 
     public static void publishEvent(Event event) {
         //publishing events to application status topic
-        String applicationTopic = Util.getMessageTopicName(event);
+        String applicationTopic = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(applicationTopic);
         eventPublisher.publish(event);
     }

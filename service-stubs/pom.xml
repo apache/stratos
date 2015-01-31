@@ -30,7 +30,7 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos-service-stubs-parent</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Service Stubs - Aggregator Module</name>
+    <name>Apache Stratos - Service Stubs</name>
     <url>http://apache.org</url>
 
     <modules>                            

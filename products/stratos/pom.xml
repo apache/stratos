@@ -27,9 +27,9 @@
     <groupId>org.apache.stratos</groupId>
     <artifactId>stratos</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Stratos - Manager - Parent</name>
+    <name>Apache Stratos - Product</name>
     <url>http://apache.org</url>
-    <description>Apache Stratos Manager Parent</description>
+    <description>Apache Stratos Product Parent</description>
 
     <modules>
         <module>modules/p2-profile-gen</module>

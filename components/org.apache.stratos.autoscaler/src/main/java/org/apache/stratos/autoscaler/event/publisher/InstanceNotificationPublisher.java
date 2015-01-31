@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class InstanceNotificationPublisher {
     private static final Log log = LogFactory.getLog(InstanceNotificationPublisher.class);
@@ -44,7 +44,7 @@ public class InstanceNotificationPublisher {
     }
 
     private static void publish(Event event) {
-        String topic = Util.getMessageTopicName(event);
+        String topic = MessagingUtil.getMessageTopicName(event);
 
         EventPublisher instanceNotifyingEvent = EventPublisherPool.
                                 getPublisher(topic);
