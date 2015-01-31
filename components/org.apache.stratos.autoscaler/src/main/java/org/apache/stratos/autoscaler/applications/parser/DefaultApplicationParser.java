@@ -346,8 +346,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 
 		    String[] arrExportMetadata = new String[exportMetadataKeys.size()];
 		    arrExportMetadata = exportMetadataKeys.toArray(arrExportMetadata);
-		    String[] arrImportMetadata = new String[exportMetadataKeys.size()];
-		    arrImportMetadata = exportMetadataKeys.toArray(arrImportMetadata);
+		    String[] arrImportMetadata = new String[importMetadataKeys.size()];
+		    arrImportMetadata = importMetadataKeys.toArray(arrImportMetadata);
 
             // Find tenant range of cluster
             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridgeInfo.getTenantPartitions());
