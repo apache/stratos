@@ -21,7 +21,6 @@ package org.apache.stratos.autoscaler.applications.parser;
 
 import org.apache.amber.oauth2.common.exception.OAuthProblemException;
 import org.apache.amber.oauth2.common.exception.OAuthSystemException;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -55,7 +54,8 @@ import java.util.*;
  */
 public class DefaultApplicationParser implements ApplicationParser {
 
-    private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
+	private static final String METADATA_APPENDER = "-";
+	private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private List<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
@@ -283,8 +283,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
             CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
-			String[] strMetaData=cartridgeInfo.getMetadataKeys();
-		    CollectionUtils.addAll(exportMetadataKeys,strMetaData);
+
+		    for (String str : cartridgeInfo.getMetadataKeys()) {
+			    exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
+			                                           .getAlias() + METADATA_APPENDER +str);
+		    }
+
 
             if (cartridgeInfo == null) {
                 handleError("No deployed Cartridge found with type [ " + cartridgeType +
@@ -318,12 +322,18 @@ public class DefaultApplicationParser implements ApplicationParser {
 		                    CartridgeInfo dependencyCartridge = getCartridge(dependencType);
 
 		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependencType);
+
 		                    if (dataHolder != null) {
 			                    if (!dataHolder.getClusterId().equals(clusterId)) {
 				                    dependencyClusterIDs.add(dataHolder.getClusterId());
-				                    CollectionUtils.addAll(importMetadataKeys, dependencyCartridge.getMetadataKeys());
-				                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
-					                    break;
+				                    for (String str : dependencyCartridge.getMetadataKeys()) {
+					                    importMetadataKeys
+							                    .add(dataHolder.getClusterId().split(".")[0] + METADATA_APPENDER + str);
+				                    }
+				                    if (!dataHolder.getClusterId().equals(clusterId)) {
+					                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
+						                    break;
+					                    }
 				                    }
 			                    }
 		                    }
