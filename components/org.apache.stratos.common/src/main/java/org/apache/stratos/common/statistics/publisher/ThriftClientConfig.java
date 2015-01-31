@@ -19,12 +19,9 @@
 
 package org.apache.stratos.common.statistics.publisher;
 
+
 /**
  * Thrift Client configuration.
- *
- * @author  supunr
- * @contact supunr@wso2.com
- * @date    1/27/15
  */
 public class ThriftClientConfig {
 
@@ -37,7 +34,10 @@ public class ThriftClientConfig {
     // here "user.dir" has been used instead of "carbon.home"
     // since "carbon.home" returned a null value in this instance
     private static final String CARBON_HOME = "user.dir";
-    private static final String REPOSITORY_CONF = "/products/stratos/conf/data-bridge/";
+
+    // Test configuration file path is used here
+    // Main configuration file path can be found under "/products/stratos/conf/data-bridge/"
+    private static final String REPOSITORY_CONF = "/components/org.apache.stratos.common/src/test/resources/";
 
     private static volatile ThriftClientConfig instance;
     private ThriftClientInfo thriftClientInfo;
@@ -55,6 +55,7 @@ public class ThriftClientConfig {
                     String defaultConfigFilePath = System.getProperty(CARBON_HOME) + REPOSITORY_CONF +
                             THRIFT_CLIENT_CONFIG_FILE_NAME;
                     String configFilePath = System.getProperty(THRIFT_CLIENT_CONFIG_FILE_PATH, defaultConfigFilePath);
+                    //System.out.println(filePath);
                     instance = ThriftClientConfigParser.parse(configFilePath);
                 }
             }
