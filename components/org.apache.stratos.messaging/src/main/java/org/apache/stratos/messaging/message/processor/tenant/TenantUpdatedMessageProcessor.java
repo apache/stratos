@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant updated message processor for updating a tenant in tenant manager and
@@ -51,7 +51,7 @@ public class TenantUpdatedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            TenantUpdatedEvent event = (TenantUpdatedEvent) Util.jsonToObject(message, TenantUpdatedEvent.class);
+            TenantUpdatedEvent event = (TenantUpdatedEvent) MessagingUtil.jsonToObject(message, TenantUpdatedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();

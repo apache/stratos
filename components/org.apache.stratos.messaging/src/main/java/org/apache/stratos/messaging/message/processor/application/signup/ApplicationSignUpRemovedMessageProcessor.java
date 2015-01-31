@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Application signup removed message processor.
@@ -45,7 +45,7 @@ public class ApplicationSignUpRemovedMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
 
         if(type.equals(ApplicationSignUpRemovedEvent.class.getName())) {
-            ApplicationSignUpRemovedEvent event = (ApplicationSignUpRemovedEvent) Util.jsonToObject(message,
+            ApplicationSignUpRemovedEvent event = (ApplicationSignUpRemovedEvent) MessagingUtil.jsonToObject(message,
                     ApplicationSignUpRemovedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationSignUpRemovedEvent");

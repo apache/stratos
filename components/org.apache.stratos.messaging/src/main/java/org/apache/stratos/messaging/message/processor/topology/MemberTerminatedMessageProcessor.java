@@ -30,7 +30,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class MemberTerminatedMessageProcessor extends MessageProcessor {
 
@@ -52,7 +52,7 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            MemberTerminatedEvent event = (MemberTerminatedEvent) Util.jsonToObject(message, MemberTerminatedEvent.class);
+            MemberTerminatedEvent event = (MemberTerminatedEvent) MessagingUtil.jsonToObject(message, MemberTerminatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {

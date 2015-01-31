@@ -20,7 +20,7 @@
 package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
-import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
+import org.apache.stratos.messaging.adapters.MapAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;

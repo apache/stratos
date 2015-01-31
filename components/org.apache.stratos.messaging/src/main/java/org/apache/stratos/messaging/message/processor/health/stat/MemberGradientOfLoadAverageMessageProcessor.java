@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Processes event that is fired by Event processing engine to send gradient of Load average
@@ -43,7 +43,7 @@ public class MemberGradientOfLoadAverageMessageProcessor extends MessageProcesso
         if (MemberGradientOfLoadAverageEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            MemberGradientOfLoadAverageEvent event = (MemberGradientOfLoadAverageEvent) Util.jsonToObject
+            MemberGradientOfLoadAverageEvent event = (MemberGradientOfLoadAverageEvent) MessagingUtil.jsonToObject
                     (message, MemberGradientOfLoadAverageEvent.class);
 
             // Notify event listeners

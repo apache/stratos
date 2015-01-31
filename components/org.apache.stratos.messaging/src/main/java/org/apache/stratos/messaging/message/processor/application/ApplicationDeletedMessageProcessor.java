@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.event.application.ApplicationDeletedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.application.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class ApplicationDeletedMessageProcessor extends MessageProcessor {
 
@@ -47,7 +47,7 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
                 return false;
             }
 
-            ApplicationDeletedEvent event = (ApplicationDeletedEvent) Util.jsonToObject(message, ApplicationDeletedEvent.class);
+            ApplicationDeletedEvent event = (ApplicationDeletedEvent) MessagingUtil.jsonToObject(message, ApplicationDeletedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationDeletedEvent");
                 return false;

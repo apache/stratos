@@ -19,7 +19,7 @@
 
 package org.apache.stratos.messaging.domain;
 
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Message definition.
@@ -32,7 +32,7 @@ public class Message {
     public Message(String topicName, String text) {
         this.topicName = topicName;
         this.text = text;
-        this.eventClassName = Util.getEventNameForTopic(topicName);
+        this.eventClassName = MessagingUtil.getEventClassNameForTopic(topicName);
     }
 
     public String getTopicName() {

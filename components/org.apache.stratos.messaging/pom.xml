@@ -83,6 +83,11 @@
             <artifactId>org.apache.stratos.common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>5.10.0</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -102,6 +107,7 @@
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
                             org.apache.stratos.messaging.*,
+                            org.apache.stratos.messaging.util.MessagingConstants,
                         </Export-Package>
                         <!--Private-Package>
                         	org.apache.stratos.messaging.internal;

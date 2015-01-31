@@ -28,7 +28,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class MemberMaintenanceModeProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(MemberMaintenanceModeProcessor.class);
@@ -49,7 +49,7 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            MemberMaintenanceModeEvent event = (MemberMaintenanceModeEvent) Util.
+            MemberMaintenanceModeEvent event = (MemberMaintenanceModeEvent) MessagingUtil.
                                             jsonToObject(message, MemberMaintenanceModeEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());

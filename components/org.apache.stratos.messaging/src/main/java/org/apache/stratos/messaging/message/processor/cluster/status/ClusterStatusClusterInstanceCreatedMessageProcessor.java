@@ -21,9 +21,8 @@ package org.apache.stratos.messaging.message.processor.cluster.status;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterInstanceCreatedEvent;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterResetEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 
 public class ClusterStatusClusterInstanceCreatedMessageProcessor extends MessageProcessor {
@@ -39,7 +38,7 @@ public class ClusterStatusClusterInstanceCreatedMessageProcessor extends Message
     public boolean process(String type, String message, Object object) {
         if (ClusterStatusClusterInstanceCreatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterStatusClusterInstanceCreatedEvent event = (ClusterStatusClusterInstanceCreatedEvent) Util.
+            ClusterStatusClusterInstanceCreatedEvent event = (ClusterStatusClusterInstanceCreatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterStatusClusterInstanceCreatedEvent.class);
 
             if(log.isDebugEnabled()) {

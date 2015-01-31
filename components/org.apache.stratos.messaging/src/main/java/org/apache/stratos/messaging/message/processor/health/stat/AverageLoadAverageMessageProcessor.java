@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  *  Processes event that is fired by Event processing engine to send average of Load average
@@ -44,7 +44,7 @@ public class AverageLoadAverageMessageProcessor extends MessageProcessor {
         if (AverageLoadAverageEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            AverageLoadAverageEvent event = (AverageLoadAverageEvent) Util.jsonToObject(message, AverageLoadAverageEvent.class);
+            AverageLoadAverageEvent event = (AverageLoadAverageEvent) MessagingUtil.jsonToObject(message, AverageLoadAverageEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);

@@ -27,7 +27,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
     private static final Log log = LogFactory.getLog(MemberReadyToShutdownMessageProcessor.class);
@@ -48,7 +48,7 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
                 return false;
 
             // Parse complete message and build event
-            MemberReadyToShutdownEvent event = (MemberReadyToShutdownEvent) Util.
+            MemberReadyToShutdownEvent event = (MemberReadyToShutdownEvent) MessagingUtil.
                                             jsonToObject(message, MemberReadyToShutdownEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());

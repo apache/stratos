@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  *  Processes event that is fired by Event processing engine to send second derivative of memory consumption
@@ -43,7 +43,7 @@ public class SecondDerivativeOfMemoryConsumptionMessageProcessor extends Message
         if (SecondDerivativeOfMemoryConsumptionEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            SecondDerivativeOfMemoryConsumptionEvent event = (SecondDerivativeOfMemoryConsumptionEvent) Util.jsonToObject
+            SecondDerivativeOfMemoryConsumptionEvent event = (SecondDerivativeOfMemoryConsumptionEvent) MessagingUtil.jsonToObject
                     (message, SecondDerivativeOfMemoryConsumptionEvent.class);
 
             // Notify event listeners

@@ -31,7 +31,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class MemberActivatedMessageProcessor extends MessageProcessor {
 
@@ -53,7 +53,7 @@ public class MemberActivatedMessageProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            MemberActivatedEvent event = (MemberActivatedEvent) Util.jsonToObject(message, MemberActivatedEvent.class);
+            MemberActivatedEvent event = (MemberActivatedEvent) MessagingUtil.jsonToObject(message, MemberActivatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {

@@ -4,7 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Created by asiri on 8/15/14.
@@ -24,7 +24,7 @@ public class AverageRequestsServingCapabilityMessageProcessor  extends MessagePr
         if (AverageRequestsServingCapabilityEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            AverageRequestsServingCapabilityEvent event = (AverageRequestsServingCapabilityEvent) Util.jsonToObject(message, AverageRequestsServingCapabilityEvent.class);
+            AverageRequestsServingCapabilityEvent event = (AverageRequestsServingCapabilityEvent) MessagingUtil.jsonToObject(message, AverageRequestsServingCapabilityEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);

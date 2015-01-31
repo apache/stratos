@@ -21,8 +21,8 @@ package org.apache.stratos.messaging.domain.topology;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.util.Util;
-import org.apache.stratos.messaging.util.bean.type.map.MapAdapter;
+import org.apache.stratos.messaging.util.MessagingUtil;
+import org.apache.stratos.messaging.adapters.MapAdapter;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -117,7 +117,7 @@ public class Cluster implements Serializable {
     }
 
     public void setTenantRange(String tenantRange) {
-        Util.validateTenantRange(tenantRange);
+        MessagingUtil.validateTenantRange(tenantRange);
         this.tenantRange = tenantRange;
     }
 

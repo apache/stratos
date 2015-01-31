@@ -25,7 +25,8 @@ import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.Message;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingConstants;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -67,7 +68,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
             }
 
             mqttClient.setCallback(new MQTTSubscriberCallback());
-            mqttClient.subscribe(topicName, MqttConstants.QOS);
+            mqttClient.subscribe(topicName, MessagingConstants.QOS);
             if (log.isDebugEnabled()) {
                 log.debug("Subscribed to topic " + topicName);
             }
@@ -102,10 +103,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 try {
                     if (log.isInfoEnabled()) {
                         log.info("Will try to subscribe again in " +
-                                Util.getFailoverPingInterval() / 1000 + " sec");
+                                MessagingUtil.getFailoverPingInterval() / 1000 + " sec");
                     }
                     try {
-                        Thread.sleep(Util.getFailoverPingInterval());
+                        Thread.sleep(MessagingUtil.getFailoverPingInterval());
                     } catch (InterruptedException ignore) {
                     }
 

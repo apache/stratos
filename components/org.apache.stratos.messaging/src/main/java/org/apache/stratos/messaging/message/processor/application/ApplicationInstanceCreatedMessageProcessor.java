@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.event.application.ApplicationInstanceCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.application.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor {
 
@@ -50,7 +50,7 @@ public class ApplicationInstanceCreatedMessageProcessor extends MessageProcessor
             }
 
 
-            ApplicationInstanceCreatedEvent event = (ApplicationInstanceCreatedEvent) Util.jsonToObject(message,
+            ApplicationInstanceCreatedEvent event = (ApplicationInstanceCreatedEvent) MessagingUtil.jsonToObject(message,
                     ApplicationInstanceCreatedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationInstanceCreatedEvent");

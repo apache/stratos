@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.event.topology.ServiceRemovedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class ServiceRemovedMessageProcessor extends MessageProcessor {
 
@@ -48,7 +48,7 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            ServiceRemovedEvent event = (ServiceRemovedEvent) Util.jsonToObject(message, ServiceRemovedEvent.class);
+            ServiceRemovedEvent event = (ServiceRemovedEvent) MessagingUtil.jsonToObject(message, ServiceRemovedEvent.class);
 
             TopologyUpdater.acquireWriteLockForServices();
             try {

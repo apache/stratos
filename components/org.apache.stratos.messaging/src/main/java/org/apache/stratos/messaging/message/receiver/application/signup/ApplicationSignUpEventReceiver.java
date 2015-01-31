@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.concurrent.ExecutorService;
 
@@ -53,7 +53,7 @@ public class ApplicationSignUpEventReceiver {
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(Util.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(), messageListener);
+            topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.APPLICATION_SIGNUP_TOPIC.getTopicName(), messageListener);
             // subscriber.setMessageListener(messageListener);
             executorService.execute(topicSubscriber);
 

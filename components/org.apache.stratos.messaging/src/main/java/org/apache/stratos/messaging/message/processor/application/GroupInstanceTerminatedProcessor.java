@@ -28,7 +28,7 @@ import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.event.application.GroupInstanceTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.application.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * This processor will act upon the Group activation events
@@ -52,7 +52,7 @@ public class GroupInstanceTerminatedProcessor extends MessageProcessor {
                 return false;
 
             // Parse complete message and build event
-            GroupInstanceTerminatedEvent event = (GroupInstanceTerminatedEvent) Util.
+            GroupInstanceTerminatedEvent event = (GroupInstanceTerminatedEvent) MessagingUtil.
                     jsonToObject(message, GroupInstanceTerminatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());

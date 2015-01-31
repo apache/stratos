@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Artifact update message processor.
@@ -43,7 +43,7 @@ public class ArtifactUpdateMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         if (ArtifactUpdatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ArtifactUpdatedEvent event = (ArtifactUpdatedEvent) Util.jsonToObject(message, ArtifactUpdatedEvent.class);
+            ArtifactUpdatedEvent event = (ArtifactUpdatedEvent) MessagingUtil.jsonToObject(message, ArtifactUpdatedEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);

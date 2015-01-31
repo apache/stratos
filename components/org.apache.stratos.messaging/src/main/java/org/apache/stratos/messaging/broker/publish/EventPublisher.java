@@ -19,33 +19,85 @@
 
 package org.apache.stratos.messaging.broker.publish;
 
+import com.google.gson.Gson;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.TopicPublisher;
+import org.apache.stratos.messaging.broker.connect.TopicPublisherFactory;
+import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
- * Defines logic for publishing events to a given topic in the message broker.
- * A message header will be used to send the event class name to be used by the
- * subscriber to identify the event.
+ * A topic publisher for publishing messages to a message broker topic.
+ * Messages will be published in JSON format.
  */
-public class EventPublisher extends Publisher {
+public class EventPublisher {
 
-	/**
+    private static final Log log = LogFactory.getLog(EventPublisher.class);
+
+    private static final int PUBLISH_RETRY_INTERVAL = 60000;
+
+	private final String topicName;
+	private final TopicPublisher topicPublisher;
+
+    /**
 	 * @param topicName topic name of this publisher instance.
 	 */
 	EventPublisher(String topicName) {
-		super(topicName);
+		this.topicName = topicName;
+        String protocol = MessagingUtil.getMessagingProtocol();
+        this.topicPublisher = TopicPublisherFactory.createTopicPublisher(protocol);
+		if (log.isDebugEnabled()) {
+			log.debug(String.format("Topic publisher created: [protocol] %s [topic] %s", protocol, topicName));
+		}
 	}
+
+    /**
+     * Publish event.
+     * @param event event to be published
+     */
+    public void publish(Event event) {
+        publish(event, true);
+    }
 
 	/**
-	 * 
-	 * @param event event to be published
+	 * Convert the object to its JSON representation and publish to the given topic.
 	 */
-	public void publish(Event event) {
-		publish(event, true);
-	}
 
-	public void publish(Event event, boolean retry) {
+	public void publish(Object messageObj, boolean retry) {
 		synchronized (EventPublisher.class) {
-			super.publish(event, retry);
-		}
-    }
+            Gson gson = new Gson();
+            String message = gson.toJson(messageObj);
+            boolean published = false;
+
+            while (!published) {
+                try {
+                    topicPublisher.connect();
+                    topicPublisher.publish(topicName, message);
+                    published = true;
+                } catch (Exception e) {
+                    if (!retry) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Retry disabled for topic " + topicName);
+                        }
+                        throw new MessagingException(e);
+                    }
+
+                    if (log.isInfoEnabled()) {
+                        log.info(String.format("Will try to re-publish in %d sec", (PUBLISH_RETRY_INTERVAL/1000)));
+                    }
+                    try {
+                        Thread.sleep(PUBLISH_RETRY_INTERVAL);
+                    } catch (InterruptedException ignore) {
+                    }
+                } finally {
+                    try {
+                        topicPublisher.disconnect();
+                    } catch (MessagingException ignore) {
+                    }
+                }
+            }
+        }
+	}
 }

@@ -23,7 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingConstants;
+import org.apache.stratos.messaging.util.MessagingUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -77,9 +78,9 @@ public abstract class MqttTopicConnector implements TopicConnector {
     public void create() {
 
         try {
-            String mqttUrl = MqttConstants.MQTT_PROPERTIES.getProperty("mqtturl", MqttConstants.MQTT_URL_DEFAULT);
+            String mqttUrl = MessagingConstants.MQTT_PROPERTIES.getProperty("mqtturl", MessagingConstants.MQTT_URL_DEFAULT);
             MemoryPersistence memoryPersistence = new MemoryPersistence();
-            String clientId = Util.getRandomString(23);
+            String clientId = MessagingUtil.getRandomString(23);
             mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
             if (log.isDebugEnabled()) {
                 log.debug("MQTT client created: [client-id] " + clientId);

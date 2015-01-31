@@ -24,7 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * A thread for receiving instance notifier information from message broker.
@@ -50,7 +50,7 @@ public class InstanceNotifierEventReceiver {
 	public void execute() {
 		try {
 			// Start topic subscriber thread
-			topicSubscriber = new TopicSubscriber(Util.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
+			topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
 //			subscriber.setMessageListener(messageListener);
 			Thread subscriberThread = new Thread(topicSubscriber);
 

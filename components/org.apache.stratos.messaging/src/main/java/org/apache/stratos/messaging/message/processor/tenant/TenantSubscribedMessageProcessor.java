@@ -22,12 +22,11 @@ package org.apache.stratos.messaging.message.processor.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.tenant.Subscription;
-import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant subscribed message processor for updating a tenant in tenant manager and
@@ -53,7 +52,7 @@ public class TenantSubscribedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            TenantSubscribedEvent event = (TenantSubscribedEvent) Util.jsonToObject(message, TenantSubscribedEvent.class);
+            TenantSubscribedEvent event = (TenantSubscribedEvent) MessagingUtil.jsonToObject(message, TenantSubscribedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();

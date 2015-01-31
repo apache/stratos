@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.event.application.CompleteApplicationsEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.application.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.Collection;
 
@@ -45,7 +45,7 @@ public class CompleteApplicationsMessageProcessor extends MessageProcessor {
 
         if (CompleteApplicationsEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            CompleteApplicationsEvent event = (CompleteApplicationsEvent) Util.
+            CompleteApplicationsEvent event = (CompleteApplicationsEvent) MessagingUtil.
                     jsonToObject(message, CompleteApplicationsEvent.class);
 
             if (!applications.isInitialized()) {

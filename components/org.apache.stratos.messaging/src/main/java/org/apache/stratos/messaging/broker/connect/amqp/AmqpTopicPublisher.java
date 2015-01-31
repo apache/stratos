@@ -17,44 +17,42 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.broker.connect.mqtt;
+package org.apache.stratos.messaging.broker.connect.amqp;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
-import org.apache.stratos.messaging.util.MessagingConstants;
-import org.eclipse.paho.client.mqttv3.*;
+
+import javax.jms.TextMessage;
+import javax.jms.Topic;
+import javax.jms.TopicSession;
 
 /**
- * Mqtt topic connector
- * Usage: Create an instance and invoke connect() to connect to the message broker. Once connected invoke publish()
- * to publish messages to the given topic. When needed to disconnect invoke disconnect(), it will disconnect and
- * close the connection.
+ * AMQP topic publisher.
  */
-public class MqttTopicPublisher extends MqttTopicConnector implements TopicPublisher {
+public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPublisher {
 
-    protected static final Log log = LogFactory.getLog(MqttTopicPublisher.class);
+    private static final Log log = LogFactory.getLog(AmqpTopicConnector.class);
 
-    public MqttTopicPublisher() {
+    public AmqpTopicPublisher() {
         create();
     }
 
+    @Override
     public void publish(String topicName, String message) {
         try {
-            if(mqttClient == null) {
-                String error = "Could not publish message to topic, MQTT client has not been initialized";
-                if(log.isErrorEnabled()) {
-                    log.error(error);
-                }
-                throw new MessagingException(error);
+            TopicSession topicSession = newSession();
+            Topic topic = lookupTopic(topicName);
+            if (topic == null) {
+                // if the topic doesn't exist, create it.
+                topic = topicSession.createTopic(topicName);
             }
-
-            MqttMessage mqttMessage = new MqttMessage(message.getBytes());
-            mqttMessage.setQos(MessagingConstants.QOS);
-            mqttClient.publish(topicName, mqttMessage);
+            javax.jms.TopicPublisher topicPublisher = topicSession.createPublisher(topic);
+            TextMessage textMessage = topicSession.createTextMessage(message);
+            topicPublisher.publish(textMessage);
         } catch (Exception e) {
-            String errorMessage = "Could not publish message: " + message;
+            String errorMessage = "Could not publish to topic: [topic-name] %s";
             log.error(errorMessage, e);
             throw new MessagingException(errorMessage, e);
         }

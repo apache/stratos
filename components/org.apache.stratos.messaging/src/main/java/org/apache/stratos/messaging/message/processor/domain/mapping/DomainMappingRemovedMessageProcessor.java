@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingManager;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Subscription domain removed message processor for removing domains from tenant subscriptions.
@@ -56,7 +56,7 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            DomainMappingRemovedEvent event = (DomainMappingRemovedEvent) Util.jsonToObject(message, DomainMappingRemovedEvent.class);
+            DomainMappingRemovedEvent event = (DomainMappingRemovedEvent) MessagingUtil.jsonToObject(message, DomainMappingRemovedEvent.class);
 
             int tenantId = event.getTenantId();
             String applicationId = event.getApplicationId();

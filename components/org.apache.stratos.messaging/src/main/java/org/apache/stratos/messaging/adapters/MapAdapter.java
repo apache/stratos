@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.util.bean.type.map;
+package org.apache.stratos.messaging.adapters;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.HashMap;

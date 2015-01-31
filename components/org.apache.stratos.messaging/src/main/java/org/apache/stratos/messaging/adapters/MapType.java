@@ -17,16 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.util.bean.type.map;
+package org.apache.stratos.messaging.adapters;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlValue;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MapEntryType<S, T> {
+public class MapType {
 
-    @XmlAttribute
-    public S key;
-
-    @XmlValue
-    public T value;
+    public List<MapEntryType> entry = new ArrayList<MapEntryType>();
 }

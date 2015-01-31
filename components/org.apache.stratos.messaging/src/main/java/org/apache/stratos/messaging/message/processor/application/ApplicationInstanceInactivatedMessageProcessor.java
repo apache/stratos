@@ -27,7 +27,7 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.event.application.ApplicationInstanceInactivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.application.updater.ApplicationsUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * This processor responsible to process the application Inactivation even and update the Topology.
@@ -55,7 +55,7 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
                 return false;
 
             // Parse complete message and build event
-            ApplicationInstanceInactivatedEvent event = (ApplicationInstanceInactivatedEvent) Util.
+            ApplicationInstanceInactivatedEvent event = (ApplicationInstanceInactivatedEvent) MessagingUtil.
                     jsonToObject(message, ApplicationInstanceInactivatedEvent.class);
 
             ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());

@@ -27,7 +27,7 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.Set;
 
@@ -52,7 +52,7 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
             }
 
             // Parse complete message and build event
-            ApplicationClustersRemovedEvent event = (ApplicationClustersRemovedEvent) Util.
+            ApplicationClustersRemovedEvent event = (ApplicationClustersRemovedEvent) MessagingUtil.
                     jsonToObject(message, ApplicationClustersRemovedEvent.class);
 
             return doProcess(event, topology);

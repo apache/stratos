@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  *  Processes event that is fired by Event processing engine to send member fault event
@@ -43,7 +43,7 @@ public class MemberFaultMessageProcessor extends MessageProcessor {
         if (MemberFaultEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            MemberFaultEvent event = (MemberFaultEvent) Util.jsonToObject
+            MemberFaultEvent event = (MemberFaultEvent) MessagingUtil.jsonToObject
                     (message, MemberFaultEvent.class);
 
             // Notify event listeners

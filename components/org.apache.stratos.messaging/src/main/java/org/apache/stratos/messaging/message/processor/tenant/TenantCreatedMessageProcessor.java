@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant created message processor for adding a tenant to the tenant manager and
@@ -50,7 +50,7 @@ public class TenantCreatedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            TenantCreatedEvent event = (TenantCreatedEvent) Util.jsonToObject(message, TenantCreatedEvent.class);
+            TenantCreatedEvent event = (TenantCreatedEvent) MessagingUtil.jsonToObject(message, TenantCreatedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();

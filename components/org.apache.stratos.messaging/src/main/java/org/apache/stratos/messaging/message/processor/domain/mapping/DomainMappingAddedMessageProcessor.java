@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingManager;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Url mapping added message processor.
@@ -55,7 +55,7 @@ public class DomainMappingAddedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            DomainMappingAddedEvent event = (DomainMappingAddedEvent) Util.jsonToObject(message, DomainMappingAddedEvent.class);
+            DomainMappingAddedEvent event = (DomainMappingAddedEvent) MessagingUtil.jsonToObject(message, DomainMappingAddedEvent.class);
 
             int tenantId = event.getTenantId();
             String applicationId = event.getApplicationId();

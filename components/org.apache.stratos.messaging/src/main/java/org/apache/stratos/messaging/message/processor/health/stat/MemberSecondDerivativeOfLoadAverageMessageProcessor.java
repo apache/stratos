@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  *  Processes event that is fired by Event processing engine to send second derivative of Load average
@@ -43,7 +43,7 @@ public class MemberSecondDerivativeOfLoadAverageMessageProcessor extends Message
         if (MemberSecondDerivativeOfLoadAverageEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            MemberSecondDerivativeOfLoadAverageEvent event = (MemberSecondDerivativeOfLoadAverageEvent) Util.jsonToObject
+            MemberSecondDerivativeOfLoadAverageEvent event = (MemberSecondDerivativeOfLoadAverageEvent) MessagingUtil.jsonToObject
                     (message, MemberSecondDerivativeOfLoadAverageEvent.class);
 
             // Notify event listeners

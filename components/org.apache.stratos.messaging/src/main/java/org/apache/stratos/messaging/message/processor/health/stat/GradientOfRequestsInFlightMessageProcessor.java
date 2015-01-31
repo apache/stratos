@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Processes event that is fired by Event processing engine to send gradient of requests in flight
@@ -43,7 +43,7 @@ public class GradientOfRequestsInFlightMessageProcessor extends MessageProcessor
         if (GradientOfRequestsInFlightEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            GradientOfRequestsInFlightEvent event = (GradientOfRequestsInFlightEvent) Util.jsonToObject
+            GradientOfRequestsInFlightEvent event = (GradientOfRequestsInFlightEvent) MessagingUtil.jsonToObject
                     (message, GradientOfRequestsInFlightEvent.class);
 
             // Notify event listeners

@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Processes event that is fired by Event processing engine to send gradient of  memory consumption
@@ -44,7 +44,7 @@ public class MemberGradientOfMemoryConsumptionMessageProcessor extends MessagePr
         if (MemberGradientOfMemoryConsumptionEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            MemberGradientOfMemoryConsumptionEvent event = (MemberGradientOfMemoryConsumptionEvent) Util.jsonToObject
+            MemberGradientOfMemoryConsumptionEvent event = (MemberGradientOfMemoryConsumptionEvent) MessagingUtil.jsonToObject
                     (message, MemberGradientOfMemoryConsumptionEvent.class);
 
             // Notify event listeners

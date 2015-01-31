@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
@@ -29,7 +28,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
             }
 
             // Parse complete message and build event
-            ApplicationClustersCreatedEvent event = (ApplicationClustersCreatedEvent) Util.
+            ApplicationClustersCreatedEvent event = (ApplicationClustersCreatedEvent) MessagingUtil.
                                                 jsonToObject(message, ApplicationClustersCreatedEvent.class);
                 return doProcess(event, topology);
 

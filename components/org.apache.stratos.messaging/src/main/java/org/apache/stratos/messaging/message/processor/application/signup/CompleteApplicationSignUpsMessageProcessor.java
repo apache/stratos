@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Complete application signups message processor.
@@ -45,7 +45,7 @@ public class CompleteApplicationSignUpsMessageProcessor extends MessageProcessor
     public boolean process(String type, String message, Object object) {
 
         if(type.equals(CompleteApplicationSignUpsEvent.class.getName())) {
-            CompleteApplicationSignUpsEvent event = (CompleteApplicationSignUpsEvent) Util.jsonToObject(message,
+            CompleteApplicationSignUpsEvent event = (CompleteApplicationSignUpsEvent) MessagingUtil.jsonToObject(message,
                     CompleteApplicationSignUpsEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to CompleteApplicationSignUpsEvent");

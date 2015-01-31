@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class InstanceCleanupClusterNotifierMessageProcessor extends MessageProcessor {
      private static final Log log = LogFactory.getLog(InstanceCleanupClusterNotifierMessageProcessor.class);
@@ -37,7 +37,7 @@ public class InstanceCleanupClusterNotifierMessageProcessor extends MessageProce
     public boolean process(String type, String message, Object object) {
         if (InstanceCleanupClusterEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            InstanceCleanupClusterEvent event = (InstanceCleanupClusterEvent) Util.
+            InstanceCleanupClusterEvent event = (InstanceCleanupClusterEvent) MessagingUtil.
                     jsonToObject(message, InstanceCleanupClusterEvent.class);
 
             // Notify event listeners

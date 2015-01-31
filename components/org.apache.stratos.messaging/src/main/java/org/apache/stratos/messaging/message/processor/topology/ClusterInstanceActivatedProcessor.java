@@ -30,7 +30,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * This processor will act upon the cluster activated event
@@ -56,7 +56,7 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            ClusterInstanceActivatedEvent event = (ClusterInstanceActivatedEvent) Util.
+            ClusterInstanceActivatedEvent event = (ClusterInstanceActivatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterInstanceActivatedEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());

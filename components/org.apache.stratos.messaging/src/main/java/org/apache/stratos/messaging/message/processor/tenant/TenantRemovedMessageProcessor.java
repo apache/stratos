@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant removed message processor for removing a tenant from tenant manager
@@ -51,7 +51,7 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            TenantRemovedEvent event = (TenantRemovedEvent) Util.jsonToObject(message, TenantRemovedEvent.class);
+            TenantRemovedEvent event = (TenantRemovedEvent) MessagingUtil.jsonToObject(message, TenantRemovedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();

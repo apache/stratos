@@ -22,7 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterActivatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 
 public class ClusterStatusClusterActivatedMessageProcessor extends MessageProcessor {
@@ -38,7 +38,7 @@ public class ClusterStatusClusterActivatedMessageProcessor extends MessageProces
     public boolean process(String type, String message, Object object) {
         if (ClusterStatusClusterActivatedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            ClusterStatusClusterActivatedEvent event = (ClusterStatusClusterActivatedEvent) Util.
+            ClusterStatusClusterActivatedEvent event = (ClusterStatusClusterActivatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterStatusClusterActivatedEvent.class);
 
             if(log.isDebugEnabled()) {

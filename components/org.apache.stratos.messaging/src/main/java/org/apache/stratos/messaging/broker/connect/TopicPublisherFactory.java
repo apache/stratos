@@ -17,24 +17,24 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.broker.connect.mqtt;
+package org.apache.stratos.messaging.broker.connect;
 
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.broker.connect.amqp.AmqpTopicPublisher;
+import org.apache.stratos.messaging.broker.connect.mqtt.MqttTopicPublisher;
+import org.apache.stratos.messaging.util.MessagingConstants;
 
-import java.io.File;
-import java.util.Properties;
+/**
+ * Topic publisher factory.
+ */
+public class TopicPublisherFactory {
 
-public class MqttConstants {
-
-    public static final String MQTT_URL_DEFAULT = "defaultValue";
-
-    /**
-     * Quality of Service for message delivery:
-     * Setting it to 2 to make sure that message is guaranteed to deliver once
-     * using two-phase acknowledgement across the network.
-     */
-    public static final int QOS = 2;
-    public static String CONFIG_FILE_LOCATION = System.getProperty("jndi.properties.dir");
-    public static Properties MQTT_PROPERTIES = Util.getProperties(CONFIG_FILE_LOCATION
-            + File.separator + "mqtttopic.properties");
+    public static TopicPublisher createTopicPublisher(String protocol) {
+        if(MessagingConstants.AMQP.equals(protocol)) {
+            return new AmqpTopicPublisher();
+        } else if(MessagingConstants.MQTT.equals(protocol)) {
+            return new MqttTopicPublisher();
+        } else {
+            throw new RuntimeException("Could not create topic publisher, unknown protocol: " + protocol);
+        }
+    }
 }

@@ -25,7 +25,7 @@ import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  * Tenant un-subscribed message processor for updating a tenant in tenant manager and
@@ -51,7 +51,7 @@ public class TenantUnSubscribedMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            TenantUnSubscribedEvent event = (TenantUnSubscribedEvent) Util.jsonToObject(message, TenantUnSubscribedEvent.class);
+            TenantUnSubscribedEvent event = (TenantUnSubscribedEvent) MessagingUtil.jsonToObject(message, TenantUnSubscribedEvent.class);
 
             try {
                 TenantManager.acquireWriteLock();

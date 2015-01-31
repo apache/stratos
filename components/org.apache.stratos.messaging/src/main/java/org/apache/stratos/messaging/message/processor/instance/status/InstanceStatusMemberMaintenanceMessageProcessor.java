@@ -20,11 +20,10 @@ package org.apache.stratos.messaging.message.processor.instance.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterActivatedEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceModeEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.cluster.status.ClusterStatusClusterActivatedMessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 
 public class InstanceStatusMemberMaintenanceMessageProcessor extends MessageProcessor {
@@ -40,7 +39,7 @@ public class InstanceStatusMemberMaintenanceMessageProcessor extends MessageProc
     public boolean process(String type, String message, Object object) {
         if (InstanceMaintenanceModeEvent.class.getName().equals(type)) {
             // Parse complete message and build event
-            InstanceMaintenanceModeEvent event = (InstanceMaintenanceModeEvent) Util.
+            InstanceMaintenanceModeEvent event = (InstanceMaintenanceModeEvent) MessagingUtil.
                     jsonToObject(message, InstanceMaintenanceModeEvent.class);
 
             if(log.isDebugEnabled()) {

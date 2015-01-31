@@ -30,7 +30,7 @@ import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilte
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class ClusterResetMessageProcessor extends MessageProcessor {
 
@@ -53,7 +53,7 @@ public class ClusterResetMessageProcessor extends MessageProcessor {
             }
 
             // Parse complete message and build event
-            ClusterResetEvent event = (ClusterResetEvent) Util.
+            ClusterResetEvent event = (ClusterResetEvent) MessagingUtil.
                     jsonToObject(message, ClusterResetEvent.class);
 
             TopologyUpdater.acquireWriteLockForService(event.getServiceName());

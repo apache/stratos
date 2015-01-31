@@ -23,7 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
-import org.apache.stratos.messaging.util.Util;
+import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
  *  Processes event that is fired by Event processing engine to send average of memory consumption
@@ -44,7 +44,7 @@ public class AverageMemoryConsumptionMessageProcessor extends MessageProcessor {
         if (AverageMemoryConsumptionEvent.class.getName().equals(type)) {
 
             // Parse complete message and build event
-            AverageMemoryConsumptionEvent event = (AverageMemoryConsumptionEvent) Util.jsonToObject(message, AverageMemoryConsumptionEvent.class);
+            AverageMemoryConsumptionEvent event = (AverageMemoryConsumptionEvent) MessagingUtil.jsonToObject(message, AverageMemoryConsumptionEvent.class);
 
             // Notify event listeners
             notifyEventListeners(event);
