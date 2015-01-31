@@ -27,10 +27,6 @@ import java.util.Iterator;
 
 /**
  * Thrift Client config parser.
- *
- * @author  supunr
- * @contact supunr@wso2.com
- * @date    1/27/15
  */
 public class ThriftClientConfigParser {
     /**
@@ -92,18 +88,18 @@ public class ThriftClientConfigParser {
             }
 
             if (userNameValuesStr == null) {
-                throw new RuntimeException("Username value not found in thriftClientConfiguration");
+                throw new RuntimeException("Username value not found in thrift Client Configuration");
             }
             if (passwordValueStr == null) {
-                throw new RuntimeException("Password not found in thriftClientConfiguration ");
+                throw new RuntimeException("Password not found in thrift Client Configuration ");
             }
 
             if (ipValuesStr == null) {
-                throw new RuntimeException("Ip values not found in thriftClientConfiguration ");
+                throw new RuntimeException("Ip values not found in thrift Client Configuration ");
             }
 
             if (portValueStr == null) {
-                throw new RuntimeException("Port not found in thriftClientConfiguration ");
+                throw new RuntimeException("Port not found in thrift Client Configuration ");
             }
 
             return thriftClientIConfig;
