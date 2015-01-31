@@ -252,6 +252,8 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 throwSynapseException(synCtx, 403, String.format("You are unauthorized to access"));
             }
         } else {
+
+            member = requestDelegator.findNextMemberFromHostName(targetHost, synCtx.getMessageID());
         }
 
         if (member == null)
