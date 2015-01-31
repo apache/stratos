@@ -19,21 +19,21 @@
 
 //package org.apache.stratos.manager.integration.tests;
 
-import org.apache.axis2.client.ServiceClient;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
-import org.apache.stratos.tenant.mgt.stub.TenantMgtAdminServiceStub;
-import org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean;
-import org.wso2.carbon.utils.CarbonUtils;
-
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+//import org.apache.axis2.client.ServiceClient;
+//import org.apache.commons.logging.Log;
+//import org.apache.commons.logging.LogFactory;
+//import org.testng.Assert;
+//import org.testng.annotations.AfterClass;
+//import org.testng.annotations.BeforeClass;
+//import org.testng.annotations.Test;
+//import org.wso2.carbon.integration.framework.utils.FrameworkSettings;
+//import org.apache.stratos.tenant.mgt.stub.TenantMgtAdminServiceStub;
+//import org.apache.stratos.tenant.mgt.stub.beans.xsd.TenantInfoBean;
+//import org.wso2.carbon.utils.CarbonUtils;
+//
+//import java.util.Calendar;
+//import java.util.Date;
+//import java.util.GregorianCalendar;
 
 //public class TenantMgtTestCase {
 //
