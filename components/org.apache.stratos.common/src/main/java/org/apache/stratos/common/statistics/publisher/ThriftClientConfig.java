@@ -55,7 +55,6 @@ public class ThriftClientConfig {
                     String defaultConfigFilePath = System.getProperty(CARBON_HOME) + REPOSITORY_CONF +
                             THRIFT_CLIENT_CONFIG_FILE_NAME;
                     String configFilePath = System.getProperty(THRIFT_CLIENT_CONFIG_FILE_PATH, defaultConfigFilePath);
-                    //System.out.println(filePath);
                     instance = ThriftClientConfigParser.parse(configFilePath);
                 }
             }
