@@ -197,23 +197,29 @@ class CompleteTopologyEvent:
                     cluster_obj.properties = cluster_str["properties"] if "properties" in cluster_str else None
                     cluster_obj.member_list_json = cluster_str["memberMap"]
 
-                    #add member map
+                    # add member map
                     for member_id in cluster_str["memberMap"]:
                         member_str = cluster_str["memberMap"][member_id]
                         mm_service_name = member_str["serviceName"]
                         mm_cluster_id = member_str["clusterId"]
-                        mm_network_partition_id = member_str["networkPartitionId"] if "networkPartitionId" in member_str else None
+                        mm_network_partition_id = member_str["networkPartitionId"] if "networkPartitionId" in member_str \
+                            else None
                         mm_partition_id = member_str["partitionId"] if "partitionId" in member_str else None
+                        mm_cluster_instance_id = member_str["clusterInstanceId"] if "clusterInstanceId" in member_str \
+                            else None
 
-                        member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id, mm_partition_id, member_id)
-                        member_obj.member_public_ips = member_str["memberPublicIPs"] if "memberPublicIPs" in member_str else None
-                        member_obj.status = member_str["status"] if "status" in member_str else None
-                        member_obj.member_private_ips = member_str["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
+                        member_obj = Member(mm_service_name, mm_cluster_id, mm_network_partition_id,
+                                            mm_partition_id, member_id, mm_cluster_instance_id)
+                        member_obj.member_public_ips = member_str["memberPublicIPs"] if "memberPublicIPs" in member_str \
+                            else None
+                        member_obj.status = member_str["memberStateManager"]["stateStack"][-1]
+                        member_obj.member_private_ips = member_str["memberPrivateIPs"] if "memberPrivateIPs" in json_obj \
+                            else None
                         member_obj.properties = member_str["properties"] if "properties" in member_str else None
                         member_obj.lb_cluster_id = member_str["lbClusterId"] if "lbClusterId" in member_str else None
                         member_obj.json_str = member_str
 
-                        #add port map
+                        # add port map
                         for mm_port_proxy in member_str["portMap"]:
                             mm_port_str = member_str["portMap"][mm_port_proxy]
                             mm_port_obj = Port(mm_port_str["protocol"], mm_port_str["value"], mm_port_proxy)

@@ -323,12 +323,15 @@ class Member:
     Represents a member on a particular cluster
     """
 
-    def __init__(self, service_name="", cluster_id="", network_partition_id="", parition_id="", member_id=""):
+    def __init__(self, service_name="", cluster_id="", network_partition_id="", parition_id="", member_id="",
+                 cluster_instance_id=""):
         self.service_name = service_name
         """ :type : str  """
         self.cluster_id = cluster_id
         """ :type : str  """
         self.network_partition_id = network_partition_id
+        """ :type : str  """
+        self.cluster_instance_id = cluster_instance_id
         """ :type : str  """
         self.partition_id = parition_id
         """ :type : str  """
@@ -360,7 +363,7 @@ class Member:
         :return: True if active, False if otherwise
         :rtype: bool
         """
-        return self.status == MemberStatus.Activated
+        return self.status == MemberStatus.Active
 
     def get_ports(self):
         """
@@ -428,14 +431,14 @@ class MemberStatus:
     """
     MemberStatus enum
     """
-    Created = 1
-    Starting = 2
-    Activated = 3
-    In_Maintenance = 4
-    ReadyToShutDown = 5
-    Terminated = 6
-    Suspended = 0
-    ShuttingDown = 0
+    Created = "Created"
+    Initialized = "Initialized"
+    Starting = "Starting"
+    Active = "Active"
+    In_Maintenance = "In_Maintenance"
+    ReadyToShutDown = "ReadyToShutDown"
+    Suspended = "Suspended"
+    Terminated = "Terminated"
 
 
 class TopologyContext:
