@@ -16,8 +16,8 @@
 
 <!--Fields to be read and parsed into WSO2CEPStatisticsPublisher-->
 <thriftClientConfiguration>
-    <username>test User</username>
-    <password>test pass</password>
-    <ip>195.168.10.1</ip>
-    <port>8080</port>
+    <username>admin</username>
+    <password>admin</password>
+    <ip>localhost</ip>
+    <port>7611</port>
 </thriftClientConfiguration>

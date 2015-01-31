@@ -289,7 +289,7 @@ do
     -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
     -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/etc/logging-bridge.properties" \
     -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
-    -Dconf.location="$CARBON_HOME/repository/conf"\
+    -Dconf.location="$CARBON_HOME/repository/conf" \
     -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
     -Dcom.atomikos.icatch.hide_init_file_path=true \
     -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \
@@ -300,8 +300,7 @@ do
     -Dfile.encoding=UTF8 \
     -Ddisable.cassandra.server.startup=true \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
-    -Dthrift.receiver.ip=localhost \
-    -Dthrift.receiver.port=7611 \
+    -Dthrift.client.config.file.path="$CARBON_HOME/repository/conf/conf/data-bridge/thrift-client-config.xml" \
     -DMETADATA_CLIENT_CONFIG_FILE="$CARBON_HOME/repository/conf/metadataservice.xml" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?

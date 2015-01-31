@@ -976,6 +976,11 @@
             <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/data-bridge/</outputDirectory>
             <fileMode>644</fileMode>
         </file>
+        <file>
+            <source>../../conf/data-bridge/thrift-client-config.xml</source>
+            <outputDirectory>${pom.artifactId}-${pom.version}/repository/conf/data-bridge/</outputDirectory>
+            <fileMode>644</fileMode>
+        </file>
 
    <!--Copying config files from kernel patches -->
         <file>

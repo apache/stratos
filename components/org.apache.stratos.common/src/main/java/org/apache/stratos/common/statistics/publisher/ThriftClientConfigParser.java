@@ -53,7 +53,11 @@ public class ThriftClientConfigParser {
             ThriftClientInfo thriftClientInfo = new ThriftClientInfo();
             thriftClientIConfig.setThriftClientInfo(thriftClientInfo);
 
-            OMElement document = AxiomXpathParserUtil.parse(new File(filePath));
+            File configFile = new File(filePath);
+            if(!configFile.exists()) {
+                throw new RuntimeException(String.format("Thrift client config file does not exist: %s", filePath));
+            }
+            OMElement document = AxiomXpathParserUtil.parse(configFile);
             Iterator thriftClientIterator = document.getChildElements();
 
             String userNameValuesStr = null;

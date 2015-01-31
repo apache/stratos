@@ -25,19 +25,7 @@ package org.apache.stratos.common.statistics.publisher;
  */
 public class ThriftClientConfig {
 
-    /**
-     * Setting the relative path to thrift-client-config.xml file
-     */
     public static final String THRIFT_CLIENT_CONFIG_FILE_PATH = "thrift.client.config.file.path";
-    private static final String THRIFT_CLIENT_CONFIG_FILE_NAME = "thrift-client-config.xml";
-
-    // here "user.dir" has been used instead of "carbon.home"
-    // since "carbon.home" returned a null value in this instance
-    private static final String CARBON_HOME = "user.dir";
-
-    // Test configuration file path is used here
-    // Main configuration file path can be found under "/products/stratos/conf/data-bridge/"
-    private static final String REPOSITORY_CONF = "/components/org.apache.stratos.common/src/test/resources/";
 
     private static volatile ThriftClientConfig instance;
     private ThriftClientInfo thriftClientInfo;
@@ -52,9 +40,7 @@ public class ThriftClientConfig {
         if (instance == null) {
             synchronized (ThriftClientConfig.class) {
                 if (instance == null) {
-                    String defaultConfigFilePath = System.getProperty(CARBON_HOME) + REPOSITORY_CONF +
-                            THRIFT_CLIENT_CONFIG_FILE_NAME;
-                    String configFilePath = System.getProperty(THRIFT_CLIENT_CONFIG_FILE_PATH, defaultConfigFilePath);
+                    String configFilePath = System.getProperty(THRIFT_CLIENT_CONFIG_FILE_PATH);
                     instance = ThriftClientConfigParser.parse(configFilePath);
                 }
             }
