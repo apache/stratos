@@ -45,12 +45,21 @@ public class WSO2CEPStatisticsPublisher implements StatisticsPublisher {
     private String password;
     private boolean enabled = false;
 
+    /**
+     * Credential information stored inside thrift-client-config.xml file
+     * is parsed and assigned into ip,port,username and password fields
+     *
+     * @param streamDefinition
+     */
     public WSO2CEPStatisticsPublisher(StreamDefinition streamDefinition) {
+        ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
+        thriftClientConfig.getThriftClientInfo();
+
         this.streamDefinition = streamDefinition;
-        this.ip = System.getProperty("thrift.receiver.ip");
-        this.port = System.getProperty("thrift.receiver.port");
-        this.username = "admin";
-        this.password = "admin";
+        this.ip = thriftClientConfig.getThriftClientInfo().getIp();
+        this.port = thriftClientConfig.getThriftClientInfo().getPort();
+        this.username = thriftClientConfig.getThriftClientInfo().getUsername();
+        this.password = thriftClientConfig.getThriftClientInfo().getPassword();
 
         enabled = Boolean.getBoolean("cep.stats.publisher.enabled");
         if (enabled) {
