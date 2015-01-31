@@ -23,12 +23,9 @@ import junit.framework.TestCase;
 import org.apache.stratos.common.statistics.publisher.ThriftClientConfig;
 import org.junit.Test;
 
+
 /**
  * Thrift Client configuration.
- *
- * @author  supunr
- * @contact supunr@wso2.com
- * @date    1/27/15
  */
 public class ThriftClientConfigParserTest extends TestCase {
     /**
@@ -38,11 +35,11 @@ public class ThriftClientConfigParserTest extends TestCase {
      * @throws Exception
      */
     @Test
-    public void testName() throws Exception{
+    public void testThriftClientConfigParser() throws Exception{
         ThriftClientConfig thriftClientConfig = ThriftClientConfig.getInstance();
         thriftClientConfig.getThriftClientInfo();
 
-        assertEquals("Incorrect Username","test User",thriftClientConfig.getThriftClientInfo().getUsername());
+        assertEquals("Incorrect Password","test User",thriftClientConfig.getThriftClientInfo().getUsername());
         assertEquals("Incorrect Password","test pass",thriftClientConfig.getThriftClientInfo().getPassword());
         assertEquals("Incorrect IP","195.168.10.1",thriftClientConfig.getThriftClientInfo().getIp());
         assertEquals("Incorrect Port","8080",thriftClientConfig.getThriftClientInfo().getPort());
