@@ -418,6 +418,9 @@ def add_payload_parameters(env_params):
         cartridge_agent_config.persistence_mappings
     env_params["STRATOS_REPO_URL"] = cartridge_agent_config.repo_url
     env_params["DEPENDANT_CLUSTER_ID"] = cartridge_agent_config.dependant_cluster_id
+    env_params["EXPORT_METADATA_KEYS"] = cartridge_agent_config.export_metadata_keys
+    env_params["IMPORT_METADATA_KEYS"] = cartridge_agent_config.import_metadata_keys
+
 
     lb_cluster_id_in_payload = cartridge_agent_config.lb_cluster_id
     member_ips = get_lb_member_ip(lb_cluster_id_in_payload)

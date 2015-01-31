@@ -99,6 +99,10 @@ class CartridgeAgentConfiguration:
             """ :type : str  """
             self.dependant_cluster_id = None
             """ :type : str  """
+            self.export_metadata_keys = None
+            """ :type : str  """
+            self.import_metadata_keys = None
+            """ :type : str  """
             self.is_primary = False
             """ :type : bool  """
 
@@ -134,6 +138,9 @@ class CartridgeAgentConfiguration:
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
                 self.dependant_cluster_id = self.read_property(cartridgeagentconstants.DEPENDENCY_CLUSTER_IDS, False)
+                self.export_metadata_keys = self.read_property(cartridgeagentconstants.EXPORT_METADATA_KEYS)
+                self.import_metadata_keys = self.read_property(cartridgeagentconstants.IMPORT_METADATA_KEYS)
+
 
                 try:
                     self.log_file_paths = str(
@@ -246,6 +253,8 @@ class CartridgeAgentConfiguration:
             self.log.debug("lb-private-ip: %r" % self.lb_private_ip)
             self.log.debug("lb-public-ip: %r" % self.lb_public_ip)
             self.log.debug("dependant_cluster_id: %r" % self.dependant_cluster_id)
+            self.log.debug("export_metadata_keys: %r" % self.export_metadata_keys)
+            self.log.debug("import_metadata_keys: %r" % self.import_metadata_keys)
 
         def get_member_id(self, member_id_field):
             """
