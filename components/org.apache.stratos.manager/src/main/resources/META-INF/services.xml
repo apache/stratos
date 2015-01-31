@@ -23,17 +23,5 @@
       <messageReceiver mep="http://www.w3.org/ns/wsdl/in-only" class="org.apache.axis2.rpc.receivers.RPCInOnlyMessageReceiver"/>
       <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="org.apache.axis2.rpc.receivers.RPCMessageReceiver"/>
     </messageReceivers>
-    <operation name="addApplicationSignUp">
-      <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/add/applicationSignUp</parameter>
-    </operation>
-    <operation name="removeApplicationSignUp">
-      <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/remove/applicationSignUp</parameter>
-    </operation>
-    <operation name="getApplicationSignUp">
-      <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/applicationSignUp</parameter>
-    </operation>
-    <operation name="getApplicationSignUps">
-      <parameter name="AuthorizationAction" locked="true">/permission/admin/manage/view/applicationSignUp</parameter>
-    </operation>
   </service>
 </serviceGroup>

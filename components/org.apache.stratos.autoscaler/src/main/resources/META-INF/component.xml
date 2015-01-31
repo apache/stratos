@@ -21,40 +21,60 @@
     </deployers>
     <ManagementPermissions>
         <ManagementPermission>
-            <DisplayName>Autoscaling Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/add/autoscalingPolicy</ResourceId>
+            <DisplayName>Get Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/admin/manage/getAutoscalingPolicies</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/add/deploymentPolicy</ResourceId>
+            <DisplayName>Add Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/admin/manage/addAutoscalingPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Partition</DisplayName>
-            <ResourceId>/permission/admin/manage/add/partition</ResourceId>
+            <DisplayName>Update Autoscaling Policies</DisplayName>
+            <ResourceId>/permission/admin/manage/updateAutoscalingPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>View</DisplayName>
-            <ResourceId>/permission/admin/manage/view/</ResourceId>
+            <DisplayName>Update Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/updateNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Autoscaling Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/view/autoscalingPolicy</ResourceId>
+            <DisplayName>Remove Autoscaling Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/removeAutoscalingPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Deployment Policy</DisplayName>
-            <ResourceId>/permission/admin/manage/view/deploymentPolicy</ResourceId>
+            <DisplayName>Add Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/addNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Partition</DisplayName>
-            <ResourceId>/permission/admin/manage/view/partition</ResourceId>
+            <DisplayName>Get Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/getNetworkPartitions</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Kubernetes</DisplayName>
-            <ResourceId>/permission/admin/manage/add/kubernetes</ResourceId>
+            <DisplayName>Remove Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/removeNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Kubernetes</DisplayName>
-            <ResourceId>/permission/admin/manage/view/kubernetes</ResourceId>
+            <DisplayName>Add Kubernetes Host Cluster</DisplayName>
+            <ResourceId>/permission/admin/manage/addKubernetesHostCluster</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Kubernetes Host</DisplayName>
+            <ResourceId>/permission/admin/manage/addKubernetesHost</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update Kubernetes Master</DisplayName>
+            <ResourceId>/permission/admin/manage/updateKubernetesMaster</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update Kubernetes Host</DisplayName>
+            <ResourceId>/permission/admin/manage/updateKubernetesHost</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Kubernetes Host Clusters</DisplayName>
+            <ResourceId>/permission/admin/manage/getKubernetesHostClusters</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Kubernetes Host Cluster</DisplayName>
+            <ResourceId>/permission/admin/manage/removeKubernetesHostCluster</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>

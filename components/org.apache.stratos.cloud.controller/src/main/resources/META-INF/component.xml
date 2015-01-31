@@ -36,24 +36,36 @@
     </deployers>
     <ManagementPermissions>
         <ManagementPermission>
-            <DisplayName>Cartridge Definition</DisplayName>
-            <ResourceId>/permission/admin/manage/add/cartridgeDefinition</ResourceId>
+            <DisplayName>Add Cartridge</DisplayName>
+            <ResourceId>/permission/admin/manage/addCartridge</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Service</DisplayName>
-            <ResourceId>/permission/admin/manage/add/service</ResourceId>
+            <DisplayName>Update Cartridge</DisplayName>
+            <ResourceId>/permission/admin/manage/updateCartridge</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>View</DisplayName>
-            <ResourceId>/permission/admin/manage/view</ResourceId>
+            <DisplayName>Get Cartridges</DisplayName>
+            <ResourceId>/permission/admin/manage/getCartridges</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Service</DisplayName>
-            <ResourceId>/permission/admin/manage/view/service</ResourceId>
+            <DisplayName>Get Cartridge By Filter</DisplayName>
+            <ResourceId>/permission/admin/manage/getCartridgesByFilter</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Cartridge</DisplayName>
-            <ResourceId>/permission/admin/manage/view/cartridge</ResourceId>
+            <DisplayName>Remove Cartridge</DisplayName>
+            <ResourceId>/permission/admin/manage/removeCartridge</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Service Group</DisplayName>
+            <ResourceId>/permission/protected/manage/addServiceGroup</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Service Group Definition</DisplayName>
+            <ResourceId>/permission/protected/manage/getServiceGroupDefinition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Service Group Definition</DisplayName>
+            <ResourceId>/permission/protected/manage/removeServiceGroup</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>

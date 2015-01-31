@@ -19,44 +19,108 @@
 <component xmlns="http://products.wso2.org/carbon">
     <ManagementPermissions>
         <ManagementPermission>
-            <DisplayName>Subscription</DisplayName>
-            <ResourceId>/permission/admin/manage/add/subscription</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>View</DisplayName>
-            <ResourceId>/permission/admin/manage/view</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Subscription</DisplayName>
-            <ResourceId>/permission/admin/manage/view/subscription</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Users</DisplayName>
-            <ResourceId>/permission/admin/manage/add/users</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Git Sync</DisplayName>
-            <ResourceId>/permission/admin/manage/add/sync</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
             <DisplayName>REST Login</DisplayName>
             <ResourceId>/permission/admin/restlogin</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Domain</DisplayName>
-            <ResourceId>/permission/admin/manage/add/domain</ResourceId>
+            <DisplayName>Add Application</DisplayName>
+            <ResourceId>/permission/protected/manage/addApplication</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Domain</DisplayName>
-            <ResourceId>/permission/admin/manage/view/domain</ResourceId>
+            <DisplayName>Get Application</DisplayName>
+            <ResourceId>/permission/protected/manage/getApplications</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Cluster</DisplayName>
-            <ResourceId>/permission/admin/manage/view/cluster</ResourceId>
+            <DisplayName>Deploy Application</DisplayName>
+            <ResourceId>/permission/protected/manage/deployApplication</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Instance</DisplayName>
-            <ResourceId>/permission/admin/manage/view/instance</ResourceId>
+            <DisplayName>Get Application Deployment Policy</DisplayName>
+            <ResourceId>/permission/protected/manage/getApplicationDeploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Application Sign Up</DisplayName>
+            <ResourceId>/permission/protected/manage/addApplicationSignUp</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Application Sign Up</DisplayName>
+            <ResourceId>/permission/protected/manage/getApplicationSignUp</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Application Sign Up</DisplayName>
+            <ResourceId>/permission/protected/manage/removeApplicationSignUp</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Domain Mappings</DisplayName>
+            <ResourceId>/permission/protected/manage/addDomainMappings</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Domain Mappings</DisplayName>
+            <ResourceId>/permission/protected/manage/removeDomainMappings</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Domain Mappings</DisplayName>
+            <ResourceId>/permission/protected/manage/getDomainMappings</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Undeploy Application</DisplayName>
+            <ResourceId>/permission/protected/manage/undeployApplication</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Application Runtime</DisplayName>
+            <ResourceId>/permission/protected/manage/getApplicationRuntime</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Application</DisplayName>
+            <ResourceId>/permission/protected/manage/removeApplication</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Tenant</DisplayName>
+            <ResourceId>/permission/protected/manage/addTenant</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update Tenant</DisplayName>
+            <ResourceId>/permission/protected/manage/updateTenant</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Tenant For Domain</DisplayName>
+            <ResourceId>/permission/protected/manage/getTenantForDomain</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Tenant</DisplayName>
+            <ResourceId>/permission/protected/manage/removeTenant</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Tenants</DisplayName>
+            <ResourceId>/permission/protected/manage/getTenants</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Activate Tenant</DisplayName>
+            <ResourceId>/permission/protected/manage/activateTenant</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Deactivate Tenant</DisplayName>
+            <ResourceId>/permission/protected/manage/deactivateTenant</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Notify Repository</DisplayName>
+            <ResourceId>/permission/admin/manage/notifyRepository</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add User</DisplayName>
+            <ResourceId>/permission/admin/manage/addUser</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove User</DisplayName>
+            <ResourceId>/permission/admin/manage/removeUser</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update User</DisplayName>
+            <ResourceId>/permission/admin/manage/updateUser</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Users</DisplayName>
+            <ResourceId>/permission/admin/manage/getUsers</ResourceId>
         </ManagementPermission>
     </ManagementPermissions>
 </component>
