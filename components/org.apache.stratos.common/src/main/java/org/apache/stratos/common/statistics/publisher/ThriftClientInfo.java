@@ -21,10 +21,6 @@ package org.apache.stratos.common.statistics.publisher;
 
 /**
  * Thrift Client Info
- *
- * @author  supunr
- * @contact supunr@wso2.com
- * @date    1/27/15
  */
 public class ThriftClientInfo {
     private String username;
