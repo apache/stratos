@@ -16,7 +16,7 @@ curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://
 
 # Removing cartridges
 echo "Removing cartridges..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:9443/api/cartridges/tomcat
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:9443/api/cartridges/php
 
 # Removing autoscale policies
 echo "Removing autoscale policies..."

@@ -20,7 +20,7 @@ sleep 1
 pushd ${cartridges_path}
 	# Adding tomcat cartridge
 echo "Adding tomcat cartridge..."
-curl -X POST -H "Content-Type: application/json" -d @'tomcat.json' -k -u admin:admin https://${host_ip}:9443/api/cartridges
+curl -X POST -H "Content-Type: application/json" -d @'php.json' -k -u admin:admin https://${host_ip}:9443/api/cartridges
 popd
 
 sleep 5
