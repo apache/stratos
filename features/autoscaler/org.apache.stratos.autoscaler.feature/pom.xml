@@ -65,6 +65,7 @@
                             <bundles>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.autoscaler:${project.version}</bundleDef>
                                 <bundleDef>org.apache.stratos:org.apache.stratos.cloud.controller.service.stub:${project.version}</bundleDef>
+                                <bundleDef>org.apache.stratos:org.apache.stratos.manager.service.stub:${project.version}</bundleDef>
                             </bundles>
                             <importFeatures>
                                 <importFeatureDef>org.wso2.carbon.core.server:${wso2carbon.version}</importFeatureDef>
