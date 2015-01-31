@@ -25,7 +25,7 @@
             "alias": "php1",
             "networkPartition": [
                 {
-                    "id": "OS-P1",
+                    "id": "openstack_R1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
