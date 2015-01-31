@@ -36,8 +36,10 @@ import java.util.UUID;
  * Messaging module utility class
  */
 public class MessagingUtil {
+
 	private static final Log log = LogFactory.getLog(MessagingUtil.class);
-	private static final int START_INDEX = 0;
+
+    private static final int START_INDEX = 0;
 	private static final String SLASH = "/";
 	private static final String DOT = ".";
     private static final String HASH = "#";
@@ -177,23 +179,9 @@ public class MessagingUtil {
 	/**
 	 * Fetch value from system param
 	 *
-	 * @return Average ping interval
-	 */
-	public static int getAveragePingInterval() {
-		if (averagePingInterval <= 0) {
-			averagePingInterval =
-					MessagingUtil.getNumericSystemProperty(DEFAULT_AVERAGE_PING_INTERVAL,
-                            AVERAGE_PING_INTERVAL_PROPERTY);
-		}
-		return averagePingInterval;
-	}
-
-	/**
-	 * Fetch value from system param
-	 *
 	 * @return Fail over ping interval
 	 */
-	public static int getFailoverPingInterval() {
+	public static int getSubscriberFailoverInterval() {
 		if (failoverPingInterval <= 0) {
 			failoverPingInterval =
 					MessagingUtil.getNumericSystemProperty(DEFAULT_FAILOVER_PING_INTERVAL,

@@ -20,9 +20,10 @@ package org.apache.stratos.messaging.message.processor.topology;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
@@ -32,7 +33,6 @@ import org.apache.stratos.messaging.message.processor.topology.updater.TopologyU
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class CompleteTopologyMessageProcessor extends MessageProcessor {
@@ -78,9 +78,6 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
     }
 
     private void doProcess (CompleteTopologyEvent event, Topology topology) {
-
-        // add locks for all the Clusters currently in Topology
-        addTopologyLocksForClusters(event.getTopology().getServices());
 
         // Apply service filter
         if (TopologyServiceFilter.getInstance().isActive()) {
@@ -154,23 +151,5 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
 
         // Set topology initialized
         topology.setInitialized(true);
-    }
-
-
-    private void addTopologyLocksForClusters (Collection<Service> services) {
-
-        if (services == null) {
-            return;
-        }
-
-        for (Service service : services) {
-            // get all the clusters and add locks
-            if (service.getClusters() != null) {
-                for (Cluster aCluster: service.getClusters()) {
-                    TopologyLockHierarchy.getInstance().addClusterLock(aCluster.getClusterId(),
-                            new TopologyLock());
-                }
-            }
-        }
     }
 }

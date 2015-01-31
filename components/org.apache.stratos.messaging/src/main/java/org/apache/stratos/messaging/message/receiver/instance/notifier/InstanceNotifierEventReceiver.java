@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.message.receiver.instance.notifier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -33,7 +33,7 @@ public class InstanceNotifierEventReceiver {
 	private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
 	private final InstanceNotifierEventMessageDelegator messageDelegator;
 	private final InstanceNotifierEventMessageListener messageListener;
-	private TopicSubscriber topicSubscriber;
+	private EventSubscriber eventSubscriber;
 	private boolean terminated;
 
 	public InstanceNotifierEventReceiver() {
@@ -50,9 +50,9 @@ public class InstanceNotifierEventReceiver {
 	public void execute() {
 		try {
 			// Start topic subscriber thread
-			topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
+			eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
 //			subscriber.setMessageListener(messageListener);
-			Thread subscriberThread = new Thread(topicSubscriber);
+			Thread subscriberThread = new Thread(eventSubscriber);
 
 			subscriberThread.start();
 			if (log.isDebugEnabled()) {
@@ -81,11 +81,11 @@ public class InstanceNotifierEventReceiver {
 	}
 
 	public boolean isSubscribed() {
-		return ((topicSubscriber != null) && (topicSubscriber.isSubscribed()));
+		return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
 	}
 
 	public void terminate() {
-		topicSubscriber.terminate();
+		eventSubscriber.terminate();
 		messageDelegator.terminate();
 		terminated = true;
 	}

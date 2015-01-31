@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -36,7 +36,7 @@ public class DomainMappingEventReceiver {
 
     private DomainMappingEventMessageDelegator messageDelegator;
     private DomainMappingEventMessageListener messageListener;
-    private TopicSubscriber topicSubscriber;
+    private EventSubscriber eventSubscriber;
     private ExecutorService executorService;
 
     public DomainMappingEventReceiver() {
@@ -53,9 +53,9 @@ public class DomainMappingEventReceiver {
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.DOMAIN_MAPPING_TOPIC.getTopicName(), messageListener);
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.DOMAIN_MAPPING_TOPIC.getTopicName(), messageListener);
             // subscriber.setMessageListener(messageListener);
-            executorService.execute(topicSubscriber);
+            executorService.execute(eventSubscriber);
 
 
             if (log.isDebugEnabled()) {
@@ -77,7 +77,7 @@ public class DomainMappingEventReceiver {
     }
 
     public void terminate() {
-        topicSubscriber.terminate();
+        eventSubscriber.terminate();
         messageDelegator.terminate();
     }
 

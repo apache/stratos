@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
 import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
 import java.io.Serializable;
@@ -62,7 +61,6 @@ public class Service implements Serializable{
 
     public void addCluster(Cluster cluster) {
         this.clusterIdClusterMap.put(cluster.getClusterId(), cluster);
-        TopologyLockHierarchy.getInstance().addClusterLock(cluster.getClusterId(), new TopologyLock());
     }
 
     public void removeCluster(Cluster cluster) {

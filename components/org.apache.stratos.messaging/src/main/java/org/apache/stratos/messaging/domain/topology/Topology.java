@@ -19,15 +19,14 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLock;
-import org.apache.stratos.messaging.domain.topology.locking.TopologyLockHierarchy;
 
 /**
  * Defines a topology of serviceMap in Stratos.
@@ -50,7 +49,6 @@ public class Topology implements Serializable {
 
     public void addService(Service service) {
         this.serviceMap.put(service.getServiceName(), service);
-        TopologyLockHierarchy.getInstance().addServiceLock(service.getServiceName(), new TopologyLock());
     }
 
     public synchronized void addServices(Collection<Service> services) {

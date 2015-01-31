@@ -44,7 +44,6 @@ public class TopologyLockHierarchy {
     private static volatile TopologyLockHierarchy topologyLockHierarchy;
 
     private TopologyLockHierarchy () {
-
         this.completeTopologyLock = new TopologyLock();
         this.serviceLock = new TopologyLock();
         this.serviceNameToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
@@ -52,7 +51,6 @@ public class TopologyLockHierarchy {
     }
 
     public static TopologyLockHierarchy getInstance () {
-
         if (topologyLockHierarchy == null) {
             synchronized (TopologyLockHierarchy.class) {
                 if (topologyLockHierarchy == null) {
@@ -60,52 +58,33 @@ public class TopologyLockHierarchy {
                 }
             }
         }
-
         return topologyLockHierarchy;
     }
 
-    public void addServiceLock (String serviceName, final TopologyLock topologyLock) {
-
-        if (!serviceNameToTopologyLockMap.containsKey(serviceName)) {
-            synchronized (serviceNameToTopologyLockMap) {
-                if (!serviceNameToTopologyLockMap.containsKey(serviceName)) {
-                    serviceNameToTopologyLockMap.put(serviceName, topologyLock);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added lock for service " + serviceName);
-                    }
-                }
-            }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Topology Lock for service " + serviceName + " already exists");
-            }
-        }
-    }
-
     public TopologyLock getTopologyLockForService (String serviceName) {
-        return serviceNameToTopologyLockMap.get(serviceName);
-    }
-
-    public void addClusterLock (String clusterId, final TopologyLock topologyLock) {
-
-        if (!clusterIdToTopologyLockMap.containsKey(clusterId)) {
-            synchronized (clusterIdToTopologyLockMap) {
-                if (!clusterIdToTopologyLockMap.containsKey(clusterId)) {
-                    clusterIdToTopologyLockMap.put(clusterId, topologyLock);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Added lock for cluster " + clusterId);
-                    }
+        TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
+        if(topologyLock == null) {
+            synchronized (TopologyLockHierarchy.class) {
+                if(topologyLock == null) {
+                    topologyLock = new TopologyLock();
+                    serviceNameToTopologyLockMap.put(serviceName, topologyLock);
                 }
             }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Topology lock for cluster " + clusterId + " already exists");
-            }
         }
+        return topologyLock;
     }
 
     public TopologyLock getTopologyLockForCluster (String clusterId) {
-        return clusterIdToTopologyLockMap.get(clusterId);
+        TopologyLock topologyLock = clusterIdToTopologyLockMap.get(clusterId);
+        if(topologyLock == null) {
+            synchronized (TopologyLockHierarchy.class) {
+                if(topologyLock == null) {
+                    topologyLock = new TopologyLock();
+                    clusterIdToTopologyLockMap.put(clusterId, topologyLock);
+                }
+            }
+        }
+        return topologyLock;
     }
 
     public void removeTopologyLockForService (String serviceName) {

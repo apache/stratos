@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.cluster.status;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -34,7 +34,7 @@ public class ClusterStatusEventReceiver{
     private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
     private final ClusterStatusEventMessageDelegator messageDelegator;
     private final ClusterStatusEventMessageListener messageListener;
-    private TopicSubscriber topicSubscriber;
+    private EventSubscriber eventSubscriber;
     private boolean terminated;
 	private ExecutorService executorService;
 
@@ -52,8 +52,8 @@ public class ClusterStatusEventReceiver{
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
-            executorService.execute(topicSubscriber);
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.CLUSTER_STATUS_TOPIC.getTopicName(), messageListener);
+            executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message receiver thread started");
@@ -74,11 +74,11 @@ public class ClusterStatusEventReceiver{
     }
 
     public boolean isSubscribed() {
-        return ((topicSubscriber != null) && (topicSubscriber.isSubscribed()));
+        return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
     }
 
     public void terminate() {
-        topicSubscriber.terminate();
+        eventSubscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }

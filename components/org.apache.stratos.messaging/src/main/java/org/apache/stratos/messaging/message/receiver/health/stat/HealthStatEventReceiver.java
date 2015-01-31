@@ -21,7 +21,7 @@ package org.apache.stratos.messaging.message.receiver.health.stat;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -35,7 +35,7 @@ public class HealthStatEventReceiver {
 
 	private final HealthStatEventMessageDelegator messageDelegator;
 	private final HealthStatEventMessageListener messageListener;
-	private TopicSubscriber topicSubscriber;
+	private EventSubscriber eventSubscriber;
 	private boolean terminated;
 	private ExecutorService executorService;
 
@@ -53,9 +53,9 @@ public class HealthStatEventReceiver {
 	public void execute() {
 		try {
 			// Start topic subscriber thread
-			topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
+			eventSubscriber = new EventSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
 
-            executorService.execute(topicSubscriber);
+            executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
 				log.debug("Health stats event message delegator thread started");
@@ -70,7 +70,7 @@ public class HealthStatEventReceiver {
 	}
 
 	public void terminate() {
-		topicSubscriber.terminate();
+		eventSubscriber.terminate();
 		messageDelegator.terminate();
 		terminated = true;
 	}

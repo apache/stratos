@@ -93,7 +93,6 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 }
                 return;
             }
-
             reconnect();
         }
 
@@ -103,10 +102,10 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 try {
                     if (log.isInfoEnabled()) {
                         log.info("Will try to subscribe again in " +
-                                MessagingUtil.getFailoverPingInterval() / 1000 + " sec");
+                                MessagingUtil.getSubscriberFailoverInterval() / 1000 + " sec");
                     }
                     try {
-                        Thread.sleep(MessagingUtil.getFailoverPingInterval());
+                        Thread.sleep(MessagingUtil.getSubscriberFailoverInterval());
                     } catch (InterruptedException ignore) {
                     }
 

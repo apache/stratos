@@ -20,7 +20,7 @@ package org.apache.stratos.messaging.message.receiver.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.subscribe.TopicSubscriber;
+import org.apache.stratos.messaging.broker.subscribe.EventSubscriber;
 import org.apache.stratos.messaging.listener.EventListener;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -31,7 +31,7 @@ public class ApplicationsEventReceiver {
 
     private ApplicationsEventMessageDelegator messageDelegator;
     private ApplicationsEventMessageListener messageListener;
-    private TopicSubscriber topicSubscriber;
+    private EventSubscriber eventSubscriber;
     private boolean terminated;
 	private ExecutorService executorService;
 
@@ -49,8 +49,8 @@ public class ApplicationsEventReceiver {
     public void execute() {
         try {
             // Start topic subscriber thread
-            topicSubscriber = new TopicSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(), messageListener);
-			executorService.execute(topicSubscriber);
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(), messageListener);
+			executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message receiver thread started");
@@ -72,7 +72,7 @@ public class ApplicationsEventReceiver {
     }
 
     public void terminate() {
-        topicSubscriber.terminate();
+        eventSubscriber.terminate();
         messageDelegator.terminate();
         terminated = true;
     }
