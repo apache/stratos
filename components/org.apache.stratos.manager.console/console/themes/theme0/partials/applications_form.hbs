@@ -91,7 +91,7 @@
                             <div class="toggle-menu-icon">
                                 <i class="fa fa-th-large"></i>
                             </div>
-                            <h2 class="truncate">{{applicationId}} </h2>
+                            <h2 class="truncate">{{alias}} </h2>
 
                             <div class="toggle-menu-description">{{description}} {{status}}</div>
                             {{#ifCond status "!=" "Created"}}
@@ -117,7 +117,7 @@
                             {{else}}
                                 <div class="list-button" style="display: none;">
                                     <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                            id="{{applicationId}}"> Delete</button>
+                                            id="{{applicationId}}" data-alias="{{alias}}"> Delete</button>
                                     <button class="btn btn-info btn-lg hover-details" type="button"
                                             id="details_list_{{applicationId}}"
                                             data-url="{{url ""}}/applications/applications/{{applicationId}}/view" > View
@@ -130,7 +130,7 @@
                                 <div class="bottom-bar-wrapper">
                                     <div class="bottom-bar">
                                         <button class="btn btn-danger btn-lg hover-delete" type="button"
-                                                id="{{applicationId}}"> Delete</button>
+                                                id="{{applicationId}}" data-alias="{{alias}}"> Delete</button>
                                         <button class="btn btn-info btn-lg hover-details" type="button"
                                                 id="details_{{applicationId}}"
                                                 data-url="{{url ""}}/applications/applications/{{applicationId}}/view" > View
@@ -358,7 +358,7 @@
         noty({
             layout: 'bottomRight',
             type: 'warning',
-            text: 'Are you sure you want to delete application: <strong>'+$(this).attr("id") + "</strong> ?",
+            text: 'Are you sure you want to delete application: <strong>'+$(this).attr("data-alias") + "</strong> ?",
             buttons: [
                 {addClass: 'btn btn-primary', text: 'Yes', onClick: function($noty) {
                     var formtype = 'deleteapplication';

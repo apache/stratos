@@ -71,6 +71,7 @@ var render = function (theme, data, meta, require) {
                             partial: 'applications_view',
                             context: {
                                 applicationName: data.applicationName,
+                                applicationAlias: data.applicationAlias,
                                 formContext: data.breadcrumbPathLevelTwo,
                                 appName: data.appName,
                                 applicationJSON: data.applicationJSON,
@@ -199,6 +200,7 @@ var render = function (theme, data, meta, require) {
                             context: {
                                 formContext: data.breadcrumbPathLevelTwo,
                                 applicationName: data.applicationName,
+                                applicationAlias: data.applicationAlias,
                                 applicationJSON: data.applicationJSON,
                                 editorCartridges: data.editorCartridges,
                                 editorGroups:data.editorGroups,

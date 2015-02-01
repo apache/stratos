@@ -46,8 +46,10 @@ if (!elements) {
     if(!elements){
         elements = uriMatcher.match('/{context}/applications/{formtype}/{applicationId}/{action}');
         var applicationName = elements.applicationId;
+
         //get application json
         var applicationJSON = util.RESTCalls.getApplicationJSON(applicationName);
+        var applicationAlias = applicationJSON.alias;
 
         if(elements.action == 'view'){
             applicationHbs = 'applicationView';
@@ -125,6 +127,7 @@ var caramelData = {
     editorCartridges: JSON.stringify(editorCartridges),
     editorAutoscalePolicies: JSON.stringify(editorAutoscalePolicies),
     applicationHbs: applicationHbs,
+    applicationAlias:applicationAlias,
     applicationName:applicationName,
     applicationJSON:JSON.stringify(applicationJSON),
     formTitle: formTitle,
