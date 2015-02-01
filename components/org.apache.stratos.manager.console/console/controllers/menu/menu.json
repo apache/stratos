@@ -43,7 +43,7 @@
                     "title": "Kubernetes Clusters",
                     "icon": "fa-sitemap",
                     "permissionPaths": ["/permission", "/permission/admin"],
-                    "description": "Define and manage docker clusters."
+                    "description": "Define and manage kubernetes clusters."
                 }
             ]
         },
