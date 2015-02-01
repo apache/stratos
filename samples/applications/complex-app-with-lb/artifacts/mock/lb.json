@@ -1,10 +1,10 @@
 {
     "type": "lb",
-    "provider": "apache",
+    "provider": "stratos",
     "category": "lb",
-    "host": "isuruh.lk",
-    "displayName": "tomcat",
-    "description": "tomcat Cartridge",
+    "host": "complex-app-with-lb",
+    "displayName": "load-balancer",
+    "description": "Loca balancer cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
@@ -19,22 +19,16 @@
     "iaasProvider": [
         {
             "type": "mock",
-            "imageId": "RegionOne/b4ca55e3-58ab-4937-82ce-817ebd10240e",
-            "networkInterfaces": [
-                {
-                    "name": "network-non-routable",
-                    "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
-                }
-            ],
+            "imageId": "image1",
             "maxInstanceLimit": "2",
             "property": [
                 {
                     "name": "instanceType",
-                    "value": "RegionOne/aa5f45a2-c6d6-419d-917a-9dd2e3888594"
+                    "value": "instanceType1"
                 },
                 {
                     "name": "keyPair",
-                    "value": "reka"
+                    "value": "default"
                 },
                 {
                     "name": "securityGroups",

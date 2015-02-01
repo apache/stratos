@@ -1,5 +1,5 @@
 {
-    "id": "autoscale_policy_1",
+    "id": "autoscale-policy-1",
     "loadThresholds": {
         "requestsInFlight": {
             "threshold": 80

@@ -21,7 +21,7 @@
                                 "cartridgeMax": 2,
                                 "subscribableInfo": {
                                     "alias": "group7tom",
-                                    "autoscalingPolicy": "autoscale_policy_1",
+                                    "autoscalingPolicy": "autoscale-policy-1",
                                     "artifactRepository":{
                                        "privateRepo":false,
                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
@@ -40,7 +40,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "group6tom",
-                            "autoscalingPolicy": "autoscale_policy_1",
+                            "autoscalingPolicy": "autoscale-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
                                "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
@@ -69,7 +69,7 @@
                                 "cartridgeMax": 2,
                                 "subscribableInfo": {
                                     "alias": "group9tom",
-                                    "autoscalingPolicy": "autoscale_policy_1",
+                                    "autoscalingPolicy": "autoscale-policy-1",
                                     "artifactRepository":{
                                        "privateRepo":false,
                                        "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
@@ -88,7 +88,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "group8tom",
-                            "autoscalingPolicy": "autoscale_policy_1",
+                            "autoscalingPolicy": "autoscale-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
                                "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
@@ -107,7 +107,7 @@
                 "cartridgeMax": 2,
                 "subscribableInfo": {
                     "alias": "mytomcat",
-                    "autoscalingPolicy": "autoscale_policy_1",
+                    "autoscalingPolicy": "autoscale-policy-1",
                     "artifactRepository":{
                        "privateRepo":false,
                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",

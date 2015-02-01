@@ -1,6 +1,6 @@
 {
-    "applicationId": "app_boo",
-    "alias": "app_boo_r2",
+    "applicationId": "complex-app-with-lb",
+    "alias": "complex-app-with-lb_r2",
     "components": {
         "groups": [
             {
@@ -21,7 +21,7 @@
                                 "cartridgeMax": 2,
                                 "subscribableInfo": {
                                     "alias": "group7tom",
-                                    "autoscalingPolicy": "autoscale_policy_1"
+                                    "autoscalingPolicy": "autoscale-policy-1"
                                 }
                             }
                         ]
@@ -34,7 +34,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "group6tom",
-                            "autoscalingPolicy": "autoscale_policy_1"
+                            "autoscalingPolicy": "autoscale-policy-1"
                         }
                     }
                 ]
@@ -57,7 +57,7 @@
                                 "cartridgeMax": 2,
                                 "subscribableInfo": {
                                     "alias": "group9tom",
-                                    "autoscalingPolicy": "autoscale_policy_1"
+                                    "autoscalingPolicy": "autoscale-policy-1"
                                 }
                             }
                         ]
@@ -70,7 +70,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "group8tom",
-                            "autoscalingPolicy": "autoscale_policy_1"
+                            "autoscalingPolicy": "autoscale-policy-1"
                         }
                     }
                 ]
@@ -83,7 +83,7 @@
                 "cartridgeMax": 2,
                 "subscribableInfo": {
                     "alias": "mylb",
-                    "autoscalingPolicy": "autoscale_policy_1"
+                    "autoscalingPolicy": "autoscale-policy-1"
                 }
             },
             {
@@ -92,7 +92,7 @@
                 "cartridgeMax": 2,
                 "subscribableInfo": {
                      "alias": "mytomcat",
-                     "autoscalingPolicy": "autoscale_policy_1"
+                     "autoscalingPolicy": "autoscale-policy-1"
                 }
              }
 
