@@ -23,6 +23,7 @@
             "format":"password",
             "default": "admin123",
             "title": "Admin user password",
+            "description":"You need to add least 6 characters including number",
             "name": "Admin user password"
         },
         "email": {
