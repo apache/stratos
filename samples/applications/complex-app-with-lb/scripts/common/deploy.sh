@@ -19,10 +19,13 @@ fi
 
 echo ${artifacts_path}/autoscale-policy.json
 echo "Adding autoscale policy..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscale-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding load balancer..."
-curl -X POST -H "Content-Type: application/json" -d @'@${artifacts_path}/lb.json' -k -v -u admin:admin https://${host_ip}:9443/api/cartridges
+echo "Adding load balancer cartridge..."
+curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/stratos-lb.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
+
+echo "Adding tomcat cartridge..."
+curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/tomcat.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
 echo "Adding tomcat1 cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/tomcat1.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
@@ -39,9 +42,9 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/
 sleep 1
 
 echo "Creating application..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-definition.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/complex-app/deploy
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/complex-app-with-lb/deploy

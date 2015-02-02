@@ -1,10 +1,10 @@
 {
-    "type": "lb",
+    "type": "stratos-lb",
     "provider": "stratos",
     "category": "lb",
     "host": "complex-app-with-lb",
-    "displayName": "load-balancer",
-    "description": "Loca balancer cartridge",
+    "displayName": "Stratos Load Balancer",
+    "description": "Stratos Load Balancer Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [

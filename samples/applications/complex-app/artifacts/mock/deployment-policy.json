@@ -1,5 +1,4 @@
 {
-    "applicationId": "complex-app",
     "applicationPolicy": {
         "networkPartition": [
             {

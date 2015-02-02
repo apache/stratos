@@ -1,5 +1,5 @@
-Complex App
-===========
+Complex App with a Load Balancer
+================================
 
 Application folder structure
 ----------------------------
