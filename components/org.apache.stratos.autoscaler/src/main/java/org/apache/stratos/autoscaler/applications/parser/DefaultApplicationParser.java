@@ -351,11 +351,14 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // Find tenant range of cluster
             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridgeInfo.getTenantPartitions());
-
+		    Boolean isLB=false;
+			if(cartridgeInfo.getCategory().equals("lb")){
+				isLB=true;
+		    }
             // create and collect this cluster's information
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
-                    subscribableInfoContext.getDeploymentPolicy(), false,
+                    subscribableInfoContext.getDeploymentPolicy(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
                     subscribableInfoContext.getProperties(), arrDependencyClusterIDs, arrExportMetadata,
                     arrImportMetadata);

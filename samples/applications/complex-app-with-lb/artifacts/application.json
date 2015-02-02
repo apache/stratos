@@ -128,7 +128,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.group8,cartridge.stratos-lb,cartridge.tomcat,group.group6"
+                "cartridge.tomcat,cartridge.stratos-lb,group.group6,group.group8"
             ],
             "terminationBehaviour": "terminate-all"
         }

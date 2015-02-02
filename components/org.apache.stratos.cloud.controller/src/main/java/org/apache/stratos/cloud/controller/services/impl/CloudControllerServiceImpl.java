@@ -1048,7 +1048,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	        Map<String,List<String>> accessUrls= new HashMap<String, List<String>>();
 
 	        for (ApplicationClusterContext appClusterCtxt : appClustersContexts) {
-		        if(appClusterCtxt.getCartridgeType().equals("lb")) {
+		        if(appClusterCtxt.isLbCluster()) {
 			        String[] dependencyClusterIDs = appClusterCtxt.getDependencyClusterIds();
 			        if(dependencyClusterIDs!=null) {
 				        for (int i = 0; i < dependencyClusterIDs.length; i++) {
