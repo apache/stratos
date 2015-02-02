@@ -42,7 +42,12 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.exception("Error processing instance started event")
 
     def on_instance_activated_event(self):
-        extensionutils.execute_instance_activated_extension()
+        try:
+            self.log.debug("Processing instance activated event...")
+            env_params = {}
+            extensionutils.execute_instance_activated_extension(env_params)
+        except:
+            self.log.exception("Error processing instance activated event")
 
     def on_artifact_updated_event(self, artifacts_updated_event):
         self.log.info("Artifact update event received: [tenant] %r [cluster] %r [status] %r" %
