@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.manager.integration.tests;
+package org.apache.stratos.integration.tests;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.io.FileUtils;
@@ -47,9 +47,7 @@ public class StratosTestServerManager extends TestServerManager {
             "/../../../distribution/target/apache-stratos-4.1.0-SNAPSHOT.zip";
     private final static int PORT_OFFSET = 0;
     private static final String ACTIVEMQ_BIND_ADDRESS1 = "tcp://localhost:61616";
-    private static final String ACTIVEMQ_BIND_ADDRESS2 = "tcp://localhost:5672";
     private static final String MOCK_IAAS_XML = "mock-iaas.xml";
-    public static final String MQTT_URI = "mqtt://0.0.0.0:1883?maximumConnections=1000&amp;wireFormat.maxFrameSize=104857600";
 
     private ServerUtils serverUtils;
     private String carbonHome;
@@ -60,7 +58,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @BeforeSuite(timeOut = 300000)
+    @BeforeSuite
     public String startServer() throws IOException {
         try {
             // Start ActiveMQ
@@ -105,7 +103,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @AfterSuite(timeOut = 60000)
+    @AfterSuite
     public void stopServer() throws Exception {
         super.stopServer();
     }

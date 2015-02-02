@@ -137,10 +137,8 @@ public class AutoscalerTopologyEventReceiver {
                         //acquire read lock
                         ApplicationHolder.acquireReadLock();
                         //start the application monitor if the policy exists
-                        DeploymentPolicy policy = PolicyManager.getInstance().
-                                getDeploymentPolicyByApplication(appId);
-                        if (policy != null && !AutoscalerContext.getInstance().
-                                containsPendingMonitor(appId)) {
+                        DeploymentPolicy policy = PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
+                        if (policy != null && !AutoscalerContext.getInstance().containsPendingMonitor(appId)) {
                             AutoscalerUtil.getInstance().startApplicationMonitor(appId);
                         }
                     } catch (Exception e) {
@@ -149,7 +147,6 @@ public class AutoscalerTopologyEventReceiver {
                     } finally {
                         //release read lock
                         ApplicationHolder.releaseReadLock();
-
                     }
                 } catch (ClassCastException e) {
                     String msg = "Error while casting the event " + e.getLocalizedMessage();
