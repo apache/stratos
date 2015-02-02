@@ -1,18 +1,17 @@
 {
-    "applicationId": "single-cartridge-app",
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "openstack_R1",
+                "id": "network-partition-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "P1",
-                        "provider": "openstack",
+                        "id": "partition-1",
+                        "provider": "mock",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
@@ -25,12 +24,12 @@
             "alias": "php1",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
-                            "max": 8
+                            "id": "partition-1",
+                            "max": 5
                         }
                     ]
                 }

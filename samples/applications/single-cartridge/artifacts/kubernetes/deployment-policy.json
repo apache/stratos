@@ -2,12 +2,12 @@
    "applicationPolicy":{
       "networkPartition":[
          {
-            "id":"network-p1",
+            "id":"network-partition-1",
             "kubernetesClusterId":"kubernetes-cluster-1",
             "activeByDefault":"true",
             "partitions":[
                {
-                  "id":"p1",
+                  "id":"partition1",
                   "provider":"kubernetes",
                   "property":[
                      {
@@ -22,14 +22,14 @@
    },
    "childPolicies":[
       {
-         "alias":"php1",
+         "alias":"phpartition1",
          "networkPartition":[
             {
-               "id":"network-p1",
+               "id":"network-partition-1",
                "partitionAlgo":"one-after-another",
                "partitions":[
                   {
-                     "id":"p1",
+                     "id":"partition1",
                      "max":5
                   }
                ]
