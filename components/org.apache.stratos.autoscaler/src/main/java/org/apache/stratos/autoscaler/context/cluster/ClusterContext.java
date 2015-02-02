@@ -18,9 +18,6 @@
  */
 package org.apache.stratos.autoscaler.context.cluster;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -43,6 +40,9 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /*
  * It holds the runtime data of a VM cluster
@@ -174,7 +174,7 @@ public class ClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
 
         if (childPolicy == null) {
-            String msg = "Deployment policy is null";
+            String msg = String.format("Child policy is not specified for the [instance alias] %s",clusterInstance.getAlias());
             log.error(msg);
             throw new PolicyValidationException(msg);
         }
