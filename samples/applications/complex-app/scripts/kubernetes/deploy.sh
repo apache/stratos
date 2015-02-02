@@ -3,7 +3,7 @@
 host_ip="localhost"
 host_port=9443
 iaas="kubernetes"
-script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
+script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 common_folder="${script_path}/../common"
 iaas_artifacts_path="${script_path}/../../artifacts/${iaas}"
 

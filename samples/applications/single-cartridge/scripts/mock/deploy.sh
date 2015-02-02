@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
 iaas="mock"
-current_folder="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
-common_folder="${current_folder}/../common"
+script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+common_folder="${script_path}/../common"
 
-pushd ${common_folder}
-bash deploy.sh ${iaas}
-popd
+bash ${common_folder}/deploy.sh ${iaas}

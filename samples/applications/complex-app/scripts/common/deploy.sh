@@ -4,7 +4,7 @@ iaas=$1
 host_ip="localhost"
 host_port=9443
 
-script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
+script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 artifacts_path="${script_path}/../../artifacts"
 iaas_artifacts_path="${script_path}/../../artifacts/${iaas}"
 cartridges_path="${script_path}/../../../../cartridges/${iaas}"
