@@ -213,14 +213,19 @@ class Cluster:
         """ :type : bool  """
         self.is_kubernetes_cluster = False
         """ :type : bool  """
-        self.status = None
-        """ :type : str  """
+        # self.status = None
+        # """ :type : str  """
         self.load_balancer_algorithm_name = None
         """ :type : str  """
         self.properties = {}
         """ :type : dict[str, str]  """
         self.member_list_json = None
         """ :type : str  """
+        self.app_id = ""
+        """ :type : str """
+        # Not relevant to cartridge agent
+        # self.instance_id_instance_context_map = {}
+        # """ :type : dict[str, ClusterInstance] """
 
     def add_hostname(self, hostname):
         self.hostnames.append(hostname)
@@ -339,6 +344,8 @@ class Member:
         """ :type : str  """
         self.port_map = {}
         """ :type : dict[str, Port]  """
+        self.init_time = None
+        """ :type : int """
 
         self.member_public_ips = None
         """ :type : str  """
@@ -446,11 +453,9 @@ class TopologyContext:
     Handles and maintains a model of the topology provided by the Cloud Controller
     """
     topology = None
-    # TODO: read write locks, Lock() and RLock()
 
     @staticmethod
     def get_topology():
-        #TODO: thread-safety missing
         if TopologyContext.topology is None:
             TopologyContext.topology = Topology()
         return TopologyContext.topology

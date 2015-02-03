@@ -46,16 +46,15 @@ def decrypt_password(pass_str, secret):
     dec_pass = ""
 
     try:
-        #log.debug("Decrypting password")
+        log.debug("Decrypting password")
         bdecoded_pass = base64.b64decode(pass_str)
-        #secret length should be 16
+        # secret length should be 16
         cipher = AES.new(secret, AES.MODE_ECB)
         dec_pass = unpad(cipher.decrypt(bdecoded_pass))
     except:
-        pass
-        #log.exception("Exception occurred while decrypting password")
+        log.exception("Exception occurred while decrypting password")
 
-    #log.debug("Decrypted PWD: [%r]" % dec_pass)
+    log.debug("Decrypted PWD: [%r]" % dec_pass)
     return dec_pass
 
 
@@ -68,11 +67,10 @@ def create_dir(path):
     """
     try:
         os.mkdir(path)
-        #log.info("Successfully created directory [%r]" % path)
+        log.info("Successfully created directory [%r]" % path)
         return True
     except OSError:
-        pass
-        #log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
+        log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
 
     return False
 
@@ -85,10 +83,9 @@ def delete_folder_tree(path):
     """
     try:
         shutil.rmtree(path)
-        #log.debug("Directory [%r] deleted." % path)
+        log.debug("Directory [%r] deleted." % path)
     except OSError:
-        pass
-        #log.exception("Deletion of folder path %r failed." % path)
+        log.exception("Deletion of folder path %r failed." % path)
 
 
 def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
@@ -136,25 +133,13 @@ def check_ports_active(ip_address, ports):
         s.settimeout(5)
         try:
             s.connect((ip_address, int(port)))
-            #log.debug("Port %r is active" % port)
+            log.debug("Port %r is active" % port)
             s.close()
         except socket.error:
-            #log.debug("Print %r is not active" % port)
+            log.debug("Port %r is not active" % port)
             return False
 
     return True
-
-
-def get_carbon_server_property(property_key):
-    """
-    Reads the carbon.xml file and returns the value for the property key.
-    TODO: Get carbon server xml location
-    :param str property_key: Property key to look for
-    :return: The value of the property, None if the property key is invalid or not present
-    :rtype : str
-    """
-
-    raise NotImplementedError
 
 
 def get_working_dir():
