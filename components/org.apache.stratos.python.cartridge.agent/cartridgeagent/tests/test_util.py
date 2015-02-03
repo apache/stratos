@@ -15,12 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# from ..cartridgeagent.modules.util.asyncscheduledtask import *
-# from ..cartridgeagent.modules.util import cartridgeagentutils
-# import time
-# import socket
-# from threading import Thread
-#
+from ..cartridgeagent.modules.util.asyncscheduledtask import *
+from ..cartridgeagent.modules.util import cartridgeagentutils
+import time
+import socket
+from threading import Thread
+
 # ASYNC_WRITE_FILE = "asynctest.txt"
 
 
@@ -57,30 +57,24 @@
 #             f.seek(0)
 #             f.truncate()
 #             f.write("%1.4f" % (time.time()*1000))
-#
-#
-# def test_decrypt_password_success():
-#     # def mockgetlog(path):
-#     #     return mocklog
-#     #
-#     # monkeypatch.delattr("LogFactory().get_log")
-#     # TODO: enable logging in cartridgeagentutils
-#
-#     plain_password = "plaintext"
-#     secret_key = "tvnw63ufg9gh5111"
-#     encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
-#
-#     decrypted_password = cartridgeagentutils.decrypt_password(encrypted_password, secret_key)
-#     #print decrypted_password
-#
-#     assert decrypted_password == plain_password, "Password decryption failed"
-#
-#
-# def test_decrypt_password_failure():
-#     plain_password = "plaintext"
-#     secret_key = "notsecretkeyhere"
-#     encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
-#     assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) != plain_password, "Password decrypted for wrong key"
+
+
+def test_decrypt_password_success():
+    plain_password = "plaintext"
+    secret_key = "tvnw63ufg9gh5111"
+    encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
+
+    decrypted_password = cartridgeagentutils.decrypt_password(encrypted_password, secret_key)
+    #print decrypted_password
+
+    assert decrypted_password == plain_password, "Password decryption failed"
+
+
+def test_decrypt_password_failure():
+    plain_password = "plaintext"
+    secret_key = "notsecretkeyhere"
+    encrypted_password= "jP1lZ5xMlpLzu8MbY2Porg=="
+    assert cartridgeagentutils.decrypt_password(encrypted_password, secret_key) != plain_password, "Password decrypted for wrong key"
 #
 #
 # def test_create_dir_normal():
@@ -93,41 +87,41 @@
 #
 # def test_create_dir_existing_dir():
 #     assert True
-#
-#
-# def test_wait_for_ports_activity_normal():
-#     portnumber = 12345
-#     listener = PortListener(portnumber)
-#     listener.start()
-#
-#     assert cartridgeagentutils.check_ports_active(socket.gethostbyname(socket.gethostname()), [str(portnumber)])
-#
-#
-# class PortListener(Thread):
-#
-#     def __init__(self, portnumber):
-#         Thread.__init__(self)
-#         self.portnumber = portnumber
-#         self.terminated = False
-#
-#     def run(self):
-#         s = socket.socket()
-#         host = socket.gethostname()
-#
-#         s.bind((host, self.portnumber))
-#         s.listen(5)
-#
-#         #while not self.terminated:
-#         c, addr = s.accept()     # Establish connection with client.
-#         #print 'Got connection from', addr
-#         c.send('Thank you for connecting')
-#         c.close()
-#
-#         s.close()
-#
-#     def terminate(self):
-#         self.terminated = True
-#
-#
-# def test_wait_for_ports_activity_non_existent():
-#     assert cartridgeagentutils.check_ports_active(socket.gethostbyname(socket.gethostname()), [str(34565)]) == False
+
+
+def test_wait_for_ports_activity_normal():
+    portnumber = 12345
+    listener = PortListener(portnumber)
+    listener.start()
+
+    assert cartridgeagentutils.check_ports_active(socket.gethostbyname(socket.gethostname()), [str(portnumber)])
+
+
+def test_wait_for_ports_activity_non_existent():
+    assert cartridgeagentutils.check_ports_active(socket.gethostbyname(socket.gethostname()), [str(34565)]) == False
+
+
+class PortListener(Thread):
+
+    def __init__(self, portnumber):
+        Thread.__init__(self)
+        self.portnumber = portnumber
+        self.terminated = False
+
+    def run(self):
+        s = socket.socket()
+        host = socket.gethostname()
+
+        s.bind((host, self.portnumber))
+        s.listen(5)
+
+        # while not self.terminated:
+        c, addr = s.accept()     # Establish connection with client.
+        # print 'Got connection from', addr
+        c.send('Thank you for connecting')
+        c.close()
+
+        s.close()
+
+    def terminate(self):
+        self.terminated = True

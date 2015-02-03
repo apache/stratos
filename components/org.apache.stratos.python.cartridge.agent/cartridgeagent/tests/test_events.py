@@ -123,5 +123,3 @@ def test_complete_topology_event():
         "Member object not serialized properly. [status] %s " % member.status
     assert member.lb_cluster_id is None,\
         "Member object not serialized properly. [lbClusterId] %s " % member.lb_cluster_id
-
-def
