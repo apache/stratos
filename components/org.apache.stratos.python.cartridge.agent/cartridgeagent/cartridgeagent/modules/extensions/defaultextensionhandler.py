@@ -27,6 +27,10 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
     """
     log = None
 
+    SUPER_TENANT_ID = -1234
+    SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
+    TENANT_REPO_PATH = "/repository/tenants/"
+
     def __init__(self):
         self.log = LogFactory().get_log(__name__)
         self.wk_members = []
@@ -41,6 +45,49 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         self.log.debug("Processing instance activated event...")
         env_params = {}
         extensionutils.execute_instance_activated_extension(env_params)
+
+    def get_repo_path_for_tenant(self, tenant_id, git_local_repo_path, is_multitenant):
+        repo_path = ""
+
+        if is_multitenant:
+            if tenant_id == self.SUPER_TENANT_ID:
+                # super tenant, /repository/deploy/server/
+                super_tenant_repo_path = self.cartridge_agent_config.super_tenant_repository_path
+                # "app_path"
+                repo_path += git_local_repo_path
+
+                if super_tenant_repo_path is not None and super_tenant_repo_path != "":
+                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") else "/" + super_tenant_repo_path
+                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") else  super_tenant_repo_path + "/"
+                    # "app_path/repository/deploy/server/"
+                    repo_path += super_tenant_repo_path
+                else:
+                    # "app_path/repository/deploy/server/"
+                    repo_path += self.SUPER_TENANT_REPO_PATH
+
+            else:
+                # normal tenant, /repository/tenants/tenant_id
+                tenant_repo_path = self.cartridge_agent_config.tenant_repository_path
+                # "app_path"
+                repo_path += git_local_repo_path
+
+                if tenant_repo_path is not None and tenant_repo_path != "":
+                    tenant_repo_path = tenant_repo_path if tenant_repo_path.startswith("/") else "/" + tenant_repo_path
+                    tenant_repo_path = tenant_repo_path if tenant_repo_path.endswith("/") else tenant_repo_path + "/"
+                    # "app_path/repository/tenants/244653444"
+                    repo_path += tenant_repo_path + tenant_id
+                else:
+                    # "app_path/repository/tenants/244653444"
+                    repo_path += self.TENANT_REPO_PATH + tenant_id
+
+                # tenant_dir_path = git_local_repo_path + AgentGitHandler.TENANT_REPO_PATH + tenant_id
+                # GitUtils.create_dir(repo_path)
+        else:
+            # not multi tenant, app_path
+            repo_path = git_local_repo_path
+
+        self.log.debug("Repo path returned : %r" % repo_path)
+        return repo_path
 
     def on_artifact_updated_event(self, artifacts_updated_event):
         self.log.info("Artifact update event received: [tenant] %r [cluster] %r [status] %r" %
@@ -67,8 +114,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.info("Executing git checkout")
 
             # create repo object
-            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id,
-                                    is_multitenant, commit_enabled)
+            local_repo_path = self.get_repo_path_for_tenant(tenant_id, local_repo_path, is_multitenant)
+            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, is_multitenant,
+                                   commit_enabled)
 
             # checkout code
             subscribe_run, repo_context = agentgithandler.AgentGitHandler.checkout(repo_info)

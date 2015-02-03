@@ -22,7 +22,6 @@ import subprocess
 import shutil
 
 from ... util.log import LogFactory
-from ... config import cartridgeagentconfiguration
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ... artifactmgt.repository import Repository
 from ... exception.gitrepositorysynchronizationexception import GitRepositorySynchronizationException
@@ -35,16 +34,16 @@ class AgentGitHandler:
 
     log = LogFactory().get_log(__name__)
 
-    SUPER_TENANT_ID = -1234
-    SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
-    TENANT_REPO_PATH = "/repository/tenants/"
+    # SUPER_TENANT_ID = -1234
+    # SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
+    # TENANT_REPO_PATH = "/repository/tenants/"
 
     extension_handler = None
 
     __git_repositories = {}
     # (tenant_id => gitrepository.GitRepository)
 
-    cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
+    # cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
 
     @staticmethod
     def checkout(repo_info):
@@ -224,7 +223,8 @@ class AgentGitHandler:
         if os.path.isdir(repo_context.local_repo_path):
             # delete and recreate local repo path if exists
             GitUtils.delete_folder_tree(repo_context.local_repo_path)
-            GitUtils.create_dir(repo_context.local_repo_path)
+
+        GitUtils.create_dir(repo_context.local_repo_path)
 
         clone_op = pexpect.spawn("git clone " + repo_context.repo_url + " " + repo_context.local_repo_path)
         # TODO: if pexpect username here, wrong url
@@ -267,8 +267,7 @@ class AgentGitHandler:
     def create_git_repo_context(repo_info):
         repo_context = GitRepository()
         repo_context.tenant_id = repo_info.tenant_id
-        repo_context.local_repo_path = AgentGitHandler.get_repo_path_for_tenant(
-            repo_info.tenant_id, repo_info.repo_path, repo_info.is_multitenant)
+        repo_context.local_repo_path = repo_info.repo_path
         repo_context.repo_url = AgentGitHandler.create_auth_url(repo_info)
         repo_context.repo_username = repo_info.repo_username
         repo_context.repo_password = repo_info.repo_password
@@ -341,50 +340,49 @@ class AgentGitHandler:
 
         raise GitRepositorySynchronizationException("Invalid repository URL: %s" % repo_url)
 
-
-    @staticmethod
-    def get_repo_path_for_tenant(tenant_id, git_local_repo_path, is_multitenant):
-        repo_path = ""
-
-        if is_multitenant:
-            if tenant_id == AgentGitHandler.SUPER_TENANT_ID:
-                # super tenant, /repository/deploy/server/
-                super_tenant_repo_path = AgentGitHandler.cartridge_agent_config.super_tenant_repository_path
-                # "app_path"
-                repo_path += git_local_repo_path
-
-                if super_tenant_repo_path is not None and super_tenant_repo_path != "":
-                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") else "/" + super_tenant_repo_path
-                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") else  super_tenant_repo_path + "/"
-                    # "app_path/repository/deploy/server/"
-                    repo_path += super_tenant_repo_path
-                else:
-                    # "app_path/repository/deploy/server/"
-                    repo_path += AgentGitHandler.SUPER_TENANT_REPO_PATH
-
-            else:
-                # normal tenant, /repository/tenants/tenant_id
-                tenant_repo_path = AgentGitHandler.cartridge_agent_config.tenant_repository_path
-                # "app_path"
-                repo_path += git_local_repo_path
-
-                if tenant_repo_path is not None and tenant_repo_path != "":
-                    tenant_repo_path = tenant_repo_path if tenant_repo_path.startswith("/") else "/" + tenant_repo_path
-                    tenant_repo_path = tenant_repo_path if tenant_repo_path.endswith("/") else tenant_repo_path + "/"
-                    # "app_path/repository/tenants/244653444"
-                    repo_path += tenant_repo_path + tenant_id
-                else:
-                    # "app_path/repository/tenants/244653444"
-                    repo_path += AgentGitHandler.TENANT_REPO_PATH + tenant_id
-
-                # tenant_dir_path = git_local_repo_path + AgentGitHandler.TENANT_REPO_PATH + tenant_id
-                GitUtils.create_dir(repo_path)
-        else:
-            # not multi tenant, app_path
-            repo_path = git_local_repo_path
-
-        AgentGitHandler.log.debug("Repo path returned : %r" % repo_path)
-        return repo_path
+    # @staticmethod
+    # def get_repo_path_for_tenant(tenant_id, git_local_repo_path, is_multitenant):
+    #     repo_path = ""
+    #
+    #     if is_multitenant:
+    #         if tenant_id == AgentGitHandler.SUPER_TENANT_ID:
+    #             # super tenant, /repository/deploy/server/
+    #             super_tenant_repo_path = AgentGitHandler.cartridge_agent_config.super_tenant_repository_path
+    #             # "app_path"
+    #             repo_path += git_local_repo_path
+    #
+    #             if super_tenant_repo_path is not None and super_tenant_repo_path != "":
+    #                 super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") else "/" + super_tenant_repo_path
+    #                 super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") else  super_tenant_repo_path + "/"
+    #                 # "app_path/repository/deploy/server/"
+    #                 repo_path += super_tenant_repo_path
+    #             else:
+    #                 # "app_path/repository/deploy/server/"
+    #                 repo_path += AgentGitHandler.SUPER_TENANT_REPO_PATH
+    #
+    #         else:
+    #             # normal tenant, /repository/tenants/tenant_id
+    #             tenant_repo_path = AgentGitHandler.cartridge_agent_config.tenant_repository_path
+    #             # "app_path"
+    #             repo_path += git_local_repo_path
+    #
+    #             if tenant_repo_path is not None and tenant_repo_path != "":
+    #                 tenant_repo_path = tenant_repo_path if tenant_repo_path.startswith("/") else "/" + tenant_repo_path
+    #                 tenant_repo_path = tenant_repo_path if tenant_repo_path.endswith("/") else tenant_repo_path + "/"
+    #                 # "app_path/repository/tenants/244653444"
+    #                 repo_path += tenant_repo_path + tenant_id
+    #             else:
+    #                 # "app_path/repository/tenants/244653444"
+    #                 repo_path += AgentGitHandler.TENANT_REPO_PATH + tenant_id
+    #
+    #             # tenant_dir_path = git_local_repo_path + AgentGitHandler.TENANT_REPO_PATH + tenant_id
+    #             GitUtils.create_dir(repo_path)
+    #     else:
+    #         # not multi tenant, app_path
+    #         repo_path = git_local_repo_path
+    #
+    #     AgentGitHandler.log.debug("Repo path returned : %r" % repo_path)
+    #     return repo_path
 
     @staticmethod
     def push(repo_info):
@@ -393,7 +391,7 @@ class AgentGitHandler:
         :param repo_info:
         :return:
         """
-        # TODO: interchanged use of repo_info
+
         repo_context = AgentGitHandler.get_repo_context(repo_info.tenant_id)
         if repo_context is None:
             # not cloned yet
