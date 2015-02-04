@@ -20,6 +20,8 @@ import os
 import pexpect
 import subprocess
 import shutil
+import errno
+import pdb
 
 from ... util.log import LogFactory
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
@@ -224,22 +226,49 @@ class AgentGitHandler:
             # delete and recreate local repo path if exists
             GitUtils.delete_folder_tree(repo_context.local_repo_path)
 
-        GitUtils.create_dir(repo_context.local_repo_path)
-
         clone_op = pexpect.spawn("git clone " + repo_context.repo_url + " " + repo_context.local_repo_path)
-        # TODO: if pexpect username here, wrong url
-        clone_output = clone_op.readlines()
-        for p in clone_output:
-            if "Checking connectivity... done." in p:
-                repo_context.cloned = True
-                AgentGitHandler.add_repo_context(repo_context)
-                AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
-                return repo_context
+        # Accepted repo url formats
+        # "https://host.com/path/to/repo.git"
+        # "https://username@host.org/path/to/repo.git"
+        # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
+        result = clone_op.expect(["Username for .*", "Password for .*", "Checking connectivity... done."])
+        if result == 0:
+            clone_op.sendline(repo_context.repo_username)
+            clone_op.expect("Password for .*")
+            clone_op.sendline(repo_context.repo_password)
+            clone_output = clone_op.readlines()
+            for p in clone_output:
+                if "Checking connectivity... done." in p:
+                    repo_context.cloned = True
+                    AgentGitHandler.add_repo_context(repo_context)
+                    AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
+                    clone_op.expect(pexpect.EOF)
+                    return repo_context
 
-            if "remote: Repository not found." in p or "fatal: unable to access " in p:
-                AgentGitHandler.log.exception("Accessing remote git repository failed for tenant %r" % repo_context.tenant_id)
-                AgentGitHandler.log.exception("Error: %s" % p)
-                return None
+                if "remote: Repository not found." in p or "fatal: unable to access " in p or "Authentication failed for" in p:
+                    raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r" % (repo_context.tenant_id, p))
+
+        elif result == 1:
+            clone_op.sendline(repo_context.repo_password)
+            clone_output = clone_op.readlines()
+            for p in clone_output:
+                if "Checking connectivity... done." in p:
+                    repo_context.cloned = True
+                    AgentGitHandler.add_repo_context(repo_context)
+                    AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
+                    clone_op.expect(pexpect.EOF)
+                    return repo_context
+
+                if "remote: Repository not found." in p or "fatal: unable to access " in p or "Authentication failed for" in p:
+                    raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r" % (repo_context.tenant_id, p))
+
+        elif result == 2:
+            repo_context.cloned = True
+            AgentGitHandler.add_repo_context(repo_context)
+            AgentGitHandler.log.info("Git clone operation for tenant %r successful" % repo_context.tenant_id)
+            clone_op.expect(pexpect.EOF)
+            return repo_context
+        # TODO: rename repo_context variable
 
     @staticmethod
     def add_repo_context(repo_context):
@@ -268,7 +297,8 @@ class AgentGitHandler:
         repo_context = GitRepository()
         repo_context.tenant_id = repo_info.tenant_id
         repo_context.local_repo_path = repo_info.repo_path
-        repo_context.repo_url = AgentGitHandler.create_auth_url(repo_info)
+        # repo_context.repo_url = AgentGitHandler.create_auth_url(repo_info)
+        repo_context.repo_url = repo_info.repo_url
         repo_context.repo_username = repo_info.repo_username
         repo_context.repo_password = repo_info.repo_password
         repo_context.is_multitenant = repo_info.is_multitenant
@@ -517,7 +547,11 @@ class AgentGitHandler:
         repo_context.scheduled_update_task.terminate()
 
         # remove git contents
-        GitUtils.delete_folder_tree(repo_context.local_repo_path)
+        try:
+            GitUtils.delete_folder_tree(repo_context.local_repo_path)
+        except GitRepositorySynchronizationException as e:
+            AgentGitHandler.log.exception("Repository folder not deleted: %r" % e.get_message())
+
         AgentGitHandler.remove_repo_context(tenant_id)
         AgentGitHandler.log.info("git repository deleted for tenant %r" % repo_context.tenant_id)
 
@@ -614,12 +648,11 @@ class GitUtils:
         try:
             os.mkdir(path)
             GitUtils.log.info("Successfully created directory [%r]" % path)
-            return True
-        except OSError:
-            pass
-            GitUtils.log.exception("Directory creating failed in [%r]. Directory already exists. " % path)
+            # return True
+        except OSError as e:
+            raise GitRepositorySynchronizationException("Directory creating failed in [%r]. " % e)
 
-        return False
+        # return False
 
     @staticmethod
     def delete_folder_tree(path):
@@ -632,5 +665,4 @@ class GitUtils:
             shutil.rmtree(path)
             GitUtils.log.debug("Directory [%r] deleted." % path)
         except OSError:
-            pass
-            GitUtils.log.exception("Deletion of folder path %r failed." % path)
+            raise GitRepositorySynchronizationException("Deletion of folder path %r failed." % path)
