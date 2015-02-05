@@ -65,4 +65,5 @@ def repo_object_decoder(obj):
     :param obj: json object
     :return:
     """
-    return Repository(obj["repoURL"], obj["repoUsername"], obj["repoPassword"], obj["repoPath"], obj["tenantId"], obj["multitenant"], obj["commitEnabled"])
+    return Repository(str(obj["repoURL"]), str(obj["repoUsername"]), str(obj["repoPassword"]), str(obj["repoPath"]),
+                      str(obj["tenantId"]), str(obj["multitenant"]), str(obj["commitEnabled"]))

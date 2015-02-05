@@ -84,7 +84,8 @@ class AgentGitHandler:
         else:
             # subscribing run.. need to clone
             git_repo = AgentGitHandler.create_git_repo(repo_info)
-            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time", git_repo.repo_url)
+            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %r",
+                                      git_repo.repo_url, git_repo.local_repo_path)
             subscribe_run = True
             AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
                                       git_repo.tenant_id, git_repo.repo_url)
