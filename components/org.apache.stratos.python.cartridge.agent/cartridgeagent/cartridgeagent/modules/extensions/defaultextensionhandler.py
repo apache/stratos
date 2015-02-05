@@ -320,7 +320,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 agentgithandler.AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
         except:
             self.log.exception("Removing git repository failed: ")
-        extensionutils.execute_tenant_unsubscribed_extension({})
+        extensionutils.execute_application_signup_removal_extension({})
 
     def cleanup(self):
         self.log.info("Executing cleaning up the data in the cartridge instance...")
