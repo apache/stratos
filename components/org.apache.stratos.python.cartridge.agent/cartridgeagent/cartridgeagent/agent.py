@@ -18,7 +18,6 @@
 
 import threading
 import sys
-from cartridgeagent.cartridgeagent import modules
 
 from modules.exception.parameternotfoundexception import ParameterNotFoundException
 from modules.subscriber import eventsubscriber
@@ -49,6 +48,10 @@ class CartridgeAgent(threading.Thread):
             mb_port)
         self.__tenant_event_subscriber = eventsubscriber.EventSubscriber(
             cartridgeagentconstants.TENANT_TOPIC,
+            mb_ip,
+            mb_port)
+        self.__application_event_subscriber = eventsubscriber.EventSubscriber(
+            cartridgeagentconstants.APPLICATION_SIGNUP,
             mb_ip,
             mb_port)
         self.__topology_event_subscriber = eventsubscriber.EventSubscriber(
@@ -282,7 +285,7 @@ class CartridgeAgent(threading.Thread):
         self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent", self.on_subscription_domain_removed)
         self.__tenant_event_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
         self.__tenant_event_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
-        self.__tenant_event_subscriber.register_handler("ApplicationSignUpRemovedEvent",self.on_application_signup_removed)
+        self.__application_event_subscriber.register_handler("ApplicationSignUpRemovedEvent",self.on_application_signup_removed)
 
         self.__tenant_event_subscriber.start()
         self.log.info("Tenant event message receiver thread started")
