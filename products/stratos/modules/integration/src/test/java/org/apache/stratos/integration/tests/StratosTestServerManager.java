@@ -23,6 +23,9 @@ import org.apache.activemq.broker.BrokerService;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.stratos.common.test.TestLogAppender;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.wso2.carbon.integration.framework.TestServerManager;
@@ -60,6 +63,11 @@ public class StratosTestServerManager extends TestServerManager {
     @Override
     @BeforeSuite
     public String startServer() throws IOException {
+
+        TestLogAppender testLogAppender = new TestLogAppender();
+        Logger.getRootLogger().addAppender(testLogAppender);
+        Logger.getRootLogger().setLevel(Level.INFO);
+
         try {
             // Start ActiveMQ
             long time1 = System.currentTimeMillis();
@@ -93,6 +101,12 @@ public class StratosTestServerManager extends TestServerManager {
                 log.info("Starting stratos server...");
                 this.serverUtils.startServerUsingCarbonHome(carbonHome, carbonHome, "stratos", PORT_OFFSET, null);
                 FrameworkSettings.init();
+
+                while (!serverStarted(testLogAppender)) {
+                    log.info("Waiting for topology to be initialized...");
+                    Thread.sleep(2000);
+                }
+
                 long time4 = System.currentTimeMillis();
                 log.info(String.format("Stratos server started in %d sec", (time4 - time3)/1000));
                 return carbonHome;
@@ -116,5 +130,14 @@ public class StratosTestServerManager extends TestServerManager {
         File destFile = new File(carbonHome + "/repository/conf/" + MOCK_IAAS_XML);
         FileUtils.copyFile(srcFile, destFile);
         log.info(MOCK_IAAS_XML + " configuration file copied");
+    }
+
+    private boolean serverStarted(TestLogAppender testLogAppender) {
+        for(String message : testLogAppender.getMessages()) {
+            if(message.contains("Topology initialized")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

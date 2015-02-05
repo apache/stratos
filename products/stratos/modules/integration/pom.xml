@@ -30,7 +30,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <artifactId>stratos-integration</artifactId>
-    <name>Apache Stratos - Manager Integration Tests</name>
+    <name>Apache Stratos - Integration Tests</name>
     <packaging>jar</packaging>
 
     <dependencies>
@@ -113,14 +113,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/resources/testing.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <!--includes>
+                    <includes>
                         <include>**/*TestServerManager.java</include>
-                        <include>**/LoginLogoutTestCase.java</include>
-                        <include>**/TenantMgtTestCase.java</include>
-                    </includes-->
+                        <include>**/SampleApplicationTests.java</include>
+                    </includes>
                     <systemProperties>
                         <maven.test.haltafterfailure>false</maven.test.haltafterfailure>
                         <sec.verifier.dir>${basedir}/target/security-verifier/</sec.verifier.dir>
