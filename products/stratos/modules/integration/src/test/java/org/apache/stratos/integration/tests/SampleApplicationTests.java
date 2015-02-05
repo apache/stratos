@@ -25,9 +25,6 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.stratos.common.test.TestLogAppender;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -40,9 +37,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 
 /**
  * Sample application tests.
@@ -53,60 +48,49 @@ public class SampleApplicationTests extends StratosTestServerManager {
 
     private final static String SAMPLES_FOLDER_PATH = SampleApplicationTests.class.getResource("/").getPath() +
             "./../../../../../../samples";
-    private TestLogAppender testLogAppender;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 240000;
+
+    private ApplicationsEventReceiver applicationsEventReceiver;
 
     @BeforeClass
     public void setUp(){
+        // Set jndi.properties.dir system property for initializing event receivers
         String path = getClass().getResource("/").getPath();
         path = StringUtils.removeEnd(path, File.separator);
         System.setProperty("jndi.properties.dir", path);
-
-        testLogAppender = new TestLogAppender();
-        Logger.getRootLogger().addAppender(testLogAppender);
-        Logger.getRootLogger().setLevel(Level.INFO);
     }
 
     @Test
     public void testSingleCartridgeApplication() {
         try {
-            ApplicationsEventReceiver applicationsEventReceiver = new ApplicationsEventReceiver();
-            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER", 1);
-            applicationsEventReceiver.setExecutorService(executorService);
-            applicationsEventReceiver.execute();
+            initializeApplicationEventReceiver();
 
-            while (!serverStarted(testLogAppender)) {
-                log.info("Waiting for stratos server to be started...");
-                Thread.sleep(2000);
-            }
             String scriptPath = SAMPLES_FOLDER_PATH + "/applications/single-cartridge/scripts/mock/deploy.sh";
             executeCommand(scriptPath);
 
-            long startTime = System.currentTimeMillis();
-            Application application = ApplicationManager.getApplications().getApplication("single-cartridge-app");
-            while(!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
-                application = ApplicationManager.getApplications().getApplication("single-cartridge-app");
-                if((System.currentTimeMillis() - startTime) > 240000) {
-                    break;
-                }
-            }
-
-            assertNotNull("Application is not found", application);
-            assertEquals(String.format("Application status did not change to active", application.getStatus()), ApplicationStatus.Active, application.getStatus());
+            assertApplicationActivation("single-cartridge-app");
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred", false);
         }
     }
 
-    private boolean serverStarted(TestLogAppender testLogAppender) {
-        for(String message : testLogAppender.getMessages()) {
-            if(message.contains("Topology initialized")) {
-                return true;
-            }
+    /**
+     * Initialize application event receiver
+     */
+    private void initializeApplicationEventReceiver() {
+        if(applicationsEventReceiver == null) {
+            applicationsEventReceiver = new ApplicationsEventReceiver();
+            ExecutorService executorService = StratosThreadPool.getExecutorService("STRATOS_TEST_SERVER", 1);
+            applicationsEventReceiver.setExecutorService(executorService);
+            applicationsEventReceiver.execute();
         }
-        return false;
     }
 
+    /**
+     * Execute shell command
+     * @param commandText
+     */
     private void executeCommand(String commandText) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
@@ -120,5 +104,24 @@ public class SampleApplicationTests extends StratosTestServerManager {
             log.error(outputStream.toString(), e);
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Assert application activation
+     * @param applicationName
+     */
+    private void assertApplicationActivation(String applicationName) {
+        long startTime = System.currentTimeMillis();
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        while(!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
+            application = ApplicationManager.getApplications().getApplication(applicationName);
+            if((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
+                break;
+            }
+        }
+
+        assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
+        assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
+                ApplicationStatus.Active, application.getStatus());
     }
 }
