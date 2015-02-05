@@ -186,10 +186,10 @@ def execute_tenant_subscribed_extension(env_params):
 
 def execute_application_signup_removal_extension(env_params):
     try:
-        log.debug("Executing tenant unsubscribed extension")
+        log.debug("Executing application sign up removal extension")
 
         script_name = cartridge_agent_config.read_property(
-            cartridgeagentconstants.TENANT_UNSUBSCRIBED_SCRIPT, False)
+            cartridgeagentconstants.APPLICATION_SIGNUP_REMOVAL_SCRIPT, False)
         command = prepare_command(script_name)
         env_params = add_payload_parameters(env_params)
         env_params = clean_process_parameters(env_params)
