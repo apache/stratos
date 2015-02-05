@@ -200,6 +200,22 @@ def execute_tenant_unsubscribed_extension(env_params):
         log.exception("Could not execute tenant unsubscribed extension")
 
 
+def execute_application_signup_removal_extension(env_params):
+    try:
+        log.debug("Executing tenant unsubscribed extension")
+
+        script_name = cartridge_agent_config.read_property(
+            cartridgeagentconstants.TENANT_UNSUBSCRIBED_SCRIPT, False)
+        command = prepare_command(script_name)
+        env_params = add_payload_parameters(env_params)
+        env_params = clean_process_parameters(env_params)
+
+        output, errors = execute_command(command, env_params)
+        log.debug("Application signup removal script returned: %r" % output)
+    except:
+        log.exception("Could not execute application signup removal extension")
+
+
 def execute_member_terminated_extension(env_params):
     try:
         log.debug("Executing member terminated extension")

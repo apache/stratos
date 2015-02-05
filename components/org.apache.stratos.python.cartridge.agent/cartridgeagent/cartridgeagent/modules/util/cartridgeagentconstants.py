@@ -81,6 +81,7 @@ SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT = "extension.subscription.domain.removed"
 ARTIFACTS_COPY_SCRIPT = "extension.artifacts.copy"
 TENANT_SUBSCRIBED_SCRIPT = "extension.tenant.subscribed"
 TENANT_UNSUBSCRIBED_SCRIPT = "extension.tenant.unsubscribed"
+APPLICATION_SIGNUP_REMOVAL_SCRIPT = "extension.application.signup.removal"
 
 SERVICE_GROUP_TOPOLOGY_KEY = "payload_parameter.SERIVCE_GROUP"
 CLUSTERING_TOPOLOGY_KEY = "payload_parameter.CLUSTERING"

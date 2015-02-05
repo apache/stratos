@@ -18,6 +18,7 @@
 
 import threading
 import sys
+from cartridgeagent.cartridgeagent import modules
 
 from modules.exception.parameternotfoundexception import ParameterNotFoundException
 from modules.subscriber import eventsubscriber
@@ -25,6 +26,7 @@ from modules.publisher import cartridgeagentpublisher
 from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
 from modules.event.topology.events import *
+from modules.event.application.signup.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
@@ -281,6 +283,7 @@ class CartridgeAgent(threading.Thread):
         self.__tenant_event_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
         self.__tenant_event_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
         self.__tenant_event_subscriber.register_handler("TenantUnSubscribedEvent", self.on_tenant_unsubscribed)
+        self.__tenant_event_subscriber.register_handler("ApplicationSignUpRemovedEvent",self.on_application_signup_removed)
 
         self.__tenant_event_subscriber.start()
         self.log.info("Tenant event message receiver thread started")
@@ -323,11 +326,11 @@ class CartridgeAgent(threading.Thread):
         except:
             self.log.exception("Error processing tenant subscribed event")
 
-    def on_tenant_unsubscribed(self, msg):
-        self.log.debug("Tenant unSubscribed event received: %r" % msg.payload)
-        event_obj = TenantUnsubscribedEvent.create_from_json(msg.payload)
+    def on_application_signup_removed(self, msg):
+        self.log.debug("Application signup removed event received: %r" % msg.payload)
+        event_obj = ApplicationSignUpRemovedEvent.create_from_json(msg.payload)
         try:
-            CartridgeAgent.extension_handler.on_tenant_unsubscribed_event(event_obj)
+            CartridgeAgent.extension_handler.on_application_signup_removal_event(event_obj)
         except:
             self.log.exception("Error processing tenant unSubscribed event")
 
