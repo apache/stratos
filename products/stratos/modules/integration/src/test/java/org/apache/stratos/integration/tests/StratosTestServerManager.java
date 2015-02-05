@@ -46,10 +46,10 @@ public class StratosTestServerManager extends TestServerManager {
 
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
 
-    private final static String CARBON_ZIP = SampleApplicationTests.class.getResource("/").getPath() +
+    private final static String CARBON_ZIP = SampleApplicationsTest.class.getResource("/").getPath() +
             "/../../../distribution/target/apache-stratos-4.1.0-SNAPSHOT.zip";
     private final static int PORT_OFFSET = 0;
-    private static final String ACTIVEMQ_BIND_ADDRESS1 = "tcp://localhost:61616";
+    private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61616";
     private static final String MOCK_IAAS_XML = "mock-iaas.xml";
 
     private ServerUtils serverUtils;
@@ -61,7 +61,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @BeforeSuite
+    @BeforeSuite(timeOut = 300000)
     public String startServer() throws IOException {
 
         TestLogAppender testLogAppender = new TestLogAppender();
@@ -74,7 +74,7 @@ public class StratosTestServerManager extends TestServerManager {
             log.info("Starting ActiveMQ...");
             BrokerService broker = new BrokerService();
             broker.setBrokerName("testBroker");
-            broker.addConnector(ACTIVEMQ_BIND_ADDRESS1);
+            broker.addConnector(ACTIVEMQ_BIND_ADDRESS);
             broker.start();
             long time2 = System.currentTimeMillis();
             log.info(String.format("ActiveMQ started in %d sec", (time2 - time1)/1000));
@@ -104,7 +104,7 @@ public class StratosTestServerManager extends TestServerManager {
 
                 while (!serverStarted(testLogAppender)) {
                     log.info("Waiting for topology to be initialized...");
-                    Thread.sleep(2000);
+                    Thread.sleep(5000);
                 }
 
                 long time4 = System.currentTimeMillis();
@@ -117,7 +117,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @AfterSuite
+    @AfterSuite(timeOut = 300000)
     public void stopServer() throws Exception {
         super.stopServer();
     }

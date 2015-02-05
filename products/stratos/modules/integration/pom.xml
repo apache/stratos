@@ -113,10 +113,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <includes>
-                        <include>**/*TestServerManager.java</include>
-                        <include>**/SampleApplicationTests.java</include>
-                    </includes>
                     <systemProperties>
                         <maven.test.haltafterfailure>false</maven.test.haltafterfailure>
                         <sec.verifier.dir>${basedir}/target/security-verifier/</sec.verifier.dir>

@@ -42,22 +42,17 @@ import static junit.framework.Assert.*;
 /**
  * Sample application tests.
  */
-public class SampleApplicationTests extends StratosTestServerManager {
+public class SampleApplicationsTest extends StratosTestServerManager {
 
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
 
-    private final static String SAMPLES_FOLDER_PATH = SampleApplicationTests.class.getResource("/").getPath() +
-            "./../../../../../../samples";
     public static final int APPLICATION_ACTIVATION_TIMEOUT = 240000;
-
     private ApplicationsEventReceiver applicationsEventReceiver;
 
     @BeforeClass
     public void setUp(){
         // Set jndi.properties.dir system property for initializing event receivers
-        String path = getClass().getResource("/").getPath();
-        path = StringUtils.removeEnd(path, File.separator);
-        System.setProperty("jndi.properties.dir", path);
+        System.setProperty("jndi.properties.dir", getResourcesFolderPath());
     }
 
     @Test
@@ -65,7 +60,8 @@ public class SampleApplicationTests extends StratosTestServerManager {
         try {
             initializeApplicationEventReceiver();
 
-            String scriptPath = SAMPLES_FOLDER_PATH + "/applications/single-cartridge/scripts/mock/deploy.sh";
+            String scriptPath = getResourcesFolderPath() + "/../../../../../../" +
+                    "samples/applications/single-cartridge/scripts/mock/deploy.sh";
             executeCommand(scriptPath);
 
             assertApplicationActivation("single-cartridge-app");
@@ -123,5 +119,14 @@ public class SampleApplicationTests extends StratosTestServerManager {
         assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
                 ApplicationStatus.Active, application.getStatus());
+    }
+
+    /**
+     * Get resources folder path
+     * @return
+     */
+    private String getResourcesFolderPath() {
+        String path = getClass().getResource("/").getPath();
+        return StringUtils.removeEnd(path, File.separator);
     }
 }
