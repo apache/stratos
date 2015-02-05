@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import time
 import json
 
 from abstractextensionhandler import AbstractExtensionHandler
@@ -34,20 +33,14 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def on_instance_started_event(self):
-        try:
-            self.log.debug("Processing instance started event...")
-            env_params = {}
-            extensionutils.execute_instance_started_extension(env_params)
-        except:
-            self.log.exception("Error processing instance started event")
+        self.log.debug("Processing instance started event...")
+        env_params = {}
+        extensionutils.execute_instance_started_extension(env_params)
 
     def on_instance_activated_event(self):
-        try:
-            self.log.debug("Processing instance activated event...")
-            env_params = {}
-            extensionutils.execute_instance_activated_extension(env_params)
-        except:
-            self.log.exception("Error processing instance activated event")
+        self.log.debug("Processing instance activated event...")
+        env_params = {}
+        extensionutils.execute_instance_activated_extension(env_params)
 
     def on_artifact_updated_event(self, artifacts_updated_event):
         self.log.info("Artifact update event received: [tenant] %r [cluster] %r [status] %r" %
@@ -62,7 +55,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             local_repo_path = self.cartridge_agent_config.app_path
 
             repo_password = None
-            if(artifacts_updated_event.repo_password is not None):
+            if artifacts_updated_event.repo_password is not None:
                 secret = self.cartridge_agent_config.cartridge_key
                 repo_password = cartridgeagentutils.decrypt_password(artifacts_updated_event.repo_password, secret)
 
@@ -94,7 +87,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 # publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
 
-            update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE, False)
+            update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE,
+                                                                         False)
             update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
             if update_artifacts:
                 auto_commit = self.cartridge_agent_config.is_commits_enabled
@@ -122,7 +116,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                     update_interval)
 
     def on_artifact_update_scheduler_event(self, tenant_id):
-        env_params = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": str(tenant_id), "STRATOS_ARTIFACT_UPDATED_SCHEDULER": str(True)}
+        env_params = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
+                      "STRATOS_ARTIFACT_UPDATED_SCHEDULER": str(True)}
 
         extensionutils.execute_artifacts_updated_extension(env_params)
 
@@ -168,7 +163,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         service = topology.get_service(service_name_in_payload)
         cluster = service.get_cluster(cluster_id_in_payload)
 
-        env_params = {"STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str), "STRATOS_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
+        env_params = {"STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str),
+                      "STRATOS_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
 
         extensionutils.execute_complete_topology_extension(env_params)
 
@@ -181,12 +177,12 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        consistant = extensionutils.check_topology_consistency(
+        consistent = extensionutils.check_topology_consistency(
             service_name_in_payload,
             cluster_id_in_payload,
             member_id_in_payload)
 
-        if not consistant:
+        if not consistent:
             return
         else:
             self.cartridge_agent_config.initialized = True
@@ -220,7 +216,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
     def on_member_suspended_event(self, member_suspended_event):
         self.log.info("Member suspended event received: [service] " + member_suspended_event.service_name +
-                      " [cluster] " + member_suspended_event.cluster_id + " [member] " + member_suspended_event.member_id)
+                      " [cluster] " + member_suspended_event.cluster_id +
+                      " [member] " + member_suspended_event.member_id)
 
         topology_consistent = extensionutils.check_topology_consistency(
             member_suspended_event.service_name,
@@ -259,7 +256,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
+        topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload,
+                                                                        member_id_in_payload)
 
         if not topology_consistant:
             self.log.error("Topology is inconsistent...failed to execute start server event")
