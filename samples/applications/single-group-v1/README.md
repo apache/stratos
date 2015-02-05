@@ -1,7 +1,15 @@
 single_group_v1
 ==============
 
-i) Using these artifacts you can deploy the single group application.
+Application folder structure
+----------------------------
+-- artifacts/<iaas>/ IaaS specific artifacts
+-- scripts/common/ Common scripts for all iaases
+-- scripts/<iaas> IaaS specific scripts
 
-ii) You can simply run the single_group.sh script to deploy the single group application.
+How to run
+----------
+cd scripts/<iaas>/
+./deploy.sh
+
 
