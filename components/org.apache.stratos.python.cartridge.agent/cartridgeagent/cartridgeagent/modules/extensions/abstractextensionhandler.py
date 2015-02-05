@@ -72,10 +72,7 @@ class AbstractExtensionHandler:
         raise NotImplementedError
 
     def on_tenant_subscribed_event(self, tenant_subscribed_event):
-            raise NotImplementedError
-
-    def on_tenant_unsubscribed_event(self, tenant_unsubscribed_event):
-            raise NotImplementedError
+        raise NotImplementedError
 
     def on_application_signup_removal_event(self, tenant_unsubscribed_event):
         raise NotImplementedError

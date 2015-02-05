@@ -345,20 +345,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         extensionutils.execute_tenant_subscribed_extension({})
 
-    def on_tenant_unsubscribed_event(self, tenant_unsubscribed_event):
-        self.log.info(
-            "Tenant unsubscribed event received: [tenant] " + tenant_unsubscribed_event.tenant_id +
-            " [service] " + tenant_unsubscribed_event.service_name +
-            " [cluster] " + tenant_unsubscribed_event.cluster_ids
-        )
-
-        try:
-            if self.cartridge_agent_config.service_name == tenant_unsubscribed_event.service_name:
-                agentgithandler.AgentGitHandler.remove_repo(tenant_unsubscribed_event.tenant_id)
-        except:
-            self.log.exception("Removing git repository failed: ")
-        extensionutils.execute_tenant_unsubscribed_extension({})
-
     def on_application_signup_removal_event(self, application_signup_removal_event):
 
         self.log.info(

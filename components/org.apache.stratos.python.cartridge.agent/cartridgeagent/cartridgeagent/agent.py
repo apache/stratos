@@ -282,7 +282,6 @@ class CartridgeAgent(threading.Thread):
         self.__tenant_event_subscriber.register_handler("SubscriptionDomainsRemovedEvent", self.on_subscription_domain_removed)
         self.__tenant_event_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
         self.__tenant_event_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
-        self.__tenant_event_subscriber.register_handler("TenantUnSubscribedEvent", self.on_tenant_unsubscribed)
         self.__tenant_event_subscriber.register_handler("ApplicationSignUpRemovedEvent",self.on_application_signup_removed)
 
         self.__tenant_event_subscriber.start()
@@ -325,14 +324,6 @@ class CartridgeAgent(threading.Thread):
             CartridgeAgent.extension_handler.on_tenant_subscribed_event(event_obj)
         except:
             self.log.exception("Error processing tenant subscribed event")
-
-    def on_tenant_unsubscribed(self, msg):
-        self.log.debug("Tenant unSubscribed event received: %r" % msg.payload)
-        event_obj = TenantUnsubscribedEvent.create_from_json(msg.payload)
-        try:
-            CartridgeAgent.extension_handler.on_tenant_unsubscribed_event(event_obj)
-        except:
-            self.log.exception("Error processing tenant unSubscribed event")
 
     def on_application_signup_removed(self, msg):
         self.log.debug("Application signup removed event received: %r" % msg.payload)
