@@ -147,7 +147,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.error("Topology is inconsistent...failed to execute member activated event")
             return
 
-
         extensionutils.execute_member_activated_extension({})
 
     def on_complete_topology_event(self, complete_topology_event):
@@ -217,15 +216,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.error("Topology is inconsistent...failed to execute member terminated event")
             return
 
-        topology = TopologyContext.get_topology()
-        service = topology.get_service(member_terminated_event.service_name)
-        cluster = service.get_cluster(member_terminated_event.cluster_id)
-        terminated_member = cluster.get_member(member_terminated_event.member_id)
-        lb_cluster_id = cluster.get_member(member_terminated_event.member_id).lb_cluster_id
-
-        #check whether terminated member is within the same cluster, LB cluster or service group
-        extensionutils.execute_member_terminated_extension(env_params)
-
+        extensionutils.execute_member_terminated_extension({})
 
     def on_member_suspended_event(self, member_suspended_event):
         self.log.info("Member suspended event received: [service] " + member_suspended_event.service_name +
@@ -241,14 +232,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.error("Topology is inconsistent...failed to execute member suspended event")
             return
 
-        topology = TopologyContext.get_topology()
-        service = topology.get_service(member_suspended_event.service_name)
-        cluster = service.get_cluster(member_suspended_event.cluster_id)
-        suspended_member = cluster.get_member(member_suspended_event.member_id)
-        lb_cluster_id = cluster.get_member(member_suspended_event.member_id).lb_cluster_id
-
-        extensionutils.execute_member_suspended_extension(env_params)
-
+        extensionutils.execute_member_suspended_extension({})
 
     def on_member_started_event(self, member_started_event):
         self.log.info("Member started event received: [service] " + member_started_event.service_name +
@@ -264,17 +248,10 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.error("Topology is inconsistent...failed to execute member started event")
             return
 
-        topology = TopologyContext.get_topology()
-        service = topology.get_service(member_started_event.service_name)
-        cluster = service.get_cluster(member_started_event.cluster_id)
-        started_member = cluster.get_member(member_started_event.member_id)
-        lb_cluster_id = cluster.get_member(member_started_event.member_id).lb_cluster_id
-
-        extensionutils.execute_member_started_extension(env_params)
-
+        extensionutils.execute_member_started_extension({})
 
     def start_server_extension(self):
-        #wait until complete topology message is received to get LB IP
+        # wait until complete topology message is received to get LB IP
         extensionutils.wait_for_complete_topology()
         self.log.info("[start server extension] complete topology event received")
 
@@ -284,22 +261,11 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
         topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload, member_id_in_payload)
 
-        try:
-            if not topology_consistant:
-                self.log.error("Topology is inconsistent...failed to execute start server event")
-                return
+        if not topology_consistant:
+            self.log.error("Topology is inconsistent...failed to execute start server event")
+            return
 
-            topology = TopologyContext.get_topology()
-            service = topology.get_service(service_name_in_payload)
-            cluster = service.get_cluster(cluster_id_in_payload)
-
-            # store environment variable parameters to be passed to extension shell script
-            env_params = {}
-
-            extensionutils.execute_start_servers_extension(env_params)
-
-        except:
-            self.log.exception("Error processing start servers event")
+        extensionutils.execute_start_servers_extension({})
 
     def volume_mount_extension(self, persistence_mappings_payload):
         extensionutils.execute_volume_mount_extension(persistence_mappings_payload)
@@ -346,7 +312,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         extensionutils.execute_tenant_subscribed_extension({})
 
     def on_application_signup_removal_event(self, application_signup_removal_event):
-
         self.log.info(
             "Tenant unsubscribed event received: [tenant] " + application_signup_removal_event.tenantId +
             " [application ID] " + application_signup_removal_event.applicationId
@@ -359,8 +324,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             self.log.exception("Removing git repository failed: ")
         extensionutils.execute_tenant_unsubscribed_extension({})
 
-
-def cleanup(self):
+    def cleanup(self):
         self.log.info("Executing cleaning up the data in the cartridge instance...")
 
         cartridgeagentpublisher.publish_maintenance_mode_event()
@@ -371,30 +335,12 @@ def cleanup(self):
         self.log.info("publishing ready to shutdown event...")
         cartridgeagentpublisher.publish_instance_ready_to_shutdown_event()
 
-
-
-    def get_min_instance_count_from_member(self, member):
-        if cartridgeagentconstants.MIN_COUNT in member.properties:
-            return int(member.properties[cartridgeagentconstants.MIN_COUNT])
-
-        return 1
-
     def find_tenant_domain(self, tenant_id):
         tenant = TenantContext.get_tenant(tenant_id)
         if tenant is None:
             raise RuntimeError("Tenant could not be found: [tenant-id] %r" % tenant_id)
 
         return tenant.tenant_domain
-
-    def wait_for_wk_members(self, env_params):
-        min_count = int(self.cartridge_agent_config.min_count)
-        is_wk_member_group_ready = False
-        while not is_wk_member_group_ready:
-            self.log.info("Waiting for %r well known members..." % min_count)
-
-            time.sleep(5)
-
-            is_wk_member_group_ready = self.is_wk_member_group_ready(env_params, min_count)
 
 from ..artifactmgt.git import agentgithandler
 from ..artifactmgt.repositoryinformation import RepositoryInformation
