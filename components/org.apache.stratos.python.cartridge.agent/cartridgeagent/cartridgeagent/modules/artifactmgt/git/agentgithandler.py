@@ -104,51 +104,33 @@ class AgentGitHandler:
 
     @staticmethod
     def add_remote(git_repo):
-        # TODO: replace unnecessary pexpects
         # add origin remote
-        add_remote_op = pexpect.spawn("git remote add origin %r" % git_repo.repo_url, cwd=git_repo.local_repo_path)
-        add_remote_op_output = add_remote_op.readline()
-        if len(add_remote_op_output) > 0:
+        output, errors = AgentGitHandler.execute_git_command(["remote", "add", "origin", git_repo.repo_url],
+                                                             git_repo.local_repo_path)
+        if len(output) > 0:
             raise GitRepositorySynchronizationException("Error in adding remote origin %r for local repository %r"
                                                         % (git_repo.repo_url, git_repo.local_repo_path))
 
         # fetch
-        fetch_op = pexpect.spawn("git fetch", cwd=git_repo.local_repo_path)
-        fetch_success = False
-        for p in fetch_op.readlines():
-            if "Resolving deltas: 100%" in p:
-                fetch_success = True
-
-        if not fetch_success:
+        output, errors = AgentGitHandler.execute_git_command(["fetch"], git_repo.local_repo_path)
+        if "Resolving deltas: 100%" not in output:
             raise GitRepositorySynchronizationException(
                 "Error in fetching from remote origin %r for local repository %r"
                 % (git_repo.repo_url, git_repo.local_repo_path))
 
         # checkout master
-        checkout_op = pexpect.spawn("git checkout master", cwd=git_repo.local_repo_path)
-        checkout_success = False
-        for p in checkout_op.readlines():
-            if "Branch master set up to track remote branch master from origin." in p:
-                checkout_success = True
-
-        if not checkout_success:
+        output, errors = AgentGitHandler.execute_git_command(["checkout", "master"], git_repo.local_repo_path)
+        if "Branch master set up to track remote branch master from origin." not in output:
             raise GitRepositorySynchronizationException("Error in checking out master branch %r for local repository %r"
                                                         % (git_repo.repo_url, git_repo.local_repo_path))
 
         return True
-        # repo_context.repo.create_remote("origin", repo_context.repo_url)
-        # fetch branch details from origin
-        # repo_context.repo.git.fetch()
-        # checkout master branch from origin/master as tracking
-        # repo_context.repo.git.branch("-f", "--track", "master", "origin/master")
-        # return True
 
     @staticmethod
     def init(path):
-        init_op = pexpect.spawn("git init", cwd=path)
-        init_op_output = init_op.readline()
-        if "Initialized empty Git repository in" not in init_op_output:
-            AgentGitHandler.log.exception("Initializing local repo at %r failed: %s" % (path, init_op_output))
+        output, errors = AgentGitHandler.execute_git_command(["init"], path)
+        if "Initialized empty Git repository in" not in output:
+            AgentGitHandler.log.exception("Initializing local repo at %r failed: %s" % (path, output))
             raise Exception("Initializing local repo at %r failed" % path)
 
     @staticmethod
