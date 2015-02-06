@@ -17,12 +17,19 @@
 
 import pytest
 import json
+import shutil
+import os
 from .. cartridgeagent.modules.artifactmgt.repository import Repository
 from .. cartridgeagent.modules.artifactmgt.git.agentgithandler import *
 
 
-def test_clone():
-    with open("conf/simple_repo.json", "r") as f:
+@pytest.mark.parametrize("input, expected", [
+    ("simple_repo.json", True),
+    ("auth_repo.json", True),
+    ("auth_repo2.json", True),
+])
+def test_clone(input, expected):
+    with open("conf/git/" + input, "r") as f:
         repo_string = f.read()
 
     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
@@ -31,12 +38,10 @@ def test_clone():
 
     assert sub_run, "Not detected as subscription run"
 
-    assert os.path.isdir(repo_info.repo_path), "Local repository directory not created."
+    result, msg = verify_git_repo(repo_info)
+    assert result == expected, msg
 
-    output, errors = AgentGitHandler.execute_git_command(["status"], repo_info.repo_path)
-    assert len(errors) == 0 and "nothing to commit, working directory clean" in output, "Git clone failed. "
-
-# def test_auth_clone():
+# def test_simple_clone():
 #     with open("conf/simple_repo.json", "r") as f:
 #         repo_string = f.read()
 #
@@ -46,10 +51,36 @@ def test_clone():
 #
 #     assert sub_run, "Not detected as subscription run"
 #
-#     assert os.path.isdir(repo_info.repo_path), "Local repository directory not created."
+#     result, msg = verify_git_repo(repo_info)
+#     assert result, msg
 #
-#     output, errors = AgentGitHandler.execute_git_command(["status"], repo_info.repo_path)
-#     assert len(errors) == 0 and "nothing to commit, working directory clean" in output, "Git clone failed. "
+#
+# def test_auth_clone():
+#     with open("conf/auth_repo.json", "r") as f:
+#         repo_string = f.read()
+#
+#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
+#     # test_info = json.loads(repo_string)
+#     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
+#
+#     assert sub_run, "Not detected as subscription run"
+#
+#     result, msg = verify_git_repo(repo_info)
+#     assert result, msg
+#
+#
+# def test_auth_clone2():
+#     with open("conf/auth_repo2.json", "r") as f:
+#         repo_string = f.read()
+#
+#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
+#     # test_info = json.loads(repo_string)
+#     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
+#
+#     assert sub_run, "Not detected as subscription run"
+#
+#     result, msg = verify_git_repo(repo_info)
+#     assert result, msg
 
 
 # def test_push():
@@ -58,6 +89,29 @@ def test_clone():
 #
 #     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
 
+
+def setup_module(module):
+    # clear the temp folder path to clone new folders
+    try:
+        shutil.rmtree("/tmp/apachestratos")
+    except:
+        pass
+
+    try:
+        os.makedirs("/tmp/apachestratos")
+    except:
+        pass
+
+
+def verify_git_repo(repo_info):
+    if not os.path.isdir(repo_info.repo_path):
+        return False, "Local repository directory not created."
+
+    output, errors = AgentGitHandler.execute_git_command(["status"], repo_info.repo_path)
+    if not (len(errors) == 0 and "nothing to commit, working directory clean" in output):
+        return False, "Git clone failed. "
+
+    return True, None
 
 
 def repo_object_decoder(obj):

@@ -1,0 +1,10 @@
+{
+  "repoURL": "https://testapache2211@bitbucket.org/testapache2211/testrepo.git",
+  "repoUsername" : "testapache2211",
+  "repoPassword" : "iXSLhimFulqe",
+  "repoPath" : "/tmp/apachestratos/testauth_repo",
+  "tenantId" : "0002",
+  "multitenant" : "False",
+  "commitEnabled" : "False",
+  "fallbackHash" : "a71503a2fed5e2c00b050ac69c912a33483949a8"
+}
