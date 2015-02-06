@@ -58,9 +58,8 @@ public class ApplicationInstanceActivatedMessageProcessor extends MessageProcess
             ApplicationInstanceActivatedEvent event = (ApplicationInstanceActivatedEvent) MessagingUtil.
                     jsonToObject(message, ApplicationInstanceActivatedEvent.class);
 
-            ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
-
             try {
+                ApplicationsUpdater.acquireWriteLockForApplication(event.getAppId());
                 return doProcess(event, applications);
 
             } finally {
@@ -92,23 +91,20 @@ public class ApplicationInstanceActivatedMessageProcessor extends MessageProcess
             ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
             if(context == null) {
                 if (log.isWarnEnabled()) {
-                    log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +
+                    log.warn(String.format("Application instance not exists in group: [AppId] %s" +
                                     "[instanceId] %s", event.getAppId(), event.getInstanceId()));
                     return false;
                 }
             }
             ApplicationStatus status = ApplicationStatus.Active;
             if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid State transfer from [ " + context.getStatus() +
-                        " ] to [ " + status + " ]");
+                log.error("Invalid application state transfer from [" + context.getStatus() + "] to [" + status + "]");
             }
             context.setStatus(status);
-
         }
 
         // Notify event listeners
         notifyEventListeners(event);
         return true;
-
     }
 }
