@@ -33,7 +33,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
     def __init__(self):
         self.log = LogFactory().get_log(__name__)
-        self.wk_members = []
         self.cartridge_agent_config = CartridgeAgentConfiguration()
 
     def on_instance_started_event(self):
@@ -57,8 +56,10 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 repo_path += git_local_repo_path
 
                 if super_tenant_repo_path is not None and super_tenant_repo_path != "":
-                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") else "/" + super_tenant_repo_path
-                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") else  super_tenant_repo_path + "/"
+                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.startswith("/") \
+                        else "/" + super_tenant_repo_path
+                    super_tenant_repo_path = super_tenant_repo_path if super_tenant_repo_path.endswith("/") \
+                        else super_tenant_repo_path + "/"
                     # "app_path/repository/deploy/server/"
                     repo_path += super_tenant_repo_path
                 else:
@@ -120,7 +121,6 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
 
             # checkout code
             subscribe_run, repo_context = agentgithandler.AgentGitHandler.checkout(repo_info)
-            # repo_context = checkout_result["repo_context"]
             # execute artifact updated extension
             env_params = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
                           "STRATOS_ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
@@ -157,7 +157,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 self.log.info("Auto Commit is turned %r " % ("on" if auto_commit else "off"))
                 self.log.info("Auto Checkout is turned %r " % ("on" if auto_checkout else "off"))
 
-                agentgithandler.AgentGitHandler.schedule_artifact_update_scheduled_task(
+                agentgithandler.AgentGitHandler.schedule_artifact_update_task(
                     repo_info,
                     auto_checkout,
                     auto_commit,
@@ -301,8 +301,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        topology_consistant = extensionutils.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                                        member_id_in_payload)
+        topology_consistant = extensionutils.check_member_state_in_topology(service_name_in_payload,
+                                                                            cluster_id_in_payload,
+                                                                            member_id_in_payload)
 
         if not topology_consistant:
             self.log.error("Member has not initialized, failed to execute start server event")

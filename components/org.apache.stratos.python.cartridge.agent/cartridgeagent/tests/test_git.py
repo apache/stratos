@@ -33,61 +33,12 @@ def test_clone(input, expected):
         repo_string = f.read()
 
     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
-    # test_info = json.loads(repo_string)
     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
 
     assert sub_run, "Not detected as subscription run"
 
     result, msg = verify_git_repo(repo_info)
     assert result == expected, msg
-
-# def test_simple_clone():
-#     with open("conf/simple_repo.json", "r") as f:
-#         repo_string = f.read()
-#
-#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
-#     # test_info = json.loads(repo_string)
-#     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
-#
-#     assert sub_run, "Not detected as subscription run"
-#
-#     result, msg = verify_git_repo(repo_info)
-#     assert result, msg
-#
-#
-# def test_auth_clone():
-#     with open("conf/auth_repo.json", "r") as f:
-#         repo_string = f.read()
-#
-#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
-#     # test_info = json.loads(repo_string)
-#     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
-#
-#     assert sub_run, "Not detected as subscription run"
-#
-#     result, msg = verify_git_repo(repo_info)
-#     assert result, msg
-#
-#
-# def test_auth_clone2():
-#     with open("conf/auth_repo2.json", "r") as f:
-#         repo_string = f.read()
-#
-#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
-#     # test_info = json.loads(repo_string)
-#     sub_run, repo_context = AgentGitHandler.checkout(repo_info)
-#
-#     assert sub_run, "Not detected as subscription run"
-#
-#     result, msg = verify_git_repo(repo_info)
-#     assert result, msg
-
-
-# def test_push():
-#     with open("conf/simple_repo.json", "r") as f:
-#         repo_string = f.read()
-#
-#     repo_info = json.loads(repo_string, object_hook=repo_object_decoder)
 
 
 def setup_module(module):
@@ -104,6 +55,11 @@ def setup_module(module):
 
 
 def verify_git_repo(repo_info):
+    """
+    Assert the status of the git repository
+    :param repo_info:
+    :return:
+    """
     if not os.path.isdir(repo_info.repo_path):
         return False, "Local repository directory not created."
 
