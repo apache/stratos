@@ -84,14 +84,16 @@ public class ThriftClientConfigParser {
                 }
                 //password field protected using Secure vault
                 if (PASSWORD_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    if (secretResolver != null && secretResolver.isInitialized()) {
+                    if ((secretResolver != null) && (secretResolver.isInitialized())) {
                         if (secretResolver.isTokenProtected(secretAlias)) {
                             passwordValueStr = secretResolver.resolve(secretAlias);
                         } else {
                             passwordValueStr = thriftClientElement.getText();
                         }
-                        thriftClientInfo.setPassword(passwordValueStr);
+                    } else {
+                        passwordValueStr = thriftClientElement.getText();
                     }
+                    thriftClientInfo.setPassword(passwordValueStr);
                 }
 
                 if (IP_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
