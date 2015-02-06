@@ -142,15 +142,21 @@ public class ReadWriteLock {
                     getName(), currentThread.getId(), currentThread.getName()));
         }
 
-        lock.writeLock().unlock();
+        if(lock.writeLock().isHeldByCurrentThread()) {
+            lock.writeLock().unlock();
 
-        if (readWriteLockMonitorEnabled) {
-            Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
-            lockTypeLongMap.remove(LockType.Write);
-        }
+            if (readWriteLockMonitorEnabled) {
+                Map<LockType, LockMetadata> lockTypeLongMap = getLockTypeLongMap(currentThread.getId());
+                lockTypeLongMap.remove(LockType.Write);
+            }
 
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Write lock released: [lock-name] %s [thread-id] %d [thread-name] %s",
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Write lock released: [lock-name] %s [thread-id] %d [thread-name] %s",
+                        getName(), currentThread.getId(), currentThread.getName()));
+            }
+        } else {
+            log.warn(String.format("System warning! A thread is trying to release a lock which has not been taken: " +
+                            "[lock-name] %s [thread-id] %d [thread-name] %s",
                     getName(), currentThread.getId(), currentThread.getName()));
         }
     }
