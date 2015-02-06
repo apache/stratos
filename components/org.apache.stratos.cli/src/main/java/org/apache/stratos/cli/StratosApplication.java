@@ -213,6 +213,9 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ListNetworkPartitionCommand();
         commands.put(command.getName(), command);
 
+        command = new UpdateNetworkPartitionCommand();
+        commands.put(command.getName(), command);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
         }
