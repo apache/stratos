@@ -17,13 +17,12 @@
 
 import json
 
-from abstractextensionhandler import AbstractExtensionHandler
 from ..util import extensionutils, cartridgeagentutils
 
 
-class DefaultExtensionHandler(AbstractExtensionHandler):
+class ExtensionHandler:
     """
-    Default implementation of the AbstractExtensionHandler
+    Extension execution related logic
     """
     log = None
 
@@ -143,11 +142,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                 auto_checkout = self.cartridge_agent_config.is_checkout_enabled
 
                 try:
-                    update_interval = int(
-                        self.cartridge_agent_config.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL))
-                except ParameterNotFoundException:
-                    self.log.exception("Invalid artifact sync interval specified ")
-                    update_interval = 10
+                    update_interval = int(self.cartridge_agent_config.artifact_update_interval)
                 except ValueError:
                     self.log.exception("Invalid artifact sync interval specified ")
                     update_interval = 10
@@ -315,7 +310,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         extensionutils.execute_volume_mount_extension(persistence_mappings_payload)
 
     def on_subscription_domain_added_event(self, subscription_domain_added_event):
-        tenant_domain = self.find_tenant_domain(subscription_domain_added_event.tenant_id)
+        tenant_domain = ExtensionHandler.find_tenant_domain(subscription_domain_added_event.tenant_id)
         self.log.info(
             "Subscription domain added event received: [tenant-id] " + subscription_domain_added_event.tenant_id +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_added_event.domain_name +
@@ -331,7 +326,7 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         extensionutils.execute_subscription_domain_added_extension(env_params)
 
     def on_subscription_domain_removed_event(self, subscription_domain_removed_event):
-        tenant_domain = self.find_tenant_domain(subscription_domain_removed_event.tenant_id)
+        tenant_domain = ExtensionHandler.find_tenant_domain(subscription_domain_removed_event.tenant_id)
         self.log.info(
             "Subscription domain removed event received: [tenant-id] " + subscription_domain_removed_event.tenant_id +
             " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_removed_event.domain_name
@@ -361,11 +356,9 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
             " [application ID] " + application_signup_removal_event.applicationId
         )
 
-        try:
-            if self.cartridge_agent_config.service_name == application_signup_removal_event.applicationId:
-                agentgithandler.AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
-        except:
-            self.log.exception("Removing git repository failed: ")
+        if self.cartridge_agent_config.service_name == application_signup_removal_event.applicationId:
+            agentgithandler.AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
+
         extensionutils.execute_application_signup_removal_extension({})
 
     def cleanup(self):
@@ -379,7 +372,8 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         self.log.info("publishing ready to shutdown event...")
         cartridgeagentpublisher.publish_instance_ready_to_shutdown_event()
 
-    def find_tenant_domain(self, tenant_id):
+    @staticmethod
+    def find_tenant_domain(tenant_id):
         tenant = TenantContext.get_tenant(tenant_id)
         if tenant is None:
             raise RuntimeError("Tenant could not be found: [tenant-id] %r" % tenant_id)

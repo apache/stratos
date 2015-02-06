@@ -105,6 +105,8 @@ class CartridgeAgentConfiguration:
             """ :type : str  """
             self.is_primary = False
             """ :type : bool  """
+            self.artifact_update_interval = None
+            """ :type : str """
 
             self.payload_params = {}
             self.__read_conf_file()
@@ -235,6 +237,12 @@ class CartridgeAgentConfiguration:
                         cartridgeagentconstants.CLUSTERING_PRIMARY_KEY)
                 except ParameterNotFoundException:
                     self.is_primary = None
+
+                try:
+                    self.artifact_update_interval = self.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL)
+                except ParameterNotFoundException:
+                    self.artifact_update_interval = "10"
+
             except ParameterNotFoundException as ex:
                 raise RuntimeError(ex)
 
@@ -255,6 +263,7 @@ class CartridgeAgentConfiguration:
             self.log.debug("dependant_cluster_id: %r" % self.dependant_cluster_id)
             self.log.debug("export_metadata_keys: %r" % self.export_metadata_keys)
             self.log.debug("import_metadata_keys: %r" % self.import_metadata_keys)
+            self.log.debug("artifact.update.interval: %r" % self.artifact_update_interval)
 
         def get_member_id(self, member_id_field):
             """

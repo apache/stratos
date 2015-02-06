@@ -30,12 +30,12 @@ from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
 from modules.config import cartridgeagentconfiguration
-from modules.extensions import defaultextensionhandler
+from modules.extensions import extensionhandler
 from modules.util import extensionutils
 
 
 class CartridgeAgent(threading.Thread):
-    extension_handler = defaultextensionhandler.DefaultExtensionHandler()
+    extension_handler = extensionhandler.ExtensionHandler()
 
     def __init__(self):
         threading.Thread.__init__(self)
