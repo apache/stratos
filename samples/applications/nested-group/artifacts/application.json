@@ -1,6 +1,6 @@
 {
-    "applicationId": "myapp1265",
-    "alias": "mytestapp1",
+    "applicationId": "nested-group-app",
+    "alias": "nested-group-app",
     "components": {
         "groups": [
             {

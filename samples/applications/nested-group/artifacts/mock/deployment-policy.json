@@ -1,5 +1,5 @@
 {
-    "applicationId": "myapp1265",
+    "applicationId": "nested-group-app",
     "applicationPolicy": {
         "networkPartition": [
             {
@@ -8,7 +8,7 @@
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "openstack",
+                        "provider": "mock",
                         "property": [
                             {
                                 "name": "region",

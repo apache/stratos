@@ -1,18 +1,19 @@
 {
-    "applicationId": "myapp1265",
+    "applicationId": "nested-group-app",
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "openstack_R1",
+                "id":"network-p1",
+                "kubernetesClusterId":"kubernetes-cluster-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "mock",
+                        "provider": "kubernetes",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
@@ -25,7 +26,7 @@
             "alias": "mytomcat",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "network-p1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
@@ -40,7 +41,7 @@
             "alias": "mygroup6",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "network-p1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
