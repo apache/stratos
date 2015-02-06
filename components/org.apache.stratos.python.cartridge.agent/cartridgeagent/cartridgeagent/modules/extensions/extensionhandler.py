@@ -119,7 +119,7 @@ class ExtensionHandler:
                                    commit_enabled)
 
             # checkout code
-            subscribe_run, repo_context = agentgithandler.AgentGitHandler.checkout(repo_info)
+            subscribe_run, updated = agentgithandler.AgentGitHandler.checkout(repo_info)
             # execute artifact updated extension
             env_params = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
                           "STRATOS_ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
@@ -133,6 +133,9 @@ class ExtensionHandler:
             if subscribe_run:
                 # publish instanceActivated
                 cartridgeagentpublisher.publish_instance_activated_event()
+            elif updated:
+                # updated on pull
+                self.on_artifact_update_scheduler_event(tenant_id)
 
             update_artifacts = self.cartridge_agent_config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE,
                                                                          False)
@@ -384,7 +387,6 @@ from ..artifactmgt.git import agentgithandler
 from ..artifactmgt.repository import Repository
 from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
 from ..publisher import cartridgeagentpublisher
-from ..exception.parameternotfoundexception import ParameterNotFoundException
 from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
 from ..util.log import LogFactory

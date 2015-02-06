@@ -20,7 +20,6 @@ import os
 import pexpect
 import subprocess
 import shutil
-import pdb
 
 from ... util.log import LogFactory
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
@@ -35,16 +34,8 @@ class AgentGitHandler:
 
     log = LogFactory().get_log(__name__)
 
-    # SUPER_TENANT_ID = -1234
-    # SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
-    # TENANT_REPO_PATH = "/repository/tenants/"
-
-    extension_handler = None
-
     __git_repositories = {}
-    # (tenant_id => gitrepository.GitRepository)
-
-    # cartridge_agent_config = cartridgeagentconfiguration.CartridgeAgentConfiguration()
+    # (tenant_id => GitRepository)
 
     @staticmethod
     def checkout(repo_info):
@@ -58,20 +49,25 @@ class AgentGitHandler:
         a pull operation will be performed.
 
         :param Repository repo_info: The repository information object
-        :return: A tuple containing whether it was an initial clone or not, and the repository
-        context object
-        :rtype: tuple(bool, GitRepository)
+        :return: A tuple containing whether it was an initial clone or not, and if the repo was updated on
+        subsequent calls or not
+        :rtype: tuple(bool, bool)
         """
         git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
+        updated = False
         if git_repo is not None:
             # has been previously cloned, this is not the subscription run
             subscribe_run = False
             if AgentGitHandler.is_valid_git_repository(git_repo):
                 AgentGitHandler.log.debug("Executing git pull: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
-                AgentGitHandler.pull(git_repo)
-                AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
-                                          git_repo.tenant_id, git_repo.repo_url)
+                try:
+                    updated = AgentGitHandler.pull(git_repo)
+                    AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
+                                              git_repo.tenant_id, git_repo.repo_url)
+                except GitRepositorySynchronizationException as e:
+                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %r" % e.get_message())
+
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
                 AgentGitHandler.log.debug("Local repository is not valid. Doing a re-clone to purify.")
@@ -79,6 +75,7 @@ class AgentGitHandler:
                 AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
                 git_repo = AgentGitHandler.clone(git_repo)
+                updated = True
                 AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
                                           git_repo.tenant_id, git_repo.repo_url)
         else:
@@ -93,7 +90,7 @@ class AgentGitHandler:
             AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
                                       git_repo.tenant_id, git_repo.repo_url)
 
-        return subscribe_run, git_repo
+        return subscribe_run, updated
 
     @staticmethod
     def sync_initial_local_artifacts(git_repo):
@@ -139,21 +136,23 @@ class AgentGitHandler:
         if git_repo.cloned:
             return True
 
-        # TODO: fix this
-        for ref in git_repo.repo.refs:
-            try:
-                ref._get_object()
-            except ValueError:
-                return False
-
-        return True
+        output, errors = AgentGitHandler.execute_git_command(["show-ref"], git_repo.local_repo_path)
+        if len(output) > 0:
+            refs = output.split("\n")
+            for ref in refs:
+                ref = ref.strip()
+                if len(ref) > 0:
+                    ref = ref.split(" ")
+                    try:
+                        AgentGitHandler.execute_git_command(["show", ref[0].strip()], git_repo.local_repo_path)
+                    except RuntimeError:
+                        return False
+            return True
+        else:
+            return False
 
     @staticmethod
     def pull(git_repo):
-        # TODO: extension handler is an ugly dependancy, raise exceptions
-        from .... agent import CartridgeAgent
-        AgentGitHandler.extension_handler = CartridgeAgent.extension_handler
-
         # git reset to make sure no uncommitted changes are present before the pull, no conflicts will occur
         AgentGitHandler.execute_git_command(["reset", "--hard"], git_repo.local_repo_path)
 
@@ -161,6 +160,7 @@ class AgentGitHandler:
         (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
 
         pull_op = pexpect.spawn("git pull", cwd=git_repo.local_repo_path)
+        # TODO: auth
         pull_output = pull_op.readlines()
 
         # HEAD after pull
@@ -170,7 +170,8 @@ class AgentGitHandler:
         if init_head != end_head:
             AgentGitHandler.log.debug("Artifacts were updated as a result of the pull operation, thread: %r - %r" %
                                       (current_thread().getName(), current_thread().ident))
-            AgentGitHandler.extension_handler.on_artifact_update_scheduler_event(git_repo.tenant_id)
+
+            return True
         else:
             # HEAD not updated, check reasons
             for p in pull_output:
@@ -178,38 +179,14 @@ class AgentGitHandler:
                     # nothing to update
                     AgentGitHandler.log.debug("Pull operation: Already up-to-date, thread: %r - %r" %
                                               (current_thread().getName(), current_thread().ident))
-                    break
+                    return False
 
-                if "fatal: unable to access " in p:
-                    # transport error
-                    AgentGitHandler.log.exception("Accessing remote git repository %r failed for tenant %r" %
-                                                  (git_repo.repo_url, git_repo.tenant_id))
-                    break
-
-                if "fatal: Could not read from remote repository." in p:
-                    # invalid configuration, need to delete and reclone
-                    AgentGitHandler.log.warn("Git pull unsuccessful for tenant %r, invalid configuration. %r" %
-                                             (git_repo.tenant_id, p))
-                    GitUtils.delete_folder_tree(git_repo.local_repo_path)
-                    AgentGitHandler.clone(Repository(
-                        git_repo.repo_url,
-                        git_repo.repo_username,
-                        git_repo.repo_password,
-                        git_repo.local_repo_path,
-                        git_repo.tenant_id,
-                        git_repo.is_multitenant,
-                        git_repo.commit_enabled
-                    ))
-
-                    AgentGitHandler.extension_handler.on_artifact_update_scheduler_event(git_repo.tenant_id)
-                    break
-
-            AgentGitHandler.log.exception("Git pull operation for tenant %r failed" % git_repo.tenant_id)
+            # not updated, something was wrong
+            raise GitRepositorySynchronizationException(
+                "Git pull operation on %r for tenant %r failed" % (git_repo.repo_url, git_repo.tenant_id))
 
     @staticmethod
     def clone(git_repo):
-        # repo_context = AgentGitHandler.create_git_repo_context(repo_info)
-
         if os.path.isdir(git_repo.local_repo_path):
             # delete and recreate local repo path if exists
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
@@ -290,7 +267,6 @@ class AgentGitHandler:
         git_repo = GitRepository()
         git_repo.tenant_id = repo_info.tenant_id
         git_repo.local_repo_path = repo_info.repo_path
-        # repo_context.repo_url = AgentGitHandler.create_auth_url(repo_info)
         git_repo.repo_url = repo_info.repo_url
         git_repo.repo_username = repo_info.repo_username
         git_repo.repo_password = repo_info.repo_password
@@ -455,7 +431,7 @@ class AgentGitHandler:
         """
         Executes the given command string with given environment parameters
         :param list command: Command with arguments to be executed
-        :param dict[str, str] env_params: Environment variables to be used
+        :param str repo_path: Repository path to run the command on
         :return: output and error string tuple, RuntimeError if errors occur
         :rtype: tuple(str, str)
         :exception: RuntimeError
@@ -487,6 +463,7 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
             try:
                 self.log.debug("Running checkout job")
                 AgentGitHandler.checkout(self.repo_info)
+                # TODO: run updated scheduler extension
             except GitRepositorySynchronizationException as e:
                 self.log.exception("Auto checkout task failed: %r" % e.get_message())
 
