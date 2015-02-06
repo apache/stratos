@@ -21,6 +21,8 @@ package org.apache.stratos.common.statistics.publisher;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.stratos.common.util.AxiomXpathParserUtil;
+import org.wso2.securevault.SecretResolver;
+import org.wso2.securevault.SecretResolverFactory;
 
 import java.io.File;
 import java.util.Iterator;
@@ -60,10 +62,16 @@ public class ThriftClientConfigParser {
             OMElement document = AxiomXpathParserUtil.parse(configFile);
             Iterator thriftClientIterator = document.getChildElements();
 
+            //Initialize the SecretResolver providing the configuration element.
+            SecretResolver secretResolver = SecretResolverFactory.create(document, false);
+
             String userNameValuesStr = null;
             String passwordValueStr = null;
             String ipValuesStr = null;
             String portValueStr = null;
+
+            //same entry used in cipher-text.properties and cipher-tool.properties.
+            String secretAlias = "thriftClientConfiguration.password";
 
             // Iterate the thrift-client-config.xml file and read child element
             // consists of credential information necessary for WSO2CEPStatisticsPublisher
@@ -74,10 +82,16 @@ public class ThriftClientConfigParser {
                     userNameValuesStr = thriftClientElement.getText();
                     thriftClientInfo.setUsername(userNameValuesStr);
                 }
-
+                //password field protected using Secure vault
                 if (PASSWORD_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
-                    passwordValueStr = thriftClientElement.getText();
-                    thriftClientInfo.setPassword(passwordValueStr);
+                    if (secretResolver != null && secretResolver.isInitialized()) {
+                        if (secretResolver.isTokenProtected(secretAlias)) {
+                            passwordValueStr = secretResolver.resolve(secretAlias);
+                        } else {
+                            passwordValueStr = thriftClientElement.getText();
+                        }
+                        thriftClientInfo.setPassword(passwordValueStr);
+                    }
                 }
 
                 if (IP_ELEMENT.equals(thriftClientElement.getQName().getLocalPart())) {
