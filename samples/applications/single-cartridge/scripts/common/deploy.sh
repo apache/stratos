@@ -9,7 +9,7 @@ script_path=`cd "$prgdir"; pwd`
 
 artifacts_path=`cd "${script_path}/../../artifacts"; pwd`
 iaas_artifacts_path=`cd "${script_path}/../../artifacts/${iaas}"; pwd`
-cartridges_path=`cd "${script_path}/../../../../cartridges/${iaas}"; pwd`
+iaas_cartridges_path=`cd "${script_path}/../../../../cartridges/${iaas}"; pwd`
 cartridges_groups_path=`cd "${script_path}/../../../../cartridges-groups"; pwd`
 
 set -e
@@ -24,7 +24,7 @@ echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
 echo "Adding php cartridge..."
-curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
 sleep 1
 
