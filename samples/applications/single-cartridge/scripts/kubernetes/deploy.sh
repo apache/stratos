@@ -6,6 +6,8 @@ iaas="kubernetes"
 
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
+
+common_folder=`cd "${script_path}/../common"; pwd`
 iaas_artifacts_path=`cd "${script_path}/../../artifacts/${iaas}"; pwd`
 
 echo "Adding kubernetes cluster..."

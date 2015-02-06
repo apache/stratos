@@ -11,7 +11,7 @@
                         "property": [
                             {
                                 "name": "region",
-                                "value": "ap-southeast-1"
+                                "value": "default"
                             }
                         ]
                     }
@@ -29,7 +29,7 @@
                     "partitions": [
                         {
                             "id": "partition-1",
-                            "max": 8
+                            "max": 5
                         }
                     ]
                 }
@@ -37,4 +37,3 @@
         }
     ]
 }
-
