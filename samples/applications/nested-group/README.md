@@ -1,8 +1,14 @@
 nested-group
 ============
 
-i) This artifact supports for the nested group deployment.
+Application folder structure
+----------------------------
+-- artifacts/<iaas>/ IaaS specific artifacts
+-- scripts/common/ Common scripts for all iaases
+-- scripts/<iaas> IaaS specific scripts
 
-ii) Once you browse the group6c.json file you can see that the group7 is nested inside the group6.
+How to run
+----------
+cd scripts/<iaas>/
+./deploy.sh
 
-iii) You can simply run the test.sh script file and deploy the necessary nested group artifacts.
