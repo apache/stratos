@@ -4,7 +4,16 @@ iaas=$1
 host_ip="localhost"
 host_port=9443
 
-script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+script_path=""
+if [ "$(uname)" == "Darwin" ]; then
+    script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+elif [ "$(expr substr $(uname -s) 1 5)" == "Linux" ]; then
+    script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
+else
+   echo "Unknown operating system"
+   exit
+fi
+
 artifacts_path="${script_path}/../../artifacts"
 iaas_artifacts_path="${script_path}/../../artifacts/${iaas}"
 cartridges_path="${script_path}/../../../../cartridges/${iaas}"
