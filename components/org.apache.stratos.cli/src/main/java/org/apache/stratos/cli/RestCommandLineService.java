@@ -1329,7 +1329,7 @@ public class RestCommandLineService {
      * Update network partitions
      * @throws CommandException
      */
-    public void updateNetworkPartition(String partitionDefinition) throws CommandException {
-        restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, partitionDefinition, "network-partition");
+    public void updateNetworkPartition(String networkPartitionDefinition) throws CommandException {
+        restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, networkPartitionDefinition, "network-partition");
     }
 }
