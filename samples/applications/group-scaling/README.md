@@ -1,4 +1,4 @@
-Group-Scaling
+Group Scaling
 ===========
 
 Application folder structure
@@ -7,13 +7,12 @@ Application folder structure
 -- scripts/common/ Common scripts for all iaases
 -- scripts/<iaas> IaaS specific scripts
 
-
 How to run
 ----------
 cd scripts/<iaas>/
 ./deploy.sh
 
-How to updeploy
-----------
+How to undeploy
+---------------
 cd scripts/<iaas>/
 ./undeploy.sh
