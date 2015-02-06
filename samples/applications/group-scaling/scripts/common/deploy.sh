@@ -49,9 +49,9 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/
 sleep 1
 
 echo "Creating application..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/composite_application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/app_deployment_policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/appscaling/deploy
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/appscaling/deploy
