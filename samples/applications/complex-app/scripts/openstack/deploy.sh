@@ -1,9 +1,8 @@
 #!/bin/bash
 
 iaas="openstack"
-script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-common_folder="${script_path}/../common"
 
-pushd ${common_folder}
-bash deploy.sh ${iaas}
-popd
+prgdir=`dirname "$0"`
+script_path=`cd "$prgdir"; pwd`
+
+bash ${common_folder}/deploy.sh ${iaas}
