@@ -300,7 +300,7 @@ do
     -Dfile.encoding=UTF8 \
     -Ddisable.cassandra.server.startup=true \
     -Djndi.properties.dir="$CARBON_HOME/repository/conf" \
-    -Dthrift.client.config.file.path="$CARBON_HOME/repository/conf/conf/data-bridge/thrift-client-config.xml" \
+    -Dthrift.client.config.file.path="$CARBON_HOME/repository/conf/thrift-client-config.xml" \
     -DMETADATA_CLIENT_CONFIG_FILE="$CARBON_HOME/repository/conf/metadataservice.xml" \
     org.wso2.carbon.bootstrap.Bootstrap $*
     status=$?
