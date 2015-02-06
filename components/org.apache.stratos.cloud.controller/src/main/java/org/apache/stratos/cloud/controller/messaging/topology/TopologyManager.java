@@ -39,31 +39,31 @@ public class TopologyManager {
     }
 
     public static void acquireReadLock() {
+        lock.acquireReadLock();
         if(log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
-        lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
+        lock.releaseReadLock();
         if(log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
-        lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
+        lock.acquireWriteLock();
         if(log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
-        lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
+        lock.releaseWriteLock();
         if(log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
-        lock.releaseWriteLock();
     }
 
     public static Topology getTopology() {
