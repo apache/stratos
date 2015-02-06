@@ -46,7 +46,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
 
     private static final Log log = LogFactory.getLog(StratosTestServerManager.class);
 
-    public static final int APPLICATION_ACTIVATION_TIMEOUT = 240000;
+    public static final int APPLICATION_ACTIVATION_TIMEOUT = 600000;
     private ApplicationsEventReceiver applicationsEventReceiver;
 
     @BeforeClass
