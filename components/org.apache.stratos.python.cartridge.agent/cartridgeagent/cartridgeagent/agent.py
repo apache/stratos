@@ -31,6 +31,7 @@ from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
 from modules.config import cartridgeagentconfiguration
 from modules.extensions import defaultextensionhandler
+from modules.util import extensionutils
 
 
 class CartridgeAgent(threading.Thread):
@@ -71,22 +72,25 @@ class CartridgeAgent(threading.Thread):
         #Check if required properties are set
         self.validate_required_properties()
 
-        #Start instance notifier listener thread
-        self.subscribe_to_topics_and_register_listeners()
-
         #Start topology event receiver thread
         self.register_topology_event_listeners()
+
+        # wait until complete topology message is received to get LB IP
+        extensionutils.wait_for_complete_topology()
+
+        #wait for member initialized event
+        while not self.cartridge_agent_config.initialized:
+            self.log.debug("Waiting for cartridge agent to be initialized...")
+            time.sleep(1)
+
+        #Start instance notifier listener thread
+        self.subscribe_to_topics_and_register_listeners()
 
         #Start tenant event receiver thread
         self.register_tenant_event_listeners()
 
         #start application signup event listener
         self.register_application_signup_event_listeners()
-
-        #wait for member initialized event
-        while not self.cartridge_agent_config.initialized:
-            self.log.debug("Waiting for cartridge agent to be initialized...")
-            time.sleep(1)
 
         #Execute instance started shell script
         CartridgeAgent.extension_handler.on_instance_started_event()
@@ -260,7 +264,7 @@ class CartridgeAgent(threading.Thread):
             self.log.exception("Error processing member suspended event")
 
     def on_complete_topology(self, msg):
-        if not self.cartridge_agent_config.initialized:
+        if not TopologyContext.topology.initialized:
             self.log.debug("Complete topology event received")
             event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
             TopologyContext.update(event_obj.topology)
@@ -269,7 +273,7 @@ class CartridgeAgent(threading.Thread):
             except:
                 self.log.exception("Error processing complete topology event")
         else:
-            self.log.info("Complete topology event updating task disabled")
+            self.log.debug("Complete topology event updating task disabled")
 
     def on_member_started(self, msg):
         self.log.debug("Member started event received: %r" % msg.payload)
@@ -326,7 +330,7 @@ class CartridgeAgent(threading.Thread):
             except:
                 self.log.exception("Error processing complete tenant event")
         else:
-            self.log.info("Complete tenant event updating task disabled")
+            self.log.debug("Complete tenant event updating task disabled")
 
     def on_tenant_subscribed(self, msg):
         self.log.debug("Tenant subscribed event received: %r" % msg.payload)

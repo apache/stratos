@@ -252,9 +252,10 @@ def wait_for_complete_topology():
     while not TopologyContext.topology.initialized:
         log.info("Waiting for complete topology event...")
         time.sleep(5)
+    log.info("Complete topology event received")
 
 
-def check_topology_consistency(service_name, cluster_id, member_id):
+def check_member_state_in_topology(service_name, cluster_id, member_id):
     topology = TopologyContext.get_topology()
     service = topology.get_service(service_name)
     if service is None:

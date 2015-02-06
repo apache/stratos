@@ -133,13 +133,13 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                          member_activated_event.cluster_id,
                          member_activated_event.member_id))
 
-        topology_consistent = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             member_activated_event.service_name,
             member_activated_event.cluster_id,
             member_activated_event.member_id)
 
-        if not topology_consistent:
-            self.log.error("Topology is inconsistent...failed to execute member activated event")
+        if not member_initialized:
+            self.log.error("Member has not initialized, failed to execute member activated event")
             return
 
         extensionutils.execute_member_activated_extension({})
@@ -151,13 +151,14 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        consistant = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             service_name_in_payload,
             cluster_id_in_payload,
             member_id_in_payload)
 
-        if not consistant:
-            return
+        if member_initialized:
+            # Set cartridge agent as initialized since member is available and it is in initialized state
+            self.cartridge_agent_config.initialized = True
 
         topology = complete_topology_event.get_topology()
         service = topology.get_service(service_name_in_payload)
@@ -177,12 +178,12 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        consistent = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             service_name_in_payload,
             cluster_id_in_payload,
             member_id_in_payload)
 
-        if not consistent:
+        if not member_initialized:
             return
         else:
             self.cartridge_agent_config.initialized = True
@@ -202,14 +203,14 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                       " [cluster] " + member_terminated_event.cluster_id
                       + " [member] " + member_terminated_event.member_id)
 
-        topology_consistent = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             member_terminated_event.service_name,
             member_terminated_event.cluster_id,
             member_terminated_event.member_id
         )
 
-        if not topology_consistent:
-            self.log.error("Topology is inconsistent...failed to execute member terminated event")
+        if not member_initialized:
+            self.log.error("Member has not initialized, failed to execute member terminated event")
             return
 
         extensionutils.execute_member_terminated_extension({})
@@ -219,14 +220,14 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
                       " [cluster] " + member_suspended_event.cluster_id +
                       " [member] " + member_suspended_event.member_id)
 
-        topology_consistent = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             member_suspended_event.service_name,
             member_suspended_event.cluster_id,
             member_suspended_event.member_id
         )
 
-        if not topology_consistent:
-            self.log.error("Topology is inconsistent...failed to execute member suspended event")
+        if not member_initialized:
+            self.log.error("Member has not initialized, failed to execute member suspended event")
             return
 
         extensionutils.execute_member_suspended_extension({})
@@ -235,32 +236,28 @@ class DefaultExtensionHandler(AbstractExtensionHandler):
         self.log.info("Member started event received: [service] " + member_started_event.service_name +
                       " [cluster] " + member_started_event.cluster_id + " [member] " + member_started_event.member_id)
 
-        topology_consistent = extensionutils.check_topology_consistency(
+        member_initialized = extensionutils.check_member_state_in_topology(
             member_started_event.service_name,
             member_started_event.cluster_id,
             member_started_event.member_id
         )
 
-        if not topology_consistent:
-            self.log.error("Topology is inconsistent...failed to execute member started event")
+        if not member_initialized:
+            self.log.error("Member has not initialized, failed to execute member started event")
             return
 
         extensionutils.execute_member_started_extension({})
 
     def start_server_extension(self):
-        # wait until complete topology message is received to get LB IP
-        extensionutils.wait_for_complete_topology()
-        self.log.info("[start server extension] complete topology event received")
-
         service_name_in_payload = self.cartridge_agent_config.service_name
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        topology_consistant = extensionutils.check_topology_consistency(service_name_in_payload, cluster_id_in_payload,
+        topology_consistant = extensionutils.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
                                                                         member_id_in_payload)
 
         if not topology_consistant:
-            self.log.error("Topology is inconsistent...failed to execute start server event")
+            self.log.error("Member has not initialized, failed to execute start server event")
             return
 
         extensionutils.execute_start_servers_extension({})
