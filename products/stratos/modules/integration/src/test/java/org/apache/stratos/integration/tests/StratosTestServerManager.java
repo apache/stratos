@@ -61,7 +61,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @BeforeSuite(timeOut = 300000)
+    @BeforeSuite(timeOut = 600000)
     public String startServer() throws IOException {
 
         TestLogAppender testLogAppender = new TestLogAppender();
@@ -117,7 +117,7 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     @Override
-    @AfterSuite(timeOut = 300000)
+    @AfterSuite(timeOut = 600000)
     public void stopServer() throws Exception {
         super.stopServer();
     }
