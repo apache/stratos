@@ -74,19 +74,10 @@ public class ApplicationManager {
      * @param applicationId Application Id to acquire read lock
      */
     public static synchronized void acquireReadLockForApplication(String applicationId) {
-
-        // acquire read lock for all Applications
-        //acquireReadLockForApplications();
-
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
-        if (applicationLock == null) {
-            handleLockNotFound("Application lock not found: [application-id] " + applicationId);
-
-        } else {
-            applicationLock.acquireReadLock();
-            if(log.isDebugEnabled()) {
-                log.debug("Read lock acquired: [application-id] " + applicationId);
-            }
+        applicationLock.acquireReadLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Read lock acquired: [application-id] " + applicationId);
         }
     }
 
@@ -96,24 +87,10 @@ public class ApplicationManager {
      * @param applicationId Application Id to release read lock
      */
     public static synchronized void releaseReadLockForApplication(String applicationId) {
-
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(applicationId);
-        if (applicationLock == null) {
-            handleLockNotFound("Application lock not found: [application-id] " + applicationId);
-
-        } else {
-            applicationLock.releaseReadLock();
-            if(log.isDebugEnabled()) {
-                log.debug("Read lock released: [application-id] " + applicationId);
-            }
+        applicationLock.releaseReadLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Read lock released: [application-id] " + applicationId);
         }
-
-        // release read lock for all Applications
-        //releaseReadLockForApplications();
-    }
-
-    private static void handleLockNotFound (String errorMsg) {
-        log.warn(errorMsg);
-        //throw new RuntimeException(errorMsg);
     }
 }

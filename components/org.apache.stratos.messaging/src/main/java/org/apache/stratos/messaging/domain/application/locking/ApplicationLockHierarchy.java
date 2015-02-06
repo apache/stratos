@@ -55,32 +55,25 @@ public class ApplicationLockHierarchy {
         return applicationLockHierarchy;
     }
 
-    public void addApplicationLock (String appId, final ApplicationLock appLock) {
-
-        if (!appIdToApplicationLockMap.containsKey(appId)) {
-            synchronized (appIdToApplicationLockMap) {
-                if (!appIdToApplicationLockMap.containsKey(appId)) {
-                    appIdToApplicationLockMap.put(appId, appLock);
-                    log.info("Added lock for Application " + appId);
+    public ApplicationLock getLockForApplication(String appId) {
+        ApplicationLock applicationLock = appIdToApplicationLockMap.get(appId);
+        if(applicationLock == null) {
+            synchronized (ApplicationLockHierarchy.class) {
+                if(applicationLock == null) {
+                    applicationLock = new ApplicationLock();
+                    appIdToApplicationLockMap.put(appId, applicationLock);
                 }
             }
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("Topology Lock for Application " + appId + " already exists");
-            }
         }
-    }
-
-    public ApplicationLock getLockForApplication(String appId) {
-        return appIdToApplicationLockMap.get(appId);
+        return applicationLock;
     }
 
     public void removeLockForApplication (String appId) {
         if (appIdToApplicationLockMap.remove(appId) != null) {
-            log.info("Removed lock for Application " + appId);
+            log.info("Removed lock for application: [application-id] " + appId);
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("Lock already removed for Application " + appId);
+                log.debug("Lock already removed for application: [application-id] " + appId);
             }
         }
     }

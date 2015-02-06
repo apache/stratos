@@ -21,7 +21,6 @@ package org.apache.stratos.messaging.domain.application;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.application.locking.ApplicationLock;
 import org.apache.stratos.messaging.domain.application.locking.ApplicationLockHierarchy;
 
 import java.io.Serializable;
@@ -42,9 +41,6 @@ public class Applications implements Serializable {
 
     public synchronized void addApplication (Application application) {
         this.applicationMap.put(application.getUniqueIdentifier(), application);
-        // TODO: It would be better to create the application lock on demand rather than initializing here
-        ApplicationLockHierarchy.getInstance().addApplicationLock(application.getUniqueIdentifier(),
-                new ApplicationLock());
     }
 
     public Application getApplication (String appId) {

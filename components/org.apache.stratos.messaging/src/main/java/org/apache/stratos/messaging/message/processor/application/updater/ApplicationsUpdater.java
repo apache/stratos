@@ -23,7 +23,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.application.locking.ApplicationLock;
 import org.apache.stratos.messaging.domain.application.locking.ApplicationLockHierarchy;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 
 /**
  * Used to lock the Topology for writes by messaging component
@@ -90,20 +89,10 @@ public class ApplicationsUpdater {
      * @param appId Application id
      */
     public static void acquireWriteLockForApplication(String appId) {
-
-        // acquire read lock for all Applications
-        ApplicationManager.acquireReadLockForApplications();
-
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
-        if (applicationLock == null) {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // now, lock Application
-            applicationLock.acquireWriteLock();
-            if (log.isDebugEnabled()) {
-                log.debug("Write lock acquired for Application " + appId);
-            }
+        applicationLock.acquireWriteLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Write lock acquired for Application " + appId);
         }
     }
 
@@ -113,26 +102,10 @@ public class ApplicationsUpdater {
      * @param appId Application id
      */
     public static void releaseWriteLockForApplication(String appId) {
-
         ApplicationLock applicationLock = applicationLockHierarchy.getLockForApplication(appId);
-        if (applicationLock == null) {
-            handleLockNotFound("Topology lock not found for Application " + appId);
-
-        } else {
-            // release App lock
-            applicationLock.releaseWriteLock();
-            if (log.isDebugEnabled()) {
-                log.debug("Write lock released for Application " + appId);
-            }
+        applicationLock.releaseWriteLock();
+        if (log.isDebugEnabled()) {
+            log.debug("Write lock released for application: [application-id] " + appId);
         }
-
-        // release read lock for all Applications
-        ApplicationManager.releaseReadLockForApplications();
     }
-
-    private static void handleLockNotFound(String errorMsg) {
-        log.warn(errorMsg);
-        //throw new RuntimeException(errorMsg);
-    }
-
 }
