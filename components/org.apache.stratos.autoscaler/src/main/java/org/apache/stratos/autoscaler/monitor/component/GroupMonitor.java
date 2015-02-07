@@ -303,34 +303,43 @@ public class GroupMonitor extends ParentComponentMonitor {
                 groupInstance.setStatus(status);
             }
         }
+        Group group = ApplicationHolder.getApplications().getApplication(this.appId).
+                getGroupRecursively(this.id);
+        if (group != null) {
 
-        if (this.isGroupScalingEnabled()) {
-            try {
-                ApplicationHolder.acquireReadLock();
-                Application application = ApplicationHolder.getApplications().
-                        getApplication(this.appId);
-                if (application != null) {
-                    //Notifying the parent using parent's instance Id,
-                    // as it has group scaling enabled.
-                    Group group = application.getGroupRecursively(this.id);
-                    if (group != null) {
-                        // notify parent
-                        log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
-                                " [instance] " + parentInstanceId);
-                        MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
-                                status, this.id, parentInstanceId);
+            int minGroupInstances = group.getGroupMinInstances();
+            int maxGroupInstances = group.getGroupMaxInstances();
+            //Checking whether group scaling enabled or whether spinning group instances possible,
+            // then have to use parent instance Id when notifying the parent
+            // as parent doesn't aware if more than one group instances are there
+            if (this.isGroupScalingEnabled() || minGroupInstances > 1 || maxGroupInstances > 1) {
+                try {
+                    ApplicationHolder.acquireReadLock();
+                    Application application = ApplicationHolder.getApplications().
+                            getApplication(this.appId);
+                    if (application != null) {
+                        //Notifying the parent using parent's instance Id,
+                        // as it has group scaling enabled.
+                        if (group != null) {
+                            // notify parent
+                            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                                    " [instance] " + parentInstanceId);
+                            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
+                                    status, this.id, parentInstanceId);
+                        }
                     }
+                } finally {
+                    ApplicationHolder.releaseReadLock();
                 }
-            } finally {
-                ApplicationHolder.releaseReadLock();
+            } else {
+                // notifying the parent
+                log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                        " [instance] " + instanceId);
+                MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
+                        status, this.id, instanceId);
             }
-        } else {
-            // notifying the parent
-            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
-                    " [instance] " + instanceId);
-            MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
-                    status, this.id, instanceId);
         }
+
         //notify the children about the state change
         try {
             MonitorStatusEventBuilder.notifyChildren(this, new GroupStatusEvent(status, this.id, instanceId));
