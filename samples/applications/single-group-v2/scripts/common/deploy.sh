@@ -4,7 +4,6 @@ iaas=$1
 host_ip="localhost"
 host_port=9443
 
-script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
 

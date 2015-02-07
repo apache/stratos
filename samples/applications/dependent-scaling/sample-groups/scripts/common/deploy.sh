@@ -4,11 +4,13 @@ iaas=$1
 host_ip="localhost"
 host_port=9443
 
-script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-artifacts_path="${script_path}/../../artifacts"
-iaas_artifacts_path="${script_path}/../../artifacts/${iaas}"
-cartridges_path="${script_path}/../../../../../cartridges/${iaas}"
-cartridges_groups_path="${script_path}/../../../../../cartridges-groups"
+prgdir=`dirname "$0"`
+script_path=`cd "$prgdir"; pwd`
+
+artifacts_path=`cd "${script_path}/../../artifacts"; pwd`
+iaas_artifacts_path=`cd "${script_path}/../../artifacts/${iaas}"; pwd`
+cartridges_path=`cd "${script_path}/../../../../cartridges/${iaas}"; pwd`
+cartridges_groups_path=`cd "${script_path}/../../../../cartridges-groups"; pwd`
 
 set -e
 
