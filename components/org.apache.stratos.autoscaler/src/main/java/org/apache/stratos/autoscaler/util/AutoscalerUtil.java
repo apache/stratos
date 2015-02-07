@@ -111,6 +111,9 @@ public class AutoscalerUtil {
                 if (topology != null) {
                     Service service = topology.getService(holder.getServiceType());
                     if (service != null) {
+                        //If one cluster of the application presents,
+                        // then we can assume that all there clusters are there
+                        // as we receive ApplicationClustersCreatedEvent with all the clusters.
                         if (service.clusterExists(holder.getClusterId())) {
                             allClustersInitialized = true;
                             return allClustersInitialized;
