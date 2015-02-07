@@ -1,8 +1,7 @@
 #!/bin/bash
 
-script_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-common_folder="${script_path}/../common"
+prgdir=`dirname "$0"`
+script_path=`cd "$prgdir"; pwd`
+common_folder=`cd "${script_path}/../common"; pwd`
 
-pushd ${common_folder}
-bash undeploy.sh
-popd
+bash ${common_folder}/undeploy.sh

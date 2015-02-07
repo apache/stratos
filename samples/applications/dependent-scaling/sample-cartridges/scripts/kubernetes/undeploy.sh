@@ -5,7 +5,7 @@ host_port=9443
 
 prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
-common_folder="${script_path}/../common"
+common_folder=`cd "${script_path}/../common"; pwd`
 
 bash ${common_folder}/undeploy.sh
 
