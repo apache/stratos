@@ -59,7 +59,6 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     private List<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
-    private Map<String, SubscribableInfoContext> subscribableInformation = new HashMap<String, SubscribableInfoContext>();
     private String oauthToken;
 
     public DefaultApplicationParser() {
@@ -108,52 +107,117 @@ public class DefaultApplicationParser implements ApplicationParser {
         return applicationClusterContexts;
     }
 
+    /**
+     * Find subscribable information in cartridge contexts
+     * @param subscribableInfoContextMap Map to return subscribable information
+     * @param applicationContext Application to read cartridge contexts
+     * @return
+     * @throws ApplicationDefinitionException
+     */
+    private void findSubscribableInfoOfCartridgeContexts(
+            Map<String, SubscribableInfoContext> subscribableInfoContextMap, ApplicationContext applicationContext)
+            throws ApplicationDefinitionException {
 
-    private Map<String, SubscribableInfoContext> getSubscribableInfo(GroupContext[] groupContexts) throws
+        CartridgeContext[] cartridgeContexts = applicationContext.getComponents().getCartridgeContexts();
+        if(cartridgeContexts != null) {
+            for(CartridgeContext cartridgeContext : cartridgeContexts) {
+                if(cartridgeContext != null) {
+                    SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+                    String alias = subscribableInfoContext.getAlias();
+                    String applicationId = applicationContext.getApplicationId();
+                    String cartridgeType = cartridgeContext.getType();
+
+                    if (StringUtils.isEmpty(alias)) {
+                        handleError(String.format("An alias is not defined for cartridge: [application-id] %s" +
+                                "[cartridge-type] %s", applicationId, cartridgeType));
+                    }
+
+                    if (!ApplicationUtils.isAliasValid(alias)) {
+                        handleError(String.format("Alias is not valid: [application-id] %s " +
+                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    }
+
+                    if (subscribableInfoContextMap.get(alias) != null) {
+                        handleError(String.format("Alias is already defined: [application-id] %s " +
+                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    }
+
+                    subscribableInfoContextMap.put(alias, cartridgeContext.getSubscribableInfoContext());
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Subscribable information added: [application-id] %s " +
+                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Get subscribable information of group contexts recursively.
+     * @param subscribableInfoContextMap Map to return subscribable information
+     * @param groupContexts Group contexts to read subscribable information
+     * @return
+     * @throws ApplicationDefinitionException
+     */
+    private void findSubscribableInfoOfGroupContexts(Map<String, SubscribableInfoContext> subscribableInfoContextMap, GroupContext[] groupContexts) throws
             ApplicationDefinitionException {
+
         if (groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
                 if (groupContext.getGroupContexts() != null) {
-                    getSubscribableInfo(groupContext.getGroupContexts());
+                    findSubscribableInfoOfGroupContexts(subscribableInfoContextMap, groupContext.getGroupContexts());
                 } else {
                     CartridgeContext[] cartridgeContexts = groupContext.getCartridgeContexts();
                     for (CartridgeContext cartridgeContext : cartridgeContexts) {
+                        if(cartridgeContext != null) {
+                            String alias = cartridgeContext.getSubscribableInfoContext().getAlias();
+                            String groupName = groupContext.getName();
+                            String cartridgeType = cartridgeContext.getType();
 
-                        if (StringUtils.isEmpty(cartridgeContext.getSubscribableInfoContext().getAlias()) ||
-                                !ApplicationUtils.isAliasValid(cartridgeContext.getSubscribableInfoContext().getAlias())) {
-                            handleError("Invalid alias specified for Subscribable Information Obj: [ " +
-                                    cartridgeContext.getSubscribableInfoContext().getAlias() + " ]");
-                        }
+                            if (StringUtils.isEmpty(alias)) {
+                                handleError(String.format("An alias is not defined for cartridge: [group-name] %s " +
+                                        "[cartridge-type] %s", groupName, cartridgeType));
+                            }
 
-                        // check if a group is already defined under the same alias
-                        if (subscribableInformation.get(cartridgeContext.getSubscribableInfoContext().getAlias()) != null) {
-                            // a group with same alias already exists, can't continue
-                            handleError("A Subscribable Info obj with alias " + cartridgeContext.getSubscribableInfoContext().getAlias() + " already exists");
-                        }
-                        subscribableInformation.put(cartridgeContext.getSubscribableInfoContext().getAlias(),
-                                cartridgeContext.getSubscribableInfoContext());
-                        if (log.isDebugEnabled()) {
-                            log.debug("Added Subcribables Info obj [ " +
-                                    cartridgeContext.getSubscribableInfoContext().getAlias() + " ] to map [cartridge alias -> Subscribable Information]");
+                            if (!ApplicationUtils.isAliasValid(alias)) {
+                                handleError(String.format("Alias is not valid: [group-name] %s " +
+                                        "[cartridge-type] %s [alias] %s", groupName, cartridgeType, alias));
+                            }
+
+                            // Check if alias is already defined
+                            if (subscribableInfoContextMap.get(alias) != null) {
+                                handleError(String.format("Alias is already defined: [group-name] %s " +
+                                        "[cartridge-type] %s [alias] %s", groupName, cartridgeType, alias));
+                            }
+
+                            subscribableInfoContextMap.put(alias, cartridgeContext.getSubscribableInfoContext());
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("Subscribable information added: [group-name] %s " +
+                                        "[cartridge-type] %s [cartridge-alias] %s", groupName, cartridgeType, alias));
+                            }
                         }
                     }
                 }
             }
         }
-        return subscribableInformation;
     }
 
     /**
      * Extract Subscription Information from the Application Definition
      *
-     * @param appCtxt ApplicationContext object with Application information
+     * @param applicationContext ApplicationContext object with Application information
      * @return Map [cartridge alias -> Group]
      * @throws ApplicationDefinitionException if the Subscription information is invalid
      */
-    private Map<String, SubscribableInfoContext> getSubscribableInformation(ApplicationContext appCtxt) throws
+    private Map<String, SubscribableInfoContext> getSubscribableInformation(ApplicationContext applicationContext) throws
             ApplicationDefinitionException {
 
-        return getSubscribableInfo(appCtxt.getComponents().getGroupContexts());
+        Map<String, SubscribableInfoContext> subscribableInfoContextMap = new HashMap<String, SubscribableInfoContext>();
+
+        findSubscribableInfoOfCartridgeContexts(subscribableInfoContextMap, applicationContext);
+        findSubscribableInfoOfGroupContexts(subscribableInfoContextMap, applicationContext.getComponents().getGroupContexts());
+
+        return subscribableInfoContextMap;
     }
 
 

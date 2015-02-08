@@ -790,6 +790,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     }
 
     private class MonitorAdder implements Runnable {
+
         private ApplicationChildContext context;
         private ParentComponentMonitor parent;
         private String appId;
@@ -808,15 +809,9 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             int retries = 5;
             boolean success = false;
             while (!success && retries != 0) {
-                /*//TODO remove thread.sleep, exectutor service
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                }*/
 
                 if (log.isInfoEnabled()) {
-                    log.info("Monitor is going to be started for [group/cluster] "
-                            + context.getId());
+                    log.info("Monitor is going to be started for [group/cluster] " + context.getId());
                 }
                 try {
                     monitor = MonitorFactory.getMonitor(parent, context, appId, instanceIds);

@@ -38,17 +38,13 @@ public class ApplicationUtils {
     private static final Log log = LogFactory.getLog(ApplicationUtils.class);
 
     public static final String TOKEN_PAYLOD_PARAM_NAME = "TOKEN";
+    private static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid (String alias) {
-
-        String patternString = "([a-z0-9]+([-][a-z0-9])*)+";
-        Pattern pattern = Pattern.compile(patternString);
-
-        return pattern.matcher(alias).matches();
+        return ALIAS_PATTERN.matcher(alias).matches();
     }
 
     public static boolean isValid (String arg) {
-
         if (arg == null || arg.isEmpty()) {
             return false;
         } else {

@@ -28,18 +28,15 @@ import java.util.Stack;
  * This is to keep track of the group/cluster status and their dependencies
  */
 public abstract class ApplicationChildContext {
-    private List<ApplicationChildContext> applicationChildContextList;
 
     private String id;
     protected boolean started;
     private boolean terminated;
-
     private ClusterStatus status;
-
     private Stack<ClusterStatus> statusLifeCycle;
+    private List<ApplicationChildContext> applicationChildContextList;
 
     protected boolean hasStartupDependents;
-    
     protected boolean isGroupScalingEnabled;
 
     public ApplicationChildContext(String id, boolean killDependent) {
