@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.broker.publish;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.broker.connect.TopicPublisherFactory;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
@@ -35,8 +36,6 @@ import org.apache.stratos.messaging.util.MessagingUtil;
 public class EventPublisher {
 
     private static final Log log = LogFactory.getLog(EventPublisher.class);
-
-    private static final int PUBLISH_RETRY_INTERVAL = 60000;
 
 	private final String topicName;
 	private final TopicPublisher topicPublisher;
@@ -70,6 +69,7 @@ public class EventPublisher {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
             boolean published = false;
+            RetryTimer retryTimer = new RetryTimer();
 
             while (!published) {
                 try {
@@ -84,11 +84,13 @@ public class EventPublisher {
                         throw new MessagingException(e);
                     }
 
+                    long retryInterval = retryTimer.getNextInterval();
                     if (log.isInfoEnabled()) {
-                        log.info(String.format("Will try to re-publish in %d sec", (PUBLISH_RETRY_INTERVAL/1000)));
+                        log.info(String.format("Event publisher will try to re-publish in %d sec: [topic-name] %s",
+                                (retryInterval /1000), topicName));
                     }
                     try {
-                        Thread.sleep(PUBLISH_RETRY_INTERVAL);
+                        Thread.sleep(retryInterval);
                     } catch (InterruptedException ignore) {
                     }
                 } finally {

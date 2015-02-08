@@ -57,4 +57,9 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
             throw new MessagingException(errorMessage, e);
         }
     }
+
+    @Override
+    protected void reconnect() {
+        // Reconnection is handled by the event publisher
+    }
 }

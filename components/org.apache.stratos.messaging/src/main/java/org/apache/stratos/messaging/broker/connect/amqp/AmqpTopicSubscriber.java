@@ -22,6 +22,7 @@ package org.apache.stratos.messaging.broker.connect.amqp;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
@@ -75,6 +76,32 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
             String message = "Could not subscribe to topic: " + topicName;
             log.error(message, e);
             throw new MessagingException(message, e);
+        }
+    }
+
+    @Override
+    protected void reconnect() {
+        RetryTimer retryTimer = new RetryTimer();
+        boolean connected = false;
+        while(!connected) {
+            try {
+                long interval = retryTimer.getNextInterval();
+                log.info(String.format("Topic subscriber will try to reconnect in %d seconds: [topic-name] %s",
+                        (interval/1000), topicName));
+                Thread.sleep(interval);
+            } catch (InterruptedException ignore) {
+            }
+
+            try {
+                disconnect();
+                create();
+                connect();
+                subscribe();
+                connected = true;
+            } catch (Exception e) {
+                String message = "Could not reconnect to message broker";
+                log.warn(message, e);
+            }
         }
     }
 }

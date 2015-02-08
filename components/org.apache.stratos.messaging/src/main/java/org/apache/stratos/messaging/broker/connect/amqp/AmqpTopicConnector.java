@@ -34,7 +34,7 @@ import java.util.Properties;
 /**
  * AMQP topic connector.
  */
-public class AmqpTopicConnector implements TopicConnector {
+public abstract class AmqpTopicConnector implements TopicConnector {
 
     private static final Log log = LogFactory.getLog(AmqpTopicConnector.class);
 
@@ -68,6 +68,13 @@ public class AmqpTopicConnector implements TopicConnector {
     public void connect() {
         try {
             topicConnection = connectionFactory.createTopicConnection();
+            topicConnection.setExceptionListener(new ExceptionListener() {
+                @Override
+                public void onException(JMSException e) {
+                    log.warn("Connection to the message broker failed");
+                    reconnect();
+                }
+            });
             topicConnection.start();
         } catch (JMSException e) {
             String message = "Could not connect to message broker";
@@ -83,8 +90,7 @@ public class AmqpTopicConnector implements TopicConnector {
                 topicConnection.stop();
             } catch (JMSException e) {
                 String message = "Could not disconnect from message broker";
-                log.error(message, e);
-                throw new MessagingException(message, e);
+                log.warn(message, e);
             }
         }
     }
@@ -106,4 +112,6 @@ public class AmqpTopicConnector implements TopicConnector {
             return null;
         }
     }
+
+    protected abstract void reconnect();
 }
