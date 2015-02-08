@@ -17,9 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher;
+package org.apache.stratos.common.statistics.publisher.wso2.cep;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.util.AxiomXpathParserUtil;
 import org.wso2.securevault.SecretResolver;
 import org.wso2.securevault.SecretResolverFactory;
@@ -28,9 +30,12 @@ import java.io.File;
 import java.util.Iterator;
 
 /**
- * Thrift Client config parser.
+ * Thrift client config parser.
  */
 public class ThriftClientConfigParser {
+
+    private static final Log log = LogFactory.getLog(ThriftClientConfigParser.class);
+
     /**
      * Fields to be read from the thrift-client-config.xml file
      */
@@ -51,6 +56,10 @@ public class ThriftClientConfigParser {
      */
     public static ThriftClientConfig parse(String filePath) {
         try {
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Parsing thrift client config file: %s", filePath));
+            }
+
             ThriftClientConfig thriftClientIConfig = new ThriftClientConfig();
             ThriftClientInfo thriftClientInfo = new ThriftClientInfo();
             thriftClientIConfig.setThriftClientInfo(thriftClientInfo);
@@ -71,7 +80,7 @@ public class ThriftClientConfigParser {
             String portValueStr = null;
 
             //same entry used in cipher-text.properties and cipher-tool.properties.
-            String secretAlias = "thriftClientConfiguration.password";
+            String secretAlias = "thrift.client.configuration.password";
 
             // Iterate the thrift-client-config.xml file and read child element
             // consists of credential information necessary for WSO2CEPStatisticsPublisher
@@ -108,26 +117,23 @@ public class ThriftClientConfigParser {
             }
 
             if (userNameValuesStr == null) {
-                throw new RuntimeException("Username value not found in thrift Client Configuration");
+                throw new RuntimeException("Username value not found in thrift client configuration");
             }
             if (passwordValueStr == null) {
-                throw new RuntimeException("Password not found in thrift Client Configuration ");
+                throw new RuntimeException("Password not found in thrift client configuration ");
             }
 
             if (ipValuesStr == null) {
-                throw new RuntimeException("Ip values not found in thrift Client Configuration ");
+                throw new RuntimeException("Ip values not found in thrift client configuration ");
             }
 
             if (portValueStr == null) {
-                throw new RuntimeException("Port not found in thrift Client Configuration ");
+                throw new RuntimeException("Port not found in thrift client configuration ");
             }
 
             return thriftClientIConfig;
-
         } catch (Exception e) {
             throw new RuntimeException("Could not parse thrift client configuration", e);
         }
     }
-
-
 }

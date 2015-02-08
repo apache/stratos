@@ -20,7 +20,7 @@
 package org.apache.stratos.common.test;
 
 import junit.framework.TestCase;
-import org.apache.stratos.common.statistics.publisher.ThriftClientConfig;
+import org.apache.stratos.common.statistics.publisher.wso2.cep.ThriftClientConfig;
 import org.junit.Test;
 
 import java.net.URL;

@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer.common.statistics.publisher;
 
-import org.apache.stratos.common.statistics.publisher.WSO2CEPStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;

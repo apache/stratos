@@ -21,7 +21,7 @@ package org.apache.stratos.cartridge.agent.statistics.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.statistics.publisher.WSO2CEPStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -40,9 +40,11 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
 
     private static StreamDefinition createStreamDefinition() {
         try {
+            // Create stream definition
             StreamDefinition streamDefinition = new StreamDefinition(DATA_STREAM_NAME, VERSION);
             streamDefinition.setNickName("agent health stats");
             streamDefinition.setDescription("agent health stats");
+
             // Payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
@@ -52,6 +54,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             payloadData.add(new Attribute("partition_id", AttributeType.STRING));
             payloadData.add(new Attribute("health_description", AttributeType.STRING));
             payloadData.add(new Attribute("value", AttributeType.DOUBLE));
+
             streamDefinition.setPayloadData(payloadData);
             return streamDefinition;
         } catch (Exception e) {
@@ -78,8 +81,8 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",
                     clusterId, networkPartitionId, partitionId, memberId, health, value));
         }
+        // Set payload values
         List<Object> payload = new ArrayList<Object>();
-        // Payload values
         payload.add(clusterId);
         payload.add(clusterInstanceId);
         payload.add(networkPartitionId);
@@ -87,6 +90,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
         payload.add(partitionId);
         payload.add(health);
         payload.add(value);
+
         super.publish(payload.toArray());
     }
 }

@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.common.statistics.publisher;
+package org.apache.stratos.common.statistics.publisher.wso2.cep;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisher;
 import org.wso2.carbon.databridge.agent.thrift.Agent;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.conf.AgentConfiguration;
@@ -35,6 +35,7 @@ import java.util.HashMap;
  * WSO2 CEP statistics publisher.
  */
 public class WSO2CEPStatisticsPublisher implements StatisticsPublisher {
+
     private static final Log log = LogFactory.getLog(WSO2CEPStatisticsPublisher.class);
 
     private StreamDefinition streamDefinition;
