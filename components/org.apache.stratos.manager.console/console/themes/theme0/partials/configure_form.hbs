@@ -430,6 +430,7 @@
 
         //handling inline help
         $('.help-block').each(function( index ) {
+            $(this).addClass('notification');
             if($(this).text() !=''){
                 $(this).parent().find('.control-label').after('<i class="fa fa-question-circle input-help-inline" ></i>');
             }
@@ -437,7 +438,11 @@
 
         $('.help-block').hide();
         $('.fa-question-circle').click(function(){
-            $(this).parent().find('.help-block').toggle();
+            $(this).parent().find('.notification').toggle();
+        });
+
+        $('.notification').on('click', function(){
+            $(this).hide();
         });
 
     });
