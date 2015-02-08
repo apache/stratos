@@ -2,7 +2,7 @@
     "type": "tomcat",
     "provider": "apache",
     "category": "data",
-    "host": "isuruh.lk",
+    "host": "tomcat.stratos.org",
     "displayName": "tomcat",
     "description": "tomcat Cartridge",
     "version": "7",

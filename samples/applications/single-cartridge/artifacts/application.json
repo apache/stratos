@@ -13,7 +13,7 @@
                	"autoscalingPolicy":"autoscale-policy-1",
                 "artifactRepository":{
                    "privateRepo":false,
-                   "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                   "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
                    "repoUsername":"",
                    "repoPassword":""
                 }

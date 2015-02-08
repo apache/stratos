@@ -2,7 +2,7 @@
     "type": "php",
     "provider": "apache",
     "category": "data",
-    "host": "isuruh.lk",
+    "host": "php.stratos.org",
     "displayName": "php",
     "description": "php Cartridge",
     "version": "7",

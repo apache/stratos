@@ -2,7 +2,7 @@
     "type": "esb",
     "provider": "wso2",
     "category": "data",
-    "host": "isuruh.lk",
+    "host": "esb.stratos.org",
     "displayName": "esb",
     "description": "esb Cartridge",
     "version": "7",
