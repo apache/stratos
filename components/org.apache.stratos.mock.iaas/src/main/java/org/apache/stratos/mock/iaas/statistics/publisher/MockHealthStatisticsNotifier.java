@@ -21,9 +21,12 @@ package org.apache.stratos.mock.iaas.statistics.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
+import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisherFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.exceptions.NoStatisticsFoundException;
+import org.apache.stratos.mock.iaas.services.impl.MockAutoscalingFactor;
 import org.apache.stratos.mock.iaas.statistics.MockHealthStatistics;
 
 /**
@@ -36,11 +39,12 @@ public class MockHealthStatisticsNotifier implements Runnable {
     public static final String LOAD_AVERAGE = "load_average";
 
     private final MockInstanceContext mockMemberContext;
-    private final MockHealthStatisticsPublisher statsPublisher;
+    private final HealthStatisticsPublisher statsPublisher;
 
     public MockHealthStatisticsNotifier(MockInstanceContext mockMemberContext) {
         this.mockMemberContext = mockMemberContext;
-        this.statsPublisher = new MockHealthStatisticsPublisher();
+        this.statsPublisher = HealthStatisticsPublisherFactory.createHealthStatisticsPublisher(
+                StatisticsPublisherType.WSO2CEP);
         this.statsPublisher.setEnabled(true);
     }
 

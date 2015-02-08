@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.stratos.cartridge.agent.statistics.publisher;
+package org.apache.stratos.common.statistics.publisher.wso2.cep;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.statistics.publisher.wso2.cep.WSO2CEPStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
 import org.wso2.carbon.databridge.commons.Attribute;
 import org.wso2.carbon.databridge.commons.AttributeType;
 import org.wso2.carbon.databridge.commons.StreamDefinition;
@@ -30,13 +30,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Health statistics publisher for publishing statistics to CEP.
+ * Health statistics publisher for publishing statistics to WSO2 CEP.
  */
-public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
-    private static final Log log = LogFactory.getLog(HealthStatisticsPublisher.class);
+public class WSO2CEPHealthStatisticsPublisher extends WSO2CEPStatisticsPublisher implements HealthStatisticsPublisher {
+
+    private static final Log log = LogFactory.getLog(WSO2CEPHealthStatisticsPublisher.class);
 
     private static final String DATA_STREAM_NAME = "cartridge_agent_health_stats";
     private static final String VERSION = "1.0.0";
+
+    public WSO2CEPHealthStatisticsPublisher() {
+        super(createStreamDefinition());
+    }
 
     private static StreamDefinition createStreamDefinition() {
         try {
@@ -45,7 +50,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
             streamDefinition.setNickName("agent health stats");
             streamDefinition.setDescription("agent health stats");
 
-            // Payload definition
+            // Set payload definition
             List<Attribute> payloadData = new ArrayList<Attribute>();
             payloadData.add(new Attribute("cluster_id", AttributeType.STRING));
             payloadData.add(new Attribute("cluster_instance_id", AttributeType.STRING));
@@ -62,10 +67,6 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
         }
     }
 
-    public HealthStatisticsPublisher() {
-        super(createStreamDefinition());
-    }
-
     /**
      * Publish health statistics to cep.
      * @param clusterId
@@ -76,6 +77,7 @@ public class HealthStatisticsPublisher extends WSO2CEPStatisticsPublisher {
      * @param health
      * @param value
      */
+    @Override
     public void publish(String clusterId, String clusterInstanceId, String networkPartitionId, String memberId, String partitionId, String health, double value) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Publishing health statistics: [cluster] %s [network-partition] %s [partition] %s [member] %s [health] %s [value] %f",

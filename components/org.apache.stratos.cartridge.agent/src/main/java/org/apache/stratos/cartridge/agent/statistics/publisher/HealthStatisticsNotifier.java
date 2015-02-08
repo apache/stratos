@@ -19,14 +19,13 @@
 
 package org.apache.stratos.cartridge.agent.statistics.publisher;
 
-import org.apache.stratos.cartridge.agent.statistics.publisher.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
-import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPublisher;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
-import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
+import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisher;
+import org.apache.stratos.common.statistics.publisher.HealthStatisticsPublisherFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 
 import java.io.File;
 import java.util.List;
@@ -43,7 +42,8 @@ public class HealthStatisticsNotifier implements Runnable {
     private boolean terminated;
 
     public HealthStatisticsNotifier() {
-        this.statsPublisher = new HealthStatisticsPublisher();
+        this.statsPublisher = HealthStatisticsPublisherFactory.createHealthStatisticsPublisher(
+                StatisticsPublisherType.WSO2CEP);
 
         /* Find all jars in the current working directory */
         String pluginFileName = System.getProperty("health.stats.reader.plugin");

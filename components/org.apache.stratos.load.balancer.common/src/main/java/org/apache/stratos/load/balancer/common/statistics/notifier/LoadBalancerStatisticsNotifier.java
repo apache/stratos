@@ -22,8 +22,10 @@ package org.apache.stratos.load.balancer.common.statistics.notifier;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.statistics.publisher.InFlightRequestPublisher;
+import org.apache.stratos.common.statistics.publisher.InFlightRequestPublisherFactory;
+import org.apache.stratos.common.statistics.publisher.StatisticsPublisherType;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
-import org.apache.stratos.load.balancer.common.statistics.publisher.WSO2CEPInFlightRequestPublisher;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
@@ -35,14 +37,15 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
     private static final Log log = LogFactory.getLog(LoadBalancerStatisticsNotifier.class);
 
     private final LoadBalancerStatisticsReader statsReader;
-    private final WSO2CEPInFlightRequestPublisher inFlightRequestPublisher;
+    private final InFlightRequestPublisher inFlightRequestPublisher;
     private long statsPublisherInterval = 15000;
     private String networkPartitionId;
     private boolean terminated;
 
     public LoadBalancerStatisticsNotifier(LoadBalancerStatisticsReader statsReader) {
         this.statsReader = statsReader;
-        this.inFlightRequestPublisher = new WSO2CEPInFlightRequestPublisher();
+        this.inFlightRequestPublisher = InFlightRequestPublisherFactory.createInFlightRequestPublisher(
+                StatisticsPublisherType.WSO2CEP);
 
         String interval = System.getProperty("stats.notifier.interval");
         if (interval != null) {
