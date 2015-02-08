@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
+import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
@@ -65,7 +66,9 @@ public class CookieBasedAuthenticationHandler implements RequestHandler {
 
        }
         return Response.status(Response.Status.FORBIDDEN).
-                type(MediaType.APPLICATION_JSON).entity(Utils.buildMessage("The endpoint requires authentication")).build();
+                type(MediaType.APPLICATION_JSON).entity(
+                		new ErrorResponseBean(Response.Status.FORBIDDEN.getStatusCode(), 
+                				"The endpoint requires authentication")).build();
     }
 
     /*

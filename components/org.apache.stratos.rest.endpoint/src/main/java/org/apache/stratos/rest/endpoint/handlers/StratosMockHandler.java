@@ -29,6 +29,7 @@ import org.apache.cxf.jaxrs.ext.RequestHandler;
 import org.apache.cxf.jaxrs.model.ClassResourceInfo;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.security.SecurityContext;
+import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.rest.endpoint.ServiceHolder;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.context.AuthenticationContext;
@@ -44,6 +45,7 @@ import org.wso2.carbon.utils.multitenancy.MultitenantUtils;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import java.util.List;
 
 /**
@@ -80,12 +82,14 @@ public class StratosMockHandler extends AbstractAuthenticationAuthorizationHandl
             log.error("username is seen as null/empty values.");
             return Response.status(Response.Status.UNAUTHORIZED)
                            .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(Utils.buildMessage("Username cannot be null")).build();
+                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(),
+                        		   "Username cannot be null")).build();
         } else if (certObject == null && ((password == null) || password.equals(""))) {
             log.error("password is seen as null/empty values.");
             return Response.status(Response.Status.UNAUTHORIZED)
                            .header("WWW-Authenticate", "Basic").type(MediaType.APPLICATION_JSON)
-                           .entity(Utils.buildMessage("password cannot be null")).build();
+                           .entity(new ErrorResponseBean(Response.Status.UNAUTHORIZED.getStatusCode(), 
+                        		   "password cannot be null")).build();
         }
         
         try {
@@ -98,7 +102,8 @@ public class StratosMockHandler extends AbstractAuthenticationAuthorizationHandl
             log.error("Authentication failed",exception);
             // server error in the eyes of the client. Hence 5xx HTTP code.
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.APPLICATION_JSON).
-                    entity(Utils.buildMessage("Unexpected error. Please contact the system admin")).build();
+                    entity(new ErrorResponseBean(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), 
+                    		"Unexpected error. Please contact the system admin")).build();
         }
 
     }

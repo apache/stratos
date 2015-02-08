@@ -34,6 +34,7 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
@@ -391,11 +392,11 @@ public class StratosApiV41Utils {
             return convertCartridgeToCartridgeDefinitionBean(cartridgeInfo);
         } catch (RemoteException e) {
             String message = e.getMessage();
-            log.error(message, e);
+            log.error(message);
             throw new RestAPIException(message, e);
         } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            String message = e.getMessage();
-            log.error(message, e);
+            String message = e.getFaultMessage().getCartridgeNotFoundException().getMessage();
+            log.error(message);
             throw new RestAPIException(message, e);
         }
     }
@@ -1844,4 +1845,5 @@ public class StratosApiV41Utils {
             throw new RuntimeException(message, e);
         }
     }
+
 }

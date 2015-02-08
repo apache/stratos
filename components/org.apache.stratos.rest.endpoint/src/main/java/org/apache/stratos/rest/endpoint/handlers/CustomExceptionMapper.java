@@ -20,6 +20,7 @@ package org.apache.stratos.rest.endpoint.handlers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.rest.endpoint.Utils;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 
@@ -47,6 +48,6 @@ public class CustomExceptionMapper implements ExceptionMapper<RestAPIException> 
            
         log.error(errorMessage, restAPIException);
         return Response.status(httpStatus.getStatusCode()).type(MediaType.APPLICATION_JSON).
-                entity(Utils.buildMessage(httpStatus.getStatusCode(),errorMessage)).build();
+                entity(new ErrorResponseBean(httpStatus.getStatusCode(),errorMessage)).build();
     }
 }
