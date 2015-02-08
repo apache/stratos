@@ -248,9 +248,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 validateDeploymentPolicy(deploymentPolicy);
                 // Add deployment policy
                 PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
-                // Add application signup in stratos manager
-                addApplicationSignUp(applicationContext, application.getKey());
-
+                if(!applicationContext.isMultiTenant()) {
+                    // Add application signup for single tenant applications
+                    addApplicationSignUp(applicationContext, application.getKey());
+                }
                 applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
                 AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             } catch (InvalidPolicyException e) {
