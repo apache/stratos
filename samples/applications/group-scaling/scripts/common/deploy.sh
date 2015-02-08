@@ -19,16 +19,16 @@ if [[ -z "${iaas}" ]]; then
     exit
 fi
 
-echo "Adding autoscale policy c1..."
+echo "Adding autoscaling policy c1..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy-c1.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding autoscale policy c2..."
+echo "Adding autoscaling policy c2..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy-c2.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding autoscale policy c3..."
+echo "Adding autoscaling policy c3..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy-c3.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding autoscale policy c4..."
+echo "Adding autoscaling policy c4..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy-c4.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
 echo "Adding c1 cartridge..."
