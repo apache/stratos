@@ -1,5 +1,5 @@
 {
-    "applicationId": "appscaling",
+    "applicationId": "group-scaling-v1",
     "applicationPolicy": {
         "networkPartition": [
             {

@@ -1,6 +1,6 @@
 {
-    "applicationId": "appscaling",
-    "alias": "appscaling",
+    "applicationId": "group-scaling-v1",
+    "alias": "group-scaling-v1",
     "components": {
         "groups": [
             {
@@ -15,7 +15,7 @@
                         "cartridgeMax": 4,
                         "subscribableInfo": {
                             "alias": "group2c2",
-                            "autoscalingPolicy": "autoscale_policy_c2",
+                            "autoscalingPolicy": "autoscaling-policy-c2",
                             "artifactRepository":{
                                 "privateRepo":false,
                                 "repoUrl":"https://github.com/imesh/stratos-c2-applications.git",
@@ -30,7 +30,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "group2c3",
-                            "autoscalingPolicy": "autoscale_policy_c3",
+                            "autoscalingPolicy": "autoscaling-policy-c3",
                             "artifactRepository":{
                                 "privateRepo":false,
                                 "repoUrl":"https://github.com/imesh/stratos-c3-applications.git",

@@ -1,14 +1,14 @@
 {
-    "id": "autoscale_policy_c1",
+    "id": "autoscaling-policy-c4",
     "loadThresholds": {
         "requestsInFlight": {
-            "threshold": 80
+            "threshold": 50
         },
         "memoryConsumption": {
-            "threshold": 20
+            "threshold": 28
         },
         "loadAverage": {
-            "threshold": 50
+            "threshold": 75
         }
     }
 }

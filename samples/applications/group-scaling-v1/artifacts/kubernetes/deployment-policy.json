@@ -1,34 +1,35 @@
 {
-    "applicationId": "appscaling",
+    "applicationId": "group-scaling-v1",
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "openstack_R1",
+                "id":"network-p1",
+                "kubernetesClusterId":"kubernetes-cluster-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "openstack",
+                        "provider": "kubernetes",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
                 ]
             },
             {
-                "id": "openstack_R2",
+                "id": "network-p2",
                 "activeByDefault": "false",
                 "partitions": [
                     {
                         "id": "P1",
-                        "provider": "openstack",
+                        "provider": "kubernetes",
                         "property": [
                             {
                                 "name": "region",
-                                "value": "RegionOne"
+                                "value": "default"
                             }
                         ]
                     }
@@ -41,7 +42,7 @@
             "alias": "mygroup2",
             "networkPartition": [
                 {
-                    "id": "openstack_R1",
+                    "id": "network-p1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
@@ -51,7 +52,7 @@
                     ]
                 },
                 {
-                    "id": "openstack_R2",
+                    "id": "network-p2",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
