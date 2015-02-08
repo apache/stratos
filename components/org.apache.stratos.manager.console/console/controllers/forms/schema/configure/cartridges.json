@@ -20,7 +20,8 @@
             "minLength":2,
             "default": "php",
             "propertyOrder": 1,
-            "maxItems": 1
+            "maxItems": 1,
+            "pattern": "^[A-Za-z0-9\s]{1,}$"
         },
         "category": {
             "type": "string",
@@ -112,6 +113,9 @@
             "id": "root/portMapping",
             "title": "Port Mapping",
             "name": "Port Mapping",
+            "options": {
+                "collapsed": true
+            },
             "items": [
                 {
                     "type": "object",
@@ -182,7 +186,9 @@
             "id": "root/iaasProvider",
             "title": "iaas Provider",
             "name": "iaas Provider",
-            "required": false,
+            "options": {
+                "collapsed": true
+            },
             "items": {
                 "type": "object",
                 "id": "root/iaasProvider/0",
@@ -194,6 +200,7 @@
                         "id": "root/iaasProvider/0/type",
                         "title": "Type",
                         "name": "Type",
+                        "enum": ["ec2","kubernetes","mock","openstack"],
                         "default": "ec2"
                     },
                     "imageId": {
@@ -298,6 +305,9 @@
             "title": "Persistence",
             "name": "Persistence",
             "required": ["isRequired", "volume"],
+            "options": {
+                "collapsed": true
+            },
             "properties": {
                 "isRequired": {
                     "type": "boolean",
