@@ -35,12 +35,20 @@ public class RetryTimer {
         valueList = new ArrayList<Long>();
 
         valueList.add(Long.valueOf(1000));
+        valueList.add(Long.valueOf(1000));
+        valueList.add(Long.valueOf(2000));
         valueList.add(Long.valueOf(2000));
         valueList.add(Long.valueOf(5000));
+        valueList.add(Long.valueOf(5000));
+        valueList.add(Long.valueOf(10000));
         valueList.add(Long.valueOf(10000));
         valueList.add(Long.valueOf(20000));
+        valueList.add(Long.valueOf(20000));
+        valueList.add(Long.valueOf(30000));
         valueList.add(Long.valueOf(30000));
         valueList.add(Long.valueOf(40000));
+        valueList.add(Long.valueOf(40000));
+        valueList.add(Long.valueOf(50000));
         valueList.add(Long.valueOf(50000));
         valueList.add(Long.valueOf(60000));
 

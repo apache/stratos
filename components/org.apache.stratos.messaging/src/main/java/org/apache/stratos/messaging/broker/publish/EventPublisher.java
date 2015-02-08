@@ -76,6 +76,7 @@ public class EventPublisher {
                     topicPublisher.connect();
                     topicPublisher.publish(topicName, message);
                     published = true;
+                    log.info(String.format("Event publisher re-published message: [topic-name] %s", topicName));
                 } catch (Exception e) {
                     if (!retry) {
                         if (log.isDebugEnabled()) {
@@ -86,8 +87,8 @@ public class EventPublisher {
 
                     long retryInterval = retryTimer.getNextInterval();
                     if (log.isInfoEnabled()) {
-                        log.info(String.format("Event publisher will try to re-publish in %d sec: [topic-name] %s",
-                                (retryInterval /1000), topicName));
+                        log.info(String.format("Event publisher will try to re-publish message in %d sec: " +
+                                        "[topic-name] %s", (retryInterval /1000), topicName));
                     }
                     try {
                         Thread.sleep(retryInterval);

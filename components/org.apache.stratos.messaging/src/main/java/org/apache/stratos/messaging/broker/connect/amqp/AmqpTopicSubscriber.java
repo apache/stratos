@@ -98,6 +98,7 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
                 connect();
                 subscribe();
                 connected = true;
+                log.info(String.format("Topic subscriber reconnected: [topic-name] %s", topicName));
             } catch (Exception e) {
                 String message = "Could not reconnect to message broker";
                 log.warn(message, e);

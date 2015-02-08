@@ -37,7 +37,16 @@ public class RetryTimerTest {
         assertEquals(1000, value);
 
         value = retryTimer.getNextInterval();
+        assertEquals(1000, value);
+
+        value = retryTimer.getNextInterval();
         assertEquals(2000, value);
+
+        value = retryTimer.getNextInterval();
+        assertEquals(2000, value);
+
+        value = retryTimer.getNextInterval();
+        assertEquals(5000, value);
 
         value = retryTimer.getNextInterval();
         assertEquals(5000, value);
@@ -46,13 +55,28 @@ public class RetryTimerTest {
         assertEquals(10000, value);
 
         value = retryTimer.getNextInterval();
+        assertEquals(10000, value);
+
+        value = retryTimer.getNextInterval();
+        assertEquals(20000, value);
+
+        value = retryTimer.getNextInterval();
         assertEquals(20000, value);
 
         value = retryTimer.getNextInterval();
         assertEquals(30000, value);
 
         value = retryTimer.getNextInterval();
+        assertEquals(30000, value);
+
+        value = retryTimer.getNextInterval();
         assertEquals(40000, value);
+
+        value = retryTimer.getNextInterval();
+        assertEquals(40000, value);
+
+        value = retryTimer.getNextInterval();
+        assertEquals(50000, value);
 
         value = retryTimer.getNextInterval();
         assertEquals(50000, value);

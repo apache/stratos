@@ -88,9 +88,8 @@ public abstract class AmqpTopicConnector implements TopicConnector {
         if(topicConnection != null) {
             try {
                 topicConnection.stop();
-            } catch (JMSException e) {
-                String message = "Could not disconnect from message broker";
-                log.warn(message, e);
+            } catch (JMSException ignore) {
+                log.warn("Could not disconnect from message broker");
             }
         }
     }
