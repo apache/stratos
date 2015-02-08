@@ -13,7 +13,6 @@
         "type": {
             "type": "string",
             "id": "root/type",
-            "id": "root/type",
             "title": "Type",
             "description": "You need to enter chartridge type without space",
             "name": "Type",
@@ -21,11 +20,10 @@
             "default": "php",
             "propertyOrder": 1,
             "maxItems": 1,
-            "pattern": "^[A-Za-z0-9\s]{1,}$"
+            "pattern": "^[a-zA-Z0-9-_]+$",
         },
         "category": {
             "type": "string",
-            "id": "root/category",
             "id": "root/category",
             "title": "Category",
             "description": "This will use to identify cartridge usage type",
