@@ -6,12 +6,12 @@ host_port=9443
 set -e
 
 echo "Undeploying application..."
-curl -X POST -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/appscaling/undeploy
+curl -X POST -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/group-scaling/undeploy
 
 sleep 10
 
 echo "Deleting application..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/appscaling
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/group-scaling
 
 echo "Removing groups..."
 curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups/group1

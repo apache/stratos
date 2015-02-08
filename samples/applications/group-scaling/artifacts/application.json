@@ -1,6 +1,6 @@
 {
-    "applicationId": "appscaling",
-    "alias": "appscaling",
+    "applicationId": "group-scaling",
+    "alias": "group-scaling",
     "components": {
         "groups": [
             {
