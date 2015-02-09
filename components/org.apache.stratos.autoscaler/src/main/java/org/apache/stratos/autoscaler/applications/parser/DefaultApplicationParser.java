@@ -349,8 +349,10 @@ public class DefaultApplicationParser implements ApplicationParser {
             CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
 
 		    for (String str : cartridgeInfo.getMetadataKeys()) {
-			    exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
-			                                           .getAlias() + METADATA_APPENDER +str);
+			    if(!StringUtils.isBlank(str)) {
+				    exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
+				                                           .getAlias() + METADATA_APPENDER + str);
+			    }
 		    }
 
 
