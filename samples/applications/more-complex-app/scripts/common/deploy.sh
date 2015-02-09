@@ -46,4 +46,4 @@ curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/applicat
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/app_boo/deploy
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/more-complex-app/deploy

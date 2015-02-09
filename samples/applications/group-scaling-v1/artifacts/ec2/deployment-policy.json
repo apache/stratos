@@ -3,11 +3,11 @@
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "EC2-P1",
+                "id": "network-partition-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "P1",
+                        "id": "partition-1",
                         "provider": "ec2",
                         "property": [
                             {
@@ -19,11 +19,11 @@
                 ]
             },
             {
-                "id": "EC2-P2",
+                "id": "network-partition-2",
                 "activeByDefault": "false",
                 "partitions": [
                     {
-                        "id": "P1",
+                        "id": "partition-2",
                         "provider": "ec2",
                         "property": [
                             {
@@ -41,21 +41,21 @@
             "alias": "mygroup2",
             "networkPartition": [
                 {
-                    "id": "EC2-P1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 2
                         }
                     ]
                 },
                 {
-                    "id": "EC2-P2",
+                    "id": "network-partition-2",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-2",
                             "max": 2
                         }
                     ]

@@ -1,6 +1,6 @@
 {
-    "applicationId": "app_group_v2",
-    "alias": "mytestapp1",
+    "applicationId": "single_group_v2",
+    "alias": "single_group_v2",
     "components": {
         "groups": [
             {

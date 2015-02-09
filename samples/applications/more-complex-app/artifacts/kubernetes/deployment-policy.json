@@ -1,15 +1,15 @@
 {
-    "applicationId": "app_boo",
+    "applicationId": "more-complex-app",
     "applicationPolicy": {
-        "applicationId": "app_boo_r4",
+        "applicationId": "more-complex-app-v1",
         "networkPartition": [
             {
-                "id":"network-p1",
+                "id":"network-partition-1",
                 "kubernetesClusterId":"kubernetes-cluster-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "P1",
+                        "id": "partition-1",
                         "provider": "kubernetes",
                         "property": [
                             {
@@ -27,11 +27,11 @@
             "alias": "mytomcat2",
             "networkPartition": [
                 {
-                    "id": "network-p1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -42,11 +42,11 @@
             "alias": "mytomcat1",
             "networkPartition": [
                 {
-                    "id": "network-p1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -57,11 +57,11 @@
             "alias": "mygroup6",
             "networkPartition": [
                 {
-                    "id": "network-p1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -72,11 +72,11 @@
             "alias": "mygroup8",
             "networkPartition": [
                 {
-                    "id": "network-p1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]

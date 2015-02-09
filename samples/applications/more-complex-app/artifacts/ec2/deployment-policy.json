@@ -1,14 +1,14 @@
 {
-    "applicationId": "app_boo",
+    "applicationId": "more-complex-app",
     "applicationPolicy": {
-        "applicationId": "app_boo_r4",
+        "applicationId": "more-complex-app-v1",
         "networkPartition": [
             {
-                "id": "EC2-P1",
+                "id": "network-partition-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "P1",
+                        "id": "partition-1",
                         "provider": "ec2",
                         "property": [
                             {
@@ -26,11 +26,11 @@
             "alias": "mytomcat2",
             "networkPartition": [
                 {
-                    "id": "EC2-P1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -41,11 +41,11 @@
             "alias": "mytomcat1",
             "networkPartition": [
                 {
-                    "id": "EC2-P1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -56,11 +56,11 @@
             "alias": "mygroup6",
             "networkPartition": [
                 {
-                    "id": "EC2-P1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -71,11 +71,11 @@
             "alias": "mygroup88",
             "networkPartition": [
                 {
-                    "id": "EC2-P1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "P1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]

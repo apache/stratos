@@ -2,11 +2,11 @@
     "applicationPolicy": {
         "networkPartition": [
             {
-                "id": "np1",
+                "id": "network-partition-1",
                 "activeByDefault": "true",
                 "partitions": [
                     {
-                        "id": "p1",
+                        "id": "partition-1",
                         "provider": "mock",
                         "property": [
                             {
@@ -24,11 +24,11 @@
             "alias": "mylb",
             "networkPartition": [
                 {
-                    "id": "np1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "p1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -39,11 +39,11 @@
             "alias": "mytomcat",
             "networkPartition": [
                 {
-                    "id": "np1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "p1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -54,11 +54,11 @@
             "alias": "mygroup6",
             "networkPartition": [
                 {
-                    "id": "np1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "p1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]
@@ -69,11 +69,11 @@
             "alias": "mygroup8",
             "networkPartition": [
                 {
-                    "id": "np1",
+                    "id": "network-partition-1",
                     "partitionAlgo": "one-after-another",
                     "partitions": [
                         {
-                            "id": "p1",
+                            "id": "partition-1",
                             "max": 5
                         }
                     ]

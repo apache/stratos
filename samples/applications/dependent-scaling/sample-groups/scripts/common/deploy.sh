@@ -9,8 +9,8 @@ script_path=`cd "$prgdir"; pwd`
 
 artifacts_path=`cd "${script_path}/../../artifacts"; pwd`
 iaas_artifacts_path=`cd "${script_path}/../../artifacts/${iaas}"; pwd`
-cartridges_path=`cd "${script_path}/../../../../cartridges/${iaas}"; pwd`
-cartridges_groups_path=`cd "${script_path}/../../../../cartridges-groups"; pwd`
+cartridges_path=`cd "${script_path}/../../../../../cartridges/${iaas}"; pwd`
+cartridges_groups_path=`cd "${script_path}/../../../../../cartridges-groups"; pwd`
 
 set -e
 
