@@ -140,8 +140,8 @@ class CartridgeAgentConfiguration:
                 self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
                 self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
                 self.dependant_cluster_id = self.read_property(cartridgeagentconstants.DEPENDENCY_CLUSTER_IDS, False)
-                self.export_metadata_keys = self.read_property(cartridgeagentconstants.EXPORT_METADATA_KEYS)
-                self.import_metadata_keys = self.read_property(cartridgeagentconstants.IMPORT_METADATA_KEYS)
+                self.export_metadata_keys = self.read_property(cartridgeagentconstants.EXPORT_METADATA_KEYS, False)
+                self.import_metadata_keys = self.read_property(cartridgeagentconstants.IMPORT_METADATA_KEYS, False)
 
 
                 try:
