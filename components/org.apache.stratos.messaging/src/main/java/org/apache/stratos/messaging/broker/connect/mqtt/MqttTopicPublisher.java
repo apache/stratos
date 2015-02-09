@@ -36,11 +36,14 @@ public class MqttTopicPublisher extends MqttTopicConnector implements TopicPubli
 
     protected static final Log log = LogFactory.getLog(MqttTopicPublisher.class);
 
-    public MqttTopicPublisher() {
+    private String topicName;
+
+    public MqttTopicPublisher(String topicName) {
+        this.topicName = topicName;
         create();
     }
 
-    public void publish(String topicName, String message) {
+    public void publish(String message, boolean retry) {
         try {
             if(mqttClient == null) {
                 String error = "Could not publish message to topic, MQTT client has not been initialized";

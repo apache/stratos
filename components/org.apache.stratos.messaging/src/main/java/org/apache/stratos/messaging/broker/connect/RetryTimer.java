@@ -19,7 +19,6 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,31 +27,12 @@ import java.util.List;
  */
 public class RetryTimer {
 
-    private List<Long> valueList;
-    private Iterator<Long> iterator;
+    private final List<Integer> valueList;
+    private final Iterator<Integer> iterator;
 
-    public RetryTimer() {
-        valueList = new ArrayList<Long>();
-
-        valueList.add(Long.valueOf(1000));
-        valueList.add(Long.valueOf(1000));
-        valueList.add(Long.valueOf(2000));
-        valueList.add(Long.valueOf(2000));
-        valueList.add(Long.valueOf(5000));
-        valueList.add(Long.valueOf(5000));
-        valueList.add(Long.valueOf(10000));
-        valueList.add(Long.valueOf(10000));
-        valueList.add(Long.valueOf(20000));
-        valueList.add(Long.valueOf(20000));
-        valueList.add(Long.valueOf(30000));
-        valueList.add(Long.valueOf(30000));
-        valueList.add(Long.valueOf(40000));
-        valueList.add(Long.valueOf(40000));
-        valueList.add(Long.valueOf(50000));
-        valueList.add(Long.valueOf(50000));
-        valueList.add(Long.valueOf(60000));
-
-        iterator = valueList.iterator();
+    public RetryTimer(List<Integer> valueList) {
+        this.valueList = valueList;
+        this.iterator = valueList.iterator();
     }
 
     public synchronized long getNextInterval() {

@@ -22,6 +22,9 @@ package org.apache.stratos.messaging.test;
 import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -31,7 +34,9 @@ public class RetryTimerTest {
 
     @Test
     public void testNextValue() {
-        RetryTimer retryTimer = new RetryTimer();
+        List<Integer> valueList = Arrays.asList(1000, 1000, 2000, 2000, 5000, 5000, 10000, 10000, 20000, 20000,
+                30000, 30000, 40000, 40000, 50000, 50000, 60000);
+        RetryTimer retryTimer = new RetryTimer(valueList);
 
         long value = retryTimer.getNextInterval();
         assertEquals(1000, value);

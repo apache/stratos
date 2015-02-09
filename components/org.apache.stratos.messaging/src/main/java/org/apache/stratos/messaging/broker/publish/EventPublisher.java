@@ -22,10 +22,8 @@ package org.apache.stratos.messaging.broker.publish;
 import com.google.gson.Gson;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.apache.stratos.messaging.broker.connect.TopicPublisher;
 import org.apache.stratos.messaging.broker.connect.TopicPublisherFactory;
-import org.apache.stratos.messaging.domain.exception.MessagingException;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
@@ -46,7 +44,7 @@ public class EventPublisher {
 	EventPublisher(String topicName) {
 		this.topicName = topicName;
         String protocol = MessagingUtil.getMessagingProtocol();
-        this.topicPublisher = TopicPublisherFactory.createTopicPublisher(protocol);
+        this.topicPublisher = TopicPublisherFactory.createTopicPublisher(protocol, topicName);
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("Topic publisher created: [protocol] %s [topic] %s", protocol, topicName));
 		}
@@ -68,39 +66,9 @@ public class EventPublisher {
 		synchronized (EventPublisher.class) {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
-            boolean published = false;
-            RetryTimer retryTimer = new RetryTimer();
 
-            while (!published) {
-                try {
-                    topicPublisher.connect();
-                    topicPublisher.publish(topicName, message);
-                    published = true;
-                    log.info(String.format("Event publisher re-published message: [topic-name] %s", topicName));
-                } catch (Exception e) {
-                    if (!retry) {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Retry disabled for topic " + topicName);
-                        }
-                        throw new MessagingException(e);
-                    }
-
-                    long retryInterval = retryTimer.getNextInterval();
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Event publisher will try to re-publish message in %d sec: " +
-                                        "[topic-name] %s", (retryInterval /1000), topicName));
-                    }
-                    try {
-                        Thread.sleep(retryInterval);
-                    } catch (InterruptedException ignore) {
-                    }
-                } finally {
-                    try {
-                        topicPublisher.disconnect();
-                    } catch (MessagingException ignore) {
-                    }
-                }
-            }
+            topicPublisher.connect();
+            topicPublisher.publish(message, retry);
         }
 	}
 }

@@ -128,12 +128,12 @@ public class AmqpSubscriberTest {
 
         initializeActiveMQ();
         startActiveMQ();
-        sleep(2000);
+        sleep(4000);
 
         String message3 = "message3";
         eventPublisher.publish(new TextMessageEvent(message3), true);
         messagesSent.add(message3);
-        sleep(1000);
+        sleep(2000);
 
         assertTrue("Topic subscriber has not received all messages", ListUtils.isEqualList(messagesSent, messagesReceived));
     }

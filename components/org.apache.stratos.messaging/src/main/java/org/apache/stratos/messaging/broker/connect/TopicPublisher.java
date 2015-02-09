@@ -26,8 +26,8 @@ public interface TopicPublisher extends TopicConnector {
 
     /**
      * Publish a message to a topic in the message broker.
-     * @param topicName
      * @param message
+     * @param retry
      */
-    public abstract void publish(String topicName, String message);
+    public abstract void publish(String message, boolean retry);
 }
