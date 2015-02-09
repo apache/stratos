@@ -26,7 +26,7 @@ MAINTAINER dev@stratos.apache.org
 # Setup ssh server
 # ------------------
 WORKDIR /opt/
-RUN apt-get update && apt-get install -y openssh-server
+RUN apt-get update && apt-get install -y openssh-server git
 RUN mkdir -p /var/run/sshd
 RUN echo 'root:stratos' | chpasswd
 RUN sed -i "s/PermitRootLogin without-password/#PermitRootLogin without-password/" /etc/ssh/sshd_config
