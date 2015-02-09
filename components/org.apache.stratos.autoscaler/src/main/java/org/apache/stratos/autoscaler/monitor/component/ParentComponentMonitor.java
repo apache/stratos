@@ -693,17 +693,6 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     protected synchronized void startMonitor(ParentComponentMonitor parent,
                                              ApplicationChildContext context, List<String> instanceIds) {
-	    if (context.getApplicationChildContextList().size() > 0) {
-		    for (ApplicationChildContext contextInner : context.getApplicationChildContextList()) {
-			    if (!this.aliasToActiveMonitorsMap.containsKey(contextInner.getId())) {
-				    pendingMonitorsList.add(context.getId());
-				    executorService.submit(new MonitorAdder(parent, contextInner, this.appId, instanceIds));
-				    if (log.isDebugEnabled()) {
-					    log.debug(String.format("Monitor Adder has been added: [cluster] %s ", contextInner.getId()));
-				    }
-			    }
-		    }
-	    }
 	    if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
 		    pendingMonitorsList.add(context.getId());
 		    executorService.submit(new MonitorAdder(parent, context, this.appId, instanceIds));
