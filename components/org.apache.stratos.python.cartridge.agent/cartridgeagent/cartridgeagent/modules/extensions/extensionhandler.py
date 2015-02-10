@@ -90,7 +90,7 @@ class ExtensionHandler:
         return repo_path
 
     def on_artifact_updated_event(self, artifacts_updated_event):
-        self.log.info("Artifact update event received: [tenant] %r [cluster] %r [status] %r" %
+        self.log.info("Artifact update event received: [tenant] %s [cluster] %s [status] %s" %
                       (artifacts_updated_event.tenant_id, artifacts_updated_event.cluster_id,
                        artifacts_updated_event.status))
 
@@ -202,6 +202,7 @@ class ExtensionHandler:
             cluster_id_in_payload,
             member_id_in_payload)
 
+        self.log.debug("Member initialized %s", member_initialized)
         if member_initialized:
             # Set cartridge agent as initialized since member is available and it is in initialized state
             self.cartridge_agent_config.initialized = True
