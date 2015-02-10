@@ -1,6 +1,21 @@
-Running Live Tests
-==================
+Python Cartridge Agent (PCA)
+============================
 
-1. Start ActiveMQ
-2. Execute following command to run python cartridge agent live tests:
+Cartridge agent manages cartridge instance lifecycle and publishes its health statistics
+to Complex Event Processor (CEP). It provides a set of extension points for implementing
+logic required configuring the server.
+
+How to run Live Tests
+---------------------
+
+1. Install dependent python modules:
+   pip install paho-mqtt
+   pip install psutil
+   pip install gittle
+   pip install pexpect
+
+2. Start ActiveMQ:
+   <activemq-home>/bin/activemq start
+
+3. Run python cartridge agent live tests:
    ```mvn clean install -Plive```
