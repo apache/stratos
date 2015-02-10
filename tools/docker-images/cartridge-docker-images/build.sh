@@ -31,16 +31,16 @@ popd
 
 pushd ${script_path}/base-image/
 echo "Building base image..."
-docker build -t stratos/base-image:4.1.0-rc1 .
+docker build -t stratos/base-image:4.1.0-beta .
 
 echo "Pushing base image to docker hub..."
-docker push stratos/base-image:4.1.0-rc1
+docker push stratos/base-image:4.1.0-beta
 popd
 
 pushd ${script_path}/service-images/php
 echo "Building php image..."
-docker build -t stratos/php:4.1.0-rc1 .
+docker build -t stratos/php:4.1.0-beta .
 
 echo "Pushing php image to docker hub..."
-docker push stratos/php:4.1.0-rc1
+docker push stratos/php:4.1.0-beta
 popd
