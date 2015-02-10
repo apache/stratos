@@ -202,7 +202,7 @@ public class PythonCartridgeAgentTest {
     private String setupPythonAgent() {
         try {
             log.info("Setting up python cartridge agent...");
-            String srcAgentPath = getResourcesFolderPath() + "/../../../org.apache.stratos.python.cartridge.agent/cartridgeagent/cartridgeagent";
+            String srcAgentPath = getResourcesFolderPath() + "/../../src/main/python/cartridge.agent/cartridge.agent";
             String destAgentPath = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/cartridge.agent";
             FileUtils.copyDirectory(new File(srcAgentPath), new File(destAgentPath));
 
