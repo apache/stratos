@@ -42,17 +42,27 @@ import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
+import static junit.framework.Assert.assertTrue;
+
 public class PythonCartridgeAgentTest {
 
     private static final Log log = LogFactory.getLog(PythonCartridgeAgentTest.class);
 
     private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final String CLUSTER_ID = "php.php.domain";
+    private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
+    private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
+    private static final String APP_ID = "application-1";
+    private static final String MEMBER_ID = "php.member-1";
+    private static final String CLUSTER_INSTANCE_ID = "cluster-1-instance-1";
+    private static final String NETWORK_PARTITION_ID = "network-partition-1";
+    private static final String PARTITION_ID = "partition-1";
+    private static final String TENANT_ID = "-1234";
 
     @BeforeClass
     public static void setUp(){
-        // Set jndi.properties.dir system property for initializing event receivers
+        // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
-        System.setProperty("mqtturl", "tcp://localhost:1883");
     }
 
     private static String getResourcesFolderPath() {
@@ -60,7 +70,7 @@ public class PythonCartridgeAgentTest {
         return StringUtils.removeEnd(path, File.separator);
     }
 
-    @Test
+    @Test(timeout = 300000)
     public void testPythonCartridgeAgent() {
 
         // Simulate CEP server socket
@@ -87,15 +97,20 @@ public class PythonCartridgeAgentTest {
                     }
                     if(line.contains("Artifact repository found")) {
                         ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
-                        artifactUpdatedEvent.setClusterId("php.php.domain");
-                        artifactUpdatedEvent.setTenantId("-1234");
+                        artifactUpdatedEvent.setClusterId(CLUSTER_ID);
+                        artifactUpdatedEvent.setTenantId(TENANT_ID);
                         artifactUpdatedEvent.setRepoURL("https://github.com/imesh/stratos-php-applications.git");
                         String topicName = MessagingUtil.getMessageTopicName(artifactUpdatedEvent);
                         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
                         eventPublisher.publish(artifactUpdatedEvent);
                     }
-                    if (newLines.contains("Exception in thread") || newLines.contains("ERROR")) {
+                    if (line.contains("Exception in thread") || line.contains("ERROR")) {
                         break;
+                    }
+
+                    if(line.contains("Git clone operation for tenant u'" + TENANT_ID + "' successful")) {
+                        assertTrue(true);
+                        return;
                     }
 
                     log.info(line);
@@ -103,8 +118,6 @@ public class PythonCartridgeAgentTest {
             }
             sleep(500);
         }
-
-        sleep(5000);
     }
 
     private void startServerSocket(final int port) {
@@ -122,17 +135,21 @@ public class PythonCartridgeAgentTest {
         socketThread.start();
     }
 
+    /**
+     * Create test topology
+     * @return
+     */
     private Topology createTestTopology() {
         Topology topology = new Topology();
         Service service = new Service("php", ServiceType.SingleTenant);
         topology.addService(service);
 
-        Cluster cluster = new Cluster(service.getServiceName(), "php.php.domain", "deployment-policy-1",
-                "autoscaling-policy-1", "application-1");
+        Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
+                AUTOSCALING_POLICY_NAME, APP_ID);
         service.addCluster(cluster);
 
-        Member member = new Member(service.getServiceName(), cluster.getClusterId(), "php.member-1",
-                "cluster-1-instance-1", "network-partition-1", "partition-1", System.currentTimeMillis());
+        Member member = new Member(service.getServiceName(), cluster.getClusterId(), MEMBER_ID,
+                CLUSTER_INSTANCE_ID, NETWORK_PARTITION_ID, PARTITION_ID, System.currentTimeMillis());
         member.setDefaultPrivateIP("10.0.0.1");
         member.setDefaultPublicIP("20.0.0.1");
         Properties properties = new Properties();
@@ -144,15 +161,21 @@ public class PythonCartridgeAgentTest {
         return topology;
     }
 
-    private List<String> getNewLines(List<String> outputLines, String output) {
+    /**
+     * Return new lines found in the output
+     * @param currentOutputLines current output lines
+     * @param output output
+     * @return
+     */
+    private List<String> getNewLines(List<String> currentOutputLines, String output) {
         List<String> newLines = new ArrayList<String>();
 
         if(StringUtils.isNotBlank(output)) {
             String [] lines = output.split(NEW_LINE);
             if(lines != null) {
                 for(String line : lines) {
-                    if(!outputLines.contains(line)) {
-                        outputLines.add(line);
+                    if(!currentOutputLines.contains(line)) {
+                        currentOutputLines.add(line);
                         newLines.add(line);
                     }
                 }
@@ -161,6 +184,10 @@ public class PythonCartridgeAgentTest {
         return newLines;
     }
 
+    /**
+     * Sleep current thread
+     * @param time
+     */
     private void sleep(long time) {
         try {
             Thread.sleep(time);
@@ -168,6 +195,10 @@ public class PythonCartridgeAgentTest {
         }
     }
 
+    /**
+     * Copy python agent distribution to a new folder, extract it and copy sample configuration files
+     * @return
+     */
     private String setupPythonAgent() {
         try {
             log.info("Setting up python cartridge agent...");
@@ -219,7 +250,7 @@ public class PythonCartridgeAgentTest {
 
                 @Override
                 public void onProcessFailed(ExecuteException e) {
-                    log.error(e);
+                    log.error("Process failed", e);
                 }
             });
             return outputStream;
@@ -229,6 +260,9 @@ public class PythonCartridgeAgentTest {
         }
     }
 
+    /**
+     * Implements isClosed() method
+     */
     private class ByteArrayOutputStreamLocal extends ByteArrayOutputStream  {
         private boolean closed;
 
