@@ -20,7 +20,7 @@
     "iaasProvider":[
        {
           "type":"kubernetes",
-          "imageId":"stratos/php:4.1.0-alpha",
+          "imageId":"stratos/php:4.1.0-beta",
           "networkInterfaces":[
              {
                 "name":"network-non-routable",
