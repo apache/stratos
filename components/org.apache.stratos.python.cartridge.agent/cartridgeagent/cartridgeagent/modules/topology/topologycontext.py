@@ -452,7 +452,7 @@ class TopologyContext:
     """
     Handles and maintains a model of the topology provided by the Cloud Controller
     """
-    topology = None
+    topology = Topology()
 
     @staticmethod
     def get_topology():
