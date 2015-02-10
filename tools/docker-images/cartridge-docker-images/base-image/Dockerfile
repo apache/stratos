@@ -35,11 +35,9 @@ EXPOSE 22
 # ----------------------
 # Install dependencies
 # ----------------------
-RUN apt-get install -y git python python-pip python-dev gcc zip
+RUN apt-get install -y git python python-pip zip
 RUN pip install paho-mqtt
-RUN pip install GitPython==0.3.1-beta2
 RUN pip install psutil
-RUN pip install gittle
 RUN pip install pexpect
 
 # -------------------------

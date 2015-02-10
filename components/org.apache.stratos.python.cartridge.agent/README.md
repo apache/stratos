@@ -12,7 +12,6 @@ How to run Live Tests
    ```
    pip install paho-mqtt
    pip install psutil
-   pip install gittle
    pip install pexpect
    ```
 
