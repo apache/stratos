@@ -191,7 +191,7 @@ class AgentGitHandler:
             # delete and recreate local repo path if exists
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
 
-        clone_op = pexpect.spawn("git clone %r %r" % (git_repo.repo_url, git_repo.local_repo_path))
+        clone_op = pexpect.spawn("git clone %s %s" % (git_repo.repo_url, git_repo.local_repo_path))
         # Accepted repo url formats
         # "https://host.com/path/to/repo.git"
         # "https://username@host.org/path/to/repo.git"
