@@ -22,7 +22,22 @@
     },
     "childPolicies": [
         {
-            "alias": "mygroup6",
+            "alias": "mytomcat",
+            "networkPartition": [
+                {
+                    "id": "network-partition-1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "partition-1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "mymysql",
             "networkPartition": [
                 {
                     "id": "network-partition-1",
