@@ -1,0 +1,47 @@
+{
+    "applicationId": "single_group_v3",
+    "alias": "single_group_v3",
+    "components": {
+      "cartridges":[  
+         {  
+            "type": "tomcat1",
+            "cartridgeMin": 1,
+            "cartridgeMax": 2,
+            "subscribableInfo": {
+                "alias": "mytomcat",
+                "autoscalingPolicy": "autoscale-policy-1",
+                "artifactRepository":{
+                      "privateRepo":false,
+                      "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
+                      "repoUsername":"",
+                      "repoPassword":""
+                }
+            }
+         },
+         {  
+            "type":"mysql",
+            "cartridgeMin": 1,
+            "cartridgeMax": 10,    
+			"subscribableInfo":{  
+                "alias":"mysqlalies",
+                "autoscalingPolicy":"autoscale-policy-1",
+                "artifactRepository":{
+                    "privateRepo":false,
+                    "repoUrl":"",
+                    "repoUsername":"",
+                    "repoPassword":""
+                }
+            }
+            
+         }
+      ],
+       "dependencies": {
+            "startupOrders": [
+                "cartridge.mysql,cartridge.tomcat1"
+            ],
+            "terminationBehaviour": "terminate-all"
+        }
+    }
+}
+
+
