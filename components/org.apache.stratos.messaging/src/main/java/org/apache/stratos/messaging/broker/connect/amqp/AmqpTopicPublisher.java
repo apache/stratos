@@ -42,7 +42,8 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
             20000, 30000, 30000, 40000, 40000, 50000, 50000, 60000);
 
     private final String topicName;
-    private boolean reconnecting;
+    private enum ConnectionStatus { Connected, ReConnecting, ReConnected }
+    private ConnectionStatus connectionStatus;
 
     public AmqpTopicPublisher(String topicName) {
         this.topicName = topicName;
@@ -59,18 +60,19 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
         boolean published = false;
         while(!published) {
             try {
-                while (reconnecting) {
+                while (connectionStatus == ConnectionStatus.ReConnecting) {
                     // Connection has been broken, wait until reconnected
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ignore) {
                     }
+                }
 
-                    if (!reconnecting) {
-                        // Publisher has reconnected, wait another 2 seconds to make sure all subscribers
-                        // have been reconnected to receive the message
-                        Thread.sleep(2000);
-                    }
+                if (connectionStatus == ConnectionStatus.ReConnected) {
+                    // Publisher has reconnected, wait another 2 seconds to make sure all subscribers
+                    // have been reconnected to receive the message
+                    Thread.sleep(2000);
+                    connectionStatus = ConnectionStatus.Connected;
                 }
 
                 TopicSession topicSession = newSession();
@@ -98,9 +100,9 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
 
     @Override
     protected void reconnect() {
-        reconnecting = true;
+        connectionStatus = ConnectionStatus.ReConnecting;
         RetryTimer retryTimer = new RetryTimer(timerValueList);
-        while(reconnecting) {
+        while(connectionStatus == ConnectionStatus.ReConnecting) {
             try {
                 long interval = retryTimer.getNextInterval();
                 log.info(String.format("Topic publisher will try to reconnect in %d seconds: [topic-name] %s",
@@ -113,7 +115,7 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
                 disconnect();
                 create();
                 connect();
-                reconnecting = false;
+                connectionStatus = ConnectionStatus.ReConnected;
                 log.info(String.format("Topic publisher reconnected: [topic-name] %s", topicName));
             } catch (Exception e) {
                 String message = "Could not reconnect to message broker";
