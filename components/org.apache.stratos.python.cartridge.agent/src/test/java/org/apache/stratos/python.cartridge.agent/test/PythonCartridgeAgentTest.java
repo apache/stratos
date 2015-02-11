@@ -24,12 +24,17 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
+import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -41,6 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
 
 import static junit.framework.Assert.assertTrue;
 
@@ -58,11 +64,25 @@ public class PythonCartridgeAgentTest {
     private static final String NETWORK_PARTITION_ID = "network-partition-1";
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
+    private static final String SERVICE_NAME = "php";
+
+    private static List<ServerSocket> serverSocketList;
 
     @BeforeClass
     public static void setUp(){
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
+        serverSocketList = new ArrayList<ServerSocket>();
+    }
+
+    @AfterClass
+    public static void tearDown() {
+        for(ServerSocket serverSocket : serverSocketList) {
+            try {
+                serverSocket.close();
+            } catch (IOException ignore) {
+            }
+        }
     }
 
     private static String getResourcesFolderPath() {
@@ -72,6 +92,11 @@ public class PythonCartridgeAgentTest {
 
     @Test(timeout = 300000)
     public void testPythonCartridgeAgent() {
+
+        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 1);
+        TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver.setExecutorService(executorService);
+        topologyEventReceiver.execute();
 
         // Simulate CEP server socket
         startServerSocket(7711);
@@ -86,16 +111,28 @@ public class PythonCartridgeAgentTest {
             if(newLines.size() > 0) {
                 for(String line : newLines) {
                     if(line.contains("Subscribed to 'topology/#'")) {
+                        sleep(2000);
+                        // Send complete topology event
+                        log.info("Publishing complete topology event...");
                         Topology topology = createTestTopology();
                         CompleteTopologyEvent completeTopologyEvent = new CompleteTopologyEvent(topology);
-                        String topicName = MessagingUtil.getMessageTopicName(completeTopologyEvent);
-                        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
-                        eventPublisher.publish(completeTopologyEvent);
+                        publishEvent(completeTopologyEvent);
+                        log.info("Complete topology event published");
+
+                        sleep(5000);
+                        // Publish member initialized event
+                        log.info("Publishing member initialized event...");
+                        MemberInitializedEvent memberInitializedEvent = new MemberInitializedEvent(
+                                SERVICE_NAME, CLUSTER_ID, CLUSTER_INSTANCE_ID, MEMBER_ID, NETWORK_PARTITION_ID, PARTITION_ID
+                        );
+                        publishEvent(memberInitializedEvent);
+                        log.info("Member initialized event published");
 
                         // Simulate server socket
                         startServerSocket(9080);
                     }
                     if(line.contains("Artifact repository found")) {
+                        // Send artifact updated event
                         ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
                         artifactUpdatedEvent.setClusterId(CLUSTER_ID);
                         artifactUpdatedEvent.setTenantId(TENANT_ID);
@@ -112,7 +149,6 @@ public class PythonCartridgeAgentTest {
                         assertTrue(true);
                         return;
                     }
-
                     log.info(line);
                 }
             }
@@ -120,13 +156,20 @@ public class PythonCartridgeAgentTest {
         }
     }
 
+    private void publishEvent(Event event) {
+        String topicName = MessagingUtil.getMessageTopicName(event);
+        EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
+        eventPublisher.publish(event);
+    }
+
     private void startServerSocket(final int port) {
         Thread socketThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    ServerSocket cep = new ServerSocket(port);
-                    cep.accept();
+                    ServerSocket serverSocket = new ServerSocket(port);
+                    serverSocketList.add(serverSocket);
+                    serverSocket.accept();
                 } catch (IOException e) {
                     log.error("Could not start server socket", e);
                 }
@@ -141,7 +184,7 @@ public class PythonCartridgeAgentTest {
      */
     private Topology createTestTopology() {
         Topology topology = new Topology();
-        Service service = new Service("php", ServiceType.SingleTenant);
+        Service service = new Service(SERVICE_NAME, ServiceType.SingleTenant);
         topology.addService(service);
 
         Cluster cluster = new Cluster(service.getServiceName(), CLUSTER_ID, DEPLOYMENT_POLICY_NAME,
@@ -155,7 +198,7 @@ public class PythonCartridgeAgentTest {
         Properties properties = new Properties();
         properties.setProperty("prop1", "value1");
         member.setProperties(properties);
-        member.setStatus(MemberStatus.Initialized);
+        member.setStatus(MemberStatus.Created);
         cluster.addMember(member);
 
         return topology;

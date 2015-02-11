@@ -66,7 +66,7 @@ class EventSubscriber(threading.Thread):
         self.log.debug("Subscribed to %r" % self.__topic)
 
     def on_message(self, client, userdata, msg):
-        self.log.debug("Message received: %r:\n%r" % (msg.topic, msg.payload))
+        self.log.debug("Message received: %s:\n%s" % (msg.topic, msg.payload))
 
         event = msg.topic.rpartition('/')[2]
 
@@ -80,7 +80,6 @@ class EventSubscriber(threading.Thread):
                 self.log.exception("Error processing %r event" % event)
         else:
             self.log.debug("Event handler not found for event : %r" % event)
-
     def is_subscribed(self):
         """
         Checks if this event subscriber is successfully subscribed to the provided topic
