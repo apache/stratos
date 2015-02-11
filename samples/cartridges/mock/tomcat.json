@@ -43,6 +43,6 @@
             ]
         }
     ],
-    "metadataKeys":["writeparam1","writeparam2"]
+    "metadataKeys":["url"]
     
 }

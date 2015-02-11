@@ -393,8 +393,12 @@ public class DefaultApplicationParser implements ApplicationParser {
 			                    if (!dataHolder.getClusterId().equals(clusterId)) {
 				                    dependencyClusterIDs.add(dataHolder.getClusterId());
 				                    for (String str : dependencyCartridge.getMetadataKeys()) {
-					                    importMetadataKeys
-							                    .add(dataHolder.getClusterId().split("\\.")[0] + METADATA_APPENDER + str);
+					                    if (!StringUtils.isBlank(str)) {
+						                    importMetadataKeys
+								                    .add(dataHolder.getClusterId().split("\\.")[0] +
+								                         METADATA_APPENDER +
+								                         str);
+					                    }
 				                    }
 				                    if (!dataHolder.getClusterId().equals(clusterId)) {
 					                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
