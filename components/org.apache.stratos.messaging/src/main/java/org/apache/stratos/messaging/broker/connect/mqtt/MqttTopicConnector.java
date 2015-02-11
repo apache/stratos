@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.broker.connect.mqtt;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.broker.connect.TopicConnector;
@@ -78,7 +79,10 @@ public abstract class MqttTopicConnector implements TopicConnector {
     public void create() {
 
         try {
-            String mqttUrl = MessagingConstants.MQTT_PROPERTIES.getProperty("mqtturl", MessagingConstants.MQTT_URL_DEFAULT);
+            String mqttUrl = System.getProperty("mqtturl");
+            if(StringUtils.isBlank(mqttUrl)) {
+                mqttUrl = MessagingConstants.MQTT_PROPERTIES.getProperty("mqtturl", MessagingConstants.MQTT_URL_DEFAULT);
+            }
             MemoryPersistence memoryPersistence = new MemoryPersistence();
             String clientId = MessagingUtil.getRandomString(23);
             mqttClient = new MqttClient(mqttUrl, clientId, memoryPersistence);
