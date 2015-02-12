@@ -26,14 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.domain.Persistence;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
@@ -643,9 +639,9 @@ public class StratosApiV41Utils {
 
         try {
             AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-            DeploymentPolicy deploymentPolicy = autoscalerServiceClient.getDeploymentPolicy(applicationId);
-            return ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
-        } catch (RemoteException e) {
+
+            return null;
+        } catch (Exception e) {
             String errorMsg = "Could not read deployment policy: [application-id] " + applicationId;
             log.error(errorMsg, e);
             throw new RestAPIException(errorMsg, e);
@@ -1057,7 +1053,7 @@ public class StratosApiV41Utils {
 	 * @param deploymentPolicy
 	 */
 	private static void validateDeploymentPolicy(DeploymentPolicyBean deploymentPolicy) throws RestAPIException {
-		if(StringUtils.isBlank(deploymentPolicy.getPolicyID())){
+		if(StringUtils.isBlank(deploymentPolicy.getId())){
 			String message = "No deployment policy id specify with the policy";
 			log.error(message);
 			throw new RestAPIException(message);
@@ -1848,23 +1844,23 @@ public class StratosApiV41Utils {
 	 * Add deployment policy
 	 * @param deployementPolicyDefinitionBean
 	 */
-	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean) {
+	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean) throws RestAPIException{
 		try {
 			if (log.isDebugEnabled()) {
-				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ", deployementPolicyDefinitionBean.getPolicyID()));
+				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ", deployementPolicyDefinitionBean.getId()));
 			}
 
 			DeploymentPolicy deploymentPolicy =
-					ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy()
+					ObjectConverter.convetToCCDeploymentPolicy(deployementPolicyDefinitionBean);
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			cloudControllerServiceClient.addCartridge(cartridgeConfig);
+			cloudControllerServiceClient.addDeploymentPolicy(deploymentPolicy);
 
 			if (log.isDebugEnabled()) {
 				log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
-				                        deployementPolicyDefinitionBean.getPolicyID()));
+				                        deployementPolicyDefinitionBean.getId()));
 			}
 		} catch (Exception e) {
-			String msg = "Could not add cartridge";
+			String msg = "Could not add deployment policy";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}

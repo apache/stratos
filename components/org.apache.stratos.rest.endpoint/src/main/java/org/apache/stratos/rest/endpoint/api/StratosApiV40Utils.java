@@ -233,8 +233,7 @@ public class StratosApiV40Utils {
         return ObjectConverter.populatePartitionPojos(partitions);
     }
 
-    public static PartitionBean[]
-    getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
+    public static PartitionBean[] getPartitionsOfGroup(String deploymentPolicyId, String groupId) throws RestAPIException {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions = null;
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
@@ -320,30 +319,12 @@ public class StratosApiV40Utils {
         return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
-    public static DeploymentPolicyBean
-    getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
+    public static DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
 
         DeploymentPolicy deploymentPolicy = null;
-        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-        if (autoscalerServiceClient != null) {
-            try {
-                deploymentPolicy = autoscalerServiceClient.getDeploymentPolicy(deploymentPolicyId);
 
-            } catch (RemoteException e) {
-                String errorMsg = "Error while getting deployment policy with id " +
-                        deploymentPolicyId+". Cause: "+e.getMessage();
-                log.error(errorMsg, e);
-                throw new RestAPIException(errorMsg, e);
-            }
-        }
 
-        if(deploymentPolicy == null) {
-            String errorMsg = "Cannot find a matching deployment policy for [id] "+deploymentPolicyId;
-            log.error(errorMsg);
-            throw new RestAPIException(errorMsg);
-        }
-
-        return ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy(deploymentPolicy);
+        return null;
     }
 
     static CartridgeBean getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {

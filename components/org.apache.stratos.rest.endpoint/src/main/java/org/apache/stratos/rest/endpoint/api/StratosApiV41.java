@@ -172,7 +172,7 @@ public class StratosApiV41 extends AbstractApi {
 	public Response addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
 			throws RestAPIException {
 
-		String deploymentPolicyID = deployementPolicyDefinitionBean.getPolicyID();
+		String deploymentPolicyID = deployementPolicyDefinitionBean.getId();
 	// TODO :: Deployment policy validation
 		DeploymentPolicyBean depploymentPolicy = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyID);
 		if (depploymentPolicy != null) {
@@ -187,7 +187,6 @@ public class StratosApiV41 extends AbstractApi {
 		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
 		                                                            String.format(
 				                                                            "Deployment policy added successfully: [deployment-policy-id] %s",
-
 				                                                            deploymentPolicyID))).build();
 	}
 
