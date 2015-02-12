@@ -83,11 +83,8 @@ public class CartridgeAgent implements Runnable {
         
         eventListenerns = new  CartridgeAgentEventListeners();
         
-        log.debug("MArtin: before validating system properties");
-
         validateRequiredSystemProperties();
         
-        log.debug("MArtin: after validating system properties");
         
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent validated system properties done");
@@ -296,10 +293,8 @@ public class CartridgeAgent implements Runnable {
     }
 
     protected void validateRequiredSystemProperties() {
-    	log.debug("MArtin: validating system properties");
         String jndiPropertiesDir = System.getProperty(CartridgeAgentConstants.JNDI_PROPERTIES_DIR);
         
-        log.debug("MArtin: validating system properties 0b: " + jndiPropertiesDir);
         if (StringUtils.isBlank(jndiPropertiesDir)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("System property not found: %s", CartridgeAgentConstants.JNDI_PROPERTIES_DIR));
@@ -307,10 +302,7 @@ public class CartridgeAgent implements Runnable {
             return;
         }
         
-        log.debug("MArtin: validating system properties 1");
-
         String payloadPath = System.getProperty(CartridgeAgentConstants.PARAM_FILE_PATH);
-        log.debug("MArtin: validating system properties 1b: " + payloadPath);
         if (StringUtils.isBlank(payloadPath)) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("System property not found: %s", CartridgeAgentConstants.PARAM_FILE_PATH));
@@ -318,18 +310,13 @@ public class CartridgeAgent implements Runnable {
             return;
         }
         
-        log.debug("MArtin: validating system properties 2");
-
         String extensionsDir = System.getProperty(CartridgeAgentConstants.EXTENSIONS_DIR);
-        log.debug("MArtin: validating system properties 2b: " + extensionsDir);
         if (StringUtils.isBlank(extensionsDir)) {
             if (log.isWarnEnabled()) {
                 log.warn(String.format("System property not found: %s", CartridgeAgentConstants.EXTENSIONS_DIR));
             }
         }
         
-        
-        log.debug("MArtin: validating system properties 3");
     }
 
     private static void publishLogs(LogPublisherManager logPublisherManager) {
