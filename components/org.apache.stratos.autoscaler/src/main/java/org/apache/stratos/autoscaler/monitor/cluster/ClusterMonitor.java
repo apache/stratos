@@ -601,7 +601,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     private void readConfigurations() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        int monitorInterval = conf.getInt(AutoscalerConstants.VMService_Cluster_MONITOR_INTERVAL, 90000);
+        int monitorInterval = conf.getInt(AutoscalerConstants.Cluster_MONITOR_INTERVAL, 90000);
         setMonitorIntervalMilliseconds(monitorInterval);
         if (log.isDebugEnabled()) {
             log.debug("ClusterMonitor task interval set to : " + getMonitorIntervalMilliseconds());

@@ -161,9 +161,10 @@ public class StratosConstants {
     // Policy and definition related constants
     public static final int PUBLIC_DEFINITION = 0;
     
-    // Autoscaler member timeout constants
-    public static final String PENDING_VM_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.vm.pendingMemberExpiryTimeout";
-    public static final String OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.vm.obsoletedMemberExpiryTimeout";
+    // member expiry timeout constants
+    public static final String PENDING_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingMemberExpiryTimeout";
+    public static final String OBSOLETED_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.obsoletedMemberExpiryTimeout";
+    public static final String PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT = "autoscaler.member.pendingTerminationMemberExpiryTimeout";
 
 	public static final String FILTER_VALUE_SEPARATOR = ",";
 	public static final String TOPOLOGY_SERVICE_FILTER = "stratos.topology.service.filter";

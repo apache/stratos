@@ -93,11 +93,13 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         terminationPendingStartedTime = new HashMap<String, Long>();
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
-        obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
+        obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        terminationPendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
         if (log.isDebugEnabled()) {
             log.debug("Instance expiry time is set to: " + pendingInstanceExpiryTime);
             log.debug("Instance obsoleted expiry time is set to: " + obsoltedInstanceExpiryTime);
+            log.debug("Instance pending termination expiry time is set to: " + terminationPendingInstanceExpiryTime);
         }
 
         /*Thread th = new Thread(new PendingInstanceWatcher(this));
@@ -120,11 +122,14 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         terminationPendingStartedTime = new HashMap<String, Long>();
         // check if a different value has been set for expiryTime
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_VM_MEMBER_EXPIRY_TIMEOUT, 900000);
-        obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_VM_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
+        obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
+        terminationPendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
+        
         if (log.isDebugEnabled()) {
             log.debug("Instance expiry time is set to: " + pendingInstanceExpiryTime);
-            log.debug("Instance obsoleted expiry time is set to: " + obsoltedInstanceExpiryTime);
+            log.debug("Instance obsolete expiry time is set to: " + obsoltedInstanceExpiryTime);
+            log.debug("Instance pending termination expiry time is set to: " + terminationPendingInstanceExpiryTime);
         }
 
         /*Thread th = new Thread(new PendingInstanceWatcher(this));

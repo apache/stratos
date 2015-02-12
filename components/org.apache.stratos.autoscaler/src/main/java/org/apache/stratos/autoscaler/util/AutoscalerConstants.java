@@ -53,12 +53,9 @@ public final class AutoscalerConstants {
     /**
      * Cluster monitoring  interval
      */
-    public static final String AUTOSCALER_MONITOR_INTERVAL = "autoscaler.monitorInterval";
+    public static final String Cluster_MONITOR_INTERVAL = "autoscaler.cluster.monitorInterval";
 
     public static final String SERVICE_GROUP = "/groups";
-    public static final String VMService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.service";
-    public static final String VMLb_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.vm.lb";
-    public static final String KubernetesService_Cluster_MONITOR_INTERVAL = "autoscaler.monitorInterval.kubernetes.service";
 
     /**
      * PortRange min max
