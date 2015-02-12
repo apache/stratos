@@ -43,7 +43,7 @@
                 <!-- this is the maximum time(ms) a member can be in obsoleted member state -->
                 <obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
 	        <!-- this is the maximum time(ms) a member can be in pending termination member state -->
-                <pendingTerminationMemberExpiryTimeout>86400000</pendingTerminationMemberExpiryTimeout>
+                <pendingTerminationMemberExpiryTimeout>1800000</pendingTerminationMemberExpiryTimeout>
 	    </member>
             <cluster>
 	        <!-- cluster monitoring interval (ms) -->
