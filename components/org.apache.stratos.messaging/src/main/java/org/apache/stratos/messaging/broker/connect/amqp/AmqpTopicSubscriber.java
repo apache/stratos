@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.broker.connect.amqp;
 
+import org.apache.activemq.command.ActiveMQBytesMessage;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,11 +28,7 @@ import org.apache.stratos.messaging.broker.connect.TopicSubscriber;
 import org.apache.stratos.messaging.broker.subscribe.MessageListener;
 import org.apache.stratos.messaging.domain.exception.MessagingException;
 
-import javax.jms.Message;
-import javax.jms.Topic;
-import javax.jms.TopicSession;
-import java.util.Arrays;
-import java.util.List;
+import javax.jms.*;
 
 /**
  * AMQP topic subscriber.
@@ -39,9 +36,6 @@ import java.util.List;
 public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubscriber {
 
     protected static final Log log = LogFactory.getLog(AmqpTopicSubscriber.class);
-
-    private static final List<Integer> timerValueList = Arrays.asList(2000, 2000, 5000, 5000, 10000, 10000, 20000,
-            20000, 30000, 30000, 40000, 40000, 50000, 50000, 60000);
 
     private final MessageListener messageListener;
     private final String topicName;
@@ -66,10 +60,22 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
                 @Override
                 public void onMessage(Message message) {
                     try {
-                        ActiveMQTextMessage activeMQTextMessage = (ActiveMQTextMessage) message;
-                        String topicName = activeMQTextMessage.getDestination().getPhysicalName();
+                        String topicName = null, messageText = null;
+
+                        if(message instanceof ActiveMQTextMessage) {
+                            ActiveMQTextMessage textMessage = (ActiveMQTextMessage)message;
+                            topicName = textMessage.getDestination().getPhysicalName();
+                            messageText = textMessage.getText();
+                        } else if(message instanceof ActiveMQBytesMessage) {
+                            ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage)message;
+                            topicName = bytesMessage.getDestination().getPhysicalName();
+                            messageText = new String(bytesMessage.getContent().data);
+                        } else {
+                            throw new RuntimeException(String.format("Could not receive message, " +
+                                            "unknown JMS message type: %s", message.getClass().getName()));
+                        }
                         org.apache.stratos.messaging.domain.Message message_ =
-                                new org.apache.stratos.messaging.domain.Message(topicName, activeMQTextMessage.getText());
+                                new org.apache.stratos.messaging.domain.Message(topicName, messageText);
                         messageListener.messageReceived(message_);
                     } catch (Exception e) {
                         String error = "An error occurred when receiving message";
@@ -86,7 +92,7 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
 
     @Override
     protected void reconnect() {
-        RetryTimer retryTimer = new RetryTimer(timerValueList);
+        RetryTimer retryTimer = new RetryTimer();
         boolean connected = false;
         while(!connected) {
             try {

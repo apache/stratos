@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.broker.connect;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,8 +28,16 @@ import java.util.List;
  */
 public class RetryTimer {
 
+    private static final List<Integer> DEFAULT_VALUE_LIST = Arrays.asList(2000, 2000, 5000, 5000, 10000, 10000, 20000,
+            20000, 30000, 30000, 40000, 40000, 50000, 50000, 60000);
+
     private final List<Integer> valueList;
     private final Iterator<Integer> iterator;
+
+    public RetryTimer() {
+        this.valueList = DEFAULT_VALUE_LIST;
+        this.iterator = valueList.iterator();
+    }
 
     public RetryTimer(List<Integer> valueList) {
         this.valueList = valueList;

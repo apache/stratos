@@ -21,6 +21,7 @@ package org.apache.stratos.messaging.broker.subscribe;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.messaging.broker.connect.RetryTimer;
 import org.apache.stratos.messaging.broker.connect.TopicSubscriberFactory;
 import org.apache.stratos.messaging.util.MessagingUtil;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -68,6 +69,7 @@ public class EventSubscriber implements Runnable {
 	@Override
 	public void run() {
 
+        RetryTimer retryTimer = new RetryTimer();
         while (!subscribed) {
             try {
                 doSubscribe();
@@ -77,12 +79,12 @@ public class EventSubscriber implements Runnable {
                     log.error("Error while subscribing to topic: " + topicName, e);
                 }
 
+                long interval = retryTimer.getNextInterval();
                 if (log.isInfoEnabled()) {
-                    log.info("Will try to subscribe again in " +
-                            MessagingUtil.getSubscriberFailoverInterval() / 1000 + " sec");
+                    log.info("Will try to subscribe again in " + interval/ 1000 + " sec");
                 }
                 try {
-                    Thread.sleep(MessagingUtil.getSubscriberFailoverInterval());
+                    Thread.sleep(interval);
                 } catch (InterruptedException ignore) {
                 }
             }
