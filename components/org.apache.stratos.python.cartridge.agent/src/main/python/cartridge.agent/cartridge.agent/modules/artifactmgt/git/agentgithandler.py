@@ -191,54 +191,57 @@ class AgentGitHandler:
             # delete and recreate local repo path if exists
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
 
-        clone_op = pexpect.spawn("git clone %s %s" % (git_repo.repo_url, git_repo.local_repo_path))
+        clone_op = pexpect.spawn("git clone %s %s" % (git_repo.repo_url, git_repo.local_repo_path), timeout=120)
         # Accepted repo url formats
         # "https://host.com/path/to/repo.git"
         # "https://username@host.org/path/to/repo.git"
         # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
-        result = clone_op.expect(["Username for .*", "Password for .*", "Checking connectivity... done."])
-        if result == 0:
-            clone_op.sendline(git_repo.repo_username)
-            clone_op.expect("Password for .*")
-            clone_op.sendline(git_repo.repo_password)
-            clone_output = clone_op.readlines()
-            for p in clone_output:
-                if "Checking connectivity... done." in p:
-                    git_repo.cloned = True
-                    AgentGitHandler.add_repo(git_repo)
-                    AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-                    clone_op.expect(pexpect.EOF)
-                    return git_repo
+        try:
+            result = clone_op.expect(["Username for .*", "Password for .*", "Checking connectivity... done."])
+            if result == 0:
+                clone_op.sendline(git_repo.repo_username)
+                clone_op.expect("Password for .*")
+                clone_op.sendline(git_repo.repo_password)
+                clone_output = clone_op.readlines()
+                for p in clone_output:
+                    if "Checking connectivity... done." in p:
+                        git_repo.cloned = True
+                        AgentGitHandler.add_repo(git_repo)
+                        AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
+                        clone_op.expect(pexpect.EOF)
+                        return git_repo
 
-                if "remote: Repository not found." in p \
-                        or "fatal: unable to access " in p \
-                        or "Authentication failed for" in p:
-                    raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
-                                                                % (git_repo.tenant_id, p))
+                    if "remote: Repository not found." in p \
+                            or "fatal: unable to access " in p \
+                            or "Authentication failed for" in p:
+                        raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
+                                                                    % (git_repo.tenant_id, p))
 
-        elif result == 1:
-            clone_op.sendline(git_repo.repo_password)
-            clone_output = clone_op.readlines()
-            for p in clone_output:
-                if "Checking connectivity... done." in p:
-                    git_repo.cloned = True
-                    AgentGitHandler.add_repo(git_repo)
-                    AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-                    clone_op.expect(pexpect.EOF)
-                    return git_repo
+            elif result == 1:
+                clone_op.sendline(git_repo.repo_password)
+                clone_output = clone_op.readlines()
+                for p in clone_output:
+                    if "Checking connectivity... done." in p:
+                        git_repo.cloned = True
+                        AgentGitHandler.add_repo(git_repo)
+                        AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
+                        clone_op.expect(pexpect.EOF)
+                        return git_repo
 
-                if "remote: Repository not found." in p \
-                        or "fatal: unable to access " in p \
-                        or "Authentication failed for" in p:
-                    raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
-                                                                % (git_repo.tenant_id, p))
+                    if "remote: Repository not found." in p \
+                            or "fatal: unable to access " in p \
+                            or "Authentication failed for" in p:
+                        raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
+                                                                    % (git_repo.tenant_id, p))
 
-        elif result == 2:
-            git_repo.cloned = True
-            AgentGitHandler.add_repo(git_repo)
-            AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-            clone_op.expect(pexpect.EOF)
-            return git_repo
+            elif result == 2:
+                git_repo.cloned = True
+                AgentGitHandler.add_repo(git_repo)
+                AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
+                clone_op.expect(pexpect.EOF)
+                return git_repo
+        except Exception as e:
+            AgentGitHandler.log.exception("Exception while executing git clone command on git binary : %r" % e)
 
     @staticmethod
     def add_repo(git_repo):

@@ -50,7 +50,7 @@ class CEPPublisherException(Exception):
     """
 
     def __init__(self, msg):
-        super(self,  msg)
+        Exception.__init__(self,  msg)
         self.message = msg
 
     def get_message(self):
