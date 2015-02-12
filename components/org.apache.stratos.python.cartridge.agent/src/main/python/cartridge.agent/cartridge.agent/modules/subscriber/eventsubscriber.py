@@ -14,6 +14,7 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
+from Queue import Queue
 
 import threading
 import paho.mqtt.client as mqtt
@@ -28,8 +29,8 @@ class EventSubscriber(threading.Thread):
     def __init__(self, topic, ip, port):
         threading.Thread.__init__(self)
 
-        #{"ArtifactUpdateEvent" : onArtifactUpdateEvent()}
-        self.__event_handlers = {}
+        self.__event_queue = Queue(maxsize=0)
+        self.__event_executor = EventExecutor(self.__event_queue)
 
         self.log = LogFactory().get_log(__name__)
 
@@ -40,6 +41,8 @@ class EventSubscriber(threading.Thread):
         self.__port = port
 
     def run(self):
+        #  Start the event executor thread
+        self.__event_executor.start()
         self.__mb_client = mqtt.Client()
         self.__mb_client.on_connect = self.on_connect
         self.__mb_client.on_message = self.on_message
@@ -57,7 +60,7 @@ class EventSubscriber(threading.Thread):
         :return: void
         :rtype: void
         """
-        self.__event_handlers[event] = handler
+        self.__event_executor.register_event_handler(event, handler)
         self.log.debug("Registered handler for event %r" % event)
 
     def on_connect(self, client, userdata, flags, rc):
@@ -67,19 +70,8 @@ class EventSubscriber(threading.Thread):
 
     def on_message(self, client, userdata, msg):
         self.log.debug("Message received: %s:\n%s" % (msg.topic, msg.payload))
+        self.__event_queue.put(msg)
 
-        event = msg.topic.rpartition('/')[2]
-
-        if event in self.__event_handlers:
-            handler = self.__event_handlers[event]
-
-            try:
-                self.log.debug("Executing handler for event %r" % event)
-                handler(msg)
-            except:
-                self.log.exception("Error processing %r event" % event)
-        else:
-            self.log.debug("Event handler not found for event : %r" % event)
     def is_subscribed(self):
         """
         Checks if this event subscriber is successfully subscribed to the provided topic
@@ -87,6 +79,39 @@ class EventSubscriber(threading.Thread):
         :rtype: bool
         """
         return self.__subscribed
+
+
+class EventExecutor(threading.Thread):
+    """
+    Polls the event queue and executes event handlers for each event
+    """
+    def __init__(self, event_queue):
+        threading.Thread.__init__(self)
+        self.__event_queue = event_queue
+        # TODO: several handlers for one event
+        self.__event_handlers = {}
+        self.log = LogFactory().get_log(__name__)
+
+    def run(self):
+        while True:
+            event_msg = self.__event_queue.get()
+            event = event_msg.topic.rpartition('/')[2]
+            if event in self.__event_handlers:
+                handler = self.__event_handlers[event]
+                try:
+                    self.log.debug("Executing handler for event %r" % event)
+                    handler(event_msg)
+                except:
+                    self.log.exception("Error processing %r event" % event)
+            else:
+
+                self.log.debug("Event handler not found for event : %r" % event)
+
+    def register_event_handler(self, event, handler):
+        self.__event_handlers[event] = handler
+
+    def terminate(self):
+        self.terminate()
 
 
 from .. util.log import LogFactory
