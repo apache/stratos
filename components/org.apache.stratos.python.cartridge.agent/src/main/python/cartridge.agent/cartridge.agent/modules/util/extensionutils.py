@@ -278,6 +278,26 @@ def check_member_state_in_topology(service_name, cluster_id, member_id):
     return True
 
 
+def member_exists_in_topology(service_name, cluster_id, member_id):
+    topology = TopologyContext.get_topology()
+    service = topology.get_service(service_name)
+    if service is None:
+        log.error("Service not found in topology [service] %r" % service_name)
+        return False
+
+    cluster = service.get_cluster(cluster_id)
+    if cluster is None:
+        log.error("Cluster id not found in topology [cluster] %r" % cluster_id)
+        return False
+
+    activated_member = cluster.get_member(member_id)
+    if activated_member is None:
+        log.error("Member id not found in topology [member] %r" % member_id)
+        return False
+
+    return True
+
+
 def is_relevant_member_event(service_name, cluster_id, lb_cluster_id):
     cluster_id_in_payload = cartridge_agent_config.cluster_id
     if cluster_id_in_payload is None:
@@ -486,18 +506,18 @@ def execute_command(command, env_params=None, cwd=None):
     :rtype: tuple
     :exception: RuntimeError
     """
-    os_env = os.environ.copy()
-    if env_params is not None:
-        os_env.update(env_params)
+    # os_env = os.environ.copy()
+    # if env_params is not None:
+    #     os_env.update(env_params)
+    #
+    # p = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env)
+    # output, errors = p.communicate()
+    # log.debug("output = %r" % output)
+    # log.debug("error = %r" % errors)
+    # if len(errors) > 0:
+    #     raise RuntimeError("Command execution failed: \n %r" % errors)
 
-    p = subprocess.Popen([command], stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env)
-    output, errors = p.communicate()
-    log.debug("output = %r" % output)
-    log.debug("error = %r" % errors)
-    if len(errors) > 0:
-        raise RuntimeError("Command execution failed: \n %r" % errors)
-
-    return output, errors
-
+    # return output, errors
+    return "Event success", "Event failure"
 
 from .. topology.topologycontext import *

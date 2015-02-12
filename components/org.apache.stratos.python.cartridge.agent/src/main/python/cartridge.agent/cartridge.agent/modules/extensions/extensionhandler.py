@@ -225,12 +225,14 @@ class ExtensionHandler:
         cluster_id_in_payload = self.cartridge_agent_config.cluster_id
         member_id_in_payload = self.cartridge_agent_config.member_id
 
-        member_initialized = extensionutils.check_member_state_in_topology(
+        member_exists = extensionutils.member_exists_in_topology(
             service_name_in_payload,
             cluster_id_in_payload,
             member_id_in_payload)
 
-        if not member_initialized:
+        self.log.debug("Member exists: %s" % member_exists)
+
+        if not member_exists:
             return
         else:
             self.cartridge_agent_config.initialized = True

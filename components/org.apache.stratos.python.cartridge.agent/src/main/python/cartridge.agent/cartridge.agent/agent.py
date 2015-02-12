@@ -221,7 +221,7 @@ class CartridgeAgent(threading.Thread):
     def on_member_initialized(self, msg):
         self.log.debug("Member initialized event received: %r" % msg.payload)
 
-        if not self.TopologyContext.topology.initialized:
+        if not TopologyContext.topology.initialized:
             return
 
         event_obj = MemberInitializedEvent.create_from_json(msg.payload)
@@ -232,7 +232,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_activated(self, msg):
         self.log.debug("Member activated event received: %r" % msg.payload)
-        if not self.TopologyContext.topology.initialized:
+        if not TopologyContext.topology.initialized:
             return
 
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
@@ -243,7 +243,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_terminated(self, msg):
         self.log.debug("Member terminated event received: %r" % msg.payload)
-        if not self.TopologyContext.topology.initialized:
+        if not TopologyContext.topology.initialized:
             return
 
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
@@ -254,7 +254,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_suspended(self, msg):
         self.log.debug("Member suspended event received: %r" % msg.payload)
-        if not self.TopologyContext.topology.initialized:
+        if not TopologyContext.topology.initialized:
             return
 
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
@@ -277,7 +277,7 @@ class CartridgeAgent(threading.Thread):
 
     def on_member_started(self, msg):
         self.log.debug("Member started event received: %r" % msg.payload)
-        if not self.TopologyContext.topology.initialized:
+        if not TopologyContext.topology.initialized:
             return
 
         event_obj = MemberStartedEvent.create_from_json(msg.payload)

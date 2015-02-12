@@ -356,7 +356,7 @@ class MemberInitializedEvent:
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
-        instance = MemberCreatedEvent()
+        instance = MemberInitializedEvent()
 
         instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
         instance.cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
@@ -369,6 +369,6 @@ class MemberInitializedEvent:
         instance.member_public_ips = json_obj["memberPublicIPs"] if "memberPublicIPs" in json_obj else None
         instance.member_default_public_ip = json_obj["defaultPublicIP"] if "defaultPublicIP" in json_obj else None
         instance.member_default_private_ip = json_obj["defaultPrivateIP"] if "defaultPrivateIP" in json_obj else None
-        instance.properties = json_obj["properties"]
+        instance.properties = json_obj["properties"] if "properties" in json_obj else None
 
         return instance
