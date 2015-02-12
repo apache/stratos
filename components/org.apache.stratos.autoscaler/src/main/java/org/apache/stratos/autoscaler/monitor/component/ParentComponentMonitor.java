@@ -177,7 +177,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             }
             //FIXME whether to start new monitor or throw exception
             if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
-                String msg = "Required Monitor cannot be fount in the hierarchy";
+                String msg = "Required Monitor cannot be found in the hierarchy";
                 throw new MonitorNotFoundException(msg);
             } else {
                 //starting a new instance of the child
