@@ -1032,10 +1032,9 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-            validateDeploymentPolicy(deploymentPolicy);
-            org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy stubDeploymentPolicy =
-                    ObjectConverter.convetToASDeploymentPolicyPojo(applicationId, deploymentPolicy);
-            autoscalerServiceClient.deployApplication(applicationId, stubDeploymentPolicy);
+
+            //TODO :: Modify the deployApplication with out application deployment policy
+            autoscalerServiceClient.deployApplication(applicationId, null);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }
@@ -1058,13 +1057,13 @@ public class StratosApiV41Utils {
 	 * @param deploymentPolicy
 	 */
 	private static void validateDeploymentPolicy(DeploymentPolicyBean deploymentPolicy) throws RestAPIException {
-		if(deploymentPolicy.getApplicationPolicy().getNetworkPartition().size()==0){
-			String message="No network partitions specify with the policy";
+		if(StringUtils.isBlank(deploymentPolicy.getPolicyID())){
+			String message = "No deployment policy id specify with the policy";
 			log.error(message);
 			throw new RestAPIException(message);
 		}
-		if(deploymentPolicy.getChildPolicies().size()==0){
-			String message = "No child policies specify with the policy";
+		if(deploymentPolicy.getNetworkPartitionBeans().length==0){
+			String message="No network partitions specify with the policy";
 			log.error(message);
 			throw new RestAPIException(message);
 		}
@@ -1845,4 +1844,38 @@ public class StratosApiV41Utils {
         }
     }
 
+	/**
+	 * Add deployment policy
+	 * @param deployementPolicyDefinitionBean
+	 */
+	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean) {
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ", deployementPolicyDefinitionBean.getPolicyID()));
+			}
+
+			DeploymentPolicy deploymentPolicy =
+					ObjectConverter.convertStubDeploymentPolicyToDeploymentPolicy()
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			cloudControllerServiceClient.addCartridge(cartridgeConfig);
+
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
+				                        deployementPolicyDefinitionBean.getPolicyID()));
+			}
+		} catch (Exception e) {
+			String msg = "Could not add cartridge";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+	}
+
+	/**
+	 * Get deployment policy
+	 * @param deploymentPolicyID Deployment policy ID
+	 * @return
+	 */
+	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) {
+		return null;
+	}
 }

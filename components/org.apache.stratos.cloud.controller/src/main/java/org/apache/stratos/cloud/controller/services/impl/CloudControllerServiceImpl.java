@@ -1369,7 +1369,36 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-    @Override
+	@Override public void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
+			throws DeploymentPolicyAlreadyExistsException {
+
+		handleNullObject(deploymentPolicy, "Deployment policy is null");
+
+		if (log.isInfoEnabled()) {
+			log.info("Adding deployment policy: [deployment-policy_id] " + deploymentPolicy.getDeploymentPolicyID());
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("Deployment policy definition: " + deploymentPolicy.toString());
+		}
+
+		String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
+		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) != null) {
+			String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyID;
+			log.error(message);
+			throw new DeploymentPolicyAlreadyExistsException(message);
+		}
+
+		// Add cartridge to the cloud controller context and persist
+		CloudControllerContext.getInstance().addDeploymentPolicy(deploymentPolicy);
+		CloudControllerContext.getInstance().persist();
+
+		if (log.isInfoEnabled()) {
+			log.info("Successfully added deployment policy: [deployment_policy_id] " + deploymentPolicyID);
+		}
+
+	}
+
+	@Override
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
             InvalidKubernetesHostException, NonExistingKubernetesHostException {
 

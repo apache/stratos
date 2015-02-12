@@ -20,50 +20,40 @@
 package org.apache.stratos.common.beans.policy.deployment;
 
 
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
 
 @XmlRootElement
 public class DeploymentPolicyBean {
 
-    private String description;
-    private boolean isPublic;
-    private ApplicationPolicyBean applicationPolicy;
-    private List<ChildPolicyBean> childPolicies;
+    private String policyID;
 
-    public boolean getIsPublic() {
-        return isPublic();
-    }
+	private String partitionAlgo;
 
-    public boolean isPublic() {
-        return isPublic;
-    }
+	private NetworkPartitionBean[] networkPartitionBeans;
 
-    public void setPublic(boolean isPublic) {
-        this.isPublic = isPublic;
-    }
+	public String getPolicyID() {
+		return policyID;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setPolicyID(String policyID) {
+		this.policyID = policyID;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public String getPartitionAlgo() {
+		return partitionAlgo;
+	}
 
-    public ApplicationPolicyBean getApplicationPolicy() {
-        return applicationPolicy;
-    }
+	public void setPartitionAlgo(String partitionAlgo) {
+		this.partitionAlgo = partitionAlgo;
+	}
 
-    public void setApplicationPolicy(ApplicationPolicyBean applicationPolicy) {
-        this.applicationPolicy = applicationPolicy;
-    }
+	public NetworkPartitionBean[] getNetworkPartitionBeans() {
+		return networkPartitionBeans;
+	}
 
-    public List<ChildPolicyBean> getChildPolicies() {
-        return childPolicies;
-    }
-
-    public void setChildPolicies(List<ChildPolicyBean> childPolicies) {
-        this.childPolicies = childPolicies;
-    }
+	public void setNetworkPartitionBeans(NetworkPartitionBean[] networkPartitionBeans) {
+		this.networkPartitionBeans = networkPartitionBeans;
+	}
 }
