@@ -28,8 +28,7 @@ public class DeploymentPolicy implements Serializable{
 
     private static final long serialVersionUID = 5675507196284400099L;
     private String deploymentPolicyID;
-	private String partitionAlgo;
-    private NetworkPartition[] applicationLevelNetworkPartitions;
+	private NetworkPartitionRef[] applicationLevelNetworkPartitions;
 
 	public String getDeploymentPolicyID() {
 		return deploymentPolicyID;
@@ -39,25 +38,17 @@ public class DeploymentPolicy implements Serializable{
 		this.deploymentPolicyID = deploymentPolicyID;
 	}
 
-	public String getPartitionAlgo() {
-		return partitionAlgo;
-	}
-
-	public void setPartitionAlgo(String partitionAlgo) {
-		this.partitionAlgo = partitionAlgo;
-	}
-
-	public NetworkPartition[] getApplicationLevelNetworkPartitions() {
+	public NetworkPartitionRef[] getNetworkPartitionsRef() {
 		return applicationLevelNetworkPartitions;
 	}
 
-	public void setApplicationLevelNetworkPartitions(NetworkPartition[] applicationLevelNetworkPartitions) {
+	public void setNetworkPartitionsRef(NetworkPartitionRef[] applicationLevelNetworkPartitions) {
 		this.applicationLevelNetworkPartitions = applicationLevelNetworkPartitions;
 	}
 
 	public String toString() {
 
-		return "PolicyID: " + deploymentPolicyID + ", Partition Algorithm: " + partitionAlgo + "\n Network Partitions: " + getApplicationLevelNetworkPartitions();
+		return "PolicyID: " + deploymentPolicyID + "\n Network Partitions: " + getNetworkPartitionsRef();
 	}
 
 }

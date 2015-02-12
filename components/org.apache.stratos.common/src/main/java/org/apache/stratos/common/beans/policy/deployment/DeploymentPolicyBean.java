@@ -20,40 +20,30 @@
 package org.apache.stratos.common.beans.policy.deployment;
 
 
-import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionRefBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class DeploymentPolicyBean {
 
-    private String policyID;
+    private String id;
 
-	private String partitionAlgo;
+	private NetworkPartitionRefBean[] networkPartitionBeans;
 
-	private NetworkPartitionBean[] networkPartitionBeans;
-
-	public String getPolicyID() {
-		return policyID;
-	}
-
-	public void setPolicyID(String policyID) {
-		this.policyID = policyID;
-	}
-
-	public String getPartitionAlgo() {
-		return partitionAlgo;
-	}
-
-	public void setPartitionAlgo(String partitionAlgo) {
-		this.partitionAlgo = partitionAlgo;
-	}
-
-	public NetworkPartitionBean[] getNetworkPartitionBeans() {
+	public NetworkPartitionRefBean[] getNetworkPartitionBeans() {
 		return networkPartitionBeans;
 	}
 
-	public void setNetworkPartitionBeans(NetworkPartitionBean[] networkPartitionBeans) {
+	public void setNetworkPartitionRefBean(NetworkPartitionRefBean[] networkPartitionBeans) {
 		this.networkPartitionBeans = networkPartitionBeans;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }
