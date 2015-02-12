@@ -188,4 +188,9 @@ public class CloudControllerServiceClient {
             CloudControllerServiceInvalidPartitionExceptionException {
         stub.validatePartition(partition);
     }
+
+	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy)
+			throws CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException, RemoteException {
+		stub.addDeployementPolicy(deploymentPolicy);
+	}
 }

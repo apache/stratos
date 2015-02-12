@@ -1,4 +1,5 @@
 {
+   "id":"deployment-policy-1"
    "networkPartition":[
       {
          "id":"network-partition-1",
