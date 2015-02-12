@@ -60,6 +60,7 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
     private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
+	private static final String CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP = "CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
     private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
@@ -138,6 +139,13 @@ public class CloudControllerContext implements Serializable {
      */
     private Map<String, ServiceGroup> serviceGroupNameToServiceGroupMap;
 
+	/**
+	 * Map of deploy policy
+	 * Key - deployment policy id
+	 * Value deployment policy
+	 */
+	private Map<String, DeploymentPolicy> deploymentPolicyIDToDeployPolicyMap;
+
     private String streamId;
     private boolean isPublisherRunning;
     private boolean isTopologySyncRunning;
@@ -166,6 +174,7 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP);
         cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
         serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
+		deploymentPolicyIDToDeployPolicyMap=distributedObjectProvider.getMap(CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP);
 
         // Update context from the registry
         updateContextFromRegistry();
@@ -246,7 +255,15 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
     }
 
-    public void removeCartridge(Cartridge cartridge) {
+	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+		deploymentPolicyIDToDeployPolicyMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
+	}
+
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
+		return deploymentPolicyIDToDeployPolicyMap.get(deploymentPolicyID);
+	}
+
+	public void removeCartridge(Cartridge cartridge) {
         if(cartridgeTypeToCartridgeMap.containsKey(cartridge.getType())) {
             cartridgeTypeToCartridgeMap.remove(cartridge.getType());
         }
