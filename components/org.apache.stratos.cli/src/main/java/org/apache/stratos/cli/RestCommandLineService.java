@@ -105,6 +105,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_SERVICE_GROUP = API_CONTEXT + "/cartridgeGroups/{groupDefinitionName}";
     private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
     private static final String ENDPOINT_LIST_NETWORK_PARTITIONS = API_CONTEXT + "/networkPartitions";
+    private static final String ENDPOINT_LIST_CARTRIDGES_BY_FILTER = API_CONTEXT + "/cartridges/filter/{filter}";
 
     private static final String ENDPOINT_DOMAIN_MAPPINGS = API_CONTEXT + "/applications/{applicationId}/domainMappings";
 
@@ -296,6 +297,50 @@ public class RestCommandLineService {
             printError(message, e);
         }
     }
+
+    /**
+     * List cartridges By Filter
+     * @throws CommandException
+     */
+    public void listCartridgesByFilter(String filter) throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<CartridgeBean>>() {
+            }.getType();
+            List<CartridgeBean> cartridgeList = (List<CartridgeBean>) restClient.listEntity(ENDPOINT_LIST_CARTRIDGES_BY_FILTER.replace("{filter}",filter),
+                    listType, "cartridges");
+
+            System.out.println("Test:"+ENDPOINT_LIST_CARTRIDGES_BY_FILTER.replace("{filter}",filter));
+
+            if ((cartridgeList == null) || (cartridgeList.size() == 0)) {
+                System.out.println("No cartridges found");
+                return;
+            }
+
+            RowMapper<CartridgeBean> cartridgeMapper = new RowMapper<CartridgeBean>() {
+                public String[] getData(CartridgeBean cartridge) {
+                    String[] data = new String[6];
+                    data[0] = cartridge.getType();
+                    data[1] = cartridge.getCategory();
+                    data[2] = cartridge.getDisplayName();
+                    data[3] = cartridge.getDescription();
+                    data[4] = cartridge.getVersion();
+                    data[5] = String.valueOf(cartridge.isMultiTenant());
+                    return data;
+                }
+            };
+
+            CartridgeBean[] cartridges = new CartridgeBean[cartridgeList.size()];
+            cartridges = cartridgeList.toArray(cartridges);
+
+            System.out.println("Cartridges found:");
+            CliUtils.printTable(cartridges, cartridgeMapper, "Type", "Category", "Name", "Description", "Version",
+                    "Multi-Tenant");
+        } catch (Exception e) {
+            String message = "Error in listing cartridges";
+            printError(message, e);
+        }
+    }
+
 
     /**
      * List cartridge groups

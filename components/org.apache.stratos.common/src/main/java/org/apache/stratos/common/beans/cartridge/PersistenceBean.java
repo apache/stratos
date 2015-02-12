@@ -26,7 +26,7 @@ import java.util.List;
 public class PersistenceBean {
 
     private boolean isRequired;
-    private List<VolumeBean> volume;
+    private List<VolumeBean> volumes;
 
     public String toString () {
         return " [ Persistence Required : " + isRequired() + "\n" +
@@ -52,10 +52,10 @@ public class PersistenceBean {
     }
 
     public List<VolumeBean> getVolume() {
-        return volume;
+        return volumes;
     }
 
-    public void setVolume(List<VolumeBean> volume) {
-        this.volume = volume;
+    public void setVolume(List<VolumeBean> volumes) {
+        this.volumes = volumes;
     }
 }

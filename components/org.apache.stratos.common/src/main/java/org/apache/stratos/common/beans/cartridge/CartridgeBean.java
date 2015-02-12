@@ -54,8 +54,8 @@ public class CartridgeBean {
         return "Type: " + getType() + ", Provider: " + getProvider() + ", Category: " + getCategory() + ", Host: " + getHost() + ", Display Name: " + getDisplayName() +
                 ", Description: " + getDescription() +  ", Version: " + getVersion() + ", Multitenant " + isMultiTenant() +", Public " + isPublic() + "\n" +
                 getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ getPersistence().toString()
-                + "\n Exports " + getExportingProperties().toString();
+                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ (getPersistence() == null ? "" : getPersistence().toString())
+                + "\n Exports " + (getExportingProperties() == null ? "" : getExportingProperties().toString()) ;
     }
 
 	private String getDeploymentDetails () {

@@ -66,6 +66,11 @@ public class CliConstants {
     public static final String CARTRIDGES_ACTION = "list-cartridges";
 
     /**
+     * List the available cartridges by filter
+     */
+    public static final String CARTRIDGES_BY_FILTER_ACTION = "list-cartridges-by-filter";
+
+    /**
      * List the available network partitions
      */
     public static final String NETWORK_PARTITION_ACTION = "list-network-partitions";
@@ -93,7 +98,7 @@ public class CliConstants {
     /**
      * Add application signup
      */
-    public static final String ADD_APPLICATION_SIGNUP = "add-application";
+    public static final String ADD_APPLICATION_SIGNUP = "add-application-signup";
 
     /**
      * Add user
@@ -311,6 +316,9 @@ public class CliConstants {
 
     public static final String CARTRIDGE_TYPE_OPTION = "t";
     public static final String CARTRIDGE_TYPE_LONG_OPTION = "cartridge-type";
+
+    public static final String CARTRIDGE_FILTER_OPTION = "f";
+    public static final String CARTRIDGE_FILTER_LONG_OPTION = "filter";
 
     public static final String FULL_OPTION = "f";
     public static final String FULL_LONG_OPTION = "full";
