@@ -28,8 +28,6 @@ import org.apache.stratos.messaging.domain.exception.MessagingException;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.jms.TopicSession;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * AMQP topic publisher.
@@ -37,9 +35,6 @@ import java.util.List;
 public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPublisher {
 
     private static final Log log = LogFactory.getLog(AmqpTopicConnector.class);
-
-    private static final List<Integer> timerValueList = Arrays.asList(2000, 2000, 5000, 5000, 10000, 10000, 20000,
-            20000, 30000, 30000, 40000, 40000, 50000, 50000, 60000);
 
     private final String topicName;
     private enum ConnectionStatus { Connected, ReConnecting, ReConnected }
@@ -101,7 +96,7 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
     @Override
     protected void reconnect() {
         connectionStatus = ConnectionStatus.ReConnecting;
-        RetryTimer retryTimer = new RetryTimer(timerValueList);
+        RetryTimer retryTimer = new RetryTimer();
         while(connectionStatus == ConnectionStatus.ReConnecting) {
             try {
                 long interval = retryTimer.getNextInterval();
