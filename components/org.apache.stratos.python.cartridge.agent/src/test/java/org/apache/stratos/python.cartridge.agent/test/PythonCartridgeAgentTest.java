@@ -45,10 +45,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 
 import static junit.framework.Assert.assertTrue;
@@ -71,27 +68,29 @@ public class PythonCartridgeAgentTest {
     private static final String SERVICE_NAME = "php";
 
     private static List<ServerSocket> serverSocketList;
-    private static List<Executor> executorList;
+    private static Map<String, Executor> executorList;
 
     @BeforeClass
     public static void setUp() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
         serverSocketList = new ArrayList<ServerSocket>();
-        executorList = new ArrayList<Executor>();
+        executorList = new HashMap<String, Executor>();
     }
 
     @AfterClass
     public static void tearDown() {
-        for (Executor executor : executorList) {
+        for (Map.Entry<String, Executor> entry : executorList.entrySet()) {
             try {
+                String commandText = entry.getKey();
+                Executor executor = entry.getValue();
                 ExecuteWatchdog watchdog = executor.getWatchdog();
                 if (watchdog != null) {
-                    log.info("Terminating agent process");
+                    log.info("Terminating process: " + commandText);
                     watchdog.destroyProcess();
                 }
-                if (executor.getWorkingDirectory() != null) {
-                    File workingDirectory = executor.getWorkingDirectory();
+                File workingDirectory = executor.getWorkingDirectory();
+                if (workingDirectory != null) {
                     log.info("Cleaning working directory: " + workingDirectory.getAbsolutePath());
                     FileUtils.deleteDirectory(workingDirectory);
                 }
@@ -356,7 +355,7 @@ public class PythonCartridgeAgentTest {
                     log.error("Agent process failed", e);
                 }
             });
-            executorList.add(exec);
+            executorList.put(commandText, exec);
             return outputStream;
         } catch (Exception e) {
             log.error(outputStream.toString(), e);
