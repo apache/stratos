@@ -165,7 +165,7 @@ public class StratosApiV41 extends AbstractApi {
 	 * @throws RestAPIException the rest api exception
 	 */
 	@POST
-	@Path("/deploymentpolicy")
+	@Path("/deploymentPolicies")
 	@Produces("application/json")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/admin/manage/addCartridge")
@@ -200,7 +200,7 @@ public class StratosApiV41 extends AbstractApi {
 	 * @throws RestAPIException the rest api exception
 	 */
 	@PUT
-	@Path("/deploymentpolicy")
+	@Path("/deploymentPolicies")
 	@Produces("application/json")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/admin/manage/addCartridge")
