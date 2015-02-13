@@ -46,15 +46,16 @@ def decrypt_password(pass_str, secret):
 
     try:
         log.debug("Decrypting password")
-        bdecoded_pass = base64.b64decode(pass_str)
+        bdecoded_pass = base64.b64decode(pass_str.strip())
         # secret length should be 16
-        cipher = AES.new(secret, AES.MODE_ECB)
-        dec_pass = unpad(cipher.decrypt(bdecoded_pass))
+        cipher = AES.new(secret.strip(), AES.MODE_ECB)
+        # dec_pass = unpad(cipher.decrypt(bdecoded_pass))
+        dec_pass = cipher.decrypt(bdecoded_pass)
     except:
         log.exception("Exception occurred while decrypting password")
 
     log.debug("Decrypted PWD: [%r]" % dec_pass)
-    return dec_pass
+    return unicode(dec_pass, "utf-8")
 
 
 def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):

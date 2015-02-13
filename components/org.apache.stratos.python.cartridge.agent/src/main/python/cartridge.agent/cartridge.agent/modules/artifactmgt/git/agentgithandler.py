@@ -17,9 +17,9 @@
 
 from threading import current_thread
 import os
-import pexpect
 import subprocess
 import shutil
+from git import *
 
 from ... util.log import LogFactory
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
@@ -159,9 +159,14 @@ class AgentGitHandler:
         # HEAD before pull
         (init_head, init_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
 
-        pull_op = pexpect.spawn("git pull", cwd=git_repo.local_repo_path)
-        # TODO: auth
-        pull_output = pull_op.readlines()
+        try:
+            repo = Repo(git_repo.local_repo_path)
+            repo.remotes.origin.pull()
+            if repo.is_dirty():
+                raise GitRepositorySynchronizationException("Git pull operation left the repository in dirty state")
+        except (GitCommandError, GitRepositorySynchronizationException) as e:
+            raise GitRepositorySynchronizationException("Git pull operation on %s for tenant %s failed: %s" %
+                                                        (git_repo.repo_url, git_repo.tenant_id, e))
 
         # HEAD after pull
         (end_head, end_errors) = AgentGitHandler.execute_git_command(["rev-parse", "HEAD"], git_repo.local_repo_path)
@@ -173,75 +178,23 @@ class AgentGitHandler:
 
             return True
         else:
-            # HEAD not updated, check reasons
-            for p in pull_output:
-                if "Already up-to-date." in p:
-                    # nothing to update
-                    AgentGitHandler.log.debug("Pull operation: Already up-to-date, thread: %r - %r" %
-                                              (current_thread().getName(), current_thread().ident))
-                    return False
-
-            # not updated, something was wrong
-            raise GitRepositorySynchronizationException(
-                "Git pull operation on %r for tenant %r failed" % (git_repo.repo_url, git_repo.tenant_id))
+            return False
 
     @staticmethod
     def clone(git_repo):
         if os.path.isdir(git_repo.local_repo_path):
             # delete and recreate local repo path if exists
+            AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
 
-        clone_op = pexpect.spawn("git clone %s %s" % (git_repo.repo_url, git_repo.local_repo_path), timeout=120)
-        # Accepted repo url formats
-        # "https://host.com/path/to/repo.git"
-        # "https://username@host.org/path/to/repo.git"
-        # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
         try:
-            result = clone_op.expect(["Username for .*", "Password for .*", "Checking connectivity... done."])
-            if result == 0:
-                clone_op.sendline(git_repo.repo_username)
-                clone_op.expect("Password for .*")
-                clone_op.sendline(git_repo.repo_password)
-                clone_output = clone_op.readlines()
-                for p in clone_output:
-                    if "Checking connectivity... done." in p:
-                        git_repo.cloned = True
-                        AgentGitHandler.add_repo(git_repo)
-                        AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-                        clone_op.expect(pexpect.EOF)
-                        return git_repo
+            Repo.clone_from(unicode(git_repo.repo_url, "utf-8"), unicode(git_repo.local_repo_path, "utf-8"))
+            AgentGitHandler.add_repo(git_repo)
+            AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
+            return git_repo
+        except GitCommandError as e:
+            raise GitRepositorySynchronizationException("Error while cloning repository: %s" % e)
 
-                    if "remote: Repository not found." in p \
-                            or "fatal: unable to access " in p \
-                            or "Authentication failed for" in p:
-                        raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
-                                                                    % (git_repo.tenant_id, p))
-
-            elif result == 1:
-                clone_op.sendline(git_repo.repo_password)
-                clone_output = clone_op.readlines()
-                for p in clone_output:
-                    if "Checking connectivity... done." in p:
-                        git_repo.cloned = True
-                        AgentGitHandler.add_repo(git_repo)
-                        AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-                        clone_op.expect(pexpect.EOF)
-                        return git_repo
-
-                    if "remote: Repository not found." in p \
-                            or "fatal: unable to access " in p \
-                            or "Authentication failed for" in p:
-                        raise GitRepositorySynchronizationException("Git clone operation failed for tenant %r: %r"
-                                                                    % (git_repo.tenant_id, p))
-
-            elif result == 2:
-                git_repo.cloned = True
-                AgentGitHandler.add_repo(git_repo)
-                AgentGitHandler.log.info("Git clone operation for tenant %r successful" % git_repo.tenant_id)
-                clone_op.expect(pexpect.EOF)
-                return git_repo
-        except Exception as e:
-            AgentGitHandler.log.exception("Exception while executing git clone command on git binary : %r" % e)
 
     @staticmethod
     def add_repo(git_repo):
@@ -270,7 +223,7 @@ class AgentGitHandler:
         git_repo = GitRepository()
         git_repo.tenant_id = repo_info.tenant_id
         git_repo.local_repo_path = repo_info.repo_path
-        git_repo.repo_url = repo_info.repo_url
+        git_repo.repo_url = AgentGitHandler.create_auth_url(repo_info)
         git_repo.repo_username = repo_info.repo_username
         git_repo.repo_password = repo_info.repo_password
         git_repo.is_multitenant = repo_info.is_multitenant
@@ -279,6 +232,41 @@ class AgentGitHandler:
         git_repo.cloned = False
 
         return git_repo
+
+    @staticmethod
+    def create_auth_url(repo_info):
+        # Accepted repo url formats
+        # "https://host.com/path/to/repo.git"
+        # "https://username@host.org/path/to/repo.git"
+        # "https://username:password@host.org/path/to/repo.git" NOT RECOMMENDED
+        if repo_info.repo_username is not None and repo_info.repo_username != "":
+            # credentials provided, have to modify url
+            repo_url = repo_info.repo_url
+            url_split = repo_url.split("//")
+            if "@" in url_split[1]:
+                # credentials seem to be in the url, check
+                at_split = url_split[1].split("@")
+                if ":" in url_split[1] and url_split[1].index(":") < url_split[1].index("@"):
+                    # both username and password are in the url, check and return as is
+                    credential_split = at_split[0].split(":")
+                    if credential_split[0] is repo_info.repo_username and \
+                            credential_split[1] is repo_info.repo_password:
+                        # credentialed url with provided credentials, return as is
+                        return repo_info.repo_url
+                    else:
+                        # credentials wrong, need to replace
+                        return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                                   at_split[1])
+                else:
+                    # only username is provided, need to include password
+                    return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                               at_split[1])
+            else:
+                # no credentials in the url, need to include username and password
+                return str(url_split[0] + "//" + repo_info.repo_username + ":" + repo_info.repo_password + "@" +
+                           url_split[1])
+        # no credentials specified, return as is
+        return repo_info.repo_url
 
     @staticmethod
     def push(repo_info):
@@ -311,7 +299,7 @@ class AgentGitHandler:
         # commit to local repositpory
         commit_message = "tenant [%r]'s artifacts committed to local repo at %r" \
                          % (git_repo.tenant_id, git_repo.local_repo_path)
-        # TODO: set configuratble names
+        # TODO: set configuratble names, check if already configured
         commit_name = git_repo.tenant_id
         commit_email = "author@example.org"
         # git config
@@ -333,25 +321,27 @@ class AgentGitHandler:
 
         # push to remote
         try:
-            push_op = pexpect.spawn('git push origin master', cwd=git_repo.local_repo_path)
-            # push_op.logfile = sys.stdout
-            push_op.expect("Username for .*")
-            push_op.sendline(git_repo.repo_username)
-            push_op.expect("Password for .*")
-            push_op.sendline(git_repo.repo_password)
-            # result = push_op.expect([commit_hash + "  master -> master", "Authentication failed for"])
-            # if result != 0:
-            #     raise Exception
-            # TODO: handle push failure scenarios
-            # push_op.interact()
-            push_op.expect(pexpect.EOF)
+            repo = Repo(git_repo.local_repo_path)
+            push_info = repo.remotes.origin.push()
+            if str(push_info[0].summary) is "[rejected] (fetch first)":
+                # need to pull
+                repo.remotes.origin.pull()
+                if repo.is_dirty():
+                    # auto merge failed, need to reset
+                    # TODO: what to do here?
+                    raise GitRepositorySynchronizationException(
+                        "Git pull before push operation left repository in dirty state.")
 
+                # pull successful, now push
+                repo.remotes.origin.push()
             AgentGitHandler.log.debug("Pushed artifacts for tenant : %r" % git_repo.tenant_id)
-        except:
-            AgentGitHandler.log.exception("Pushing artifacts to remote repository failed for tenant %r"
-                                          % git_repo.tenant_id)
+        except (GitCommandError, GitRepositorySynchronizationException) as e:
             # revert to initial commit hash
             AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
+
+            raise GitRepositorySynchronizationException(
+                "Pushing artifacts to remote repository failed for tenant %s: %s" % (git_repo.tenant_id, e))
+
 
     @staticmethod
     def get_unstaged_files(repo_path):
@@ -537,5 +527,5 @@ class GitUtils:
         try:
             shutil.rmtree(path)
             GitUtils.log.debug("Directory [%r] deleted." % path)
-        except OSError:
-            raise GitRepositorySynchronizationException("Deletion of folder path %r failed." % path)
+        except OSError as e:
+            raise GitRepositorySynchronizationException("Deletion of folder path %s failed: %s" % (path, e))
