@@ -1,7 +1,7 @@
 {  
    "applicationId":"single-cartridge-app",
    "alias":"single-cartridge-app",
-   "multiTenant":true,
+   "multiTenant":false,
    "components":{  
       "cartridges":[  
          {  
