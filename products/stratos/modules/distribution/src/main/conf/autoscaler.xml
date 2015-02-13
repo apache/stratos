@@ -18,40 +18,40 @@
        under the License.
 -->
 <configuration>
-	<autoscaler>
-	    <rulesEvaluator>
-	        <schedule>
-		    <initialDelay>30</initialDelay>
-	            <period>15</period>
-	        </schedule>
-	    </rulesEvaluator>
-	    <cloudController>
-	        <hostname>localhost</hostname>
-		    <port>9443</port>
-		    <!-->CC client timout in ms<-->
+    <autoscaler>
+        <rulesEvaluator>
+            <schedule>
+                <initialDelay>30</initialDelay>
+                <period>15</period>
+            </schedule>
+        </rulesEvaluator>
+        <cloudController>
+            <hostname>localhost</hostname>
+            <port>9443</port>
+            <!-- CC client timout in ms -->
             <clientTimeout>300000</clientTimeout>
-	    </cloudController>
-            <stratosManager>
-	        <hostname>localhost</hostname>
-		<port>9445</port>
-		<!--SM client timeout in ms-->
-                <clientTimeout>300000</clientTimeout>
-	    </stratosManager>
-	    <member>
-	        <!-- this is the maximum time(ms) a member can be in pending member state -->
-        	<pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
-                <!-- this is the maximum time(ms) a member can be in obsoleted member state -->
-                <obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
-	        <!-- this is the maximum time(ms) a member can be in pending termination member state -->
-                <pendingTerminationMemberExpiryTimeout>1800000</pendingTerminationMemberExpiryTimeout>
-	    </member>
-            <cluster>
-	        <!-- cluster monitoring interval (ms) -->
-                <monitorInterval>1800000</monitorInterval>
-            </cluster>
+        </cloudController>
+        <stratosManager>
+            <hostname>localhost</hostname>
+            <port>9445</port>
+            <!-- SM client timeout in ms -->
+            <clientTimeout>300000</clientTimeout>
+        </stratosManager>
+        <member>
+            <!-- this is the maximum time(ms) a member can be in pending member state -->
+            <pendingMemberExpiryTimeout>900000</pendingMemberExpiryTimeout>
+            <!-- this is the maximum time(ms) a member can be in obsoleted member state -->
+            <obsoletedMemberExpiryTimeout>86400000</obsoletedMemberExpiryTimeout>
+            <!-- this is the maximum time(ms) a member can be in pending termination member state -->
+            <pendingTerminationMemberExpiryTimeout>1800000</pendingTerminationMemberExpiryTimeout>
+        </member>
+        <cluster>
+            <!-- cluster monitoring interval (ms) -->
+            <monitorInterval>90000</monitorInterval>
+        </cluster>
         <threadpool>
             <identifier>Autoscaler</identifier>
             <threadPoolSize>10</threadPoolSize>
         </threadpool>
-	</autoscaler>
+    </autoscaler>
 </configuration>
