@@ -160,7 +160,7 @@ public class StratosApiV41 extends AbstractApi {
 	/**
 	 * Creates the Deployement Policy Definition.
 	 *
-	 * @param deployementPolicyDefinitionBean the cartridge definition bean
+	 * @param deploymentPolicyDefinitionBean the cartridge definition bean
 	 * @return the response
 	 * @throws RestAPIException the rest api exception
 	 */
