@@ -32,6 +32,9 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.CompleteTopologyEvent;
 import org.apache.stratos.messaging.event.topology.MemberInitializedEvent;
+import org.apache.stratos.messaging.listener.instance.status.InstanceActivatedEventListener;
+import org.apache.stratos.messaging.listener.instance.status.InstanceStartedEventListener;
+import org.apache.stratos.messaging.message.receiver.instance.status.InstanceStatusEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.util.MessagingUtil;
 import org.junit.AfterClass;
@@ -90,13 +93,34 @@ public class PythonCartridgeAgentTest {
         return StringUtils.removeEnd(path, File.separator);
     }
 
-    @Test(timeout = 300000)
+    @Test(timeout = 200000)
     public void testPythonCartridgeAgent() {
 
-        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 1);
+        ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
         TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
         topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.execute();
+
+        InstanceStatusEventReceiver instanceStatusEventReceiver = new InstanceStatusEventReceiver();
+        instanceStatusEventReceiver.setExecutorService(executorService);
+        instanceStatusEventReceiver.execute();
+
+        final boolean[] instanceStarted = new boolean[1];
+        instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                instanceStarted[0] = true;
+            }
+        });
+
+
+        final boolean[] instanceActivated = new boolean[1];
+        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                instanceActivated[0] = true;
+            }
+        });
 
         // Simulate CEP server socket
         startServerSocket(7711);
@@ -146,14 +170,20 @@ public class PythonCartridgeAgentTest {
                     }
 
                     if(line.contains("Git clone operation for tenant u'" + TENANT_ID + "' successful")) {
-                        assertTrue(true);
-                        return;
+                        break;
+                    }
+
+                    if(instanceActivated[0]) {
+                        break;
                     }
                     log.info(line);
                 }
             }
             sleep(500);
         }
+
+        assertTrue("Instance started event was not received", instanceStarted[0]);
+        assertTrue("Instance activated event was not received", instanceActivated[0]);
     }
 
     private void publishEvent(Event event) {
