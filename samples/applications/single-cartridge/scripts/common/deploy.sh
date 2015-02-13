@@ -24,7 +24,7 @@ echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
 echo "Adding deploy policy..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentpolicy
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
 
 
 echo "Adding php cartridge..."
