@@ -29,14 +29,14 @@ public class DeploymentPolicyBean {
 
     private String id;
 
-	private NetworkPartitionRefBean[] networkPartitionBeans;
+	private NetworkPartitionRefBean[] networkPartition;
 
 	public NetworkPartitionRefBean[] getNetworkPartitionBeans() {
-		return networkPartitionBeans;
+		return networkPartition;
 	}
 
-	public void setNetworkPartitionRefBean(NetworkPartitionRefBean[] networkPartitionBeans) {
-		this.networkPartitionBeans = networkPartitionBeans;
+	public void setNetworkPartitionRefBean(NetworkPartitionRefBean[] networkPartition) {
+		this.networkPartition = networkPartition;
 	}
 
 	public String getId() {
