@@ -193,7 +193,7 @@ function cc_related_popup() {
 
 function cc_conf_validate() {
     if [[ $ec2_provider_enabled = "false" && $openstack_provider_enabled = "false" && $vcloud_provider_enabled = "false" \
-          && $gce_provider_enabled = "false" ]]; then
+          && $gce_provider_enabled = "false" && $kubernetes_provider_enabled = "false" ]]; then
         echo "Please enable at least one of the IaaS providers in conf/setup.conf file"
         exit 1
     fi
@@ -221,6 +221,12 @@ function cc_conf_validate() {
             exit 1
         fi
     fi
+    if [[ $kubernetes_provider_enabled = "true" ]]; then
+        if [[ ( -z $kubernetes_identity || -z $kubernetes_credential ) ]]; then
+            echo "Please set Kubernetes configuration information in conf/setup.conf file"
+            exit 1
+        fi
+    fi
 }
 
 # Setup cc
@@ -243,6 +249,9 @@ function cc_setup() {
     fi
     if [[ $gce_provider_enabled = true ]]; then
         ./gce.sh $stratos_extract_path
+    fi
+    if [[ $kubernetes_provider_enabled = true ]]; then
+        ./kubernetes.sh $stratos_extract_path
     fi
 
     pushd $stratos_extract_path

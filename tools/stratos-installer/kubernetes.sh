@@ -20,7 +20,7 @@
 #
 # ----------------------------------------------------------------------------
 #
-#  This script is invoked by setup.sh for configuring OpenStack IaaS information.
+#  This script is invoked by setup.sh for configuring KUBERNETES IaaS information.
 # ----------------------------------------------------------------------------
 
 # Die on any error:
@@ -29,14 +29,14 @@ set -e
 # General commands
 if [ "$(uname)" == "Darwin" ]; then
     # Do something under Mac OS X platform
-        SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
+	SED=`which gsed` && : || (echo "Command 'gsed' is not installed."; exit 10;)
 else
     # Do something else under some other platform
     SED=`which sed` && : || (echo "Command 'sed' is not installed."; exit 10;)
 fi
 
 SLEEP=60
-export LOG=$log_path/stratos-gce.log
+export LOG=$log_path/stratos-kubernetes.log
 
 source "./conf/setup.conf"
 
@@ -48,22 +48,21 @@ fi
 
 pushd $stratos_extract_path
 
-echo "Set vCloud provider specific info in repository/conf/cloud-controller.xml" >> $LOG
+echo "Set KUBERNETES provider specific info in repository/conf/cloud-controller.xml" >> $LOG
 
-${SED} -i "s@VCLOUD_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
-${SED} -i "s@VCLOUD_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
-${SED} -i "s@EC2_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
-${SED} -i "s@EC2_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_START@!--@g"  repository/conf/cloud-controller.xml
+${SED} -i "s@EC2_PROVIDER_END@--@g"  repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
 ${SED} -i "s@OPENSTACK_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
-${SED} -i "s@GCE_PROVIDER_START@@g" repository/conf/cloud-controller.xml
-${SED} -i "s@GCE_IDENTITY@${gce_identity//@/\\@}@g" repository/conf/cloud-controller.xml
-# first replace the newlines in $gce_credential to newline, then add that in the place where 
-# GCE_CREDENTIAL is found in the xml file
-${SED} -i "s@GCE_CREDENTIAL@${gce_credential//$'\n'/\\n}@g" repository/conf/cloud-controller.xml
-${SED} -i "s/GCE_PROJECTNAME/$gce_projectname/g" repository/conf/cloud-controller.xml
-${SED} -i "s@GCE_PROVIDER_END@@g" repository/conf/cloud-controller.xml
-${SED} -i "s@KUBERNETES_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
-${SED} -i "s@KUBERNETES_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@VCLOUD_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@GCE_PROVIDER_START@!--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@GCE_PROVIDER_END@--@g" repository/conf/cloud-controller.xml
+${SED} -i "s@KUBERNETES_PROVIDER_START@@g" repository/conf/cloud-controller.xml
+${SED} -i "s@KUBERNETES_IDENTITY@$kubernetes_identity@g" repository/conf/cloud-controller.xml
+${SED} -i "s@KUBERNETES_CREDENTIAL@$kubernetes_credential@g" repository/conf/cloud-controller.xml
+${SED} -i "s@KUBERNETES_PROVIDER_END@@g" repository/conf/cloud-controller.xml
+
 
 popd
+
