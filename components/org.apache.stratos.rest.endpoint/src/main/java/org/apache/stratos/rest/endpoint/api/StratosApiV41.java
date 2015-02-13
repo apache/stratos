@@ -165,28 +165,30 @@ public class StratosApiV41 extends AbstractApi {
 	 * @throws RestAPIException the rest api exception
 	 */
 	@POST
-	@Path("/cartridges")
+	@Path("/deploymentpolicy")
 	@Produces("application/json")
 	@Consumes("application/json")
 	@AuthorizationAction("/permission/admin/manage/addCartridge")
-	public Response addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
+	public Response addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
 			throws RestAPIException {
 
-		String deploymentPolicyID = deployementPolicyDefinitionBean.getId();
-	// TODO :: Deployment policy validation
+		String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+		// TODO :: Deployment policy validation
 		DeploymentPolicyBean depploymentPolicy = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyID);
 		if (depploymentPolicy != null) {
-			String msg = String.format("Deployment policy already exists: [Deployment Policy ID] %s", deploymentPolicyID);
+			String msg =
+					String.format("Deployment policy already exists: [Deployment Policy ID] %s", deploymentPolicyID);
 			log.warn(msg);
 			return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
 					Response.Status.CONFLICT.getStatusCode(), msg)).build();
 		}
 
-		StratosApiV41Utils.addDeploymentPolicy(deployementPolicyDefinitionBean);
+		StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
 		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
 		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
 		                                                            String.format(
-				                                                            "Deployment policy added successfully: [deployment-policy-id] %s",
+				                                                            "Deployment policy added successfully: " +
+				                                                            "[deployment-policy-id] %s",
 				                                                            deploymentPolicyID))).build();
 	}
 

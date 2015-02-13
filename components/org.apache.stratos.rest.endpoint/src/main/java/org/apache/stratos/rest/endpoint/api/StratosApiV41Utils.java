@@ -1842,12 +1842,15 @@ public class StratosApiV41Utils {
 
 	/**
 	 * Add deployment policy
+	 *
 	 * @param deployementPolicyDefinitionBean
 	 */
-	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean) throws RestAPIException{
+	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
+			throws RestAPIException {
 		try {
 			if (log.isDebugEnabled()) {
-				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ", deployementPolicyDefinitionBean.getId()));
+				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
+				                        deployementPolicyDefinitionBean.getId()));
 			}
 
 			DeploymentPolicy deploymentPolicy =
