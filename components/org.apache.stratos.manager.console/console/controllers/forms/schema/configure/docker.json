@@ -33,9 +33,15 @@
                             "default": "KubHostSlave1",
                             "required":false
                         },
-                        "hostIpAddress": {
+                        "privateIPAddress": {
                             "type":"string",
-                            "id": "root/kubernetesHosts/0/hostIpAddress",
+                            "id": "root/kubernetesHosts/0/privateIPAddress",
+                            "default": "172.17.8.101",
+                            "required":true
+                        },
+                        "publicIPAddress": {
+                            "type":"string",
+                            "id": "root/kubernetesHosts/0/publicIPAddress",
                             "default": "172.17.8.101",
                             "required":false
                         },
@@ -103,9 +109,15 @@
                             "default": "KubHostSlave2",
                             "required":false
                         },
-                        "hostIpAddress": {
+                        "privateIPAddress": {
                             "type":"string",
-                            "id": "root/kubernetesHosts/1/hostIpAddress",
+                            "id": "root/kubernetesHosts/1/privateIPAddress",
+                            "default": "172.17.8.102",
+                            "required":true
+                        },
+                        "publicIPAddress": {
+                            "type":"string",
+                            "id": "root/kubernetesHosts/0/publicIPAddress",
                             "default": "172.17.8.102",
                             "required":false
                         },
@@ -175,9 +187,15 @@
                     "default": "KubHostMaster1",
                     "required":false
                 },
-                "hostIpAddress": {
+                "privateIPAddress": {
                     "type":"string",
-                    "id": "root/kubernetesMaster/hostIpAddress",
+                    "id": "root/kubernetesMaster/privateIPAddress",
+                    "default": "172.17.8.100",
+                    "required":true
+                },
+                "publicIPAddress": {
+                    "type":"string",
+                    "id": "root/kubernetesMaster/publicIPAddress",
                     "default": "172.17.8.100",
                     "required":false
                 },

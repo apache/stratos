@@ -4,7 +4,8 @@
     "kubernetesMaster": {
         "hostId": "KubHostMaster1",
         "hostname": "master.dev.kubernetes.example.org",
-        "hostIpAddress": "172.17.8.100",
+        "privateIPAddress": "172.17.8.100",
+        "publicIPAddress": "172.17.8.100",
         "property": [
             {
                 "name": "prop1",
@@ -24,7 +25,8 @@
         {
             "hostId": "KubHostSlave1",
             "hostname": "slave1.dev.kubernetes.example.org",
-            "hostIpAddress": "172.17.8.101",
+            "privateIPAddress": "172.17.8.101",
+            "publicIPAddress": "172.17.8.101",
             "property": [
                 {
                     "name": "prop1",
@@ -39,7 +41,8 @@
         {
             "hostId": "KubHostSlave2",
             "hostname": "slave2.dev.kubernetes.example.org",
-            "hostIpAddress": "172.17.8.102",
+            "privateIPAddress": "172.17.8.102",
+            "publicIPAddress": "172.17.8.102",
             "property": [
                 {
                     "name": "prop1",
