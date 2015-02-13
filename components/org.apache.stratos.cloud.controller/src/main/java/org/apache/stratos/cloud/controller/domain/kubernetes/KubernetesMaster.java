@@ -21,29 +21,22 @@
 
 package org.apache.stratos.cloud.controller.domain.kubernetes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.Serializable;
 
 /**
- * The model class for KubernetesMaster beans. This represents a Kubernetes CoreOS master host instance
+ * The model class for KubernetesMaster beans. This represents a Kubernetes master host instance.
  */
 public class KubernetesMaster extends KubernetesHost implements Serializable {
-    private static final long serialVersionUID = -4369535909362724532L;
 
-    private static final Log log = LogFactory.getLog(KubernetesMaster.class);
+    private static final long serialVersionUID = -4369535909362724532L;
 
     private String endpoint;
 
     public KubernetesMaster() {
-
     }
 
-    public KubernetesMaster(String hostId, String hostname, String hostIpAddress, String endpoint) {
-        this.hostId = hostId;
-        this.hostname = hostname;
-        this.hostIpAddress = hostIpAddress;
+    public KubernetesMaster(String hostId, String hostname, String privateIPAddress, String publicIPAddress, String endpoint) {
+        super(hostId, hostname, privateIPAddress, publicIPAddress);
         this.endpoint = endpoint;
     }
 
@@ -57,27 +50,27 @@ public class KubernetesMaster extends KubernetesHost implements Serializable {
 
     @Override
     public String toString() {
-        return "KubernetesMaster [hostId=" + hostId +
-                " hostname=" + hostname +
-                " hostIpAddress=" + hostIpAddress +
+        return "KubernetesMaster [hostId=" + getHostId() +
+                " hostname=" + getHostname() +
+                " privateIPAddress=" + getPrivateIPAddress() +
                 " endpoint=" + endpoint +
-                " properties=" + properties + "]";
+                " properties=" + getProperties() + "]";
     }
 
     @Override
-    public boolean equals(Object anObject) {
-        if (anObject == null) {
+    public boolean equals(Object object) {
+        if (object == null) {
             return false;
         }
-        if (this == anObject) {
+        if (this == object) {
             return true;
         }
 
-        if (!(anObject instanceof KubernetesMaster)) {
+        if (!(object instanceof KubernetesMaster)) {
             return false;
         }
 
-        return super.equals(anObject);
+        return super.equals(object);
     }
 
     @Override

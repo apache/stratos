@@ -1205,10 +1205,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
             CloudControllerUtil.validateKubernetesHost(kubernetesHost);
 
-            KubernetesCluster kubernetesClusterStored = getKubernetesCluster(kubernetesClusterId);
+            KubernetesCluster kubernetesCluster = getKubernetesCluster(kubernetesClusterId);
             ArrayList<KubernetesHost> kubernetesHostArrayList;
 
-            if (kubernetesClusterStored.getKubernetesHosts() == null) {
+            if (kubernetesCluster.getKubernetesHosts() == null) {
                 kubernetesHostArrayList = new ArrayList<KubernetesHost>();
             } else {
                 if (CloudControllerContext.getInstance().kubernetesHostExists(kubernetesHost.getHostId())) {
@@ -1216,17 +1216,17 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             kubernetesHost.getHostId());
                 }
                 kubernetesHostArrayList = new
-                        ArrayList<KubernetesHost>(Arrays.asList(kubernetesClusterStored.getKubernetesHosts()));
+                        ArrayList<KubernetesHost>(Arrays.asList(kubernetesCluster.getKubernetesHosts()));
             }
             kubernetesHostArrayList.add(kubernetesHost);
 
             // Update information model
-            kubernetesClusterStored.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
-            CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesClusterStored);
+            kubernetesCluster.setKubernetesHosts(kubernetesHostArrayList.toArray(new KubernetesHost[kubernetesHostArrayList.size()]));
+            CloudControllerContext.getInstance().updateKubernetesCluster(kubernetesCluster);
             CloudControllerContext.getInstance().persist();
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesClusterStored.getClusterId()));
+                log.info(String.format("Kubernetes host added successfully: [id] %s", kubernetesCluster.getClusterId()));
             }
 
             return true;

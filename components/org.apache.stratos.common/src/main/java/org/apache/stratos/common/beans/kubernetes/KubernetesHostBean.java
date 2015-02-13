@@ -31,7 +31,8 @@ public class KubernetesHostBean {
 
     private String hostId;
     private String hostname;
-    private String hostIpAddress;
+    private String privateIPAddress;
+    private String publicIPAddress;
     private List<PropertyBean> property;
 
     public String getHostId() {
@@ -50,12 +51,20 @@ public class KubernetesHostBean {
         this.hostname = hostname;
     }
 
-    public String getHostIpAddress() {
-        return hostIpAddress;
+    public String getPrivateIPAddress() {
+        return privateIPAddress;
     }
 
-    public void setHostIpAddress(String hostIpAddress) {
-        this.hostIpAddress = hostIpAddress;
+    public void setPrivateIPAddress(String privateIPAddress) {
+        this.privateIPAddress = privateIPAddress;
+    }
+
+    public String getPublicIPAddress() {
+        return publicIPAddress;
+    }
+
+    public void setPublicIPAddress(String publicIPAddress) {
+        this.publicIPAddress = publicIPAddress;
     }
 
     public List<PropertyBean> getProperty() {

@@ -949,7 +949,8 @@ public class RestCommandLineService {
                         String[] data = new String[3];
                         data[0] = kubernetesHost.getHostId();
                         data[1] = kubernetesHost.getHostname();
-                        data[2] = kubernetesHost.getHostIpAddress();
+                        data[2] = emptyStringIfNullOrEmpty(kubernetesHost.getPrivateIPAddress());
+                        data[3] = emptyStringIfNullOrEmpty(kubernetesHost.getPublicIPAddress());
                         return data;
                     }
                 };
@@ -957,7 +958,8 @@ public class RestCommandLineService {
                 KubernetesHostBean[] array = new KubernetesHostBean[list.size()];
                 array = list.toArray(array);
                 System.out.println("Kubernetes hosts found:");
-                CliUtils.printTable(array, partitionMapper, "Host ID", "Hostname", "IP Address");
+                CliUtils.printTable(array, partitionMapper, "Host ID", "Hostname", "Private IP Address",
+                        "Public IP Address");
             } else {
                 System.out.println("No kubernetes hosts found");
                 return;
@@ -966,6 +968,10 @@ public class RestCommandLineService {
             String message = "Could not list kubernetes hosts";
             printError(message, e);
         }
+    }
+
+    private String emptyStringIfNullOrEmpty(String value) {
+        return StringUtils.isBlank(value) ? "" : value;
     }
 
     /**

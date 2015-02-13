@@ -21,31 +21,31 @@
 
 package org.apache.stratos.cloud.controller.domain.kubernetes;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.Properties;
 
 import java.io.Serializable;
 
 /**
- * The model class for KubernetesHost beans. This represents a Kubernetes CoreOS host instance
+ * The model class for KubernetesHost beans. This represents a Kubernetes host instance.
  */
 public class KubernetesHost implements Serializable {
+
     private static final long serialVersionUID = 1798748592432690645L;
-    private static final Log log = LogFactory.getLog(KubernetesHost.class);
-    protected String hostId;
-    protected String hostname;
-    protected String hostIpAddress;
-    protected Properties properties = new Properties();
+
+    private String hostId;
+    private String hostname;
+    private String privateIPAddress;
+    private String publicIPAddress;
+    private Properties properties = new Properties();
 
     public KubernetesHost() {
-
     }
 
-    public KubernetesHost(String hostId, String hostname, String hostIpAddress) {
+    public KubernetesHost(String hostId, String hostname, String privateIPAddress, String publicIPAddress) {
         this.hostId = hostId;
         this.hostname = hostname;
-        this.hostIpAddress = hostIpAddress;
+        this.privateIPAddress = privateIPAddress;
+        this.publicIPAddress = publicIPAddress;
     }
 
     public String getHostId() {
@@ -64,12 +64,20 @@ public class KubernetesHost implements Serializable {
         this.hostname = hostname;
     }
 
-    public String getHostIpAddress() {
-        return hostIpAddress;
+    public String getPrivateIPAddress() {
+        return privateIPAddress;
     }
 
-    public void setHostIpAddress(String hostIpAddress) {
-        this.hostIpAddress = hostIpAddress;
+    public void setPrivateIPAddress(String hostIpAddress) {
+        this.privateIPAddress = hostIpAddress;
+    }
+
+    public String getPublicIPAddress() {
+        return publicIPAddress;
+    }
+
+    public void setPublicIPAddress(String publicIPAddress) {
+        this.publicIPAddress = publicIPAddress;
     }
 
     public Properties getProperties() {
@@ -84,7 +92,8 @@ public class KubernetesHost implements Serializable {
     public String toString() {
         return "KubernetesHost [hostId=" + hostId +
                 " hostname=" + hostname +
-                " hostIpAddress=" + hostIpAddress +
+                " privateIPAddress=" + privateIPAddress +
+                " publicIPAddress=" + publicIPAddress +
                 " properties=" + properties + "]";
     }
 
@@ -108,9 +117,15 @@ public class KubernetesHost implements Serializable {
             return false;
         }
 
-        if (this.hostIpAddress == null || kubernetesHostObj.getHostIpAddress() == null) {
+        if (this.privateIPAddress == null || kubernetesHostObj.getPrivateIPAddress() == null) {
             return false;
-        } else if (!this.hostIpAddress.equals(kubernetesHostObj.getHostIpAddress())) {
+        } else if (!this.privateIPAddress.equals(kubernetesHostObj.getPrivateIPAddress())) {
+            return false;
+        }
+
+        if (this.publicIPAddress == null || kubernetesHostObj.getPublicIPAddress() == null) {
+            return false;
+        } else if (!this.publicIPAddress.equals(kubernetesHostObj.getPublicIPAddress())) {
             return false;
         }
 
@@ -139,7 +154,8 @@ public class KubernetesHost implements Serializable {
         int result = 1;
         result = prime * result + ((this.hostId == null) ? 0 : this.hostId.hashCode());
         result = prime * result + ((this.hostname == null) ? 0 : this.hostname.hashCode());
-        result = prime * result + ((this.hostIpAddress == null) ? 0 : this.hostIpAddress.hashCode());
+        result = prime * result + ((this.privateIPAddress == null) ? 0 : this.privateIPAddress.hashCode());
+        result = prime * result + ((this.publicIPAddress == null) ? 0 : this.publicIPAddress.hashCode());
         result = prime * result + ((this.properties == null) ? 0 : this.properties.hashCode());
         return result;
     }

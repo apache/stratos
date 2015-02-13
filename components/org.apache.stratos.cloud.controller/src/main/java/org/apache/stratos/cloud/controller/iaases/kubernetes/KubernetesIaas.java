@@ -20,26 +20,29 @@
 package org.apache.stratos.cloud.controller.iaases.kubernetes;
 
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
+import org.apache.stratos.cloud.controller.domain.kubernetes.PortRange;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.common.constants.StratosConstants;
-import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
-import org.apache.stratos.cloud.controller.domain.kubernetes.PortRange;
+import org.apache.stratos.common.domain.NameValuePair;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.*;
+import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
+import org.apache.stratos.kubernetes.client.model.Labels;
+import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Service;
 
 import java.util.ArrayList;
@@ -178,7 +181,7 @@ public class KubernetesIaas extends Iaas {
                     " [member-id] " + memberId);
 
             // Prepare kubernetes context
-            String kubernetesMasterIp = kubernetesCluster.getKubernetesMaster().getHostIpAddress();
+            String kubernetesMasterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
             PortRange kubernetesPortRange = kubernetesCluster.getPortRange();
             String kubernetesMasterPort = CloudControllerUtil.getProperty(
                     kubernetesCluster.getKubernetesMaster().getProperties(), StratosConstants.KUBERNETES_MASTER_PORT,
@@ -223,7 +226,7 @@ public class KubernetesIaas extends Iaas {
             }
 
             // Create member context
-            MemberContext newMemberContext = createNewMemberContext(memberContext, pod);
+            MemberContext newMemberContext = createNewMemberContext(memberContext, pod, kubernetesCluster);
             CloudControllerContext.getInstance().addMemberContext(newMemberContext);
 
             // persist in registry
@@ -244,22 +247,47 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
-    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod) {
+    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod, KubernetesCluster kubernetesCluster) {
         MemberContext newMemberContext = new MemberContext(memberContext.getApplicationId(),
                 memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getMemberId());
+
+        String memberPrivateIPAddress = pod.getCurrentState().getPodIP();
+        String podHostIPAddress = pod.getCurrentState().getHost();
+        String memberPublicIPAddress = podHostIPAddress;
+        String kubernetesHostPublicIP = findKubernetesHostPublicIPAddress(kubernetesCluster, podHostIPAddress);
+        if(StringUtils.isNotBlank(kubernetesHostPublicIP)) {
+            memberPublicIPAddress = kubernetesHostPublicIP;
+            if(log.isInfoEnabled()) {
+                 log.info(String.format("Member public IP address set to Kubernetes host public IP address:" +
+                         "[pod-host-ip] %s [kubernetes-host-public-ip] %s", podHostIPAddress, kubernetesHostPublicIP));
+            }
+        }
 
         newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
         newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
         newMemberContext.setPartition(memberContext.getPartition());
         newMemberContext.setInstanceId(pod.getId());
-        newMemberContext.setDefaultPrivateIP(pod.getCurrentState().getPodIP());
-        newMemberContext.setPrivateIPs(new String[]{pod.getCurrentState().getPodIP()});
-        newMemberContext.setDefaultPublicIP(pod.getCurrentState().getHost());
-        newMemberContext.setPublicIPs(new String[]{pod.getCurrentState().getHost()});
+        newMemberContext.setDefaultPrivateIP(memberPrivateIPAddress);
+        newMemberContext.setPrivateIPs(new String[]{memberPrivateIPAddress});
+        newMemberContext.setDefaultPublicIP(memberPublicIPAddress);
+        newMemberContext.setPublicIPs(new String[]{memberPublicIPAddress});
         newMemberContext.setInitTime(memberContext.getInitTime());
         newMemberContext.setProperties(memberContext.getProperties());
 
         return newMemberContext;
+    }
+
+    private String findKubernetesHostPublicIPAddress(KubernetesCluster kubernetesCluster, String podHostIP) {
+        if((kubernetesCluster != null) && (StringUtils.isNotBlank(podHostIP))) {
+            for (KubernetesHost kubernetesHost : kubernetesCluster.getKubernetesHosts()) {
+                if (kubernetesHost != null) {
+                    if (podHostIP.equals(kubernetesHost.getPrivateIPAddress())) {
+                        return kubernetesHost.getPublicIPAddress();
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     private Pod waitForPodToBeActivated(MemberContext memberContext, KubernetesApiClient kubernetesApi)

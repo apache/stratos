@@ -155,7 +155,7 @@ public class ReadWriteLock {
                         getName(), currentThread.getId(), currentThread.getName()));
             }
         } else {
-            log.warn(String.format("System warning! A thread is trying to release a lock which has not been taken: " +
+            log.warn(String.format("System warning! Trying to release a lock which has not been taken by the same thread: " +
                             "[lock-name] %s [thread-id] %d [thread-name] %s",
                     getName(), currentThread.getId(), currentThread.getName()));
         }

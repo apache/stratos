@@ -942,7 +942,8 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost
                 kubernetesHost = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesHost();
         kubernetesHost.setHostId(kubernetesHostBean.getHostId());
-        kubernetesHost.setHostIpAddress(kubernetesHostBean.getHostIpAddress());
+        kubernetesHost.setPrivateIPAddress(kubernetesHostBean.getPrivateIPAddress());
+        kubernetesHost.setPublicIPAddress(kubernetesHostBean.getPublicIPAddress());
         kubernetesHost.setHostname(kubernetesHostBean.getHostname());
         kubernetesHost.setProperties(convertPropertyBeansToCCStubProperties(kubernetesHostBean.getProperty()));
 
@@ -959,7 +960,8 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster
                 kubernetesMaster = new org.apache.stratos.cloud.controller.stub.domain.kubernetes.KubernetesMaster();
         kubernetesMaster.setHostId(kubernetesMasterBean.getHostId());
-        kubernetesMaster.setHostIpAddress(kubernetesMasterBean.getHostIpAddress());
+        kubernetesMaster.setPrivateIPAddress(kubernetesMasterBean.getPrivateIPAddress());
+        kubernetesMaster.setPublicIPAddress(kubernetesMasterBean.getPublicIPAddress());
         kubernetesMaster.setHostname(kubernetesMasterBean.getHostname());
         kubernetesMaster.setEndpoint(kubernetesMasterBean.getEndpoint());
         kubernetesMaster.setProperties(convertPropertyBeansToCCStubProperties(kubernetesMasterBean.getProperty()));
@@ -1000,7 +1002,8 @@ public class ObjectConverter {
         KubernetesMasterBean kubernetesMasterBean = new KubernetesMasterBean();
         kubernetesMasterBean.setHostId(kubernetesMaster.getHostId());
         kubernetesMasterBean.setHostname(kubernetesMaster.getHostname());
-        kubernetesMasterBean.setHostIpAddress(kubernetesMaster.getHostIpAddress());
+        kubernetesMasterBean.setPrivateIPAddress(kubernetesMaster.getPrivateIPAddress());
+        kubernetesMasterBean.setPublicIPAddress(kubernetesMaster.getPublicIPAddress());
         kubernetesMasterBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesMaster.getProperties()));
         kubernetesMasterBean.setEndpoint(kubernetesMaster.getEndpoint());
         return kubernetesMasterBean;
@@ -1025,7 +1028,8 @@ public class ObjectConverter {
         KubernetesHostBean kubernetesHostBean = new KubernetesHostBean();
         kubernetesHostBean.setHostId(kubernetesHost.getHostId());
         kubernetesHostBean.setHostname(kubernetesHost.getHostname());
-        kubernetesHostBean.setHostIpAddress(kubernetesHost.getHostIpAddress());
+        kubernetesHostBean.setPrivateIPAddress(kubernetesHost.getPrivateIPAddress());
+        kubernetesHostBean.setPublicIPAddress(kubernetesHost.getPublicIPAddress());
         kubernetesHostBean.setProperty(convertCCStubPropertiesToPropertyBeans(kubernetesHost.getProperties()));
         return kubernetesHostBean;
     }

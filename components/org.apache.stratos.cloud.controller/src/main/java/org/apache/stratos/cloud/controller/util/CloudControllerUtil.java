@@ -445,17 +445,24 @@ public class CloudControllerUtil {
 
     public static void validateKubernetesHost(KubernetesHost kubernetesHost) throws InvalidKubernetesHostException {
         if (kubernetesHost == null) {
-            throw new InvalidKubernetesHostException("Kubernetes host can not be null");
+            throw new InvalidKubernetesHostException("Kubernetes host is null");
         }
-        if (StringUtils.isEmpty(kubernetesHost.getHostId())) {
-            throw new InvalidKubernetesHostException("Kubernetes host id can not be empty");
+        if (StringUtils.isBlank(kubernetesHost.getHostId())) {
+            throw new InvalidKubernetesHostException("Kubernetes host id cannot be empty");
         }
-        if (kubernetesHost.getHostIpAddress() == null) {
-            throw new InvalidKubernetesHostException("Mandatory field Kubernetes host IP address has not been set " +
-                    "for [hostId] " + kubernetesHost.getHostId());
+        if (StringUtils.isBlank(kubernetesHost.getPrivateIPAddress())) {
+            throw new InvalidKubernetesHostException("Kubernetes host private IP address has not been set: " +
+                    "[host-id] " + kubernetesHost.getHostId());
         }
-        if (!InetAddresses.isInetAddress(kubernetesHost.getHostIpAddress())) {
-            throw new InvalidKubernetesHostException("Kubernetes host ip address is invalid: " + kubernetesHost.getHostIpAddress());
+        if (!InetAddresses.isInetAddress(kubernetesHost.getPrivateIPAddress())) {
+            throw new InvalidKubernetesHostException("Kubernetes host private IP address is invalid: " +
+                    kubernetesHost.getPrivateIPAddress());
+        }
+        if (StringUtils.isNotBlank(kubernetesHost.getPublicIPAddress())) {
+            if (!InetAddresses.isInetAddress(kubernetesHost.getPublicIPAddress())) {
+                throw new InvalidKubernetesHostException("Kubernetes host public IP address is invalid: " +
+                        kubernetesHost.getPrivateIPAddress());
+            }
         }
     }
 
