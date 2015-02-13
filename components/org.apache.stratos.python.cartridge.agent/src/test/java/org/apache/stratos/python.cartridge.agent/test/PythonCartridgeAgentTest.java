@@ -304,11 +304,6 @@ public class PythonCartridgeAgentTest {
             String destAgentPath = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/cartridge.agent";
             FileUtils.copyDirectory(new File(srcAgentPath), new File(destAgentPath));
 
-            List<File> extensionFiles = (List<File>) FileUtils.listFiles(new File(srcAgentPath + "/extensions"), new String[]{"sh"}, false);
-            for (File extensionFile : extensionFiles) {
-                executeCommand("chmod +x " + extensionFile.getAbsolutePath());
-            }
-
             String srcAgentConfPath = getResourcesFolderPath() + "/agent.conf";
             String destAgentConfPath = destAgentPath + "/agent.conf";
             FileUtils.copyFile(new File(srcAgentConfPath), new File(destAgentConfPath));
