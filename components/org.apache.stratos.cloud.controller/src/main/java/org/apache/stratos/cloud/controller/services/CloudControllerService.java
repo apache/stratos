@@ -346,6 +346,34 @@ public interface CloudControllerService {
 	 * @throws InvalidIaasProviderException        if the iaas providers configured are not valid.
 	 * @throws IllegalArgumentException            if the provided argument is not valid.
 	 */
-	void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
-			throws DeploymentPolicyAlreadyExistsException;
+	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException;
+
+	/**
+	 * Update existing deployment policy
+	 *
+	 * @param deploymentPolicy DeployementPolicy
+	 * @throws InvalidCartridgeDefinitionException if the cartridge configuration is not valid.
+	 * @throws InvalidIaasProviderException        if the iaas providers configured are not valid.
+	 * @throws IllegalArgumentException            if the provided argument is not valid.
+	 */
+	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException;
+
+	/**
+	 * Remove deployment policy
+	 *
+	 * @param deploymentPolicyID deploymentPolicyID
+	 * @throws InvalidCartridgeDefinitionException if the cartridge configuration is not valid.
+	 * @throws InvalidIaasProviderException        if the iaas providers configured are not valid.
+	 * @throws IllegalArgumentException            if the provided argument is not valid.
+	 */
+	public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException;
+
+	/**
+	 * Get deployment policy definition
+	 * @param deploymentPolicyID
+	 * @return
+	 */
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException;
+
+
 }

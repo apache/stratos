@@ -1862,7 +1862,13 @@ public class StratosApiV41Utils {
 				log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
 				                        deployementPolicyDefinitionBean.getId()));
 			}
-		} catch (Exception e) {
+		}
+		catch (CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException e){
+			String msg = "Deployment policy already exist [Deployment-policy-id]"+deployementPolicyDefinitionBean.getId();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+		catch (Exception e) {
 			String msg = "Could not add deployment policy";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
@@ -1876,5 +1882,34 @@ public class StratosApiV41Utils {
 	 */
 	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) {
 		return null;
+	}
+
+	public static void updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
+			throws RestAPIException {
+		try {
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("Adding deployment policy: [deployment-policy-id] %s ",
+				                        deploymentPolicyDefinitionBean.getId()));
+			}
+
+			DeploymentPolicy deploymentPolicy =
+					ObjectConverter.convetToCCDeploymentPolicy(deploymentPolicyDefinitionBean);
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			cloudControllerServiceClient.updateDeploymentPolicy(deploymentPolicy);
+
+			if (log.isDebugEnabled()) {
+				log.debug(String.format("DeploymentPolicy updates successfully : [deployment-policy-id] %s ",
+				                        deploymentPolicyDefinitionBean.getId()));
+			}
+		} catch (CloudControllerServiceDeploymentPolicyNotExistsExceptionException e) {
+			String msg =
+					"Deployment policy already exist [Deployment-policy-id]" + deploymentPolicyDefinitionBean.getId();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		} catch (Exception e) {
+			String msg = "Could not add deployment policy";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
 	}
 }

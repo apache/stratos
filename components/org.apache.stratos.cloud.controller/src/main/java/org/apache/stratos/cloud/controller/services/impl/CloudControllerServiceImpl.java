@@ -1360,7 +1360,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 
-	@Override public void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
+	@Override
+	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
 			throws DeploymentPolicyAlreadyExistsException {
 
 		handleNullObject(deploymentPolicy, "Deployment policy is null");
@@ -1387,6 +1388,67 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			log.info("Successfully added deployment policy: [deployment_policy_id] " + deploymentPolicyID);
 		}
 
+	}
+
+	@Override
+	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy)
+			throws DeploymentPolicyNotExistsException {
+		handleNullObject(deploymentPolicy, "Deployment policy is null");
+
+		if (log.isInfoEnabled()) {
+			log.info("Updating deployment policy: [deployment-policy_id] " + deploymentPolicy.getDeploymentPolicyID());
+		}
+		if (log.isDebugEnabled()) {
+			log.debug("Updating Deployment policy definition: " + deploymentPolicy.toString());
+		}
+
+		String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
+		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
+			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
+			log.error(message);
+			throw new DeploymentPolicyNotExistsException(message);
+		}
+
+		// Add cartridge to the cloud controller context and persist
+		CloudControllerContext.getInstance().addDeploymentPolicy(deploymentPolicy);
+		CloudControllerContext.getInstance().persist();
+
+		if (log.isInfoEnabled()) {
+			log.info("Successfully added deployment policy: [deployment_policy_id] " + deploymentPolicyID);
+		}
+	}
+
+	@Override
+	public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException {
+		if (log.isInfoEnabled()) {
+			log.info("Removing deployment policy: [deployment-policy_id] " + deploymentPolicyID);
+		}
+		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
+			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
+			log.error(message);
+			throw new DeploymentPolicyNotExistsException(message);
+		}
+		CloudControllerContext.getInstance().removeDeploymentPolicy(deploymentPolicyID);
+		if (log.isInfoEnabled()) {
+			log.info("Successfully removed deployment policy: [deployment_policy_id] " + deploymentPolicyID);
+		}
+
+	}
+
+	@Override
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID)
+			throws DeploymentPolicyNotExistsException {
+		if (log.isInfoEnabled()) {
+			log.info("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
+		}
+		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
+			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
+			log.error(message);
+			throw new DeploymentPolicyNotExistsException(message);
+		}
+		DeploymentPolicy deploymentPolicy =
+				CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
+		return deploymentPolicy;
 	}
 
 	@Override
