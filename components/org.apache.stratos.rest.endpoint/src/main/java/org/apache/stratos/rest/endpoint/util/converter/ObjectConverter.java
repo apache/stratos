@@ -354,22 +354,21 @@ public class ObjectConverter {
         return autoscalePolicy;
     }
 
-    public static org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy convetToCCDeploymentPolicy(
-             DeploymentPolicyBean deploymentPolicyBean) {
+	public static org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy convetToCCDeploymentPolicy(
+			DeploymentPolicyBean deploymentPolicyBean) {
 
-	    org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy deploymentPolicy =
-                new org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy();
+		org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy deploymentPolicy =
+				new org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy();
 
-        deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
+		deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
 
-        if (deploymentPolicyBean.getNetworkPartitionBeans()!= null) {
-            deploymentPolicy.setNetworkPartitionsRef(
-		            convertNetworkPartitionRefToStubNetworkPartitionRef(
-				            deploymentPolicyBean.getNetworkPartitionBeans()));
-        }
+		if (deploymentPolicyBean.getNetworkPartitionBeans() != null) {
+			deploymentPolicy.setNetworkPartitionsRef(convertNetworkPartitionRefToStubNetworkPartitionRef(
+					deploymentPolicyBean.getNetworkPartitionBeans()));
+		}
 
-        return deploymentPolicy;
-    }
+		return deploymentPolicy;
+	}
 
     public static DeploymentPolicyBean convertStubDeploymentPolicyToDeploymentPolicy(
             org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy stubDeploymentPolicy) {
@@ -567,7 +566,7 @@ public class ObjectConverter {
 		org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef[] networkPartition =
 				new NetworkPartitionRef[networkPartitionBean.length];
 		for (int i = 0; i < networkPartitionBean.length; i++) {
-			networkPartition[i]=new NetworkPartitionRef();
+			networkPartition[i] = new NetworkPartitionRef();
 			networkPartition[i].setId(networkPartitionBean[i].getId());
 			networkPartition[i].setPartitionAlgo(networkPartitionBean[i].getPartitionAlgo());
 			networkPartition[i].setPartitions(convertToCCPartitionRefPojos(networkPartitionBean[i].getPartitions()));
@@ -575,6 +574,7 @@ public class ObjectConverter {
 
 		return networkPartition;
 	}
+
     private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<ChildLevelNetworkPartitionBean> networkPartitions) {
 
         ChildLevelNetworkPartition[] childLevelNetworkPartitions = new ChildLevelNetworkPartition[networkPartitions.size()];
@@ -716,8 +716,7 @@ public class ObjectConverter {
 	private static PartitionRef[] convertToCCPartitionRefPojos
 			(List<PartitionRefBean> partitionList) {
 
-		PartitionRef[] partitions =
-				new PartitionRef[partitionList.size()];
+		PartitionRef[] partitions = new PartitionRef[partitionList.size()];
 		for (int i = 0; i < partitionList.size(); i++) {
 			partitions[i] = convertStubPartitionToPartitionRef(partitionList.get(i));
 		}

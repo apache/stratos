@@ -23,6 +23,9 @@ echo ${artifacts_path}/autoscale-policy.json
 echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
+echo "Adding deploy policy..."
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentpolicy
+
 echo "Adding php cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
