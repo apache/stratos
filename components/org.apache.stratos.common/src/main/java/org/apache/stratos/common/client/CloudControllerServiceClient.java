@@ -199,5 +199,13 @@ public class CloudControllerServiceClient {
 		stub.updateDeployementPolicy(deploymentPolicy);
 	}
 
+	public void removeDeploymentPolicy(String deploymentPolicyID)
+			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
+		stub.removeDeployementPolicy(deploymentPolicyID);
+	}
 
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID)
+			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
+		return stub.getDeploymentPolicy(deploymentPolicyID);
+	}
 }

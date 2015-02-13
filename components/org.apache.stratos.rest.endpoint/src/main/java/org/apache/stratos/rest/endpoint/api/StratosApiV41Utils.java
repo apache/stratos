@@ -1843,7 +1843,7 @@ public class StratosApiV41Utils {
 	/**
 	 * Add deployment policy
 	 *
-	 * @param deployementPolicyDefinitionBean
+	 * @param deployementPolicyDefinitionBean DeploymentPolicyBean
 	 */
 	public static void addDeploymentPolicy(DeploymentPolicyBean deployementPolicyDefinitionBean)
 			throws RestAPIException {
@@ -1862,13 +1862,12 @@ public class StratosApiV41Utils {
 				log.debug(String.format("Successfully added deploymentPolicy: [deployment-policy-id] %s ",
 				                        deployementPolicyDefinitionBean.getId()));
 			}
-		}
-		catch (CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException e){
-			String msg = "Deployment policy already exist [Deployment-policy-id]"+deployementPolicyDefinitionBean.getId();
+		} catch (CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException e) {
+			String msg =
+					"Deployment policy already exist [Deployment-policy-id]" + deployementPolicyDefinitionBean.getId();
 			log.error(msg, e);
 			throw new RestAPIException(msg);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			String msg = "Could not add deployment policy";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
@@ -1880,10 +1879,28 @@ public class StratosApiV41Utils {
 	 * @param deploymentPolicyID Deployment policy ID
 	 * @return
 	 */
-	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) {
-		return null;
+	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) throws RestAPIException {
+
+		DeploymentPolicyBean deploymentPolicy = null;
+		try {
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			deploymentPolicy = ObjectConverter
+					.convetFromCCDeploymentPolicy(cloudControllerServiceClient.getDeploymentPolicy
+							(deploymentPolicyID));
+		} catch (Exception e) {
+			String msg = "Could not find deployment policy [deployment-policy-id" + deploymentPolicyID;
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+
+		return deploymentPolicy;
 	}
 
+	/**
+	 * Update deployement policy
+	 * @param deploymentPolicyDefinitionBean DeploymentPolicyBean
+	 * @throws RestAPIException
+	 */
 	public static void updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
 			throws RestAPIException {
 		try {
@@ -1908,6 +1925,24 @@ public class StratosApiV41Utils {
 			throw new RestAPIException(msg);
 		} catch (Exception e) {
 			String msg = "Could not add deployment policy";
+			log.error(msg, e);
+			throw new RestAPIException(msg);
+		}
+	}
+
+	/**
+	 * Remove deployment policy
+	 * @param deploymentPolicyID Deployment policy ID
+	 * @throws RestAPIException
+	 */
+	public static void removeDeploymentPolicy(String deploymentPolicyID)
+			throws RestAPIException {
+		try {
+			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+			cloudControllerServiceClient.removeDeploymentPolicy(deploymentPolicyID);
+		}
+		catch(Exception e){
+			String msg = "Could not remove deployment policy";
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}
