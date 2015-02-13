@@ -1058,7 +1058,7 @@ public class StratosApiV41Utils {
 			log.error(message);
 			throw new RestAPIException(message);
 		}
-		if(deploymentPolicy.getNetworkPartitionBeans().length==0){
+		if(deploymentPolicy.getNetworkPartition().size()==0){
 			String message="No network partitions specify with the policy";
 			log.error(message);
 			throw new RestAPIException(message);

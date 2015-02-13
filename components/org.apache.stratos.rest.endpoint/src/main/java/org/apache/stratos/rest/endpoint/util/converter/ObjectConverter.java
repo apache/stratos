@@ -364,9 +364,9 @@ public class ObjectConverter {
 
 		deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
 
-		if (deploymentPolicyBean.getNetworkPartitionBeans() != null) {
+		if (deploymentPolicyBean.getNetworkPartition()!= null) {
 			deploymentPolicy.setNetworkPartitionsRef(convertNetworkPartitionRefToStubNetworkPartitionRef(
-					deploymentPolicyBean.getNetworkPartitionBeans()));
+					deploymentPolicyBean.getNetworkPartition()));
 		}
 
 		return deploymentPolicy;
@@ -563,15 +563,15 @@ public class ObjectConverter {
     }
 
 	public static NetworkPartitionRef[] convertNetworkPartitionRefToStubNetworkPartitionRef(
-			NetworkPartitionRefBean[] networkPartitionBean) {
+			List<NetworkPartitionRefBean> networkPartitionBean) {
 
 		org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef[] networkPartition =
-				new NetworkPartitionRef[networkPartitionBean.length];
-		for (int i = 0; i < networkPartitionBean.length; i++) {
+				new NetworkPartitionRef[networkPartitionBean.size()];
+		for (int i=0;i<networkPartitionBean.size();i++) {
 			networkPartition[i] = new NetworkPartitionRef();
-			networkPartition[i].setId(networkPartitionBean[i].getId());
-			networkPartition[i].setPartitionAlgo(networkPartitionBean[i].getPartitionAlgo());
-			networkPartition[i].setPartitions(convertToCCPartitionRefPojos(networkPartitionBean[i].getPartitions()));
+			networkPartition[i].setId(networkPartitionBean.get(i).getId());
+			networkPartition[i].setPartitionAlgo(networkPartitionBean.get(i).getPartitionAlgo());
+			networkPartition[i].setPartitions(convertToCCPartitionRefPojos(networkPartitionBean.get(i).getPartitions()));
 		}
 
 		return networkPartition;

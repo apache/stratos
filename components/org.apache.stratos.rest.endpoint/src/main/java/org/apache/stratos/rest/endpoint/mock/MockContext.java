@@ -547,7 +547,7 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitionBeans()[0].getPartitions().toArray(new PartitionBean[0]);
+        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartition().get(0).getPartitions().toArray(new PartitionBean[0]);
     		}
     	}
         	
@@ -556,7 +556,7 @@ public class MockContext {
         }
         //FIXME to parse thr all the NW partitions
     	return (deploymentPolicyMap.get(tenantId)).
-                get(deploymentPolicyId).getNetworkPartitionBeans()[0].getPartitions().toArray(new PartitionBean[0]);
+                get(deploymentPolicyId).getNetworkPartition().get(0).getPartitions().toArray(new PartitionBean[0]);
     }
 
     public NetworkPartitionRefBean[] getPartitionGroups(String deploymentPolicyId)  throws RestAPIException{
@@ -569,14 +569,14 @@ public class MockContext {
     			if(!(deploymentPolicyMap.get(PUBLIC_DEFINITION)).containsKey(deploymentPolicyId)){
         			throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         		}
-        		return (deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartitionBeans();
+        		return (NetworkPartitionRefBean[])(deploymentPolicyMap.get(PUBLIC_DEFINITION)).get(deploymentPolicyId).getNetworkPartition().toArray();
     		}
     	}
         	
     	if(!(deploymentPolicyMap.get(tenantId)).containsKey(deploymentPolicyId)){
     		throw new RestAPIException(Status.NO_CONTENT,"There is no deployment policy with id: " + deploymentPolicyId);
         }
-    	return (deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartitionBeans();
+    	return (NetworkPartitionRefBean[])(deploymentPolicyMap.get(tenantId)).get(deploymentPolicyId).getNetworkPartition().toArray();
     }
 
     public AutoscalePolicyBean[] getAutoscalePolicies()  throws RestAPIException{
@@ -710,7 +710,7 @@ public class MockContext {
     	}
         	  	
         PartitionBean[] partitions = null;
-         for(NetworkPartitionRefBean networkPartition : deploymentPolicy.getNetworkPartitionBeans()){
+         for(NetworkPartitionRefBean networkPartition : deploymentPolicy.getNetworkPartition()){
              if(networkPartition.getId().equals(partitionGroupId)){
                  partitions =  networkPartition.getPartitions().toArray(new PartitionBean[0]);
              }
