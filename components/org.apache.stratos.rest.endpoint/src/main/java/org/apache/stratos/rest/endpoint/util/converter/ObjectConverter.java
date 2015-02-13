@@ -1731,4 +1731,8 @@ public class ObjectConverter {
         domainMappingBean.setContextPath(domainMapping.getContextPath());
         return domainMappingBean;
     }
+
+	public static DeploymentPolicyBean convetFromCCDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+		return null;
+	}
 }

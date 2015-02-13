@@ -160,7 +160,7 @@ public class StratosApiV41 extends AbstractApi {
 	/**
 	 * Creates the Deployement Policy Definition.
 	 *
-	 * @param deploymentPolicyDefinitionBean the cartridge definition bean
+	 * @param deploymentPolicyDefinitionBean the deployment policy bean
 	 * @return the response
 	 * @throws RestAPIException the rest api exception
 	 */
@@ -174,15 +174,6 @@ public class StratosApiV41 extends AbstractApi {
 
 		String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
 		// TODO :: Deployment policy validation
-		DeploymentPolicyBean depploymentPolicy = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyID);
-		if (depploymentPolicy != null) {
-			String msg =
-					String.format("Deployment policy already exists: [Deployment Policy ID] %s", deploymentPolicyID);
-			log.warn(msg);
-			return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
-					Response.Status.CONFLICT.getStatusCode(), msg)).build();
-		}
-
 		StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
 		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
 		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
@@ -195,7 +186,7 @@ public class StratosApiV41 extends AbstractApi {
 	/**
 	 * Updates the Deployment Policy Definition.
 	 *
-	 * @param deploymentPolicyDefinitionBean the cartridge definition bean
+	 * @param deploymentPolicyDefinitionBean the deployment policy bean
 	 * @return the response
 	 * @throws RestAPIException the rest api exception
 	 */
@@ -214,7 +205,31 @@ public class StratosApiV41 extends AbstractApi {
 		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
 		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
 		                                                            String.format(
-				                                                            "Deployment policy added successfully: " +
+				                                                            "Deployment policy updated successfully: " +
+				                                                            "[deployment-policy-id] %s",
+				                                                            deploymentPolicyID))).build();
+	}
+
+	/**
+	 * Updates the Deployment Policy Definition.
+	 *
+	 * @param deploymentPolicyID the deployment policy id
+	 * @return the response
+	 * @throws RestAPIException the rest api exception
+	 */
+	@DELETE
+	@Path("/deploymentPolicies")
+	@Produces("application/json")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/admin/manage/addCartridge")
+	public Response removeDeploymentPolicy(String deploymentPolicyID)
+			throws RestAPIException {
+
+		StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
+		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+		                                                            String.format(
+				                                                            "Deployment policy removed successfully: " +
 				                                                            "[deployment-policy-id] %s",
 				                                                            deploymentPolicyID))).build();
 	}
