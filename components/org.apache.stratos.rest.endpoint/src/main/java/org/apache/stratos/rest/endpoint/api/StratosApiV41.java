@@ -193,6 +193,32 @@ public class StratosApiV41 extends AbstractApi {
 	}
 
 	/**
+	 * Creates the Deployement Policy Definition.
+	 *
+	 * @param deploymentPolicyDefinitionBean the cartridge definition bean
+	 * @return the response
+	 * @throws RestAPIException the rest api exception
+	 */
+	@PUT
+	@Path("/deploymentpolicy")
+	@Produces("application/json")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/admin/manage/addCartridge")
+	public Response updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
+			throws RestAPIException {
+
+		String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+		// TODO :: Deployment policy validation
+
+		StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
+		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+		                                                            String.format(
+				                                                            "Deployment policy added successfully: " +
+				                                                            "[deployment-policy-id] %s",
+				                                                            deploymentPolicyID))).build();
+	}
+	/**
 	 * Updates the cartridge definition.
 	 *
 	 * @param cartridgeDefinitionBean the cartridge definition bean
