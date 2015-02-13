@@ -94,5 +94,11 @@
                         <property name="projectName" value="GCE_PROJECTNAME" />>
                        <property name="autoAssignIp" value="true" />
                 </iaasProviderGCE_PROVIDER_END>
+                <KUBERNETES_PROVIDER_STARTiaasProvider type="kubernetes" name="KUBERNETES specific details">
+                    <className>org.apache.stratos.cloud.controller.iaases.kubernetes.KubernetesIaas</className>
+                    <provider>kubernetes</provider>
+                    <identity svns:secretAlias="cloud.controller.kubernetes.identity">identity</identity>
+                    <credential svns:secretAlias="cloud.controller.kubernetes.credential">credential</credential>
+                </iaasProviderKUBERNETES_PROVIDER_END>
         </iaasProviders>
 </cloudController>
