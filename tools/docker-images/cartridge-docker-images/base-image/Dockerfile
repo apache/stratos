@@ -40,6 +40,7 @@ RUN pip install paho-mqtt
 RUN pip install psutil
 RUN pip install pexpect
 RUN pip install pycrypto
+RUN pip install gitpython
 
 # -------------------------
 # Install cartridge agent 

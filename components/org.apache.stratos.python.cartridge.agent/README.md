@@ -13,6 +13,8 @@ How to run Live Tests
    pip install paho-mqtt
    pip install psutil
    pip install pexpect
+   pip install pycrypto
+   pip install gitpython
    ```
 
 2. Start ActiveMQ:
