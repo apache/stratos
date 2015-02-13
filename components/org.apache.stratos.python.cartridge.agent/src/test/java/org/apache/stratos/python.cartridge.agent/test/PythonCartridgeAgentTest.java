@@ -58,6 +58,7 @@ public class PythonCartridgeAgentTest {
     private static final Log log = LogFactory.getLog(PythonCartridgeAgentTest.class);
 
     private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final long TIMEOUT = 200000;
     private static final String CLUSTER_ID = "php.php.domain";
     private static final String DEPLOYMENT_POLICY_NAME = "deployment-policy-1";
     private static final String AUTOSCALING_POLICY_NAME = "autoscaling-policy-1";
@@ -70,30 +71,43 @@ public class PythonCartridgeAgentTest {
     private static final String SERVICE_NAME = "php";
 
     private static List<ServerSocket> serverSocketList;
+    private static List<Executor> executorList;
 
     @BeforeClass
-    public static void setUp(){
+    public static void setUp() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
         serverSocketList = new ArrayList<ServerSocket>();
+        executorList = new ArrayList<Executor>();
     }
 
     @AfterClass
     public static void tearDown() {
-        for(ServerSocket serverSocket : serverSocketList) {
+        for (Executor executor : executorList) {
             try {
+                ExecuteWatchdog watchdog = executor.getWatchdog();
+                if (watchdog != null) {
+                    log.info("Terminating agent process");
+                    watchdog.destroyProcess();
+                }
+                if (executor.getWorkingDirectory() != null) {
+                    File workingDirectory = executor.getWorkingDirectory();
+                    log.info("Cleaning working directory: " + workingDirectory.getAbsolutePath());
+                    FileUtils.deleteDirectory(workingDirectory);
+                }
+            } catch (Exception ignore) {
+            }
+        }
+        for (ServerSocket serverSocket : serverSocketList) {
+            try {
+                log.info("Stopping socket server: " + serverSocket.getLocalSocketAddress());
                 serverSocket.close();
             } catch (IOException ignore) {
             }
         }
     }
 
-    private static String getResourcesFolderPath() {
-        String path = PythonCartridgeAgentTest.class.getResource("/").getPath();
-        return StringUtils.removeEnd(path, File.separator);
-    }
-
-    @Test(timeout = 200000)
+    @Test(timeout = TIMEOUT)
     public void testPythonCartridgeAgent() {
 
         ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
@@ -109,6 +123,7 @@ public class PythonCartridgeAgentTest {
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
+                log.info("Instance started event received");
                 instanceStarted[0] = true;
             }
         });
@@ -118,6 +133,7 @@ public class PythonCartridgeAgentTest {
         instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
+                log.info("Instance activated event received");
                 instanceActivated[0] = true;
             }
         });
@@ -132,9 +148,9 @@ public class PythonCartridgeAgentTest {
         List<String> outputLines = new ArrayList<String>();
         while (!outputStream.isClosed()) {
             List<String> newLines = getNewLines(outputLines, outputStream.toString());
-            if(newLines.size() > 0) {
-                for(String line : newLines) {
-                    if(line.contains("Subscribed to 'topology/#'")) {
+            if (newLines.size() > 0) {
+                for (String line : newLines) {
+                    if (line.contains("Subscribed to 'topology/#'")) {
                         sleep(2000);
                         // Send complete topology event
                         log.info("Publishing complete topology event...");
@@ -155,7 +171,7 @@ public class PythonCartridgeAgentTest {
                         // Simulate server socket
                         startServerSocket(9080);
                     }
-                    if(line.contains("Artifact repository found")) {
+                    if (line.contains("Artifact repository found")) {
                         // Send artifact updated event
                         ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
                         artifactUpdatedEvent.setClusterId(CLUSTER_ID);
@@ -166,18 +182,14 @@ public class PythonCartridgeAgentTest {
                         eventPublisher.publish(artifactUpdatedEvent);
                     }
                     if (line.contains("Exception in thread") || line.contains("ERROR")) {
-                        break;
-                    }
-
-                    if(line.contains("Git clone operation for tenant u'" + TENANT_ID + "' successful")) {
-                        break;
-                    }
-
-                    if(instanceActivated[0]) {
-                        break;
+                        //throw new RuntimeException(line);
                     }
                     log.info(line);
                 }
+            }
+
+            if (instanceActivated[0]) {
+                break;
             }
             sleep(500);
         }
@@ -186,22 +198,32 @@ public class PythonCartridgeAgentTest {
         assertTrue("Instance activated event was not received", instanceActivated[0]);
     }
 
+    /**
+     * Publish messaging event
+     * @param event
+     */
     private void publishEvent(Event event) {
         String topicName = MessagingUtil.getMessageTopicName(event);
         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
         eventPublisher.publish(event);
     }
 
+    /**
+     * Start server socket
+     * @param port
+     */
     private void startServerSocket(final int port) {
         Thread socketThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     ServerSocket serverSocket = new ServerSocket(port);
-                    serverSocketList.add(serverSocket);
                     serverSocket.accept();
+                    serverSocketList.add(serverSocket);
                 } catch (IOException e) {
-                    log.error("Could not start server socket", e);
+                    String message = "Could not start server socket: [port] " + port;
+                    log.error(message, e);
+                    throw new RuntimeException(message, e);
                 }
             }
         });
@@ -210,6 +232,7 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Create test topology
+     *
      * @return
      */
     private Topology createTestTopology() {
@@ -236,18 +259,19 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Return new lines found in the output
+     *
      * @param currentOutputLines current output lines
-     * @param output output
+     * @param output             output
      * @return
      */
     private List<String> getNewLines(List<String> currentOutputLines, String output) {
         List<String> newLines = new ArrayList<String>();
 
-        if(StringUtils.isNotBlank(output)) {
-            String [] lines = output.split(NEW_LINE);
-            if(lines != null) {
-                for(String line : lines) {
-                    if(!currentOutputLines.contains(line)) {
+        if (StringUtils.isNotBlank(output)) {
+            String[] lines = output.split(NEW_LINE);
+            if (lines != null) {
+                for (String line : lines) {
+                    if (!currentOutputLines.contains(line)) {
                         currentOutputLines.add(line);
                         newLines.add(line);
                     }
@@ -259,6 +283,7 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Sleep current thread
+     *
      * @param time
      */
     private void sleep(long time) {
@@ -270,6 +295,7 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Copy python agent distribution to a new folder, extract it and copy sample configuration files
+     *
      * @return
      */
     private String setupPythonAgent() {
@@ -279,8 +305,8 @@ public class PythonCartridgeAgentTest {
             String destAgentPath = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/cartridge.agent";
             FileUtils.copyDirectory(new File(srcAgentPath), new File(destAgentPath));
 
-            List<File> extensionFiles = (List<File>) FileUtils.listFiles(new File(srcAgentPath + "/extensions"), new String[] { "sh"}, false);
-            for(File extensionFile : extensionFiles) {
+            List<File> extensionFiles = (List<File>) FileUtils.listFiles(new File(srcAgentPath + "/extensions"), new String[]{"sh"}, false);
+            for (File extensionFile : extensionFiles) {
                 executeCommand("chmod +x " + extensionFile.getAbsolutePath());
             }
 
@@ -307,6 +333,7 @@ public class PythonCartridgeAgentTest {
 
     /**
      * Execute shell command
+     *
      * @param commandText
      */
     private ByteArrayOutputStreamLocal executeCommand(String commandText) {
@@ -316,16 +343,20 @@ public class PythonCartridgeAgentTest {
             DefaultExecutor exec = new DefaultExecutor();
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             exec.setStreamHandler(streamHandler);
+            ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
+            exec.setWatchdog(watchdog);
             exec.execute(commandline, new ExecuteResultHandler() {
                 @Override
                 public void onProcessComplete(int i) {
+                    log.info("Agent process completed");
                 }
 
                 @Override
                 public void onProcessFailed(ExecuteException e) {
-                    log.error("Process failed", e);
+                    log.error("Agent process failed", e);
                 }
             });
+            executorList.add(exec);
             return outputStream;
         } catch (Exception e) {
             log.error(outputStream.toString(), e);
@@ -334,9 +365,18 @@ public class PythonCartridgeAgentTest {
     }
 
     /**
-     * Implements isClosed() method
+     * Get resources folder path
+     * @return
      */
-    private class ByteArrayOutputStreamLocal extends ByteArrayOutputStream  {
+    private static String getResourcesFolderPath() {
+        String path = PythonCartridgeAgentTest.class.getResource("/").getPath();
+        return StringUtils.removeEnd(path, File.separator);
+    }
+
+    /**
+     * Implements ByteArrayOutputStream.isClosed() method
+     */
+    private class ByteArrayOutputStreamLocal extends ByteArrayOutputStream {
         private boolean closed;
 
         @Override
