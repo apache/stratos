@@ -20,6 +20,7 @@ import base64
 import os
 import time
 import socket
+import string
 
 from log import LogFactory
 
@@ -54,8 +55,10 @@ def decrypt_password(pass_str, secret):
     except:
         log.exception("Exception occurred while decrypting password")
 
+    # remove nonprintable characters that are padded in the decrypted password
+    dec_pass = filter(lambda x: x in string.printable, dec_pass)
     log.debug("Decrypted PWD: [%r]" % dec_pass)
-    return unicode(dec_pass, "utf-8")
+    return dec_pass
 
 
 def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):

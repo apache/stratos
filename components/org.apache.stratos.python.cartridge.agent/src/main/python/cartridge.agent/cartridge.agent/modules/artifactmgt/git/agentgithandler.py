@@ -188,7 +188,7 @@ class AgentGitHandler:
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
 
         try:
-            Repo.clone_from(unicode(git_repo.repo_url, "utf-8"), unicode(git_repo.local_repo_path, "utf-8"))
+            Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)
             AgentGitHandler.add_repo(git_repo)
             AgentGitHandler.log.info("Git clone operation for tenant %s successful" % git_repo.tenant_id)
             return git_repo
