@@ -21,16 +21,16 @@ package org.apache.stratos.messaging.message.processor.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.ClusterInstanceActivatedEvent;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.MessagingUtil;
+
+import java.net.URL;
+import java.util.List;
 
 /**
  * This processor will act upon the cluster activated event
@@ -59,12 +59,13 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             ClusterInstanceActivatedEvent event = (ClusterInstanceActivatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterInstanceActivatedEvent.class);
 
-            TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
+            String clusterId = event.getClusterId();
+            TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), clusterId);
             try {
                 return doProcess(event, topology);
 
             } finally {
-                TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), event.getClusterId());
+                TopologyUpdater.releaseWriteLockForCluster(event.getServiceName(), clusterId);
             }
 
         } else {
@@ -120,19 +121,37 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
             }
         } else {
             // Apply changes to the topology
+            List<KubernetesService> kubernetesServices = event.getKubernetesServices();
+            if(kubernetesServices != null) {
+                // Set kubernetes services
+                cluster.setKubernetesServices(kubernetesServices);
+                try {
+                    // Generate access URLs for kubernetes services
+                    for (KubernetesService kubernetesService : kubernetesServices) {
+                        String[] publicIPs = kubernetesService.getPublicIPs();
+                        if((publicIPs != null) && (publicIPs.length > 0)) {
+                            URL accessURL = new URL(kubernetesService.getProtocol(), publicIPs[0],
+                                    kubernetesService.getPort(), "");
+                            cluster.addAccessUrl(accessURL.toString());
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Could not create access URLs for Kubernetes services");
+                }
+            }
+
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
             if(context == null) {
-                log.warn("Cluster Instance Context is not found for [cluster] " +
+                log.warn("Cluster instance context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
                         event.getInstanceId());
                 return false;
             }
             ClusterStatus status = ClusterStatus.Active;
             if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid State Transition from " + context.getStatus() + " to " + status);
+                log.error("Invalid state transition from " + context.getStatus() + " to " + status);
             }
             context.setStatus(status);
-
         }
 
         // Notify event listeners

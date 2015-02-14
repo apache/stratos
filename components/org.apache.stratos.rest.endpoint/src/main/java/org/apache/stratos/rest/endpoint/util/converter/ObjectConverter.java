@@ -37,10 +37,7 @@ import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingB
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
 import org.apache.stratos.common.beans.cartridge.*;
-import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
-import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
-import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
+import org.apache.stratos.common.beans.kubernetes.*;
 import org.apache.stratos.common.beans.partition.ChildLevelNetworkPartitionBean;
 import org.apache.stratos.common.beans.partition.ChildLevelPartitionBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
@@ -60,6 +57,7 @@ import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
@@ -698,7 +696,29 @@ public class ObjectConverter {
         for (String hostname : cluster.getHostNames()) {
             clusterInstanceBean.getHostNames().add(hostname);
         }
+        clusterInstanceBean.setKubernetesServices(convertKubernetesServiceToKubernetesServiceBean(
+                cluster.getKubernetesServices()));
         return clusterInstanceBean;
+    }
+
+    private static List<KubernetesServiceBean> convertKubernetesServiceToKubernetesServiceBean(
+            List<KubernetesService> kubernetesServices) {
+        List<KubernetesServiceBean> kubernetesServiceBeans = new ArrayList<KubernetesServiceBean>();
+        if(kubernetesServices != null) {
+            for (KubernetesService kubernetesService : kubernetesServices) {
+
+                KubernetesServiceBean kubernetesServiceBean = new KubernetesServiceBean();
+                kubernetesServiceBean.setId(kubernetesService.getId());
+                kubernetesServiceBean.setPublicIPs(kubernetesService.getPublicIPs());
+                kubernetesServiceBean.setPortalIP(kubernetesService.getPortalIP());
+                kubernetesServiceBean.setProtocol(kubernetesService.getProtocol());
+                kubernetesServiceBean.setPort(kubernetesService.getPort());
+                kubernetesServiceBean.setContainerPort(kubernetesService.getContainerPort());
+
+                kubernetesServiceBeans.add(kubernetesServiceBean);
+            }
+        }
+        return kubernetesServiceBeans;
     }
 
     private static org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] convertToCCPartitionPojos
@@ -1386,7 +1406,6 @@ public class ObjectConverter {
         applicationBean.setTenantDomain(application.getTenantDomain());
         applicationBean.setTenantAdminUsername(application.getTenantAdminUserName());
         applicationBean.setApplicationInstances(convertApplicationInstancesToApplicationInstances(application));
-	   // applicationBean.setAccessURL(createApplicationAccessUrl(application));
         return applicationBean;
     }
 

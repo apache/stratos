@@ -20,10 +20,9 @@
  */
 package org.apache.stratos.kubernetes.client.model;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.Arrays;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * https://github.com/GoogleCloudPlatform/kubernetes/blob/master/api/doc/service-schema.json
@@ -46,6 +45,7 @@ public class Service implements Serializable {
 	private String apiVersion;
 	private Labels labels;
 	private String[] publicIPs;
+    private String portalIP;
 	
 	public String getKind() {
 		return kind;
@@ -135,11 +135,19 @@ public class Service implements Serializable {
 	    this.publicIPs = publicIPs;
 	}
 
-	@Override
+    public String getPortalIP() {
+        return portalIP;
+    }
+
+    public void setPortalIP(String portalIP) {
+        this.portalIP = portalIP;
+    }
+
+    @Override
     public String toString() {
         return "Service [kind=" + kind + ", id=" + id + ", creationTimestamp=" + creationTimestamp + ", selfLink="
                 + selfLink + ", name=" + name + ", port=" + port + ", containerPort=" + containerPort + ", selector="
                 + selector + ", apiVersion=" + apiVersion + ", labels=" + labels + ", publicIPs="
-                + Arrays.toString(publicIPs) + "]";
+                + Arrays.toString(publicIPs) + "portalIP=" + portalIP + "]";
     }
 }

@@ -44,6 +44,7 @@ import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
 import org.apache.stratos.kubernetes.client.model.Labels;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Service;
+import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -214,8 +215,9 @@ public class KubernetesIaas extends Iaas {
             createReplicationController(clusterContext, memberContext, kubernetesApi);
 
             // Create proxy services for port mappings
-            List<Service> services = createProxyServices(clusterContext, kubClusterContext, kubernetesApi);
-            clusterContext.setKubernetesServices(services);
+            List<KubernetesService> kubernetesServices = createKubernetesServices(kubernetesApi, clusterContext,
+                    kubClusterContext);
+            clusterContext.setKubernetesServices(kubernetesServices);
             CloudControllerContext.getInstance().updateClusterContext(clusterContext);
 
             // Wait for pod status to be changed to running
@@ -229,7 +231,7 @@ public class KubernetesIaas extends Iaas {
             MemberContext newMemberContext = createNewMemberContext(memberContext, pod, kubernetesCluster);
             CloudControllerContext.getInstance().addMemberContext(newMemberContext);
 
-            // persist in registry
+            // Persist in registry
             CloudControllerContext.getInstance().persist();
             log.info(String.format("Container started successfully: [cluster-id] %s [member-id] %s",
                     newMemberContext.getClusterId(), newMemberContext.getMemberId()));
@@ -408,18 +410,17 @@ public class KubernetesIaas extends Iaas {
     }
 
     /**
-     * Create proxy services for the cluster and add them to the cluster context.
+     * Creates and returns proxy services for the cluster.
      *
+     * @param kubernetesApi
      * @param clusterContext
      * @param kubernetesClusterContext
-     * @param kubernetesApi
      * @return
      * @throws KubernetesClientException
      */
-    private List<Service> createProxyServices(ClusterContext clusterContext,
-                                              KubernetesClusterContext kubernetesClusterContext,
-                                              KubernetesApiClient kubernetesApi) throws KubernetesClientException {
-        List<Service> services = new ArrayList<Service>();
+    private List<KubernetesService> createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
+                                                             KubernetesClusterContext kubernetesClusterContext) throws KubernetesClientException {
+        List<KubernetesService> kubernetesServices = new ArrayList<KubernetesService>();
 
         String clusterId = clusterContext.getClusterId();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
@@ -453,7 +454,15 @@ public class KubernetesIaas extends Iaas {
             }
 
             Service service = kubernetesApi.getService(serviceId);
-            services.add(service);
+
+            KubernetesService kubernetesService = new KubernetesService();
+            kubernetesService.setId(service.getId());
+            kubernetesService.setPortalIP(service.getPortalIP());
+            kubernetesService.setPublicIPs(service.getPublicIPs());
+            kubernetesService.setProtocol(portMapping.getProtocol());
+            kubernetesService.setPort(service.getPort());
+            kubernetesService.setContainerPort(portMapping.getPort());
+            kubernetesServices.add(kubernetesService);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [service-id] %s " +
@@ -461,7 +470,7 @@ public class KubernetesIaas extends Iaas {
                         serviceId, portMapping.getProtocol(), servicePort, portMapping.getPort()));
             }
         }
-        return services;
+        return kubernetesServices;
     }
 
     private void updateKubernetesServicePorts(KubernetesClusterContext kubernetesClusterContext, String clusterId,
@@ -519,13 +528,13 @@ public class KubernetesIaas extends Iaas {
 
             KubernetesApiClient kubApi = kubClusterContext.getKubApi();
 
-            // Remove the services
-            List<Service> services = clusterContext.getKubernetesServices();
-            if (services != null) {
-                for (Service service : services) {
+            // Remove kubernetes services
+            List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+            if (kubernetesServices != null) {
+                for (KubernetesService kubernetesService : kubernetesServices) {
                     try {
-                        kubApi.deleteService(service.getId());
-                        int allocatedPort = service.getPort();
+                        kubApi.deleteService(kubernetesService.getId());
+                        int allocatedPort = kubernetesService.getPort();
                         kubClusterContext.deallocatePort(allocatedPort);
                     } catch (KubernetesClientException e) {
                         log.error("Could not remove kubernetes service: [cluster-id] " + clusterId, e);

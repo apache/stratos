@@ -18,6 +18,8 @@
  */
 package org.apache.stratos.common.beans.topology;
 
+import org.apache.stratos.common.beans.kubernetes.KubernetesServiceBean;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.List;
@@ -35,8 +37,9 @@ public class ClusterInstanceBean implements Serializable {
     private String tenantRange;
     private List<String> hostNames;
 	private List<String> accessUrls;
+    private List<KubernetesServiceBean> kubernetesServices;
 
-	public String getStatus() {
+    public String getStatus() {
 		return status;
 	}
 
@@ -103,7 +106,8 @@ public class ClusterInstanceBean implements Serializable {
     @Override
     public String toString() {
         return "Cluster [serviceName=" + getServiceName() + ", clusterId=" + getClusterId() + ", member=" + getMember()
-                + ", tenantRange=" + getTenantRange() + ", hostNames=" + getHostNames();
+                + ", tenantRange=" + getTenantRange() + ", hostNames=" + getHostNames() + ", accessURLs=" +
+                getAccessUrls() + ", kubernetesServices=" + getKubernetesServices();
     }
 
     public String getParentInstanceId() {
@@ -121,4 +125,12 @@ public class ClusterInstanceBean implements Serializable {
 	public void setAccessUrls(List<String> accessUrls) {
 		this.accessUrls = accessUrls;
 	}
+
+    public void setKubernetesServices(List<KubernetesServiceBean> kubernetesServices) {
+        this.kubernetesServices = kubernetesServices;
+    }
+
+    public List<KubernetesServiceBean> getKubernetesServices() {
+        return kubernetesServices;
+    }
 }

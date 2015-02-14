@@ -46,7 +46,7 @@ public class Cluster implements Serializable {
     private List<String> hostNames;
     private String tenantRange;
     private boolean isLbCluster;
-    private boolean isKubernetesCluster; // TODO fix properly with an Enum
+    private boolean isKubernetesCluster;
     // Key: Member.memberId
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Map<String, Member> memberMap;
@@ -54,15 +54,14 @@ public class Cluster implements Serializable {
     //private ClusterStatus status;
 
     private String appId;
-
     private String parentId;
-
     private String loadBalanceAlgorithmName;
     @XmlJavaTypeAdapter(MapAdapter.class)
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
 	private List<String> accessUrls;
+    private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
         this.serviceName = cluster.getServiceName();
@@ -70,7 +69,6 @@ public class Cluster implements Serializable {
         this.deploymentPolicyName = cluster.getDeploymentPolicyName();
         this.autoscalePolicyName = cluster.getAutoscalePolicyName();
         this.appId = cluster.getAppId();
-        this.setKubernetesCluster(cluster.isKubernetesCluster());
         this.setHostNames(cluster.getHostNames());
         this.memberMap = cluster.getMemberMap();
         this.setInstanceIdToInstanceContextMap(cluster.getInstanceIdToInstanceContextMap());
@@ -79,6 +77,9 @@ public class Cluster implements Serializable {
         this.parentId = cluster.getParentId();
         this.tenantRange = cluster.getTenantRange();
         this.setLbCluster(cluster.isLbCluster());
+        this.setKubernetesCluster(cluster.isKubernetesCluster());
+        this.accessUrls = cluster.getAccessUrls();
+        this.kubernetesServices = cluster.getKubernetesServices();
     }
     
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
@@ -91,9 +92,8 @@ public class Cluster implements Serializable {
         this.memberMap = new HashMap<String, Member>();
         this.appId = appId;
         this.setInstanceIdToInstanceContextMap(new HashMap<String, ClusterInstance>());
-        //this.clusterStateManager = new LifeCycleStateManager<ClusterStatus>(ClusterStatus.Created, clusterId);
-        // temporary; should be removed
-        //this.status = ClusterStatus.Created;
+        this.accessUrls = new ArrayList<String>();
+        this.kubernetesServices = new ArrayList<KubernetesService>();
     }
 
     public String getServiceName() {
@@ -182,9 +182,9 @@ public class Cluster implements Serializable {
 		return isKubernetesCluster;
 	}
 
-	public void setKubernetesCluster(boolean isKubernetesCluster) {
-		this.isKubernetesCluster = isKubernetesCluster;
-	}
+    public void setKubernetesCluster(boolean isKubernetesCluster) {
+        this.isKubernetesCluster = isKubernetesCluster;
+    }
 
     /**
      * Check whether a given tenant id is in tenant range of the cluster.
@@ -305,12 +305,6 @@ public class Cluster implements Serializable {
         return clusterId.hashCode();
     }
 
-    public String toString () {
-
-        return " [ Cluster Id: " + clusterId + ", Service Name: " + serviceName + ", Autoscale Policy Name: "
-                + autoscalePolicyName + ", Deployment Policy Name: " + deploymentPolicyName +
-                ", Tenant Range: " + tenantRange + ", Is a Kubernetes Cluster: " + isKubernetesCluster + " ] ";
-    }
     public String getAppId() {
         return appId;
     }
@@ -346,12 +340,32 @@ public class Cluster implements Serializable {
 	public void setAccessUrls(List<String> accessUrls) {
 		this.accessUrls = accessUrls;
 	}
-	//    public ClusterStatus getTempStatus() {
-//        return status;
-//    }
-//
-//    public void setTempStatus(ClusterStatus status) {
-//        this.status = status;
-//    }
+
+    public void addAccessUrl(String accessUrl) {
+        if(accessUrls == null) {
+            accessUrls = new ArrayList<String>();
+        }
+        if(!accessUrls.contains(accessUrl)) {
+            accessUrls.add(accessUrl);
+        }
+    }
+
+    public List<KubernetesService> getKubernetesServices() {
+        return kubernetesServices;
+    }
+
+    public void setKubernetesServices(List<KubernetesService> kubernetesServices) {
+        this.kubernetesServices = kubernetesServices;
+        setKubernetesCluster((kubernetesServices != null) && (kubernetesServices.size() > 0));
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
+                        "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
+                        "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
+                deploymentPolicyName, hostNames, tenantRange,loadBalanceAlgorithmName, appId, parentId,
+                accessUrls, kubernetesServices );
+    }
 }
 

@@ -1087,7 +1087,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
-	            Cartridge cartridge=CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
+	            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
 
                 // Create cluster object
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),

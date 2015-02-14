@@ -133,6 +133,8 @@
                 <value>clusterInstances</value>
                 <value>applicationInstances</value>
                 <value>accessUrls</value>
+                <value>kubernetesServices</value>
+                <value>publicIPs</value>
             </list>
         </property>
     </bean>

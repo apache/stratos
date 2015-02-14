@@ -18,8 +18,10 @@
  */
 package org.apache.stratos.messaging.event.topology;
 
-import org.apache.stratos.messaging.domain.topology.ClusterStatus;
+import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.event.Event;
+
+import java.util.List;
 
 /**
  * Cluster activated event will be sent by Autoscaler
@@ -30,6 +32,7 @@ public class ClusterInstanceActivatedEvent extends Event {
     private final String clusterId;
     private String appId;
     private String instanceId;
+    private List<KubernetesService> kubernetesServices;
 
     public ClusterInstanceActivatedEvent(String appId, String serviceName, String clusterId, String instanceId) {
         this.serviceName = serviceName;
@@ -60,4 +63,11 @@ public class ClusterInstanceActivatedEvent extends Event {
         return instanceId;
     }
 
+    public List<KubernetesService> getKubernetesServices() {
+        return kubernetesServices;
+    }
+
+    public void setKubernetesServices(List<KubernetesService> kubernetesServices) {
+        this.kubernetesServices = kubernetesServices;
+    }
 }

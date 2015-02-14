@@ -103,6 +103,8 @@ public class CloudControllerServiceComponent {
             } else {
                 executeCoordinatorTasks();
             }
+
+            log.info("Cloud controller service component activated");
 		} catch (Exception e) {
 			log.error("Could not activate cloud controller service component", e);
         }

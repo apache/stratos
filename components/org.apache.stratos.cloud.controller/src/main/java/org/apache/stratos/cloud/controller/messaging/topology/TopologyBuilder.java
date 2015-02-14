@@ -405,43 +405,6 @@ public class TopologyBuilder {
 			member.setStatus(MemberStatus.Created);
 			member.setLbClusterId(lbClusterId);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
-            try {
-
-                Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(service.getServiceName());
-                List<PortMapping> portMappings = cartridge.getPortMappings();
-                Port port;
-                if(cluster.isKubernetesCluster()){
-                    // Update port mappings with generated service proxy port
-                    ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-                    if(clusterContext == null) {
-                        log.warn("Cluster context not found, could not add member ports: [cluster-id] " + clusterId);
-                    } else {
-                        List<org.apache.stratos.kubernetes.client.model.Service> services =
-                                clusterContext.getKubernetesServices();
-                        if(services == null) {
-                            log.warn("Kubernetes services not found in cluster context, could not add member ports: " +
-                                    "[cluster-id] " + clusterId);
-                        } else {
-                            // Adding ports to the member
-                            for (PortMapping portMapping : portMappings) {
-                                port = new Port(portMapping.getProtocol(),
-                                        findServicePort(clusterId, services, portMapping), portMapping.getProxyPort());
-                                member.addPort(port);
-                            }
-                        }
-                    }
-
-                } else {
-                    // Adding ports to the member
-                    for (PortMapping portMapping : portMappings) {
-                        port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
-                        member.addPort(port);
-                    }
-                }
-
-            } catch (Exception e) {
-                log.error("Could not update member port-map: [member-id] " + memberId, e);
-            }
 			cluster.addMember(member);
 			TopologyManager.updateTopology(topology);
 		} finally {
@@ -517,12 +480,11 @@ public class TopologyBuilder {
         }
     }
 
-    private static int findServicePort(String clusterId,
-                                       List<org.apache.stratos.kubernetes.client.model.Service> services,
-                                       PortMapping portMapping) {
-        for(org.apache.stratos.kubernetes.client.model.Service service : services) {
-            if(service.getContainerPort().equals(portMapping.getPort())) {
-                return service.getPort();
+    private static int findKubernetesServicePort(String clusterId, List<KubernetesService> kubernetesServices,
+                                                 PortMapping portMapping) {
+        for(KubernetesService kubernetesService : kubernetesServices) {
+            if(kubernetesService.getProtocol().equals(portMapping.getProtocol())) {
+                return kubernetesService.getPort();
             }
         }
         throw new RuntimeException("Kubernetes service port not found: [cluster-id] " + clusterId + " [port] "
@@ -530,53 +492,60 @@ public class TopologyBuilder {
     }
 
     public static void handleMemberStarted(InstanceStartedEvent instanceStartedEvent) {
-        Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(instanceStartedEvent.getServiceName());
-        if (service == null) {
-        	log.warn(String.format("Service %s does not exist",
-                    instanceStartedEvent.getServiceName()));
-        	return;
-        }
-        if (!service.clusterExists(instanceStartedEvent.getClusterId())) {
-        	log.warn(String.format("Cluster %s does not exist in service %s",
-                    instanceStartedEvent.getClusterId(),
-                    instanceStartedEvent.getServiceName()));
-        	return;
-        }
-
-        Member member = service.getCluster(instanceStartedEvent.getClusterId()).
-                getMember(instanceStartedEvent.getMemberId());
-        if (member == null) {
-        	log.warn(String.format("Member %s does not exist",
-                    instanceStartedEvent.getMemberId()));
-        	return;
-        }
-
         try {
-            TopologyManager.acquireWriteLock();
-            // try update lifecycle state
-            if (!member.isStateTransitionValid(MemberStatus.Starting)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " +
-                        MemberStatus.Starting);
-                return;
-            } else {
-                member.setStatus(MemberStatus.Starting);
-                log.info("member started event adding status started");
-
-                TopologyManager.updateTopology(topology);
-                //memberStartedEvent.
-                TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
-                //publishing data
-                StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
-                        instanceStartedEvent.getPartitionId(),
-                        instanceStartedEvent.getNetworkPartitionId(),
-                        instanceStartedEvent.getClusterId(),
-                        instanceStartedEvent.getServiceName(),
-                        MemberStatus.Starting.toString(),
-                        null);
+            Topology topology = TopologyManager.getTopology();
+            Service service = topology.getService(instanceStartedEvent.getServiceName());
+            if (service == null) {
+        	    log.warn(String.format("Service %s does not exist",
+                        instanceStartedEvent.getServiceName()));
+        	    return;
             }
-        } finally {
-            TopologyManager.releaseWriteLock();
+            if (!service.clusterExists(instanceStartedEvent.getClusterId())) {
+                log.warn(String.format("Cluster %s does not exist in service %s",
+                        instanceStartedEvent.getClusterId(),
+                        instanceStartedEvent.getServiceName()));
+                return;
+            }
+
+            Cluster cluster = service.getCluster(instanceStartedEvent.getClusterId());
+            Member member = cluster.getMember(instanceStartedEvent.getMemberId());
+            if (member == null) {
+                log.warn(String.format("Member %s does not exist",
+                        instanceStartedEvent.getMemberId()));
+                return;
+            }
+
+            try {
+                TopologyManager.acquireWriteLock();
+                // try update lifecycle state
+                if (!member.isStateTransitionValid(MemberStatus.Starting)) {
+                    log.error("Invalid State Transition from " + member.getStatus() + " to " +
+                            MemberStatus.Starting);
+                    return;
+                } else {
+                    member.setStatus(MemberStatus.Starting);
+                    log.info("member started event adding status started");
+
+                    TopologyManager.updateTopology(topology);
+                    //memberStartedEvent.
+                    TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
+                    //publishing data
+                    StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
+                            instanceStartedEvent.getPartitionId(),
+                            instanceStartedEvent.getNetworkPartitionId(),
+                            instanceStartedEvent.getClusterId(),
+                            instanceStartedEvent.getServiceName(),
+                            MemberStatus.Starting.toString(),
+                            null);
+                }
+            } finally {
+                TopologyManager.releaseWriteLock();
+            }
+        } catch (Exception e) {
+            String message = String.format("Could not handle member started event: [application-id] %s " +
+                    "[service-name] %s [member-id] %s", instanceStartedEvent.getApplicationId(),
+                    instanceStartedEvent.getServiceName(), instanceStartedEvent.getMemberId());
+            log.warn(message, e);
         }
     }
 
@@ -597,7 +566,6 @@ public class TopologyBuilder {
         }
 
         Member member = cluster.getMember(instanceActivatedEvent.getMemberId());
-
         if (member == null) {
         	log.warn(String.format("Member %s does not exist",
                     instanceActivatedEvent.getMemberId()));
@@ -619,32 +587,52 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             // try update lifecycle state
             if (!member.isStateTransitionValid(MemberStatus.Active)) {
-                log.error("Invalid State Transition from " + member.getStatus() + " to " +
-                        MemberStatus.Active);
+                log.error("Invalid state transition from [" + member.getStatus() + "] to [" + MemberStatus.Active + "]");
                 return;
             } else {
                 member.setStatus(MemberStatus.Active);
-                log.info("member started event adding status activated");
-                Cartridge cartridge = CloudControllerContext.getInstance().
-                        getCartridge(instanceActivatedEvent.getServiceName());
 
-                List<PortMapping> portMappings = cartridge.getPortMappings();
-                Port port;
-                //adding ports to the event
-                for (PortMapping portMapping : portMappings) {
-                    port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
-                    member.addPort(port);
-                    memberActivatedEvent.addPort(port);
+                // Set member ports
+                try {
+                    Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(service.getServiceName());
+                    if (cartridge == null) {
+                        throw new RuntimeException(String.format("Cartridge not found: [cartridge-type] %s",
+                                service.getServiceName()));
+                    }
+
+                    Port port; int portValue;
+                    List<PortMapping> portMappings = cartridge.getPortMappings();
+                    String clusterId = cluster.getClusterId();
+                    ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+                    List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+
+                    for (PortMapping portMapping : portMappings) {
+                        if(kubernetesServices != null) {
+                            portValue = findKubernetesServicePort(clusterId, kubernetesServices, portMapping);
+                        } else {
+                            portValue = portMapping.getPort();
+                        }
+                        port = new Port(portMapping.getProtocol(), portValue, portMapping.getProxyPort());
+                        member.addPort(port);
+                        memberActivatedEvent.addPort(port);
+                    }
+                } catch (Exception e) {
+                    String message = String.format("Could not add member ports: [service-name] %s [member-id] %s",
+                            memberActivatedEvent.getServiceName(), memberActivatedEvent.getMemberId());
+                    log.error(message, e);
                 }
 
+                // Set member ip addresses
                 memberActivatedEvent.setDefaultPrivateIP(member.getDefaultPrivateIP());
                 memberActivatedEvent.setMemberPrivateIPs(member.getMemberPrivateIPs());
                 memberActivatedEvent.setDefaultPublicIP(member.getDefaultPublicIP());
                 memberActivatedEvent.setMemberPublicIPs(member.getMemberPublicIPs());
                 TopologyManager.updateTopology(topology);
 
+                // Publish member activated event
                 TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
-                //publishing data
+
+                // Publish statistics data
                 StatisticsDataPublisher.publish(memberActivatedEvent.getMemberId(),
                         memberActivatedEvent.getPartitionId(),
                         memberActivatedEvent.getNetworkPartitionId(),
@@ -656,7 +644,6 @@ public class TopologyBuilder {
         } finally {
             TopologyManager.releaseWriteLock();
         }
-
     }
 
     public static void handleMemberReadyToShutdown(InstanceReadyToShutdownEvent instanceReadyToShutdownEvent)
@@ -830,37 +817,48 @@ public class TopologyBuilder {
         }
     }
 
-    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent clusterActivatedEvent) {
+    public static void handleClusterActivatedEvent(ClusterStatusClusterActivatedEvent clusterStatusClusterActivatedEvent) {
 
         Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(clusterActivatedEvent.getServiceName());
+        Service service = topology.getService(clusterStatusClusterActivatedEvent.getServiceName());
         //update the status of the cluster
         if (service == null) {
             log.warn(String.format("Service %s does not exist",
-                    clusterActivatedEvent.getServiceName()));
+                    clusterStatusClusterActivatedEvent.getServiceName()));
             return;
         }
 
-        Cluster cluster = service.getCluster(clusterActivatedEvent.getClusterId());
+        Cluster cluster = service.getCluster(clusterStatusClusterActivatedEvent.getClusterId());
         if (cluster == null) {
             log.warn(String.format("Cluster %s does not exist",
-                    clusterActivatedEvent.getClusterId()));
+                    clusterStatusClusterActivatedEvent.getClusterId()));
             return;
         }
 
-        ClusterInstanceActivatedEvent clusterActivatedEvent1 =
+        String clusterId = cluster.getClusterId();
+        ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
+        if (clusterContext == null) {
+            log.warn("Cluster context not found: [cluster-id] " + clusterId);
+            return;
+        }
+
+        ClusterInstanceActivatedEvent clusterInstanceActivatedEvent =
                 new ClusterInstanceActivatedEvent(
-                        clusterActivatedEvent.getAppId(),
-                        clusterActivatedEvent.getServiceName(),
-                        clusterActivatedEvent.getClusterId(),
-                        clusterActivatedEvent.getInstanceId());
+                        clusterStatusClusterActivatedEvent.getAppId(),
+                        clusterStatusClusterActivatedEvent.getServiceName(),
+                        clusterStatusClusterActivatedEvent.getClusterId(),
+                        clusterStatusClusterActivatedEvent.getInstanceId());
         try {
             TopologyManager.acquireWriteLock();
-            ClusterInstance context = cluster.getInstanceContexts(clusterActivatedEvent.getInstanceId());
+            List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+            cluster.setKubernetesServices(kubernetesServices);
+            clusterInstanceActivatedEvent.setKubernetesServices(kubernetesServices);
+
+            ClusterInstance context = cluster.getInstanceContexts(clusterStatusClusterActivatedEvent.getInstanceId());
             if (context == null) {
-                log.warn("Cluster Instance Context is not found for [cluster] " +
-                        clusterActivatedEvent.getClusterId() + " [instance-id] " +
-                        clusterActivatedEvent.getInstanceId());
+                log.warn("Cluster instance context is not found for [cluster] " +
+                        clusterStatusClusterActivatedEvent.getClusterId() + " [instance-id] " +
+                        clusterStatusClusterActivatedEvent.getInstanceId());
                 return;
             }
             ClusterStatus status = ClusterStatus.Active;
@@ -868,12 +866,12 @@ public class TopologyBuilder {
                 context.setStatus(status);
                 log.info("Cluster activated adding status started for " + cluster.getClusterId());
                 TopologyManager.updateTopology(topology);
-                //publishing data
-                TopologyEventPublisher.sendClusterActivatedEvent(clusterActivatedEvent1);
+                // publish event
+                TopologyEventPublisher.sendClusterActivatedEvent(clusterInstanceActivatedEvent);
             } else {
                 log.error(String.format("Cluster state transition is not valid: [cluster-id] %s " +
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
-                        clusterActivatedEvent.getClusterId(), clusterActivatedEvent.getInstanceId(),
+                        clusterStatusClusterActivatedEvent.getClusterId(), clusterStatusClusterActivatedEvent.getInstanceId(),
                         context.getStatus(), status));
                 return;
             }

@@ -34,7 +34,6 @@ import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.cloud.controller.stub.domain.Persistence;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
-import org.apache.stratos.common.beans.ErrorResponseBean;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.GroupBean;
@@ -1244,10 +1243,10 @@ public class StratosApiV41Utils {
                 String serviceType = clusterDataHolder.getServiceType();
                 try {
                     TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
-                    Cluster topLevelCluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+                    Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
                     applicationInstanceBean.getClusterInstances().add(ObjectConverter.
                             convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
-                                    topLevelCluster, entry.getKey()));
+                                    cluster, entry.getKey()));
 	            } finally {
 		            TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
 	            }

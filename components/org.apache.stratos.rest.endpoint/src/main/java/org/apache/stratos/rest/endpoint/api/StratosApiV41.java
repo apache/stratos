@@ -715,8 +715,7 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/getApplicationRuntime")
     public Response getApplicationRuntime(@PathParam("applicationId") String applicationId) throws RestAPIException {
-        ApplicationInfoBean applicationRuntime = StratosApiV41Utils.
-                getApplicationRuntime(applicationId);
+        ApplicationInfoBean applicationRuntime = StratosApiV41Utils.getApplicationRuntime(applicationId);
         if (applicationRuntime == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         } else {
