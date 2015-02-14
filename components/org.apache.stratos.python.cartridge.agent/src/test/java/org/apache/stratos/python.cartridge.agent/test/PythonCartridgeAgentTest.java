@@ -175,7 +175,7 @@ public class PythonCartridgeAgentTest {
                         ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
                         artifactUpdatedEvent.setClusterId(CLUSTER_ID);
                         artifactUpdatedEvent.setTenantId(TENANT_ID);
-                        artifactUpdatedEvent.setRepoURL("https://github.com/imesh/stratos-php-applications.git");
+                        artifactUpdatedEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
                         String topicName = MessagingUtil.getMessageTopicName(artifactUpdatedEvent);
                         EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
                         eventPublisher.publish(artifactUpdatedEvent);

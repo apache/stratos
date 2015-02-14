@@ -73,21 +73,24 @@ class EventHandler:
             plugins = plugin_manager.getPluginsOfCategory(CARTRIDGE_AGENT_PLUGIN)
             grouped_plugins = {}
             for plugin_info in plugins:
-                self.__log.debug("Found plugin %s at %s" % (plugin_info.name, plugin_info.path))
+                self.__log.debug("Found plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
-                self.__log.info("Activated plugin %s" % plugin_info.name)
+                self.__log.info("Activated plugin [%s]" % plugin_info.name)
 
-                if grouped_plugins.get(plugin_info.description) is None:
-                    grouped_plugins[plugin_info.description] = []
+                mapped_events = plugin_info.description.split(",")
+                for mapped_event in mapped_events:
+                    if mapped_event.strip() != "":
+                        if grouped_plugins.get(mapped_event) is None:
+                            grouped_plugins[mapped_event] = []
 
-                grouped_plugins[plugin_info.description].append(plugin_info)
+                        grouped_plugins[mapped_event].append(plugin_info)
 
             # activate artifact management plugins
             artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(ARTIFACT_MGT_PLUGIN)
             for plugin_info in artifact_mgt_plugins:
-                self.__log.debug("Found artifact management plugin %s at %s" % (plugin_info.name, plugin_info.path))
+                self.__log.debug("Found artifact management plugin [%s] at [%s]" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
-                self.__log.info("Activated artifact management plugin %s" % plugin_info.name)
+                self.__log.info("Activated artifact management plugin [%s]" % plugin_info.name)
 
             return plugin_manager, grouped_plugins, artifact_mgt_plugins
         except ParameterNotFoundException as e:
@@ -105,6 +108,7 @@ class EventHandler:
         """
         try:
             plugin_values = self.get_values_for_plugins(plugin_values)
+            plugin_values["EVENT"] = event
             plugins_for_event = self.__plugins.get(event)
             if plugins_for_event is not None:
                 for plugin_info in plugins_for_event:

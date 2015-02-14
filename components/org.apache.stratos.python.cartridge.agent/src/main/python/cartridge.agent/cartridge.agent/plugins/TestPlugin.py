@@ -21,6 +21,6 @@ from plugins.contracts import ICartridgeAgentPlugin
 class TestPlugin(ICartridgeAgentPlugin):
 
     def run_plugin(self, values, log):
-        log.debug("Running test plugin")
+        log.debug("Running test plugin for event %s" % values["EVENT"])
         for key, value in values.iteritems():
             log.debug("%s => %s" % (key, value))
