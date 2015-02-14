@@ -76,6 +76,7 @@ public class PythonCartridgeAgentTest {
     private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
     private ExecutorService executorService;
+    private boolean eventReceiverInitiated = false;
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
         this.artifactUpdatedEvent = artifactUpdatedEvent;
@@ -93,39 +94,43 @@ public class PythonCartridgeAgentTest {
         serverSocketList = new ArrayList<ServerSocket>();
         executorList = new HashMap<String, Executor>();
 
-        this.executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
-        TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
-        topologyEventReceiver.setExecutorService(executorService);
-        topologyEventReceiver.execute();
+        if (!this.eventReceiverInitiated) {
+            this.executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
+            TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
+            topologyEventReceiver.setExecutorService(executorService);
+            topologyEventReceiver.execute();
 
-        InstanceStatusEventReceiver instanceStatusEventReceiver = new InstanceStatusEventReceiver();
-        instanceStatusEventReceiver.setExecutorService(executorService);
-        instanceStatusEventReceiver.execute();
+            InstanceStatusEventReceiver instanceStatusEventReceiver = new InstanceStatusEventReceiver();
+            instanceStatusEventReceiver.setExecutorService(executorService);
+            instanceStatusEventReceiver.execute();
 
-        this.instanceStarted = false;
-        instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                log.info("Instance started event received");
-                instanceStarted = true;
-            }
-        });
+            this.instanceStarted = false;
+            instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
+                @Override
+                protected void onEvent(Event event) {
+                    log.info("Instance started event received");
+                    instanceStarted = true;
+                }
+            });
 
-        this.instanceActivated = false;
-        instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
-            @Override
-            protected void onEvent(Event event) {
-                log.info("Instance activated event received");
-                instanceActivated = true;
-            }
-        });
+            this.instanceActivated = false;
+            instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
+                @Override
+                protected void onEvent(Event event) {
+                    log.info("Instance activated event received");
+                    instanceActivated = true;
+                }
+            });
+
+            this.eventReceiverInitiated = true;
+        }
 
         String agentPath = setupPythonAgent();
         log.info("Starting python cartridge agent...");
         this.outputStream = executeCommand("python " + agentPath + "/agent.py");
 
         // Simulate CEP server socket
-        // startServerSocket(7711);
+        startServerSocket(7711);
     }
 
     @After
@@ -161,8 +166,6 @@ public class PythonCartridgeAgentTest {
         } catch (Exception ignore){
 
         }
-
-        this.executorService.shutdownNow();
 
         this.instanceActivated = false;
         this.instanceStarted = false;
