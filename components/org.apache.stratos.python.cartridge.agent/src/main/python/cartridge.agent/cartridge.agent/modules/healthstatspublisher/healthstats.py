@@ -16,16 +16,16 @@
 # under the License.
 
 from threading import Thread
-import time
-import psutil
-import os
 import multiprocessing
+
+import psutil
 
 from abstracthealthstatisticspublisher import *
 from ..databridge.agent import *
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import cartridgeagentutils, cartridgeagentconstants
-from ..exception.thriftreceiverofflineexception import ThriftReceiverOfflineException
+from config import CartridgeAgentConfiguration
+from ..util import cartridgeagentutils
+from exception import ThriftReceiverOfflineException
+import constants
 
 
 class HealthStatisticsPublisherManager(Thread):
@@ -146,7 +146,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.network_partition_id)
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)
-        event.payloadData.append(cartridgeagentconstants.MEMORY_CONSUMPTION)
+        event.payloadData.append(constants.MEMORY_CONSUMPTION)
         event.payloadData.append(memory_usage)
 
         HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [payload_data} %r [version] %r" % (self.stream_definition.name,event.payloadData, self.stream_definition.version))
@@ -164,7 +164,7 @@ class HealthStatisticsPublisher:
         event.payloadData.append(self.cartridge_agent_config.network_partition_id)
         event.payloadData.append(self.cartridge_agent_config.member_id)
         event.payloadData.append(self.cartridge_agent_config.partition_id)
-        event.payloadData.append(cartridgeagentconstants.LOAD_AVERAGE)
+        event.payloadData.append(constants.LOAD_AVERAGE)
         event.payloadData.append(load_avg)
 
         HealthStatisticsPublisher.log.debug("Publishing cep event: [stream] %r [version] %r" % (self.stream_definition.name, self.stream_definition.version))
@@ -231,7 +231,7 @@ class CEPPublisherConfiguration:
 
     def read_config(self):
         self.enabled = True if self.cartridge_agent_config.read_property(
-           cartridgeagentconstants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
+            constants.CEP_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
         if not self.enabled:
             CEPPublisherConfiguration.log.info("CEP Publisher disabled")
             return
@@ -239,23 +239,23 @@ class CEPPublisherConfiguration:
         CEPPublisherConfiguration.log.info("CEP Publisher enabled")
 
         self.server_ip = self.cartridge_agent_config.read_property(
-            cartridgeagentconstants.CEP_RECEIVER_IP, False)
+            constants.CEP_RECEIVER_IP, False)
         if self.server_ip is None or self.server_ip.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_IP)
+            raise RuntimeError("System property not found: " + constants.CEP_RECEIVER_IP)
 
         self.server_port = self.cartridge_agent_config.read_property(
-            cartridgeagentconstants.CEP_RECEIVER_PORT, False)
+            constants.CEP_RECEIVER_PORT, False)
         if self.server_port is None or self.server_port.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_RECEIVER_PORT)
+            raise RuntimeError("System property not found: " + constants.CEP_RECEIVER_PORT)
 
         self.admin_username = self.cartridge_agent_config.read_property(
-            cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME, False)
+            constants.CEP_SERVER_ADMIN_USERNAME, False)
         if self.admin_username is None or self.admin_username.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_USERNAME)
+            raise RuntimeError("System property not found: " + constants.CEP_SERVER_ADMIN_USERNAME)
 
         self.admin_password = self.cartridge_agent_config.read_property(
-            cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD, False)
+            constants.CEP_SERVER_ADMIN_PASSWORD, False)
         if self.admin_password is None or self.admin_password.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.CEP_SERVER_ADMIN_PASSWORD)
+            raise RuntimeError("System property not found: " + constants.CEP_SERVER_ADMIN_PASSWORD)
 
         CEPPublisherConfiguration.log.info("CEP Publisher configuration initialized")

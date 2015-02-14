@@ -15,14 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import os
 import datetime
 from threading import Thread, current_thread
 
 from ..databridge.agent import *
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from ..util import cartridgeagentutils, cartridgeagentconstants
-from exception.datapublisherexception import DataPublisherException
+from config import CartridgeAgentConfiguration
+from ..util import cartridgeagentutils
+from exception import DataPublisherException
+import constants
 
 
 class LogPublisher(Thread):
@@ -185,8 +185,8 @@ class LogPublisherManager(Thread):
 
     @staticmethod
     def get_valid_tenant_id(tenant_id):
-        if tenant_id == cartridgeagentconstants.INVALID_TENANT_ID \
-                or tenant_id == cartridgeagentconstants.SUPER_TENANT_ID:
+        if tenant_id == constants.INVALID_TENANT_ID \
+                or tenant_id == constants.SUPER_TENANT_ID:
             return "0"
 
         return tenant_id
@@ -207,7 +207,7 @@ class LogPublisherManager(Thread):
         :return: Formatted date string
         :rtype : str
         """
-        return datetime.date.today().strftime(cartridgeagentconstants.DATE_FORMAT)
+        return datetime.date.today().strftime(constants.DATE_FORMAT)
 
 
 class DataPublisherConfiguration:
@@ -243,31 +243,31 @@ class DataPublisherConfiguration:
         self.read_config()
 
     def read_config(self):
-        self.enabled = True if self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
+        self.enabled = True if self.cartridge_agent_config.read_property(constants.MONITORING_PUBLISHER_ENABLED, False).strip().lower() == "true" else False
         if not self.enabled:
             DataPublisherConfiguration.log.info("Data Publisher disabled")
             return
 
         DataPublisherConfiguration.log.info("Data Publisher enabled")
 
-        self.monitoring_server_ip = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_RECEIVER_IP, False)
+        self.monitoring_server_ip = self.cartridge_agent_config.read_property(constants.MONITORING_RECEIVER_IP, False)
         if self.monitoring_server_ip is None or self.monitoring_server_ip.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_RECEIVER_IP)
+            raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_IP)
 
-        self.monitoring_server_port = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_RECEIVER_PORT, False)
+        self.monitoring_server_port = self.cartridge_agent_config.read_property(constants.MONITORING_RECEIVER_PORT, False)
         if self.monitoring_server_port is None or self.monitoring_server_port.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_RECEIVER_PORT)
+            raise RuntimeError("System property not found: " + constants.MONITORING_RECEIVER_PORT)
 
         self.monitoring_server_secure_port = self.cartridge_agent_config.read_property("monitoring.server.secure.port", False)
         if self.monitoring_server_secure_port is None or self.monitoring_server_secure_port.strip() == "":
             raise RuntimeError("System property not found: monitoring.server.secure.port")
 
-        self.admin_username = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_SERVER_ADMIN_USERNAME, False)
+        self.admin_username = self.cartridge_agent_config.read_property(constants.MONITORING_SERVER_ADMIN_USERNAME, False)
         if self.admin_username is None or self.admin_username.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_SERVER_ADMIN_USERNAME)
+            raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_USERNAME)
 
-        self.admin_password = self.cartridge_agent_config.read_property(cartridgeagentconstants.MONITORING_SERVER_ADMIN_PASSWORD, False)
+        self.admin_password = self.cartridge_agent_config.read_property(constants.MONITORING_SERVER_ADMIN_PASSWORD, False)
         if self.admin_password is None or self.admin_password.strip() == "":
-            raise RuntimeError("System property not found: " + cartridgeagentconstants.MONITORING_SERVER_ADMIN_PASSWORD)
+            raise RuntimeError("System property not found: " + constants.MONITORING_SERVER_ADMIN_PASSWORD)
 
         DataPublisherConfiguration.log.info("Data Publisher configuration initialized")

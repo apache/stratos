@@ -18,7 +18,8 @@
 from thrift.publisher import *
 from thrift.gen.Exception.ttypes import ThriftSessionExpiredException
 from ..util.log import *
-from ..exception.thriftreceiverofflineexception import ThriftReceiverOfflineException
+from exception import ThriftReceiverOfflineException
+
 import time
 
 
@@ -48,7 +49,7 @@ class StreamDefinition:
         """:type : list[str]"""
         self.payload_data = []
         """:type : list[str]"""
-        self.stream_id =  None
+        self.stream_id = None
         """ :type : str """
 
     def add_metadata_attribute(self, attr_name, attr_type):
@@ -163,7 +164,7 @@ class ThriftPublisher:
         try:
             self.__publisher.publish(event_bundle)
             self.log.debug("Published event to thrift stream [%r]" % self.stream_id)
-        except ThriftSessionExpiredException as ex:
+        except ThriftSessionExpiredException:
             self.log.debug("ThriftSession expired. Reconnecting")
             self.__publisher.connect(self.username, self.password)
             self.log.debug("connected! stream ID: %r" % self.stream_id)

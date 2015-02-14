@@ -17,9 +17,10 @@
 
 import ConfigParser
 import os
-import socket
 
-from ..util.log import LogFactory
+from modules.util.log import LogFactory
+from exception import ParameterNotFoundException
+import constants
 
 
 class CartridgeAgentConfiguration:
@@ -31,9 +32,12 @@ class CartridgeAgentConfiguration:
             # set log level
             self.log = LogFactory().get_log(__name__)
 
-            self.payload_params = {}
-            self.properties = None
+            self.__payload_params = {}
+            self.__properties = None
             """ :type : ConfigParser.SafeConfigParser """
+
+            self.__read_conf_file()
+            self.__read_parameter_file()
 
             self.application_id = None
             """ :type : str """
@@ -108,95 +112,88 @@ class CartridgeAgentConfiguration:
             self.artifact_update_interval = None
             """ :type : str """
 
-            self.payload_params = {}
-            self.__read_conf_file()
-            self.__read_parameter_file()
-
             self.initialized = False
             """ :type : bool """
 
             try:
-                self.service_group = self.payload_params[cartridgeagentconstants.SERVICE_GROUP] \
-                    if cartridgeagentconstants.SERVICE_GROUP in self.payload_params \
+                self.service_group = self.__payload_params[constants.SERVICE_GROUP] \
+                    if constants.SERVICE_GROUP in self.__payload_params \
                     else None
 
-                if cartridgeagentconstants.CLUSTERING in self.payload_params and \
-                        str(self.payload_params[cartridgeagentconstants.CLUSTERING]).strip().lower() == "true":
+                if constants.CLUSTERING in self.__payload_params and \
+                        str(self.__payload_params[constants.CLUSTERING]).strip().lower() == "true":
                     self.is_clustered = True
                 else:
                     self.is_clustered = False
-                # self.__isClustered = self.payload_params[
-                # cartridgeagentconstants.CLUSTERING] if cartridgeagentconstants.CLUSTERING in self.payload_params else None
 
-                self.application_id = self.read_property(cartridgeagentconstants.APPLICATION_ID)
-                self.service_name = self.read_property(cartridgeagentconstants.SERVICE_NAME)
-                self.cluster_id = self.read_property(cartridgeagentconstants.CLUSTER_ID)
-                self.cluster_instance_id= self.read_property(cartridgeagentconstants.CLUSTER_INSTANCE_ID, False)
-                self.member_id = self.read_property(cartridgeagentconstants.MEMBER_ID, False)
-                self.network_partition_id = self.read_property(cartridgeagentconstants.NETWORK_PARTITION_ID, False)
-                self.partition_id = self.read_property(cartridgeagentconstants.PARTITION_ID, False)
-                self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
-                self.app_path = self.read_property(cartridgeagentconstants.APPLICATION_PATH, False)
-                self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
-                self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")
-                self.dependant_cluster_id = self.read_property(cartridgeagentconstants.DEPENDENCY_CLUSTER_IDS, False)
-                self.export_metadata_keys = self.read_property(cartridgeagentconstants.EXPORT_METADATA_KEYS, False)
-                self.import_metadata_keys = self.read_property(cartridgeagentconstants.IMPORT_METADATA_KEYS, False)
-
+                self.application_id = self.read_property(constants.APPLICATION_ID)
+                self.service_name = self.read_property(constants.SERVICE_NAME)
+                self.cluster_id = self.read_property(constants.CLUSTER_ID)
+                self.cluster_instance_id = self.read_property(constants.CLUSTER_INSTANCE_ID, False)
+                self.member_id = self.read_property(constants.MEMBER_ID, False)
+                self.network_partition_id = self.read_property(constants.NETWORK_PARTITION_ID, False)
+                self.partition_id = self.read_property(constants.PARTITION_ID, False)
+                self.cartridge_key = self.read_property(constants.CARTRIDGE_KEY)
+                self.app_path = self.read_property(constants.APPLICATION_PATH, False)
+                self.repo_url = self.read_property(constants.REPO_URL, False)
+                self.ports = str(self.read_property(constants.PORTS)).split("|")
+                self.dependant_cluster_id = self.read_property(constants.DEPENDENCY_CLUSTER_IDS, False)
+                self.export_metadata_keys = self.read_property(constants.EXPORT_METADATA_KEYS, False)
+                self.import_metadata_keys = self.read_property(constants.IMPORT_METADATA_KEYS, False)
 
                 try:
                     self.log_file_paths = str(
-                        self.read_property(cartridgeagentconstants.LOG_FILE_PATHS)).strip().split("|")
+                        self.read_property(constants.LOG_FILE_PATHS)).strip().split("|")
                 except ParameterNotFoundException as ex:
                     self.log.debug("Cannot read log file path : %r" % ex.get_message())
                     self.log_file_paths = None
 
-                is_multi_str = self.read_property(cartridgeagentconstants.MULTITENANT)
+                is_multi_str = self.read_property(constants.MULTITENANT)
                 self.is_multitenant = True if str(is_multi_str).lower().strip() == "true" else False
 
                 try:
                     self.persistence_mappings = self.read_property(
-                        cartridgeagentconstants.PERSISTENCE_MAPPING)
+                        constants.PERSISTENCE_MAPPING)
                 except ParameterNotFoundException as ex:
                     self.log.debug("Cannot read persistence mapping : %r" % ex.get_message())
                     self.persistence_mappings = None
 
                 try:
-                    is_commit_str = self.read_property(cartridgeagentconstants.COMMIT_ENABLED)
+                    is_commit_str = self.read_property(constants.COMMIT_ENABLED)
                     self.is_commits_enabled = True if str(is_commit_str).lower().strip() == "true" else False
                 except ParameterNotFoundException:
                     try:
-                        is_commit_str = self.read_property(cartridgeagentconstants.AUTO_COMMIT)
+                        is_commit_str = self.read_property(constants.AUTO_COMMIT)
                         self.is_commits_enabled = True if str(is_commit_str).lower().strip() == "true" else False
                     except ParameterNotFoundException:
                         self.log.info(
-                            "%r is not found and setting it to false" % cartridgeagentconstants.COMMIT_ENABLED)
+                            "%r is not found and setting it to false" % constants.COMMIT_ENABLED)
                         self.is_commits_enabled = False
 
-                auto_checkout_str = self.read_property(cartridgeagentconstants.AUTO_CHECKOUT, False)
+                auto_checkout_str = self.read_property(constants.AUTO_CHECKOUT, False)
                 self.is_checkout_enabled = True if str(auto_checkout_str).lower().strip() == "true" else False
 
                 self.listen_address = self.read_property(
-                    cartridgeagentconstants.LISTEN_ADDRESS, False)
+                    constants.LISTEN_ADDRESS, False)
 
                 try:
-                    int_repo_str = self.read_property(cartridgeagentconstants.INTERNAL)
+                    int_repo_str = self.read_property(constants.INTERNAL)
                     self.is_internal_repo = True if str(int_repo_str).strip().lower() == "true" else False
                 except ParameterNotFoundException:
                     self.log.info(" INTERNAL payload parameter is not found")
                     self.is_internal_repo = False
 
-                self.tenant_id = self.read_property(cartridgeagentconstants.TENANT_ID)
-                self.lb_cluster_id = self.read_property(cartridgeagentconstants.LB_CLUSTER_ID, False)
-                self.min_count = self.read_property(cartridgeagentconstants.MIN_INSTANCE_COUNT, False)
-                self.lb_private_ip = self.read_property(cartridgeagentconstants.LB_PRIVATE_IP, False)
-                self.lb_public_ip = self.read_property(cartridgeagentconstants.LB_PUBLIC_IP, False)
-                self.tenant_repository_path = self.read_property(cartridgeagentconstants.TENANT_REPO_PATH, False)
-                self.super_tenant_repository_path = self.read_property(cartridgeagentconstants.SUPER_TENANT_REPO_PATH, False)
+                self.tenant_id = self.read_property(constants.TENANT_ID)
+                self.lb_cluster_id = self.read_property(constants.LB_CLUSTER_ID, False)
+                self.min_count = self.read_property(constants.MIN_INSTANCE_COUNT, False)
+                self.lb_private_ip = self.read_property(constants.LB_PRIVATE_IP, False)
+                self.lb_public_ip = self.read_property(constants.LB_PUBLIC_IP, False)
+                self.tenant_repository_path = self.read_property(constants.TENANT_REPO_PATH, False)
+                self.super_tenant_repository_path = self.read_property(constants.SUPER_TENANT_REPO_PATH, False)
 
                 try:
                     self.deployment = self.read_property(
-                        cartridgeagentconstants.DEPLOYMENT)
+                        constants.DEPLOYMENT)
                 except ParameterNotFoundException:
                     self.deployment = None
 
@@ -204,14 +201,14 @@ class CartridgeAgentConfiguration:
                 if self.deployment is None:
                     self.manager_service_name = None
 
-                if str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
+                if str(self.deployment).lower() == constants.DEPLOYMENT_MANAGER.lower():
                     self.manager_service_name = self.service_name
 
-                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                elif str(self.deployment).lower() == constants.DEPLOYMENT_WORKER.lower():
                     self.deployment = self.read_property(
-                        cartridgeagentconstants.MANAGER_SERVICE_TYPE)
+                        constants.MANAGER_SERVICE_TYPE)
 
-                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
+                elif str(self.deployment).lower() == constants.DEPLOYMENT_DEFAULT.lower():
                     self.deployment = None
                 else:
                     self.deployment = None
@@ -220,26 +217,26 @@ class CartridgeAgentConfiguration:
                 if self.deployment is None:
                     self.worker_service_name = None
 
-                if str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_WORKER.lower():
+                if str(self.deployment).lower() == constants.DEPLOYMENT_WORKER.lower():
                     self.manager_service_name = self.service_name
 
-                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_MANAGER.lower():
+                elif str(self.deployment).lower() == constants.DEPLOYMENT_MANAGER.lower():
                     self.deployment = self.read_property(
-                        cartridgeagentconstants.WORKER_SERVICE_TYPE)
+                        constants.WORKER_SERVICE_TYPE)
 
-                elif str(self.deployment).lower() == cartridgeagentconstants.DEPLOYMENT_DEFAULT.lower():
+                elif str(self.deployment).lower() == constants.DEPLOYMENT_DEFAULT.lower():
                     self.deployment = None
                 else:
                     self.deployment = None
 
                 try:
                     self.is_primary = self.read_property(
-                        cartridgeagentconstants.CLUSTERING_PRIMARY_KEY)
+                        constants.CLUSTERING_PRIMARY_KEY)
                 except ParameterNotFoundException:
                     self.is_primary = None
 
                 try:
-                    self.artifact_update_interval = self.read_property(cartridgeagentconstants.ARTIFACT_UPDATE_INTERVAL)
+                    self.artifact_update_interval = self.read_property(constants.ARTIFACT_UPDATE_INTERVAL)
                 except ParameterNotFoundException:
                     self.artifact_update_interval = "10"
 
@@ -271,17 +268,17 @@ class CartridgeAgentConfiguration:
             :return: void
             """
 
-            conf_file_path = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "agent.conf"
+            conf_file_path = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/agent.conf"
             self.log.debug("Config file path : %r" % conf_file_path)
-            self.properties = ConfigParser.SafeConfigParser()
-            self.properties.read(conf_file_path)
+            self.__properties = ConfigParser.SafeConfigParser()
+            self.__properties.read(conf_file_path)
 
             # set calculated values
-            param_file = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "payload/launch-params"
-            self.properties.set("agent", cartridgeagentconstants.PARAM_FILE_PATH, param_file)
+            param_file = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/payload/launch-params"
+            self.__properties.set("agent", constants.PARAM_FILE_PATH, param_file)
 
-            plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "plugins"
-            self.properties.set("agent", cartridgeagentconstants.PLUGINS_DIR, plugins_dir)
+            plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/plugins"
+            self.__properties.set("agent", constants.PLUGINS_DIR, plugins_dir)
 
         def __read_parameter_file(self):
             """
@@ -289,7 +286,7 @@ class CartridgeAgentConfiguration:
             :return: void
             """
 
-            param_file = self.read_property(cartridgeagentconstants.PARAM_FILE_PATH, False)
+            param_file = self.read_property(constants.PARAM_FILE_PATH, False)
             self.log.debug("Param file path : %r" % param_file)
 
             try:
@@ -299,16 +296,16 @@ class CartridgeAgentConfiguration:
                     for param in metadata_payload_content.split(","):
                         if param.strip() != "":
                             param_value = param.strip().split("=")
-                            self.payload_params[param_value[0]] = param_value[1]
+                            self.__payload_params[param_value[0]] = param_value[1]
 
                     # self.payload_params = dict(
                     #     param.split("=") for param in metadata_payload_content.split(","))
                     metadata_file.close()
                 else:
                     self.log.error("File not found: %r" % param_file)
-            except:
+            except Exception as e:
                 self.log.exception(
-                    "Could not read launch parameter file, hence trying to read from System properties.")
+                    "Could not read launch parameter file: %s" % e)
 
         def read_property(self, property_key, critical=True):
             """
@@ -319,46 +316,35 @@ class CartridgeAgentConfiguration:
             :exception: ParameterNotFoundException if the provided property cannot be found
             """
 
-            if self.properties.has_option("agent", property_key):
-                temp_str = self.properties.get("agent", property_key)
+            if self.__properties.has_option("agent", property_key):
+                temp_str = self.__properties.get("agent", property_key)
                 self.log.debug("Reading property: %s = %s", property_key, temp_str)
-                if temp_str != "" and temp_str is not None:
-                    if str(temp_str).strip().lower() == "null":
-                        return ""
-                    else:
-                        return str(temp_str).strip()
+                if temp_str is not None and temp_str.strip() != "" and temp_str.strip().lower() != "null":
+                    return str(temp_str).strip()
 
-            if property_key in self.payload_params:
-                temp_str = self.payload_params[property_key]
+            if property_key in self.__payload_params:
+                temp_str = self.__payload_params[property_key]
                 self.log.debug("Reading payload parameter: %s = %s", property_key, temp_str)
-                if temp_str != "" and temp_str is not None:
-                    if str(temp_str).strip().lower() == "null":
-                        return ""
-                    else:
-                        return str(temp_str).strip()
+                if temp_str is not None and temp_str != "" and temp_str.strip().lower() != "null":
+                    return str(temp_str).strip()
 
             if critical:
                 raise ParameterNotFoundException("Cannot find the value of required parameter: %r" % property_key)
+            else:
+                return None
 
-    instance = None
+        def get_payload_params(self):
+            return self.__payload_params
+
+    __instance = None
     """ :type : __CartridgeAgentConfiguration"""
 
-    # def __new__(cls, *args, **kwargs):
-    #     if not CartridgeAgentConfiguration.instance:
-    #         CartridgeAgentConfiguration.instance = CartridgeAgentConfiguration.__CartridgeAgentConfiguration()
-    #
-    #     return CartridgeAgentConfiguration.instance
-
     def __init__(self):
-        if not CartridgeAgentConfiguration.instance:
-            CartridgeAgentConfiguration.instance = CartridgeAgentConfiguration.__CartridgeAgentConfiguration()
+        if not CartridgeAgentConfiguration.__instance:
+            CartridgeAgentConfiguration.__instance = CartridgeAgentConfiguration.__CartridgeAgentConfiguration()
 
     def __getattr__(self, name):
-        return getattr(self.instance, name)
+        return getattr(self.__instance, name)
 
     def __setattr__(self, name, value):
-        return setattr(self.instance, name, value)
-
-
-from ..exception.parameternotfoundexception import ParameterNotFoundException
-from ..util import cartridgeagentconstants
+        return setattr(self.__instance, name, value)

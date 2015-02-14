@@ -15,15 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-import logging
-
 import paho.mqtt.publish as publish
 
 from .. event.instance.status.events import *
-from .. config.cartridgeagentconfiguration import CartridgeAgentConfiguration
-from .. util import cartridgeagentconstants
 from .. healthstatspublisher.healthstats import *
-from .. healthstatspublisher.abstracthealthstatisticspublisher import *
+import constants
+from config import CartridgeAgentConfiguration
 
 
 log = LogFactory().get_log(__name__)
@@ -53,7 +50,7 @@ def publish_instance_started_event():
 
         instance_started_event = InstanceStartedEvent(application_id, service_name, cluster_id, cluster_instance_id, member_id,
                                                       instance_id, network_partition_id, partition_id)
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_STARTED_EVENT)
+        publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_STARTED_EVENT)
         publisher.publish(instance_started_event)
         started = True
         log.info("Instance started event published")
@@ -77,7 +74,7 @@ def publish_instance_activated_event():
         instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, cluster_instance_id, member_id,
                                                           instance_id, network_partition_id, partition_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_ACTIVATED_EVENT)
+        publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
         publisher.publish(instance_activated_event)
 
         log.info("Instance activated event published")
@@ -122,7 +119,7 @@ def publish_maintenance_mode_event():
         instance_maintenance_mode_event = InstanceMaintenanceModeEvent(service_name, cluster_id, cluster_instance_id, member_id,
                                                                        instance_id, network_partition_id, partition_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_MAINTENANCE_MODE_EVENT)
+        publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_MAINTENANCE_MODE_EVENT)
         publisher.publish(instance_maintenance_mode_event)
 
         maintenance = True
@@ -147,7 +144,7 @@ def publish_instance_ready_to_shutdown_event():
         instance_shutdown_event = InstanceReadyToShutdownEvent(service_name, cluster_id, cluster_instance_id, member_id,
                                                                instance_id, network_partition_id, partition_id)
 
-        publisher = get_publisher(cartridgeagentconstants.INSTANCE_STATUS_TOPIC + cartridgeagentconstants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
+        publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_READY_TO_SHUTDOWN_EVENT)
         publisher.publish(instance_shutdown_event)
 
         ready_to_shutdown = True
@@ -171,7 +168,7 @@ class EventPublisher:
         self.__topic = topic
 
     def publish(self, event):
-        mb_ip = CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_IP)
-        mb_port = CartridgeAgentConfiguration().read_property(cartridgeagentconstants.MB_PORT)
+        mb_ip = CartridgeAgentConfiguration().read_property(constants.MB_IP)
+        mb_port = CartridgeAgentConfiguration().read_property(constants.MB_PORT)
         payload = event.to_json()
         publish.single(self.__topic, payload, hostname=mb_ip, port=mb_port)

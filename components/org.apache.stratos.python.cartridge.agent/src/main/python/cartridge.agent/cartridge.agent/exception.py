@@ -22,7 +22,7 @@ class CartridgeAgentException(Exception):
     """
 
     def __init__(self, message):
-        Exception.__init__(self, message)
+        super(CartridgeAgentException, self).__init__(message)
         self.__message = message
 
     def get_message(self):
@@ -39,8 +39,8 @@ class DataPublisherException(CartridgeAgentException):
     Exception to be used during log publishing operations
     """
 
-    def __init__(self, msg):
-        super(self,  msg)
+    def __init__(self, message):
+        super(DataPublisherException, self).__init__(message)
 
 
 class PluginExecutionException(CartridgeAgentException):
@@ -49,7 +49,7 @@ class PluginExecutionException(CartridgeAgentException):
     """
 
     def __init__(self, message):
-        super(self, message)
+        super(PluginExecutionException, self).__init__(message)
 
 
 class GitRepositorySynchronizationException(CartridgeAgentException):
@@ -58,7 +58,7 @@ class GitRepositorySynchronizationException(CartridgeAgentException):
     """
 
     def __init__(self, message):
-        super(self, message)
+        super(GitRepositorySynchronizationException, self).__init__(message)
 
 
 class ParameterNotFoundException(CartridgeAgentException):
@@ -68,7 +68,7 @@ class ParameterNotFoundException(CartridgeAgentException):
     """
 
     def __init__(self, message):
-        super(self, message)
+        super(ParameterNotFoundException, self).__init__(message)
 
 
 class ThriftReceiverOfflineException(CartridgeAgentException):
@@ -77,4 +77,4 @@ class ThriftReceiverOfflineException(CartridgeAgentException):
     """
 
     def __init__(self, message):
-        super(self, message)
+        super(ThriftReceiverOfflineException, self).__init__(message)

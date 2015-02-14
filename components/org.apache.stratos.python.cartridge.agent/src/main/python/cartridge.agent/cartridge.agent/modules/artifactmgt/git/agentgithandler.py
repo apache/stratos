@@ -24,7 +24,7 @@ from git import *
 from ... util.log import LogFactory
 from ... util.asyncscheduledtask import AbstractAsyncScheduledTask, ScheduledExecutor
 from ... artifactmgt.repository import Repository
-from ... exception.gitrepositorysynchronizationexception import GitRepositorySynchronizationException
+from exception import GitRepositorySynchronizationException
 
 
 class AgentGitHandler:
@@ -66,7 +66,7 @@ class AgentGitHandler:
                     AgentGitHandler.log.debug("Git pull executed: [tenant-id] %s [repo-url] %s",
                                               git_repo.tenant_id, git_repo.repo_url)
                 except GitRepositorySynchronizationException as e:
-                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %r" % e.get_message())
+                    AgentGitHandler.log.debug("Warning: Git Pull operation failed: %s" % e.get_message())
 
             else:
                 # not a valid repository, might've been corrupted. do a re-clone
@@ -81,7 +81,7 @@ class AgentGitHandler:
         else:
             # subscribing run.. need to clone
             git_repo = AgentGitHandler.create_git_repo(repo_info)
-            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %r",
+            AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %s",
                                       git_repo.repo_url, git_repo.local_repo_path)
             subscribe_run = True
             AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
@@ -106,20 +106,20 @@ class AgentGitHandler:
         output, errors = AgentGitHandler.execute_git_command(["remote", "add", "origin", git_repo.repo_url],
                                                              git_repo.local_repo_path)
         if len(output) > 0:
-            raise GitRepositorySynchronizationException("Error in adding remote origin %r for local repository %r"
+            raise GitRepositorySynchronizationException("Error in adding remote origin %s for local repository %s"
                                                         % (git_repo.repo_url, git_repo.local_repo_path))
 
         # fetch
         output, errors = AgentGitHandler.execute_git_command(["fetch"], git_repo.local_repo_path)
         if "Resolving deltas: 100%" not in output:
             raise GitRepositorySynchronizationException(
-                "Error in fetching from remote origin %r for local repository %r"
+                "Error in fetching from remote origin %s for local repository %s"
                 % (git_repo.repo_url, git_repo.local_repo_path))
 
         # checkout master
         output, errors = AgentGitHandler.execute_git_command(["checkout", "master"], git_repo.local_repo_path)
         if "Branch master set up to track remote branch master from origin." not in output:
-            raise GitRepositorySynchronizationException("Error in checking out master branch %r for local repository %r"
+            raise GitRepositorySynchronizationException("Error in checking out master branch %s for local repository %s"
                                                         % (git_repo.repo_url, git_repo.local_repo_path))
 
         return True
@@ -128,8 +128,8 @@ class AgentGitHandler:
     def init(path):
         output, errors = AgentGitHandler.execute_git_command(["init"], path)
         if "Initialized empty Git repository in" not in output:
-            AgentGitHandler.log.exception("Initializing local repo at %r failed: %s" % (path, output))
-            raise Exception("Initializing local repo at %r failed" % path)
+            AgentGitHandler.log.exception("Initializing local repo at %s failed: %s" % (path, output))
+            raise Exception("Initializing local repo at %s failed" % path)
 
     @staticmethod
     def is_valid_git_repository(git_repo):
@@ -173,7 +173,7 @@ class AgentGitHandler:
 
         # check if HEAD was updated
         if init_head != end_head:
-            AgentGitHandler.log.debug("Artifacts were updated as a result of the pull operation, thread: %r - %r" %
+            AgentGitHandler.log.debug("Artifacts were updated as a result of the pull operation, thread: %s - %s" %
                                       (current_thread().getName(), current_thread().ident))
 
             return True
@@ -194,7 +194,6 @@ class AgentGitHandler:
             return git_repo
         except GitCommandError as e:
             raise GitRepositorySynchronizationException("Error while cloning repository: %s" % e)
-
 
     @staticmethod
     def add_repo(git_repo):
@@ -226,7 +225,6 @@ class AgentGitHandler:
         git_repo.repo_url = AgentGitHandler.create_auth_url(repo_info)
         git_repo.repo_username = repo_info.repo_username
         git_repo.repo_password = repo_info.repo_password
-        git_repo.is_multitenant = repo_info.is_multitenant
         git_repo.commit_enabled = repo_info.commit_enabled
 
         git_repo.cloned = False
@@ -288,16 +286,16 @@ class AgentGitHandler:
         # check if modified
         modified, unstaged_files = AgentGitHandler.get_unstaged_files(git_repo.local_repo_path)
 
-        AgentGitHandler.log.debug("[Git] Modified: %r" % str(modified))
+        AgentGitHandler.log.debug("[Git] Modified: %s" % str(modified))
 
         if not modified:
-            AgentGitHandler.log.debug("No changes detected in the local repository for tenant %r" % git_repo.tenant_id)
+            AgentGitHandler.log.debug("No changes detected in the local repository for tenant %s" % git_repo.tenant_id)
             return
 
         AgentGitHandler.stage_all(git_repo.local_repo_path)
 
         # commit to local repositpory
-        commit_message = "tenant [%r]'s artifacts committed to local repo at %r" \
+        commit_message = "tenant [%s]'s artifacts committed to local repo at %s" \
                          % (git_repo.tenant_id, git_repo.local_repo_path)
         # TODO: set configuratble names, check if already configured
         commit_name = git_repo.tenant_id
@@ -311,7 +309,7 @@ class AgentGitHandler:
             ["commit", "-m", commit_message], git_repo.local_repo_path)
         if errors.strip() == "":
             commit_hash = AgentGitHandler.find_between(output, "[master", "]").strip()
-            AgentGitHandler.log.debug("Committed artifacts for tenant : %r : %r " % (git_repo.tenant_id, commit_hash))
+            AgentGitHandler.log.debug("Committed artifacts for tenant : %s : %s " % (git_repo.tenant_id, commit_hash))
         else:
             AgentGitHandler.log.exception("Committing artifacts to local repository failed for tenant: %s, Cause: %s"
                                           % (git_repo.tenant_id, errors))
@@ -334,7 +332,7 @@ class AgentGitHandler:
 
                 # pull successful, now push
                 repo.remotes.origin.push()
-            AgentGitHandler.log.debug("Pushed artifacts for tenant : %r" % git_repo.tenant_id)
+            AgentGitHandler.log.debug("Pushed artifacts for tenant : %s" % git_repo.tenant_id)
         except (GitCommandError, GitRepositorySynchronizationException) as e:
             # revert to initial commit hash
             AgentGitHandler.execute_git_command(["reset", "--hard", init_head], git_repo.local_repo_path)
@@ -342,12 +340,11 @@ class AgentGitHandler:
             raise GitRepositorySynchronizationException(
                 "Pushing artifacts to remote repository failed for tenant %s: %s" % (git_repo.tenant_id, e))
 
-
     @staticmethod
     def get_unstaged_files(repo_path):
 
         (output, errors) = AgentGitHandler.execute_git_command(["status"], repo_path=repo_path)
-        unstaged_files = {"modified":[], "untracked":[]}
+        unstaged_files = {"modified": [], "untracked": []}
 
         if "nothing to commit" in output:
             return False, unstaged_files
@@ -386,7 +383,7 @@ class AgentGitHandler:
         git_repo = AgentGitHandler.get_repo(repo_info.tenant_id)
 
         if git_repo is None:
-            AgentGitHandler.log.error("Unable to schedule artifact sync task, repositoryContext null for tenant %r"
+            AgentGitHandler.log.error("Unable to schedule artifact sync task, repositoryContext null for tenant %s"
                                       % repo_info.tenant_id)
             return
 
@@ -396,9 +393,9 @@ class AgentGitHandler:
 
             git_repo.scheduled_update_task = async_task
             async_task.start()
-            AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %r" % git_repo.local_repo_path)
+            AgentGitHandler.log.info("Scheduled Artifact Synchronization Task for path %s" % git_repo.local_repo_path)
         else:
-            AgentGitHandler.log.info("Artifact Synchronization Task for path %r already scheduled"
+            AgentGitHandler.log.info("Artifact Synchronization Task for path %s already scheduled"
                                      % git_repo.local_repo_path)
 
     @staticmethod
@@ -412,10 +409,10 @@ class AgentGitHandler:
         try:
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
         except GitRepositorySynchronizationException as e:
-            AgentGitHandler.log.exception("Repository folder not deleted: %r" % e.get_message())
+            AgentGitHandler.log.exception("Repository folder not deleted: %s" % e.get_message())
 
         AgentGitHandler.clear_repo(tenant_id)
-        AgentGitHandler.log.info("git repository deleted for tenant %r" % git_repo.tenant_id)
+        AgentGitHandler.log.info("git repository deleted for tenant %s" % git_repo.tenant_id)
 
         return True
 
@@ -435,7 +432,7 @@ class AgentGitHandler:
         p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=os_env, cwd=repo_path)
         output, errors = p.communicate()
         if len(errors) > 0:
-            raise RuntimeError("Git Command execution failed: \n %r" % errors)
+            raise RuntimeError("Git Command execution failed: %s" % errors)
 
         return output, errors
 
@@ -458,14 +455,14 @@ class ArtifactUpdateTask(AbstractAsyncScheduledTask):
                 AgentGitHandler.checkout(self.repo_info)
                 # TODO: run updated scheduler extension
             except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto checkout task failed: %r" % e.get_message())
+                self.log.exception("Auto checkout task failed: %s" % e.get_message())
 
         if self.auto_commit:
             try:
                 self.log.debug("Running commit job")
                 AgentGitHandler.push(self.repo_info)
             except GitRepositorySynchronizationException as e:
-                self.log.exception("Auto commit failed: %r" % e.get_message())
+                self.log.exception("Auto commit failed: %s" % e.get_message())
 
 
 class GitRepository:
@@ -486,7 +483,6 @@ class GitRepository:
         """ :type : str  """
         self.repo_password = None
         """ :type : str  """
-        self.is_multitenant = False
         """ :type : bool  """
         self.commit_enabled = False
         """ :type : bool  """
@@ -510,10 +506,10 @@ class GitUtils:
         """
         try:
             os.mkdir(path)
-            GitUtils.log.info("Successfully created directory [%r]" % path)
+            GitUtils.log.info("Successfully created directory [%s]" % path)
             # return True
         except OSError as e:
-            raise GitRepositorySynchronizationException("Directory creating failed in [%r]. " % e)
+            raise GitRepositorySynchronizationException("Directory creating failed in [%s]. " % e)
 
         # return False
 
@@ -526,6 +522,6 @@ class GitUtils:
         """
         try:
             shutil.rmtree(path)
-            GitUtils.log.debug("Directory [%r] deleted." % path)
+            GitUtils.log.debug("Directory [%s] deleted." % path)
         except OSError as e:
             raise GitRepositorySynchronizationException("Deletion of folder path %s failed: %s" % (path, e))

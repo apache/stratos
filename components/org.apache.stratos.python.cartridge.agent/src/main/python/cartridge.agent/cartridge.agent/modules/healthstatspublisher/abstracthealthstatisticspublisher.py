@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+
 class AbstractHealthStatisticsReader:
     """
     Abstract class to implement to create a custom health stat reader

@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from ..util import cartridgeagentconstants
+import constants
 
 
 class Topology:
@@ -289,7 +289,7 @@ class Cluster:
         if self.tenant_range == "*":
             return True
         else:
-            arr = self.tenant_range.split(cartridgeagentconstants.TENANT_RANGE_DELIMITER)
+            arr = self.tenant_range.split(constants.TENANT_RANGE_DELIMITER)
             tenant_start = int(arr[0])
             if tenant_start <= tenant_id:
                 tenant_end = arr[1]
@@ -312,7 +312,7 @@ class Cluster:
         if tenant_range == "*":
             valid = True
         else:
-            arr = tenant_range.split(cartridgeagentconstants.TENANT_RANGE_DELIMITER)
+            arr = tenant_range.split(constants.TENANT_RANGE_DELIMITER)
             if len(arr) == 2:
                 if arr[0].isdigit() and arr[1].isdigit():
                     valid = True
@@ -328,7 +328,7 @@ class Member:
     Represents a member on a particular cluster
     """
 
-    def __init__(self, service_name="", cluster_id="", network_partition_id="", parition_id="", member_id="",
+    def __init__(self, service_name="", cluster_id="", network_partition_id="", partition_id="", member_id="",
                  cluster_instance_id=""):
         self.service_name = service_name
         """ :type : str  """
@@ -338,7 +338,7 @@ class Member:
         """ :type : str  """
         self.cluster_instance_id = cluster_instance_id
         """ :type : str  """
-        self.partition_id = parition_id
+        self.partition_id = partition_id
         """ :type : str  """
         self.member_id = member_id
         """ :type : str  """

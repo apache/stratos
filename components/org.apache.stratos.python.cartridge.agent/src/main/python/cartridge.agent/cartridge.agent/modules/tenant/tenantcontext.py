@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
+
 class Tenant:
     """
     Object type representing the tenant details of a single tenant

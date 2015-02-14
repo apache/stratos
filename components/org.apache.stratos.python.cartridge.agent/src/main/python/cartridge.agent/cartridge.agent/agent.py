@@ -27,8 +27,9 @@ from modules.event.application.signup.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
-from modules.config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from config import CartridgeAgentConfiguration
 from modules.event.eventhandler import EventHandler
+import constants
 
 
 class CartridgeAgent(threading.Thread):
@@ -42,21 +43,18 @@ class CartridgeAgent(threading.Thread):
         self.__log = LogFactory().get_log(__name__)
         self.__config = CartridgeAgentConfiguration()
 
-        mb_ip = self.__config.read_property(cartridgeagentconstants.MB_IP)
-        mb_port = self.__config.read_property(cartridgeagentconstants.MB_PORT)
+        mb_ip = self.__config.read_property(constants.MB_IP)
+        mb_port = self.__config.read_property(constants.MB_PORT)
 
-        self.__inst_topic_subscriber = EventSubscriber(cartridgeagentconstants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port)
-        self.__tenant_topic_subscriber = EventSubscriber(cartridgeagentconstants.TENANT_TOPIC, mb_ip, mb_port)
-        self.__app_topic_subscriber = EventSubscriber(cartridgeagentconstants.APPLICATION_SIGNUP, mb_ip, mb_port)
-        self.__topology_event_subscriber = EventSubscriber(cartridgeagentconstants.TOPOLOGY_TOPIC, mb_ip, mb_port)
+        self.__inst_topic_subscriber = EventSubscriber(constants.INSTANCE_NOTIFIER_TOPIC, mb_ip, mb_port)
+        self.__tenant_topic_subscriber = EventSubscriber(constants.TENANT_TOPIC, mb_ip, mb_port)
+        self.__app_topic_subscriber = EventSubscriber(constants.APPLICATION_SIGNUP, mb_ip, mb_port)
+        self.__topology_event_subscriber = EventSubscriber(constants.TOPOLOGY_TOPIC, mb_ip, mb_port)
 
         self.__event_handler = EventHandler()
 
     def run(self):
         self.__log.info("Starting Cartridge Agent...")
-
-        # Check if required properties are set
-        # self.validate_required_properties()
 
         # Start topology event receiver thread
         self.register_topology_event_listeners()
@@ -135,25 +133,6 @@ class CartridgeAgent(threading.Thread):
         :return: void
         """
         self.__terminated = True
-
-    # def validate_required_properties(self):
-    #     """
-    #     Checks if required properties are set
-    #     :return: void
-    #     """
-    #     # PARAM_FILE_PATH
-    #     try:
-    #         self.__config.read_property(cartridgeagentconstants.PARAM_FILE_PATH)
-    #     except ParameterNotFoundException:
-    #         self.__log.error("System property not found: %r" % cartridgeagentconstants.PARAM_FILE_PATH)
-    #         return
-    #
-    #     # EXTENSIONS_DIR
-    #     try:
-    #         self.__config.read_property(cartridgeagentconstants.PLUGINS_DIR)
-    #     except ParameterNotFoundException:
-    #         self.__log.error("System property not found: %r" % cartridgeagentconstants.PLUGINS_DIR)
-    #         return
         
     def register_instance_topic_listeners(self):
         self.__log.debug("Starting instance notifier event message receiver thread")
@@ -245,10 +224,7 @@ class CartridgeAgent(threading.Thread):
         if not TopologyContext.topology.initialized:
             return
 
-        try:
-            self.__event_handler.on_member_initialized_event()
-        except:
-            self.__log.exception("Error processing member initialized event")
+        self.__event_handler.on_member_initialized_event()
 
     def on_member_activated(self, msg):
         self.__log.debug("Member activated event received: %r" % msg.payload)
@@ -256,10 +232,7 @@ class CartridgeAgent(threading.Thread):
             return
 
         event_obj = MemberActivatedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_member_activated_event(event_obj)
-        except:
-            self.__log.exception("Error processing member activated event")
+        self.__event_handler.on_member_activated_event(event_obj)
 
     def on_member_terminated(self, msg):
         self.__log.debug("Member terminated event received: %r" % msg.payload)
@@ -267,10 +240,7 @@ class CartridgeAgent(threading.Thread):
             return
 
         event_obj = MemberTerminatedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_member_terminated_event(event_obj)
-        except:
-            self.__log.exception("Error processing member terminated event")
+        self.__event_handler.on_member_terminated_event(event_obj)
 
     def on_member_suspended(self, msg):
         self.__log.debug("Member suspended event received: %r" % msg.payload)
@@ -278,20 +248,14 @@ class CartridgeAgent(threading.Thread):
             return
 
         event_obj = MemberSuspendedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_member_suspended_event(event_obj)
-        except:
-            self.__log.exception("Error processing member suspended event")
+        self.__event_handler.on_member_suspended_event(event_obj)
 
     def on_complete_topology(self, msg):
         if not TopologyContext.topology.initialized:
             self.__log.debug("Complete topology event received")
             event_obj = CompleteTopologyEvent.create_from_json(msg.payload)
             TopologyContext.update(event_obj.topology)
-            try:
-                self.__event_handler.on_complete_topology_event(event_obj)
-            except:
-                self.__log.exception("Error processing complete topology event")
+            self.__event_handler.on_complete_topology_event(event_obj)
         else:
             self.__log.debug("Complete topology event updating task disabled")
 
@@ -301,26 +265,17 @@ class CartridgeAgent(threading.Thread):
             return
 
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_member_started_event(event_obj)
-        except:
-            self.__log.exception("Error processing member started event")
+        self.__event_handler.on_member_started_event(event_obj)
 
     def on_subscription_domain_added(self, msg):
         self.__log.debug("Subscription domain added event received : %r" % msg.payload)
         event_obj = SubscriptionDomainAddedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_subscription_domain_added_event(event_obj)
-        except:
-            self.__log.exception("Error processing subscription domains added event")
+        self.__event_handler.on_subscription_domain_added_event(event_obj)
 
     def on_subscription_domain_removed(self, msg):
         self.__log.debug("Subscription domain removed event received : %r" % msg.payload)
         event_obj = SubscriptionDomainRemovedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_subscription_domain_removed_event(event_obj)
-        except:
-            self.__log.exception("Error processing subscription domains removed event")
+        self.__event_handler.on_subscription_domain_removed_event(event_obj)
 
     def on_complete_tenant(self, msg):
         if not self.__tenant_context_initialized:
@@ -328,29 +283,20 @@ class CartridgeAgent(threading.Thread):
             event_obj = CompleteTenantEvent.create_from_json(msg.payload)
             TenantContext.update(event_obj.tenants)
 
-            try:
-                self.__event_handler.on_complete_tenant_event(event_obj)
-                self.__tenant_context_initialized = True
-            except:
-                self.__log.exception("Error processing complete tenant event")
+            self.__event_handler.on_complete_tenant_event(event_obj)
+            self.__tenant_context_initialized = True
         else:
             self.__log.debug("Complete tenant event updating task disabled")
 
     def on_tenant_subscribed(self, msg):
         self.__log.debug("Tenant subscribed event received: %r" % msg.payload)
         event_obj = TenantSubscribedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_tenant_subscribed_event(event_obj)
-        except:
-            self.__log.exception("Error processing tenant subscribed event")
+        self.__event_handler.on_tenant_subscribed_event(event_obj)
 
     def on_application_signup_removed(self, msg):
         self.__log.debug("Application signup removed event received: %r" % msg.payload)
         event_obj = ApplicationSignUpRemovedEvent.create_from_json(msg.payload)
-        try:
-            self.__event_handler.on_application_signup_removed_event(event_obj)
-        except:
-            self.__log.exception("Error processing tenant unSubscribed event")
+        self.__event_handler.on_application_signup_removed_event(event_obj)
 
     def wait_for_complete_topology(self):
         while not TopologyContext.topology.initialized:
@@ -359,21 +305,15 @@ class CartridgeAgent(threading.Thread):
         self.__log.info("Complete topology event received")
 
 
-def uncaught_exception_mg(exctype, value, tb):
-    log = LogFactory().get_log(__name__)
-    log.exception("UNCAUGHT EXCEPTION:", value)
-
-
 def main():
-    sys.excepthook = uncaught_exception_mg
     cartridge_agent = CartridgeAgent()
     log = LogFactory().get_log(__name__)
 
     try:
         log.debug("Starting cartridge agent")
         cartridge_agent.start()
-    except:
-        log.exception("Cartridge Agent Exception")
+    except Exception as e:
+        log.exception("Cartridge Agent Exception: %r" % e)
         cartridge_agent.terminate()
 
 

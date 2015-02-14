@@ -20,20 +20,20 @@ from threading import Thread
 
 from ..util import cartridgeagentutils
 from yapsy.PluginManager import PluginManager
-from ...plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin
+from plugins.contracts import ICartridgeAgentPlugin, IArtifactManagementPlugin
 from ..artifactmgt.git.agentgithandler import *
 from ..artifactmgt.repository import Repository
-from ..config.cartridgeagentconfiguration import CartridgeAgentConfiguration
+from config import CartridgeAgentConfiguration
 from ..publisher import cartridgeagentpublisher
 from ..topology.topologycontext import *
 from ..tenant.tenantcontext import *
 from ..util.log import LogFactory
+import constants
+from exception import ParameterNotFoundException
 
-from ... exception import ParameterNotFoundException
-
-ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
 
 AGENT_PLUGIN_EXT = "agent-plugin"
+ARTIFACT_MGT_PLUGIN = "ArtifactManagementPlugin"
 CARTRIDGE_AGENT_PLUGIN = "CartridgeAgentPlugin"
 SUPER_TENANT_ID = -1234
 SUPER_TENANT_REPO_PATH = "/repository/deployment/server/"
@@ -59,13 +59,13 @@ class EventHandler:
 
         try:
             plugin_manager = PluginManager()
-            plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
+            # TODO: change plugin descriptor extensions, plugin_manager.setPluginInfoExtension(AGENT_PLUGIN_EXT)
             plugin_manager.setCategoriesFilter({
                 CARTRIDGE_AGENT_PLUGIN: ICartridgeAgentPlugin,
                 ARTIFACT_MGT_PLUGIN: IArtifactManagementPlugin
             })
 
-            plugin_manager.setPluginPlaces([self.__config.read_property(cartridgeagentconstants.PLUGINS_DIR)])
+            plugin_manager.setPluginPlaces([self.__config.read_property(constants.PLUGINS_DIR)])
 
             plugin_manager.collectPlugins()
 
@@ -73,21 +73,21 @@ class EventHandler:
             plugins = plugin_manager.getPluginsOfCategory(CARTRIDGE_AGENT_PLUGIN)
             grouped_plugins = {}
             for plugin_info in plugins:
-                print "Found plugin %s at %s" % (plugin_info.name, plugin_info.path)
+                self.__log.debug("Found plugin %s at %s" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
-                print "Activated plugin %s" % plugin_info.name
+                self.__log.info("Activated plugin %s" % plugin_info.name)
 
-                if grouped_plugins[plugin_info.description] is None:
+                if grouped_plugins.get(plugin_info.description) is None:
                     grouped_plugins[plugin_info.description] = []
 
-                grouped_plugins[plugin_info.description].add(plugin_info)
+                grouped_plugins[plugin_info.description].append(plugin_info)
 
             # activate artifact management plugins
             artifact_mgt_plugins = plugin_manager.getPluginsOfCategory(ARTIFACT_MGT_PLUGIN)
             for plugin_info in artifact_mgt_plugins:
-                print "Found artifact management plugin %s at %s" % (plugin_info.name, plugin_info.path)
+                self.__log.debug("Found artifact management plugin %s at %s" % (plugin_info.name, plugin_info.path))
                 plugin_manager.activatePluginByName(plugin_info.name)
-                print "Activated artifact management plugin %s" % plugin_info.name
+                self.__log.info("Activated artifact management plugin %s" % plugin_info.name)
 
             return plugin_manager, grouped_plugins, artifact_mgt_plugins
         except ParameterNotFoundException as e:
@@ -103,9 +103,17 @@ class EventHandler:
         :param dict plugin_values: the values to be passed to the plugin
         :return:
         """
-        plugin_values = self.get_values_for_plugins(plugin_values)
-        for plugin_info in self.__plugins[event]:
-            PluginExecutor(plugin_info, plugin_values).start()
+        try:
+            plugin_values = self.get_values_for_plugins(plugin_values)
+            plugins_for_event = self.__plugins.get(event)
+            if plugins_for_event is not None:
+                for plugin_info in plugins_for_event:
+                    self.__log.debug("Executing plugin %s for event %s" % (plugin_info.name, event))
+                    PluginExecutor(plugin_info, plugin_values).start()
+            else:
+                self.__log.debug("No plugins registered for event %s" % event)
+        except Exception as e:
+            self.__log.exception("Error while executing plugin for event %s: %s" % (event, e))
 
     def on_instance_started_event(self):
         self.__log.debug("Processing instance started event...")
@@ -187,18 +195,17 @@ class EventHandler:
 
             # create repo object
             local_repo_path = self.get_repo_path_for_tenant(tenant_id, local_repo_path, is_multitenant)
-            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, is_multitenant,
-                                   commit_enabled)
+            repo_info = Repository(repo_url, repo_username, repo_password, local_repo_path, tenant_id, commit_enabled)
 
             # checkout code
             subscribe_run, updated = AgentGitHandler.checkout(repo_info)
             # execute artifact updated extension
-            plugin_values = {"STRATOS_ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
-                             "STRATOS_ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
-                             "STRATOS_ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
-                             "STRATOS_ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
-                             "STRATOS_ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
-                             "STRATOS_ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
+            plugin_values = {"ARTIFACT_UPDATED_CLUSTER_ID": artifacts_updated_event.cluster_id,
+                             "ARTIFACT_UPDATED_TENANT_ID": artifacts_updated_event.tenant_id,
+                             "ARTIFACT_UPDATED_REPO_URL": artifacts_updated_event.repo_url,
+                             "ARTIFACT_UPDATED_REPO_PASSWORD": artifacts_updated_event.repo_password,
+                             "ARTIFACT_UPDATED_REPO_USERNAME": artifacts_updated_event.repo_username,
+                             "ARTIFACT_UPDATED_STATUS": artifacts_updated_event.status}
 
             self.execute_plugins_for_event("ArtifactUpdatedEvent", plugin_values)
 
@@ -209,7 +216,7 @@ class EventHandler:
                 # updated on pull
                 self.on_artifact_update_scheduler_event(tenant_id)
 
-            update_artifacts = self.__config.read_property(cartridgeagentconstants.ENABLE_ARTIFACT_UPDATE, False)
+            update_artifacts = self.__config.read_property(constants.ENABLE_ARTIFACT_UPDATE, False)
             update_artifacts = True if str(update_artifacts).strip().lower() == "true" else False
             if update_artifacts:
                 auto_commit = self.__config.is_commits_enabled
@@ -234,8 +241,8 @@ class EventHandler:
 
     def on_artifact_update_scheduler_event(self, tenant_id):
         self.__log.info("Processing Artifact update scheduler event...")
-        plugin_values = {"STRATOS_ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
-                         "STRATOS_ARTIFACT_UPDATED_SCHEDULER": str(True)}
+        plugin_values = {"ARTIFACT_UPDATED_TENANT_ID": str(tenant_id),
+                         "ARTIFACT_UPDATED_SCHEDULER": str(True)}
 
         self.execute_plugins_for_event("ArtifactUpdateSchedulerEvent", plugin_values)
 
@@ -285,8 +292,8 @@ class EventHandler:
         service = topology.get_service(service_name_in_payload)
         cluster = service.get_cluster(cluster_id_in_payload)
 
-        plugin_values = {"STRATOS_TOPOLOGY_JSON": json.dumps(topology.json_str),
-                         "STRATOS_MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
+        plugin_values = {"TOPOLOGY_JSON": json.dumps(topology.json_str),
+                         "MEMBER_LIST_JSON": json.dumps(cluster.member_list_json)}
 
         self.execute_plugins_for_event("CompleteTopologyEvent", plugin_values)
 
@@ -310,13 +317,15 @@ class EventHandler:
         if member_exists:
             self.__config.initialized = True
 
+        self.execute_plugins_for_event("MemberInitializedEvent", {})
+
     def on_complete_tenant_event(self, complete_tenant_event):
         self.__log.debug("Processing Complete tenant event...")
 
         tenant_list_json = complete_tenant_event.tenant_list_json
         self.__log.debug("Complete tenants:" + json.dumps(tenant_list_json))
 
-        plugin_values = {"STRATOS_TENANT_LIST_JSON": json.dumps(tenant_list_json)}
+        plugin_values = {"TENANT_LIST_JSON": json.dumps(tenant_list_json)}
 
         self.execute_plugins_for_event("CompleteTenantEvent", plugin_values)
 
@@ -377,10 +386,10 @@ class EventHandler:
         cluster_id_in_payload = self.__config.cluster_id
         member_id_in_payload = self.__config.member_id
 
-        topology_consistant = self.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
-                                                                  member_id_in_payload)
+        member_initialized = self.check_member_state_in_topology(service_name_in_payload, cluster_id_in_payload,
+                                                                 member_id_in_payload)
 
-        if not topology_consistant:
+        if not member_initialized:
             self.__log.error("Member has not initialized, failed to execute start server event")
             return
 
@@ -398,11 +407,11 @@ class EventHandler:
             " [application-context] " + subscription_domain_added_event.application_context
         )
 
-        plugin_values = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscription_domain_added_event.service_name,
-                         "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscription_domain_added_event.domain_name,
-                         "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscription_domain_added_event.tenant_id),
-                         "STRATOS_SUBSCRIPTION_TENANT_DOMAIN": tenant_domain,
-                         "STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT":
+        plugin_values = {"SUBSCRIPTION_SERVICE_NAME": subscription_domain_added_event.service_name,
+                         "SUBSCRIPTION_DOMAIN_NAME": subscription_domain_added_event.domain_name,
+                         "SUBSCRIPTION_TENANT_ID": int(subscription_domain_added_event.tenant_id),
+                         "SUBSCRIPTION_TENANT_DOMAIN": tenant_domain,
+                         "SUBSCRIPTION_APPLICATION_CONTEXT":
                              subscription_domain_added_event.application_context}
 
         self.execute_plugins_for_event("SubscriptionDomainAddedEvent", plugin_values)
@@ -414,10 +423,10 @@ class EventHandler:
             " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_removed_event.domain_name
         )
 
-        plugin_values = {"STRATOS_SUBSCRIPTION_SERVICE_NAME": subscription_domain_removed_event.service_name,
-                         "STRATOS_SUBSCRIPTION_DOMAIN_NAME": subscription_domain_removed_event.domain_name,
-                         "STRATOS_SUBSCRIPTION_TENANT_ID": int(subscription_domain_removed_event.tenant_id),
-                         "STRATOS_SUBSCRIPTION_TENANT_DOMAIN": tenant_domain}
+        plugin_values = {"SUBSCRIPTION_SERVICE_NAME": subscription_domain_removed_event.service_name,
+                         "SUBSCRIPTION_DOMAIN_NAME": subscription_domain_removed_event.domain_name,
+                         "SUBSCRIPTION_TENANT_ID": int(subscription_domain_removed_event.tenant_id),
+                         "SUBSCRIPTION_TENANT_DOMAIN": tenant_domain}
 
         self.execute_plugins_for_event("SubscriptionDomainRemovedEvent", plugin_values)
 
@@ -497,36 +506,26 @@ class EventHandler:
 
         return True
 
-    def get_values_for_plugins(self, env_params):
+    def get_values_for_plugins(self, plugin_values):
         """
         Adds the common parameters to be used by the extension scripts
-        :param dict[str, str] env_params: Dictionary to be added
+        :param dict[str, str] plugin_values: Dictionary to be added
         :return: Dictionary with updated parameters
         :rtype: dict[str, str]
         """
-        env_params["APPLICATION_PATH"] = self.__config.app_path
-        env_params["PARAM_FILE_PATH"] = self.__config.read_property(cartridgeagentconstants.PARAM_FILE_PATH, False)
-        env_params["SERVICE_NAME"] = self.__config.service_name
-        env_params["TENANT_ID"] = self.__config.tenant_id
-        env_params["CARTRIDGE_KEY"] = self.__config.cartridge_key
-        env_params["LB_CLUSTER_ID"] = self.__config.lb_cluster_id
-        env_params["CLUSTER_ID"] = self.__config.cluster_id
-        env_params["NETWORK_PARTITION_ID"] = self.__config.network_partition_id
-        env_params["PARTITION_ID"] = self.__config.partition_id
-        env_params["PERSISTENCE_MAPPINGS"] = self.__config.persistence_mappings
-        env_params["REPO_URL"] = self.__config.repo_url
-        env_params["DEPENDANT_CLUSTER_ID"] = self.__config.dependant_cluster_id
-        env_params["EXPORT_METADATA_KEYS"] = self.__config.export_metadata_keys
-        env_params["IMPORT_METADATA_KEYS"] = self.__config.import_metadata_keys
+        if plugin_values is None:
+            plugin_values = {}
+        elif type(plugin_values) != dict:
+            plugin_values = {"VALUE1": str(plugin_values)}
+
+        plugin_values["APPLICATION_PATH"] = self.__config.app_path
+        plugin_values["PARAM_FILE_PATH"] = self.__config.read_property(constants.PARAM_FILE_PATH, False)
+        plugin_values["PERSISTENCE_MAPPINGS"] = self.__config.persistence_mappings
 
         lb_cluster_id_in_payload = self.__config.lb_cluster_id
-        member_ips = EventHandler.get_lb_member_ip(lb_cluster_id_in_payload)
-        if member_ips is not None:
-            env_params["LB_IP"] = member_ips[0]
-            env_params["LB_PUBLIC_IP"] = member_ips[1]
-        else:
-            env_params["LB_IP"] = self.__config.lb_private_ip
-            env_params["LB_PUBLIC_IP"] = self.__config.lb_public_ip
+        lb_private_ip, lb_public_ip = EventHandler.get_lb_member_ip(lb_cluster_id_in_payload)
+        plugin_values["LB_IP"] = lb_private_ip if lb_private_ip is not None else self.__config.lb_private_ip
+        plugin_values["LB_PUBLIC_IP"] = lb_public_ip if lb_public_ip is not None else self.__config.lb_public_ip
 
         topology = TopologyContext.get_topology()
         if topology.initialized:
@@ -534,15 +533,16 @@ class EventHandler:
             cluster = service.get_cluster(self.__config.cluster_id)
             member_id_in_payload = self.__config.member_id
             member = cluster.get_member(member_id_in_payload)
-            self.add_properties(service.properties, env_params, "SERVICE_PROPERTY")
-            self.add_properties(cluster.properties, env_params, "CLUSTER_PROPERTY")
-            self.add_properties(member.properties, env_params, "MEMBER_PROPERTY")
+            EventHandler.add_properties(service.properties, plugin_values, "SERVICE_PROPERTY")
+            EventHandler.add_properties(cluster.properties, plugin_values, "CLUSTER_PROPERTY")
+            EventHandler.add_properties(member.properties, plugin_values, "MEMBER_PROPERTY")
 
-        # TODO: env_params.update(self.__config.get_payload_params())
+        plugin_values.update(self.__config.get_payload_params())
 
-        return EventHandler.clean_process_parameters(env_params)
+        return EventHandler.clean_process_parameters(plugin_values)
 
-    def add_properties(self, properties, params, prefix):
+    @staticmethod
+    def add_properties(properties, params, prefix):
         """
         Adds the given property list to the parameters list with given prefix in the parameter name
         :param dict[str, str] properties: service properties
@@ -555,7 +555,6 @@ class EventHandler:
 
         for key in properties:
             params[prefix + "_" + key] = str(properties[key])
-            self.__log.debug("Property added: " + prefix + "_" + key + " => " + properties[key])
 
     @staticmethod
     def get_lb_member_ip(lb_cluster_id):
@@ -568,9 +567,9 @@ class EventHandler:
                 members = cluster.get_members()
                 for member in members:
                     if member.cluster_id == lb_cluster_id:
-                        return [member.member_default_private_ip, member.member_default_public_ip]
+                        return member.member_default_private_ip, member.member_default_public_ip
 
-        return None
+        return None, None
 
     @staticmethod
     def clean_process_parameters(params):
@@ -596,7 +595,7 @@ class EventHandler:
 
 
 class PluginExecutor(Thread):
-    """ Executes a given plugin on a separate thread, passing the given dictionary of values to the plugin entry mehtod
+    """ Executes a given plugin on a separate thread, passing the given dictionary of values to the plugin entry method
     """
 
     def __init__(self, plugin_info, values):
@@ -607,6 +606,6 @@ class PluginExecutor(Thread):
 
     def run(self):
         try:
-            self.__plugin_info.run_plugin(self.__values)
+            self.__plugin_info.plugin_object.run_plugin(self.__values, self.__log)
         except Exception as e:
             self.__log.exception("Error while executing plugin %s: %s" % (self.__plugin_info.name, e))
