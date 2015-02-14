@@ -6,7 +6,7 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#   http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -27,9 +27,9 @@ APPLICATION_PATH = "APPLICATION_PATH"
 SERVICE_GROUP = "SERIVCE_GROUP"
 SERVICE_NAME = "SERVICE_NAME"
 CLUSTER_ID = "CLUSTER_ID"
-CLUSTER_INSTANCE_ID= "CLUSTER_INSTANCE_ID"
+CLUSTER_INSTANCE_ID = "CLUSTER_INSTANCE_ID"
 MEMBER_ID = "MEMBER_ID"
-INSTANCE_ID= "INSTANCE_ID"
+INSTANCE_ID = "INSTANCE_ID"
 LB_CLUSTER_ID = "LB_CLUSTER_ID"
 NETWORK_PARTITION_ID = "NETWORK_PARTITION_ID"
 PARTITION_ID = "PARTITION_ID"
@@ -41,8 +41,8 @@ MANAGER_SERVICE_TYPE = "MANAGER_SERVICE_TYPE"
 WORKER_SERVICE_TYPE = "WORKER_SERVICE_TYPE"
 PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING"
 DEPENDENCY_CLUSTER_IDS = "DEPENDENCY_CLUSTER_IDS"
-EXPORT_METADATA_KEYS="EXPORT_METADATA_KEYS"
-IMPORT_METADATA_KEYS="IMPORT_METADATA_KEYS"
+EXPORT_METADATA_KEYS = "EXPORT_METADATA_KEYS"
+IMPORT_METADATA_KEYS = "IMPORT_METADATA_KEYS"
 
 # stratos.sh environment variables keys
 LOG_FILE_PATHS = "LOG_FILE_PATHS"
@@ -101,9 +101,9 @@ HEALTH_STAT_TOPIC = "health/#"
 TOPOLOGY_TOPIC = "topology/#"
 TENANT_TOPIC = "tenant/#"
 INSTANCE_STATUS_TOPIC = "instance/status/"
-APPLICATION_SIGNUP="application/signup/#"
+APPLICATION_SIGNUP = "application/signup/#"
 
-#Messaging Model
+# Messaging Model
 TENANT_RANGE_DELIMITER = "-"
 
 INSTANCE_STARTED_EVENT = "InstanceStartedEvent"
@@ -121,7 +121,7 @@ KEY_MANAGER_SERVICE_NAME = "keymanager"
 PRIMARY = "PRIMARY"
 MIN_COUNT = "MIN_COUNT"
 
-#multi tenant constants
+# multi tenant constants
 INVALID_TENANT_ID = "-1"
 SUPER_TENANT_ID = "-1234"
 
