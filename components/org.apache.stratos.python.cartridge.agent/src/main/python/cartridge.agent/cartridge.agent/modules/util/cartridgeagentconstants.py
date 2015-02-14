@@ -16,7 +16,7 @@
 # under the License.
 
 PARAM_FILE_PATH = "param.file.path"
-EXTENSIONS_DIR = "extensions.dir"
+PLUGINS_DIR = "plugins.dir"
 
 MB_IP = "mb.ip"
 MB_PORT = "mb.port"

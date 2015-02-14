@@ -265,21 +265,6 @@ class CartridgeAgentConfiguration:
             self.log.debug("import_metadata_keys: %r" % self.import_metadata_keys)
             self.log.debug("artifact.update.interval: %r" % self.artifact_update_interval)
 
-        def get_member_id(self, member_id_field):
-            """
-            Reads the member id from the payload file or configuration file. If neither of
-            these sources contain the member id, the hostname is assigned to it and returned.
-            :param str member_id_field: the key of the member id to lookup
-            :return: The member id
-            :rtype : str
-            """
-            try:
-                member_id = self.read_property(member_id_field)
-                return member_id
-            except ParameterNotFoundException:
-                self.log.debug("Member id not found")
-                return member_id
-
         def __read_conf_file(self):
             """
             Reads and stores the agent's configuration file
@@ -291,12 +276,12 @@ class CartridgeAgentConfiguration:
             self.properties = ConfigParser.SafeConfigParser()
             self.properties.read(conf_file_path)
 
-            #set calculated values
+            # set calculated values
             param_file = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "payload/launch-params"
             self.properties.set("agent", cartridgeagentconstants.PARAM_FILE_PATH, param_file)
 
-            extensions_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "extensions"
-            self.properties.set("agent", cartridgeagentconstants.EXTENSIONS_DIR, extensions_dir)
+            plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "plugins"
+            self.properties.set("agent", cartridgeagentconstants.PLUGINS_DIR, plugins_dir)
 
         def __read_parameter_file(self):
             """
