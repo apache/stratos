@@ -11,6 +11,7 @@
 				"subscribableInfo":{  
                	"alias":"php1",
                	"autoscalingPolicy":"autoscale-policy-1",
+                "deploymentPolicy":"deployment-policy-1",
                 "artifactRepository":{
                    "privateRepo":false,
                    "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
