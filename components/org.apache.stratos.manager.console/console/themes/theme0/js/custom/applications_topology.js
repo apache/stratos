@@ -193,7 +193,7 @@ function update(source) {
                 if((d.ports != '') && (d.ports.length > 0)) {
                     var portsHTML = "<strong>Ports: </strong></br>";
                     for(var i=0;i<d.ports.length;i++){
-                        portsHTML += "Port: " + d.ports[i].port + ", Protocol: " + d.ports[i].protocol + ", Proxy Port: " + d.ports[i].proxyPort;
+                        portsHTML += "Port: " + d.ports[i].port + ", Protocol: " + d.ports[i].protocol;
                         if(i < (d.ports.length - 1)) {
                             portsHTML += "</br>";
                         }
