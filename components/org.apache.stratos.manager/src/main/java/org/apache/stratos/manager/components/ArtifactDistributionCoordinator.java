@@ -22,15 +22,11 @@ package org.apache.stratos.manager.components;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.application.Group;
-import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
-import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
+import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.manager.exception.ArtifactDistributionCoordinatorException;
 import org.apache.stratos.manager.messaging.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.Applications;
-import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
+import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
+import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
 
 import java.util.List;
 
@@ -164,33 +160,15 @@ public class ArtifactDistributionCoordinator {
     }
 
     private String findClusterId(String applicationId, String alias) {
-        Applications applications = ApplicationManager.getApplications();
-        if (applications == null) {
-            throw new RuntimeException("Applications not found in application manager");
+        try {
+            AutoscalerServiceClient autoscalerServiceClient = AutoscalerServiceClient.getInstance();
+            return autoscalerServiceClient.findClusterId(applicationId, alias);
+        } catch (Exception e) {
+            String message = String.format("Could not find cluster id of alias: [application-id] %s [alias] %s",
+                    applicationId, alias);
+            log.error(message, e);
+            throw new RuntimeException(message, e);
         }
-
-        Application application = applications.getApplication(applicationId);
-        if (application == null) {
-            throw new RuntimeException(String.format("Application not found: [application-id] %s", applicationId));
-        }
-
-        ClusterDataHolder clusterData = application.getClusterData(alias);
-
-        if(clusterData == null) {
-	        for(Group group:application.getGroups()){
-		        clusterData=group.getClusterData(alias);
-		        if(clusterData!=null){
-			        break;
-		        }
-	        }
-	        if (clusterData == null) {
-		        throw new RuntimeException(
-				        String.format("Cluster data not found for alias: [application-id] %s [alias] %s",
-				                      applicationId, alias));
-	        }
-
-        }
-        return clusterData.getClusterId();
     }
 
     private boolean artifactRepositoriesExist(ApplicationSignUp applicationSignUp) {

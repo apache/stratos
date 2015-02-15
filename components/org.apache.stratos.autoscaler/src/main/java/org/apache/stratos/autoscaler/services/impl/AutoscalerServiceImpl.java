@@ -59,6 +59,7 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Artifac
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.Group;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
@@ -729,6 +730,24 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             String message = String.format("Could not get network partition: [network-partition-id] %s",
                     networkPartitionId);
             log.error(message);
+            throw new AutoScalerException(message, e);
+        }
+    }
+
+    @Override
+    public String findClusterId(String applicationId, String alias) {
+        try {
+            Application application = ApplicationManager.getApplications().getApplication(applicationId);
+            if(application != null) {
+                ClusterDataHolder clusterData = application.getClusterData(alias);
+                if(clusterData != null) {
+                    return clusterData.getClusterId();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            String message = String.format("Could not find cluster id: [application-id] %s [alias] %s",
+                    applicationId, alias);
             throw new AutoScalerException(message, e);
         }
     }

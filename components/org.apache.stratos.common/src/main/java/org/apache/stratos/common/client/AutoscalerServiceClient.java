@@ -176,4 +176,8 @@ public class AutoscalerServiceClient {
             throws RemoteException, AutoscalerServiceInvalidArgumentExceptionException {
         stub.updateClusterMonitor(clusterId, properties);
     }
+
+    public String findClusterId(String applicationId, String alias) throws RemoteException {
+        return stub.findClusterId(applicationId, alias);
+    }
 }
