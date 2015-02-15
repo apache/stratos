@@ -58,6 +58,7 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
+import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
@@ -672,25 +673,17 @@ public class ObjectConverter {
                 memberBean.setNetworkPartitionId(member.getNetworkPartitionId());
                 memberBean.setPartitionId(member.getPartitionId());
                 memberBean.setMemberId(member.getMemberId());
-                if (member.getDefaultPrivateIP() == null) {
-                    memberBean.setDefaultPrivateIP("NULL");
-                } else {
-                    memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
-                }
-                if (member.getDefaultPublicIP() == null) {
-                    memberBean.setDefaultPublicIP("NULL");
-                } else {
-                    memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
-                }
+                memberBean.setDefaultPrivateIP(member.getDefaultPrivateIP());
+                memberBean.setDefaultPublicIP(member.getDefaultPublicIP());
                 memberBean.setMemberPrivateIPs(member.getMemberPrivateIPs());
                 memberBean.setMemberPublicIPs(member.getMemberPublicIPs());
+                memberBean.setPorts(convertStubPortsToPortMappingBeans(member.getPorts()));
                 memberBean.setServiceName(member.getServiceName());
                 memberBean.setStatus(member.getStatus().toString());
                 memberBean.setProperty(convertJavaUtilPropertiesToPropertyBeans(member.getProperties()));
+
                 clusterInstanceBean.getMember().add(memberBean);
-
             }
-
         }
 		clusterInstanceBean.setAccessUrls(cluster.getAccessUrls());
         for (String hostname : cluster.getHostNames()) {
@@ -699,6 +692,21 @@ public class ObjectConverter {
         clusterInstanceBean.setKubernetesServices(convertKubernetesServiceToKubernetesServiceBean(
                 cluster.getKubernetesServices()));
         return clusterInstanceBean;
+    }
+
+    private static List<PortMappingBean> convertStubPortsToPortMappingBeans(Collection<Port> ports) {
+        List<PortMappingBean> portMappingBeans = new ArrayList<PortMappingBean>();
+        if(ports != null) {
+            for(Port port : ports) {
+                PortMappingBean portMappingBean = new PortMappingBean();
+                portMappingBean.setProtocol(port.getProtocol());
+                portMappingBean.setPort(port.getValue());
+                portMappingBean.setProxyPort(port.getProxy());
+
+                portMappingBeans.add(portMappingBean);
+            }
+        }
+        return portMappingBeans;
     }
 
     private static List<KubernetesServiceBean> convertKubernetesServiceToKubernetesServiceBean(

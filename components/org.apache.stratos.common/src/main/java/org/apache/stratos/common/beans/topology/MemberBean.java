@@ -18,9 +18,11 @@
  */
 package org.apache.stratos.common.beans.topology;
 
-import java.util.List;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.apache.stratos.common.beans.cartridge.PortMappingBean;
 import org.apache.stratos.common.beans.cartridge.PropertyBean;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
 public class MemberBean {
@@ -37,6 +39,7 @@ public class MemberBean {
     private String lbClusterId;
     private String defaultPublicIP;
     private List<String> memberPublicIPs;
+    private List<PortMappingBean> ports;
     private List<PropertyBean> property;
 
     public String getServiceName() {
@@ -143,6 +146,14 @@ public class MemberBean {
         this.clusterInstanceId = clusterInstanceId;
     }
 
+    public List<PortMappingBean> getPorts() {
+        return ports;
+    }
+
+    public void setPorts(List<PortMappingBean> ports) {
+        this.ports = ports;
+    }
+
     @Override
     public String toString() {
         return "Member [serviceName=" + getServiceName()
@@ -157,6 +168,7 @@ public class MemberBean {
                 + ", defaultPublicIP=" + getDefaultPublicIP()
                 + ", memberPublicIPs=" + memberPublicIPs.toString()
                 + ", lbClusterId=" + getLbClusterId()
+                + ", ports=" + getPorts()
                 + ", property=" + getProperty() + "]";
     }
 }

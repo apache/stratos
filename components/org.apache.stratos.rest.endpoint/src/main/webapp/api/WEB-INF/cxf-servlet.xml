@@ -135,6 +135,7 @@
                 <value>accessUrls</value>
                 <value>kubernetesServices</value>
                 <value>publicIPs</value>
+                <value>ports</value>
             </list>
         </property>
     </bean>
