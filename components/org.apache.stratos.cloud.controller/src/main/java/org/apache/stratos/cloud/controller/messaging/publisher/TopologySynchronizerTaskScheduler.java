@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.messaging.publisher;
 
-import java.util.HashMap;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
@@ -29,6 +27,8 @@ import org.wso2.carbon.ntask.common.TaskException;
 import org.wso2.carbon.ntask.core.TaskInfo;
 import org.wso2.carbon.ntask.core.TaskManager;
 import org.wso2.carbon.ntask.core.service.TaskService;
+
+import java.util.HashMap;
 
 /**
  * Topology synchronizer task scheduler for scheduling the topology synchronizer task
@@ -52,6 +52,7 @@ public class TopologySynchronizerTaskScheduler {
                         getTopologyConfig().getProperty(CloudControllerConstants.CRON_PROPERTY);
 				String cron = cronProp != null ?  cronProp :CloudControllerConstants.TOPOLOGY_SYNC_CRON ;
                 TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(cron);
+
                 TaskInfo taskInfo = new TaskInfo(CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME,
                         TopologySynchronizerTask.class.getName(),
                         new HashMap<String, String>(), triggerInfo);

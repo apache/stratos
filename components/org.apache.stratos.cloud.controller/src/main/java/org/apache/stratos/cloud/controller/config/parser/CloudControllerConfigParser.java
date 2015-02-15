@@ -175,12 +175,10 @@ public class CloudControllerConfigParser {
         }
 
         // get enable attribute
-        boolean isEnable =
-                Boolean.parseBoolean(element.getAttributeValue(new QName(
+        boolean isEnable = Boolean.parseBoolean(element.getAttributeValue(new QName(
                         CloudControllerConstants.ENABLE_ATTR)));
 
         CloudControllerConfig config = CloudControllerConfig.getInstance();
-
         config.setEnableTopologySync(isEnable);
         if (!isEnable) {
             if (log.isWarnEnabled()) {
@@ -192,7 +190,6 @@ public class CloudControllerConfigParser {
             TopologyConfig topologyConfig = new TopologyConfig();
             // load properties
             IaasProviderConfigParser.loadProperties(FILE_NAME, element, topologyConfig.getProperties());
-
             config.setTopologyConfig(topologyConfig);
         }
     }
