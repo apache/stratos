@@ -22,7 +22,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
-import org.apache.stratos.cloud.controller.concurrent.ThreadExecutor;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
@@ -41,6 +40,7 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 
@@ -50,6 +50,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
 
@@ -64,8 +65,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private static final String PERSISTENCE_MAPPING = "PERSISTENCE_MAPPING";
 
     private CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
+    private ExecutorService executorService;
 
     public CloudControllerServiceImpl() {
+        executorService = StratosThreadPool.getExecutorService("cloud.controller.instance.manager.thread.pool", 50);
+
     }
 
     public void addCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
@@ -448,11 +452,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // Start instance in a new thread
-            ThreadExecutor threadExecutor = ThreadExecutor.getInstance();
             if (log.isDebugEnabled()) {
                 log.debug("Starting the instance creator thread...");
             }
-            threadExecutor.execute(new InstanceCreator(memberContext, iaasProvider));
+            executorService.execute(new InstanceCreator(memberContext, iaasProvider));
 
             TopologyBuilder.handleMemberCreatedEvent(memberContext);
             return memberContext;
@@ -593,8 +596,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
             }
 
-            ThreadExecutor exec = ThreadExecutor.getInstance();
-            exec.execute(new InstanceTerminator(memberContext));
+            executorService.execute(new InstanceTerminator(memberContext));
         } catch (InvalidMemberException e) {
             String message = "Could not terminate instance: [member-id] " + memberId;
             log.error(message, e);
@@ -679,17 +681,15 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
         handleNullObject(clusterId, "Instance termination failed. Cluster id is null.");
 
-        List<MemberContext> ctxts = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
-
-        if (ctxts == null) {
+        List<MemberContext> memberContexts = CloudControllerContext.getInstance().getMemberContextsOfClusterId(clusterId);
+        if (memberContexts == null) {
             String msg = "Instance termination failed. No members found for cluster id: " + clusterId;
             log.warn(msg);
             return;
         }
 
-        ThreadExecutor exec = ThreadExecutor.getInstance();
-        for (MemberContext memberContext : ctxts) {
-            exec.execute(new InstanceTerminator(memberContext));
+        for (MemberContext memberContext : memberContexts) {
+            executorService.execute(new InstanceTerminator(memberContext));
         }
     }
 

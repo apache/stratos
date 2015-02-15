@@ -41,7 +41,7 @@ public class MockHealthStatisticsGenerator {
 
     private static volatile MockHealthStatisticsGenerator instance;
     private static final ScheduledExecutorService scheduledExecutorService =
-            StratosThreadPool.getScheduledExecutorService("MOCK_STATISTICS_GENERATOR_EXECUTOR_SERVICE", 10);
+            StratosThreadPool.getScheduledExecutorService("mock.iaas.health.statistics.generator.thread.pool", 10);
 
     private boolean scheduled;
     // Map<ServiceName, List<ScheduledFuture>>

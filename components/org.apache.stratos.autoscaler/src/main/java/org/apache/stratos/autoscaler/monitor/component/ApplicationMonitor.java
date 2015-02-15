@@ -69,7 +69,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             TopologyInConsistentException {
         super(application);
 
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_SIZE, 10);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_SIZE, 20);
         this.executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID, threadPoolSize);
 

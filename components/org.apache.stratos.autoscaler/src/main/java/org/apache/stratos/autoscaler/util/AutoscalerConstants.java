@@ -35,7 +35,7 @@ public final class AutoscalerConstants {
     public static final String PROPERTY_VALUE_ATTR = "value";
     public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
     public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
-    public static final int AUTOSCALER_THREAD_POOL_SIZE = 10;
+    public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
     public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
             File.separator + "stratos-config.xml";
     

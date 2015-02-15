@@ -43,10 +43,10 @@ import java.util.concurrent.TimeUnit;
 public class MockInstance implements Runnable, Serializable {
 
     private static final Log log = LogFactory.getLog(MockInstance.class);
-    private static final ExecutorService instanceNotifierExecutorService =
-            StratosThreadPool.getExecutorService("MOCK_MEMBER_INSTANCE_NOTIFIER_EXECUTOR_SERVICE", 20);
+    private static final ExecutorService eventListenerExecutorService =
+            StratosThreadPool.getExecutorService("mock.iaas.event.listener.thread.pool", 20);
     private static final ScheduledExecutorService healthStatNotifierExecutorService =
-            StratosThreadPool.getScheduledExecutorService("MOCK_MEMBER_HEALTH_STAT_NOTIFIER_EXECUTOR_SERVICE", 20);
+            StratosThreadPool.getScheduledExecutorService("mock.iaas.health.statistics.notifier.thread.pool", 20);
     private static final int HEALTH_STAT_INTERVAL = 15; // 15 seconds
 
     private final MockInstanceContext mockMemberContext;
@@ -108,7 +108,7 @@ public class MockInstance implements Runnable, Serializable {
             }
         });
 
-        instanceNotifierExecutorService.submit(new Runnable() {
+        eventListenerExecutorService.submit(new Runnable() {
             @Override
             public void run() {
                 instanceNotifierEventReceiver.execute();

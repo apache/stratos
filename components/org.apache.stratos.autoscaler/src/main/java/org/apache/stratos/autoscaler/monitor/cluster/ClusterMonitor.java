@@ -117,7 +117,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
         scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 1);
-        int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 10);
+        int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
         executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
 

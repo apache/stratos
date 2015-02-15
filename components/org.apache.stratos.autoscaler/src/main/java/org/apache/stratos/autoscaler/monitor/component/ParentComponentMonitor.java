@@ -64,7 +64,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     private static final Log log = LogFactory.getLog(ParentComponentMonitor.class);
 
     //Scheduler executor service to execute this monitor in a thread
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = StratosThreadPool.getScheduledExecutorService(
+            "autoscaler.monitor.scheduler.thread.pool", 100);
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies

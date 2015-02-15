@@ -22,16 +22,21 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.cloud.controller.domain.Cartridge;
+import org.apache.stratos.cloud.controller.domain.ClusterContext;
+import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.ServiceGroup;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
+import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
-import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.exception.*;
+import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesClusterException;
+import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesHostException;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -39,7 +44,6 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.locks.Lock;
 
@@ -122,7 +126,8 @@ public class CloudControllerContext implements Serializable {
     /**
      * Thread pool used in this task to execute parallel tasks.
      */
-    private transient ExecutorService executorService = Executors.newFixedThreadPool(20);
+    private transient ExecutorService executorService = StratosThreadPool.getExecutorService(
+            "cloud.controller.context.thread.pool", 10);
 
     /**
      * Map of registered {@link org.apache.stratos.cloud.controller.domain.Cartridge}s

@@ -44,7 +44,7 @@ public class Main {
 			if (log.isInfoEnabled()) {
 				log.info("HAProxy extension started");
 			}
-			executorService = StratosThreadPool.getExecutorService("Load_Balance_Extension", 10);
+			executorService = StratosThreadPool.getExecutorService("haproxy.extension.thread.pool", 10);
 			// Validate runtime parameters
 			HAProxyContext.getInstance().validate();
 			extension = new LoadBalancerExtension(new HAProxy(),
