@@ -22,6 +22,7 @@ package org.apache.stratos.mock.iaas.services.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.apache.stratos.mock.iaas.exceptions.MockIaasException;
@@ -65,6 +66,10 @@ public class MockIaasServiceImpl implements MockIaasService {
 
     public MockIaasServiceImpl() {
         try {
+            if(!MockIaasConfig.getInstance().isEnabled()) {
+                throw new RuntimeException("Mock IaaS is disabled, please check the configuration");
+            }
+
             String persistenceManagerTypeStr = System.getProperty(MockConstants.PERSISTENCE_MANAGER_TYPE,
                     PersistenceManagerType.Registry.toString());
             PersistenceManagerType persistenceManagerType = PersistenceManagerType.valueOf(persistenceManagerTypeStr);
@@ -111,7 +116,17 @@ public class MockIaasServiceImpl implements MockIaasService {
             String serviceName = mockInstanceContext.getServiceName();
             MockHealthStatisticsGenerator.getInstance().scheduleStatisticsUpdaterTasks(serviceName);
 
+            // Simulate instance creation time
+            sleep(2000);
+
             return new MockInstanceMetadata(mockInstanceContext);
+        }
+    }
+
+    private void sleep(int time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ignore) {
         }
     }
 
