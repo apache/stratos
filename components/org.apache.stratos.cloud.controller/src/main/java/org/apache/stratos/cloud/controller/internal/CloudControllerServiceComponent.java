@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
+import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTask;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
@@ -139,6 +140,9 @@ public class CloudControllerServiceComponent {
             log.info("Scheduling topology synchronizer task");
         }
         TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
+        // Execute topology synchronizer at the server startup
+        TopologySynchronizerTask topologySynchronizerTask = new TopologySynchronizerTask();
+        topologySynchronizerTask.execute();
     }
 
     protected void setTaskService(TaskService taskService) {

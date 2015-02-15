@@ -64,7 +64,6 @@ public class TopologySynchronizerTask implements Task {
     
     @Override
     public void init() {
-        execute();
     }
 
     @Override
