@@ -75,12 +75,13 @@ function genTree(data){
                 var cur_name = items[prop].memberId,
                     defaultPrivateIP = items[prop].defaultPrivateIP,
                     defaultPublicIP = items[prop].defaultPublicIP,
+                    ports = items[prop].ports,
                     networkPartitionId = items[prop].networkPartitionId,
                     partitionId = items[prop].partitionId,
                     status = items[prop].status;
                 var type = 'members';
                 rawout.push({"name": cur_name, "parent": parent, "type": type, "status": status,
-                    "defaultPrivateIP":defaultPrivateIP, "defaultPublicIP":defaultPublicIP,
+                    "defaultPrivateIP":defaultPrivateIP, "defaultPublicIP":defaultPublicIP,"ports":ports,
                     "networkPartitionId":networkPartitionId, "partitionId":partitionId
                 });
             }
@@ -189,10 +190,23 @@ function update(source) {
                             "<strong>Status: </strong>" + d.status;
 
             } else if (d.type == 'members') {
+                if((d.ports != '') && (d.ports.length > 0)) {
+                    var portsHTML = "<strong>Ports: </strong></br>";
+                    for(var i=0;i<d.ports.length;i++){
+                        portsHTML += "Port: " + d.ports[i].port + ", Protocol: " + d.ports[i].protocol + ", Proxy Port: " + d.ports[i].proxyPort;
+                        if(i < (d.ports.length - 1)) {
+                            portsHTML += "</br>";
+                        }
+                    }
+                    portsHTML += "</br>"
 
+                } else{
+                    var portsHTML ='';
+                }
                 div_html = "<strong>Member Id: </strong>" + d.name + "<br/>" +
                         "<strong>Default Private IP: </strong>" + d.defaultPrivateIP + "<br/>" +
                         "<strong>Default Public IP: </strong>" + d.defaultPublicIP + "<br/>" +
+                        portsHTML +
                         "<strong>Network Partition Id: </strong>" + d.networkPartitionId + "<br/>" +
                         "<strong>Partition Id: </strong>" + d.partitionId + "<br/>" +
                         "<strong>Status: </strong>" + d.status;
