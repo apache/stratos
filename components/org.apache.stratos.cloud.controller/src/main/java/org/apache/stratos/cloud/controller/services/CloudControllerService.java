@@ -375,5 +375,37 @@ public interface CloudControllerService {
 	 */
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException;
 
+    /**
+     * Add network partition
+     * @param networkPartition
+     * @throws NetworkPartitionAlreadyExistsException 
+     */
+    public void addNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionAlreadyExistsException;
 
+    /**
+     * Remove network partition
+     * @param networkPartitionId
+     * @throws NetworkPartitionNotExistsException 
+     */
+    public void removeNetworkPartition(String networkPartitionId) throws NetworkPartitionNotExistsException;
+
+    /**
+     * Update network partition
+     * @param networkPartition
+     * @throws NetworkPartitionNotExistsException 
+     */
+    public void updateNetworkPartition(NetworkPartition networkPartition) throws NetworkPartitionNotExistsException;
+
+    /**
+     * Get network partitions
+     * @return
+     */
+    public NetworkPartition[] getNetworkPartitions();
+
+    /**
+     * Get network partition by network partition id
+     * @param networkPartitionId
+     * @return
+     */
+    public NetworkPartition getNetworkPartition(String networkPartitionId);
 }

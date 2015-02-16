@@ -135,6 +135,8 @@ public class LoadBalancerConfigurationTest {
             Assert.assertEquals(String.format("%s, port proxy not valid: [member] %s [proxy-port] %d", validationError, memberId, proxyPort), 80, m1Http.getProxy());
 
             Assert.assertFalse(String.format("%s, rewrite-location-header is not false", validationError), LoadBalancerConfiguration.getInstance().isReWriteLocationHeader());
+            Assert.assertTrue(String.format("%s, map-domain-names is not true", validationError), LoadBalancerConfiguration.getInstance().isDomainMappingEnabled());
+
         } finally {
             TopologyManager.releaseReadLock();
             LoadBalancerConfiguration.clear();
