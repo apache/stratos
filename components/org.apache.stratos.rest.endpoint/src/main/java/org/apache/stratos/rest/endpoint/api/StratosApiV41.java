@@ -28,6 +28,7 @@ import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingB
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
@@ -591,7 +592,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Deploy application.
      *
-     * @param deploymentPolicy the deployment policy
+     * @param applicationPolicy the application policy
      * @return the response
      * @throws RestAPIException the rest api exception
      */
@@ -600,10 +601,10 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/deployApplication")
-    public Response deployApplication(@PathParam("applicationId") String applicationId, DeploymentPolicyBean
-		    deploymentPolicy)
+    public Response deployApplication(@PathParam("applicationId") String applicationId, ApplicationPolicyBean
+		    applicationPolicy)
             throws RestAPIException {
-        StratosApiV41Utils.deployApplication(applicationId, deploymentPolicy);
+        StratosApiV41Utils.deployApplication(applicationId, applicationPolicy);
         return Response.accepted().entity(
 		        new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
 		                                String.format("Application deployed successfully: [application] %s",

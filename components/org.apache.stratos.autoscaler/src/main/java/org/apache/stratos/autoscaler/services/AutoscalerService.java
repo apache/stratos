@@ -23,6 +23,7 @@ package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
@@ -93,10 +94,10 @@ public interface AutoscalerService {
     /**
      * Deploy an application in created state
      * @param applicationId
-     * @param deploymentPolicy
+     * @param applicationPolicy
      * @return
      */
-    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws ApplicationDefinitionException;
+    public boolean deployApplication(String applicationId, ApplicationPolicy applicationPolicy) throws ApplicationDefinitionException;
 
     /**
      * Undeploy an application in deployed state

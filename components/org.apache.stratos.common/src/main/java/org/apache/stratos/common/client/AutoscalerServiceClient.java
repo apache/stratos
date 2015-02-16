@@ -26,9 +26,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy;
 import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
+import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.constants.StratosConstants;
 
 import java.rmi.RemoteException;
@@ -126,9 +128,9 @@ public class AutoscalerServiceClient {
         return stub.getApplications();
     }
 
-    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws RemoteException,
+    public boolean deployApplication(String applicationId, ApplicationPolicy ap) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceApplicationDefinitionExceptionException {
-        return stub.deployApplication(applicationId, deploymentPolicy);
+		return stub.deployApplication(applicationId, ap);
     }
 
     public void undeployApplication(String applicationId) throws

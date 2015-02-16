@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,24 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
-package org.apache.stratos.common.beans.policy.deployment;
+import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.stratos.common.beans.partition.ApplicationPolicyNetworkPartitionReferenceBean;
-
-@XmlRootElement
-public class ApplicationPolicyBean {
-
-    private ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition;
-
-	public ApplicationPolicyNetworkPartitionReferenceBean[] getNetworkPartition() {
-		return networkPartition;
+public class ApplicationPolicyNetworkPartitionReference implements Serializable {
+	
+    private static final long serialVersionUID = 7887911742533671753L;
+	private String networkPartitionId;
+	private boolean activeByDefault;
+	
+	public String getNetworkPartitionId() {
+		return networkPartitionId;
 	}
-
-	public void setNetworkPartition(ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition) {
-		this.networkPartition = networkPartition;
+	
+	public void setNetworkPartitionId(String networkPartitionId) {
+		this.networkPartitionId = networkPartitionId;
 	}
-        
+	
+	public boolean isActiveByDefault() {
+		return activeByDefault;
+	}
+	
+	public void setActiveByDefault(boolean activeByDefault) {
+		this.activeByDefault = activeByDefault;
+	}	
 }

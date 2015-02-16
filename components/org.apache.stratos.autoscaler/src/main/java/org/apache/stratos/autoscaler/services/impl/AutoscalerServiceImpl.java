@@ -40,6 +40,8 @@ import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
@@ -226,7 +228,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean deployApplication(String applicationId, DeploymentPolicy deploymentPolicy) throws ApplicationDefinitionException {
+    public boolean deployApplication(String applicationId, ApplicationPolicy applicationPolicy) throws ApplicationDefinitionException {
         try {
             Application application = RegistryManager.getInstance().getApplication(applicationId);
             if (application == null) {
@@ -238,33 +240,34 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
 
+            List<NetworkPartition> networkPartitionList = new ArrayList<NetworkPartition>();
+            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReference();
+            for (ApplicationPolicyNetworkPartitionReference npReference : npReferences) {
+            	NetworkPartition networkPartition = RegistryManager.getInstance().getNetworkPartition(npReference.getNetworkPartitionId());
+            	networkPartitionList.add(networkPartition);            	
+            }
+            
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationCreatedEvent(application, applicationContext.getComponents().getApplicationClusterContexts());
 
-            try {
-                // Update kubernetes cluster ids
-                updateKubernetesClusterIds(deploymentPolicy);
-                // Validate deployment policy via cloud controller
-                validateDeploymentPolicy(deploymentPolicy);
-                // Add deployment policy
-                PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
-                if(!applicationContext.isMultiTenant()) {
-                    // Add application signup for single tenant applications
-                    addApplicationSignUp(applicationContext, application.getKey());
-                }
-                applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
-                AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
-            } catch (InvalidPolicyException e) {
-                String message = "Deployment policy is not valid: [application-id] " + deploymentPolicy.getApplicationId();
-                log.error(message, e);
-                throw new RuntimeException(message, e);
-            }
+            // Update kubernetes cluster ids
+			updateKubernetesClusterIds(applicationId, networkPartitionList);
+			// TODO -- validate application policy
+			
+			// Add deployment policy
+			//PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
+			if(!applicationContext.isMultiTenant()) {
+			    // Add application signup for single tenant applications
+			    addApplicationSignUp(applicationContext, application.getKey());
+			}
+			applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
+			AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
             // Check whether all the clusters are there
             boolean allClusterInitialized = false;
             try {
                 ApplicationHolder.acquireReadLock();
-                application = ApplicationHolder.getApplications().getApplication(deploymentPolicy.getApplicationId());
+                application = ApplicationHolder.getApplications().getApplication(applicationId);
                 if (application != null) {
                     allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
                 }
@@ -417,11 +420,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     /**
      * Overwrite partition's kubernetes cluster ids with network partition's kubernetes cluster ids.
-     * @param deploymentPolicy
+     * 
+     * @param applicationId
+     * @param networkPartitions
      */
-    private void updateKubernetesClusterIds(DeploymentPolicy deploymentPolicy) {
-        NetworkPartition[] networkPartitions =
-                deploymentPolicy.getApplicationLevelNetworkPartitions();
+    private void updateKubernetesClusterIds(String applicationId, List<NetworkPartition> networkPartitions) {
+        
         if(networkPartitions != null) {
             for(NetworkPartition networkPartition : networkPartitions) {
                 if(StringUtils.isNotBlank(networkPartition.getKubernetesClusterId())) {
@@ -433,7 +437,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                                     log.info(String.format("Overwriting partition's kubernetes cluster id: " +
                                                     "[application-id] %s [network-partition-id] %s [partition-id] %s " +
                                                     "[kubernetes-cluster-id] %s",
-                                            deploymentPolicy.getApplicationId(), networkPartition.getId(),
+                                                    applicationId, networkPartition.getId(),
                                             partition.getId(), networkPartition.getKubernetesClusterId()));
                                 }
                                 partition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());

@@ -47,6 +47,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
@@ -987,13 +988,13 @@ public class StratosApiV41Utils {
 	}
 
 	/**
-     * Deploy application with a deployment policy.
-     *
-     * @param applicationId
-     * @param deploymentPolicy
-     * @throws RestAPIException
-     */
-    public static void deployApplication(String applicationId, DeploymentPolicyBean deploymentPolicy)
+	 * Deploy application with an application policy.
+	 * 
+	 * @param applicationId
+	 * @param applicationPolicy
+	 * @throws RestAPIException
+	 */
+    public static void deployApplication(String applicationId, ApplicationPolicyBean applicationPolicy)
             throws RestAPIException {
 
         try {
@@ -1028,9 +1029,8 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
 
-
-            //TODO :: Modify the deployApplication with out application deployment policy
-            autoscalerServiceClient.deployApplication(applicationId, null);
+            autoscalerServiceClient.deployApplication(applicationId, 
+            		ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicy));
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }
@@ -1854,6 +1854,7 @@ public class StratosApiV41Utils {
 			}
 
 			DeploymentPolicy deploymentPolicy =
+
 					ObjectConverter.convetToCCDeploymentPolicy(deployementPolicyDefinitionBean);
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
 			cloudControllerServiceClient.addDeploymentPolicy(deploymentPolicy);
