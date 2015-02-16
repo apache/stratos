@@ -65,6 +65,7 @@ public class LoadBalancerConfiguration {
     private String topologyMemberFilter;
     private String networkPartitionId;
     private boolean reWriteLocationHeader;
+    private boolean domainMappingEnabled;
 
     /**
      * Load balancer configuration is singleton.
@@ -260,6 +261,14 @@ public class LoadBalancerConfiguration {
         return reWriteLocationHeader;
     }
 
+    public boolean isDomainMappingEnabled() {
+        return domainMappingEnabled;
+    }
+
+    public void setDomainMappingEnabled(boolean domainMappingEnabled) {
+        this.domainMappingEnabled = domainMappingEnabled;
+    }
+
     private static class LoadBalancerConfigurationReader {
 
         public LoadBalancerConfiguration readFromFile() {
@@ -426,6 +435,11 @@ public class LoadBalancerConfiguration {
             String rewriteLocationHeader = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_REWRITE_LOCATION_HEADER);
             if(StringUtils.isNotEmpty(rewriteLocationHeader)) {
                 configuration.setRewriteLocationHeader(Boolean.parseBoolean(topologyEventListenerEnabled));
+            }
+
+            String mapDomainNames = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MAP_DOMAIN_NAMES);
+            if(StringUtils.isNotEmpty(mapDomainNames)) {
+                configuration.setDomainMappingEnabled(Boolean.parseBoolean(mapDomainNames));
             }
 
             if (!configuration.isTopologyEventListenerEnabled()) {
