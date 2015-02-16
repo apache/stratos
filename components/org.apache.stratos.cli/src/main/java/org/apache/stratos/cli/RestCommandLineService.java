@@ -1462,4 +1462,20 @@ public class RestCommandLineService {
     public void updateNetworkPartition(String networkPartitionDefinition) throws CommandException {
         restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, networkPartitionDefinition, "network-partition");
     }
+
+    /**
+     * Deploy deployment policy
+     * @throws CommandException
+     */
+    public void addDeploymentPolicy(String deploymentPolicy) throws CommandException {
+        restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
+
+    /**
+     * Update deployment policy
+     * @throws CommandException
+     */
+    public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
 }
