@@ -35,7 +35,7 @@ public class ListApplicationsCommand implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-        return CliConstants.LIST_APPLICATIONS;
+        return "list-applications";
     }
 
     public String getDescription() {

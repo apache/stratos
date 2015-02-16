@@ -35,7 +35,7 @@ public class ListTenants implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-        return CliConstants.LIST_TENANTS;
+        return "list-tenants";
     }
 
     public String getDescription() {

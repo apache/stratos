@@ -36,7 +36,7 @@ public class DescribeApplicationSignupCommand implements Command<StratosCommandC
 	}
 
 	public String getName() {
-		return CliConstants.DESCRIBE_APPLICATION_SIGNUP;
+		return "describe-application-signup";
 	}
 
 	public String getDescription() {

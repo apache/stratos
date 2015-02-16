@@ -660,8 +660,8 @@ public class RestCommandLineService {
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
 
-            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                System.out.println("You have succesfully deleted " + userName + " user");
+            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT) || responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("You have successfully deleted " + userName + " user");
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
