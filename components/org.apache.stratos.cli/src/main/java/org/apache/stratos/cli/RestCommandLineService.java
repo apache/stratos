@@ -91,8 +91,8 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_REMOVE_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{id}";
-
     private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
+    private static final String ENDPOINT_REMOVE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{policyId}";
 
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
@@ -1477,5 +1477,14 @@ public class RestCommandLineService {
      */
     public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
         restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
+
+    /**
+     * Delete deployment policy
+     * @throws CommandException
+     */
+    public void deleteDeploymentPolicy(String policyId) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_DEPLOYMENT_POLICY.replace("{policyId}", policyId), policyId,
+                "deployment policy");
     }
 }
