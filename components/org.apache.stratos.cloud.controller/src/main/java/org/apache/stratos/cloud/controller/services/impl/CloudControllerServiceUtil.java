@@ -26,9 +26,14 @@ import com.google.common.net.InetAddresses;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
+import org.apache.stratos.cloud.controller.domain.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
+import org.apache.stratos.cloud.controller.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.domain.NetworkPartitionRef;
 import org.apache.stratos.cloud.controller.domain.Partition;
+import org.apache.stratos.cloud.controller.domain.PartitionRef;
+import org.apache.stratos.cloud.controller.exception.InvalidDeploymentPolicyException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
@@ -107,5 +112,112 @@ public class CloudControllerServiceUtil {
     public static boolean validatePartition(Partition partition, IaasProvider iaasProvider) throws InvalidPartitionException {
         validatePartitionAndGetIaasProvider(partition, iaasProvider);
         return true;
+    }
+    
+    /**
+     * Validates deployment policy
+     * @param deploymentPolicy the {@link DeploymentPolicy} to be validated
+     * @throws InvalidDeploymentPolicyException will be thrown if the given {@link DeploymentPolicy} is not valid
+     */
+    public static void validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) throws InvalidDeploymentPolicyException {
+    	
+    	// deployment policy can't be null
+    	if (null == deploymentPolicy) {
+			String msg = "Invalid deployment policy. Cause -> Deployment policy is null";
+			log.error(msg);
+			throw new InvalidDeploymentPolicyException(msg);
+		}
+    	
+    	if (log.isInfoEnabled()) {
+    		log.info(String.format("Validating deployment policy %s", deploymentPolicy.toString()));
+		}
+    	
+    	// deployment policy id can't be null or empty
+    	if (null == deploymentPolicy.getDeploymentPolicyID() || deploymentPolicy.getDeploymentPolicyID().isEmpty()) {
+			String msg = "Invalid deployment policy. Cause -> Invalid deployment policy id";
+			log.error(msg);
+			throw new InvalidDeploymentPolicyException(msg);
+		}
+    	
+    	// deployment policy should contain at least one network partition reference
+    	if (null == deploymentPolicy.getNetworkPartitionsRef() || deploymentPolicy.getNetworkPartitionsRef().length == 0) {
+			String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+					+ "Cause -> Deployment policy doesn't have at least one network partition reference", 
+					deploymentPolicy.getDeploymentPolicyID());
+			log.error(msg);
+			throw new InvalidDeploymentPolicyException(msg);
+		}
+    	
+    	// validate each network partition references
+    	for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionsRef()) {
+    		
+			// network partition id can't be null or empty
+    		if (null == networkPartitionRef.getId() || networkPartitionRef.getId().isEmpty()) {
+				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+						+ "Cause -> Invalid network partition id in network partition references section", 
+						deploymentPolicy.getDeploymentPolicyID());
+				log.error(msg);
+				throw new InvalidDeploymentPolicyException(msg);
+			}
+    		
+    		// network partitions should be already deployed
+    		if (null == CloudControllerContext.getInstance().getNetworkPartition(networkPartitionRef.getId())) {
+				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+						+ "Cause -> Network partition is not deployed - [network-partition-id] %s", 
+						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
+				log.error(msg);
+				throw new InvalidDeploymentPolicyException(msg);
+			}
+    		
+    		// partition algorithm can't be null or empty
+    		if (null == networkPartitionRef.getPartitionAlgo() || networkPartitionRef.getPartitionAlgo().isEmpty()) {
+				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+						+ "Cause -> Invalid partition algorithm - [network-partition-id] %s", 
+						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
+				log.error(msg);
+				throw new InvalidDeploymentPolicyException(msg);
+			}
+    		
+    		// a network partition reference should contain at least one partition reference
+    		if (null == networkPartitionRef.getPartitions() || networkPartitionRef.getPartitions().length == 0) {
+				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+						+ "Cause -> Network partition reference doesn't have at lease one partition reference - "
+						+ "[network-partition-id] %s", deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
+				log.error(msg);
+				throw new InvalidDeploymentPolicyException(msg);
+			}
+    		
+    		// validate each partition reference defined in network partition reference
+    		for (PartitionRef partitionRef : networkPartitionRef.getPartitions()) {
+				
+    			// partition id can't be null or empty
+    			if (null == partitionRef.getId() || partitionRef.getId().isEmpty()) {
+    				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+    						+ "Cause -> Invalid partition id for a partition defined in the netwok partition - [network-partition-id] %s", 
+    						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
+    				log.error(msg);
+    				throw new InvalidDeploymentPolicyException(msg);
+				}
+    			
+    			// partition should be defined in the relevant network partitions (on network partition deployment)
+    			NetworkPartition networkPartition = CloudControllerContext.getInstance().getNetworkPartition(networkPartitionRef.getId());
+    			if (null == networkPartition.getPartition(partitionRef.getId())) {
+    				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+    						+ "Cause -> Partition not found in the network partition definition - [network-partition-id] %s [partition-id] %s", 
+    						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), partitionRef.getId());
+    				log.error(msg);
+    				throw new InvalidDeploymentPolicyException(msg);
+				}
+    			
+    			// partition reference should have a valid max value
+    			if (partitionRef.getMax() < 0) {
+    				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+    						+ "Cause -> Partition max value is not valid - [network-partition-id] %s [partition-id] %s [max-value] %s", 
+    						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), partitionRef.getId(), partitionRef.getMax());
+    				log.error(msg);
+    				throw new InvalidDeploymentPolicyException(msg);
+				}
+			}
+		}
     }
 }
