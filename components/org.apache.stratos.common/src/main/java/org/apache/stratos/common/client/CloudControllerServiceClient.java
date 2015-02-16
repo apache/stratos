@@ -208,4 +208,27 @@ public class CloudControllerServiceClient {
 			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
 		return stub.getDeploymentPolicy(deploymentPolicyID);
 	}
+	
+    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException, 
+    CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
+    	stub.addNetworkPartition(networkPartition);
+    }
+
+    public void removeNetworkPartition(String networkPartitionId) throws RemoteException, 
+    CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+    	stub.removeNetworkPartition(networkPartitionId);
+    }
+
+    public void updateNetworkPartition(NetworkPartition networkPartition) throws RemoteException, 
+    CloudControllerServiceNetworkPartitionNotExistsExceptionException {
+    	stub.updateNetworkPartition(networkPartition);
+    }
+
+    public NetworkPartition[] getNetworkPartitions() throws RemoteException{
+    	return stub.getNetworkPartitions();
+    }
+
+    public NetworkPartition getNetworkPartition(String networkPartitionId) throws RemoteException {
+    	return stub.getNetworkPartition(networkPartitionId);
+    }
 }
