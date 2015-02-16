@@ -225,6 +225,12 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new ListCartridgesByFilterCommand();
         commands.put(command.getName(), command);
 
+        command = new DescribeTenantCommand();
+        commands.put(command.getName(),command);
+
+        command = new ListPartialSearchTenantsCommand();
+        commands.put(command.getName(),command);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
         }

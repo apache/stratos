@@ -200,7 +200,10 @@ public class CliConstants {
      * Describe the auto scaling policy
      */
     public static final String DESCRIBE_AUTO_SCALING_POLICY = "describe-autoscaling-policy";
-
+    /**
+     * Describe the cartridge
+     */
+    public static final String DESCRIBE_TENANT = "describe-tenant";
     /**
      * Undeploy application
      */
@@ -322,6 +325,9 @@ public class CliConstants {
 
     public static final String FULL_OPTION = "f";
     public static final String FULL_LONG_OPTION = "full";
+
+    public static final String TENANT_PARTIAL_SEARCH_OPTION = "d";
+    public static final String TENANT_PARTIAL_SEARCH_LONG_OPTION = "partialDomain";
 
     public static final String FORCE_OPTION = "f";
     public static final String FORCE_LONG_OPTION = "force";

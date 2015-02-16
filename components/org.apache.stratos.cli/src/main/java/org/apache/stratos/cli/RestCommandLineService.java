@@ -106,6 +106,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_LIST_APPLICATION = API_CONTEXT + "/applications";
     private static final String ENDPOINT_LIST_NETWORK_PARTITIONS = API_CONTEXT + "/networkPartitions";
     private static final String ENDPOINT_LIST_CARTRIDGES_BY_FILTER = API_CONTEXT + "/cartridges/filter/{filter}";
+    private static final String ENDPOINT_LIST_TENANTS_BY_PARTIAL_DOMAIN = API_CONTEXT + "/tenants/search/{tenantDomain}";
 
     private static final String ENDPOINT_DOMAIN_MAPPINGS = API_CONTEXT + "/applications/{applicationId}/domainMappings";
 
@@ -490,6 +491,85 @@ public class RestCommandLineService {
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    /**
+     * Describe a tenant
+     * @param domainName
+     * @throws org.apache.stratos.cli.exception.CommandException
+     */
+    public void describeTenant(final String domainName) throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<TenantInfoBean>>() {
+            }.getType();
+            List<TenantInfoBean> tenantList = (List<TenantInfoBean>) restClient.listEntity(ENDPOINT_LIST_TENANTS,
+                    listType, "tenant");
+
+            TenantInfoBean tenant = null;
+            for(TenantInfoBean item : tenantList) {
+                if(item.getTenantDomain().equals(domainName)) {
+                    tenant = item;
+                    break;
+                }
+            }
+
+            if (tenant == null) {
+                System.out.println("Tenant not found");
+                return;
+            }
+
+            System.out.println("-------------------------------------");
+            System.out.println("Tenant Information:");
+            System.out.println("-------------------------------------");
+            System.out.println("Tenant domain: " + tenant.getTenantDomain());
+            System.out.println("ID: " + tenant.getTenantId());
+            System.out.println("Email: " + tenant.getEmail());
+            System.out.println("Active: " + tenant.isActive());
+            System.out.println("Created date: " + tenant.getCreatedDate());
+
+        } catch (Exception e) {
+            String message = "Error in describing tenant: " + domainName;
+            printError(message, e);
+        }
+    }
+
+    /**
+     * List tenants by a partial domain serach
+     * @throws org.apache.stratos.cli.exception.CommandException
+     */
+    public void listTenantsByPartialDomain(String partialDomain) throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<TenantInfoBean>>() {
+            }.getType();
+            List<TenantInfoBean> tenantList = (List<TenantInfoBean>) restClient.listEntity(ENDPOINT_LIST_TENANTS_BY_PARTIAL_DOMAIN.replace("{tenantDomain}",partialDomain),
+                    listType, "tenants");
+
+            if ((tenantList == null) || (tenantList.size() == 0)) {
+                System.out.println("No tenants found");
+                return;
+            }
+
+            RowMapper<TenantInfoBean> tenantMapper = new RowMapper<TenantInfoBean>() {
+                public String[] getData(TenantInfoBean tenant) {
+                    String[] data = new String[5];
+                    data[0] = tenant.getTenantDomain();
+                    data[1] = String.valueOf(tenant.getTenantId());
+                    data[2] = String.valueOf(tenant.isActive());
+                    data[3] = tenant.getEmail();
+                    data[4] = String.valueOf(tenant.getCreatedDate());
+                    return data;
+                }
+            };
+
+            TenantInfoBean[] tenants = new TenantInfoBean[tenantList.size()];
+            tenants = tenantList.toArray(tenants);
+
+            System.out.println("Tenants found:");
+            CliUtils.printTable(tenants, tenantMapper, "tenantDomain", "tenantID", "active", "email", "createdDate");
+        } catch (Exception e) {
+            String message = "Error in listing tenants";
+            printError(message, e);
         }
     }
 
