@@ -25,6 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.stub.deployment.partition.ChildLevelPartition;
 import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
+import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
+import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ChildPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
@@ -43,6 +45,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
 import org.apache.stratos.common.beans.partition.*;
 import org.apache.stratos.common.beans.policy.autoscale.*;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.ChildPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.*;
@@ -1734,5 +1737,22 @@ public class ObjectConverter {
 
 	public static DeploymentPolicyBean convetFromCCDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
 		return null;
+	}
+	
+	public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
+	        ApplicationPolicyBean appPolicy) {
+		ApplicationPolicyNetworkPartitionReferenceBean[] nps = appPolicy.getNetworkPartition();
+		ApplicationPolicy applicationPolicy = new ApplicationPolicy();
+		List<ApplicationPolicyNetworkPartitionReference> nprList = new ArrayList<ApplicationPolicyNetworkPartitionReference>();
+
+		for (ApplicationPolicyNetworkPartitionReferenceBean np : nps) {
+			ApplicationPolicyNetworkPartitionReference npRef = new ApplicationPolicyNetworkPartitionReference();
+			npRef.setActiveByDefault(np.isActiveByDefault());
+			npRef.setNetworkPartitionId(np.getId());
+			nprList.add(npRef);
+		}
+		applicationPolicy.setNetworkPartitionReference(nprList
+		        .toArray(new ApplicationPolicyNetworkPartitionReference[nprList.size()]));
+		return applicationPolicy;
 	}
 }
