@@ -174,6 +174,31 @@ public class CartridgeAgentEventListeners
     }
     
     private void addTopologyEventListeners() {
+    	topologyEventReceiver.addEventListener(new MemberInitializedEventListener() {
+        	@Override
+        	protected void onEvent(Event event) {
+        		try {
+        			boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+        			if (initialized) {
+        				// no need to process this event, if the member is initialized.
+        				return;
+        			}
+        			TopologyManager.acquireReadLock();
+        			if (log.isDebugEnabled()) {
+        				log.debug("Member initialized event received");
+        			}
+        			MemberInitializedEvent memberInitializedEvent = (MemberInitializedEvent) event;
+        			extensionHandler.onMemberInitializedEvent(memberInitializedEvent);
+        		} catch (Exception e) {
+        			if (log.isErrorEnabled()) {
+        				log.error("Error processing member created event", e);
+        			}
+        		} finally {
+        			TopologyManager.releaseReadLock();
+        		}
+        	}
+        });
+    	
         topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
         	@Override
         	protected void onEvent(Event event) {

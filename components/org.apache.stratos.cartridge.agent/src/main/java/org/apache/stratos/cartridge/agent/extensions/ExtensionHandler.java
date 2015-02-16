@@ -56,6 +56,8 @@ public interface ExtensionHandler {
     public void onMemberSuspendedEvent(MemberSuspendedEvent memberSuspendedEvent);
 
     public void onMemberStartedEvent(MemberStartedEvent memberStartedEvent);
+    
+    public void onMemberInitializedEvent(MemberInitializedEvent memberInitializedEvent); 
 
     public void startServerExtension();
 

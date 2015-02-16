@@ -320,8 +320,7 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
         }
     }
-
-
+    
     @Override
     public void onCompleteTopologyEvent(CompleteTopologyEvent completeTopologyEvent) {
         if (log.isDebugEnabled()) {
@@ -349,6 +348,33 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         env.put("STRATOS_TOPOLOGY_JSON", gson.toJson(topology.getServices(), serviceType));
         env.put("STRATOS_MEMBER_LIST_JSON", gson.toJson(cluster.getMembers(), memberType));
         ExtensionUtils.executeCompleteTopologyExtension(env);
+    }
+
+
+    @Override
+    public void onMemberInitializedEvent(MemberInitializedEvent memberInitializedEvent) {
+        if (log.isDebugEnabled()) {
+            log.debug("Member initialized event received");
+        }
+        String serviceNameInPayload = CartridgeAgentConfiguration.getInstance().getServiceName();
+        String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
+        String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
+
+
+        boolean isConsistent = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
+        if (!isConsistent) {
+            // if this member isn't there in the complete topology
+        	if (log.isDebugEnabled()) {
+                log.debug("Member initialized event, topology is inconsistent");
+            }
+            return;
+        } else {
+        	if (log.isDebugEnabled()) {
+                log.debug("Member initialized event, topology is consistent, agent is initialized");
+            }
+            CartridgeAgentConfiguration.getInstance().setInitialized(true);
+        }
+
     }
 
 
