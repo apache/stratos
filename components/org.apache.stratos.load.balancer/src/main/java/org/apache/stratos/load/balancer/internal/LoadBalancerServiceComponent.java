@@ -129,12 +129,17 @@ public class LoadBalancerServiceComponent {
             executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
                     threadPoolSize);
 
-            startApplicationSignUpEventReceiver(executorService);
-            startDomainMappingEventReceiver(executorService);
-
             if (configuration.isMultiTenancyEnabled()) {
                 // Start tenant event receiver
                 startTenantEventReceiver(executorService);
+            }
+
+            if(configuration.isDomainMappingEnabled()) {
+                // Start application signup event receiver
+                startApplicationSignUpEventReceiver(executorService);
+
+                // Start domain mapping event receiver
+                startDomainMappingEventReceiver(executorService);
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
