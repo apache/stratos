@@ -58,6 +58,7 @@ public class Constants {
     public static final String CONF_PROPERTY_TENANT_IDENTIFIER_REGEX = "tenant-identifier-regex";
     public static final String CONF_PROPERTY_NETWORK_PARTITION_ID = "network-partition-id";
     public static final String CONF_PROPERTY_REWRITE_LOCATION_HEADER = "rewrite-location-header";
+    public static final String CONF_PROPERTY_MAP_DOMAIN_NAMES = "map-domain-names";
 
     public static final String CONF_DELIMITER_HOSTS = ",";
     public static final long DEFAULT_ENDPOINT_TIMEOUT = 15000;
