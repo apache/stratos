@@ -33,7 +33,7 @@ public class RemoveNetworkPartitionCommand implements Command<StratosCommandCont
 
     @Override
     public String getName() {
-        return CliConstants.REMOVE_NETWORK_PARTITION;
+        return "remove-network-partition";
     }
 
     @Override

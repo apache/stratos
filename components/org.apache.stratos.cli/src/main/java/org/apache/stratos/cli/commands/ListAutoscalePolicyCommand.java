@@ -35,7 +35,7 @@ public class ListAutoscalePolicyCommand implements Command<StratosCommandContext
     }
 
     public String getName() {
-        return CliConstants.LIST_AUTOSCALE_POLICY;
+        return "list-autoscaling-policies";
     }
 
     public String getDescription() {

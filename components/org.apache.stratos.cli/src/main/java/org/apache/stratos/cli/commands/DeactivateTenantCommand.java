@@ -32,7 +32,7 @@ public class DeactivateTenantCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getName() {
-        return CliConstants.DEACTIVATE_TENANT;
+        return "deactivate-tenant";
     }
 
     @Override
