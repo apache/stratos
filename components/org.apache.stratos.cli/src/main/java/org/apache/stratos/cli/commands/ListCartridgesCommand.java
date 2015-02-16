@@ -35,7 +35,7 @@ public class ListCartridgesCommand implements Command<StratosCommandContext> {
 	}
 
 	public String getName() {
-		return CliConstants.CARTRIDGES_ACTION;
+		return "list-cartridges";
 	}
 
 	public String getDescription() {

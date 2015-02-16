@@ -32,7 +32,7 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getName() {
-        return CliConstants.DESCRIBE_CARTRIDGE;
+        return "describe-cartridge";
     }
 
     @Override
