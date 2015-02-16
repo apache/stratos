@@ -510,7 +510,7 @@ public class RegistryManager {
                             partition = (Partition) dataObj;
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Partition read from registry: [id] %s [provider] %s [min] %d [max] %d",
-                                        partition.getId(), partition.getProvider(), partition.getPartitionMin(), partition.getPartitionMax()));
+                                        partition.getId(), partition.getProvider()));
                             }
                             partitionList.add(partition);
                         } else {

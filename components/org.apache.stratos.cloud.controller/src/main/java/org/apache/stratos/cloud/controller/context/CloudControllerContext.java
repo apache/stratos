@@ -61,6 +61,7 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
     private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
 	private static final String CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP = "CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP";
+	private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
     private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
@@ -145,6 +146,13 @@ public class CloudControllerContext implements Serializable {
 	 * Value deployment policy
 	 */
 	private Map<String, DeploymentPolicy> deploymentPolicyIDToDeployPolicyMap;
+	
+	/**
+	 * Map of network partitions
+	 * Key - network partition id
+	 * Value network partition
+	 */
+	private Map<String, NetworkPartition> networkPartitionIDToNetworkPartitionMap;
 
     private String streamId;
     private boolean isPublisherRunning;
@@ -175,6 +183,7 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
         serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
 		deploymentPolicyIDToDeployPolicyMap=distributedObjectProvider.getMap(CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP);
+		networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
 
         // Update context from the registry
         updateContextFromRegistry();
@@ -267,6 +276,22 @@ public class CloudControllerContext implements Serializable {
 		if (deploymentPolicyIDToDeployPolicyMap.containsKey(deploymentPolicyID)) {
 			deploymentPolicyIDToDeployPolicyMap.remove(deploymentPolicyID);
 		}
+	}
+	
+	public void addNetworkPartition(NetworkPartition networkPartition) {
+		networkPartitionIDToNetworkPartitionMap.put(networkPartition.getId(), networkPartition);
+	}
+
+	public NetworkPartition getNetworkPartition(String networkPartitionID) {
+		return networkPartitionIDToNetworkPartitionMap.get(networkPartitionID);
+	}
+	
+	public Collection<NetworkPartition> getNetworkPartitions() {
+		return networkPartitionIDToNetworkPartitionMap.values();
+	}
+
+	public void removeNetworkPartition(String networkPartitionID) {
+		networkPartitionIDToNetworkPartitionMap.remove(networkPartitionID);
 	}
 
 	public void removeCartridge(Cartridge cartridge) {
