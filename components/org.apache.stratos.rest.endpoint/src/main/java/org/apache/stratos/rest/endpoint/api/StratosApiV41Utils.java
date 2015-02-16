@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.autoscaler.stub.deployment.partition.NetworkPartition;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -1783,8 +1782,8 @@ public class StratosApiV41Utils {
 
     public static void addNetworkPartition(NetworkPartitionBean networkPartitionBean) {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
-            serviceClient.addNetworkPartition(ObjectConverter.convertNetworkPartitionToStubNetworkPartition(networkPartitionBean));
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            serviceClient.addNetworkPartition(ObjectConverter.convertNetworkPartitionToCCStubNetworkPartition(networkPartitionBean));
         } catch (Exception e) {
             String message = "Could not add network partition";
             log.error(message);
@@ -1794,9 +1793,9 @@ public class StratosApiV41Utils {
 
     public static NetworkPartitionBean[] getNetworkPartitions() {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
-            NetworkPartition[] networkPartitions = serviceClient.getNetworkPartitions();
-            return ObjectConverter.convertStubNetworkPartitionsToNetworkPartitions(networkPartitions);
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition[] networkPartitions = serviceClient.getNetworkPartitions();
+            return ObjectConverter.convertCCStubNetworkPartitionsToNetworkPartitions(networkPartitions);
         } catch (Exception e) {
             String message = "Could not get network partitions";
             log.error(message);
@@ -1806,7 +1805,7 @@ public class StratosApiV41Utils {
 
     public static void removeNetworkPartition(String networkPartitionId) {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.removeNetworkPartition(networkPartitionId);
         } catch (Exception e) {
             String message = String.format("Could not remove network partition: [network-partition-id] %s", networkPartitionId);
@@ -1817,9 +1816,9 @@ public class StratosApiV41Utils {
 
     public static NetworkPartitionBean getNetworkPartition(String networkPartitionId) {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
-            NetworkPartition networkPartition = serviceClient.getNetworkPartition(networkPartitionId);
-            return ObjectConverter.convertStubNetworkPartitionToNetworkPartition(networkPartition);
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition = serviceClient.getNetworkPartition(networkPartitionId);
+            return ObjectConverter.convertCCStubNetworkPartitionToNetworkPartition(networkPartition);
         } catch (Exception e) {
             String message = String.format("Could not get network partition: [network-partition-id] %s", networkPartitionId);
             log.error(message);
@@ -1829,9 +1828,9 @@ public class StratosApiV41Utils {
 
     public static void updateNetworkPartition(NetworkPartitionBean networkPartition) {
         try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             serviceClient.updateNetworkPartition(ObjectConverter.
-                    convertNetworkPartitionToStubNetworkPartition(networkPartition));
+                    convertNetworkPartitionToCCStubNetworkPartition(networkPartition));
         }catch (Exception e) {
             String message = String.format("Could not update network partition: [network-partition-id] %s,",
                     networkPartition.getId());
