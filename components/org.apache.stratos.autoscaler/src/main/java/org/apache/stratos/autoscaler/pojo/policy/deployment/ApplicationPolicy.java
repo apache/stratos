@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,24 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
-package org.apache.stratos.common.beans.policy.deployment;
+import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlRootElement;
+public class ApplicationPolicy implements Serializable{
 
-import org.apache.stratos.common.beans.partition.ApplicationPolicyNetworkPartitionReferenceBean;
-
-@XmlRootElement
-public class ApplicationPolicyBean {
-
-    private ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition;
-
-	public ApplicationPolicyNetworkPartitionReferenceBean[] getNetworkPartition() {
-		return networkPartition;
+	private static final long serialVersionUID = -2851334419121310395L;
+	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReference;
+	
+	public ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReference() {
+		return networkPartitionReference;
 	}
-
-	public void setNetworkPartition(ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition) {
-		this.networkPartition = networkPartition;
+	public void setNetworkPartitionReference(
+	        ApplicationPolicyNetworkPartitionReference[] networkPartitionReference) {
+		this.networkPartitionReference = networkPartitionReference;
 	}
-        
+	
+	
+	
 }

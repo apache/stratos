@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,24 +16,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.stratos.common.beans.policy.deployment;
+package org.apache.stratos.common.beans.partition;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.stratos.common.beans.partition.ApplicationPolicyNetworkPartitionReferenceBean;
-
 @XmlRootElement
-public class ApplicationPolicyBean {
+public class ApplicationPolicyNetworkPartitionReferenceBean {
 
-    private ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition;
-
-	public ApplicationPolicyNetworkPartitionReferenceBean[] getNetworkPartition() {
-		return networkPartition;
+	private String id;
+	private boolean activeByDefault;
+	
+	public String getId() {
+		return id;
 	}
-
-	public void setNetworkPartition(ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition) {
-		this.networkPartition = networkPartition;
+	
+	public void setId(String id) {
+		this.id = id;
 	}
-        
+	
+	public boolean isActiveByDefault() {
+		return activeByDefault;
+	}
+	
+	public void setActiveByDefault(boolean activeByDefault) {
+		this.activeByDefault = activeByDefault;
+	}	
+	
 }
