@@ -32,7 +32,7 @@ public class DeleteUserCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getName() {
-        return CliConstants.DELETE_USER;
+        return "remove-user";
     }
 
     @Override

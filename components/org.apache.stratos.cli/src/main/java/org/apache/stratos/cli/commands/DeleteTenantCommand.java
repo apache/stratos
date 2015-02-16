@@ -32,7 +32,7 @@ public class DeleteTenantCommand implements Command<StratosCommandContext> {
 
     @Override
     public String getName() {
-        return CliConstants.DELETE_TENANT;
+        return "remove-tenant";
     }
 
     @Override

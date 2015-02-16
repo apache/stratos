@@ -35,7 +35,7 @@ public class ListUsers implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-        return CliConstants.LIST_USERS;
+        return "list-users";
     }
 
     public String getDescription() {
