@@ -20,7 +20,9 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
+import java.util.Arrays;
 
 @XmlRootElement
 public class NetworkPartitionRef implements Serializable{
@@ -55,5 +57,10 @@ public class NetworkPartitionRef implements Serializable{
 
 	public void setPartitions(PartitionRef[] partitions) {
 		this.partitions = partitions;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("{ network-partition-id : %s, partition-algo : %s, partitions : %s }", id, partitionAlgo, Arrays.toString(partitions));
 	}
 }
