@@ -145,35 +145,4 @@ public interface AutoscalerService {
      * @return
      */
     public ServiceGroup getServiceGroup(String name);
-
-    /**
-     * Add network partition
-     * @param networkPartition
-     */
-    public void addNetworkPartition(NetworkPartition networkPartition);
-
-    /**
-     * Remove network partition
-     * @param networkPartitionId
-     */
-    public void removeNetworkPartition(String networkPartitionId);
-
-    /**
-     * Update network partition
-     * @param networkPartition
-     */
-    public void updateNetworkPartition(NetworkPartition networkPartition);
-
-    /**
-     * Get network partitions
-     * @return
-     */
-    public NetworkPartition[] getNetworkPartitions();
-
-    /**
-     * Get network partition by network partition id
-     * @param networkPartitionId
-     * @return
-     */
-    public NetworkPartition getNetworkPartition(String networkPartitionId);
 }
