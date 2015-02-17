@@ -33,24 +33,8 @@
             <ResourceId>/permission/admin/manage/updateAutoscalingPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
-            <DisplayName>Update Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/updateNetworkPartition</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
             <DisplayName>Remove Autoscaling Policy</DisplayName>
             <ResourceId>/permission/admin/manage/removeAutoscalingPolicy</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Add Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/addNetworkPartition</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Get Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/getNetworkPartitions</ResourceId>
-        </ManagementPermission>
-        <ManagementPermission>
-            <DisplayName>Remove Network Partition</DisplayName>
-            <ResourceId>/permission/protected/manage/removeNetworkPartition</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
             <DisplayName>Add Kubernetes Host Cluster</DisplayName>
