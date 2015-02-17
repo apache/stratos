@@ -22,6 +22,7 @@ package org.apache.stratos.mock.iaas.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.mock.iaas.api.exception.MockIaasApiException;
+import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.mock.iaas.domain.MockInstanceContext;
 import org.apache.stratos.mock.iaas.domain.MockInstanceMetadata;
 import org.apache.stratos.mock.iaas.services.MockIaasService;
@@ -47,9 +48,14 @@ public class MockIaasApi {
 
     public MockIaasApi() {
         try {
-            mockIaasService = (MockIaasService) PrivilegedCarbonContext.getThreadLocalCarbonContext().getOSGiService(MockIaasService.class);
+            try {
+                mockIaasService = (MockIaasService) PrivilegedCarbonContext.getThreadLocalCarbonContext().
+                        getOSGiService(MockIaasService.class);
+            } catch (NullPointerException ignore) {
+                // Above carbon context method throws a NPE if service is not registered
+            }
         } catch (Exception e) {
-            String message = "Could not initialize mock iaas service reference";
+            String message = "Could not initialize Mock IaaS API";
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -61,10 +67,11 @@ public class MockIaasApi {
     @Produces("application/json")
     public Response startInstance(MockInstanceContext mockInstanceContext) throws MockIaasApiException {
         try {
+            // Validate mock iaas service
+            validateMockIaasService();
+
             log.info(String.format("Starting mock instance: [member-id] %s", mockInstanceContext.getMemberId()));
-
             MockInstanceMetadata mockInstanceMetadata = mockIaasService.startInstance(mockInstanceContext);
-
             log.info(String.format("Mock instance started successfully: [member-id] %s [instance-id] %s",
                     mockInstanceContext.getMemberId(), mockInstanceContext.getInstanceId()));
             return Response.ok(mockInstanceMetadata).build();
@@ -80,6 +87,9 @@ public class MockIaasApi {
     @Produces("application/json")
     public Response getInstances() throws MockIaasApiException {
         try {
+            // Validate mock iaas service
+            validateMockIaasService();
+
             log.debug(String.format("Get mock instances"));
 
             List<MockInstanceMetadata> mockInstanceMetadataList = mockIaasService.getInstances();
@@ -98,6 +108,9 @@ public class MockIaasApi {
     @Produces("application/json")
     public Response getInstance(@PathParam("instanceId") String instanceId) throws MockIaasApiException {
         try {
+            // Validate mock iaas service
+            validateMockIaasService();
+
             log.debug(String.format("Get mock instance: [instance-id] %s", instanceId));
 
             MockInstanceMetadata mockInstanceMetadata = mockIaasService.getInstance(instanceId);
@@ -119,6 +132,9 @@ public class MockIaasApi {
     @Produces("application/json")
     public Response allocateIpAddress(@PathParam("instanceId") String instanceId) throws MockIaasApiException {
         try {
+            // Validate mock iaas service
+            validateMockIaasService();
+
             log.info(String.format("Allocating ip addresses: [instance-id] %s", instanceId));
 
             MockInstanceMetadata mockInstanceMetadata = mockIaasService.getInstance(instanceId);
@@ -141,6 +157,9 @@ public class MockIaasApi {
     @Path("/instances/{instanceId}")
     public Response terminateInstance(@PathParam("instanceId") String instanceId) throws MockIaasApiException {
         try {
+            // Validate mock iaas service
+            validateMockIaasService();
+
             log.info(String.format("Terminating mock instance: [instance-id] %s", instanceId));
             mockIaasService.terminateInstance(instanceId);
             log.info(String.format("Mock instance terminated successfully: [instance-id] %s", instanceId));
@@ -149,6 +168,16 @@ public class MockIaasApi {
             String message = "Could not start mock instance";
             log.error(message, e);
             throw new MockIaasApiException(message, e);
+        }
+    }
+
+    /**
+     * Validate mock iaas service.
+     */
+    private void validateMockIaasService() {
+        if(mockIaasService == null) {
+            throw new RuntimeException(String.format("Mock IaaS is disabled, please check %s file",
+                    MockIaasConfig.MOCK_IAAS_CONFIG_FILE_NAME));
         }
     }
 }
