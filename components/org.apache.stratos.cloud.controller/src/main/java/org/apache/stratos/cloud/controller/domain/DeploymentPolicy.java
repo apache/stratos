@@ -20,6 +20,7 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * The model class for Deployment-Policy definition.
@@ -47,8 +48,8 @@ public class DeploymentPolicy implements Serializable{
 	}
 
 	public String toString() {
-
-		return "PolicyID: " + deploymentPolicyID + "\n Network Partitions: " + getNetworkPartitionsRef();
+		return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID, 
+				Arrays.toString(applicationLevelNetworkPartitions));
 	}
 
 }

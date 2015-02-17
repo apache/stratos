@@ -20,6 +20,7 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 
 @XmlRootElement
@@ -43,5 +44,10 @@ public class PartitionRef implements Serializable {
 
 	public void setMax(int max) {
 		this.max = max;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("{ partion-id : %s, partition-max : %s }", id, max);
 	}
 }
