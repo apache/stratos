@@ -15,7 +15,7 @@
                         "cartridgeMax": 4,
                         "subscribableInfo": {
                             "alias": "tom1group6",
-                            "autoscalingPolicy": "autoscale-policy-1",
+                            "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
                                "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
