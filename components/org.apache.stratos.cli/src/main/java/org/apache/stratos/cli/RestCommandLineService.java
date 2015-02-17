@@ -91,8 +91,8 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_REMOVE_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_REMOVE_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{id}";
-
     private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
+    private static final String ENDPOINT_REMOVE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{policyId}";
 
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
@@ -535,8 +535,8 @@ public class RestCommandLineService {
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
 
-            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT)) {
-                System.out.println("You have succesfully deleted " + userName + " user");
+            if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT) || responseCode.equals(CliConstants.RESPONSE_OK)) {
+                System.out.println("You have successfully deleted " + userName + " user");
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -1331,5 +1331,30 @@ public class RestCommandLineService {
      */
     public void updateNetworkPartition(String networkPartitionDefinition) throws CommandException {
         restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, networkPartitionDefinition, "network-partition");
+    }
+
+    /**
+     * Deploy deployment policy
+     * @throws CommandException
+     */
+    public void addDeploymentPolicy(String deploymentPolicy) throws CommandException {
+        restClient.deployEntity(ENDPOINT_DEPLOY_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
+
+    /**
+     * Update deployment policy
+     * @throws CommandException
+     */
+    public void updateDeploymentPolicy(String deploymentPolicy) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_DEPLOYMENT_POLICY, deploymentPolicy, "deployment policy");
+    }
+
+    /**
+     * Delete deployment policy
+     * @throws CommandException
+     */
+    public void deleteDeploymentPolicy(String policyId) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_DEPLOYMENT_POLICY.replace("{policyId}", policyId), policyId,
+                "deployment policy");
     }
 }

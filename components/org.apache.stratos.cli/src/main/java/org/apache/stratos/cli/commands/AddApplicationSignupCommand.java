@@ -49,7 +49,7 @@ public class AddApplicationSignupCommand implements Command<StratosCommandContex
 
     @Override
     public String getName() {
-    	return CliConstants.ADD_APPLICATION_SIGNUP;
+    	return "add-application";
     }
 
     @Override

@@ -32,7 +32,7 @@ public class DeleteApplicationSignupCommand implements Command<StratosCommandCon
 
     @Override
     public String getName() {
-        return CliConstants.DELETE_APPLICATION_SIGNUP;
+        return "remove-application-signup";
     }
 
     @Override

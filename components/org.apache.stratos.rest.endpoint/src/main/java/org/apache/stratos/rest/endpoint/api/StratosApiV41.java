@@ -219,11 +219,11 @@ public class StratosApiV41 extends AbstractApi {
 	 * @throws RestAPIException the rest api exception
 	 */
 	@DELETE
-	@Path("/deploymentPolicies")
+	@Path("/deploymentPolicies/{depolymentPolicyID}")
 	@Produces("application/json")
 	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/addCartridge")
-	public Response removeDeploymentPolicy(String deploymentPolicyID)
+	@AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
+	public Response removeDeploymentPolicy(@PathParam("depolymentPolicyID") String deploymentPolicyID)
 			throws RestAPIException {
 
 		StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
