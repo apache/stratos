@@ -547,7 +547,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
                                 log.info("Executing scaling rule as statistics have been reset");
-                                ClusterContext vmClusterContext = (ClusterContext) clusterContext;
+                                ClusterContext clusterContext = (ClusterContext) ClusterMonitor.this.clusterContext;
 
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
@@ -556,7 +556,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
                                 getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
-                                        vmClusterContext.getAutoscalePolicy());
+                                        clusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                         averageRequestServedPerInstanceReset);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers",

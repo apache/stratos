@@ -37,6 +37,8 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -123,32 +125,52 @@ public class DefaultApplicationParser implements ApplicationParser {
             for(CartridgeContext cartridgeContext : cartridgeContexts) {
                 if(cartridgeContext != null) {
                     SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-                    String alias = subscribableInfoContext.getAlias();
-                    String applicationId = applicationContext.getApplicationId();
-                    String cartridgeType = cartridgeContext.getType();
-
-                    if (StringUtils.isEmpty(alias)) {
-                        handleError(String.format("An alias is not defined for cartridge: [application-id] %s" +
-                                "[cartridge-type] %s", applicationId, cartridgeType));
-                    }
-
-                    if (!ApplicationUtils.isAliasValid(alias)) {
-                        handleError(String.format("Alias is not valid: [application-id] %s " +
-                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
-                    }
-
-                    if (subscribableInfoContextMap.get(alias) != null) {
-                        handleError(String.format("Alias is already defined: [application-id] %s " +
-                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
-                    }
-
-                    subscribableInfoContextMap.put(alias, cartridgeContext.getSubscribableInfoContext());
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Subscribable information added: [application-id] %s " +
-                                        "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
-                    }
+                    addSubscribableInfo(applicationContext.getApplicationId(),
+                            cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
                 }
             }
+        }
+    }
+
+    private void addSubscribableInfo(String applicationId, String cartridgeType,
+                                     Map<String, SubscribableInfoContext> subscribableInfoContextMap,
+                                     SubscribableInfoContext subscribableInfoContext)
+            throws ApplicationDefinitionException {
+
+        String alias = subscribableInfoContext.getAlias();
+        String autoscalingPolicyId = subscribableInfoContext.getAutoscalingPolicy();
+
+        if (StringUtils.isEmpty(alias)) {
+            handleError(String.format("An alias is not defined for cartridge: [application-id] %s" +
+                    "[cartridge-type] %s", applicationId, cartridgeType));
+        }
+
+        if (!ApplicationUtils.isAliasValid(alias)) {
+            handleError(String.format("Alias is not valid: [application-id] %s " +
+                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+        }
+
+        if (subscribableInfoContextMap.get(alias) != null) {
+            handleError(String.format("Alias is already defined: [application-id] %s " +
+                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+        }
+
+        if(StringUtils.isBlank(autoscalingPolicyId)) {
+            handleError(String.format("Autoscaling policy is not defined: [application-id] %s " +
+                    "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+        }
+
+        AutoscalePolicy autoscalingPolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
+        if(autoscalingPolicy == null) {
+            handleError(String.format("Autoscaling policy is not found: [application-id] %s " +
+                    "[cartridge-type] %s [alias] %s [autoscaling-policy] %s", applicationId, cartridgeType,
+                    alias, autoscalingPolicyId));
+        }
+
+        subscribableInfoContextMap.put(alias, subscribableInfoContext);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Subscribable information added: [application-id] %s " +
+                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
     }
 
@@ -159,42 +181,22 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return
      * @throws ApplicationDefinitionException
      */
-    private void findSubscribableInfoOfGroupContexts(Map<String, SubscribableInfoContext> subscribableInfoContextMap, GroupContext[] groupContexts) throws
+    private void findSubscribableInfoOfGroupContexts(String applicationId,
+                                                     Map<String, SubscribableInfoContext> subscribableInfoContextMap,
+                                                     GroupContext[] groupContexts) throws
             ApplicationDefinitionException {
 
         if (groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
                 if (groupContext.getGroupContexts() != null) {
-                    findSubscribableInfoOfGroupContexts(subscribableInfoContextMap, groupContext.getGroupContexts());
+                    findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContext.getGroupContexts());
                 } else {
                     CartridgeContext[] cartridgeContexts = groupContext.getCartridgeContexts();
                     for (CartridgeContext cartridgeContext : cartridgeContexts) {
                         if(cartridgeContext != null) {
-                            String alias = cartridgeContext.getSubscribableInfoContext().getAlias();
-                            String groupName = groupContext.getName();
-                            String cartridgeType = cartridgeContext.getType();
-
-                            if (StringUtils.isEmpty(alias)) {
-                                handleError(String.format("An alias is not defined for cartridge: [group-name] %s " +
-                                        "[cartridge-type] %s", groupName, cartridgeType));
-                            }
-
-                            if (!ApplicationUtils.isAliasValid(alias)) {
-                                handleError(String.format("Alias is not valid: [group-name] %s " +
-                                        "[cartridge-type] %s [alias] %s", groupName, cartridgeType, alias));
-                            }
-
-                            // Check if alias is already defined
-                            if (subscribableInfoContextMap.get(alias) != null) {
-                                handleError(String.format("Alias is already defined: [group-name] %s " +
-                                        "[cartridge-type] %s [alias] %s", groupName, cartridgeType, alias));
-                            }
-
-                            subscribableInfoContextMap.put(alias, cartridgeContext.getSubscribableInfoContext());
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Subscribable information added: [group-name] %s " +
-                                        "[cartridge-type] %s [cartridge-alias] %s", groupName, cartridgeType, alias));
-                            }
+                            SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+                            addSubscribableInfo(applicationId, cartridgeContext.getType(),
+                                    subscribableInfoContextMap, subscribableInfoContext);
                         }
                     }
                 }
@@ -215,7 +217,8 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, SubscribableInfoContext> subscribableInfoContextMap = new HashMap<String, SubscribableInfoContext>();
 
         findSubscribableInfoOfCartridgeContexts(subscribableInfoContextMap, applicationContext);
-        findSubscribableInfoOfGroupContexts(subscribableInfoContextMap, applicationContext.getComponents().getGroupContexts());
+        findSubscribableInfoOfGroupContexts(applicationContext.getApplicationId(),
+                subscribableInfoContextMap, applicationContext.getComponents().getGroupContexts());
 
         return subscribableInfoContextMap;
     }
