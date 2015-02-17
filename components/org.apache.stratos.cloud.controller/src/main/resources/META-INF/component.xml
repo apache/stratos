@@ -67,5 +67,33 @@
             <DisplayName>Remove Service Group Definition</DisplayName>
             <ResourceId>/permission/protected/manage/removeServiceGroup</ResourceId>
         </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/addDeploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/updateDeploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/removeDeploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Add Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/addNetworkPartition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Update Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/updateNetworkPartition</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/getNetworkPartitions</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Remove Network Partition</DisplayName>
+            <ResourceId>/permission/protected/manage/removeNetworkPartition</ResourceId>
+        </ManagementPermission>
     </ManagementPermissions>
 </component>

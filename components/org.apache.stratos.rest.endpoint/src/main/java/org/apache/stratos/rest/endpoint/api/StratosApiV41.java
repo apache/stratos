@@ -169,7 +169,7 @@ public class StratosApiV41 extends AbstractApi {
 	@Path("/deploymentPolicies")
 	@Produces("application/json")
 	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/addCartridge")
+	@AuthorizationAction("/permission/admin/manage/addDeploymentPolicy")
 	public Response addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
 			throws RestAPIException {
 
@@ -195,7 +195,7 @@ public class StratosApiV41 extends AbstractApi {
 	@Path("/deploymentPolicies")
 	@Produces("application/json")
 	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/addCartridge")
+	@AuthorizationAction("/permission/admin/manage/updateDeploymentPolicy")
 	public Response updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
 			throws RestAPIException {
 
