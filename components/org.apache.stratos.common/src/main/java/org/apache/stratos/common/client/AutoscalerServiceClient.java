@@ -82,26 +82,6 @@ public class AutoscalerServiceClient {
         stub.removeServiceGroup(serviceGroupName);
     }
 
-    public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException {
-        stub.addNetworkPartition(networkPartition);
-    }
-
-    public NetworkPartition[] getNetworkPartitions() throws RemoteException {
-        return stub.getNetworkPartitions();
-    }
-
-    public NetworkPartition getNetworkPartition(String networkPartitionId) throws RemoteException {
-        return stub.getNetworkPartition(networkPartitionId);
-    }
-
-    public void removeNetworkPartition(String networkPartitionId) throws RemoteException {
-        stub.removeNetworkPartition(networkPartitionId);
-    }
-
-    public void updateNetworkPartition(NetworkPartition networkPartition) throws RemoteException {
-        stub.updateNetworkPartition(networkPartition);
-    }
-
     public org.apache.stratos.autoscaler.stub.autoscale.policy.AutoscalePolicy[] getAutoScalePolicies()
             throws RemoteException {
         return stub.getAutoScalingPolicies();
