@@ -193,5 +193,9 @@ public class StratosConstants {
 
     public static final String DEFAULT_CLIENT_SOCKET_TIMEOUT = "300000";
     public static final String DEFAULT_CLIENT_CONNECTION_TIMEOUT = "300000";
+    
+    // partition algorithm id constants
+	public static final String ROUND_ROBIN_ALGORITHM_ID = "round-robin";
+	public static final String ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
 }
 
