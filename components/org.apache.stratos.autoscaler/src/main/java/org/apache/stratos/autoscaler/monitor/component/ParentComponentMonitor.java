@@ -45,6 +45,7 @@ import org.apache.stratos.autoscaler.monitor.events.ScalingUpBeyondMaxEvent;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.application.ParentComponent;
@@ -729,10 +730,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
-        if (AutoscalerConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (StratosConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new RoundRobin();
-        } else if (AutoscalerConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new OneAfterAnother();
         } else {
