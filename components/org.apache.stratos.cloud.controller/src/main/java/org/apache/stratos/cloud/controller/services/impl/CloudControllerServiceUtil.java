@@ -116,7 +116,9 @@ public class CloudControllerServiceUtil {
     }
     
     /**
-     * Validates deployment policy
+     * Validates deployment policy. This method will not validate whether the deployment policy is already deployed or not.
+     * Reason is this method has to be used in add/update deployment policy APIs which have different view on "already deployed deployment policies".
+     * It is the caller's responsibility to validate whether the deployment policy is already deployed or not.
      * @param deploymentPolicy the {@link DeploymentPolicy} to be validated
      * @throws InvalidDeploymentPolicyException will be thrown if the given {@link DeploymentPolicy} is not valid
      */
