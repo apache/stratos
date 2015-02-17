@@ -41,6 +41,7 @@ import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 /**
@@ -134,7 +135,8 @@ public class CloudControllerServiceUtil {
     	
     	// deployment policy id can't be null or empty
     	if (null == deploymentPolicy.getDeploymentPolicyID() || deploymentPolicy.getDeploymentPolicyID().isEmpty()) {
-			String msg = "Invalid deployment policy. Cause -> Invalid deployment policy id";
+			String msg = String.format("Invalid deployment policy. Cause -> Invalid deployment policy id [deployment-policy-id] %s", 
+					deploymentPolicy.getDeploymentPolicyID());
 			log.error(msg);
 			throw new InvalidDeploymentPolicyException(msg);
 		}
@@ -160,10 +162,10 @@ public class CloudControllerServiceUtil {
 				throw new InvalidDeploymentPolicyException(msg);
 			}
     		
-    		// network partitions should be already deployed
+    		// network partitions should be already added
     		if (null == CloudControllerContext.getInstance().getNetworkPartition(networkPartitionRef.getId())) {
 				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
-						+ "Cause -> Network partition is not deployed - [network-partition-id] %s", 
+						+ "Cause -> Network partition is not added - [network-partition-id] %s", 
 						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
 				log.error(msg);
 				throw new InvalidDeploymentPolicyException(msg);
@@ -171,6 +173,16 @@ public class CloudControllerServiceUtil {
     		
     		// partition algorithm can't be null or empty
     		if (null == networkPartitionRef.getPartitionAlgo() || networkPartitionRef.getPartitionAlgo().isEmpty()) {
+				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
+						+ "Cause -> Invalid partition algorithm - [network-partition-id] %s", 
+						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
+				log.error(msg);
+				throw new InvalidDeploymentPolicyException(msg);
+			}
+    		
+    		// partition algorithm should be either one-after-another or round-robin
+    		if (StratosConstants.ROUND_ROBIN_ALGORITHM_ID != networkPartitionRef.getPartitionAlgo()
+    				&& StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID != networkPartitionRef.getPartitionAlgo()) {
 				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
 						+ "Cause -> Invalid partition algorithm - [network-partition-id] %s", 
 						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId());
@@ -210,7 +222,7 @@ public class CloudControllerServiceUtil {
 				}
     			
     			// partition reference should have a valid max value
-    			if (partitionRef.getMax() < 0) {
+    			if (partitionRef.getMax() <= 0) {
     				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
     						+ "Cause -> Partition max value is not valid - [network-partition-id] %s [partition-id] %s [max-value] %s", 
     						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), partitionRef.getId(), partitionRef.getMax());
