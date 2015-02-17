@@ -23,17 +23,13 @@ package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
-import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.common.Properties;
 
 public interface AutoscalerService {
@@ -147,37 +143,6 @@ public interface AutoscalerService {
      * @return
      */
     public ServiceGroup getServiceGroup(String name);
-
-    /**
-     * Add network partition
-     * @param networkPartition
-     */
-    public void addNetworkPartition(NetworkPartition networkPartition);
-
-    /**
-     * Remove network partition
-     * @param networkPartitionId
-     */
-    public void removeNetworkPartition(String networkPartitionId);
-
-    /**
-     * Update network partition
-     * @param networkPartition
-     */
-    public void updateNetworkPartition(NetworkPartition networkPartition);
-
-    /**
-     * Get network partitions
-     * @return
-     */
-    public NetworkPartition[] getNetworkPartitions();
-
-    /**
-     * Get network partition by network partition id
-     * @param networkPartitionId
-     * @return
-     */
-    public NetworkPartition getNetworkPartition(String networkPartitionId);
 
     /**
      * Find cluster id of an application by subscription alias.
