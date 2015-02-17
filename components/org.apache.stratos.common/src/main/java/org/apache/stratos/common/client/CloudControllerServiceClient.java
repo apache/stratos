@@ -190,12 +190,14 @@ public class CloudControllerServiceClient {
     }
 
 	public void addDeploymentPolicy(DeploymentPolicy deploymentPolicy)
-			throws CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException, RemoteException {
+			throws CloudControllerServiceDeploymentPolicyAlreadyExistsExceptionException, RemoteException, 
+			CloudControllerServiceInvalidDeploymentPolicyExceptionException {
 		stub.addDeployementPolicy(deploymentPolicy);
 	}
 
 	public void updateDeploymentPolicy(DeploymentPolicy deploymentPolicy)
-			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException {
+			throws CloudControllerServiceDeploymentPolicyNotExistsExceptionException, RemoteException, 
+			CloudControllerServiceInvalidDeploymentPolicyExceptionException {
 		stub.updateDeployementPolicy(deploymentPolicy);
 	}
 
