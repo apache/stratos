@@ -376,6 +376,12 @@ public interface CloudControllerService {
 	 * @return
 	 */
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException;
+	
+    /**
+     * Get deployment policies
+     * @return array of {@link DeploymentPolicy}
+     */
+    public DeploymentPolicy[] getDeploymentPolicies();
 
     /**
      * Add network partition
