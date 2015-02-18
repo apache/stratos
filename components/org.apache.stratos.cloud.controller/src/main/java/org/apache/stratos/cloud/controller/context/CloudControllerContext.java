@@ -686,6 +686,7 @@ public class CloudControllerContext implements Serializable {
                         copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
                         copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
                         copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
+                        copyMap(serializedObj.deploymentPolicyIDToDeployPolicyMap, deploymentPolicyIDToDeployPolicyMap);
                         copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap, networkPartitionIDToNetworkPartitionMap);
 
                         if (log.isDebugEnabled()) {
