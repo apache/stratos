@@ -211,6 +211,10 @@ public class CloudControllerServiceClient {
 		return stub.getDeploymentPolicy(deploymentPolicyID);
 	}
 	
+    public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException{
+    	return stub.getDeploymentPolicies();
+    }
+	
     public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException, 
     CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {
     	stub.addNetworkPartition(networkPartition);
