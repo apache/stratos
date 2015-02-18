@@ -1882,6 +1882,22 @@ public class StratosApiV41Utils {
 
 		return deploymentPolicy;
 	}
+	
+	/**
+	 * Get deployment policies
+	 * @return array of {@link DeploymentPolicyBean}
+	 */
+	public static DeploymentPolicyBean[] getDeployementPolicies() {
+        try {
+            CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
+            DeploymentPolicy[] deploymentPolicies = serviceClient.getDeploymentPolicies();
+            return ObjectConverter.convertCCStubDeploymentPoliciesToDeploymentPolicies(deploymentPolicies);
+        } catch (Exception e) {
+            String message = "Could not get network partitions";
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
 
 	/**
 	 * Update deployement policy

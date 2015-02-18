@@ -198,6 +198,21 @@ public class StratosApiV41 extends AbstractApi {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
         return Response.ok(deploymentPolicyBean).build();
     }
+    
+    /**
+     * Get deployment policies
+     * @return the response
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/deploymentPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/getDeploymentPolicy")
+    public Response getDeploymentPolicies() throws RestAPIException {
+    	DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
+        return Response.ok(deploymentPolicies).build();
+    }
 
 	/**
 	 * Updates the Deployment Policy Definition.
