@@ -447,7 +447,6 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
-        networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition :
@@ -469,7 +468,6 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
-        networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for(Partition stubPartition : stubNetworkPartition.getPartitions()) {
@@ -639,7 +637,6 @@ public class ObjectConverter {
                 new NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setKubernetesClusterId(networkPartitionBean.getKubernetesClusterId());
-        networkPartition.setActiveByDefault(networkPartitionBean.isActiveByDefault());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }
@@ -651,7 +648,6 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setKubernetesClusterId(networkPartitionBean.getKubernetesClusterId());
-        networkPartition.setActiveByDefault(networkPartitionBean.isActiveByDefault());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertPartitionToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }

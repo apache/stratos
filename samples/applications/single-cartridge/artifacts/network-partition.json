@@ -1,6 +1,5 @@
 {
     "id": "network-partition-1",
-    "activeByDefault": "true",
     "partitions": [
         {
             "id": "p1",

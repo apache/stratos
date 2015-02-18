@@ -66,8 +66,8 @@ import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 import org.wso2.carbon.registry.api.RegistryException;
-
 import java.rmi.RemoteException;
+import com.google.gdata.wireformats.ObjectConverter;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -243,9 +243,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             List<NetworkPartition> networkPartitionList = new ArrayList<NetworkPartition>();
-            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReference();
+            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReferences();
             for (ApplicationPolicyNetworkPartitionReference npReference : npReferences) {
-            	NetworkPartition networkPartition = RegistryManager.getInstance().getNetworkPartition(npReference.getNetworkPartitionId());
+				NetworkPartition networkPartition = AutoscalerObjectConverter.convertNetworkParitionStubToPojo(CloudControllerServiceClient
+				                .getInstance().getNetworkPartition(npReference.getNetworkPartitionId()));
             	networkPartitionList.add(networkPartition);            	
             }
             
@@ -256,8 +257,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			updateKubernetesClusterIds(applicationId, networkPartitionList);
 			// TODO -- validate application policy
 			
-			// Add deployment policy
-			//PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
+			// Add application policy
+			PolicyManager.getInstance().addApplicationPolicy(applicationId, applicationPolicy);
 			if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
 			    addApplicationSignUp(applicationContext, application.getKey());
@@ -688,7 +689,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     	
     	// application policy should contain at least one network partition reference
     	ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
-    			applicationPolicy.getNetworkPartitionReference();
+    			applicationPolicy.getNetworkPartitionReferences();
 		if (null == networkPartitionReferences || networkPartitionReferences.length == 0) {
 			String msg = "Invalid Application Policy. "
 					+ "Cause -> Application Policy is not containing any network partition reference";
