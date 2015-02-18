@@ -635,19 +635,6 @@ public class StratosApiV41Utils {
         return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
-    public static DeploymentPolicyBean getDeploymentPolicy(String applicationId) throws RestAPIException {
-
-        try {
-            AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
-
-            return null;
-        } catch (Exception e) {
-            String errorMsg = "Could not read deployment policy: [application-id] " + applicationId;
-            log.error(errorMsg, e);
-            throw new RestAPIException(errorMsg, e);
-        }
-    }
-
     // Util methods for repo actions
 
     public static void notifyArtifactUpdatedEvent(GitNotificationPayloadBean payload) throws RestAPIException {
@@ -1875,9 +1862,9 @@ public class StratosApiV41Utils {
 	}
 
 	/**
-	 * Get deployment policy
-	 * @param deploymentPolicyID Deployment policy ID
-	 * @return
+	 * Get deployment policy by deployment policy id
+	 * @param deploymentPolicyID deployment policy id
+	 * @return {@link DeploymentPolicyBean}
 	 */
 	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) throws RestAPIException {
 
@@ -1885,10 +1872,10 @@ public class StratosApiV41Utils {
 		try {
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
 			deploymentPolicy = ObjectConverter
-					.convetFromCCDeploymentPolicy(cloudControllerServiceClient.getDeploymentPolicy
+					.convetCCStubDeploymentPolicytoDeploymentPolicy(cloudControllerServiceClient.getDeploymentPolicy
 							(deploymentPolicyID));
 		} catch (Exception e) {
-			String msg = "Could not find deployment policy [deployment-policy-id" + deploymentPolicyID;
+			String msg = "Could not find deployment policy deployment-policy-id " + deploymentPolicyID;
 			log.error(msg, e);
 			throw new RestAPIException(msg);
 		}

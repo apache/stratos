@@ -62,6 +62,7 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
+import org.apache.xerces.dom.DeepNodeListImpl;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
@@ -673,6 +674,20 @@ public class ObjectConverter {
 
 		return networkPartition;
 	}
+	
+	public static List<NetworkPartitionRefBean> convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(NetworkPartitionRef[] networkPartitionRefs) {
+		
+		List<NetworkPartitionRefBean> networkPartitionRefBeans = new ArrayList<NetworkPartitionRefBean>();
+		for (int i = 0; i < networkPartitionRefs.length; i++) {
+			NetworkPartitionRefBean networkPartitionRefBean = new NetworkPartitionRefBean();
+			networkPartitionRefBean.setId(networkPartitionRefs[i].getId());
+			networkPartitionRefBean.setPartitionAlgo(networkPartitionRefs[i].getPartitionAlgo());
+			networkPartitionRefBean.setPartitions(convertCCStubPartitionRefsToPartitionRefs(networkPartitionRefs[i].getPartitions()));
+			networkPartitionRefBeans.add(networkPartitionRefBean);
+		}
+		
+		return networkPartitionRefBeans;
+	}
 
     private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<ChildLevelNetworkPartitionBean> networkPartitions) {
 
@@ -861,6 +876,19 @@ public class ObjectConverter {
 		}
 
 		return partitions;
+	}
+	
+	private static List<PartitionRefBean> convertCCStubPartitionRefsToPartitionRefs(PartitionRef[] partitionRefs) {
+		
+		List<PartitionRefBean> partitionRefBeans = new ArrayList<PartitionRefBean>();
+		for (int i = 0; i < partitionRefs.length; i++) {
+			PartitionRefBean partitionRefBean = new PartitionRefBean();
+			partitionRefBean.setId(partitionRefs[i].getId());
+			partitionRefBean.setMax(partitionRefs[i].getMax());
+			partitionRefBeans.add(partitionRefBean);
+		}
+		
+		return partitionRefBeans;
 	}
 
     private static ChildLevelPartition[] convertToCCChildPartitionPojos
@@ -1858,8 +1886,11 @@ public class ObjectConverter {
         return domainMappingBean;
     }
 
-	public static DeploymentPolicyBean convetFromCCDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-		return null;
+	public static DeploymentPolicyBean convetCCStubDeploymentPolicytoDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+		DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
+		deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
+		deploymentPolicyBean.setNetworkPartition(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
+		return deploymentPolicyBean;
 	}
 	
 	public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
