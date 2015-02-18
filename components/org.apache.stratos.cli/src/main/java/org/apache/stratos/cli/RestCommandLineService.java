@@ -116,6 +116,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
     private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/master";
     private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
+    private static final String ENDPOINT_GET_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{networkPartitionId}";
 
     private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
     private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion/{minionId}";
@@ -1331,6 +1332,32 @@ public class RestCommandLineService {
      */
     public void updateNetworkPartition(String networkPartitionDefinition) throws CommandException {
         restClient.updateEntity(ENDPOINT_DEPLOY_NETWORK_PARTITION, networkPartitionDefinition, "network-partition");
+    }
+
+    /**
+     * Describe a network partition
+     * @param partitionId
+     * @throws CommandException
+     */
+    public void describeNetworkPartition(final String partitionId) throws CommandException {
+        try {
+            Type listType = new TypeToken<NetworkPartitionBean>() {
+            }.getType();
+            NetworkPartitionBean partition = (NetworkPartitionBean) restClient
+                    .getEntity(ENDPOINT_GET_NETWORK_PARTITION, NetworkPartitionBean.class, "{networkPartitionId}", partitionId,
+                            "network partition");
+
+            if (partition == null) {
+                System.out.println("Network partition not found: " + partitionId);
+                return;
+            }
+
+            System.out.println("Partition: " + partitionId);
+            System.out.println(getGson().toJson(partition));
+        } catch (Exception e) {
+            String message = "Could not describe partition: " + partitionId;
+            printError(message, e);
+        }
     }
 
     /**
