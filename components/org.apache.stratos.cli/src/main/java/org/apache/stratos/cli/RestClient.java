@@ -172,7 +172,7 @@ public class RestClient implements GenericRestClient {
             int responseCode = executeDelete(serviceEndpoint, entityId);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 204) {
+            } else if (responseCode >= 200 && responseCode <300) {
                 System.out.println(String.format("Successfully un-deployed %s", entityName));
             }
         } catch (Exception e) {
