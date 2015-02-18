@@ -1,0 +1,17 @@
+{
+    "name": "mysql-php-group",
+    "groupScalingEnabled": "true",
+    "cartridges": [
+        "mysql",
+        "php"
+    ],
+    "dependencies": {
+        "startupOrders": [
+            "cartridge.mysql,cartridge.php"
+        ],
+        "scalingDependants": [
+        ],
+        "terminationBehaviour": "terminate-none"
+    }
+}
+
