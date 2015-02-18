@@ -25,14 +25,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 
 import java.util.Map;
-
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 
 /**
  * Manager class for the purpose of managing Autoscale/Deployment policy definitions.
@@ -43,10 +42,15 @@ public class PolicyManager {
     
     private static final String AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP = "AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP";
     private static final String DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP = "DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP";
+    private static final String APPLICATION_ID_TO_APPLICATION_POLICY_MAP = "APPLICATION_ID_TO_APPLICATION_POLICY_MAP";
     
-    private static Map<String, AutoscalePolicy> autoscalePolicyListMap; //= new HashMap<String, AutoscalePolicy>();
+    private final transient DistributedObjectProvider distributedObjectProvider;
 
-    private static Map<String, DeploymentPolicy> deploymentPolicyListMap; //= new HashMap<String, DeploymentPolicy>();
+    private static Map<String, AutoscalePolicy> autoscalePolicyListMap;
+
+    private static Map<String, DeploymentPolicy> deploymentPolicyListMap;
+    
+    private static Map<String, ApplicationPolicy> applicationPolicyListMap;
     
     /* An instance of a PolicyManager is created when the class is loaded. 
      * Since the class is loaded only once, it is guaranteed that an object of 
@@ -66,6 +70,7 @@ public class PolicyManager {
         DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
         autoscalePolicyListMap = distributedObjectProvider.getMap(AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP);
         deploymentPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
+        applicationPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
     }
 
     // Add the policy to information model and persist.
@@ -295,6 +300,46 @@ public class PolicyManager {
             }
         }
         return null;
+    }
+
+	public void addApplicationPolicy(String applicationId,ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Adding application policy for application: [id] %s", applicationId));
+		}
+		this.addApplicationPolicyToInformationModel(applicationId, applicationPolicy);
+		RegistryManager.getInstance().persistApplicationPolicy(applicationId,applicationPolicy);
+
+		if (log.isInfoEnabled()) {
+			log.info(String
+			        .format("Application policy is added successfully: [application-id] %s",
+			                applicationId));
+		}
+
+	}
+
+	private void addApplicationPolicyToInformationModel(String applicationId,
+            ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
+        if (!applicationPolicyListMap.containsKey(applicationId)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Adding application policy for application Id: " + applicationId);
+            }
+            applicationPolicyListMap.put(applicationId, applicationPolicy);
+        } else {
+        	String errMsg = "Application policy is already exists for appplication [" + applicationId + "] ";
+        	log.error(errMsg);
+            throw new InvalidPolicyException(errMsg);
+        }
+	    
+    }
+	
+	/**
+	 * Retruns an ApplicationPolicy of a given application
+	 * 
+	 * @param applicationId
+	 * @return
+	 */
+    public ApplicationPolicy getApplicationPolicy(String applicationId) {
+        return applicationPolicyListMap.get(applicationId);
     }
 
 }

@@ -19,7 +19,10 @@
 
 package org.apache.stratos.autoscaler.util;
 
+import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
+import org.apache.stratos.cloud.controller.stub.Property;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.Properties;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,5 +67,49 @@ public class AutoscalerObjectConverter {
         cloudControllerPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
 
         return cloudControllerPartition;
+    }
+    
+    
+    public static NetworkPartition convertNetworkParitionStubToPojo(org.apache.stratos.cloud.controller.stub.domain.NetworkPartition np) {
+    	
+    	NetworkPartition networkPartition = new NetworkPartition();
+    	networkPartition.setId(np.getId());
+    	networkPartition.setKubernetesClusterId(np.getKubernetesClusterId());
+    	networkPartition.setPartitions(convertPartitionStubToPojo(np.getPartitions()));
+    	
+    	return networkPartition;
+    }
+
+	private static org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] convertPartitionStubToPojo(
+            Partition[] partitions) {
+		
+		List<org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition> partitionList = 
+				new ArrayList<org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition>();
+		
+		for (Partition p : partitions) {
+			org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition =
+					new org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition();
+			partition.setDescription(p.getDescription());
+			partition.setId(p.getId());
+			partition.setIsPublic(p.getIsPublic());
+			partition.setKubernetesClusterId(p.getKubernetesClusterId());
+			partition.setProperties(convertProperties(p.getProperties()));
+			partition.setProvider(p.getProvider());
+        }
+		
+	    return partitionList.toArray(
+	    		new org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[partitions.length]);
+    }
+
+	private static Properties convertProperties(
+            org.apache.stratos.cloud.controller.stub.Properties properties) {
+	    
+		Properties props = new Properties();
+		Property[] propArray = properties.getProperties();
+		for (Property property : propArray) {
+	        props.addProperty(new org.apache.stratos.common.Property(property.getName(),property.getValue()));
+        }
+		
+	    return props;
     }
 }
