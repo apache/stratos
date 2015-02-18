@@ -183,6 +183,21 @@ public class StratosApiV41 extends AbstractApi {
 				                                                            "[deployment-policy-id] %s",
 				                                                            deploymentPolicyID))).build();
 	}
+	
+    /**
+     * Get deployment policy by deployment policy id
+     * @return the response
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/deploymentPolicies/{deploymentPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/getDeploymentPolicy")
+    public Response getDeploymentPolicy(@PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
+        DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
+        return Response.ok(deploymentPolicyBean).build();
+    }
 
 	/**
 	 * Updates the Deployment Policy Definition.
@@ -609,27 +624,6 @@ public class StratosApiV41 extends AbstractApi {
 		        new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
 		                                String.format("Application deployed successfully: [application] %s",
 		                                              applicationId))).build();
-    }
-
-    /**
-     * Gets the application's deployment policy.
-     *
-     * @param applicationId the application id
-     * @return the application deployment policy
-     * @throws RestAPIException the rest api exception
-     */
-    @GET
-    @Path("/applications/{applicationId}/deploymentPolicy")
-    @Produces("application/json")
-    @Consumes("application/json")
-    @AuthorizationAction("/permission/protected/manage/getApplicationDeploymentPolicy")
-    public Response getApplicationDeploymentPolicy(@PathParam("applicationId") String applicationId)
-            throws RestAPIException {
-        DeploymentPolicyBean deploymentPolicy = StratosApiV41Utils.getDeploymentPolicy(applicationId);
-        if (deploymentPolicy == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        return Response.ok(deploymentPolicy).build();
     }
 
     /**
