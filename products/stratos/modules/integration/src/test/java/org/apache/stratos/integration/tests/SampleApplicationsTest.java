@@ -60,8 +60,7 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         try {
             initializeApplicationEventReceiver();
 
-            String scriptPath = getResourcesFolderPath() + "/../../../../../../" +
-                    "samples/applications/single-cartridge/scripts/mock/deploy.sh";
+            String scriptPath = getApplicationsPath() + "/single-cartridge/scripts/mock/deploy.sh";
             executeCommand(scriptPath);
 
             assertApplicationActivation("single-cartridge-app");
@@ -119,6 +118,14 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
                 ApplicationStatus.Active, application.getStatus());
+    }
+
+    /**
+     * Get applications folder path
+     * @return
+     */
+    private String getApplicationsPath() {
+        return getResourcesFolderPath() + "/../../../../../../samples/applications";
     }
 
     /**

@@ -214,6 +214,11 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
+                if(clusterInstance == null) {
+                    log.warn(String.format("Cluster instance not found: [instance-id] %s", instanceId));
+                    return;
+                }
+
                 if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated)){
                     if(clusterInstance.getStatus() != ClusterStatus.Terminated) {
                         ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =

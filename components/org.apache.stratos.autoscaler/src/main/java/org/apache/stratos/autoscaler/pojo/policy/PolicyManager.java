@@ -44,8 +44,6 @@ public class PolicyManager {
     private static final String AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP = "AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP";
     private static final String DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP = "DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP";
     
-    private final transient DistributedObjectProvider distributedObjectProvider;
-
     private static Map<String, AutoscalePolicy> autoscalePolicyListMap; //= new HashMap<String, AutoscalePolicy>();
 
     private static Map<String, DeploymentPolicy> deploymentPolicyListMap; //= new HashMap<String, DeploymentPolicy>();
@@ -65,7 +63,7 @@ public class PolicyManager {
     
     private PolicyManager() {
     	// Initialize distributed object provider
-        distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
+        DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
         autoscalePolicyListMap = distributedObjectProvider.getMap(AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP);
         deploymentPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
     }
