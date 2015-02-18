@@ -31,6 +31,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
@@ -66,6 +67,7 @@ import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 import org.wso2.carbon.registry.api.RegistryException;
 
+import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -665,5 +667,72 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         } catch (MetaDataServiceClientException e) {
             log.error("Could not publish to metadata service ", e);
         }
+    }
+    
+    /**
+     * Validates Application Policy against the given application.
+     * @param applicationId the application id against which the application policy needs to be validated
+     * @param applicationPolicy the application policy to be validated
+     * @throws InvalidApplicationPolicyException if application policy is not valid
+     * @throws RemoteException is anything went wrong while communicating with CC to validate network partitions
+     */
+	private void validateApplicationPolicy(String applicationId, ApplicationPolicy applicationPolicy) 
+    		throws InvalidApplicationPolicyException, RemoteException {
+    	
+    	// application policy can't be null
+    	if (null == applicationPolicy) {
+			String msg = "Invalid Application Policy. Cause -> Application Policy is null";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// application policy should contain at least one network partition reference
+    	ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
+    			applicationPolicy.getNetworkPartitionReference();
+		if (null == networkPartitionReferences || networkPartitionReferences.length == 0) {
+			String msg = "Invalid Application Policy. "
+					+ "Cause -> Application Policy is not containing any network partition reference";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// to count the number of network partitions which are active by default
+    	// if the count is 0, we should raise the error
+    	int activeByDefaultNetworkPartitionsCount = 0;
+    	
+    	// validating all network partition references
+    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : networkPartitionReferences) {
+			
+    		// network-partition-id can't be null or empty
+    		String networkPartitionId = applicationPolicyNetworkPartitionReference.getNetworkPartitionId();
+			if (null == networkPartitionId || networkPartitionId.isEmpty()) {
+				String msg = String.format("Invalid Application Policy. "
+						+ "Cause -> Invalid network-partition-id : %s", networkPartitionId);
+				log.error(msg);
+				throw new InvalidApplicationPolicyException(msg);
+			}
+			
+			// network partitions should be added already
+			if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId)) {
+				String msg = String.format("Invalid Application Policy. "
+						+ "Cause -> Network partition not found for network-partition-id : %s", networkPartitionId);
+				log.error(msg);
+				throw new InvalidApplicationPolicyException(msg);
+			}
+			
+			//TODO validate application policy against the given application
+			
+			// counting number of network partitions which are active by default
+			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
+				activeByDefaultNetworkPartitionsCount++;
+			}
+		}
+    	
+    	// there should be at least one network partition reference which is active by default
+    	if (activeByDefaultNetworkPartitionsCount == 0) {
+			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
     }
 }
