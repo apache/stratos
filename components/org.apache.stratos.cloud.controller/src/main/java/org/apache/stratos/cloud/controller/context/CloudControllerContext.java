@@ -276,6 +276,10 @@ public class CloudControllerContext implements Serializable {
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
 		return deploymentPolicyIDToDeployPolicyMap.get(deploymentPolicyID);
 	}
+	
+	public Collection<DeploymentPolicy> getDeploymentPolicies() {
+		return deploymentPolicyIDToDeployPolicyMap.values();
+	}
 
 	public void removeDeploymentPolicy(String deploymentPolicyID) {
 		if (deploymentPolicyIDToDeployPolicyMap.containsKey(deploymentPolicyID)) {
