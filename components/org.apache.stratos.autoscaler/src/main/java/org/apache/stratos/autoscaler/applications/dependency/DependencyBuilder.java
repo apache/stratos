@@ -87,82 +87,82 @@ public class DependencyBuilder {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
                         if (startupOrderComponent != null) {
-                            ApplicationChildContext applicationContext = ApplicationChildContextFactory.
-                                    getApplicationContext(startupOrderComponent, component, dependencyTree);
-                            String id = applicationContext.getId();
+                            ApplicationChildContext applicationChildContext = ApplicationChildContextFactory.
+                                    createApplicationChildContext(startupOrderComponent, component, dependencyTree);
+                            String applicationChildContextId = applicationChildContext.getId();
 
-                            ApplicationChildContext existingApplicationContext =
-                                    dependencyTree.getApplicationChildContextByIdInPrimaryTree(id);
-                            if (existingApplicationContext == null) {
+                            ApplicationChildContext existingApplicationChildContext =
+                                    dependencyTree.getApplicationChildContextByIdInPrimaryTree(applicationChildContextId);
+                            if (existingApplicationChildContext == null) {
                                 if (parentContext != null) {
                                     //appending the start up order to already added parent group/cluster
-                                    parentContext.addApplicationContext(applicationContext);
-                                    parentContext = applicationContext;
+                                    parentContext.addApplicationChildContext(applicationChildContext);
+                                    parentContext = applicationChildContext;
                                     if (log.isDebugEnabled()) {
                                         log.debug("Found an existing [dependency] " + parentContext.getId() +
-                                                " and adding the [dependency] " + id + " as the child");
+                                                " and adding the [dependency] " + applicationChildContextId + " as the child");
                                     }
                                 } else {
                                     //adding list of startup order to the dependency tree
-                                    dependencyTree.addPrimaryApplicationContext(applicationContext);
-                                    parentContext = applicationContext;
+                                    dependencyTree.addPrimaryApplicationContext(applicationChildContext);
+                                    parentContext = applicationChildContext;
                                 }
                             } else {
                                 if (parentContext == null) {
                                     //if existing context found, add it to child of existing context and
                                     //set the existing context as the next parent
-                                    //existingApplicationContext.addApplicationContext(applicationContext);
-                                    parentContext = existingApplicationContext;
+                                    //existingApplicationChildContext.addApplicationChildContext(applicationChildContext);
+                                    parentContext = existingApplicationChildContext;
                                     if (log.isDebugEnabled()) {
-                                        log.debug("Found an existing [dependency] " + id + " and setting it " +
+                                        log.debug("Found an existing [dependency] " + applicationChildContextId + " and setting it " +
                                                 "for the next dependency to follow");
                                     }
                                 } else {
                                     ApplicationChildContext existingParentContext =
                                             dependencyTree.findParentContextWithId(
-                                                    applicationContext.getId());
+                                                    applicationChildContext.getId());
                                     if(existingParentContext != null && existingParentContext.getId().
                                             equals(parentContext.getId())) {
                                         if(log.isDebugEnabled()) {
                                             log.debug("Found an existing parent Context. " +
                                                     "Hence skipping it and parsing the next value.");
                                         }
-                                        parentContext = existingApplicationContext;
+                                        parentContext = existingApplicationChildContext;
                                     } else {
                                         String msg = "Startup order is not consistent. It contains the group/cluster " +
                                                 "which has been used more than one in another startup order";
                                         throw new DependencyBuilderException(msg);
                                     }
-
                                 }
-
                             }
                         }
                     }
-
                 }
             }
-
-            
         }
 
         //adding the rest of the children who are independent to the top level
         // as they can start in parallel.
         Collection<Group> groups = component.getAliasToGroupMap().values();
-        for (Group group1 : groups) {
-            if (dependencyTree.getApplicationChildContextByIdInPrimaryTree(group1.getAlias()) == null) {
-                ApplicationChildContext context = ApplicationChildContextFactory.getGroupChildContext(group1.getAlias(), dependencyTree.isTerminateDependent());
+        for (Group group : groups) {
+            if (dependencyTree.getApplicationChildContextByIdInPrimaryTree(group.getAlias()) == null) {
+                ApplicationChildContext context = ApplicationChildContextFactory.createGroupChildContext(group.getAlias(),
+                        dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
             }
         }
         Collection<ClusterDataHolder> clusterData = component.getClusterDataMap().values();
         for (ClusterDataHolder dataHolder : clusterData) {
             if (dependencyTree.getApplicationChildContextByIdInPrimaryTree(dataHolder.getClusterId()) == null) {
-                ApplicationChildContext context = ApplicationChildContextFactory.getClusterChildContext(dataHolder,
+                ApplicationChildContext context = ApplicationChildContextFactory.createClusterChildContext(dataHolder,
                         dependencyTree.isTerminateDependent());
                 dependencyTree.addPrimaryApplicationContext(context);
 
             }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Dependency tree generated: [component] %s [tree] %s",
+                    component.getUniqueIdentifier(), dependencyTree.toString()));
         }
         return dependencyTree;
     }

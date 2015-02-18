@@ -1417,7 +1417,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 // Cluster instance is already there. No need to create one.
                 ClusterContext clusterContext = (ClusterContext) this.getClusterContext();
                 if (clusterContext == null) {
-
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
                             hasScalingDependents());
                     this.setClusterContext(clusterContext);
@@ -1439,13 +1438,14 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 }
                 if (this.hasMonitoringStarted().compareAndSet(false, true)) {
                     this.startScheduler();
-                    log.info("Monitoring task for Cluster Monitor with cluster id " +
-                            cluster.getClusterId() + " started successfully");
+                    log.info(String.format("Monitoring task for cluster monitor started: [cluster-id] %s",
+                            cluster.getClusterId()));
                 }
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionId());
-
+                log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
+                        "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
             }
             return true;
 

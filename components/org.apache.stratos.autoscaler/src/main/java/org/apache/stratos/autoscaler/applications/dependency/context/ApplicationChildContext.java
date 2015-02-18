@@ -54,7 +54,7 @@ public abstract class ApplicationChildContext {
         this.applicationChildContextList = applicationChildContextList;
     }
 
-    public void addApplicationContext(ApplicationChildContext applicationContext) {
+    public void addApplicationChildContext(ApplicationChildContext applicationContext) {
         applicationChildContextList.add(applicationContext);
 
     }

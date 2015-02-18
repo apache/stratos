@@ -698,7 +698,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 		    pendingMonitorsList.add(context.getId());
 		    executorService.submit(new MonitorAdder(parent, context, this.appId, instanceIds));
 		    if (log.isDebugEnabled()) {
-			    log.debug(String.format("Monitor Adder has been added: [cluster] %s ", context.getId()));
+			    log.debug(String.format("Monitor adder has been added: [cluster] %s ", context.getId()));
 		    }
 	    }
 
