@@ -362,7 +362,7 @@ class ExtensionHandler:
             " [application ID] " + application_signup_removal_event.applicationId
         )
 
-        if self.cartridge_agent_config.service_name == application_signup_removal_event.applicationId:
+        if self.cartridge_agent_config.application_id == application_signup_removal_event.applicationId:
             agentgithandler.AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
 
         extensionutils.execute_application_signup_removal_extension({})
