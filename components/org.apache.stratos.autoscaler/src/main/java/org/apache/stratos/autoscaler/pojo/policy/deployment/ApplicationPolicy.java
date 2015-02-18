@@ -23,14 +23,14 @@ import java.io.Serializable;
 public class ApplicationPolicy implements Serializable{
 
 	private static final long serialVersionUID = -2851334419121310395L;
-	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReference;
+	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences;
 	
-	public ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReference() {
-		return networkPartitionReference;
+	public ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences() {
+		return networkPartitionReferences;
 	}
-	public void setNetworkPartitionReference(
+	public void setNetworkPartitionReferences(
 	        ApplicationPolicyNetworkPartitionReference[] networkPartitionReference) {
-		this.networkPartitionReference = networkPartitionReference;
+		this.networkPartitionReferences = networkPartitionReference;
 	}
 	
 	

@@ -28,6 +28,7 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
@@ -701,5 +702,15 @@ public class RegistryManager {
             throw new AutoScalerException("Could not delete data in registry at " + resourcePath, e);
         }
 
+    }
+
+	public void persistApplicationPolicy(String applicationId, ApplicationPolicy applicationPolicy) {
+
+		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationId;
+        persist(applicationPolicy, resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Application policy written to registry"));
+        }
+	    
     }
 }

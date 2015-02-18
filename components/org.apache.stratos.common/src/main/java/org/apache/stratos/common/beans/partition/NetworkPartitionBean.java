@@ -27,7 +27,6 @@ public class NetworkPartitionBean {
 
     private String id;
     private String kubernetesClusterId;
-    private boolean activeByDefault;
     private List<PartitionBean> partitions;
 
     public String getId() {
@@ -44,14 +43,6 @@ public class NetworkPartitionBean {
 
     public void setKubernetesClusterId(String kubernetesClusterId) {
         this.kubernetesClusterId = kubernetesClusterId;
-    }
-
-    public boolean isActiveByDefault() {
-        return activeByDefault;
-    }
-
-    public void setActiveByDefault(boolean activeByDefault) {
-        this.activeByDefault = activeByDefault;
     }
 
     public List<PartitionBean> getPartitions() {
