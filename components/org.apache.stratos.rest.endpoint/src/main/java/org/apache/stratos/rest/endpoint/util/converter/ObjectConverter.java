@@ -374,18 +374,6 @@ public class ObjectConverter {
 		return deploymentPolicy;
 	}
 
-    public static DeploymentPolicyBean convertStubDeploymentPolicyToDeploymentPolicy(
-            org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy stubDeploymentPolicy) {
-
-        if(stubDeploymentPolicy == null) {
-            return null;
-        }
-
-        DeploymentPolicyBean deploymentPolicy = new DeploymentPolicyBean();
-
-        return deploymentPolicy;
-    }
-
     private static ChildPolicyBean
     convertStubChildPolicyToChildPolicy(ChildPolicy stubChildDeploymentPolicy) {
         if(stubChildDeploymentPolicy == null) {
@@ -1022,6 +1010,20 @@ public class ObjectConverter {
         }
 
         return networkPartitionGroupsBeans;
+    }
+    
+    public static DeploymentPolicyBean[] convertCCStubDeploymentPoliciesToDeploymentPolicies(DeploymentPolicy[] deploymentPolicies) {
+    	DeploymentPolicyBean[] deploymentPolicyBeans;
+    	if (null == deploymentPolicies) {
+			deploymentPolicyBeans = new DeploymentPolicyBean[0];
+			return deploymentPolicyBeans;
+		}
+    	
+    	deploymentPolicyBeans = new DeploymentPolicyBean[deploymentPolicies.length];
+    	for (int i = 0; i < deploymentPolicies.length; i++) {
+    		deploymentPolicyBeans[i] = convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicies[i]);
+    	}
+    	return deploymentPolicyBeans;
     }
 
 //    public static ServiceDefinitionBean convertToServiceDefinitionBean(Service service) {
