@@ -1364,12 +1364,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	@Override
 	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
-			throws DeploymentPolicyAlreadyExistsException {
+			throws DeploymentPolicyAlreadyExistsException, InvalidDeploymentPolicyException {
 
-		handleNullObject(deploymentPolicy, "Deployment policy is null");
+		CloudControllerServiceUtil.validateDeploymentPolicy(deploymentPolicy);
 
 		if (log.isInfoEnabled()) {
-			log.info("Adding deployment policy: [deployment-policy_id] " + deploymentPolicy.getDeploymentPolicyID());
+			log.info("Adding deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Deployment policy definition: " + deploymentPolicy.toString());
@@ -1387,18 +1387,19 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		CloudControllerContext.getInstance().persist();
 
 		if (log.isInfoEnabled()) {
-			log.info("Successfully added deployment policy: [deployment_policy_id] " + deploymentPolicyID);
+			log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyID);
 		}
 
 	}
 
 	@Override
 	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy)
-			throws DeploymentPolicyNotExistsException {
-		handleNullObject(deploymentPolicy, "Deployment policy is null");
+			throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException {
+		
+		CloudControllerServiceUtil.validateDeploymentPolicy(deploymentPolicy);
 
 		if (log.isInfoEnabled()) {
-			log.info("Updating deployment policy: [deployment-policy_id] " + deploymentPolicy.getDeploymentPolicyID());
+			log.info("Updating deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Updating Deployment policy definition: " + deploymentPolicy.toString());
@@ -1416,7 +1417,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		CloudControllerContext.getInstance().persist();
 
 		if (log.isInfoEnabled()) {
-			log.info("Successfully added deployment policy: [deployment_policy_id] " + deploymentPolicyID);
+			log.info("Successfully updated deployment policy: [deployment-policy-id] " + deploymentPolicyID);
 		}
 	}
 
