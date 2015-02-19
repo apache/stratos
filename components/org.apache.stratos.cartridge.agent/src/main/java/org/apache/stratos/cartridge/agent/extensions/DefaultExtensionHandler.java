@@ -21,6 +21,7 @@ package org.apache.stratos.cartridge.agent.extensions;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,6 +38,7 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
@@ -1080,6 +1082,35 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         }
         Map<String, String> env = new HashMap<String, String>();
         ExtensionUtils.executeTenantUnSubscribedExtension(env);
+    }
+    
+    //ApplicationSignUpRemovedEvent
+    @Override
+    public void onApplicationSignUpRemovedEvent(ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent) {
+    	/*
+    	 * self.log.info(
+            "Tenant unsubscribed event received: [tenant] " + application_signup_removal_event.tenantId +
+            " [application ID] " + application_signup_removal_event.applicationId
+        )
+
+        if self.cartridge_agent_config.service_name == application_signup_removal_event.applicationId:
+            agentgithandler.AgentGitHandler.remove_repo(application_signup_removal_event.tenant_id)
+
+        extensionutils.execute_application_signup_removal_extension({})
+    	 */
+        if (log.isInfoEnabled()) {
+            log.info(String.format("applicationSignUpRemovedEvent event received: [appId] %s [tenantId] %s ",
+            		applicationSignUpRemovedEvent.getApplicationId(), applicationSignUpRemovedEvent.getTenantId()));
+        }
+
+        try {
+            if (CartridgeAgentConfiguration.getInstance().getApplicationId().equals(applicationSignUpRemovedEvent.getApplicationId())) {
+                GitBasedArtifactRepository.getInstance().removeRepo(applicationSignUpRemovedEvent.getTenantId());
+            }
+        } catch (Exception e) {
+            log.error(e);
+        }
+        
     }
 
 }

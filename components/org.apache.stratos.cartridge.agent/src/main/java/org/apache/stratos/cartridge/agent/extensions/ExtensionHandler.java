@@ -23,6 +23,7 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
@@ -72,5 +73,7 @@ public interface ExtensionHandler {
     public void onTenantSubscribedEvent(TenantSubscribedEvent tenantSubscribedEvent);
 
     public void onTenantUnSubscribedEvent(TenantUnSubscribedEvent tenantUnSubscribedEvent);
+    
+    public void onApplicationSignUpRemovedEvent(ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent);
 
 }

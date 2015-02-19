@@ -108,6 +108,13 @@ public class CartridgeAgent implements Runnable {
         // Start tenant event receiver thread
         registerTenantEventListeners();
         
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent registerApplicationEventListeners done");
+        }
+        
+        // Start application event receiver thread
+        registerApplicationEventListeners();
+        
         
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registering all event listeners ... done");
@@ -278,17 +285,25 @@ public class CartridgeAgent implements Runnable {
 
     protected void registerTenantEventListeners() {
     	if (log.isDebugEnabled()) {
-            log.debug("registerTenantEventListeners before X");
-        }
-    	
-    	if (log.isDebugEnabled()) {
-            log.debug("skipping registerTenantEventListeners before X");
+            log.debug("registerTenantEventListeners before");
         }
     	
     	eventListenerns.startTenantEventReceiver();
     	
     	if (log.isDebugEnabled()) {
             log.debug("registerTenantEventListeners after");
+        }
+    }
+    
+    protected void registerApplicationEventListeners() {
+    	if (log.isDebugEnabled()) {
+            log.debug("registerApplicationListeners before");
+        }
+    	
+    	eventListenerns.startApplicationsEventReceiver();
+    	
+    	if (log.isDebugEnabled()) {
+            log.debug("registerApplicationEventListeners after");
         }
     }
 

@@ -7,6 +7,7 @@ import org.apache.stratos.cartridge.agent.extensions.DefaultExtensionHandler;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
@@ -14,6 +15,7 @@ import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
 import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
 import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpRemovedEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
@@ -21,6 +23,8 @@ import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
 import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
+import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
@@ -38,6 +42,7 @@ public class CartridgeAgentEventListeners
     private InstanceNotifierEventReceiver instanceNotifierEventReceiver;
     private TopologyEventReceiver topologyEventReceiver;
     private TenantEventReceiver tenantEventReceiver;
+    private ApplicationSignUpEventReceiver applicationsEventReceiver;
     
     private ExtensionHandler extensionHandler;
     private static final ExecutorService eventListenerExecutorService =
@@ -47,6 +52,9 @@ public class CartridgeAgentEventListeners
     	if (log.isDebugEnabled()) {
             log.debug("Creating cartridge agent event listeners...");
         }
+        this.applicationsEventReceiver = new ApplicationSignUpEventReceiver();
+        this.applicationsEventReceiver.setExecutorService(eventListenerExecutorService);
+        
         this.topologyEventReceiver = new TopologyEventReceiver();
         this.topologyEventReceiver.setExecutorService(eventListenerExecutorService);
         
@@ -60,6 +68,7 @@ public class CartridgeAgentEventListeners
         addInstanceNotifierEventListeners();
         addTopologyEventListeners();
         addTenantEventListeners();
+        addApplicationsEventListeners();
         
         if (log.isDebugEnabled()) {
             log.debug("Cartridge agent event listeners created");
@@ -119,6 +128,25 @@ public class CartridgeAgentEventListeners
 
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent tenant receiver thread started, waiting for event messages ...");
+        }
+
+    }
+    
+    public void startApplicationsEventReceiver() {
+        
+    	if (log.isDebugEnabled()) {
+            log.debug("Starting cartridge agent application event message receiver");
+        }
+
+        eventListenerExecutorService.submit(new Runnable() {
+            @Override
+            public void run() {
+            	applicationsEventReceiver.execute();
+            }
+        });
+
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent application receiver thread started, waiting for event messages ...");
         }
 
     }
@@ -421,6 +449,26 @@ public class CartridgeAgentEventListeners
 
         if(log.isInfoEnabled()) {
             log.info("Tenant event listener added ... ");
+        }
+    }
+    
+    private void addApplicationsEventListeners() {
+        applicationsEventReceiver.addEventListener(new ApplicationSignUpRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                	ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent = (ApplicationSignUpRemovedEvent) event;
+                    extensionHandler.onApplicationSignUpRemovedEvent(applicationSignUpRemovedEvent);
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Error processing ApplicationSignUpRemovedEvent event", e);
+                    }
+                }
+            }
+        });
+
+        if(log.isInfoEnabled()) {
+            log.info("applications event listener added ... ");
         }
     }
 
