@@ -67,6 +67,7 @@ public class PythonCartridgeAgentTest {
     private static final String PARTITION_ID = "partition-1";
     private static final String TENANT_ID = "-1234";
     private static final String SERVICE_NAME = "php";
+    public static final String SOURCE_PATH = "/tmp/stratos-pca-test-app-path/";
 
     private static List<ServerSocket> serverSocketList;
     private static Map<String, Executor> executorList;
@@ -75,32 +76,39 @@ public class PythonCartridgeAgentTest {
     private boolean instanceStarted;
     private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
-    private ExecutorService executorService;
     private boolean eventReceiverInitiated = false;
+    private TopologyEventReceiver topologyEventReceiver;
+    private InstanceStatusEventReceiver instanceStatusEventReceiver;
 
     public PythonCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
         this.artifactUpdatedEvent = artifactUpdatedEvent;
         this.expectedResult = expectedResult;
     }
 
+    /**
+     * Setup method for test class
+     */
     @BeforeClass
     public static void oneTimeSetUp() {
         // Set jndi.properties.dir system property for initializing event publishers and receivers
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
     }
 
+    /**
+     * Setup method for test method testPythonCartridgeAgent
+     */
     @Before
     public void setup(){
         serverSocketList = new ArrayList<ServerSocket>();
         executorList = new HashMap<String, Executor>();
 
         if (!this.eventReceiverInitiated) {
-            this.executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
-            TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
+            ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
+            topologyEventReceiver = new TopologyEventReceiver();
             topologyEventReceiver.setExecutorService(executorService);
             topologyEventReceiver.execute();
 
-            InstanceStatusEventReceiver instanceStatusEventReceiver = new InstanceStatusEventReceiver();
+            instanceStatusEventReceiver = new InstanceStatusEventReceiver();
             instanceStatusEventReceiver.setExecutorService(executorService);
             instanceStatusEventReceiver.execute();
 
@@ -133,6 +141,9 @@ public class PythonCartridgeAgentTest {
         startServerSocket(7711);
     }
 
+    /**
+     * TearDown method for test method testPythonCartridgeAgent
+     */
     @After
     public void tearDown() {
         for (Map.Entry<String, Executor> entry : executorList.entrySet()) {
@@ -162,18 +173,26 @@ public class PythonCartridgeAgentTest {
 
         try {
             log.info("Deleting source checkout folder...");
-            FileUtils.deleteDirectory(new File("/tmp/stratos-pca-test-app-path/"));
+            FileUtils.deleteDirectory(new File(SOURCE_PATH));
         } catch (Exception ignore){
 
         }
+
+        this.instanceStatusEventReceiver.terminate();
+        this.topologyEventReceiver.terminate();
 
         this.instanceActivated = false;
         this.instanceStarted = false;
     }
 
 
+    /**
+     * This method returns a collection of {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent}
+     * objects as parameters to the test
+     * @return
+     */
     @Parameterized.Parameters
-    public static Collection artifactUpdatedEvents(){
+    public static Collection getArtifactUpdatedEventsAsParams(){
         ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
 
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
@@ -194,6 +213,11 @@ public class PythonCartridgeAgentTest {
 
     }
 
+    /**
+     * Creates an {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent} object with a public
+     * repository URL
+     * @return
+     */
     private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
         ArtifactUpdatedEvent publicRepoEvent = new ArtifactUpdatedEvent();
         publicRepoEvent.setClusterId(CLUSTER_ID);
@@ -252,7 +276,8 @@ public class PythonCartridgeAgentTest {
         communicatorThread.start();
 
         while (!instanceActivated){
-            sleep(100);
+            // wait until the instance activated event is received.
+            sleep(2000);
         }
 
         assertTrue("Instance started event was not received", instanceStarted);
@@ -392,7 +417,7 @@ public class PythonCartridgeAgentTest {
      *
      * @param commandText
      */
-    private ByteArrayOutputStreamLocal executeCommand(String commandText) {
+    private ByteArrayOutputStreamLocal executeCommand(final String commandText) {
         final ByteArrayOutputStreamLocal outputStream = new ByteArrayOutputStreamLocal();
         try {
             CommandLine commandline = CommandLine.parse(commandText);
@@ -404,12 +429,12 @@ public class PythonCartridgeAgentTest {
             exec.execute(commandline, new ExecuteResultHandler() {
                 @Override
                 public void onProcessComplete(int i) {
-                    log.info("Agent process completed");
+                    log.info(commandText + " process completed");
                 }
 
                 @Override
                 public void onProcessFailed(ExecuteException e) {
-                    log.error("Agent process failed", e);
+                    log.error(commandText + " process failed", e);
                 }
             });
             executorList.put(commandText, exec);
