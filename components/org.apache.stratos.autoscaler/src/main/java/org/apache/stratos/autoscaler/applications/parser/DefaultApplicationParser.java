@@ -56,8 +56,10 @@ import java.util.*;
  */
 public class DefaultApplicationParser implements ApplicationParser {
 
-	private static final String METADATA_APPENDER = "-";
-	private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
+    private static final String METADATA_APPENDER = "-";
+    private static final String ALIAS = "alias";
+    private static final String CARTRIDGE_TYPE = "type";
+    private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private List<ApplicationClusterContext> applicationClusterContexts;
     private Map<String, Properties> aliasToProperties;
@@ -305,7 +307,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             // Set groups
             if (components.getGroupContexts() != null) {
                 application.setGroups(
-		                parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
+                        parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
 		                            application.getKey(), Arrays.asList(components.getGroupContexts()),
 		                            subscribableInfoCtxts));
             }
@@ -534,6 +536,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                 throw new RuntimeException("Cartridge group not found: [group-name] " + groupCtxt.getName());
             }
             Group group = parseGroup(appId, tenantId, key, groupCtxt, subscribableInformation, serviceGroup);
+            validateCartridgeGroupReference(appId, serviceGroup, group);
             groupAliasToGroup.put(group.getAlias(), group);
         }
 
@@ -542,6 +545,68 @@ public class DefaultApplicationParser implements ApplicationParser {
         filterDuplicatedGroupContexts(groupAliasToGroup.values(), nestedGroups);
 
         return groupAliasToGroup;
+    }
+
+    /**
+     * Validate cartridge group reference against cartridge group definition
+     * @param serviceGroup
+     * @param group
+     */
+    private void validateCartridgeGroupReference(String applicationId, ServiceGroup serviceGroup, Group group) {
+        List<String> cartridgeTypes = findCartridgeTypesInServiceGroup(serviceGroup);
+        for(String cartridgeType : cartridgeTypes) {
+            if(findClusterDataInGroup(group, cartridgeType) == null) {
+                throw new RuntimeException(String.format("Cartridge %s not defined in cartridge group: " +
+                        "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
+                        cartridgeType, applicationId, group.getName(), group.getAlias()));
+            }
+        }
+    }
+
+    /**
+     * Find cluster data in a group recursively by cartridge type.
+     * @param group
+     * @param cartridgeType
+     * @return
+     */
+    private ClusterDataHolder findClusterDataInGroup(Group group, String cartridgeType) {
+        Map<String, ClusterDataHolder> clusterDataForType = group.getClusterDataForType();
+        if(clusterDataForType != null) {
+            ClusterDataHolder clusterData = clusterDataForType.get(cartridgeType);
+            if(clusterData != null) {
+                return clusterData;
+            }
+
+            if(group.getGroups() != null) {
+                for(Group childGroup : group.getGroups()) {
+                    return findClusterDataInGroup(childGroup, cartridgeType);
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find cartridge types available in a service group recursively.
+     * @param serviceGroup
+     * @return
+     */
+    private List<String> findCartridgeTypesInServiceGroup(ServiceGroup serviceGroup) {
+        List<String> cartridgeTypes = new ArrayList<String>();
+        if(serviceGroup.getCartridges() != null) {
+            for(String cartridgeType : serviceGroup.getCartridges()) {
+                cartridgeTypes.add(cartridgeType);
+            }
+        }
+        if(serviceGroup.getGroups() != null) {
+            for(ServiceGroup childServiceGroup : serviceGroup.getGroups()) {
+                List<String> childCartridgeTypes = findCartridgeTypesInServiceGroup(childServiceGroup);
+                for(String cartridgeType : childCartridgeTypes) {
+                    cartridgeTypes.add(cartridgeType);
+                }
+            }
+        }
+        return cartridgeTypes;
     }
 
     /**
@@ -608,6 +673,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         group.setGroupScalingEnabled(isGroupScalingEnabled(groupCtxt.getName(), serviceGroup));
         group.setGroupMinInstances(groupCtxt.getGroupMinInstances());
         group.setGroupMaxInstances(groupCtxt.getGroupMaxInstances());
+
         DependencyOrder dependencyOrder = new DependencyOrder();
         // create the Dependency Ordering
         String[] startupOrders = getStartupOrderForGroup(groupCtxt.getName(), serviceGroup);
@@ -616,12 +682,13 @@ public class DefaultApplicationParser implements ApplicationParser {
             setStartUpOrder = ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
             dependencyOrder.setStartupOrders(setStartUpOrder);
         }
+
         String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
         if (scaleDependents != null) {
             dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
         }
+
         dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(), serviceGroup));
-        //dependencyOrder.setScalingDependents(scalingDependents);
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
@@ -630,8 +697,8 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (groupCtxt.getCartridgeContexts() != null) {
             clusterDataMap = parseLeafLevelSubscriptions(appId, tenantId, key, groupCtxt.getName(),
                     Arrays.asList(groupCtxt.getCartridgeContexts()), setStartUpOrder);
-            group.setClusterData(clusterDataMap.get("alias"));
-            group.setClusterDataForType(clusterDataMap.get("type"));
+            group.setClusterData(clusterDataMap.get(ALIAS));
+            group.setClusterDataForType(clusterDataMap.get(CARTRIDGE_TYPE));
 
         }
 
@@ -653,7 +720,6 @@ public class DefaultApplicationParser implements ApplicationParser {
 
                 }
             }
-
             group.setGroups(nestedGroups);
         }
 
@@ -792,7 +858,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
 
     /**
-     * Retrieves deployed Service Group instance
+     * Retrieves deployed service group
      *
      * @param serviceGroupName name of the Service Group
      * @return ServiceGroup instance if exists
@@ -803,8 +869,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         try {
             return RegistryManager.getInstance().getServiceGroup(serviceGroupName);
         } catch (Exception e) {
-            String errorMsg = "Error in getting Service Group Definition for [ " + serviceGroupName +
-                    " ] from Registry";
+            String errorMsg = "Could not read cartridge group: " + serviceGroupName;
             log.error(errorMsg, e);
             throw new ApplicationDefinitionException(errorMsg, e);
         }
