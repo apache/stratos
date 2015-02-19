@@ -112,7 +112,7 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
-    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/applications/{applicationId}/deploymentPolicy";
+    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{deploymentPolicyId}";
     private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
@@ -686,7 +686,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_DEACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain),"");
+                    + ENDPOINT_DEACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain), "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -718,7 +718,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_ACTIVATE_TENANT .replace("{tenantDomain}", tenantDomain), "");
+                    + ENDPOINT_ACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain), "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -937,20 +937,20 @@ public class RestCommandLineService {
      * Describe deployment policy
      * @throws CommandException
      */
-    public void describeDeploymentPolicy(String applicationId) throws CommandException {
+    public void describeDeploymentPolicy(String deploymentPolicyId) throws CommandException {
         try {
             DeploymentPolicyBean policy = (DeploymentPolicyBean) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
-                    DeploymentPolicyBean.class, "{applicationId}", applicationId, "deployment policy");
+                    DeploymentPolicyBean.class, "{deploymentPolicyId}", deploymentPolicyId, "deployment policy");
 
             if (policy == null) {
-                System.out.println("Deployment policy not found: " + applicationId);
+                System.out.println("Deployment policy not found: " + deploymentPolicyId);
                 return;
             }
 
-            System.out.println("Deployment policy: " + applicationId);
+            System.out.println("Deployment policy: " + deploymentPolicyId);
             System.out.println(getGson().toJson(policy));
         } catch (Exception e) {
-            String message = "Error in describing deployment policy: " + applicationId;
+            String message = "Error in describing deployment policy: " + deploymentPolicyId;
             printError(message, e);
         }
     }
@@ -1515,4 +1515,42 @@ public class RestCommandLineService {
         restClient.deleteEntity(ENDPOINT_REMOVE_DEPLOYMENT_POLICY.replace("{policyId}", policyId), policyId,
                 "deployment policy");
     }
+
+    /**
+     * List deployment policies
+     * @throws CommandException
+     */
+    public void listDeploymentPolicies() throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<DeploymentPolicyBean>>() {
+            }.getType();
+            List<DeploymentPolicyBean> list = (List<DeploymentPolicyBean>) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
+                    listType, "deployment policies");
+
+            if ((list == null) || (list == null) || (list.size() == 0)) {
+                System.out.println("No deployment policies found");
+                return;
+            }
+
+            RowMapper<DeploymentPolicyBean> rowMapper = new RowMapper<DeploymentPolicyBean>() {
+
+                public String[] getData(DeploymentPolicyBean policy) {
+                    String[] data = new String[2];
+                    data[0] = policy.getId();
+                    data[1] = String.valueOf(policy.getNetworkPartition().size());
+                    return data;
+                }
+            };
+
+            DeploymentPolicyBean[] array = new DeploymentPolicyBean[list.size()];
+            array = list.toArray(array);
+
+            System.out.println("Deployment policies found:");
+            CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
+        } catch (Exception e) {
+            String message = "Could not list deployment policies";
+            printError(message, e);
+        }
+    }
+
 }
