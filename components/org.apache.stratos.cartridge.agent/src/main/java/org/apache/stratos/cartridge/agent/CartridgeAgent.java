@@ -32,30 +32,7 @@ import org.apache.stratos.cartridge.agent.extensions.DefaultExtensionHandler;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
-import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
-import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
-import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
-import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
-import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
-import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
-import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
-import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
-import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
-import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
-import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+
 
 import java.util.List;
 
@@ -176,25 +153,6 @@ public class CartridgeAgent implements Runnable {
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
-        /*if(CartridgeAgentConfiguration.getInstance().isMultitenant()) {
-            if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
-                log.info(" Commits enabled. Starting File listener ");
-                ScheduledExecutorService scheduler = Executors
-                        .newScheduledThreadPool(1);
-                scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0,
-                        10, TimeUnit.SECONDS);
-            }
-            
-            // Start super tenant artifact copy task
-            // from temp location to super tenant app path
-			//ScheduledExecutorService scheduler = Executors
-			//		.newScheduledThreadPool(1);
-			//scheduler.scheduleWithFixedDelay(new ArtifactCopyTask(
-			//		CartridgeAgentConstants.SUPERTENANT_TEMP_PATH,
-			//		CartridgeAgentConfiguration.getInstance().getAppPath()+ "/repository/deployment/server/"
-			//		),
-			//		0, 10, TimeUnit.SECONDS);
-        } */
         
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent getRepoUrl done");
@@ -217,28 +175,7 @@ public class CartridgeAgent implements Runnable {
         	if (log.isInfoEnabled()) {
                 log.info("Cartridge agent - artifact repository found");
             }
-            //Start periodical file processor task
-            /*if (CartridgeAgentConfiguration.getInstance().isCommitsEnabled()) {
-                log.info(" Commits enabled. Starting File listener ");
-                ScheduledExecutorService scheduler = Executors
-                        .newScheduledThreadPool(1);
-                scheduler.scheduleWithFixedDelay(new RepositoryFileListener(), 0,
-                        10, TimeUnit.SECONDS);
-            } */
         }
-
-//        if (CartridgeAgentConfiguration.getInstance().isInternalRepo()) {
-//            // Start periodic file copy for super tenant
-//            // From repo/deployment/server to /tmp/-1234
-//
-//            ScheduledExecutorService scheduler = Executors
-//                    .newScheduledThreadPool(1);
-//            scheduler.scheduleWithFixedDelay(
-//            		new ArtifactCopyTask(CartridgeAgentConfiguration.getInstance().getAppPath()
-//            		+ "/repository/deployment/server/",
-//            		CartridgeAgentConstants.SUPERTENANT_TEMP_PATH), 0,
-//                    10, TimeUnit.SECONDS);
-//        }
         
         String persistenceMappingsPayload = CartridgeAgentConfiguration.getInstance().getPersistenceMappings();
         if (persistenceMappingsPayload != null) {
@@ -340,7 +277,6 @@ public class CartridgeAgent implements Runnable {
             List<String> logFilePaths = CartridgeAgentConfiguration.getInstance().getLogFilePaths();
             if (logFilePaths == null) {
                 log.error("No valid log file paths found, no logs will be published");
-                return;
             } else {
                 // initialize the log publishing
                 try {
