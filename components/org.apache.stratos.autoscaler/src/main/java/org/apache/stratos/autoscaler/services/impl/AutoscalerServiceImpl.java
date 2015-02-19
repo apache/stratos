@@ -186,20 +186,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
 
-            List<NetworkPartition> networkPartitionList = new ArrayList<NetworkPartition>();
-            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReferences();
-            for (ApplicationPolicyNetworkPartitionReference npReference : npReferences) {
-				NetworkPartition networkPartition = AutoscalerObjectConverter.convertNetworkParitionStubToPojo(CloudControllerServiceClient
-				                .getInstance().getNetworkPartition(npReference.getNetworkPartitionId()));
-            	networkPartitionList.add(networkPartition);            	
-            }
-            
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationCreatedEvent(application, applicationContext.getComponents().getApplicationClusterContexts());
 
-            // Update kubernetes cluster ids
-			updateKubernetesClusterIds(applicationId, networkPartitionList);
-			
 			// validating application policy
 			validateApplicationPolicy(applicationId, applicationPolicy);
 			
@@ -362,37 +351,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 artifactRepository.setRepoPassword(artifactRepositoryContext.getRepoPassword());
 
                 artifactRepositoryList.add(artifactRepository);
-            }
-        }
-    }
-
-    /**
-     * Overwrite partition's kubernetes cluster ids with network partition's kubernetes cluster ids.
-     * 
-     * @param applicationId
-     * @param networkPartitions
-     */
-    private void updateKubernetesClusterIds(String applicationId, List<NetworkPartition> networkPartitions) {
-        
-        if(networkPartitions != null) {
-            for(NetworkPartition networkPartition : networkPartitions) {
-                if(StringUtils.isNotBlank(networkPartition.getKubernetesClusterId())) {
-                    Partition[] partitions = networkPartition.getPartitions();
-                    if(partitions != null) {
-                        for(Partition partition : partitions) {
-                            if(partition != null) {
-                                if(log.isInfoEnabled()) {
-                                    log.info(String.format("Overwriting partition's kubernetes cluster id: " +
-                                                    "[application-id] %s [network-partition-id] %s [partition-id] %s " +
-                                                    "[kubernetes-cluster-id] %s",
-                                                    applicationId, networkPartition.getId(),
-                                            partition.getId(), networkPartition.getKubernetesClusterId()));
-                                }
-                                partition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
-                            }
-                        }
-                    }
-                }
             }
         }
     }
