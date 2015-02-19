@@ -1397,6 +1397,7 @@ public class StratosApiV41 extends AbstractApi {
     @PUT
     @Path("/tenants/activate/{tenantDomain}")
     @Consumes("application/json")
+    @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/activateTenant")
     @SuperTenantService(true)
     public Response activateTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
