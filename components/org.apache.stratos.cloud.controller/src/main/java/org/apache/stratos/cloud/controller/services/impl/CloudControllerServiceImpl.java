@@ -1537,6 +1537,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
             }
             
+            // overwrites partitions' kubernetes cluster ids with network partition's kubernetes cluster id
+            CloudControllerServiceUtil.overwritesPartitionsKubernetesClusterIdsWithNetworkPartitionKubernetesClusterId(networkPartition);
+            
             // adding network partition to CC-Context
             CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
             // persisting CC-Context
