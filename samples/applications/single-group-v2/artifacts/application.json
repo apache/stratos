@@ -6,8 +6,8 @@
             {
                 "name": "group6",
                 "alias": "mygroup6",
-                "groupMinInstances": 2,
-                "groupMaxInstances": 3,
+                "groupMinInstances": 1,
+                "groupMaxInstances": 1,
                 "cartridges": [
                     {
                         "type": "tomcat2",
@@ -15,7 +15,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "tom2group6",
-                            "autoscalingPolicy": "autoscale-policy-1",
+                            "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
                                "repoUrl":"https://github.com/imesh/stratos-tomcat2-applications.git",
@@ -30,7 +30,7 @@
                         "cartridgeMax": 2,
                         "subscribableInfo": {
                             "alias": "tom1group6",
-                            "autoscalingPolicy": "autoscale-policy-1",
+                            "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
                                "repoUrl":"https://github.com/imesh/stratos-tomcat1-applications.git",
@@ -49,7 +49,7 @@
                 "cartridgeMax": 2,
                 "subscribableInfo": {
                     "alias": "mytomcat",
-                    "autoscalingPolicy": "autoscale-policy-1",
+                    "autoscalingPolicy": "autoscaling-policy-1",
                     "artifactRepository":{
                        "privateRepo":false,
                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",

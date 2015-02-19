@@ -22,4 +22,4 @@ curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://
 curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges/php
 
 echo "Removing autoscale policies..."
-curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies/autoscale-policy-1
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies/autoscaling-policy-1

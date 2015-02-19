@@ -305,11 +305,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
 
-        if (deploymentPolicy == null) {
-            //FIXME for docker with deployment policy
-            ApplicationInstance appInstance = createApplicationInstance(application, null);
-            instanceIds.add(appInstance.getInstanceId());
-        } else {
+//        if (deploymentPolicy == null) {
+//            //FIXME for docker with deployment policy
+//            ApplicationInstance appInstance = createApplicationInstance(application, null);
+//            instanceIds.add(appInstance.getInstanceId());
+//        } else {
             for (NetworkPartition networkPartition :
                     deploymentPolicy.getApplicationLevelNetworkPartitions()) {
                 if (networkPartition.isActiveByDefault()) {
@@ -334,7 +334,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 
                 }
             }
-        }
+//        }
         startDependency(application, instanceIds);
         return initialStartup;
     }

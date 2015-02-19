@@ -62,6 +62,10 @@ public class Group extends ParentComponent<GroupInstance> {
         return alias;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getAlias() {
         return alias;
     }

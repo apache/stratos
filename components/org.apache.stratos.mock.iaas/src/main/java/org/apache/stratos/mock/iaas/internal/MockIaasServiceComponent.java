@@ -21,6 +21,7 @@ package org.apache.stratos.mock.iaas.internal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.mock.iaas.config.MockIaasConfig;
 import org.apache.stratos.mock.iaas.persistence.PersistenceManager;
 import org.apache.stratos.mock.iaas.persistence.PersistenceManagerFactory;
 import org.apache.stratos.mock.iaas.persistence.PersistenceManagerType;
@@ -44,6 +45,11 @@ public class MockIaasServiceComponent {
 
     protected void activate(ComponentContext context) {
         try {
+            if(!MockIaasConfig.getInstance().isEnabled()) {
+                log.debug("Mock IaaS is disabled, Mock IaaS service component is not activated");
+                return;
+            }
+
             PersistenceManager persistenceManager = PersistenceManagerFactory.getPersistenceManager(PersistenceManagerType.Registry);
             MockIaasServiceUtil mockIaasServiceUtil = new MockIaasServiceUtil(persistenceManager);
             mockIaasServiceUtil.startInstancesPersisted();

@@ -32,29 +32,29 @@ public class ApplicationChildContextFactory {
     private static final Log log = LogFactory.getLog(ApplicationChildContextFactory.class);
 
     /**
-     * Will return the GroupChildContext/ClusterChildContext based on the type in start order/scaling order
+     * Will create and return GroupChildContext/ClusterChildContext based on the type in start order/scaling order
      *
      * @param order      reference of group/cluster in the start/scaling order
      * @param component       The component which used to build the dependency
      * @param tree kill dependent behaviour of this component
      * @return Context
      */
-    public static ApplicationChildContext getApplicationContext(String order,
-                                                           ParentComponent component,
-                                                           DependencyTree tree) {
+    public static ApplicationChildContext createApplicationChildContext(String order,
+                                                                        ParentComponent component,
+                                                                        DependencyTree tree) {
         String id;
         ApplicationChildContext applicationContext = null;
         boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
         if (order.trim().startsWith(AutoscalerConstants.GROUP + ".")) {
             //getting the group alias
             id = getGroupFromStartupOrder(order);
-            applicationContext = getGroupChildContext(id, hasDependents);
+            applicationContext = createGroupChildContext(id, hasDependents);
         } else if (order.trim().startsWith(AutoscalerConstants.CARTRIDGE + ".")) {
             //getting the cartridge type
             id = getClusterFromStartupOrder(order);
             //getting the cluster-id from cluster alias
             ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
-            applicationContext = getClusterChildContext(clusterDataHolder, hasDependents);
+            applicationContext = createClusterChildContext(clusterDataHolder, hasDependents);
 
         } else {
             log.warn("[Startup Order]: " + order + " contains unknown reference");
@@ -89,13 +89,11 @@ public class ApplicationChildContextFactory {
 	 * @param isKillDependent Whether is this a kill dependant or not
 	 * @return ApplicationChildContext
 	 */
-    public static ApplicationChildContext getClusterChildContext(ClusterDataHolder dataHolder,
-                                                       boolean isKillDependent) {
-        ApplicationChildContext applicationContext;
-        applicationContext = new ClusterChildContext(dataHolder.getClusterId(),
-                isKillDependent);
-        ((ClusterChildContext) applicationContext).setServiceName(dataHolder.getServiceType());
-        return  applicationContext;
+    public static ApplicationChildContext createClusterChildContext(ClusterDataHolder dataHolder,
+                                                                    boolean isKillDependent) {
+        ClusterChildContext clusterChildContext = new ClusterChildContext(dataHolder.getClusterId(), isKillDependent);
+        clusterChildContext.setServiceName(dataHolder.getServiceType());
+        return  clusterChildContext;
     }
 
 	/**
@@ -104,10 +102,8 @@ public class ApplicationChildContextFactory {
 	 * @param isDependent Whether is this a dependant or not
 	 * @return ApplicationChildContext
 	 */
-    public static ApplicationChildContext getGroupChildContext(String id, boolean isDependent) {
-        ApplicationChildContext applicationContext;
-        applicationContext = new GroupChildContext(id,
-                isDependent);
-        return applicationContext;
+    public static ApplicationChildContext createGroupChildContext(String id, boolean isDependent) {
+        GroupChildContext groupChildContext = new GroupChildContext(id, isDependent);
+        return groupChildContext;
     }
 }

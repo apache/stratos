@@ -46,8 +46,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
     }
 
     @Override
-    public boolean process(String idOfComponent, String appId,
-                           String instanceId) {
+    public boolean process(String idOfComponent, String appId, String instanceId) {
         boolean statusChanged;
         statusChanged = doProcess(idOfComponent, appId, instanceId);
         if (statusChanged) {
@@ -58,8 +57,7 @@ public class GroupStatusInactiveProcessor extends GroupStatusProcessor {
             // ask the next processor to take care of the message.
             return nextProcessor.process(idOfComponent, appId, instanceId);
         } else {
-
-            log.warn(String.format("No possible state change found for [component] %s [instance]",
+            log.warn(String.format("No possible state change found for [component] %s [instance] %s",
                     idOfComponent, instanceId));
         }
         return false;

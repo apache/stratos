@@ -116,7 +116,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
     public ClusterMonitor(Cluster cluster, boolean hasScalingDependents, boolean groupScalingEnabledSubtree) {
 
-        scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 1);
+        scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.CLUSTER_MONITOR_SCHEDULER_ID, 50);
         int threadPoolSize = Integer.getInteger(AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_SIZE, 50);
         executorService = StratosThreadPool.getExecutorService(
                 AutoscalerConstants.CLUSTER_MONITOR_THREAD_POOL_ID, threadPoolSize);
@@ -486,7 +486,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                         public void run() {
 
                             if (log.isDebugEnabled()) {
-                                log.debug("Monitor is running for [cluster] : " + getClusterId());
+                                log.debug(String.format("Cluster monitor is running: [application-id] %s [cluster-id]: " +
+                                                "%s", getAppId(), getClusterId()));
                             }
                             // store primary members in the cluster instance context
                             List<String> primaryMemberListInClusterInstance = new ArrayList<String>();
@@ -508,8 +509,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                     }
                                 }
 
-                                obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
-                                        getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
+                                //obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
+                                //        getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
 
                             }
 
@@ -547,7 +548,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                             if (rifReset || memoryConsumptionReset || loadAverageReset) {
 
                                 log.info("Executing scaling rule as statistics have been reset");
-                                ClusterContext vmClusterContext = (ClusterContext) clusterContext;
+                                ClusterContext clusterContext = (ClusterContext) ClusterMonitor.this.clusterContext;
 
                                 getScaleCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                 getScaleCheckKnowledgeSession().setGlobal("rifReset", rifReset);
@@ -556,7 +557,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                 getScaleCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 getScaleCheckKnowledgeSession().setGlobal("algorithmName", paritionAlgo);
                                 getScaleCheckKnowledgeSession().setGlobal("autoscalePolicy",
-                                        vmClusterContext.getAutoscalePolicy());
+                                        clusterContext.getAutoscalePolicy());
                                 getScaleCheckKnowledgeSession().setGlobal("arspiReset",
                                         averageRequestServedPerInstanceReset);
                                 getScaleCheckKnowledgeSession().setGlobal("primaryMembers",
@@ -1416,7 +1417,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 // Cluster instance is already there. No need to create one.
                 ClusterContext clusterContext = (ClusterContext) this.getClusterContext();
                 if (clusterContext == null) {
-
                     clusterContext = ClusterContextFactory.getVMClusterContext(clusterInstance.getInstanceId(), cluster,
                             hasScalingDependents());
                     this.setClusterContext(clusterContext);
@@ -1438,13 +1438,14 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 }
                 if (this.hasMonitoringStarted().compareAndSet(false, true)) {
                     this.startScheduler();
-                    log.info("Monitoring task for Cluster Monitor with cluster id " +
-                            cluster.getClusterId() + " started successfully");
+                    log.info(String.format("Monitoring task for cluster monitor started: [cluster-id] %s",
+                            cluster.getClusterId()));
                 }
             } else {
                 createClusterInstance(cluster.getServiceName(), cluster.getClusterId(), null, parentInstanceId, partitionId,
                         parentMonitorInstance.getNetworkPartitionId());
-
+                log.debug(String.format("Cluster instance created: [application-id] %s [service-name] %s " +
+                        "[cluster-id] %s", appId, cluster.getServiceName(), cluster.getClusterId()));
             }
             return true;
 

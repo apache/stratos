@@ -19,7 +19,7 @@ if [[ -z "${iaas}" ]]; then
     exit
 fi
 
-echo ${artifacts_path}/autoscale-policy.json
+echo ${artifacts_path}/autoscaling-policy.json
 echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 

@@ -109,7 +109,7 @@ public class GroupMonitor extends ParentComponentMonitor {
             @Override
             public void run() {
                 if (log.isDebugEnabled()) {
-                    log.debug("Group monitor is running for the [group]: " + id + " ==============");
+                    log.debug("Group monitor is running: [group] " + id);
                 }
                 for (NetworkPartitionContext networkPartitionContext : networkPartitionContexts) {
 

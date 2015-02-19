@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.applications.dependency;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
@@ -260,4 +261,26 @@ public class DependencyTree {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if(primaryApplicationContextList != null) {
+            for(ApplicationChildContext applicationChildContext : primaryApplicationContextList) {
+                buildTreeStructure(applicationChildContext, stringBuilder);
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    private void buildTreeStructure(ApplicationChildContext applicationChildContext, StringBuilder stringBuilder) {
+        if(applicationChildContext != null) {
+            if(StringUtils.isNotBlank(stringBuilder.toString())) {
+                stringBuilder.append(" --> ");
+            }
+            stringBuilder.append(applicationChildContext.getId());
+            for(ApplicationChildContext childContext : applicationChildContext.getApplicationChildContextList()) {
+                buildTreeStructure(childContext, stringBuilder);
+            }
+        }
+    }
 }

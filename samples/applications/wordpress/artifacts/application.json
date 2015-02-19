@@ -1,0 +1,41 @@
+{
+    "applicationId": "wordpress",
+    "alias": "wordpress",
+    "components": {
+        "groups": [
+            {
+                "name": "mysql-php-group",
+                "alias": "mysql-php-group",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 1,
+                "cartridges": [
+                    {
+                        "type": "mysql",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "mysql",
+                            "autoscalingPolicy": "autoscaling-policy-1"
+                        }
+                    },
+                    {
+                        "type": "php",
+                        "cartridgeMin": 1,
+                        "cartridgeMax": 2,
+                        "subscribableInfo": {
+                            "alias": "php",
+                            "autoscalingPolicy": "autoscaling-policy-1",
+                            "artifactRepository":{
+                               "privateRepo":false,
+                               "repoUrl":"https://github.com/imesh/stratos-php-applications.git"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "dependencies": {
+        }
+    }
+}
+
