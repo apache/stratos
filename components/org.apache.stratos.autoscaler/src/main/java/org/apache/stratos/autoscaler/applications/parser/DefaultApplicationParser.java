@@ -42,8 +42,10 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.*;
 import org.wso2.carbon.identity.oauth.stub.OAuthAdminServiceException;
 
@@ -963,8 +965,8 @@ public class DefaultApplicationParser implements ApplicationParser {
     private CartridgeInfo getCartridge(String cartridgeType) throws ApplicationDefinitionException {
 
         try {
-            return CloudControllerClient.getInstance().getCartrdgeInformation(cartridgeType);
-        } catch (CartridgeInformationException e) {
+            return CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+        } catch (Exception e) {
             throw new ApplicationDefinitionException(e);
         }
     }

@@ -81,62 +81,7 @@ public class CloudControllerClient {
         }
     }
     
-    /*
-     * This will validate the given partitions against the given cartridge type.
-     */
-
-    public synchronized boolean validateDeploymentPolicy(String cartridgeType, org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] partitions) throws PartitionValidationException {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Validating partitions of policy via cloud controller: [cartridge-type] %s", cartridgeType));
-            }
-            long startTime = System.currentTimeMillis();
-            boolean result = stub.validateDeploymentPolicy(cartridgeType,
-                    AutoscalerObjectConverter.convertASPartitionsToCCStubPartitions(partitions));
-            if (log.isDebugEnabled()) {
-                long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call validateDeploymentPolicy() returned in %dms", (endTime - startTime)));
-            }
-            return result;
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-            throw new PartitionValidationException(e.getMessage(), e);
-        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
-            log.error(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
-            throw new PartitionValidationException(e.getFaultMessage().getInvalidPartitionException().getMessage());
-        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-            log.error(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage(), e);
-            throw new PartitionValidationException(e.getFaultMessage().getInvalidCartridgeTypeException().getMessage());
-        }
-
-    }
-
-    /*
-     * Calls the CC to validate the partition.
-     */
-    public synchronized boolean validatePartition(Partition partition) throws PartitionValidationException {
-
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Validating partition via cloud controller: [id] %s", partition.getId()));
-            }
-            long startTime = System.currentTimeMillis();
-            boolean result = stub.validatePartition(partition);
-            if (log.isDebugEnabled()) {
-                long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call validatePartition() returned in %dms", (endTime - startTime)));
-            }
-            return result;
-        } catch (RemoteException e) {
-            log.error(e.getMessage(), e);
-            throw new PartitionValidationException(e.getMessage(), e);
-        } catch (CloudControllerServiceInvalidPartitionExceptionException e) {
-            log.error(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
-            throw new PartitionValidationException(e.getFaultMessage().getInvalidPartitionException().getMessage(), e);
-        }
-
-    }
-
+  
     public synchronized MemberContext startInstance(Partition partition,
                                                     String clusterId, String clusterInstanceId,
                                                     String networkPartitionId, boolean isPrimary,
@@ -200,29 +145,7 @@ public class CloudControllerClient {
         }
     }
 
-    public synchronized void terminateInstances(String clusterId) throws TerminationException {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Terminating all instances of cluster via cloud controller: [cluster] %s", clusterId));
-            }
-            long startTime = System.currentTimeMillis();
-            stub.terminateInstances(clusterId);
-            if (log.isDebugEnabled()) {
-                long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call terminateInstances() returned in %dms", (endTime - startTime)));
-            }
-        } catch (RemoteException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-
-        } catch (CloudControllerServiceInvalidClusterExceptionException e) {
-            String message = e.getFaultMessage().getInvalidClusterException().getMessage();
-            log.error(message, e);
-            throw new TerminationException(message, e);
-        }
-    }
-
+    
     public synchronized void createApplicationClusters(String appId,
                                                        ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
@@ -262,67 +185,6 @@ public class CloudControllerClient {
 
 
     }
-
-    public void createClusterInstance (String serviceType, String clusterId, String alias,
-                                       String instanceId, String partitionId, String networkPartitionId){
-        try {
-            stub.createClusterInstance(serviceType, clusterId, alias, instanceId,
-                    partitionId, networkPartitionId);
-
-        } catch (RemoteException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new RuntimeException(msg, e);
-        } catch (CloudControllerServiceClusterInstanceCreationExceptionException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new RuntimeException(msg, e);
-        }
-    }
-
-    public synchronized void terminateInstance(String memberId) throws TerminationException {
-        try {
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Terminating instance via cloud controller: [member] %s", memberId));
-            }
-            long startTime = System.currentTimeMillis();
-            stub.terminateInstance(memberId);
-            if (log.isDebugEnabled()) {
-                long endTime = System.currentTimeMillis();
-                log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
-            }
-        } catch (RemoteException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceInvalidMemberExceptionException e) {
-            String msg = e.getFaultMessage().getInvalidMemberException().getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceInvalidCartridgeTypeExceptionException e) {
-            String msg = e.getFaultMessage().getInvalidCartridgeTypeException().getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        } catch (CloudControllerServiceCloudControllerExceptionException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new TerminationException(msg, e);
-        }
-    }
-
-    public CartridgeInfo getCartrdgeInformation(String cartridgeType) throws CartridgeInformationException {
-
-        try {
-            return stub.getCartridgeInfo(cartridgeType);
-
-        } catch (RemoteException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new CartridgeInformationException(msg, e);
-        } catch (CloudControllerServiceCartridgeNotFoundExceptionException e) {
-            String msg = e.getMessage();
-            log.error(msg, e);
-            throw new CartridgeInformationException(msg, e);
-        }
-    }
+   
+    
 }
