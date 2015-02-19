@@ -199,7 +199,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // Update kubernetes cluster ids
 			updateKubernetesClusterIds(applicationId, networkPartitionList);
-			// TODO -- validate application policy
+			
+			// validating application policy
+			validateApplicationPolicy(applicationId, applicationPolicy);
 			
 			// Add application policy
 			PolicyManager.getInstance().addApplicationPolicy(applicationId, applicationPolicy);
