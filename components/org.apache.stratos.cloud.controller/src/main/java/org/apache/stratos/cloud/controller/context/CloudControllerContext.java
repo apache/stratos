@@ -271,6 +271,10 @@ public class CloudControllerContext implements Serializable {
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
 		return deploymentPolicyIDToDeployPolicyMap.get(deploymentPolicyID);
 	}
+	
+	public Collection<DeploymentPolicy> getDeploymentPolicies() {
+		return deploymentPolicyIDToDeployPolicyMap.values();
+	}
 
 	public void removeDeploymentPolicy(String deploymentPolicyID) {
 		if (deploymentPolicyIDToDeployPolicyMap.containsKey(deploymentPolicyID)) {
@@ -686,6 +690,7 @@ public class CloudControllerContext implements Serializable {
                         copyMap(serializedObj.cartridgeTypeToPartitionIdsMap, cartridgeTypeToPartitionIdsMap);
                         copyMap(serializedObj.cartridgeTypeToCartridgeMap, cartridgeTypeToCartridgeMap);
                         copyMap(serializedObj.serviceGroupNameToServiceGroupMap, serviceGroupNameToServiceGroupMap);
+                        copyMap(serializedObj.deploymentPolicyIDToDeployPolicyMap, deploymentPolicyIDToDeployPolicyMap);
                         copyMap(serializedObj.networkPartitionIDToNetworkPartitionMap, networkPartitionIDToNetworkPartitionMap);
 
                         if (log.isDebugEnabled()) {

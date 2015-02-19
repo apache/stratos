@@ -18,11 +18,23 @@
  */
 package org.apache.stratos.autoscaler.monitor.cluster;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.InstanceContext;
 import org.apache.stratos.autoscaler.context.cluster.AbstractClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
@@ -34,7 +46,6 @@ import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetwo
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
-import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
@@ -53,6 +64,7 @@ import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.application.ApplicationStatus;
@@ -64,17 +76,32 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.event.health.stat.*;
-import org.apache.stratos.messaging.event.topology.*;
+import org.apache.stratos.messaging.event.health.stat.AverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.AverageRequestsServingCapabilityEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.GradientOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberAverageMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberFaultEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberGradientOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.MemberSecondDerivativeOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfLoadAverageEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfMemoryConsumptionEvent;
+import org.apache.stratos.messaging.event.health.stat.SecondDerivativeOfRequestsInFlightEvent;
+import org.apache.stratos.messaging.event.topology.ClusterRemovedEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
+import org.apache.stratos.messaging.event.topology.MemberStartedEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.drools.runtime.StatefulKnowledgeSession;
 import org.drools.runtime.rule.FactHandle;
-
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Is responsible for monitoring a service cluster. This runs periodically
@@ -378,20 +405,27 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
         return groupScalingEnabledSubtree;
     }
-    private static void terminateMember(String memberId) {
-        try {
-            CloudControllerClient.getInstance().terminateInstance(memberId);
+    
+	private static void createClusterInstance(String serviceType,
+	        String clusterId, String alias, String instanceId,
+	        String partitionId, String networkPartitionId) {
+		
+			try {
+	            CloudControllerServiceClient.getInstance().createClusterInstance(
+	                    serviceType, clusterId, alias, instanceId, partitionId,
+	                    networkPartitionId);
+			} catch (RemoteException e) {
+				String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId 
+	            		+ "] instance-id ["+instanceId+"] service-type ["+serviceType+"]"
+	            		+ "] alias ["+alias+"] partition-id ["+partitionId+"]"
+	            		+ "] network-parition-id ["+networkPartitionId+"]"
+	            				+ " .Reason ["+e.getMessage()+"]" ;
+	            log.error(msg);
+	            throw new RuntimeException(msg, e);
+            }
+		
 
-        } catch (TerminationException e) {
-            log.error("Unable to terminate member: [member-id] " + memberId, e);
-        }
-    }
-
-    private static void createClusterInstance(String serviceType, String clusterId, String alias,
-                                              String instanceId, String partitionId, String networkPartitionId) {
-        CloudControllerClient.getInstance().createClusterInstance(serviceType, clusterId, alias,
-                instanceId, partitionId, networkPartitionId);
-    }
+	}
 
     public void addClusterLevelNWPartitionContext(ClusterLevelNetworkPartitionContext clusterLevelNWPartitionCtxt) {
         networkPartitionIdToClusterLevelNetworkPartitionCtxts.put(clusterLevelNWPartitionCtxt.getId(), clusterLevelNWPartitionCtxt);

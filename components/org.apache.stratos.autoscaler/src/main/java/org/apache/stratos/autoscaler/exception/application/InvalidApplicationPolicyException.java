@@ -16,40 +16,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.exception.application;
 
-package org.apache.stratos.common.beans.partition;
+public class InvalidApplicationPolicyException extends Exception{
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+	private static final long serialVersionUID = -58978497283511866L;
+	private String message;
 
-@XmlRootElement
-public class NetworkPartitionBean {
-
-    private String id;
-    private String kubernetesClusterId;
-    private List<PartitionBean> partitions;
-
-    public String getId() {
-        return id;
+    public InvalidApplicationPolicyException(final String message, final Exception exception) {
+        super(message, exception);
+        this.setMessage(message);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public InvalidApplicationPolicyException(final Exception exception) {
+        super(exception);
     }
 
-    public String getKubernetesClusterId() {
-        return kubernetesClusterId;
+    public InvalidApplicationPolicyException(final String msg) {
+        super(msg);
+        this.setMessage(msg);
     }
 
-    public void setKubernetesClusterId(String kubernetesClusterId) {
-        this.kubernetesClusterId = kubernetesClusterId;
+    public String getMessage() {
+        return message;
     }
 
-    public List<PartitionBean> getPartitions() {
-        return partitions;
-    }
-
-    public void setPartitions(List<PartitionBean> partitions) {
-        this.partitions = partitions;
+    public void setMessage(String message) {
+        this.message = message;
     }
 }

@@ -34,6 +34,8 @@ import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.events.*;
 import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBuilder;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
@@ -310,11 +312,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             ApplicationInstance appInstance = createApplicationInstance(application, null);
             instanceIds.add(appInstance.getInstanceId());
         } else {
-            for (NetworkPartition networkPartition :
-                    deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-                if (networkPartition.isActiveByDefault()) {
-                    ApplicationLevelNetworkPartitionContext context =
-                            new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+        	
+        	for (ApplicationPolicyNetworkPartitionReference 
+        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
+	            if(appPolicyNetworkPartition.isActiveByDefault()) {
+	            	ApplicationLevelNetworkPartitionContext context =
+                            new ApplicationLevelNetworkPartitionContext(appPolicyNetworkPartition.getNetworkPartitionId());
                     //If application instances found in the ApplicationsTopology,
                     // then have to add them first before creating new one
                     ApplicationInstance appInstance = (ApplicationInstance) application.
@@ -330,13 +333,35 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     }
                     instanceIds.add(instanceId);
                     log.info("Application instance has been added for the [network partition] " +
-                            networkPartition.getId() + " [appInstanceId] " + instanceId);
+                    		appPolicyNetworkPartition.getNetworkPartitionId() + " [appInstanceId] " + instanceId);
 
-                }
+	            }
             }
+            
         }
         startDependency(application, instanceIds);
         return initialStartup;
+    }
+
+	private ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences(
+            String applicationId) throws PolicyValidationException {
+	    ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationId);
+	    
+	    if(applicationPolicy == null) {
+	    	String msg = "Application policy is not found "
+	    			+ "for application ["+ applicationId + "] ";
+	    	log.error(msg);
+	    	throw new PolicyValidationException(msg);        		
+	    }
+	    ApplicationPolicyNetworkPartitionReference[] npReference = applicationPolicy.getNetworkPartitionReferences();
+	    
+	    if(npReference == null || npReference.length <= 0) {
+	    	String msg = "Network partition references cannot be found in application policy "+ applicationPolicy+ " is not found "
+	    			+ "for application ["+ applicationId + "] ";
+	    	log.error(msg);        		
+	    	throw new PolicyValidationException(msg);  
+	    }
+	    return npReference;
     }
 
     private String handleApplicationInstanceCreation(Application application,
@@ -386,15 +411,15 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             instanceId = appInstance.getInstanceId();
 
         } else {
-            for (NetworkPartition networkPartition : deploymentPolicy.
-                    getApplicationLevelNetworkPartitions()) {
+            for (ApplicationPolicyNetworkPartitionReference 
+        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
                 //Checking whether any not active NP found
-                if (!networkPartition.isActiveByDefault()) {
+                if (!appPolicyNetworkPartition.isActiveByDefault()) {
 
-                    if (!this.networkPartitionCtxts.containsKey(networkPartition.getId())) {
+                    if (!this.networkPartitionCtxts.containsKey(appPolicyNetworkPartition.getNetworkPartitionId())) {
 
                         ApplicationLevelNetworkPartitionContext context =
-                                new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                                new ApplicationLevelNetworkPartitionContext(appPolicyNetworkPartition.getNetworkPartitionId());
 
                         //Setting flags saying that it has been created by burst
                         context.setCreatedOnBurst(true);

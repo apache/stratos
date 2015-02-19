@@ -72,6 +72,10 @@
             <ResourceId>/permission/admin/manage/addDeploymentPolicy</ResourceId>
         </ManagementPermission>
         <ManagementPermission>
+            <DisplayName>Get Deployment Policy</DisplayName>
+            <ResourceId>/permission/admin/manage/getDeploymentPolicy</ResourceId>
+        </ManagementPermission>
+        <ManagementPermission>
             <DisplayName>Update Deployment Policy</DisplayName>
             <ResourceId>/permission/admin/manage/updateDeploymentPolicy</ResourceId>
         </ManagementPermission>

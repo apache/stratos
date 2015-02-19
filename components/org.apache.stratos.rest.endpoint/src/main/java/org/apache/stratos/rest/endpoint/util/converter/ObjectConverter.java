@@ -60,6 +60,7 @@ import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
 import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
+import org.apache.xerces.dom.DeepNodeListImpl;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
@@ -373,18 +374,6 @@ public class ObjectConverter {
 		return deploymentPolicy;
 	}
 
-    public static DeploymentPolicyBean convertStubDeploymentPolicyToDeploymentPolicy(
-            org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy stubDeploymentPolicy) {
-
-        if(stubDeploymentPolicy == null) {
-            return null;
-        }
-
-        DeploymentPolicyBean deploymentPolicy = new DeploymentPolicyBean();
-
-        return deploymentPolicy;
-    }
-
     private static ChildPolicyBean
     convertStubChildPolicyToChildPolicy(ChildPolicy stubChildDeploymentPolicy) {
         if(stubChildDeploymentPolicy == null) {
@@ -446,7 +435,6 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
-        networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for(org.apache.stratos.autoscaler.stub.deployment.partition.Partition stubPartition :
@@ -468,7 +456,6 @@ public class ObjectConverter {
 
         NetworkPartitionBean networkPartition = new NetworkPartitionBean();
         networkPartition.setId(stubNetworkPartition.getId());
-        networkPartition.setActiveByDefault(stubNetworkPartition.getActiveByDefault());
         if(stubNetworkPartition.getPartitions() != null) {
             List<PartitionBean> partitionList = new ArrayList<PartitionBean>();
             for(Partition stubPartition : stubNetworkPartition.getPartitions()) {
@@ -638,7 +625,6 @@ public class ObjectConverter {
                 new NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setKubernetesClusterId(networkPartitionBean.getKubernetesClusterId());
-        networkPartition.setActiveByDefault(networkPartitionBean.isActiveByDefault());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }
@@ -650,7 +636,6 @@ public class ObjectConverter {
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
         networkPartition.setKubernetesClusterId(networkPartitionBean.getKubernetesClusterId());
-        networkPartition.setActiveByDefault(networkPartitionBean.isActiveByDefault());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertPartitionToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }
@@ -670,6 +655,20 @@ public class ObjectConverter {
 		}
 
 		return networkPartition;
+	}
+	
+	public static List<NetworkPartitionRefBean> convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(NetworkPartitionRef[] networkPartitionRefs) {
+		
+		List<NetworkPartitionRefBean> networkPartitionRefBeans = new ArrayList<NetworkPartitionRefBean>();
+		for (int i = 0; i < networkPartitionRefs.length; i++) {
+			NetworkPartitionRefBean networkPartitionRefBean = new NetworkPartitionRefBean();
+			networkPartitionRefBean.setId(networkPartitionRefs[i].getId());
+			networkPartitionRefBean.setPartitionAlgo(networkPartitionRefs[i].getPartitionAlgo());
+			networkPartitionRefBean.setPartitions(convertCCStubPartitionRefsToPartitionRefs(networkPartitionRefs[i].getPartitions()));
+			networkPartitionRefBeans.add(networkPartitionRefBean);
+		}
+		
+		return networkPartitionRefBeans;
 	}
 
     private static ChildLevelNetworkPartition[] convertToCCChildNetworkPartition(List<ChildLevelNetworkPartitionBean> networkPartitions) {
@@ -830,6 +829,19 @@ public class ObjectConverter {
 		}
 
 		return partitions;
+	}
+	
+	private static List<PartitionRefBean> convertCCStubPartitionRefsToPartitionRefs(PartitionRef[] partitionRefs) {
+		
+		List<PartitionRefBean> partitionRefBeans = new ArrayList<PartitionRefBean>();
+		for (int i = 0; i < partitionRefs.length; i++) {
+			PartitionRefBean partitionRefBean = new PartitionRefBean();
+			partitionRefBean.setId(partitionRefs[i].getId());
+			partitionRefBean.setMax(partitionRefs[i].getMax());
+			partitionRefBeans.add(partitionRefBean);
+		}
+		
+		return partitionRefBeans;
 	}
 
     private static ChildLevelPartition[] convertToCCChildPartitionPojos
@@ -998,6 +1010,20 @@ public class ObjectConverter {
         }
 
         return networkPartitionGroupsBeans;
+    }
+    
+    public static DeploymentPolicyBean[] convertCCStubDeploymentPoliciesToDeploymentPolicies(DeploymentPolicy[] deploymentPolicies) {
+    	DeploymentPolicyBean[] deploymentPolicyBeans;
+    	if (null == deploymentPolicies) {
+			deploymentPolicyBeans = new DeploymentPolicyBean[0];
+			return deploymentPolicyBeans;
+		}
+    	
+    	deploymentPolicyBeans = new DeploymentPolicyBean[deploymentPolicies.length];
+    	for (int i = 0; i < deploymentPolicies.length; i++) {
+    		deploymentPolicyBeans[i] = convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicies[i]);
+    	}
+    	return deploymentPolicyBeans;
     }
 
 //    public static ServiceDefinitionBean convertToServiceDefinitionBean(Service service) {
@@ -1477,6 +1503,7 @@ public class ObjectConverter {
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
            
             // Groups
             if (groupDefinition.getGroups() != null) {
@@ -1824,8 +1851,11 @@ public class ObjectConverter {
         return domainMappingBean;
     }
 
-	public static DeploymentPolicyBean convetFromCCDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-		return null;
+	public static DeploymentPolicyBean convetCCStubDeploymentPolicytoDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+		DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
+		deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
+		deploymentPolicyBean.setNetworkPartition(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
+		return deploymentPolicyBean;
 	}
 	
 	public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
@@ -1840,7 +1870,7 @@ public class ObjectConverter {
 			npRef.setNetworkPartitionId(np.getId());
 			nprList.add(npRef);
 		}
-		applicationPolicy.setNetworkPartitionReference(nprList
+		applicationPolicy.setNetworkPartitionReferences(nprList
 		        .toArray(new ApplicationPolicyNetworkPartitionReference[nprList.size()]));
 		return applicationPolicy;
 	}

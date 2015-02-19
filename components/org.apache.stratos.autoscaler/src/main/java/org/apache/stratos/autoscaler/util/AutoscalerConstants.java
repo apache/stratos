@@ -49,6 +49,7 @@ public final class AutoscalerConstants {
 	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
     public static final String APPLICATIONS_RESOURCE = "/applications";
     public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
+    public static final String APPLICATION_POLICY_RESOURCE = "/policies/applicationPolicies";
 
     /**
      * Cluster monitoring  interval
@@ -118,5 +119,5 @@ public final class AutoscalerConstants {
 	public static final String OAUTH_SERVICE_SFX = "services/OAuthAdminService";
 	public static final String IDENTITY_APPLICATION_SERVICE_SFX = "services/IdentityApplicationManagementService";
 	public static final String TOKEN_ENDPOINT_SFX = "oauth2/token";
-	public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
+	public static final String TERMINATE_DEPENDENTS = "terminate-dependents";	
 }

@@ -31,7 +31,6 @@ public class NetworkPartition implements Serializable {
 
     private String id;
     private String kubernetesClusterId;
-    private boolean activeByDefault;
     private Partition[] partitions;
 
     public void setPartitions(Partition[] partitions) {
@@ -64,14 +63,6 @@ public class NetworkPartition implements Serializable {
      */
     public void setId(String id) {
         this.id = id;
-    }
-
-    public boolean isActiveByDefault() {
-        return activeByDefault;
-    }
-
-    public void setActiveByDefault(boolean activeByDefault) {
-        this.activeByDefault = activeByDefault;
     }
 
     public Partition getPartition(String partitionId) {

@@ -18,22 +18,33 @@
  */
 package org.apache.stratos.autoscaler.services.impl;
 
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.*;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
+import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
+import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
+import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
+import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
@@ -42,9 +53,7 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ChildPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -59,15 +68,10 @@ import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 import org.wso2.carbon.registry.api.RegistryException;
-
-import java.text.MessageFormat;
-import java.util.*;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -78,66 +82,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     public AutoscalePolicy[] getAutoScalingPolicies() {
         return PolicyManager.getInstance().getAutoscalePolicyList();
-    }
-
-    private boolean validateDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        try {
-            ApplicationHolder.acquireReadLock();
-
-            for (ChildPolicy childPolicy : deploymentPolicy.getChildPolicies()) {
-                String alias = childPolicy.getAlias();
-                List<Partition> partitionList = new ArrayList<Partition>();
-                for (ChildLevelNetworkPartition networkPartition : childPolicy.getChildLevelNetworkPartitions()) {
-                    Partition[] partitions = deploymentPolicy.getApplicationLevelNetworkPartition(
-                            networkPartition.getId()).getPartitions();
-                    for (Partition partition : partitions) {
-                        partitionList.add(partition);
-                    }
-                }
-
-                Application application = ApplicationHolder.getApplications().getApplication(
-                        deploymentPolicy.getApplicationId());
-                Partition[] partitions = new Partition[partitionList.size()];
-                if (application != null) {
-                    Group group = application.getGroupRecursively(alias);
-                    if (group != null) {
-                        Set<ClusterDataHolder> clusterDataHolders = group.getClusterDataHoldersOfGroup();
-                        //validating the group deployment policy against the leaf cartridges
-                        for (ClusterDataHolder clusterDataHolder : clusterDataHolders) {
-                            CloudControllerClient.getInstance().validateDeploymentPolicy(
-                                    clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
-                        }
-                    } else {
-                        //Validating the cartridge level deployment policy
-                        ClusterDataHolder clusterDataHolder = application.
-                                getClusterDataHolderRecursivelyByAlias(alias);
-                        if (clusterDataHolder != null) {
-                            CloudControllerClient.getInstance().validateDeploymentPolicy(
-                                    clusterDataHolder.getServiceType(), partitionList.toArray(partitions));
-                        } else {
-                            String msg = "Error while retrieving the group/cluster for the deployment " +
-                                    "policy: " + alias;
-                            log.error(msg);
-                            throw new TopologyInConsistentException(msg);
-                        }
-                    }
-                } else {
-                    String msg = "Error while retrieving the application for the deployment policy: " +
-                            deploymentPolicy.getApplicationId();
-                    log.error(msg);
-                    throw new TopologyInConsistentException(msg);
-                }
-            }
-        } catch (PartitionValidationException e) {
-            log.error("Error while validating the deployment policy", e);
-            //TODO throw exception
-        } catch (TopologyInConsistentException e) {
-            log.error("Error while validating the deployment policy", e);
-            //TODO throw exception
-        } finally {
-            ApplicationHolder.releaseReadLock();
-        }
-        return true;
     }
 
     @Override
@@ -241,9 +185,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             List<NetworkPartition> networkPartitionList = new ArrayList<NetworkPartition>();
-            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReference();
+            ApplicationPolicyNetworkPartitionReference[] npReferences = applicationPolicy.getNetworkPartitionReferences();
             for (ApplicationPolicyNetworkPartitionReference npReference : npReferences) {
-            	NetworkPartition networkPartition = RegistryManager.getInstance().getNetworkPartition(npReference.getNetworkPartitionId());
+				NetworkPartition networkPartition = AutoscalerObjectConverter.convertNetworkParitionStubToPojo(CloudControllerServiceClient
+				                .getInstance().getNetworkPartition(npReference.getNetworkPartitionId()));
             	networkPartitionList.add(networkPartition);            	
             }
             
@@ -252,10 +197,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // Update kubernetes cluster ids
 			updateKubernetesClusterIds(applicationId, networkPartitionList);
-			// TODO -- validate application policy
 			
-			// Add deployment policy
-			//PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
+			// validating application policy
+			validateApplicationPolicy(applicationId, applicationPolicy);
+			
+			// Add application policy
+			PolicyManager.getInstance().addApplicationPolicy(applicationId, applicationPolicy);
 			if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
 			    addApplicationSignUp(applicationContext, application.getKey());
@@ -665,5 +612,72 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         } catch (MetaDataServiceClientException e) {
             log.error("Could not publish to metadata service ", e);
         }
+    }
+    
+    /**
+     * Validates Application Policy against the given application.
+     * @param applicationId the application id against which the application policy needs to be validated
+     * @param applicationPolicy the application policy to be validated
+     * @throws InvalidApplicationPolicyException if application policy is not valid
+     * @throws RemoteException is anything went wrong while communicating with CC to validate network partitions
+     */
+	private void validateApplicationPolicy(String applicationId, ApplicationPolicy applicationPolicy) 
+    		throws InvalidApplicationPolicyException, RemoteException {
+    	
+    	// application policy can't be null
+    	if (null == applicationPolicy) {
+			String msg = "Invalid Application Policy. Cause -> Application Policy is null";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// application policy should contain at least one network partition reference
+    	ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
+    			applicationPolicy.getNetworkPartitionReferences();
+		if (null == networkPartitionReferences || networkPartitionReferences.length == 0) {
+			String msg = "Invalid Application Policy. "
+					+ "Cause -> Application Policy is not containing any network partition reference";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// to count the number of network partitions which are active by default
+    	// if the count is 0, we should raise the error
+    	int activeByDefaultNetworkPartitionsCount = 0;
+    	
+    	// validating all network partition references
+    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : networkPartitionReferences) {
+			
+    		// network-partition-id can't be null or empty
+    		String networkPartitionId = applicationPolicyNetworkPartitionReference.getNetworkPartitionId();
+			if (null == networkPartitionId || networkPartitionId.isEmpty()) {
+				String msg = String.format("Invalid Application Policy. "
+						+ "Cause -> Invalid network-partition-id : %s", networkPartitionId);
+				log.error(msg);
+				throw new InvalidApplicationPolicyException(msg);
+			}
+			
+			// network partitions should be added already
+			if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId)) {
+				String msg = String.format("Invalid Application Policy. "
+						+ "Cause -> Network partition not found for network-partition-id : %s", networkPartitionId);
+				log.error(msg);
+				throw new InvalidApplicationPolicyException(msg);
+			}
+			
+			//TODO validate application policy against the given application
+			
+			// counting number of network partitions which are active by default
+			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
+				activeByDefaultNetworkPartitionsCount++;
+			}
+		}
+    	
+    	// there should be at least one network partition reference which is active by default
+    	if (activeByDefaultNetworkPartitionsCount == 0) {
+			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
     }
 }

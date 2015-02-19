@@ -37,12 +37,10 @@ import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPub
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
-import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
-import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 
@@ -1453,6 +1451,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 				CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
 		return deploymentPolicy;
 	}
+	
+    @Override
+    public DeploymentPolicy[] getDeploymentPolicies() {
+        try {
+            Collection<DeploymentPolicy> deploymentPolicies = cloudControllerContext.getDeploymentPolicies();
+            return deploymentPolicies.toArray(new DeploymentPolicy[deploymentPolicies.size()]);
+        } catch (Exception e) {
+            String message = "Could not get deployment policies";
+            log.error(message);
+            throw new CloudControllerException(message, e);
+        }
+    }
 
 	@Override
     public boolean updateKubernetesHost(KubernetesHost kubernetesHost) throws
