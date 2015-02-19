@@ -685,8 +685,8 @@ public class RestCommandLineService {
     public void deactivateTenant(String tenantDomain) throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_DEACTIVATE_TENANT + "/" + tenantDomain, "");
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_DEACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain),"");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -694,7 +694,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully deactivated " + tenantDomain + " tenant");
+                System.out.println("You have successfully deactivated " + tenantDomain + " tenant");
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);

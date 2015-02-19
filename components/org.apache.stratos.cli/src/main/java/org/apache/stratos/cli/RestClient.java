@@ -187,7 +187,7 @@ public class RestClient implements GenericRestClient {
             int responseCode = executePut(serviceEndpoint, entityBody);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
-            } else if (responseCode == 201) {
+            } else if (responseCode >= 200 && responseCode <300) {
                 System.out.println(String.format("Successfully updated %s", entityName));
             }
         } catch (Exception e) {
