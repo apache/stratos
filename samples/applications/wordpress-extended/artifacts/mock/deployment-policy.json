@@ -1,0 +1,55 @@
+{
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "network-partition-1",
+                "activeByDefault": "true",
+                "partitions": [
+                    {
+                        "id": "partition-1",
+                        "provider": "mock",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "mysql-php-group",
+            "networkPartition": [
+                {
+                    "id": "network-partition-1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "partition-1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "alias": "tomcat",
+            "networkPartition": [
+                {
+                    "id": "network-partition-1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "partition-1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+

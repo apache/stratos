@@ -1,7 +1,8 @@
-Wordpress Application
+Wordpress Extended Application
 =====================
-Wordpress application consists of a cartridge group which includes a MySQL cartridge and PHP cartridge. It defines a
-startup dependency to start MySQL cluster first and PHP cluster second once the MySQL cluster is active.
+Wordpress extended application consists of a cartridge group which includes a MySQL cartridge, a PHP cartridge and
+an extra Tomcat cartridge on the top level.
+
 
 Application folder structure
 ----------------------------
