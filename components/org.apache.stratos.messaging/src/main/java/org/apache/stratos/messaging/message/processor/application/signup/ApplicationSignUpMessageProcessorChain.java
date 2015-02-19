@@ -22,6 +22,8 @@ package org.apache.stratos.messaging.message.processor.application.signup;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.listener.EventListener;
+import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpAddedEventListener;
+import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpRemovedEventListener;
 import org.apache.stratos.messaging.listener.application.signup.CompleteApplicationSignUpsEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingAddedEventListener;
 import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemovedEventListener;
@@ -35,29 +37,29 @@ public class ApplicationSignUpMessageProcessorChain extends MessageProcessorChai
     private static final Log log = LogFactory.getLog(ApplicationSignUpMessageProcessorChain.class);
 
     private CompleteApplicationSignUpsMessageProcessor completeApplicationSignUpsMessageProcessor;
-    private ApplicationSignUpAddedMessageProcessor domainNameAddedMessageProcessor;
-    private ApplicationSignUpRemovedMessageProcessor domainNameRemovedMessageProcessor;
+    private ApplicationSignUpAddedMessageProcessor applicationSignUpAddedMessageProcessor;
+    private ApplicationSignUpRemovedMessageProcessor applicationSignUpRemovedMessageProcessor;
 
     @Override
     protected void initialize() {
         completeApplicationSignUpsMessageProcessor = new CompleteApplicationSignUpsMessageProcessor();
         add(completeApplicationSignUpsMessageProcessor);
 
-        domainNameAddedMessageProcessor = new ApplicationSignUpAddedMessageProcessor();
-        add(domainNameAddedMessageProcessor);
+        applicationSignUpAddedMessageProcessor = new ApplicationSignUpAddedMessageProcessor();
+        add(applicationSignUpAddedMessageProcessor);
 
-        domainNameRemovedMessageProcessor = new ApplicationSignUpRemovedMessageProcessor();
-        add(domainNameRemovedMessageProcessor);
+        applicationSignUpRemovedMessageProcessor = new ApplicationSignUpRemovedMessageProcessor();
+        add(applicationSignUpRemovedMessageProcessor);
     }
 
     @Override
     public void addEventListener(EventListener eventListener) {
         if (eventListener instanceof CompleteApplicationSignUpsEventListener) {
             completeApplicationSignUpsMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof DomainMappingAddedEventListener) {
-            domainNameAddedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof DomainMappingRemovedEventListener) {
-            domainNameRemovedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationSignUpAddedEventListener) {
+            applicationSignUpAddedMessageProcessor.addEventListener(eventListener);
+        } else if (eventListener instanceof ApplicationSignUpRemovedEventListener) {
+            applicationSignUpRemovedMessageProcessor.addEventListener(eventListener);
         }
         else {
             throw new RuntimeException("Unknown event listener");
