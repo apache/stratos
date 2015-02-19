@@ -22,6 +22,7 @@ package org.apache.stratos.common.beans.application;
 import org.apache.stratos.common.beans.cartridge.CartridgeReferenceBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class GroupReferenceBean implements Serializable {
     private int groupMinInstances;
     private int groupMaxInstances;
     private boolean isGroupScalingEnabled;
+    private String deploymentPolicy;
     private List<CartridgeReferenceBean> cartridges;
     private List<GroupReferenceBean> groups;
 
@@ -93,5 +95,12 @@ public class GroupReferenceBean implements Serializable {
 	public void setGroups(List<GroupReferenceBean> groups) {
 		this.groups = groups;
 	}
-	
+
+	public String getDeploymentPolicy() {
+		return deploymentPolicy;
+	}
+
+	public void setDeploymentPolicy(String deploymentPolicy) {
+		this.deploymentPolicy = deploymentPolicy;
+	}
 }

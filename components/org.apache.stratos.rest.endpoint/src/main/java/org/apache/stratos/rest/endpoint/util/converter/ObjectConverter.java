@@ -1538,6 +1538,7 @@ public class ObjectConverter {
             groupContext.setGroupMaxInstances(groupDefinition.getGroupMaxInstances());
             groupContext.setGroupMinInstances(groupDefinition.getGroupMinInstances());
             groupContext.setGroupScalingEnabled(groupDefinition.isGroupScalingEnabled());
+            groupContext.setDeploymentPolicy(groupDefinition.getDeploymentPolicy());
            
             // Groups
             if (groupDefinition.getGroups() != null) {
@@ -1903,7 +1904,7 @@ public class ObjectConverter {
 			npRef.setNetworkPartitionId(np.getId());
 			nprList.add(npRef);
 		}
-		applicationPolicy.setNetworkPartitionReference(nprList
+		applicationPolicy.setNetworkPartitionReferences(nprList
 		        .toArray(new ApplicationPolicyNetworkPartitionReference[nprList.size()]));
 		return applicationPolicy;
 	}
