@@ -118,6 +118,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
     private static final String ENDPOINT_GET_KUBERNETES_HOST_CLUSTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}";
     private static final String ENDPOINT_GET_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{networkPartitionId}";
+    private static final String ENDPOINT_GET_APPLICATION_RUNTIME = API_CONTEXT + "/applications/{applicationId}/runtime";
 
     private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
     private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion/{minionId}";
@@ -1223,7 +1224,7 @@ public class RestCommandLineService {
      * @throws CommandException
      */// This method helps to remove applications
     public void deleteApplication (String applicationId) {
-        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
+        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{appId}", applicationId), applicationId,
                 "application");
     }
 
@@ -1257,6 +1258,31 @@ public class RestCommandLineService {
             System.out.println(getGson().toJson(application));
         } catch (Exception e) {
             String message = "Could not describe application: " + applicationID;
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Describe application runtime
+     * @throws CommandException
+     */
+    public void describeApplicationRuntime (String applicationID) {
+        try {
+            Type listType = new TypeToken<ApplicationBean>() {
+            }.getType();
+            ApplicationBean application = (ApplicationBean) restClient
+                    .getEntity(ENDPOINT_GET_APPLICATION_RUNTIME, ApplicationBean.class, "{applicationId}", applicationID,
+                            "application");
+
+            if (application == null) {
+                System.out.println("Application not found: " + applicationID);
+                return;
+            }
+
+            System.out.println("Application: " + applicationID);
+            System.out.println(getGson().toJson(application));
+        } catch (Exception e) {
+            String message = "Could not describe application runtime: " + applicationID;
             printError(message, e);
         }
     }
