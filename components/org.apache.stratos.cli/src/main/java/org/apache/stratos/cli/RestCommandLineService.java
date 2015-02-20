@@ -44,6 +44,7 @@ import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -114,8 +115,8 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
-    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/master";
-    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST_CLUSTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}";
     private static final String ENDPOINT_GET_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{networkPartitionId}";
 
     private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
@@ -866,7 +867,7 @@ public class RestCommandLineService {
      */
     public void listKubernetesClusters() {
         try {
-            Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
+            Type listType = new TypeToken<ArrayList<KubernetesClusterBean>>() {
             }.getType();
             List<KubernetesClusterBean> list = (List<KubernetesClusterBean>) restClient.
                     listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, listType, "kubernetes cluster");
@@ -917,8 +918,8 @@ public class RestCommandLineService {
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
 
-            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully deployed host to Kubernetes cluster: " + clusterId);
+            if (responseCode.equals(CliConstants.RESPONSE_OK) || responseCode.equals(CliConstants.RESPONSE_CREATED)) {
+                System.out.println("You have successfully deployed host to Kubernetes cluster: " + clusterId);
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -965,6 +966,58 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             String message = "Could not list kubernetes hosts";
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Get the master of a Kubernetes Cluster
+     * @param clusterId
+     * @throws CommandException
+     */
+    public void getKubernetesMaster(final String clusterId) throws CommandException {
+        try {
+            Type listType = new TypeToken<KubernetesMasterBean>() {
+            }.getType();
+            KubernetesMasterBean master = (KubernetesMasterBean) restClient
+                    .getEntity(ENDPOINT_GET_KUBERNETES_MASTER, KubernetesMasterBean.class, "{kubernetesClusterId}", clusterId,
+                            "network partition");
+
+            if (master == null) {
+                System.out.println("Kubernetes master not found in: " + clusterId);
+                return;
+            }
+
+            System.out.println("Cluster: " + clusterId);
+            System.out.println(getGson().toJson(master));
+        } catch (Exception e) {
+            String message = "Could not get the master of " + clusterId;
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Describe a Kubernetes cluster
+     * @param clusterId
+     * @throws CommandException
+     */
+    public void describeKubernetesCluster(final String clusterId) throws CommandException {
+        try {
+            Type listType = new TypeToken<KubernetesClusterBean>() {
+            }.getType();
+            KubernetesClusterBean cluster = (KubernetesClusterBean) restClient
+                    .getEntity(ENDPOINT_GET_KUBERNETES_HOST_CLUSTER, KubernetesClusterBean.class, "{kubernetesClusterId}", clusterId,
+                            "kubernetes cluster");
+
+            if (cluster == null) {
+                System.out.println("Kubernetes cluster not found: " + clusterId);
+                return;
+            }
+
+            System.out.println("Kubernetes cluster: " + clusterId);
+            System.out.println(getGson().toJson(cluster));
+        } catch (Exception e) {
+            String message = "Could not describe kubernetes cluster: " + clusterId;
             printError(message, e);
         }
     }
