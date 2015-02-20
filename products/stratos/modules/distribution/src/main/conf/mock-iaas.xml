@@ -39,5 +39,25 @@
                 <sampleDuration>60</sampleDuration>
             </pattern>
         </cartridge>
+        <cartridge type="php">
+            <!-- factor:memory-consumption|load-average|request-in-flight-->
+            <!-- mode:loop|continue|stop -->
+            <!-- Mode defines the action needs to be taken after the last sample value:
+                 loop: start from beginning
+                 continue: continue the last sample value
+                 stop: stop publishing statistics -->
+            <pattern factor="memory-consumption" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20,30,40,50,60,70,50,40,30,20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+            <pattern factor="load-average" mode="continue">
+                <!-- Sample values -->
+                <sampleValues>20</sampleValues>
+                <!-- Duration of each sample value in seconds -->
+                <sampleDuration>60</sampleDuration>
+            </pattern>
+        </cartridge>
     </health-statistics>
 </mock-iaas>
