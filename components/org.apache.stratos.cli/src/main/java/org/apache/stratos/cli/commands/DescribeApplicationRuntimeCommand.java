@@ -16,6 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+
 package org.apache.stratos.cli.commands;
 
 import org.apache.commons.cli.Options;
@@ -27,44 +28,40 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DeleteApplicationCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DeleteApplicationCommand.class);
+public class DescribeApplicationRuntimeCommand implements Command<StratosCommandContext> {
 
-    @Override
+    private static final Logger logger = LoggerFactory.getLogger(DescribeApplicationRuntimeCommand.class);
+
+    public DescribeApplicationRuntimeCommand() {
+    }
+
     public String getName() {
-        return "remove-application";
+        return "describe-application-runtime";
     }
 
-    @Override
     public String getDescription() {
-        return "Remove Application";
+        return "Describe application runtime";
     }
 
-    @Override
     public String getArgumentSyntax() {
         return "[application-id]";
     }
 
-    @Override
-    public Options getOptions() {
-        return null;
-    }
-
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
-		}
-		if (args != null && args.length == 1) {
-			String id = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting delete application id {}", id);
-			}
-			RestCommandLineService.getInstance().deleteApplication(id);
-			return CliConstants.COMMAND_SUCCESSFULL;
-		} else {
-			context.getStratosApplication().printUsage(getName());
-			return CliConstants.COMMAND_FAILED;
-		}
+            logger.debug("Executing command: ", getName());
+        }
+        if ((args == null) || (args.length == 0)) {
+            context.getStratosApplication().printUsage(getName());
+            return CliConstants.COMMAND_FAILED;
+        } else {
+            String applicationId = args[0];
+            RestCommandLineService.getInstance().describeApplicationRuntime(applicationId);
+            return CliConstants.COMMAND_SUCCESSFULL;
+        }
+    }
+
+    public Options getOptions() {
+        return null;
     }
 }
