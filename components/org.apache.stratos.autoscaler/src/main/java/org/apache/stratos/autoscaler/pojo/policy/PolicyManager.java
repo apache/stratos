@@ -70,7 +70,7 @@ public class PolicyManager {
         DistributedObjectProvider distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
         autoscalePolicyListMap = distributedObjectProvider.getMap(AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP);
         deploymentPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
-        applicationPolicyListMap = distributedObjectProvider.getMap(DEPLOYMENT_POLICY_ID_TO_DEPLOYMENT_POLICY_MAP);
+        applicationPolicyListMap = distributedObjectProvider.getMap(APPLICATION_ID_TO_APPLICATION_POLICY_MAP);
     }
 
     // Add the policy to information model and persist.
