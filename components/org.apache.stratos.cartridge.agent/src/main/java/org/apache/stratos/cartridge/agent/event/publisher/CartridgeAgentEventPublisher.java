@@ -24,6 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.cartridge.agent.statistics.publisher.HealthStatisticsNotifier;
+import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
 import org.apache.stratos.messaging.broker.publish.EventPublisher;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.event.instance.status.InstanceActivatedEvent;
@@ -31,6 +32,8 @@ import org.apache.stratos.messaging.event.instance.status.InstanceMaintenanceMod
 import org.apache.stratos.messaging.event.instance.status.InstanceReadyToShutdownEvent;
 import org.apache.stratos.messaging.event.instance.status.InstanceStartedEvent;
 import org.apache.stratos.messaging.util.MessagingUtil;
+
+import java.util.List;
 
 /**
  * Cartridge agent event publisher.
@@ -102,35 +105,55 @@ public class CartridgeAgentEventPublisher {
 
 	public static void publishInstanceActivatedEvent() {
 		if (!isActivated()) {
-			if (log.isInfoEnabled()) {
-				log.info("Publishing instance activated event");
-			}
-			InstanceActivatedEvent event = new InstanceActivatedEvent(
-					CartridgeAgentConfiguration.getInstance().getServiceName(),
-					CartridgeAgentConfiguration.getInstance().getClusterId(),
-					CartridgeAgentConfiguration.getInstance().getMemberId(),
-					CartridgeAgentConfiguration.getInstance().getInstanceId(),
-					CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
-					CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
-					CartridgeAgentConfiguration.getInstance().getPartitionId());
+			// Wait for all ports to be active, if ports are not activated, do not publish instance activated since
+			// the service is not up
+			List<Integer> ports = CartridgeAgentConfiguration.getInstance().getPorts();
+			String listenAddress = CartridgeAgentConfiguration.getInstance().getListenAddress();
+			boolean portsActivated = CartridgeAgentUtils.waitUntilPortsActive(listenAddress, ports);
 
-			// Event publisher connection will
-			String topic = MessagingUtil.getMessageTopicName(event);
-			EventPublisher eventPublisher = EventPublisherPool
-					.getPublisher(topic);
-			eventPublisher.publish(event);
-			if (log.isInfoEnabled()) {
-				log.info("Instance activated event published");
-			}
+			if (portsActivated) {
+				if (log.isInfoEnabled()) {
+					log.info("Publishing instance activated event");
+				}
+				InstanceActivatedEvent event = new InstanceActivatedEvent(
+						CartridgeAgentConfiguration.getInstance().getServiceName(),
+						CartridgeAgentConfiguration.getInstance().getClusterId(),
+						CartridgeAgentConfiguration.getInstance().getMemberId(),
+						CartridgeAgentConfiguration.getInstance().getInstanceId(),
+						CartridgeAgentConfiguration.getInstance().getClusterInstanceId(),
+						CartridgeAgentConfiguration.getInstance().getNetworkPartitionId(),
+						CartridgeAgentConfiguration.getInstance().getPartitionId());
 
-			if (log.isInfoEnabled()) {
-				log.info("Starting health statistics notifier");
-			}
-			Thread thread = new Thread(new HealthStatisticsNotifier());
-			thread.start();
-			setActivated(true);
-			if (log.isInfoEnabled()) {
-				log.info("Health statistics notifier started");
+				// Event publisher connection will
+				String topic = MessagingUtil.getMessageTopicName(event);
+				EventPublisher eventPublisher = EventPublisherPool
+						.getPublisher(topic);
+				eventPublisher.publish(event);
+				if (log.isInfoEnabled()) {
+					log.info("Instance activated event published");
+				}
+
+				if (log.isInfoEnabled()) {
+					log.info("Starting health statistics notifier");
+				}
+				Thread thread = new Thread(new HealthStatisticsNotifier());
+				thread.start();
+				setActivated(true);
+				if (log.isInfoEnabled()) {
+					log.info("Health statistics notifier started");
+				}
+			} else {
+				if (log.isInfoEnabled()) {
+					// There would not be a large number of ports
+					String portsStr = "";
+					for (Integer port: ports){
+						portsStr += port + ", ";
+					}
+					log.info(String.format(
+							"Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAdress] %s [Ports] %s",
+							listenAddress,
+							portsStr));
+				}
 			}
 		} else {
 			if (log.isWarnEnabled()) {

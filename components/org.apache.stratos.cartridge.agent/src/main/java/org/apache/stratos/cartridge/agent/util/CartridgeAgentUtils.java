@@ -79,7 +79,13 @@ public class CartridgeAgentUtils {
         return decryptPassword;
     }
 
-    public static void waitUntilPortsActive(String ipAddress, List<Integer> ports) {
+    /**
+     * Blocks until the provided ports are activated on the provided ip address or the port check timeout exceeds
+     * @param ipAddress
+     * @param ports
+     * @return true if ports are activated, false if timeout exceeded
+     */
+    public static boolean waitUntilPortsActive(String ipAddress, List<Integer> ports) {
         long portCheckTimeOut = 1000 * 60 * 10;
         String portCheckTimeOutStr = System.getProperty("port.check.timeout");
         if (StringUtils.isNotBlank(portCheckTimeOutStr)) {
@@ -99,16 +105,19 @@ public class CartridgeAgentUtils {
             long endTime = System.currentTimeMillis();
             long duration = endTime - startTime;
             if (duration > portCheckTimeOut) {
-                return;
+                return false;
             }
             try {
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
             }
         }
+
         if(log.isInfoEnabled()) {
             log.info("Ports activated: [ip] " + ipAddress + " [ports] "+ports);
         }
+
+        return true;
     }
 
     public static boolean checkPortsActive(String ipAddress, List<Integer> ports) {

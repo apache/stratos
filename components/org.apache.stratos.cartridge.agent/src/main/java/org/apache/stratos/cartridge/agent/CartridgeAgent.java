@@ -31,7 +31,7 @@ import org.apache.stratos.cartridge.agent.event.publisher.CartridgeAgentEventPub
 import org.apache.stratos.cartridge.agent.extensions.DefaultExtensionHandler;
 import org.apache.stratos.cartridge.agent.extensions.ExtensionHandler;
 import org.apache.stratos.cartridge.agent.util.CartridgeAgentConstants;
-import org.apache.stratos.cartridge.agent.util.CartridgeAgentUtils;
+import org.apache.stratos.cartridge.agent.util.ExtensionUtils;
 
 
 import java.util.List;
@@ -47,11 +47,6 @@ public class CartridgeAgent implements Runnable {
     
     private CartridgeAgentEventListeners eventListenerns;
 
-    // We have an asynchronous activity running to respond to ADC updates. We want to ensure
-    // that no publishInstanceActivatedEvent() call is made *before* the port activation test
-    // has succeeded. This flag controls that.
-    private boolean portsActivated;
-
     @Override
     public void run() {
         if (log.isInfoEnabled()) {
@@ -61,60 +56,60 @@ public class CartridgeAgent implements Runnable {
         eventListenerns = new  CartridgeAgentEventListeners();
         
         validateRequiredSystemProperties();
-        
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent validated system properties done");
         }
 
-        // Start instance notifier listener thread
-        portsActivated = false;
-        subscribeToTopicsAndRegisterListeners();
-        
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent subscribeToTopicsAndRegisterListeners done");
-        }
-
         // Start topology event receiver thread
         registerTopologyEventListeners();
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registerTopologyEventListeners done");
+        }
+
+        if (log.isInfoEnabled()){
+            log.info("Waiting for CompleteTopologyEvent..");
+        }
+
+        ExtensionUtils.waitForCompleteTopology();
+        if (log.isInfoEnabled()){
+            log.info("CompleteTopologyEvent received.");
+        }
+
+        // wait till the member spawned event
+        while (!CartridgeAgentConfiguration.getInstance().isInitialized()) {
+            try {
+                if (log.isDebugEnabled()) {
+                    log.info("Waiting for Cartridge Agent to be initialized...");
+                }
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
+        }
+
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent initialized done");
+        }
+
+        // Start instance notifier listener thread
+        registerInstanceNotifierEventListeners();
+        if (log.isInfoEnabled()) {
+            log.info("Cartridge agent registerInstanceNotifierEventListeners done");
         }
         
         // Start tenant event receiver thread
         registerTenantEventListeners();
-        
         if (log.isInfoEnabled()) {
-            log.info("Cartridge agent registerApplicationEventListeners done");
+            log.info("Cartridge agent registerTenantEventListeners done");
         }
         
         // Start application event receiver thread
         registerApplicationEventListeners();
-        
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registering all event listeners ... done");
-        }
-        
-		// wait till the member spawned event
-		while (!CartridgeAgentConfiguration.getInstance().isInitialized()) {
-			try {
-				if (log.isDebugEnabled()) {
-					log.info("Waiting for Cartridge Agent to be initialized...");
-				}
-				Thread.sleep(1000);
-			} catch (InterruptedException ignore) {
-			}
-		}
-		
-		if (log.isInfoEnabled()) {
-            log.info("Cartridge agent initialized done");
         }
 
         // Execute instance started shell script
         extensionHandler.onInstanceStartedEvent();
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent onInstanceStartedEvent done");
         }
@@ -135,45 +130,33 @@ public class CartridgeAgent implements Runnable {
             log.info("Cartridge agent startServerExtension done");
         }
 
-        // Wait for all ports to be active
-        CartridgeAgentUtils.waitUntilPortsActive(CartridgeAgentConfiguration.getInstance().getListenAddress(),
-                CartridgeAgentConfiguration.getInstance().getPorts());
-        portsActivated = true;
-        
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent portsActivated done");
-        }
-
         // Publish instance activated event
         CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent publishInstanceActivatedEvent done");
         }
 
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
-        
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent getRepoUrl done");
         }
 
         if ("null".equals(repoUrl) || StringUtils.isBlank(repoUrl)) {
             if (log.isInfoEnabled()) {
-                log.info("No artifact repository found");
-            }
-            // Execute instance activated shell script
-            extensionHandler.onInstanceActivatedEvent();
-            
-            if (log.isInfoEnabled()) {
-                log.info("Cartridge agent onInstanceActivatedEvent done");
+                log.info("No artifact repository found. Publishing InstanceActivatedEvent.");
             }
 
             // Publish instance activated event
             CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+            // Execute instance activated shell script
+            extensionHandler.onInstanceActivatedEvent();
+            if (log.isInfoEnabled()) {
+                log.info("Cartridge agent onInstanceActivatedEvent done");
+            }
         } else {
         	if (log.isInfoEnabled()) {
-                log.info("Cartridge agent - artifact repository found");
+                log.info("Artifact repository found. Waiting for ArtifactUpdatedEvent to commence cloning.");
             }
         }
         
@@ -197,7 +180,7 @@ public class CartridgeAgent implements Runnable {
         logPublisherManager.stop();
     }
 
-    protected void subscribeToTopicsAndRegisterListeners() {
+    protected void registerInstanceNotifierEventListeners() {
     	if (log.isDebugEnabled()) {
             log.debug("SsubscribeToTopicsAndRegisterListeners before");
         }
