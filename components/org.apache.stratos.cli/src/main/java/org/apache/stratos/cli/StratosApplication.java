@@ -255,6 +255,12 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeKubernetesClusterCommand();
         commands.put(command.getName(), command);
 
+        command = new DeleteApplicationCommand();
+        commands.put(command.getName(), command);
+
+        command = new DescribeApplicationRuntimeCommand();
+        commands.put(command.getName(), command);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
         }
