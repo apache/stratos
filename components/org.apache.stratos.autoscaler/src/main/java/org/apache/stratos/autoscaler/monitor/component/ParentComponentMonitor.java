@@ -770,6 +770,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
         public void run() {
             long startTime = System.currentTimeMillis();
+            long endTime = startTime;
             int retries = 5;
             Monitor monitor = null;
             boolean success = false;
@@ -805,6 +806,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                     retries--;
                 }
                 success = true;
+                endTime = System.currentTimeMillis();
             }
 
             if (monitor == null) {
@@ -819,7 +821,6 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             pendingMonitorsList.remove(context.getId());
 
             if (log.isInfoEnabled()) {
-                long endTime = System.currentTimeMillis();
                 long startupTime = (endTime - startTime)/1000;
                 log.info(String.format("Monitor started successfully: [type] %s [component] %s [dependents] %s " +
                                 "[startup-time] %d seconds", monitorTypeStr, context.getId(),

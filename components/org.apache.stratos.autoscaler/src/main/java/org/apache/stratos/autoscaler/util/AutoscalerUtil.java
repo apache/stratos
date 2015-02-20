@@ -271,13 +271,15 @@ public class AutoscalerUtil {
         }
 
         public void run() {
-            ApplicationMonitor applicationMonitor = null;
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime;
             int retries = 5;
             boolean success = false;
+            ApplicationMonitor applicationMonitor = null;
             while (!success && retries != 0) {
 
                 try {
-                    long start = System.currentTimeMillis();
+                    startTime = System.currentTimeMillis();
                     log.info("Starting monitor: [application] " + applicationId);
                     try {
                         applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
@@ -286,10 +288,8 @@ public class AutoscalerUtil {
                         log.warn(msg, e);
                         retries--;
                     }
-                    long end = System.currentTimeMillis();
-                    log.debug("Monitor started in " + ((end - start) / 1000) + " seconds: " +
-                            "[application] " + applicationId);
                     success = true;
+                    endTime = System.currentTimeMillis();
                 } catch (DependencyBuilderException e) {
                     String msg = "Monitor creation failed: [application] " + applicationId;
                     log.warn(msg, e);
@@ -308,12 +308,14 @@ public class AutoscalerUtil {
                 throw new RuntimeException(msg);
             }
             AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
-
             autoscalerContext.removeAppMonitor(applicationId);
             autoscalerContext.addAppMonitor(applicationMonitor);
+
+            long startupTime = ((endTime - startTime) / 1000);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s",
-                        applicationMonitor.getId(), applicationMonitor.getStartupDependencyTree()));
+                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s " +
+                                "[startup-time] %d seconds", applicationMonitor.getId(),
+                        applicationMonitor.getStartupDependencyTree(), startupTime));
             }
         }
     }
