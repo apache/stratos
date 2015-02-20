@@ -5,25 +5,25 @@
         "groups": [
             {
                 "name": "mysql-php-group",
-                "alias": "mysql-php-group",
-                "groupMinInstances": 1,
-                "groupMaxInstances": 1,
+                "alias": "mysql-php-group1",
+                "groupMinInstances": 2,
+                "groupMaxInstances": 2,
                 "cartridges": [
                     {
                         "type": "mysql",
-                        "cartridgeMin": 1,
-                        "cartridgeMax": 2,
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "mysql",
+                            "alias": "mysql1",
                             "autoscalingPolicy": "autoscaling-policy-1"
                         }
                     },
                     {
                         "type": "php",
-                        "cartridgeMin": 1,
-                        "cartridgeMax": 2,
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "php",
+                            "alias": "php1",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -37,10 +37,10 @@
         "cartridges" : [
             {
                 "type": "tomcat",
-                "cartridgeMin": 1,
-                "cartridgeMax": 2,
+                "cartridgeMin": 2,
+                "cartridgeMax": 5,
                 "subscribableInfo": {
-                    "alias": "tomcat",
+                    "alias": "tomcat1",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
@@ -51,7 +51,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mysql-php-group,cartridge.tomcat"
+                "group.mysql-php-group1,cartridge.tomcat1"
             ],
             "terminationBehaviour": "terminate-none"
         }

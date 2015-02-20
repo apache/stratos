@@ -21,7 +21,7 @@
     },
     "childPolicies": [
         {
-            "alias": "mysql1",
+            "alias": "mysql-php-group1",
             "networkPartition": [
                 {
                     "id": "network-partition-1",
@@ -36,7 +36,7 @@
             ]
         },
         {
-            "alias": "php1",
+            "alias": "tomcat1",
             "networkPartition": [
                 {
                     "id": "network-partition-1",
