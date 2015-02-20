@@ -59,7 +59,7 @@ import static junit.framework.Assert.assertTrue;
 public class JavaCartridgeAgentTest {
 
     private static final Log log = LogFactory.getLog(JavaCartridgeAgentTest.class);
-    private static final long TIMEOUT = 120000;
+    private static final long TIMEOUT = 200000;
 
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final String CLUSTER_ID = "php.php.domain";
@@ -121,10 +121,11 @@ public class JavaCartridgeAgentTest {
             }
         });
 
-        log.info("Starting Java cartridge agent...");
-        outputStream = executeCommand("bash stratos.sh", new File(this.agentHome + "/bin"));
-
         startServerSocket(7711);
+
+        log.info("Starting Java cartridge agent...");
+        String binPath = agentHome + "/bin";
+        outputStream = executeCommand("bash stratos.sh > /tmp/agent.screen.log 2>&1 &", new File(binPath));
     }
 
     @After
@@ -200,10 +201,13 @@ public class JavaCartridgeAgentTest {
             @Override
             public void run() {
                 List<String> outputLines = new ArrayList<String>();
+                log.info("LOG11111111111111");
                 while (!outputStream.isClosed()) {
+                    log.info("LOG");
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
+                            log.info("LOG22222222222");
                             if (line.contains("Cartridge agent topology receiver thread started, waiting for event messages")) {
                                 sleep(2000);
                                 // Send complete topology event
@@ -252,8 +256,15 @@ public class JavaCartridgeAgentTest {
 
         communicatorThread.start();
 
-//        assertTrue("Instance started event was not received", instanceStarted[0]);
-//        assertTrue("Instance activated event was not received", instanceActivated[0]);
+        while (!instanceActivated){
+            log.info("LOGWAIT0000000000000000000000000");
+            wait(2000);
+        }
+
+        log.info("ASSERTIONS");
+
+        assertTrue("Instance started event was not received", instanceStarted);
+        assertTrue("Instance activated event was not received", instanceActivated);
     }
 
     /**
@@ -299,10 +310,14 @@ public class JavaCartridgeAgentTest {
             CommandLine commandline = CommandLine.parse(commandText);
             DefaultExecutor exec = new DefaultExecutor();
             exec.setWorkingDirectory(workingDir);
+            if (workingDir != null) {
+                exec.setWorkingDirectory(workingDir);
+            }
             PumpStreamHandler streamHandler = new PumpStreamHandler(outputStream);
             exec.setStreamHandler(streamHandler);
             ExecuteWatchdog watchdog = new ExecuteWatchdog(TIMEOUT);
             exec.setWatchdog(watchdog);
+            log.info("Executing command: " + commandText + (workingDir == null ? "" : " at " + workingDir.getCanonicalPath()));
             exec.execute(commandline, new ExecuteResultHandler() {
                 @Override
                 public void onProcessComplete(int i) {
