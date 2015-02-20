@@ -122,6 +122,11 @@ public class MockIaas extends Iaas {
         if(mockInstanceMetadata != null) {
             memberContext.setDefaultPrivateIP(mockInstanceMetadata.getDefaultPrivateIp());
             memberContext.setDefaultPublicIP(mockInstanceMetadata.getDefaultPublicIp());
+
+            String[] privateIPs = new String[] { mockInstanceMetadata.getDefaultPrivateIp()};
+            String[] publicIPs = new String[] { mockInstanceMetadata.getDefaultPublicIp()};
+            memberContext.setPrivateIPs(privateIPs);
+            memberContext.setPublicIPs(publicIPs);
         }
     }
 

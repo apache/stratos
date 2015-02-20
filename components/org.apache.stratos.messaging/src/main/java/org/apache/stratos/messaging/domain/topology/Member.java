@@ -211,10 +211,10 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
                 + ", initTime=" + getInitTime()
                 + ", portMap=" + getPorts()
                 + ", defaultPublicIP=" + getDefaultPublicIP()
-                + ", memberPublicIPs=" + memberPublicIPs.toString()
+                + ", memberPublicIPs=" + ((memberPublicIPs != null) ? memberPublicIPs.toString() : "")
                 + ", status=" + getStatus()
                 + ", defaultPrivateIP=" + getDefaultPrivateIP()
-                + ", memberPrivateIPs=" + memberPrivateIPs.toString()
+                + ", memberPrivateIPs=" + ((memberPrivateIPs != null) ? memberPrivateIPs.toString() : "")
                 + ", lbClusterId=" + getLbClusterId()
                 + ", properties=" + getProperties() + "]";
     }
