@@ -129,20 +129,15 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
      * @return found data holder
      */
     public ClusterDataHolder getClusterDataHolderRecursivelyByAlias(String alias) {
-        if (this.aliasToClusterDataMap.containsKey(alias)) {
-            return this.aliasToClusterDataMap.get(alias);
+        if (aliasToClusterDataMap.containsKey(alias)) {
+            return aliasToClusterDataMap.get(alias);
         } else {
-            for (Group group : aliasToGroupMap.values()) {
-                ClusterDataHolder foundDataHolder = traverseAndCheckClusterDataHolderRecursively(
-                        this.aliasToGroupMap, alias);
-                if (foundDataHolder != null) {
-                    return foundDataHolder;
-                }
+            ClusterDataHolder foundDataHolder = traverseAndCheckClusterDataHolderRecursively(aliasToGroupMap, alias);
+            if (foundDataHolder != null) {
+                return foundDataHolder;
             }
-
         }
         return null;
-
     }
 
     private ClusterDataHolder traverseAndCheckClusterDataHolderRecursively(

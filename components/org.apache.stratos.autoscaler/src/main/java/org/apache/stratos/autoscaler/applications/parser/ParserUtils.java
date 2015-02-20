@@ -47,16 +47,14 @@ public class ParserUtils {
     private static StartupOrder getStartupOrder (String commaSeparatedStartupOrder) throws ApplicationDefinitionException{
 
         List<String> startupOrders = new ArrayList<String>();
-
         for (String startupOrder : Arrays.asList(commaSeparatedStartupOrder.split(","))) {
             startupOrder = startupOrder.trim();
             if (!startupOrder.startsWith("cartridge.") && !startupOrder.startsWith("group.")) {
-                throw new ApplicationDefinitionException("Incorrect Startup Order specified, should start with 'cartridge.' or 'group.'");
+                throw new ApplicationDefinitionException("Incorrect startup order specified, " +
+                        "should start with 'cartridge.' or 'group.'");
             }
-
             startupOrders.add(startupOrder);
         }
-
         return new StartupOrder(startupOrders);
     }
 
@@ -124,31 +122,26 @@ public class ParserUtils {
     public static Set<ScalingDependentList> convertScalingDependentList(String[] scalingDependentListArr) throws ApplicationDefinitionException {
 
         Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
-
         if (scalingDependentListArr == null) {
             return scalingDependentLists;
         }
-
         for (String commaSeparatedScalingDependentList : scalingDependentListArr) {
             scalingDependentLists.add(getScalingDependentList(commaSeparatedScalingDependentList));
         }
-
         return scalingDependentLists;
     }
 
     private static ScalingDependentList getScalingDependentList (String commaSeparatedScalingDependentList) throws ApplicationDefinitionException{
 
         List<String> scalingDependentLists = new ArrayList<String>();
-
         for (String scalingDependentList : Arrays.asList(commaSeparatedScalingDependentList.split(","))) {
             scalingDependentList = scalingDependentList.trim();
             if (!scalingDependentList.startsWith("cartridge.") && !scalingDependentList.startsWith("group.")) {
-                throw new ApplicationDefinitionException("Incorrect Scaling Dependent List specified, should start with 'cartridge.' or 'group.'");
+                throw new ApplicationDefinitionException("Incorrect scaling dependent List specified, " +
+                        "should start with 'cartridge.' or 'group.'");
             }
-
             scalingDependentLists.add(scalingDependentList);
         }
-
         return new ScalingDependentList(scalingDependentLists);
     }
 
@@ -156,18 +149,14 @@ public class ParserUtils {
             throws ApplicationDefinitionException {
 
         Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
-
         if (scalingDependentListArr == null) {
             return scalingDependentLists;
         }
-
-
         for (String commaSeparatedScalingDependentList : scalingDependentListArr) {
             // convertScalingDependentList all scaling dependents to aliases-based
             List<String> components = Arrays.asList(commaSeparatedScalingDependentList.split(","));
             scalingDependentLists.add(getScalingDependentList(components, groupContext));
         }
-
         return scalingDependentLists;
     }
 

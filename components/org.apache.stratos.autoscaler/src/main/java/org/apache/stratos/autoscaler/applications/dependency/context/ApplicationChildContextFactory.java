@@ -34,53 +34,30 @@ public class ApplicationChildContextFactory {
     /**
      * Will create and return GroupChildContext/ClusterChildContext based on the type in start order/scaling order
      *
-     * @param order      reference of group/cluster in the start/scaling order
+     * @param startUpOrder      reference of group/cluster in the start/scaling order
      * @param component       The component which used to build the dependency
      * @param tree kill dependent behaviour of this component
      * @return Context
      */
-    public static ApplicationChildContext createApplicationChildContext(String order,
+    public static ApplicationChildContext createApplicationChildContext(String applicationId, String startUpOrder,
                                                                         ParentComponent component,
                                                                         DependencyTree tree) {
-        String id;
-        ApplicationChildContext applicationContext = null;
+
         boolean hasDependents = tree.isTerminateDependent() || tree.isTerminateAll();
-        if (order.trim().startsWith(AutoscalerConstants.GROUP + ".")) {
-            //getting the group alias
-            id = getGroupFromStartupOrder(order);
-            applicationContext = createGroupChildContext(id, hasDependents);
-        } else if (order.trim().startsWith(AutoscalerConstants.CARTRIDGE + ".")) {
-            //getting the cartridge type
-            id = getClusterFromStartupOrder(order);
-            //getting the cluster-id from cluster alias
-            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
-            applicationContext = createClusterChildContext(clusterDataHolder, hasDependents);
-
+        if (startUpOrder.trim().startsWith(AutoscalerConstants.GROUP + ".")) {
+            // Find group alias
+            String groupAlias = startUpOrder.substring(AutoscalerConstants.GROUP.length() + 1);
+            return createGroupChildContext(groupAlias, hasDependents);
+        } else if (startUpOrder.trim().startsWith(AutoscalerConstants.CARTRIDGE + ".")) {
+            // Find cartridge alias
+            String cartridgeAlias = startUpOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
+            // Find cluster-id from cluster alias
+            ClusterDataHolder clusterDataHolder = component.getClusterDataHolderRecursivelyByAlias(cartridgeAlias);
+            return createClusterChildContext(clusterDataHolder, hasDependents);
         } else {
-            log.warn("[Startup Order]: " + order + " contains unknown reference");
+            throw new RuntimeException(String.format("Startup order contains an unknown reference: " +
+                            "[application-id] %s [startup-order] %s", applicationId, startUpOrder));
         }
-        return applicationContext;
-
-    }
-
-    /**
-     * Utility method to get the group alias from the startup order Eg: group.mygroup
-     *
-     * @param startupOrder startup order
-     * @return group alias
-     */
-    public static String getGroupFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(AutoscalerConstants.GROUP.length() + 1);
-    }
-
-    /**
-     * Utility method to get the cluster alias from startup order Eg: cartridge.myphp
-     *
-     * @param startupOrder startup order
-     * @return cluster alias
-     */
-    public static String getClusterFromStartupOrder(String startupOrder) {
-        return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
     }
 
 	/**

@@ -52,18 +52,21 @@ public class DependencyBuilder {
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
-    public DependencyTree buildDependency(ParentComponent component) throws DependencyBuilderException{
+    public DependencyTree buildDependency(String applicationId, ParentComponent component)
+            throws DependencyBuilderException{
 
         String identifier = component.getUniqueIdentifier();
         DependencyTree dependencyTree = new DependencyTree(identifier);
         DependencyOrder dependencyOrder = component.getDependencyOrder();
 
         if (dependencyOrder != null) {
-            log.info("Building dependency for the Application/Group " + identifier);
+            log.info(String.format("Building dependency tree: [application-id] %s [component] %s ",
+                    applicationId, identifier));
 
-            //Parsing the kill behaviour
+            log.info(String.format("Setting termination behaviour: [application-id] %s [component] %s ",
+                    applicationId, identifier));
+
             String terminationBehaviour = dependencyOrder.getTerminationBehaviour();
-
             if (AutoscalerConstants.TERMINATE_NONE.equals(terminationBehaviour)) {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_NONE);
             } else if (AutoscalerConstants.TERMINATE_ALL.equals(terminationBehaviour)) {
@@ -72,23 +75,21 @@ public class DependencyBuilder {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_DEPENDENT);
             }
 
-            log.info("Setting the [terminationBehaviour] " + terminationBehaviour + " to the " +
-                    "[dependency-tree] " + dependencyTree.getId());
-
-
-            //Parsing the start up order
             Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
-            ApplicationChildContext foundContext;
             ApplicationChildContext parentContext;
 
             if (startupOrders != null) {
+                log.info(String.format("Processing startup orders: [application-id] %s [component] %s",
+                        applicationId, identifier));
+
                 for (StartupOrder startupOrder : startupOrders) {
                     parentContext = null;
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
                         if (startupOrderComponent != null) {
                             ApplicationChildContext applicationChildContext = ApplicationChildContextFactory.
-                                    createApplicationChildContext(startupOrderComponent, component, dependencyTree);
+                                    createApplicationChildContext(applicationId, startupOrderComponent,
+                                            component, dependencyTree);
                             String applicationChildContextId = applicationChildContext.getId();
 
                             ApplicationChildContext existingApplicationChildContext =
@@ -119,12 +120,11 @@ public class DependencyBuilder {
                                     }
                                 } else {
                                     ApplicationChildContext existingParentContext =
-                                            dependencyTree.findParentContextWithId(
-                                                    applicationChildContext.getId());
-                                    if(existingParentContext != null && existingParentContext.getId().
-                                            equals(parentContext.getId())) {
+                                            dependencyTree.findParentContextWithId(applicationChildContext.getId());
+                                    if((existingParentContext != null) &&
+                                            (existingParentContext.getId().equals(parentContext.getId()))) {
                                         if(log.isDebugEnabled()) {
-                                            log.debug("Found an existing parent Context. " +
+                                            log.debug("Found an existing parent context. " +
                                                     "Hence skipping it and parsing the next value.");
                                         }
                                         parentContext = existingApplicationChildContext;
@@ -229,7 +229,4 @@ public class DependencyBuilder {
     public static String getClusterFromStartupOrder(String startupOrder) {
         return startupOrder.substring(AutoscalerConstants.CARTRIDGE.length() + 1);
     }
-
-
-
 }

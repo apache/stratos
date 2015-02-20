@@ -20,17 +20,17 @@
  */
 package org.apache.stratos.autoscaler.context;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
-import org.wso2.carbon.registry.core.exceptions.RegistryException;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * It holds all cluster monitors which are active in stratos.
@@ -137,24 +137,16 @@ public class AutoscalerContext {
         return pendingApplicationMonitors;
     }
 
-    public void setPendingApplicationMonitors(List<String> pendingApplicationMonitors) {
-        this.pendingApplicationMonitors = pendingApplicationMonitors;
-    }
-
-    public void addPendingMonitor(String appId) {
+    public void addApplicationPendingMonitor(String appId) {
         this.pendingApplicationMonitors.add(appId);
     }
 
-    public void removeFromPendingMonitors(String appId) {
+    public void removeApplicationPendingMonitor(String appId) {
         this.pendingApplicationMonitors.remove(appId);
     }
 
-    public boolean containsPendingMonitor(String appId) {
+    public boolean containsApplicationPendingMonitor(String appId) {
         return this.pendingApplicationMonitors.contains(appId);
-    }
-
-    public boolean monitorExists(String appId) {
-        return this.applicationMonitors.containsKey(appId);
     }
 
     public void addApplicationContext(ApplicationContext applicationContext) {

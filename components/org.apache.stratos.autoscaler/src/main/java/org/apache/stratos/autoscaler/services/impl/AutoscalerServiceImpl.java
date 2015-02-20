@@ -273,8 +273,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 ApplicationHolder.releaseReadLock();
             }
 
-            if (!AutoscalerContext.getInstance().containsPendingMonitor(applicationId)
-                    || !AutoscalerContext.getInstance().monitorExists(applicationId)) {
+            if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(applicationId)) {
                 if (allClusterInitialized) {
                     AutoscalerUtil.getInstance().startApplicationMonitor(applicationId);
                 } else {

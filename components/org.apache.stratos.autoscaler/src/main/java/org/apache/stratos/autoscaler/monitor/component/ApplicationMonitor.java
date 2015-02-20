@@ -78,6 +78,11 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
     @Override
+    public MonitorType getMonitorType() {
+        return MonitorType.Application;
+    }
+
+    @Override
     public void run() {
         try {
             monitor();
@@ -305,36 +310,31 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
 
-//        if (deploymentPolicy == null) {
-//            //FIXME for docker with deployment policy
-//            ApplicationInstance appInstance = createApplicationInstance(application, null);
-//            instanceIds.add(appInstance.getInstanceId());
-//        } else {
-            for (NetworkPartition networkPartition :
-                    deploymentPolicy.getApplicationLevelNetworkPartitions()) {
-                if (networkPartition.isActiveByDefault()) {
-                    ApplicationLevelNetworkPartitionContext context =
-                            new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
-                    //If application instances found in the ApplicationsTopology,
-                    // then have to add them first before creating new one
-                    ApplicationInstance appInstance = (ApplicationInstance) application.
-                            getInstanceByNetworkPartitionId(context.getId());
-                    if (appInstance != null) {
-                        //use the existing instance in the Topology to create the data
-                        instanceId = handleApplicationInstanceCreation(application, context, appInstance);
-                        initialStartup = false;
-                    } else {
-                        //create new app instance as it doesn't exist in the Topology
-                        instanceId = handleApplicationInstanceCreation(application, context, null);
-
-                    }
-                    instanceIds.add(instanceId);
-                    log.info("Application instance has been added for the [network partition] " +
-                            networkPartition.getId() + " [appInstanceId] " + instanceId);
+        for (NetworkPartition networkPartition :
+                deploymentPolicy.getApplicationLevelNetworkPartitions()) {
+            if (networkPartition.isActiveByDefault()) {
+                ApplicationLevelNetworkPartitionContext context =
+                        new ApplicationLevelNetworkPartitionContext(networkPartition.getId());
+                //If application instances found in the ApplicationsTopology,
+                // then have to add them first before creating new one
+                ApplicationInstance appInstance = (ApplicationInstance) application.
+                        getInstanceByNetworkPartitionId(context.getId());
+                if (appInstance != null) {
+                    //use the existing instance in the Topology to create the data
+                    instanceId = handleApplicationInstanceCreation(application, context, appInstance);
+                    initialStartup = false;
+                } else {
+                    //create new app instance as it doesn't exist in the Topology
+                    instanceId = handleApplicationInstanceCreation(application, context, null);
 
                 }
+                instanceIds.add(instanceId);
+                log.info("Application instance has been added for the [network partition] " +
+                        networkPartition.getId() + " [appInstanceId] " + instanceId);
+
             }
-//        }
+        }
+
         startDependency(application, instanceIds);
         return initialStartup;
     }

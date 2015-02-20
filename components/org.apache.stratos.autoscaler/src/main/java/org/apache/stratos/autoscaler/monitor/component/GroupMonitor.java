@@ -93,6 +93,11 @@ public class GroupMonitor extends ParentComponentMonitor {
     }
 
     @Override
+    public MonitorType getMonitorType() {
+        return MonitorType.Group;
+    }
+
+    @Override
     public void run() {
         try {
             monitor();

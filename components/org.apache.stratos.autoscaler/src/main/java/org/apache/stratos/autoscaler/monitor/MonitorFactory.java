@@ -97,12 +97,18 @@ public class MonitorFactory {
             throws DependencyBuilderException,
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
-        boolean initialStartup = false;
+        Application application = ApplicationHolder.getApplications().getApplication(appId);
+        if(application == null) {
+            throw new RuntimeException("Application not found: [application-id] " + appId);
+        }
+
         try {
             //acquiring read lock to create the monitor
             ApplicationHolder.acquireReadLock();
-            Group group = ApplicationHolder.getApplications().
-                    getApplication(appId).getGroupRecursively(context.getId());
+            Group group = application.getGroupRecursively(context.getId());
+            if(group == null) {
+                throw new RuntimeException("Group not found: [group-alias] " + context.getId());
+            }
 
             boolean hasScalingDependents = false;
             if (parentMonitor.getScalingDependencies() != null) {
@@ -130,9 +136,9 @@ public class MonitorFactory {
             ApplicationHolder.releaseReadLock();
         }
 
-        Group group = ApplicationHolder.getApplications().
-                getApplication(appId).getGroupRecursively(context.getId());
-        //Starting the minimum dependencies
+        Group group = application.getGroupRecursively(context.getId());
+
+        // Starting the minimum dependencies
         groupMonitor.createInstanceAndStartDependencyAtStartup(group, instanceIds);
 
         /**
@@ -171,18 +177,14 @@ public class MonitorFactory {
             //acquiring read lock to start the monitor
             ApplicationHolder.acquireReadLock();
             application = ApplicationHolder.getApplications().getApplication(applicationId);
-            if (application != null) {
-                applicationMonitor = new ApplicationMonitor(application);
-
-                if(null != applicationMonitor){
-                    applicationMonitor.setHasStartupDependents(false);
-                    //starting the scheduler of the application monitor
-                    applicationMonitor.startScheduler();
-                }
-            } else {
-                String msg = "Application not found in the topology: [application-id] " + applicationId;
-                throw new TopologyInConsistentException(msg);
+            if (application == null) {
+                throw new RuntimeException("Application not found in the topology: [application-id] " + applicationId);
             }
+
+            applicationMonitor = new ApplicationMonitor(application);
+            applicationMonitor.setHasStartupDependents(false);
+            // Starting the scheduler of the application monitor
+            applicationMonitor.startScheduler();
         } finally {
             ApplicationHolder.releaseReadLock();
         }
@@ -228,18 +230,17 @@ public class MonitorFactory {
         TopologyManager.acquireReadLockForCluster(serviceName, clusterId);
         try {
             Topology topology = TopologyManager.getTopology();
-            if (topology.serviceExists(serviceName)) {
-                Service service = topology.getService(serviceName);
-                if (service.clusterExists(clusterId)) {
-                    cluster = service.getCluster(clusterId);
-                } else {
-                    String msg = "[Cluster] " + clusterId + " cannot be found in the " +
-                            "Topology for [service] " + serviceName;
-                    throw new TopologyInConsistentException(msg);
-                }
-            } else {
-                String msg = "[Service] " + serviceName + " cannot be found in the Topology";
-                throw new TopologyInConsistentException(msg);
+            Service service = topology.getService(serviceName);
+            if(service == null) {
+                String msg = String.format("Service not found in topology: [service] %s", serviceName);
+                throw new RuntimeException(msg);
+            }
+
+            cluster = service.getCluster(clusterId);
+            if(cluster == null) {
+                String msg = String.format("Cluster not found in topology: [service] %s [cluster] %s",
+                        serviceName, clusterId);
+                throw new RuntimeException(msg);
             }
 
             boolean hasScalingDependents = false;
@@ -253,7 +254,6 @@ public class MonitorFactory {
 
             boolean groupScalingEnabledSubtree = false;
             if (parentMonitor instanceof GroupMonitor) {
-
                 GroupMonitor groupMonitor = (GroupMonitor) parentMonitor;
                 groupScalingEnabledSubtree = findIfChildIsInGroupScalingEnabledSubTree(groupMonitor);
             }
@@ -262,16 +262,16 @@ public class MonitorFactory {
 
             Properties props = cluster.getProperties();
             if (props != null) {
-                // set hasPrimary property
+                // Set hasPrimary property
                 // hasPrimary is true if there are primary members available in that cluster
                 clusterMonitor.setHasPrimary(Boolean.parseBoolean(cluster.getProperties().getProperty(IS_PRIMARY)));
             }
 
-            //Setting the parent of the cluster monitor
+            // Setting the parent of the cluster monitor
             clusterMonitor.setParent(parentMonitor);
             clusterMonitor.setId(clusterId);
 
-            //setting the startup dependent behaviour of the cluster monitor
+            // Setting the startup dependent behaviour of the cluster monitor
             if (parentMonitor.hasStartupDependents() || (context.hasStartupDependents() &&
                     context.hasChild())) {
                 clusterMonitor.setHasStartupDependents(true);
@@ -279,9 +279,8 @@ public class MonitorFactory {
                 clusterMonitor.setHasStartupDependents(false);
             }
 
-            //Creating the instance of the cluster
-            ((ClusterMonitor) clusterMonitor).createClusterInstances(parentInstanceIds, cluster);
-            //add it to autoscaler context
+            // Creating the instance of the cluster
+            clusterMonitor.createClusterInstances(parentInstanceIds, cluster);
             AutoscalerContext.getInstance().addClusterMonitor(clusterMonitor);
             log.info("ClusterMonitor created: " + clusterMonitor.toString());
 

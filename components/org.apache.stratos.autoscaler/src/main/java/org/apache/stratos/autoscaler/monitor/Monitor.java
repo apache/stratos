@@ -30,6 +30,9 @@ import java.util.Map;
  * Abstract class for the monitoring functionality in autoscaler.
  */
 public abstract class Monitor implements EventHandler {
+
+    public enum MonitorType { Application, Group, Cluster }
+
     //Id of the monitor, cluster=clusterId, group=group-alias, application=app-alias
     protected String id;
     //The parent app which this monitor relates to
@@ -57,6 +60,12 @@ public abstract class Monitor implements EventHandler {
     public String getId() {
         return id;
     }
+
+    /**
+     * Return the type of the monitor.
+     * @return
+     */
+    public abstract MonitorType getMonitorType();
 
     /**
      * Set the id of the monitor

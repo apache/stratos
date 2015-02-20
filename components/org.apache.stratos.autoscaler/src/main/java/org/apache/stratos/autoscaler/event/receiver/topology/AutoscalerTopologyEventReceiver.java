@@ -27,11 +27,8 @@ import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
-import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
-import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
-import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
@@ -138,7 +135,7 @@ public class AutoscalerTopologyEventReceiver {
                         ApplicationHolder.acquireReadLock();
                         //start the application monitor if the policy exists
                         DeploymentPolicy policy = PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
-                        if (policy != null && !AutoscalerContext.getInstance().containsPendingMonitor(appId)) {
+                        if (policy != null && !AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
                             AutoscalerUtil.getInstance().startApplicationMonitor(appId);
                         }
                     } catch (Exception e) {

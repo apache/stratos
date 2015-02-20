@@ -174,7 +174,8 @@ public class ClusterContext extends AbstractClusterContext {
             throws PolicyValidationException, PartitionValidationException {
 
         if (childPolicy == null) {
-            String msg = String.format("Child policy is not specified for the [instance alias] %s",clusterInstance.getAlias());
+            String msg = String.format("Child policy is not specified [alias] %s",
+                    clusterInstance.getAlias());
             log.error(msg);
             throw new PolicyValidationException(msg);
         }

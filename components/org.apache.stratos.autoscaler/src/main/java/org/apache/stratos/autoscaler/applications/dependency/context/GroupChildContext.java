@@ -19,6 +19,7 @@
 package org.apache.stratos.autoscaler.applications.dependency.context;
 
 public class GroupChildContext extends ApplicationChildContext {
+
     public GroupChildContext(String id, boolean killDependent) {
         super(id ,killDependent);
     }

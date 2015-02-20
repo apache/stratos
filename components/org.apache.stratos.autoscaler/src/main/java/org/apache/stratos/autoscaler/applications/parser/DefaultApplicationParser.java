@@ -57,8 +57,8 @@ import java.util.*;
 public class DefaultApplicationParser implements ApplicationParser {
 
     private static final String METADATA_APPENDER = "-";
-    private static final String ALIAS = "alias";
-    private static final String CARTRIDGE_TYPE = "type";
+    public static final String ALIAS = "alias";
+    public static final String CARTRIDGE_TYPE = "type";
     private static Log log = LogFactory.getLog(DefaultApplicationParser.class);
 
     private List<ApplicationClusterContext> applicationClusterContexts;
@@ -293,15 +293,16 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
 
             // Set application cluster data
-            if (components.getCartridgeContexts() != null) {
-                List<CartridgeContext> cartridgeContextList = Arrays.asList(components.getCartridgeContexts());
+            CartridgeContext[] cartridgeContexts = components.getCartridgeContexts();
+            if (cartridgeContexts != null) {
+                List<CartridgeContext> cartridgeContextList = Arrays.asList(cartridgeContexts);
                 Set<StartupOrder> startupOrders = application.getDependencyOrder().getStartupOrders();
                 Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
 
                 clusterDataMap = parseLeafLevelSubscriptions(applicationContext.getApplicationId(),
                         applicationContext.getTenantId(), application.getKey(), null, cartridgeContextList, startupOrders);
-                application.setClusterData(clusterDataMap.get("alias"));
-                application.setClusterDataForType(clusterDataMap.get("type"));
+                application.setClusterData(clusterDataMap.get(ALIAS));
+                application.setClusterDataForType(clusterDataMap.get(CARTRIDGE_TYPE));
             }
 
             // Set groups
@@ -349,10 +350,12 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-
-            // check if a cartridgeInfo with relevant type is already deployed. else, can't continue
             CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
+            if(cartridgeInfo == null) {
+                throw new RuntimeException("Cartridge not found: " + cartridgeType);
+            }
 
+            // Add metadata keys defined in cartridges as export metadata keys
 		    for (String str : cartridgeInfo.getMetadataKeys()) {
 			    if(!StringUtils.isBlank(str)) {
 				    exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
@@ -360,15 +363,8 @@ public class DefaultApplicationParser implements ApplicationParser {
 			    }
 		    }
 
-
-            if (cartridgeInfo == null) {
-                handleError("No deployed Cartridge found with type [ " + cartridgeType +
-                        " ] for Composite Application");
-            }
-
             // get hostname and cluster id
             ClusterInformation clusterInfo;
-            assert cartridgeInfo != null;
             if (cartridgeInfo.getMultiTenant()) {
                 clusterInfo = new MTClusterInformation();
             } else {
@@ -382,27 +378,30 @@ public class DefaultApplicationParser implements ApplicationParser {
                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
             }
 
-           //Get dependency cluster id
+           // Find import metadata keys
             if (dependencyOrder != null) {
                 for (StartupOrder startupOrder : dependencyOrder) {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
 	                    String[] arrStartUp= startupOrderComponent.split("\\.");
 	                    if(arrStartUp[0].equals("cartridge")) {
-		                    String dependencType = arrStartUp[1];
-		                    CartridgeInfo dependencyCartridge = getCartridge(dependencType);
-
-		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependencType);
+		                    String cartridgeAlias = arrStartUp[1];
+                            String dependentCartridgeType = findCartridgeTypeFromAlias(cartridgeContextList, cartridgeAlias);
+		                    if(StringUtils.isBlank(dependentCartridgeType)) {
+                                throw new RuntimeException(String.format("Could not find dependent cartridge for " +
+                                        "cartridge alias: [application] %s [cartridge-alias] %s", appId, cartridgeAlias));
+                            }
+                            CartridgeInfo dependencyCartridge = getCartridge(dependentCartridgeType);
+		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
 		                    if (dataHolder != null) {
 			                    if (!dataHolder.getClusterId().equals(clusterId)) {
 				                    dependencyClusterIDs.add(dataHolder.getClusterId());
 				                    for (String str : dependencyCartridge.getMetadataKeys()) {
 					                    if (!StringUtils.isBlank(str)) {
-						                    importMetadataKeys
-								                    .add(dataHolder.getClusterId().split("\\.")[0] +
-								                         METADATA_APPENDER +
-								                         str);
+						                    importMetadataKeys.add(dataHolder.getClusterId().split("\\.")[0] +
+                                                    METADATA_APPENDER +
+                                                    str);
 					                    }
 				                    }
 				                    if (!dataHolder.getClusterId().equals(clusterId)) {
@@ -444,12 +443,27 @@ public class DefaultApplicationParser implements ApplicationParser {
 
 
         }
-        completeDataHolder.put("type", clusterDataMapByType);
-        completeDataHolder.put("alias", clusterDataMap);
+        completeDataHolder.put(CARTRIDGE_TYPE, clusterDataMapByType);
+        completeDataHolder.put(ALIAS, clusterDataMap);
         return completeDataHolder;
     }
 
-	private void createClusterDataMap(List<CartridgeContext> cartridgeContextList,
+    /**
+     * Find alias of a cartridge by cartridge type
+     * @param cartridgeContextList
+     * @param alias
+     * @return
+     */
+    private String findCartridgeTypeFromAlias(List<CartridgeContext> cartridgeContextList, String alias) {
+        for(CartridgeContext cartridgeContext : cartridgeContextList) {
+            if(alias.equals(cartridgeContext.getSubscribableInfoContext().getAlias())) {
+                return cartridgeContext.getType();
+            }
+        }
+        return null;
+    }
+
+    private void createClusterDataMap(List<CartridgeContext> cartridgeContextList,
 	                                  Map<String, ClusterDataHolder> clusterDataMap,
 	                                  Map<String, ClusterDataHolder> clusterDataMapByType)
 			throws ApplicationDefinitionException {

@@ -339,7 +339,9 @@ public class BasicPayloadData implements Serializable {
 				dependencyClusterIDsPayload.append("|");
 			}
 		}
-		log.debug("Dependency Cluster IDs:  " + dependencyClusterIDsPayload);
+        if(StringUtils.isNotBlank(dependencyClusterIDsPayload.toString())) {
+            log.debug("Dependency cluster ids: " + dependencyClusterIDsPayload);
+        }
 		return dependencyClusterIDsPayload.toString();
 	}
 

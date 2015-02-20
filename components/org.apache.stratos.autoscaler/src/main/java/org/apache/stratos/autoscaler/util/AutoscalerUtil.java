@@ -23,10 +23,14 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
+import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
+import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -247,8 +251,10 @@ public class AutoscalerUtil {
 
 	    AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
 	    if (autoscalerContext.getAppMonitor(applicationId) == null) {
-		    autoscalerContext.addPendingMonitor(applicationId);
+		    autoscalerContext.addApplicationPendingMonitor(applicationId);
 		    ServiceReferenceHolder.getInstance().getExecutorService().submit(new ApplicationMonitorAdder(applicationId));
+
+            log.info(String.format("Monitor scheduled: [application] %s ", applicationId));
 	    } else {
 		    if (log.isDebugEnabled()) {
 			    log.debug(String.format("Application monitor thread already exists: " +
@@ -258,10 +264,10 @@ public class AutoscalerUtil {
     }
 
     private class ApplicationMonitorAdder implements Runnable {
-        private String appId;
+        private String applicationId;
 
-        public ApplicationMonitorAdder(String appId) {
-            this.appId = appId;
+        public ApplicationMonitorAdder(String applicationId) {
+            this.applicationId = applicationId;
         }
 
         public void run() {
@@ -269,48 +275,56 @@ public class AutoscalerUtil {
             int retries = 5;
             boolean success = false;
             while (!success && retries != 0) {
-                /*try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                }*/
+
                 try {
                     long start = System.currentTimeMillis();
-                    log.info("Application monitor is going to be started for [application] " + appId);
+                    log.info("Starting monitor: [application] " + applicationId);
                     try {
-                        applicationMonitor = MonitorFactory.getApplicationMonitor(appId);
+                        applicationMonitor = MonitorFactory.getApplicationMonitor(applicationId);
                     } catch (PolicyValidationException e) {
-                        String msg = "Application monitor creation failed for Application: ";
+                        String msg = "Monitor creation failed: [application] " + applicationId;
                         log.warn(msg, e);
                         retries--;
                     }
                     long end = System.currentTimeMillis();
-                    log.info("Time taken to start app monitor: " + (end - start) / 1000);
+                    log.debug("Monitor started in " + ((end - start) / 1000) + " seconds: " +
+                            "[application] " + applicationId);
                     success = true;
                 } catch (DependencyBuilderException e) {
-                    String msg = "Application monitor creation failed for Application: ";
+                    String msg = "Monitor creation failed: [application] " + applicationId;
                     log.warn(msg, e);
                     retries--;
                 } catch (TopologyInConsistentException e) {
-                    String msg = "Application monitor creation failed for Application: ";
+                    String msg = "Monitor creation failed: [application] " + applicationId;
                     log.warn(msg, e);
                     retries--;
                 }
             }
 
             if (applicationMonitor == null) {
-                String msg = "Application monitor creation failed, even after retrying for 5 times, "
-                        + "for Application: " + appId;
+                String msg = "Monitor creation failed, even after retrying for 5 times: "
+                        + "[application] " + applicationId;
                 log.error(msg);
                 throw new RuntimeException(msg);
             }
             AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
 
-            autoscalerContext.removeAppMonitor(appId);
+            autoscalerContext.removeAppMonitor(applicationId);
             autoscalerContext.addAppMonitor(applicationMonitor);
             if (log.isInfoEnabled()) {
-                log.info(String.format("Application monitor has been added successfully: " +
-                        "[application] %s", applicationMonitor.getId()));
+                log.info(String.format("Monitor started successfully: [application] %s [dependents] %s",
+                        applicationMonitor.getId(), applicationMonitor.getStartupDependencyTree()));
             }
+        }
+    }
+
+    public static Monitor.MonitorType findMonitorType(ApplicationChildContext context) {
+        if(context instanceof GroupChildContext) {
+            return Monitor.MonitorType.Group;
+        } else if(context instanceof ClusterChildContext) {
+            return Monitor.MonitorType.Cluster;
+        } else {
+            throw new RuntimeException("Unknown child context type: " + context.getClass().getName());
         }
     }
 
@@ -341,66 +355,4 @@ public class AutoscalerUtil {
         }
         return "*";
     }
-
-
-//    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
-//        if (null == cluster) {
-//               return null;
-//           }
-//
-//           String autoscalePolicyName = cluster.getAutoscalePolicyName();
-//           String deploymentPolicyName = cluster.getDeploymentPolicyName();
-//
-//           if (log.isDebugEnabled()) {
-//               log.debug("Deployment policy name: " + deploymentPolicyName);
-//               log.debug("Autoscaler policy name: " + autoscalePolicyName);
-//           }
-//
-//           AutoscalePolicy policy =
-//                                    PolicyManager.getInstance()
-//                                                 .getAutoscalePolicy(autoscalePolicyName);
-//           DeploymentPolicy deploymentPolicy =
-//                                               PolicyManager.getInstance()
-//                                                            .getDeploymentPolicy(deploymentPolicyName);
-//
-//           if (deploymentPolicy == null) {
-//               String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-//               log.error(msg);
-//               throw new PolicyValidationException(msg);
-//           }
-//
-//           Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-//           if (allPartitions == null) {
-//               String msg =
-//                            "Deployment Policy's Partitions are null. Policy name: " +
-//                                    deploymentPolicyName;
-//               log.error(msg);
-//               throw new PolicyValidationException(msg);
-//           }
-//
-//           try {
-//               validateExistenceOfPartions(allPartitions);
-//           } catch (InvalidPartitionException e) {
-//               String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
-//               log.error(msg, e);
-//               throw new PolicyValidationException(msg, e);
-//           }
-//
-//           CloudControllerClient.getInstance()
-//                                .validateDeploymentPolicy(cluster.getServiceName(),
-//                                                            allPartitions);
-//
-//           LbClusterMonitor clusterMonitor =
-//                                           new LbClusterMonitor(cluster.getClusterId(),
-//                                                              cluster.getServiceName(),
-//                                                              deploymentPolicy, policy);
-//           fNetworkPartitionroup partitionGroup: deploymentPoliNetworkPartitionnGroups()){
-//
-//               NetworkPartitionContext networkPartitionContext
-//                       = PartitionManager.getInstance().getNetworkPartitionLbHolder(partitionGroup.getNetworkPartitionId());
-//               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-//           }
-//        return null;
-//    }
-
 }
