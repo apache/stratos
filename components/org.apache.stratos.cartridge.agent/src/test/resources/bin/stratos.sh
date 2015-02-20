@@ -23,13 +23,12 @@
 echo "Starting cartridge agent..."
 script_path="$( cd -P "$( dirname "$SOURCE" )" && pwd )/`dirname $0`"
 lib_path=${script_path}/../lib/
-echo  "LIB PATH : ${lib_path}"
 class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
-properties="-Dmb.ip=MB-IP
-            -Dmb.port=MB-PORT
+properties="-Dmb.ip=localhost
+            -Dmb.port=1883
             -Dlisten.address=localhost
-            -Dthrift.receiver.ip=CEP-IP
-            -Dthrift.receiver.port=CEP-PORT
+            -Dthrift.receiver.ip=localhost
+            -Dthrift.receiver.port=7711
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.configuration=file://${script_path}/../conf/log4j.properties
@@ -38,20 +37,20 @@ properties="-Dmb.ip=MB-IP
             -Dcep.stats.publisher.enabled=true
             -Dlb.private.ip=
             -Dlb.public.ip=
-            -Djavax.net.ssl.trustStore=CERT-TRUSTSTORE
-            -Djavax.net.ssl.trustStorePassword=TRUSTSTORE-PASSWORD
+            -Djavax.net.ssl.trustStore=client-truststore.jks
+            -Djavax.net.ssl.trustStorePassword=wso2carbon
 	    -Denable.artifact.update=true
             -Dauto.commit=false
             -Dauto.checkout=true
             -Dartifact.update.interval=15
-            -Denable.data.publisher=ENABLE-DATA-PUBLISHER
-            -Dmonitoring.server.ip=MONITORING-SERVER-IP
-	    -Dmonitoring.server.port=MONITORING-SERVER-PORT
-	    -Dmonitoring.server.secure.port=MONITORING-SERVER-SECURE-PORT
-	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
-	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD
+            -Denable.data.publisher=false
+            -Dmonitoring.server.ip=localhost
+	    -Dmonitoring.server.port=7611
+	    -Dmonitoring.server.secure.port=7711
+	    -Dmonitoring.server.admin.username=admin
+	    -Dmonitoring.server.admin.password=admin
 	    -Dlog.file.paths=LOG_FILE_PATHS
-	    -DAPP_PATH=APP_PATH
+	    -DAPP_PATH=/tmp/test-jca-source
             -Dsuper.tenant.repository.path=/repository/deployment/server/
             -Dtenant.repository.path=/repository/tenants/
 	    -Dextension.instance.started=instance-started.sh

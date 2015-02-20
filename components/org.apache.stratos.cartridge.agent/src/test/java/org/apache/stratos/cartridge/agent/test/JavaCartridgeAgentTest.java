@@ -54,7 +54,7 @@ import java.util.concurrent.ExecutorService;
 import static junit.framework.Assert.assertTrue;
 
 /**
- * Created by chamilad on 2/19/15.
+ * An integration test that verifies the functionality of the Java cartridge agent
  */
 public class JavaCartridgeAgentTest {
 
@@ -75,13 +75,12 @@ public class JavaCartridgeAgentTest {
     public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.1.0-SNAPSHOT";
     private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
-    private String agentHome;
-    private boolean[] instanceStarted;
-    private boolean[] instanceActivated;
+    private boolean instanceStarted;
+    private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
 
     @BeforeClass
-    public static void setupOneTime(){
+    public static void oneTimeSetUp(){
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
 
     }
@@ -91,7 +90,7 @@ public class JavaCartridgeAgentTest {
         serverSocketList = new ArrayList<ServerSocket>();
         executorList = new HashMap<String, Executor>();
 
-        agentHome = setupJavaAgent();
+        String agentHome = setupJavaAgent();
 
         ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
         TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
@@ -102,22 +101,22 @@ public class JavaCartridgeAgentTest {
         instanceStatusEventReceiver.setExecutorService(executorService);
         instanceStatusEventReceiver.execute();
 
-        instanceStarted = new boolean[1];
+        instanceStarted = false;
         instanceStatusEventReceiver.addEventListener(new InstanceStartedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("Instance started event received");
-                instanceStarted[0] = true;
+                instanceStarted = true;
             }
         });
 
 
-        instanceActivated = new boolean[1];
+        instanceActivated = false;
         instanceStatusEventReceiver.addEventListener(new InstanceActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 log.info("Instance activated event received");
-                instanceActivated[0] = true;
+                instanceActivated = true;
             }
         });
 
@@ -125,11 +124,12 @@ public class JavaCartridgeAgentTest {
 
         log.info("Starting Java cartridge agent...");
         String binPath = agentHome + "/bin";
-        outputStream = executeCommand("bash stratos.sh > /tmp/agent.screen.log 2>&1 &", new File(binPath));
+        outputStream = executeCommand("bash stratos.sh", new File(binPath));
+
     }
 
     @After
-    public void teardown() {
+    public void tearDown() {
         for (Map.Entry<String, Executor> entry : executorList.entrySet()) {
             try {
                 String commandText = entry.getKey();
@@ -139,11 +139,11 @@ public class JavaCartridgeAgentTest {
                     log.info("Terminating process: " + commandText);
                     watchdog.destroyProcess();
                 }
-                File workingDirectory = executor.getWorkingDirectory();
-                if (workingDirectory != null) {
-                    log.info("Cleaning working directory: " + workingDirectory.getAbsolutePath());
-                    FileUtils.deleteDirectory(workingDirectory);
-                }
+//                File workingDirectory = executor.getWorkingDirectory();
+//                if (workingDirectory != null) {
+//                    log.info("Cleaning working directory: " + workingDirectory.getAbsolutePath());
+//                    FileUtils.deleteDirectory(workingDirectory);
+//                }
             } catch (Exception ignore) {
             }
         }
@@ -158,32 +158,52 @@ public class JavaCartridgeAgentTest {
 
     private String setupJavaAgent() {
         try {
+            log.info("Setting up Java cartridge agent test setup");
             String jcaZipSource = getResourcesFolderPath() + "/../../../../products/cartridge-agent/modules/distribution/target/" + AGENT_NAME + ".zip";
             String testHome = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/";
-            String agentHome = testHome + AGENT_NAME;
+            File agentHome = new File(testHome + AGENT_NAME);
             log.debug("Extracting Java Cartridge Agent to test folder");
             ZipFile agentZip = new ZipFile(jcaZipSource);
             agentZip.extractAll(testHome);
 
-            log.debug("Copying test payload file");
+            log.info("Copying agent jar");
+            String agentJar = "org.apache.stratos.cartridge.agent-4.1.0-SNAPSHOT.jar";
+            String agentJarSource = getResourcesFolderPath() + "/../" + agentJar;
+            String agentJarDest = agentHome.getCanonicalPath() + "/lib/" + agentJar;
+            FileUtils.copyFile(new File(agentJarSource), new File(agentJarDest));
+
+            log.info("Copying test payload file");
             String srcPayloadPath = getResourcesFolderPath() + "/../../src/test/resources/payload";
             String destPayloadPath = agentHome + "/payload";
             FileUtils.copyDirectory(new File(srcPayloadPath), new File(destPayloadPath));
 
-            log.debug("Copying test conf files");
+            log.info("Copying test conf files");
             String srcConf = getResourcesFolderPath() + "/../../src/test/resources/conf";
             String destConf = agentHome + "/conf";
             FileUtils.copyDirectory(new File(srcConf), new File(destConf));
 
-            log.info("Java Cartridge Agent setup complete.");
+            log.info("Copying test stratos.sh script");
+            String srcBin = getResourcesFolderPath() + "/../../src/test/resources/bin";
+            String destBin = agentHome + "/bin";
+            FileUtils.copyDirectory(new File(srcBin), new File(destBin));
 
-            return agentHome;
+            log.info("Changing stratos.sh permissions");
+            this.executeCommand("chmod +x " + agentHome.getCanonicalPath() + "/bin/stratos.sh", null);
+            log.info("Changed permissions for stratos.sh");
+
+            log.info("Changing extension scripts permissions");
+            String outputStream = this.executeCommand("chmod -R +x " + agentHome.getCanonicalPath() + "/extensions/*.sh", null).toString();
+            log.info("Changed permissions for extensions : " + outputStream);
+
+            log.info("Java cartridge agent setup complete.");
+
+            return agentHome.getCanonicalPath();
         } catch (IOException e) {
             String message = "Could not copy cartridge agent distribution";
             log.error(message, e);
             throw new RuntimeException(message, e);
         } catch (ZipException e) {
-            String message = "Could not unzip cartridge agent distribution";
+            String message = "Could not unzip cartridge agent distribution. Please make sure to build <STRATOS_HOME>/products/cartridge-agent first.";
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
@@ -195,19 +215,14 @@ public class JavaCartridgeAgentTest {
 
     @Test
     public void testJavaCartridgeAgent() throws Exception {
-
-
         Thread communicatorThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 List<String> outputLines = new ArrayList<String>();
-                log.info("LOG11111111111111");
                 while (!outputStream.isClosed()) {
-                    log.info("LOG");
                     List<String> newLines = getNewLines(outputLines, outputStream.toString());
                     if (newLines.size() > 0) {
                         for (String line : newLines) {
-                            log.info("LOG22222222222");
                             if (line.contains("Cartridge agent topology receiver thread started, waiting for event messages")) {
                                 sleep(2000);
                                 // Send complete topology event
@@ -246,7 +261,7 @@ public class JavaCartridgeAgentTest {
                         }
                     }
 
-                    if (instanceActivated[0]) {
+                    if (instanceActivated) {
                         break;
                     }
                     sleep(500);
@@ -257,11 +272,8 @@ public class JavaCartridgeAgentTest {
         communicatorThread.start();
 
         while (!instanceActivated){
-            log.info("LOGWAIT0000000000000000000000000");
-            wait(2000);
+            sleep(2000);
         }
-
-        log.info("ASSERTIONS");
 
         assertTrue("Instance started event was not received", instanceStarted);
         assertTrue("Instance activated event was not received", instanceActivated);
@@ -304,7 +316,7 @@ public class JavaCartridgeAgentTest {
      *
      * @param commandText
      */
-    private ByteArrayOutputStreamLocal executeCommand(String commandText, File workingDir) {
+    private ByteArrayOutputStreamLocal executeCommand(final String commandText, File workingDir) {
         final ByteArrayOutputStreamLocal outputStream = new ByteArrayOutputStreamLocal();
         try {
             CommandLine commandline = CommandLine.parse(commandText);
@@ -321,12 +333,12 @@ public class JavaCartridgeAgentTest {
             exec.execute(commandline, new ExecuteResultHandler() {
                 @Override
                 public void onProcessComplete(int i) {
-                    log.info("Agent process completed");
+                    log.info(commandText + " process completed");
                 }
 
                 @Override
                 public void onProcessFailed(ExecuteException e) {
-                    log.error("Agent process failed", e);
+                    log.error(commandText + " process failed", e);
                 }
             });
             executorList.put(commandText, exec);
