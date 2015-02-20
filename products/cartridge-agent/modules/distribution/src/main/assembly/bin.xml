@@ -66,6 +66,14 @@
             </includes>
         </fileSet>
         <fileSet>
+            <directory>${project.basedir}/src/main/conf</directory>
+            <outputDirectory>/conf</outputDirectory>
+            <fileMode>0600</fileMode>
+            <includes>
+                <include>thrift-client-config.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
             <directory>${project.basedir}/src/main/extensions</directory>
             <outputDirectory>/extensions</outputDirectory>
             <fileMode>0755</fileMode>

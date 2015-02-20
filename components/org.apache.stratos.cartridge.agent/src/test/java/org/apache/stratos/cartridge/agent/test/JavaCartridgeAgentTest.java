@@ -192,7 +192,13 @@ public class JavaCartridgeAgentTest {
             log.info("Changed permissions for stratos.sh");
 
             log.info("Changing extension scripts permissions");
-            String outputStream = this.executeCommand("chmod -R +x " + agentHome.getCanonicalPath() + "/extensions/*.sh", null).toString();
+//            String outputStream = this.executeCommand("chmod -R +x " + agentHome.getCanonicalPath() + "/extensions/*.sh", null).toString();
+            File extensionsPath = new File(agentHome.getCanonicalPath() + "/extensions/");
+            File[] extensions = extensionsPath.listFiles();
+            for (File extension:extensions){
+                extension.setExecutable(true);
+//                Files.setPosixFilePermissions(extension.getCanonicalPath())
+            }
             log.info("Changed permissions for extensions : " + outputStream);
 
             log.info("Java cartridge agent setup complete.");
@@ -244,7 +250,7 @@ public class JavaCartridgeAgentTest {
                                 // Simulate server socket
                                 startServerSocket(9080);
                             }
-                            if (line.contains("Cartridge agent - artifact repository found")) {
+                            if (line.contains("Artifact repository found")) {
                                 // Send artifact updated event
                                 ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
                                 artifactUpdatedEvent.setClusterId(CLUSTER_ID);

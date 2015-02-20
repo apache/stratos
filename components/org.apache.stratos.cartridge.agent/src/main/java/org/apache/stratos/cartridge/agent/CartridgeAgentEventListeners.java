@@ -205,13 +205,13 @@ public class CartridgeAgentEventListeners
     	topologyEventReceiver.addEventListener(new MemberInitializedEventListener() {
         	@Override
         	protected void onEvent(Event event) {
-        		try {
-        			boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-        			if (initialized) {
-        				// no need to process this event, if the member is initialized.
-        				return;
-        			}
-        			TopologyManager.acquireReadLock();
+                boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+                if (initialized) {
+                    // no need to process this event, if the member is initialized.
+                    return;
+                }
+                try {
+                    TopologyManager.acquireReadLock();
         			if (log.isDebugEnabled()) {
         				log.debug("Member initialized event received");
         			}
@@ -230,13 +230,13 @@ public class CartridgeAgentEventListeners
         topologyEventReceiver.addEventListener(new MemberCreatedEventListener() {
         	@Override
         	protected void onEvent(Event event) {
-        		try {
-        			boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
-        			if (initialized) {
-        				// no need to process this event, if the member is initialized.
-        				return;
-        			}
-        			TopologyManager.acquireReadLock();
+                boolean initialized = CartridgeAgentConfiguration.getInstance().isInitialized();
+                if (initialized) {
+                    // no need to process this event, if the member is initialized.
+                    return;
+                }
+                try {
+                    TopologyManager.acquireReadLock();
         			if (log.isDebugEnabled()) {
         				log.debug("Member created event received");
         			}

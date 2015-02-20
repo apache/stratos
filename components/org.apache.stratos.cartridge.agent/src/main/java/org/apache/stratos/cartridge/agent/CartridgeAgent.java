@@ -130,12 +130,6 @@ public class CartridgeAgent implements Runnable {
             log.info("Cartridge agent startServerExtension done");
         }
 
-        // Publish instance activated event
-        CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
-        if (log.isInfoEnabled()) {
-            log.info("Cartridge agent publishInstanceActivatedEvent done");
-        }
-
         // Check repo url
         String repoUrl = CartridgeAgentConfiguration.getInstance().getRepoUrl();
         if (log.isInfoEnabled()) {

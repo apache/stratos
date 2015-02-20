@@ -27,8 +27,7 @@ class_path=`echo ${lib_path}/*.jar | tr ' ' ':'`
 properties="-Dmb.ip=MB-IP
             -Dmb.port=MB-PORT
             -Dlisten.address=localhost
-            -Dthrift.receiver.ip=CEP-IP
-            -Dthrift.receiver.port=CEP-PORT
+            -Dthrift.client.config.file.path=${script_path}/../conf/thrift-client-config.xml
             -Djndi.properties.template.file.path=${script_path}/../conf/templates/jndi.properties.template
             -Djndi.properties.dir=${script_path}/../conf
             -Dlog4j.configuration=file://${script_path}/../conf/log4j.properties
