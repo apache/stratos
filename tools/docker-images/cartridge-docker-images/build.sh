@@ -30,17 +30,25 @@ cp -vf target/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip ${script_
 popd
 
 pushd ${script_path}/base-image/
-echo "Building base image..."
+echo "Building base docker image..."
 docker build -t stratos/base-image:4.1.0-beta .
 
-echo "Pushing base image to docker hub..."
+echo "Pushing base docker image to docker hub..."
 docker push stratos/base-image:4.1.0-beta
 popd
 
 pushd ${script_path}/service-images/php
-echo "Building php image..."
+echo "Building php docker image..."
 docker build -t stratos/php:4.1.0-beta .
 
-echo "Pushing php image to docker hub..."
+echo "Pushing php docker image to docker hub..."
 docker push stratos/php:4.1.0-beta
+popd
+
+pushd ${script_path}/service-images/tomcat
+echo "Building tomcat docker image..."
+docker build -t stratos/tomcat:4.1.0-beta .
+
+echo "Pushing tomcat docker image to docker hub..."
+docker push stratos/tomcat:4.1.0-beta
 popd
