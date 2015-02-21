@@ -21,6 +21,7 @@ package org.apache.stratos.cartridge.agent.test;
 
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.progress.ProgressMonitor;
 import org.apache.commons.exec.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -78,11 +79,12 @@ public class JavaCartridgeAgentTest {
     private boolean instanceStarted;
     private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
+    private TopologyEventReceiver topologyEventReceiver;
+    private InstanceStatusEventReceiver instanceStatusEventReceiver;
 
     @BeforeClass
     public static void oneTimeSetUp(){
         System.setProperty("jndi.properties.dir", getResourcesFolderPath());
-
     }
 
     @Before
@@ -93,11 +95,11 @@ public class JavaCartridgeAgentTest {
         String agentHome = setupJavaAgent();
 
         ExecutorService executorService = StratosThreadPool.getExecutorService("TEST_THREAD_POOL", 5);
-        TopologyEventReceiver topologyEventReceiver = new TopologyEventReceiver();
+        topologyEventReceiver = new TopologyEventReceiver();
         topologyEventReceiver.setExecutorService(executorService);
         topologyEventReceiver.execute();
 
-        InstanceStatusEventReceiver instanceStatusEventReceiver = new InstanceStatusEventReceiver();
+        instanceStatusEventReceiver = new InstanceStatusEventReceiver();
         instanceStatusEventReceiver.setExecutorService(executorService);
         instanceStatusEventReceiver.execute();
 
@@ -154,6 +156,12 @@ public class JavaCartridgeAgentTest {
             } catch (IOException ignore) {
             }
         }
+
+        this.instanceStatusEventReceiver.terminate();
+        this.topologyEventReceiver.terminate();
+
+        this.instanceActivated = false;
+        this.instanceStarted = false;
     }
 
     private String setupJavaAgent() {
@@ -162,9 +170,18 @@ public class JavaCartridgeAgentTest {
             String jcaZipSource = getResourcesFolderPath() + "/../../../../products/cartridge-agent/modules/distribution/target/" + AGENT_NAME + ".zip";
             String testHome = getResourcesFolderPath() + "/../" + UUID.randomUUID() + "/";
             File agentHome = new File(testHome + AGENT_NAME);
-            log.debug("Extracting Java Cartridge Agent to test folder");
+            log.info("Extracting Java Cartridge Agent to test folder");
             ZipFile agentZip = new ZipFile(jcaZipSource);
+            ProgressMonitor zipProgresMonitor = agentZip.getProgressMonitor();
             agentZip.extractAll(testHome);
+            while (zipProgresMonitor.getPercentDone() < 100) {
+                log.info("Extracting: " + zipProgresMonitor.getPercentDone());
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
 
             log.info("Copying agent jar");
             String agentJar = "org.apache.stratos.cartridge.agent-4.1.0-SNAPSHOT.jar";
@@ -188,16 +205,14 @@ public class JavaCartridgeAgentTest {
             FileUtils.copyDirectory(new File(srcBin), new File(destBin));
 
             log.info("Changing stratos.sh permissions");
-            this.executeCommand("chmod +x " + agentHome.getCanonicalPath() + "/bin/stratos.sh", null);
+            new File(agentHome.getCanonicalPath() + "/bin/stratos.sh").setExecutable(true);
             log.info("Changed permissions for stratos.sh");
 
             log.info("Changing extension scripts permissions");
-//            String outputStream = this.executeCommand("chmod -R +x " + agentHome.getCanonicalPath() + "/extensions/*.sh", null).toString();
             File extensionsPath = new File(agentHome.getCanonicalPath() + "/extensions/");
             File[] extensions = extensionsPath.listFiles();
             for (File extension:extensions){
                 extension.setExecutable(true);
-//                Files.setPosixFilePermissions(extension.getCanonicalPath())
             }
             log.info("Changed permissions for extensions : " + outputStream);
 
@@ -327,7 +342,6 @@ public class JavaCartridgeAgentTest {
         try {
             CommandLine commandline = CommandLine.parse(commandText);
             DefaultExecutor exec = new DefaultExecutor();
-            exec.setWorkingDirectory(workingDir);
             if (workingDir != null) {
                 exec.setWorkingDirectory(workingDir);
             }
