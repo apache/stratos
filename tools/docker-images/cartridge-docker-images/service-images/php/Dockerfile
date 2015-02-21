@@ -22,16 +22,16 @@
 FROM stratos/base-image:4.1.0-beta
 MAINTAINER dev@stratos.apache.org
 
-##################
+# ----------------
 # Install PHP
-##################
+# ----------------
 RUN apt-get install -y apache2 php5 zip stress
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 ADD files/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
 EXPOSE 80
 
-#####################
+# ----------------
 # Entrypoint
-#####################
+# ----------------
 ENTRYPOINT /usr/local/bin/run | /usr/sbin/sshd -D
