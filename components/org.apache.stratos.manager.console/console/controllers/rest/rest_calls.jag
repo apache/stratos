@@ -60,15 +60,23 @@ RESTCalls = new function(){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployDeploymentPolicyDefinition = function(applicationID, policyDefinition){
+    this.deployApplicationDeployment = function(applicationID, policyDefinition){
         return this.send("POST","/applications/"+applicationID+"/deploy",policyDefinition);
+    };
+
+    this.deployDeploymentPolicyDefinition = function(policyDefinition){
+        return this.send("POST","/deploymentPolicies", policyDefinition);
     };
 
     this.deployAutoscalePolicyDefinition = function(policyDefinition){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
-    this.deleteAutoscalePolicyDefinition = function(autoscalePolicyId){
+    this.deleteAutoscalePolicyDefinition = function(deploymentPolicyId){
+        return this.send("DELETE","/deploymentPolicies/" + deploymentPolicyId,{});
+    };
+
+    this.deleteDeploymentPolicyDefinition = function(autoscalePolicyId){
         return this.send("DELETE","/autoscalingPolicies/" + autoscalePolicyId,{});
     };
 
@@ -160,8 +168,11 @@ RESTCalls = new function(){
     this.getPolicyAutoScale = function(autoscalePolicyId){
         return this.sendReceive("GET","/autoscalingPolicies/"+autoscalePolicyId,{});
     };
+    this.getPolicyDeployment = function(deployemntPolicyId){
+        return this.sendReceive("GET","/deploymentPolicies/" + deployemntPolicyId ,{});
+    };
 
-    this.getPolicyDeployment = function(){
+    this.getPolicyDeployments = function(){
         return this.sendReceive("GET","/deploymentPolicies",{});
     };
     this.unsubscribeCartridge = function(alias){
