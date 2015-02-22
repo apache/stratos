@@ -3,29 +3,25 @@
     "provider": "apache",
     "host": "tomcat.stratos.org",
     "category": "data",
-    "displayName": "tomcat",
-    "description": "tomcat Cartridge",
+    "displayName": "Tomcat 7",
+    "description": "Tomcat 7 Cartridge",
     "version": "7",
     "multiTenant": "false",
     "portMapping": [
         {
             "protocol": "http",
-            "port": "22",
+            "port": "8080",
             "proxyPort": "8280"
         }
     ],
     "deployment":{
-           "baseDir":"/var/www"
+           "baseDir":"/opt/tomcat/webapps"
     },
     "iaasProvider":[
         {
             "type":"kubernetes",
-            "imageId":"stratos/cartridge:4.1.0-alpha",
+            "imageId":"stratos/tomcat:4.1.0-beta",
             "networkInterfaces":[
-            {
-                "name":"network-non-routable",
-                "networkUuid":""
-            }
             ],
             "property":[
             ]

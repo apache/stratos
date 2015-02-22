@@ -1,0 +1,24 @@
+{  
+   "applicationId":"tomcat-single-sign-on",
+   "alias":"tomcat-single-sign-on",
+   "multiTenant":false,
+   "components":{  
+      "cartridges":[  
+         {  
+            "type":"tomcat",
+                "cartridgeMin": 1,
+                "cartridgeMax": 5,
+				"subscribableInfo":{  
+               	"alias":"tomcat-1",
+               	"autoscalingPolicy":"autoscaling-policy-1",
+                "artifactRepository":{
+                   "privateRepo":false,
+                   "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
+                   "repoUsername":"",
+                   "repoPassword":""
+                }
+            }
+         }
+      ]
+   }
+}

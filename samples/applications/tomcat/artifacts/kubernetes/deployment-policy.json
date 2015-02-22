@@ -1,0 +1,41 @@
+{
+    "applicationPolicy": {
+        "networkPartition": [
+            {
+                "id": "network-partition-1",
+                "activeByDefault": "true",
+                "kubernetesClusterId": "kubernetes-cluster-1",
+                "partitions": [
+                    {
+                        "id": "partition-1",
+                        "provider": "kubernetes",
+                        "property": [
+                            {
+                                "name": "region",
+                                "value": "default"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    "childPolicies": [
+        {
+            "alias": "tomcat-1",
+            "networkPartition": [
+                {
+                    "id": "network-partition-1",
+                    "partitionAlgo": "one-after-another",
+                    "partitions": [
+                        {
+                            "id": "partition-1",
+                            "max": 5
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
