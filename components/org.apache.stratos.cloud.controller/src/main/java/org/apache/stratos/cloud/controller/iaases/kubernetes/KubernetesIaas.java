@@ -296,7 +296,7 @@ public class KubernetesIaas extends Iaas {
             throws KubernetesClientException, InterruptedException {
 
         Labels labels = new Labels();
-        String podId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
+        String podId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
         labels.setName(podId);
 
         Pod pod;
@@ -333,7 +333,7 @@ public class KubernetesIaas extends Iaas {
             Thread.sleep(5000);
         }
 
-        String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
+        String replicationControllerId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
         String message;
         if (podCreated) {
             // Pod created but status did not change to running
@@ -394,7 +394,7 @@ public class KubernetesIaas extends Iaas {
         memberContext.setDynamicPayload(payload);
 
         // Create replication controller
-        String replicationControllerId = CloudControllerUtil.replaceDotsWithDash(memberContext.getMemberId());
+        String replicationControllerId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
         String replicationControllerName = replicationControllerId;
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
@@ -432,8 +432,8 @@ public class KubernetesIaas extends Iaas {
         }
 
         for (PortMapping portMapping : cartridge.getPortMappings()) {
-            String serviceName = CloudControllerUtil.replaceDotsWithDash(clusterId);
-            String serviceId = KubernetesIaasUtil.generateKubernetesServiceId(serviceName, portMapping);
+            String serviceName = CloudControllerUtil.removeSpecialCharacters(clusterId);
+            String serviceId = serviceName;
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Creating kubernetes service: [cluster-id] %s [service-id] %s " +

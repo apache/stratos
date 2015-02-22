@@ -356,10 +356,10 @@ public class CloudControllerUtil {
 		return "[" +partitionStr+ "]";
 	}
 	
-	public static String replaceDotsWithDash(String id) {
-		if (id.indexOf('.') != -1) {
-			id = id.replace('.', '-');
-		}
+	public static String removeSpecialCharacters(String id) {
+		id = id.replace(".", "");
+		id = id.replace("-", "");
+        id = id.replace("_", "");
 		return id;
 	}
 	
