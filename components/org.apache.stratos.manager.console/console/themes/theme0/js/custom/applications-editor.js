@@ -709,6 +709,10 @@ $(document).ready(function(){
         tabData($(this));
     });
 
+    $('#whiteboard').on('dblclick', '.stepnode', function(){
+        document.getElementById('component-data').scrollIntoView();
+    });
+
     function tabData(node){
         //get tab activated
         if(node.attr('id') == 'applicationId'){
