@@ -36,7 +36,8 @@ public interface KubernetesAPIClientInterface {
 	 * @param ports
 	 * @throws KubernetesClientException
 	 */
-	public void createPod(String podId, String podName, String dockerImage, List<Port> ports)
+	public void createPod(String podId, String podName, String dockerImage, List<Port> ports,
+                          EnvironmentVariable[] environmentVariables)
 			throws KubernetesClientException;
 
 	/**
@@ -120,11 +121,10 @@ public interface KubernetesAPIClientInterface {
 	 * @param serviceName
 	 * @param servicePort
 	 * @param containerPortName
-	 * @param publicIp
 	 * @throws KubernetesClientException
 	 */
 	public void createService(String serviceId, String serviceName, int servicePort,
-								 String containerPortName, String publicIp) throws KubernetesClientException;
+								 String containerPortName) throws KubernetesClientException;
 
 	/**
 	 * Get the Service with the given id.

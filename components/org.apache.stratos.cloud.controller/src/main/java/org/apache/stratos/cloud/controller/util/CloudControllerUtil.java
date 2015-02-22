@@ -356,13 +356,6 @@ public class CloudControllerUtil {
 		return "[" +partitionStr+ "]";
 	}
 	
-	public static String removeSpecialCharacters(String id) {
-		id = id.replace(".", "");
-		id = id.replace("-", "");
-        id = id.replace("_", "");
-		return id;
-	}
-	
 	public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
         CloudControllerContext context = CloudControllerContext.getInstance();
 	    

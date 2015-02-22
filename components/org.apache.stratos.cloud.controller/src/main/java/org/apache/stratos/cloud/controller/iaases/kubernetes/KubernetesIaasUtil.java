@@ -114,7 +114,7 @@ public class KubernetesIaasUtil {
         List<Port> ports = new ArrayList<Port>();
         for(PortMapping portMapping : portMappings) {
             Port port = new Port();
-            port.setName(generatePortName(portMapping));
+            port.setName(preparePortNameFromPortMapping(portMapping));
             port.setContainerPort(portMapping.getPort());
             port.setHostPort(portMapping.getKubernetesServicePort());
             ports.add(port);
@@ -123,11 +123,22 @@ public class KubernetesIaasUtil {
     }
 
     /**
-     * Generate port name for port mapping.
+     * Prepare port name for port mapping.
      * @param portMapping
      * @return
      */
-    public static String generatePortName(PortMapping portMapping) {
+    public static String preparePortNameFromPortMapping(PortMapping portMapping) {
         return String.format("%s-%d", portMapping.getProtocol(), portMapping.getPort());
+    }
+
+    /**
+     * Replace dot and underscore with dash character.
+     * @param id
+     * @return
+     */
+    public static String fixSpecialCharacters(String id) {
+        id = id.replace(".", "-");
+        id = id.replace("_", "-");
+        return id;
     }
 }

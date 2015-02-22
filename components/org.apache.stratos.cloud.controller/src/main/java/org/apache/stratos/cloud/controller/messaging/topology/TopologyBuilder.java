@@ -64,7 +64,8 @@ public class TopologyBuilder {
             TopologyManager.acquireWriteLock();
             for (Cartridge cartridge : cartridgeList) {
                 if (!topology.serviceExists(cartridge.getType())) {
-                    service = new Service(cartridge.getType(), cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant);
+                    ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant;
+                    service = new Service(cartridge.getType(), serviceType);
                     List<PortMapping> portMappings = cartridge.getPortMappings();
                     Properties properties = new Properties();
                     for (Map.Entry<String, String> entry : cartridge.getProperties().entrySet()) {

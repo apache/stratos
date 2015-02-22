@@ -32,7 +32,6 @@ import org.apache.stratos.cloud.controller.domain.kubernetes.PortRange;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceUtil;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -144,9 +143,9 @@ public class KubernetesIaas extends Iaas {
             lock = CloudControllerContext.getInstance().acquireMemberContextWriteLock();
 
             handleNullObject(memberContext, "member context is null");
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Starting container: [cartridge-type] %s", memberContext.getCartridgeType()));
-            }
+            log.info(String.format("Starting container: [application] %s [cartridge] %s [member] %s",
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                    memberContext.getMemberId()));
 
             // Validate cluster id
             String clusterId = memberContext.getClusterId();
@@ -155,20 +154,21 @@ public class KubernetesIaas extends Iaas {
 
             // Validate cluster context
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
-            handleNullObject(clusterContext, "cluster context not found: [cluster-id] "
-                    + clusterId + " [member-id] " + memberId);
+            handleNullObject(clusterContext, String.format("Cluster context not found: [application] %s [cartridge] %s " +
+                    "[cluster] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(), clusterId));
 
             // Validate partition
             Partition partition = memberContext.getPartition();
-            handleNullObject(partition, "partition not found in member context: " +
-                    "[cluster-id] " + clusterId + " [member-id] " + memberId);
+            handleNullObject(partition, String.format("partition not found in member context: [application] %s " +
+                    "[cartridge] %s [member] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                    memberContext.getMemberId()));
 
             // Validate cartridge
             String cartridgeType = clusterContext.getCartridgeType();
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if (cartridge == null) {
-                String msg = "cartridge not found: [cartridge-type] " + cartridgeType + " " +
-                        "[cluster-id] " + clusterId + " [member-id] " + memberId;
+                String msg = String.format("Cartridge not found: [application] %s [cartridge] %s",
+                        memberContext.getApplicationId(), memberContext.getCartridgeType());
                 log.error(msg);
                 throw new CartridgeNotFoundException(msg);
             }
@@ -178,8 +178,8 @@ public class KubernetesIaas extends Iaas {
             KubernetesCluster kubernetesCluster = CloudControllerContext.getInstance().
                     getKubernetesCluster(kubernetesClusterId);
             handleNullObject(kubernetesCluster, "kubernetes cluster not found: " +
-                    "[kubernetes-cluster-id] " + kubernetesClusterId + " [cluster-id] " + clusterId +
-                    " [member-id] " + memberId);
+                    "[kubernetes-cluster] " + kubernetesClusterId + " [cluster] " + clusterId +
+                    " [member] " + memberId);
 
             // Prepare kubernetes context
             String kubernetesMasterIp = kubernetesCluster.getKubernetesMaster().getPrivateIPAddress();
@@ -205,27 +205,20 @@ public class KubernetesIaas extends Iaas {
                     kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getUpper(),
                     kubernetesPortRange.getLower());
 
-            // Generate proxy service ports and update port mappings in cartridge
+            // Generate kubernetes service ports and update port mappings in cartridge
             updateKubernetesServicePorts(kubClusterContext, clusterContext.getClusterId(), cartridge);
 
             // Get kubernetes API
             KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
 
-            // Create replication controller
-            createReplicationController(clusterContext, memberContext, kubernetesApi);
+            // Create pod
+            createPod(clusterContext, memberContext, kubernetesApi);
 
-            // Create proxy services for port mappings
-            List<KubernetesService> kubernetesServices = createKubernetesServices(kubernetesApi, clusterContext,
-                    kubClusterContext);
-            clusterContext.setKubernetesServices(kubernetesServices);
-            CloudControllerContext.getInstance().updateClusterContext(clusterContext);
+            // Create kubernetes services for port mappings
+            createKubernetesServices(kubernetesApi, clusterContext, kubClusterContext);
 
             // Wait for pod status to be changed to running
             Pod pod = waitForPodToBeActivated(memberContext, kubernetesApi);
-            if (log.isDebugEnabled()) {
-                log.debug(String.format("Pod created: [cluster-id] %s [member-id] %s [pod-id] %s",
-                        clusterId, memberId, pod.getId()));
-            }
 
             // Create member context
             MemberContext newMemberContext = createNewMemberContext(memberContext, pod, kubernetesCluster);
@@ -233,13 +226,15 @@ public class KubernetesIaas extends Iaas {
 
             // Persist in registry
             CloudControllerContext.getInstance().persist();
-            log.info(String.format("Container started successfully: [cluster-id] %s [member-id] %s",
-                    newMemberContext.getClusterId(), newMemberContext.getMemberId()));
 
+            log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s",
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                    memberContext.getMemberId()));
             return newMemberContext;
         } catch (Exception e) {
-            String msg = String.format("Could not start container: [cartridge-type] %s [member-id] %s",
-                    memberContext.getCartridgeType(), memberContext.getMemberId());
+            String msg = String.format("Could not start container: [application] %s [cartridge] %s [member] %s",
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(),
+                    memberContext.getMemberId());
             log.error(msg, e);
             throw new IllegalStateException(msg, e);
         } finally {
@@ -296,8 +291,8 @@ public class KubernetesIaas extends Iaas {
             throws KubernetesClientException, InterruptedException {
 
         Labels labels = new Labels();
-        String podId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
-        labels.setName(podId);
+        String podName = memberContext.getKubernetesPodName();
+        labels.setName(podName);
 
         Pod pod;
         List<Pod> pods;
@@ -309,22 +304,27 @@ public class KubernetesIaas extends Iaas {
             pods = kubernetesApi.queryPods(new Labels[]{labels});
             if ((pods != null) && (pods.size() > 0)) {
                 if (pods.size() > 1) {
-                    throw new RuntimeException("System error, more than one pod found with the same pod id: " + podId);
+                    throw new RuntimeException("System error, more than one pod found with the same pod name: "
+                            + podName);
                 }
 
                 pod = pods.get(0);
                 podCreated = true;
                 if (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING)) {
-                    log.info(String.format("Pod status changed to running: [member-id] %s [pod-id] %s",
+                    log.info(String.format("Pod status changed to running: [application] %s [cartridge] %s [member] %s " +
+                                    "[pod] %s", memberContext.getApplicationId(), memberContext.getCartridgeType(),
                             memberContext.getMemberId(), pod.getId()));
                     return pod;
                 } else {
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Waiting pod status to be changed to running: [member-id] %s " +
-                                        "[pod-id] %s [current-pod-status] %s ", memberContext.getMemberId(),
-                                pod.getId(), pod.getCurrentState().getStatus().toLowerCase()));
-                    }
+                    log.info(String.format("Waiting pod status to be changed to running: [application] %s " +
+                                    "[cartridge] %s [member] %s [pod] %s", memberContext.getApplicationId(),
+                            memberContext.getCartridgeType(), memberContext.getMemberId(), pod.getId()));
                 }
+            } else {
+                log.info(String.format("Waiting for pod to be created: [application] %s " +
+                                "[cartridge] %s [member] %s [pod] %s", memberContext.getApplicationId(),
+                        memberContext.getCartridgeType(), memberContext.getMemberId(),
+                        memberContext.getKubernetesPodId()));
             }
 
             if ((System.currentTimeMillis() - startTime) > podActivationTimeout) {
@@ -333,21 +333,22 @@ public class KubernetesIaas extends Iaas {
             Thread.sleep(5000);
         }
 
-        String replicationControllerId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
         String message;
         if (podCreated) {
             // Pod created but status did not change to running
             message = String.format("Pod status did not change to running within %d sec: " +
-                            "[cluster-id] %s [member-id] %s [replication-controller-id] %s [pod-id] %s",
-                    (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
-                    replicationControllerId, podId);
+                            "[application] %s [cartridge] %s [member] %s [pod] %s",
+                    (podActivationTimeout.intValue() / 1000),
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId(),
+                    memberContext.getKubernetesPodId());
             log.error(message);
         } else {
             // Pod did not create
             message = String.format("Pod did not create within %d sec: " +
-                            "[cluster-id] %s [member-id] %s [replication-controller-id] %s",
-                    (podActivationTimeout.intValue() / 1000), memberContext.getClusterId(), memberContext.getMemberId(),
-                    replicationControllerId);
+                            "[application] %s [cartridge] %s [member] %s [pod] %s",
+                    (podActivationTimeout.intValue() / 1000),
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId(),
+                    memberContext.getKubernetesPodId());
             log.error(message);
         }
 
@@ -355,37 +356,44 @@ public class KubernetesIaas extends Iaas {
     }
 
     /**
-     * Create new replication controller for the cluster and generate environment variables using member context.
+     * Create new pod and pass environment variables.
      *
      * @param memberContext
      * @param kubernetesApi
      * @throws KubernetesClientException
      */
-    private void createReplicationController(ClusterContext clusterContext, MemberContext memberContext,
-                                             KubernetesApiClient kubernetesApi)
+    private void createPod(ClusterContext clusterContext, MemberContext memberContext,
+                           KubernetesApiClient kubernetesApi)
             throws KubernetesClientException {
+
+        String applicationId = memberContext.getApplicationId();
+        String cartridgeType = memberContext.getCartridgeType();
+        String memberId = memberContext.getMemberId();
+
         if (log.isInfoEnabled()) {
-            log.info(String.format("Creating replication controller: [cartridge-type] %s [member-id] %s",
-                    memberContext.getCartridgeType(), memberContext.getClusterId()));
+            log.info(String.format("Creating kubernetes pod: [application] %s [cartridge] %s [member] %s",
+                    applicationId, cartridgeType, memberId));
         }
 
         Partition partition = memberContext.getPartition();
         if (partition == null) {
-            String message = "Partition not found in member context: [member-id] " + memberContext.getMemberId();
+            String message = String.format("Partition not found in member context: [application] %s [cartridge] %s " +
+                    "[member] %s ", applicationId, cartridgeType,
+                    memberId);
             log.error(message);
             throw new RuntimeException(message);
         }
 
-        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(memberContext.getCartridgeType());
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge == null) {
-            String message = "Could not find cartridge: [cartridge-type] " + memberContext.getCartridgeType();
+            String message = "Could not find cartridge: [cartridge] " + cartridgeType;
             log.error(message);
             throw new RuntimeException(message);
         }
 
         IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partition.getId());
         if (iaasProvider == null) {
-            String message = "Could not find iaas provider: [partition-id] " + partition.getId();
+            String message = "Could not find iaas provider: [partition] " + partition.getId();
             log.error(message);
             throw new RuntimeException(message);
         }
@@ -393,19 +401,25 @@ public class KubernetesIaas extends Iaas {
         // Add dynamic payload to the member context
         memberContext.setDynamicPayload(payload);
 
-        // Create replication controller
-        String replicationControllerId = CloudControllerUtil.removeSpecialCharacters(memberContext.getMemberId());
-        String replicationControllerName = replicationControllerId;
+        // Create pod
+        String podId = KubernetesIaasUtil.fixSpecialCharacters(memberId);
+        String podName = podId;
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
-        int replicas = 1;
 
-        kubernetesApi.createReplicationController(replicationControllerId, replicationControllerName,
-                dockerImage, KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings()), environmentVariables, replicas);
+        kubernetesApi.createPod(podId, podName, dockerImage,
+                KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings()), environmentVariables);
+
+        // Add pod id to member context and persist
+        memberContext.setKubernetesPodId(podId);
+        memberContext.setKubernetesPodName(podName);
+        CloudControllerContext.getInstance().persist();
+
         if (log.isInfoEnabled()) {
-            log.info(String.format("Replication controller created successfully: [cartridge-type] %s [member-id] %s",
-                    memberContext.getCartridgeType(), memberContext.getClusterId()));
+            log.info(String.format("Kubernetes pod created successfully: [application] %s [cartridge] %s [member] %s " +
+                            "[pod] %s", applicationId, cartridgeType,
+                    memberId, memberContext.getKubernetesPodId()));
         }
     }
 
@@ -415,38 +429,51 @@ public class KubernetesIaas extends Iaas {
      * @param kubernetesApi
      * @param clusterContext
      * @param kubernetesClusterContext
-     * @return
      * @throws KubernetesClientException
      */
-    private List<KubernetesService> createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
+    private void createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
                                                              KubernetesClusterContext kubernetesClusterContext) throws KubernetesClientException {
-        List<KubernetesService> kubernetesServices = new ArrayList<KubernetesService>();
 
         String clusterId = clusterContext.getClusterId();
-        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
+        String cartridgeType = clusterContext.getCartridgeType();
+
+        Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge == null) {
-            String message = "Could not create kubernetes services, cartridge not found: [cartridge-type] " +
-                    clusterContext.getCartridgeType();
+            String message = "Could not create kubernetes services, cartridge not found: [cartridge] " +
+                    cartridgeType;
             log.error(message);
             throw new RuntimeException(message);
         }
 
-        for (PortMapping portMapping : cartridge.getPortMappings()) {
-            String serviceName = CloudControllerUtil.removeSpecialCharacters(clusterId);
-            String serviceId = serviceName;
+        List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();
+        if(kubernetesServices == null) {
+            kubernetesServices = new ArrayList<KubernetesService>();
+        }
 
-            if (log.isInfoEnabled()) {
-                log.info(String.format("Creating kubernetes service: [cluster-id] %s [service-id] %s " +
-                                "[protocol] %s [service-port] %d [container-port] %s", clusterId,
-                        serviceId, portMapping.getProtocol(), portMapping.getKubernetesServicePort(),
-                        portMapping.getPort()));
+        int i = kubernetesServices.size();
+        for (PortMapping portMapping : cartridge.getPortMappings()) {
+
+            // Skip if already created
+            int containerPort = portMapping.getPort();
+            if(kubernetesServiceExist(kubernetesServices, containerPort)) {
+                continue;
             }
 
-            int servicePort = portMapping.getKubernetesServicePort();
-            String containerPortName = KubernetesIaasUtil.generatePortName(portMapping);
-            String publicIp = kubernetesClusterContext.getMasterIp();
+            // Service id = cluster id + kubernetes service seq number of cluster
+            String serviceId = KubernetesIaasUtil.fixSpecialCharacters(clusterId + "-" + (++i));
+            String serviceName = serviceId;
 
-            kubernetesApi.createService(serviceId, serviceName, servicePort, containerPortName, publicIp);
+            if (log.isInfoEnabled()) {
+                log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s " +
+                                "[protocol] %s [service-port] %d [container-port] %s", clusterId,
+                        serviceId, portMapping.getProtocol(), portMapping.getKubernetesServicePort(),
+                        containerPort));
+            }
+
+            // Create kubernetes service for port mapping
+            int servicePort = portMapping.getKubernetesServicePort();
+            String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(portMapping);
+            kubernetesApi.createService(serviceId, serviceName, servicePort, containerPortName);
 
             try {
                 Thread.sleep(1000);
@@ -461,16 +488,28 @@ public class KubernetesIaas extends Iaas {
             kubernetesService.setPublicIPs(service.getPublicIPs());
             kubernetesService.setProtocol(portMapping.getProtocol());
             kubernetesService.setPort(service.getPort());
-            kubernetesService.setContainerPort(portMapping.getPort());
+            kubernetesService.setContainerPort(containerPort);
             kubernetesServices.add(kubernetesService);
 
             if (log.isInfoEnabled()) {
-                log.info(String.format("Kubernetes service successfully created: [cluster-id] %s [service-id] %s " +
+                log.info(String.format("Kubernetes service successfully created: [cluster] %s [service] %s " +
                                 "[protocol] %s [service-port] %d [container-port] %s", clusterId,
-                        serviceId, portMapping.getProtocol(), servicePort, portMapping.getPort()));
+                        serviceId, portMapping.getProtocol(), servicePort, containerPort));
             }
         }
-        return kubernetesServices;
+
+        // Add kubernetes services to cluster context and persist
+        clusterContext.setKubernetesServices(kubernetesServices);
+        CloudControllerContext.getInstance().persist();
+    }
+
+    private boolean kubernetesServiceExist(List<KubernetesService> kubernetesServices, int port) {
+        for(KubernetesService kubernetesService : kubernetesServices) {
+            if(kubernetesService.getContainerPort() == port) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void updateKubernetesServicePorts(KubernetesClusterContext kubernetesClusterContext, String clusterId,
@@ -556,7 +595,7 @@ public class KubernetesIaas extends Iaas {
                 }
             }
 
-            // persist
+            // Persist changes
             CloudControllerContext.getInstance().persist();
             return memberContextsRemoved.toArray(new MemberContext[memberContextsRemoved.size()]);
         } finally {
@@ -598,37 +637,25 @@ public class KubernetesIaas extends Iaas {
                     "context not found: [cluster-id] %s [member-id] %s", clusterId, memberId));
             KubernetesApiClient kubApi = kubernetesClusterContext.getKubApi();
 
-            // Remove the pod forcefully
             try {
-                Labels l = new Labels();
-                l.setName(memberId);
-                // execute the label query
-                List<Pod> pods = kubApi.queryPods(new Labels[]{l});
-                for (Pod pod : pods) {
-                    try {
-                        // delete pods forcefully
-                        kubApi.deletePod(pod.getId());
-                    } catch (KubernetesClientException ignore) {
-                        // we can't do nothing here
-                        log.warn(String.format("Could not delete pod: [pod-id] %s", pod.getId()));
-                    }
-                }
-            } catch (KubernetesClientException e) {
-                // we're not going to throw this error, but proceed with other deletions
-                log.error("Could not delete pods of cluster: [cluster-id] " + clusterId, e);
-            }
+                log.info(String.format("Removing kubernetes pod: [application] %s [cartridge] %s [member] %s [pod] %s",
+                        memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId(),
+                        memberContext.getKubernetesPodId()));
 
-            // Remove the replication controller
-            try {
-                kubApi.deleteReplicationController(memberContext.getMemberId());
-                MemberContext memberToBeRemoved = CloudControllerContext.getInstance().getMemberContextOfMemberId(memberId);
-                CloudControllerServiceUtil.executeMemberTerminationPostProcess(memberToBeRemoved);
-                return memberToBeRemoved;
-            } catch (KubernetesClientException e) {
-                String msg = String.format("Failed to terminate member: [cluster-id] %s [member-id] %s", clusterId, memberId);
-                log.error(msg, e);
-                throw new MemberTerminationFailedException(msg, e);
+                // Remove pod
+                kubApi.deletePod(memberContext.getKubernetesPodId());
+                // Persist changes
+                CloudControllerContext.getInstance().persist();
+
+                log.info(String.format("Kubernetes pod removed successfully: [application] %s [cartridge] %s " +
+                                "[member] %s [pod] %s",
+                        memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId(),
+                        memberContext.getKubernetesPodId()));
+            } catch (KubernetesClientException ignore) {
+                // we can't do nothing here
+                log.warn(String.format("Could not delete pod: [pod-id] %s", memberContext.getKubernetesPodId()));
             }
+            return memberContext;
         } finally {
             if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
