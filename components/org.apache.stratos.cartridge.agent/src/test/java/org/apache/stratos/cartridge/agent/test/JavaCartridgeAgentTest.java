@@ -44,6 +44,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -57,6 +59,7 @@ import static junit.framework.Assert.assertTrue;
 /**
  * An integration test that verifies the functionality of the Java cartridge agent
  */
+@RunWith(Parameterized.class)
 public class JavaCartridgeAgentTest {
 
     private static final Log log = LogFactory.getLog(JavaCartridgeAgentTest.class);
@@ -76,11 +79,18 @@ public class JavaCartridgeAgentTest {
     public static final String AGENT_NAME = "apache-stratos-cartridge-agent-4.1.0-SNAPSHOT";
     private static HashMap<String, Executor> executorList;
     private static ArrayList<ServerSocket> serverSocketList;
+    private final ArtifactUpdatedEvent artifactUpdatedEvent;
+    private final Boolean expectedResult;
     private boolean instanceStarted;
     private boolean instanceActivated;
     private ByteArrayOutputStreamLocal outputStream;
     private TopologyEventReceiver topologyEventReceiver;
     private InstanceStatusEventReceiver instanceStatusEventReceiver;
+
+    public JavaCartridgeAgentTest(ArtifactUpdatedEvent artifactUpdatedEvent, Boolean expectedResult) {
+        this.artifactUpdatedEvent = artifactUpdatedEvent;
+        this.expectedResult = expectedResult;
+    }
 
     @BeforeClass
     public static void oneTimeSetUp(){
@@ -153,8 +163,15 @@ public class JavaCartridgeAgentTest {
             try {
                 log.info("Stopping socket server: " + serverSocket.getLocalSocketAddress());
                 serverSocket.close();
-            } catch (IOException ignore) {
+            } catch (IOException e) {
+                log.info("Couldn't stop socket server " + serverSocket.getLocalSocketAddress() + ", " + e.getMessage());
             }
+        }
+
+        try {
+            log.info("Deleting source checkout folder...");
+            FileUtils.deleteDirectory(new File("/tmp/test-jca-source"));
+        } catch (Exception ignore){
         }
 
         this.instanceStatusEventReceiver.terminate();
@@ -164,6 +181,50 @@ public class JavaCartridgeAgentTest {
         this.instanceStarted = false;
     }
 
+    /**
+     * This method returns a collection of {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent}
+     * objects as parameters to the test
+     * @return
+     */
+    @Parameterized.Parameters
+    public static Collection getArtifactUpdatedEventsAsParams(){
+        ArtifactUpdatedEvent publicRepoEvent = createTestArtifactUpdatedEvent();
+
+        ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
+        privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
+        privateRepoEvent.setRepoUserName("testapache2211");
+        privateRepoEvent.setRepoPassword("RExPDGa4GkPJj4kJDzSROQ==");
+
+        ArtifactUpdatedEvent privateRepoEvent2 = createTestArtifactUpdatedEvent();
+        privateRepoEvent2.setRepoURL("https://testapache2211@bitbucket.org/testapache2211/testrepo.git");
+        privateRepoEvent2.setRepoUserName("testapache2211");
+        privateRepoEvent2.setRepoPassword("RExPDGa4GkPJj4kJDzSROQ==");
+
+        return Arrays.asList(new Object[][]{
+                {publicRepoEvent, true},
+                {privateRepoEvent, true},
+                {privateRepoEvent2, true}
+        });
+
+    }
+
+    /**
+     * Creates an {@link org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent} object with a public
+     * repository URL
+     * @return
+     */
+    private static ArtifactUpdatedEvent createTestArtifactUpdatedEvent() {
+        ArtifactUpdatedEvent publicRepoEvent = new ArtifactUpdatedEvent();
+        publicRepoEvent.setClusterId(CLUSTER_ID);
+        publicRepoEvent.setTenantId(TENANT_ID);
+        publicRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
+        return publicRepoEvent;
+    }
+
+    /**
+     * Setup the JCA test path, copy test configurations
+     * @return
+     */
     private String setupJavaAgent() {
         try {
             log.info("Setting up Java cartridge agent test setup");
@@ -230,11 +291,15 @@ public class JavaCartridgeAgentTest {
         }
     }
 
+    /**
+     * Get current folder path
+     * @return
+     */
     private static String getResourcesFolderPath() {
         return StringUtils.removeEnd(JavaCartridgeAgentTest.class.getResource("/").getPath(), File.separator);
     }
 
-    @Test
+    @Test(timeout = TIMEOUT)
     public void testJavaCartridgeAgent() throws Exception {
         Thread communicatorThread = new Thread(new Runnable() {
             @Override
@@ -267,13 +332,7 @@ public class JavaCartridgeAgentTest {
                             }
                             if (line.contains("Artifact repository found")) {
                                 // Send artifact updated event
-                                ArtifactUpdatedEvent artifactUpdatedEvent = new ArtifactUpdatedEvent();
-                                artifactUpdatedEvent.setClusterId(CLUSTER_ID);
-                                artifactUpdatedEvent.setTenantId(TENANT_ID);
-                                artifactUpdatedEvent.setRepoURL("https://bitbucket.org/testapache2211/opentestrepo1.git");
-                                String topicName = MessagingUtil.getMessageTopicName(artifactUpdatedEvent);
-                                EventPublisher eventPublisher = EventPublisherPool.getPublisher(topicName);
-                                eventPublisher.publish(artifactUpdatedEvent);
+                                publishEvent(artifactUpdatedEvent);
                             }
                             if (line.contains("Exception in thread") || line.contains("ERROR")) {
                                 //throw new RuntimeException(line);
@@ -297,7 +356,7 @@ public class JavaCartridgeAgentTest {
         }
 
         assertTrue("Instance started event was not received", instanceStarted);
-        assertTrue("Instance activated event was not received", instanceActivated);
+        assertTrue("Instance activated event was not received", instanceActivated == expectedResult);
     }
 
     /**
@@ -320,12 +379,12 @@ public class JavaCartridgeAgentTest {
             public void run() {
                 try {
                     ServerSocket serverSocket = new ServerSocket(port);
-                    serverSocket.accept();
                     serverSocketList.add(serverSocket);
+                    serverSocket.accept();
                 } catch (IOException e) {
                     String message = "Could not start server socket: [port] " + port;
                     log.error(message, e);
-                    throw new RuntimeException(message, e);
+//                    throw new RuntimeException(message, e);
                 }
             }
         });

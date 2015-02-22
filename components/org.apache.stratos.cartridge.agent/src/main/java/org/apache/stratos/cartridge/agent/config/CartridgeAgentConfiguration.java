@@ -98,7 +98,7 @@ public class CartridgeAgentConfiguration {
             //self.cartridge_key = self.read_property(cartridgeagentconstants.CARTRIDGE_KEY)
             cartridgeKey = readParameterValue(CartridgeAgentConstants.CARTRIDGE_KEY);
             //self.app_path = self.read_property(cartridgeagentconstants.APPLICATION_PATH, False)
-            appPath = readParameterValue(CartridgeAgentConstants.APP_PATH);
+            appPath = readParameterValue(CartridgeAgentConstants.APPLICATION_PATH);
             //self.repo_url = self.read_property(cartridgeagentconstants.REPO_URL, False)
             repoUrl = readParameterValue(CartridgeAgentConstants.REPO_URL);
             //self.ports = str(self.read_property(cartridgeagentconstants.PORTS)).split("|")

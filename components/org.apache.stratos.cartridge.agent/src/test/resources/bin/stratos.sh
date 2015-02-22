@@ -49,7 +49,7 @@ properties="-Dmb.ip=localhost
 	    -Dmonitoring.server.admin.username=admin
 	    -Dmonitoring.server.admin.password=admin
 	    -Dlog.file.paths=LOG_FILE_PATHS
-	    -DAPP_PATH=/tmp/test-jca-source
+	    -DAPPLICATION_PATH=/tmp/test-jca-source
             -Dsuper.tenant.repository.path=/repository/deployment/server/
             -Dtenant.repository.path=/repository/tenants/
 	    -Dextension.instance.started=instance-started.sh
