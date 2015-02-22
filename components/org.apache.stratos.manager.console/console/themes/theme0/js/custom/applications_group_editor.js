@@ -427,6 +427,16 @@ $(document).ready(function(){
         tabData($(this))
     });
 
+    $('#whiteboard').on('dblclick', '.stepnode', function(){
+        var target = $('#group-data-scroll');
+        if( target.length ) {
+            event.preventDefault();
+            $('html, body').animate({
+                scrollTop: target.offset().top - 140
+            }, 1000);
+        }
+    });
+
     //get component JSON data
     $('#component-info-update').on('click', function(){
         $('#'+blockId).attr('data-generated', encodeURIComponent(JSON.stringify(editor.getValue())));
