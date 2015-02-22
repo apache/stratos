@@ -1,7 +1,6 @@
 Tomcat Application
 ==================
-Tomcat application provides an Apache Tomcat 7 cluster. It only contains the tomcat cartridge and has no cartridge
-groups or any dependencies.
+Tomcat application provides an Apache Tomcat 7 cluster. It has no cartridge groups or any dependencies.
 
 Application folder structure
 ----------------------------

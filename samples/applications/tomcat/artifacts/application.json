@@ -1,6 +1,6 @@
 {  
-   "applicationId":"tomcat-single-sign-on",
-   "alias":"tomcat-single-sign-on",
+   "applicationId":"tomcat",
+   "alias":"tomcat",
    "multiTenant":false,
    "components":{  
       "cartridges":[  
