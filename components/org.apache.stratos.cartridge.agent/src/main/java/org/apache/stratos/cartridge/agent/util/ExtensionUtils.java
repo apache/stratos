@@ -24,10 +24,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cartridge.agent.config.CartridgeAgentConfiguration;
 import org.apache.stratos.common.util.CommandUtils;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.File;
@@ -133,66 +130,6 @@ public class ExtensionUtils {
             }
         }
         return null;
-    }
-
-    public static boolean isRelevantMemberEvent(String serviceName, String clusterId, String lbClusterId) {
-        String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
-        if (clusterIdInPayload == null) {
-            return false;
-        }
-        Topology topology = TopologyManager.getTopology();
-        if (topology == null || !topology.isInitialized()) {
-            return false;
-        }
-
-        if (clusterIdInPayload.equals(clusterId)) {
-            return true;
-        }
-
-        if (clusterIdInPayload.equals(lbClusterId)) {
-            return true;
-        }
-
-        String serviceGroupInPayload = CartridgeAgentConfiguration.getInstance().getServiceGroup();
-        if (serviceGroupInPayload != null) {
-            Properties serviceProperties = topology.getService(serviceName).getProperties();
-            if (serviceProperties == null) {
-                return false;
-            }
-            String memberServiceGroup = serviceProperties.getProperty(CartridgeAgentConstants.SERVICE_GROUP_TOPOLOGY_KEY);
-            if (memberServiceGroup != null && memberServiceGroup.equals(serviceGroupInPayload)) {            	
-            	if(serviceName.equals(CartridgeAgentConfiguration.getInstance().getServiceName())) {
-            		if (log.isDebugEnabled()) {
-            			log.debug("Service names are same");
-            		}
-            		return true;
-            	}else if(CartridgeAgentConfiguration.getInstance().getServiceName().equals("apistore") && "publisher".equals(serviceName)) {
-            		if (log.isDebugEnabled()) {
-            			log.debug("Service name in payload is [store]. Serivce name in event is ["+serviceName+"] ");
-            		}
-            		return true;
-            	}else if(CartridgeAgentConfiguration.getInstance().getServiceName().equals("publisher") && "apistore".equals(serviceName)) {
-            		if (log.isDebugEnabled()) {
-            			log.debug("Service name in payload is [publisher]. Serivce name in event is ["+serviceName+"] ");
-            		}
-            		return true;
-            	}else if(CartridgeAgentConstants.DEPLOYMENT_WORKER.equals(CartridgeAgentConfiguration.getInstance().getDeployment()) &&
-            			serviceName.equals(CartridgeAgentConfiguration.getInstance().getManagerServiceName())) {
-            		if (log.isDebugEnabled()) {
-            			log.debug("Deployment is worker. Worker's manager service name & service name in event are same");
-            		}
-            		return true;
-            	}else if (CartridgeAgentConstants.DEPLOYMENT_MANAGER.equals(CartridgeAgentConfiguration.getInstance().getDeployment()) &&
-            			serviceName.equals(CartridgeAgentConfiguration.getInstance().getWorkerServiceName())) {
-            		if (log.isDebugEnabled()) {
-            			log.debug("Deployment is manager. Manager's worker service name & service name in event are same");
-            		}
-            		return true;
-            	}
-            }
-        }
-                
-        return false;
     }
 
     private static Map<String, String> cleanProcessParameters(Map<String, String> envParameters) {
@@ -510,7 +447,7 @@ public class ExtensionUtils {
             String command = prepareCommand(script);
             addPayloadParameters(envParameters);
             cleanProcessParameters(envParameters);
-            String output = CommandUtils.executeCommand(command, envParameters);
+            CommandUtils.executeCommand(command, envParameters);
         } catch (Exception e) {
             log.error("Could not execute tenant subscribed extension", e);
         }
@@ -525,7 +462,7 @@ public class ExtensionUtils {
             String command = prepareCommand(script);
             addPayloadParameters(envParameters);
             cleanProcessParameters(envParameters);
-            String output = CommandUtils.executeCommand(command, envParameters);
+            CommandUtils.executeCommand(command, envParameters);
         } catch (Exception e) {
             log.error("Could not execute tenant un-subscribed extension", e);
         }
@@ -550,7 +487,7 @@ public class ExtensionUtils {
         }
     }
 
-    public static boolean checkTopologyConsistency(String serviceName, String clusterId, String memberId){
+    public static boolean checkTopologyConsistency(String serviceName, String clusterId, String memberId) {
         Topology topology = TopologyManager.getTopology();
         Service service = topology.getService(serviceName);
         if (service == null) {
@@ -559,6 +496,7 @@ public class ExtensionUtils {
             }
             return false;
         }
+
         Cluster cluster = service.getCluster(clusterId);
         if (cluster == null) {
             if (log.isErrorEnabled()) {
@@ -566,13 +504,49 @@ public class ExtensionUtils {
             }
             return false;
         }
+
         Member activatedMember = cluster.getMember(memberId);
         if (activatedMember == null) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Member id not found in topology [member] %s", memberId));
             }
             return false;
+        } else if (activatedMember.getStatus() != MemberStatus.Initialized) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Member found in topology, but not in initialized state [member] %s", memberId));
+            }
+            return false;
         }
+
+        return true;
+    }
+
+    public static boolean memberExistsInTopology(String serviceNameInPayload, String clusterIdInPayload, String memberIdInPayload) {
+        Topology topology = TopologyManager.getTopology();
+        Service service = topology.getService(serviceNameInPayload);
+        if (service == null) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Service not found in topology [service] %s", serviceNameInPayload));
+            }
+            return false;
+        }
+
+        Cluster cluster = service.getCluster(clusterIdInPayload);
+        if (cluster == null) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Cluster id not found in topology [cluster] %s", clusterIdInPayload));
+            }
+            return false;
+        }
+
+        Member activatedMember = cluster.getMember(memberIdInPayload);
+        if (activatedMember == null) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Member id not found in topology [member] %s", memberIdInPayload));
+            }
+            return false;
+        }
+
         return true;
     }
 }
