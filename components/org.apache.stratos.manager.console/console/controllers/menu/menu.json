@@ -28,6 +28,15 @@
                     "description": "Define policies which specify inbound requests, memory usage and CPU usage etc."
                 },
                 {
+                    "link": "configure/deploymentpolicies/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Deployment Policies",
+                    "icon": "fa-road",
+                    "permissionPaths": ["/permission", "/permission/admin"],
+                    "description": "Define specific policies for application deployment."
+                },
+                {
                     "link": "configure/cartridges/",
                     "linkexternal": false,
                     "context": "/configure",

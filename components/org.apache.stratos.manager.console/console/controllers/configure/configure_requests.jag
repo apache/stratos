@@ -36,6 +36,9 @@ try {
         case "autoscalingpolicies":
             formSubmit = util.RESTCalls.deployAutoscalePolicyDefinition(formPayload);
             break;
+        case "deploymentpolicies":
+            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(formPayload);
+            break;
         case "cartridges":
             formSubmit = util.RESTCalls.deployCartridgeDefinition(formPayload);
             break;
@@ -49,6 +52,9 @@ try {
             formSubmit = util.RESTCalls.deleteCartridgeDefinition(formPayload);
             break;
         case "delete-autoscalingpolicy":
+            formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
+            break;
+        case "delete-deploymentpolicy":
             formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
             break;
         case "delete-kubernetes-cluster":

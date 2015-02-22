@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "root",
+    "type": "object",
+    "title":"Deployment Policy Definition",
+    "name": "Deployment Policy",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "properties": {
+        "id": {
+            "id": "root/id",
+            "type": "string",
+            "title":"Deployment policy ID"
+        },
+        "networkPartition": {
+            "id": "root/networkPartition",
+            "title":"Network Partitions",
+            "type": "array",
+            "items": {
+                "id": "root/networkPartition/0",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "id": "root/networkPartition/0/id",
+                        "type": "string",
+                        "title":"Network Partition ID",
+                    },
+                    "partitionAlgo": {
+                        "id": "root/networkPartition/0/partitionAlgo",
+                        "type": "string",
+                        "title":"Network Partition Algorithm",
+                        "enum": ["round-robin", "one-after-another"],
+                        "maxItems":1
+                    },
+                    "partitions": {
+                        "id": "root/networkPartition/0/partitions",
+                        "type": "array",
+                        "items": {
+                            "id": "root/networkPartition/0/partitions/0",
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "id": "root/networkPartition/0/partitions/0/id",
+                                    "type": "string",
+                                    "title":"Partition ID",
+                                },
+                                "max": {
+                                    "id": "root/networkPartition/0/partitions/0/max",
+                                    "type": "integer",
+                                    "format": "number"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "id",
+        "networkPartition"
+    ]
+}
