@@ -710,7 +710,13 @@ $(document).ready(function(){
     });
 
     $('#whiteboard').on('dblclick', '.stepnode', function(){
-        document.getElementById('component-data').scrollIntoView();
+        var target = $('#component-data');
+        if( target.length ) {
+            event.preventDefault();
+            $('html, body').animate({
+                scrollTop: target.offset().top
+            }, 1000);
+        }
     });
 
     function tabData(node){
