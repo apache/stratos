@@ -259,15 +259,20 @@ public class RuleTasksDelegator {
     }
 
     public void delegateTerminate(ClusterLevelPartitionContext clusterMonitorPartitionContext, String memberId) {
-        log.info("Starting to terminate Member [ " + memberId + " ], in Partition [ " +
-                clusterMonitorPartitionContext.getPartitionId() + " ], NW Partition [ " +
-                clusterMonitorPartitionContext.getNetworkPartitionId() + " ]");
 
         try {
             //Moving member to pending termination list
             if (clusterMonitorPartitionContext.activeMemberAvailable(memberId)) {
+
+                log.info(String.format("Moving active member to termination pending list [member id] %s [partition] %s " +
+                                "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
+                        clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
+
+                log.info(String.format("Moving pending member to termination pending list [member id] %s [partition] %s " +
+                                "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
+                        clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
             }
         } catch (Exception e) {
