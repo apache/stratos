@@ -130,6 +130,8 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
+    private static final String ENDPOINT_UPDATE_USER = API_CONTEXT + "/users";
+    private static final String ENDPOINT_UPDATE_TENANT = API_CONTEXT + "/tenants";
 
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -452,6 +454,46 @@ public class RestCommandLineService {
     }
 
     /**
+     * Update an existing tenant
+     * @throws CommandException
+     */
+    public void updateTenant(int id,String admin, String firstName, String lastName, String password, String domain, String email)
+            throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            TenantInfoBean tenantInfo = new TenantInfoBean();
+            tenantInfo.setAdmin(admin);
+            tenantInfo.setFirstname(firstName);
+            tenantInfo.setLastname(lastName);
+            tenantInfo.setAdminPassword(password);
+            tenantInfo.setTenantDomain(domain);
+            tenantInfo.setEmail(email);
+            tenantInfo.setTenantId(id);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
+
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_UPDATE_TENANT, jsonString);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
+                System.out.println("Tenant updated successfully: "+domain);
+                return;
+            }
+        } catch (Exception e) {
+            String message = "Could not update tenant: "+domain;
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    /**
      * Add user
      * @throws CommandException
      */
@@ -485,6 +527,46 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             String message = "Could not add user";
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    /**
+     * Update user
+     * @throws CommandException
+     */
+    public void updateUser(String userName, String credential, String role, String firstName, String lastName, String email, String profileName)
+            throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            UserInfoBean userInfoBean = new UserInfoBean();
+            userInfoBean.setUserName(userName);
+            userInfoBean.setCredential(credential);
+            userInfoBean.setRole(role);
+            userInfoBean.setFirstName(firstName);
+            userInfoBean.setLastName(lastName);
+            userInfoBean.setEmail(email);
+            userInfoBean.setProfileName(profileName);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(userInfoBean, UserInfoBean.class);
+
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_UPDATE_USER, jsonString);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
+                System.out.println("User updated successfully: "+userName);
+                return;
+            }
+        } catch (Exception e) {
+            String message = "Could not update user: "+userName;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();

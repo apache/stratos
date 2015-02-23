@@ -252,6 +252,12 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeApplicationRuntimeCommand();
         commands.put(command.getName(), command);
 
+        command = new UpdateUserCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateTenantCommand();
+        commands.put(command.getName(), command);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
         }
