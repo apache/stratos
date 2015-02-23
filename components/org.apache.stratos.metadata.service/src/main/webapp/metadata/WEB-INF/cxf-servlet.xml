@@ -33,21 +33,13 @@
         <jaxrs:providers>
             <ref bean="throwableExceptionHandler"/>
 			<ref bean="genericExceptionHandler"/>
-            <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
+            <ref bean="jsonProvider"/>
 	    <ref bean="OAuthFilter"/>
-            <ref bean="basicAuthenticationFilter"/>
-            <ref bean="sessionAuthenticationFilter"/>
-            <!--<ref bean="authorizationFilter"/>-->
         </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="stratosRestEndpointBean" class="org.apache.stratos.metadata.service.services.MetaDataAdmin"/>
-    <bean id="basicAuthenticationFilter" class="org.apache.stratos.metadata.service.handlers.StratosAuthenticationHandler"/>
-    <bean id="sessionAuthenticationFilter" class="org.apache.stratos.metadata.service.handlers.CookieBasedAuthenticationHandler"/>
-    <bean id="authorizationFilter" class="org.apache.stratos.metadata.service.handlers.StratosAuthorizingHandler">
-        <property name="securedObject" ref="stratosRestEndpointBean"/>
-    </bean>
     <bean id="exceptionHandler" class="org.apache.stratos.metadata.service.handlers.CustomExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.metadata.service.handlers.GenericExceptionMapper"/>
     <bean id="throwableExceptionHandler" class="org.apache.stratos.metadata.service.handlers.CustomThrowableExceptionMapper"/>
