@@ -20,12 +20,6 @@
 
 <configuration>
     <autoscaler>
-        <rulesEvaluator>
-            <schedule>
-                <initialDelay>30</initialDelay>
-                <period>15</period>
-            </schedule>
-        </rulesEvaluator>
         <cloudController>
             <hostname>localhost</hostname>
             <port>9443</port>

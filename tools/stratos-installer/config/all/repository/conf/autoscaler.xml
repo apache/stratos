@@ -19,12 +19,6 @@
 -->
 <configuration>
 	<autoscaler>
-            <rulesEvaluator>
-	        <schedule>
-		    <initialDelay>30</initialDelay>
-	            <period>15</period>
-	        </schedule>
-	    </rulesEvaluator>
 	    <cloudController>
 	        <hostname>CC_HOSTNAME</hostname>
 		    <port>CC_LISTEN_PORT</port>
