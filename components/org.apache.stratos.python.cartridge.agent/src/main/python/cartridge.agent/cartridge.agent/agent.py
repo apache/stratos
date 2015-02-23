@@ -24,6 +24,7 @@ from modules.event.instance.notifier.events import *
 from modules.event.tenant.events import *
 from modules.event.topology.events import *
 from modules.event.application.signup.events import *
+from modules.event.domain.mapping.events import *
 from modules.tenant.tenantcontext import *
 from modules.topology.topologycontext import *
 from modules.datapublisher.logpublisher import *
@@ -161,10 +162,10 @@ class CartridgeAgent(threading.Thread):
 
     def register_tenant_event_listeners(self):
         self.__log.debug("Starting tenant event message receiver thread")
-        self.__tenant_topic_subscriber.register_handler("SubscriptionDomainAddedEvent",
-                                                        self.on_subscription_domain_added)
-        self.__tenant_topic_subscriber.register_handler("SubscriptionDomainsRemovedEvent",
-                                                        self.on_subscription_domain_removed)
+        self.__tenant_topic_subscriber.register_handler("DomainMappingAddedEvent",
+                                                        self.on_domain_mapping_added)
+        self.__tenant_topic_subscriber.register_handler("DomainsMappingRemovedEvent",
+                                                        self.on_domain_mapping_removed)
         self.__tenant_topic_subscriber.register_handler("CompleteTenantEvent", self.on_complete_tenant)
         self.__tenant_topic_subscriber.register_handler("TenantSubscribedEvent", self.on_tenant_subscribed)
 
@@ -260,15 +261,15 @@ class CartridgeAgent(threading.Thread):
         event_obj = MemberStartedEvent.create_from_json(msg.payload)
         self.__event_handler.on_member_started_event(event_obj)
 
-    def on_subscription_domain_added(self, msg):
+    def on_domain_mapping_added(self, msg):
         self.__log.debug("Subscription domain added event received : %r" % msg.payload)
-        event_obj = SubscriptionDomainAddedEvent.create_from_json(msg.payload)
-        self.__event_handler.on_subscription_domain_added_event(event_obj)
+        event_obj = DomainMappingAddedEvent.create_from_json(msg.payload)
+        self.__event_handler.on_domain_mapping_added_event(event_obj)
 
-    def on_subscription_domain_removed(self, msg):
+    def on_domain_mapping_removed(self, msg):
         self.__log.debug("Subscription domain removed event received : %r" % msg.payload)
-        event_obj = SubscriptionDomainRemovedEvent.create_from_json(msg.payload)
-        self.__event_handler.on_subscription_domain_removed_event(event_obj)
+        event_obj = DomainMappingRemovedEvent.create_from_json(msg.payload)
+        self.__event_handler.on_domain_mapping_removed_event(event_obj)
 
     def on_complete_tenant(self, msg):
         if not self.__tenant_context_initialized:

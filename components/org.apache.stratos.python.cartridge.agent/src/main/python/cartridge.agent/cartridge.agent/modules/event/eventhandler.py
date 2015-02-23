@@ -407,36 +407,40 @@ class EventHandler:
         self.__log.info("Processing volume mount extension...")
         self.execute_plugins_for_event("VolumeMount", persistence_mappings_payload)
 
-    def on_subscription_domain_added_event(self, subscription_domain_added_event):
-        tenant_domain = EventHandler.find_tenant_domain(subscription_domain_added_event.tenant_id)
+    def on_domain_mapping_added_event(self, domain_mapping_added_event):
+        tenant_domain = EventHandler.find_tenant_domain(domain_mapping_added_event.tenant_id)
         self.__log.info(
-            "Processing Subscription domain added event: [tenant-id] " + subscription_domain_added_event.tenant_id +
-            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_added_event.domain_name +
-            " [application-context] " + subscription_domain_added_event.application_context
+            "Processing Domain mapping added event: [tenant-id] " + domain_mapping_added_event.tenant_id +
+            " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_added_event.domain_name +
+            " [application-context] " + domain_mapping_added_event.application_context
         )
 
-        plugin_values = {"SUBSCRIPTION_SERVICE_NAME": subscription_domain_added_event.service_name,
-                         "SUBSCRIPTION_DOMAIN_NAME": subscription_domain_added_event.domain_name,
-                         "SUBSCRIPTION_TENANT_ID": int(subscription_domain_added_event.tenant_id),
+        plugin_values = {"SUBSCRIPTION_APPLICATION_ID": domain_mapping_added_event.application_id,
+                         "SUBSCRIPTION_SERVICE_NAME": domain_mapping_added_event.service_name,
+                         "SUBSCRIPTION_DOMAIN_NAME": domain_mapping_added_event.domain_name,
+                         "SUBSCRIPTION_CLUSTER_ID": domain_mapping_added_event.cluster_id,
+                         "SUBSCRIPTION_TENANT_ID": int(domain_mapping_added_event.tenant_id),
                          "SUBSCRIPTION_TENANT_DOMAIN": tenant_domain,
-                         "SUBSCRIPTION_APPLICATION_CONTEXT":
-                             subscription_domain_added_event.application_context}
+                         "SUBSCRIPTION_CONTEXT_PATH":
+                             domain_mapping_added_event.context_path}
 
-        self.execute_plugins_for_event("SubscriptionDomainAddedEvent", plugin_values)
+        self.execute_plugins_for_event("DomainMappingAddedEvent", plugin_values)
 
-    def on_subscription_domain_removed_event(self, subscription_domain_removed_event):
-        tenant_domain = EventHandler.find_tenant_domain(subscription_domain_removed_event.tenant_id)
+    def on_domain_mapping_removed_event(self, domain_mapping_removed_event):
+        tenant_domain = EventHandler.find_tenant_domain(domain_mapping_removed_event.tenant_id)
         self.__log.info(
-            "Subscription domain removed event received: [tenant-id] " + subscription_domain_removed_event.tenant_id +
-            " [tenant-domain] " + tenant_domain + " [domain-name] " + subscription_domain_removed_event.domain_name
+            "Domain mapping removed event received: [tenant-id] " + domain_mapping_removed_event.tenant_id +
+            " [tenant-domain] " + tenant_domain + " [domain-name] " + domain_mapping_removed_event.domain_name
         )
 
-        plugin_values = {"SUBSCRIPTION_SERVICE_NAME": subscription_domain_removed_event.service_name,
-                         "SUBSCRIPTION_DOMAIN_NAME": subscription_domain_removed_event.domain_name,
-                         "SUBSCRIPTION_TENANT_ID": int(subscription_domain_removed_event.tenant_id),
+        plugin_values = {"SUBSCRIPTION_APPLICATION_ID": domain_mapping_removed_event.application_id,
+                         "SUBSCRIPTION_SERVICE_NAME": domain_mapping_removed_event.service_name,
+                         "SUBSCRIPTION_DOMAIN_NAME": domain_mapping_removed_event.domain_name,
+                         "SUBSCRIPTION_CLUSTER_ID": domain_mapping_removed_event.cluster_id,
+                         "SUBSCRIPTION_TENANT_ID": int(domain_mapping_removed_event.tenant_id),
                          "SUBSCRIPTION_TENANT_DOMAIN": tenant_domain}
 
-        self.execute_plugins_for_event("SubscriptionDomainRemovedEvent", plugin_values)
+        self.execute_plugins_for_event("DomainMappingRemovedEvent", plugin_values)
 
     def on_copy_artifacts_extension(self, src, dest):
         self.__log.info("Processing Copy artifacts extension...")

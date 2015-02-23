@@ -25,5 +25,5 @@
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-OUTPUT=`date`": Subscription Domain Added Event"
+OUTPUT=`date`": Domain Mapping Added Event"
 echo $OUTPUT | tee -a $log

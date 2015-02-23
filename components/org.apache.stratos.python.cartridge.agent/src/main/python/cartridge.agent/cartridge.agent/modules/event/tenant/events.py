@@ -19,59 +19,6 @@ import json
 from ... tenant.tenantcontext import *
 
 
-class SubscriptionDomainAddedEvent():
-
-    def __init__(self):
-        self.tenant_id = None
-        """ :type : int  """
-        self.service_name = None
-        """ :type : str  """
-        self.cluster_ids = None
-        """ :type : list[str]  """
-        self.domain_name = None
-        """ :type : str  """
-        self.application_context = None
-        """ :type : str  """
-
-    @staticmethod
-    def create_from_json(json_str):
-        json_obj = json.loads(json_str)
-        instance = SubscriptionDomainAddedEvent()
-
-        instance.cluster_ids = json_obj["clusterIds"] if "clusterIds" in json_obj else None
-        instance.tenant_id = json_obj["tenantId"] if "tenantId" in json_obj else None
-        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
-        instance.domain_name = json_obj["domainName"] if "domainName" in json_obj else None
-        instance.application_context = json_obj["applicationContext"] if "applicationContext" in json_obj else None
-
-        return instance
-
-
-class SubscriptionDomainRemovedEvent:
-
-    def __init__(self, tenant_id, service_name, cluster_ids, domain_name):
-        self.tenant_id = tenant_id
-        """ :type : int  """
-        self.service_name = service_name
-        """ :type : str  """
-        self.cluster_ids = cluster_ids
-        """ :type : list[str]  """
-        self.domain_name = domain_name
-        """ :type : str  """
-
-    @staticmethod
-    def create_from_json(json_str):
-        json_obj = json.loads(json_str)
-        instance = SubscriptionDomainRemovedEvent()
-
-        instance.cluster_ids = json_obj["clusterIds"] if "clusterIds" in json_obj else None
-        instance.tenant_id = json_obj["tenantId"] if "tenantId" in json_obj else None
-        instance.service_name = json_obj["serviceName"] if "serviceName" in json_obj else None
-        instance.domain_name = json_obj["domainName"] if "domainName" in json_obj else None
-
-        return instance
-
-
 class CompleteTenantEvent:
 
     def __init__(self):

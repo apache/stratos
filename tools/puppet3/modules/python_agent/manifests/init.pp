@@ -53,8 +53,8 @@ class python_agent(
     'extensions/member-suspended.sh',
     'extensions/member-terminated.sh',
     'extensions/mount-volumes.sh',
-    'extensions/subscription-domain-added.sh',
-    'extensions/subscription-domain-removed.sh',
+    'extensions/domain-mapping-added.sh',
+    'extensions/domain-mapping-removed.sh',
   ]
 
  python_agent::initialize { $service_code:

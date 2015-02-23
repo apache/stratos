@@ -20,16 +20,10 @@
 #
 # --------------------------------------------------------------
 # This extension script will be executed when subscription domain
-# added event is received.
+# removed event is received.
 # --------------------------------------------------------------
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-OUTPUT=`date`": Subscription Domain Added Event"
-OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_SERVICE_NAME: ${STRATOS_SUBSCRIPTION_SERVICE_NAME},"
-OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_DOMAIN_NAME: ${STRATOS_SUBSCRIPTION_DOMAIN_NAME},"
-OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_ID: ${STRATOS_SUBSCRIPTION_TENANT_ID},"
-OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_DOMAIN: $STRATOS_SUBSCRIPTION_TENANT_DOMAIN},"
-OUTPUT="$OUTPUT APP_PATH: ${APP_PATH},"
-OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT: ${STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT}"
+OUTPUT=`date`": Domain Mapping Removed Event"
 echo $OUTPUT | tee -a $log

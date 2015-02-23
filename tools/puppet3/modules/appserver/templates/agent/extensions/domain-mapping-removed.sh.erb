@@ -19,11 +19,18 @@
 # under the License.
 #
 # --------------------------------------------------------------
-# This extension script will be executed when subscription domain
-# removed event is received.
+# This extension script will be executed when a subscription domain removed
+# event is received by the cartridge agent.
 # --------------------------------------------------------------
 #
 
 log=/var/log/apache-stratos/cartridge-agent-extensions.log
-OUTPUT=`date`": Subscription Domain Removed Event"
+OUTPUT=`date`": Domain Mapping Removed Event"
+OUTPUT="$OUTPUT SUBSCRIPTION_APPLICATION_ID: ${SUBSCRIPTION_APPLICATION_ID},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_SERVICE_NAME: ${STRATOS_SUBSCRIPTION_SERVICE_NAME},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_DOMAIN_NAME: ${STRATOS_SUBSCRIPTION_DOMAIN_NAME},"
+OUTPUT="$OUTPUT SUBSCRIPTION_CLUSTER_ID: ${SUBSCRIPTION_CLUSTER_ID},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_ID: ${STRATOS_SUBSCRIPTION_TENANT_ID},"
+OUTPUT="$OUTPUT APPLICATION_PATH: ${APPLICATION_PATH},"
+OUTPUT="$OUTPUT STRATOS_SUBSCRIPTION_TENANT_DOMAIN: $STRATOS_SUBSCRIPTION_TENANT_DOMAIN}"
 echo $OUTPUT | tee -a $log

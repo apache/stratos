@@ -53,8 +53,8 @@ class agent(
     'extensions/member-suspended.sh',
     'extensions/member-terminated.sh',
     'extensions/mount-volumes.sh',
-    'extensions/subscription-domain-added.sh',
-    'extensions/subscription-domain-removed.sh',
+    'extensions/domain-mapping-added.sh',
+    'extensions/domain-mapping-removed.sh',
     ]
 
   agent::initialize { $deployment_code:
