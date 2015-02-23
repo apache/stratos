@@ -16,14 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -32,13 +28,12 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddUserCommand implements Command<StratosCommandContext> {
-
-    private static final Logger logger = LoggerFactory.getLogger(AddUserCommand.class);
+public class UpdateUserCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(UpdateUserCommand.class);
 
     private final Options options;
 
-    public AddUserCommand(){
+    public UpdateUserCommand(){
         options = constructOptions();
     }
 
@@ -51,12 +46,12 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         options.addOption(usernameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
-                                           "User credential");
+                "User credential");
         passwordOption.setArgName("credential");
         options.addOption(passwordOption);
 
         Option roleOption = new Option(CliConstants.ROLE_NAME_OPTION, CliConstants.ROLE_NAME_LONG_OPTION, true,
-                                           "User Role");
+                "User Role");
         roleOption.setArgName("role");
         options.addOption(roleOption);
 
@@ -71,7 +66,7 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         options.addOption(lastnameOption);
 
         Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true,
-                                        "User email");
+                "User email");
         emailOption.setArgName("email");
         options.addOption(emailOption);
 
@@ -84,11 +79,11 @@ public class AddUserCommand implements Command<StratosCommandContext> {
     }
 
     public String getName() {
-        return "add-user";
+        return "update-user";
     }
 
     public String getDescription() {
-        return "Add new user";
+        return "Update an existing user";
     }
 
     public String getArgumentSyntax() {
@@ -116,7 +111,7 @@ public class AddUserCommand implements Command<StratosCommandContext> {
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Add user");
+                    logger.debug("Update user");
                 }
 
                 if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
@@ -168,7 +163,7 @@ public class AddUserCommand implements Command<StratosCommandContext> {
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().addUser(userName, credential, role, firstName, lastName, email, profileName);
+                RestCommandLineService.getInstance().updateUser(userName, credential, role, firstName, lastName, email, profileName);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
