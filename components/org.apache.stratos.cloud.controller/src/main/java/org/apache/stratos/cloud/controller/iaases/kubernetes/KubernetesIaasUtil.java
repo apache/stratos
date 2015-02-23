@@ -63,8 +63,8 @@ public class KubernetesIaasUtil {
         List<EnvironmentVariable> environmentVariables = new ArrayList<EnvironmentVariable>();
 
         // Set dynamic payload
-        List<NameValuePair> payload = memberContext.getDynamicPayload();
-        if (payload != null) {
+        NameValuePair[] payload = memberContext.getDynamicPayload();
+        if (payload != null && payload.length != 0) {
             for (NameValuePair parameter : payload) {
                 addToEnvironmentVariables(environmentVariables, parameter.getName(), parameter.getValue());
             }

@@ -399,7 +399,7 @@ public class KubernetesIaas extends Iaas {
         }
 
         // Add dynamic payload to the member context
-        memberContext.setDynamicPayload(payload);
+        memberContext.setDynamicPayload(payload.toArray(new NameValuePair[payload.size()]));
 
         // Create pod
         String podId = KubernetesIaasUtil.fixSpecialCharacters(memberId);

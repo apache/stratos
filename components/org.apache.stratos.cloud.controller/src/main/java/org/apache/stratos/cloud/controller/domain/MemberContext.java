@@ -72,7 +72,7 @@ public class MemberContext implements Serializable {
     private InstanceMetadata instanceMetadata;
     // Properties
     private Properties properties;
-    private List<NameValuePair> dynamicPayload;
+    private NameValuePair[] dynamicPayload;
     private String kubernetesPodId;
     private String kubernetesPodName;
 
@@ -255,11 +255,11 @@ public class MemberContext implements Serializable {
         return clusterInstanceId;
     }
 
-    public void setDynamicPayload(List<NameValuePair> dynamicPayload) {
+    public void setDynamicPayload(NameValuePair[] dynamicPayload) {
         this.dynamicPayload = dynamicPayload;
     }
 
-    public List<NameValuePair> getDynamicPayload() {
+    public NameValuePair[] getDynamicPayload() {
         return dynamicPayload;
     }
 
