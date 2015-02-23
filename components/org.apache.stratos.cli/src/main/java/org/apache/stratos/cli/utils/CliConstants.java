@@ -352,6 +352,9 @@ public class CliConstants {
     public static final String EMAIL_OPTION = "e";
     public static final String EMAIL_LONG_OPTION = "email";
 
+    public static final String ID_OPTION = "i";
+    public static final String ID_LONG_OPTION = "tenant-id";
+
     public static final String ACTIVE_OPTION = "a";
     public static final String ACTIVE_LONG_OPTION = "active";
 
