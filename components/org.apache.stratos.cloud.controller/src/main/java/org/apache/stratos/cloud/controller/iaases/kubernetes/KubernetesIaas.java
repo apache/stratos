@@ -56,7 +56,7 @@ public class KubernetesIaas extends Iaas {
 
     private static final Log log = LogFactory.getLog(KubernetesIaas.class);
 
-    private static final long DEFAULT_POD_ACTIVATION_TIMEOUT = 300000; // 5 min
+    private static final long DEFAULT_POD_ACTIVATION_TIMEOUT = 60000; // 1 min
     private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
     private static final String PAYLOAD_PARAMETER_PREFIX = "payload_parameter.";
