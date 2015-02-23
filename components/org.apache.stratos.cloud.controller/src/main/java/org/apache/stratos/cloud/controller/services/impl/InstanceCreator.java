@@ -114,6 +114,11 @@ public class InstanceCreator implements Runnable {
         CloudControllerContext.getInstance().updateMemberContext(memberContext);
         CloudControllerContext.getInstance().persist();
 
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Member context updated: [application] %s [cartridge] %s [member] %s",
+                    memberContext.getApplicationId(), memberContext.getCartridgeType(), memberContext.getMemberId()));
+        }
+
         return memberContext;
     }
 

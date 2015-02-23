@@ -208,10 +208,8 @@ public class KubernetesIaas extends Iaas {
             // Generate kubernetes service ports and update port mappings in cartridge
             updateKubernetesServicePorts(kubClusterContext, clusterContext.getClusterId(), cartridge);
 
-            // Get kubernetes API
-            KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
-
             // Create pod
+            KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
             createPod(clusterContext, memberContext, kubernetesApi);
 
             // Create kubernetes services for port mappings
@@ -220,23 +218,19 @@ public class KubernetesIaas extends Iaas {
             // Wait for pod status to be changed to running
             Pod pod = waitForPodToBeActivated(memberContext, kubernetesApi);
 
-            // Create member context
-            MemberContext newMemberContext = createNewMemberContext(memberContext, pod, kubernetesCluster);
-            CloudControllerContext.getInstance().addMemberContext(newMemberContext);
+            // Update member context
+            updateMemberContext(memberContext, pod, kubernetesCluster);
 
-            // Persist in registry
-            CloudControllerContext.getInstance().persist();
-
-            log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s",
+            log.info(String.format("Container started successfully: [application] %s [cartridge] %s [member] %s [pod]",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(),
-                    memberContext.getMemberId()));
-            return newMemberContext;
+                    memberContext.getMemberId(), memberContext.getKubernetesPodId()));
+            return memberContext;
         } catch (Exception e) {
             String msg = String.format("Could not start container: [application] %s [cartridge] %s [member] %s",
                     memberContext.getApplicationId(), memberContext.getCartridgeType(),
                     memberContext.getMemberId());
             log.error(msg, e);
-            throw new IllegalStateException(msg, e);
+            throw new RuntimeException(msg, e);
         } finally {
             if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
@@ -244,34 +238,28 @@ public class KubernetesIaas extends Iaas {
         }
     }
 
-    private MemberContext createNewMemberContext(MemberContext memberContext, Pod pod, KubernetesCluster kubernetesCluster) {
-        MemberContext newMemberContext = new MemberContext(memberContext.getApplicationId(),
-                memberContext.getCartridgeType(), memberContext.getClusterId(), memberContext.getMemberId());
+    private void updateMemberContext(MemberContext memberContext, Pod pod, KubernetesCluster kubernetesCluster) {
 
         String memberPrivateIPAddress = pod.getCurrentState().getPodIP();
         String podHostIPAddress = pod.getCurrentState().getHost();
         String memberPublicIPAddress = podHostIPAddress;
         String kubernetesHostPublicIP = findKubernetesHostPublicIPAddress(kubernetesCluster, podHostIPAddress);
+
         if(StringUtils.isNotBlank(kubernetesHostPublicIP)) {
             memberPublicIPAddress = kubernetesHostPublicIP;
             if(log.isInfoEnabled()) {
-                 log.info(String.format("Member public IP address set to Kubernetes host public IP address:" +
+                 log.info(String.format("Member public IP address set to kubernetes host public IP address:" +
                          "[pod-host-ip] %s [kubernetes-host-public-ip] %s", podHostIPAddress, kubernetesHostPublicIP));
             }
         }
 
-        newMemberContext.setClusterInstanceId(memberContext.getClusterInstanceId());
-        newMemberContext.setNetworkPartitionId(memberContext.getNetworkPartitionId());
-        newMemberContext.setPartition(memberContext.getPartition());
-        newMemberContext.setInstanceId(pod.getId());
-        newMemberContext.setDefaultPrivateIP(memberPrivateIPAddress);
-        newMemberContext.setPrivateIPs(new String[]{memberPrivateIPAddress});
-        newMemberContext.setDefaultPublicIP(memberPublicIPAddress);
-        newMemberContext.setPublicIPs(new String[]{memberPublicIPAddress});
-        newMemberContext.setInitTime(memberContext.getInitTime());
-        newMemberContext.setProperties(memberContext.getProperties());
-
-        return newMemberContext;
+        memberContext.setInstanceId(pod.getId());
+        memberContext.setDefaultPrivateIP(memberPrivateIPAddress);
+        memberContext.setPrivateIPs(new String[]{memberPrivateIPAddress});
+        memberContext.setDefaultPublicIP(memberPublicIPAddress);
+        memberContext.setPublicIPs(new String[]{memberPublicIPAddress});
+        memberContext.setInitTime(memberContext.getInitTime());
+        memberContext.setProperties(memberContext.getProperties());
     }
 
     private String findKubernetesHostPublicIPAddress(KubernetesCluster kubernetesCluster, String podHostIP) {

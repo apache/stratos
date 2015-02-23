@@ -19,8 +19,6 @@
 
 package org.apache.stratos.cloud.controller.iaases;
 
-import com.google.common.collect.ImmutableSet;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -267,12 +265,7 @@ public abstract class JcloudsIaas extends Iaas {
             	log.info("Retrieving private IP addresses " + memberContext.toString());
             } else {
             	memberContext.setPrivateIPs(new String[0]);
-            } 
-
-            CloudControllerContext.getInstance().updateMemberContext(memberContext);
-
-            // persist in registry
-            CloudControllerContext.getInstance().persist();
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("IP allocation process ended for " + memberContext);

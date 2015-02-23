@@ -451,16 +451,25 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
             }
 
+            // Handle member created event
+            TopologyBuilder.handleMemberCreatedEvent(memberContext);
+
+            // Persist member context
+            CloudControllerContext.getInstance().addMemberContext(memberContext);
+            CloudControllerContext.getInstance().persist();
+
             // Start instance in a new thread
             if (log.isDebugEnabled()) {
-                log.debug("Starting the instance creator thread...");
+                log.debug(String.format("Starting instance creator thread: [cluster] %s [cluster-instance] %s " +
+                        "[member] %s", instanceContext.getClusterId(), instanceContext.getClusterInstanceId(),
+                        memberId));
             }
             executorService.execute(new InstanceCreator(memberContext, iaasProvider));
 
-            TopologyBuilder.handleMemberCreatedEvent(memberContext);
             return memberContext;
         } catch (Exception e) {
-            String msg = "Failed to start instance: " + instanceContext.toString();
+            String msg = String.format("Could not start instance: [cluster] %s [cluster-instance] %s",
+                    instanceContext.getClusterId(), instanceContext.getClusterInstanceId());
             log.error(msg, e);
             throw new CloudControllerException(msg, e);
         }

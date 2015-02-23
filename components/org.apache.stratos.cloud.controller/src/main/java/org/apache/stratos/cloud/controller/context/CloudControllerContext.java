@@ -342,9 +342,6 @@ public class CloudControllerContext implements Serializable {
         }
         memberContextList.add(memberContext);
         clusterIdToMemberContextListMap.put(memberContext.getClusterId(), memberContextList);
-        if (log.isDebugEnabled()) {
-            log.debug("Member context updated in the cloud controller context: " + memberContext);
-        }
     }
 
     public void addScheduledFutureJob(String memberId, ScheduledFuture<?> job) {
