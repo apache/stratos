@@ -1221,7 +1221,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
                 networkPartitionId, clusterInstanceId);
         ClusterLevelPartitionContext clusterMonitorPartitionContext =
                 clusterLevelNetworkPartitionContext.getPartitionCtxt(partitionId);
-        clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
 
         if (clusterMonitorPartitionContext.removeTerminationPendingMember(memberId)) {
             if (log.isDebugEnabled()) {

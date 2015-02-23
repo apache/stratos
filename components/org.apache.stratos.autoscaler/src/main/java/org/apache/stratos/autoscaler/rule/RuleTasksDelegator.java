@@ -268,15 +268,17 @@ public class RuleTasksDelegator {
                                 "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+                clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
 
                 log.info(String.format("Moving pending member to termination pending list [member id] %s [partition] %s " +
                                 "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
+                clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             }
         } catch (Exception e) {
-            log.error("Cannot terminate instance", e);
+            log.error("Cannot move member to termination pending list ", e);
         }
     }
 
