@@ -590,6 +590,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     private class PendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
+        private final Log log = LogFactory.getLog(PendingMemberWatcher.class);
 
         public PendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
@@ -599,6 +600,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         public void run() {
 
             while (true) {
+
                 long expiryTime = ctxt.getPendingMemberExpiryTime();
                 List<MemberContext> pendingMembers = ctxt.getPendingMembers();
 
@@ -615,8 +617,10 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
 
                             iterator.remove();
-                            log.info("Pending state of member: " + pendingMember.getMemberId() +
-                                    " is expired. " + "Adding as an obsoleted member.");
+                            log.info(String.format("Pending state of member expired, adding as an obsoleted member. " +
+                                            "[pending member] %s [expiry time] %s [cluster] %s " + "[cluster instance] %s",
+                                    pendingMember.getMemberId(), expiryTime, pendingMember.getClusterId(),
+                                    pendingMember.getClusterInstanceId()));
                             // member should be terminated
                             ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
@@ -640,6 +644,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
     private class ObsoletedMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
+        private final Log log = LogFactory.getLog(ObsoletedMemberWatcher.class);
 
         public ObsoletedMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
@@ -648,7 +653,8 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         @Override
         public void run() {
             while (true) {
-                long obsoltedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
+
+                long obsoletedMemberExpiryTime = ctxt.getObsoltedMemberExpiryTime();
                 Map<String, MemberContext> obsoletedMembers = ctxt.getObsoletedMembers();
 
                 Iterator<Entry<String, MemberContext>> iterator = obsoletedMembers.entrySet().iterator();
@@ -659,7 +665,13 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                         continue;
                     }
                     long obsoleteTime = System.currentTimeMillis() - obsoleteMember.getInitTime();
-                    if (obsoleteTime >= obsoltedMemberExpiryTime) {
+                    if (obsoleteTime >= obsoletedMemberExpiryTime) {
+
+                        log.info(String.format("Obsolete state of member is expired, member will be disposed and will " +
+                                        "not be tracked anymore [obsolete member] %s [expiry time] %s [cluster] %s " +
+                                        "[cluster instance] %s",
+                                obsoleteMember.getMemberId(), obsoletedMemberExpiryTime, obsoleteMember.getClusterId(),
+                                obsoleteMember.getClusterInstanceId()));
                         iterator.remove();
                     }
                 }
@@ -677,6 +689,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
      */
     private class TerminationPendingMemberWatcher implements Runnable {
         private ClusterLevelPartitionContext ctxt;
+        private final Log log = LogFactory.getLog(TerminationPendingMemberWatcher.class);
 
         public TerminationPendingMemberWatcher(ClusterLevelPartitionContext ctxt) {
             this.ctxt = ctxt;
@@ -698,7 +711,12 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                     long terminationPendingTime = System.currentTimeMillis()
                             - ctxt.getTerminationPendingStartedTimeOfMember(terminationPendingMember.getMemberId());
                     if (terminationPendingTime >= terminationPendingMemberExpiryTime) {
-                        log.info("Moving [member] " + terminationPendingMember.getMemberId() + partitionId);
+
+                        log.info(String.format("Termination pending state of member is expired, member will be moved to " +
+                                        "obsolete list [termination pending member] %s [expiry time] %s [cluster] %s " +
+                                        "[cluster instance] %s",
+                                terminationPendingMember.getMemberId(), terminationPendingMemberExpiryTime,
+                                terminationPendingMember.getClusterId(), terminationPendingMember.getClusterInstanceId()));
                         iterator.remove();
                         obsoletedMembers.put(terminationPendingMember.getMemberId(), terminationPendingMember);
                     }
