@@ -130,7 +130,7 @@ dialect "mvel"
                     log.info("[scale-up] Required member count based on stat based scaling is higher than max, hence
                             notifying to parent for possible group scaling or app bursting.
                             [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
-                            " [max] " + clusterMaxMembers);
+                            " [max] " + clusterMaxMembers + " [number of required instances] " + numberOfRequiredInstances);
                     delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
                 } else {
 

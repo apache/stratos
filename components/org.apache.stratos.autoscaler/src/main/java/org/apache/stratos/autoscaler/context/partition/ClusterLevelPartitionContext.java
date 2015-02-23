@@ -613,12 +613,11 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
                         long pendingTime = System.currentTimeMillis() - pendingMember.getInitTime();
                         if (pendingTime >= expiryTime) {
 
-
-                            iterator.remove();
-                            log.info(String.format("Pending state of member expired, adding as an obsoleted member. " +
+                            log.info(String.format("Pending state of member expired, member will be moved to obsolete list. " +
                                             "[pending member] %s [expiry time] %s [cluster] %s " + "[cluster instance] %s",
                                     pendingMember.getMemberId(), expiryTime, pendingMember.getClusterId(),
                                     pendingMember.getClusterInstanceId()));
+                            iterator.remove();
                             // member should be terminated
                             ctxt.addObsoleteMember(pendingMember);
                             pendingMembersFailureCount++;
