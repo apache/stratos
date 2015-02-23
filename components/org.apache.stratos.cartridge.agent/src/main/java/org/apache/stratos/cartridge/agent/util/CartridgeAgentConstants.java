@@ -78,8 +78,8 @@ public class CartridgeAgentConstants implements Serializable{
     public static final String MEMBER_STARTED_SCRIPT = "extension.member.started";
     public static final String COMPLETE_TOPOLOGY_SCRIPT = "extension.complete.topology";
     public static final String COMPLETE_TENANT_SCRIPT = "extension.complete.tenant";
-    public static final String SUBSCRIPTION_DOMAIN_ADDED_SCRIPT = "extension.subscription.domain.added";
-    public static final String SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT = "extension.subscription.domain.removed";
+    public static final String DOMAIN_MAPPING_ADDED_SCRIPT = "extension.domain.mapping.added";
+    public static final String DOMAIN_MAPPING_REMOVED_SCRIPT = "extension.domain.mapping.removed";
     public static final String ARTIFACTS_COPY_SCRIPT = "extension.artifacts.copy";
     public static final String TENANT_SUBSCRIBED_SCRIPT = "extension.tenant.subscribed";
     public static final String TENANT_UNSUBSCRIBED_SCRIPT = "extension.tenant.unsubscribed";

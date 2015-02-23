@@ -397,42 +397,42 @@ public class ExtensionUtils {
         }
     }
 
-    public static void executeSubscriptionDomainAddedExtension(Map<String, String> envParameters) {
+    public static void executeDomainMappingAddedExtension(Map<String, String> envParameters) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Executing subscription domain added extension");
+                log.debug("Executing domain mapping added extension");
             }
-            String script = System.getProperty(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_ADDED_SCRIPT);
+            String script = System.getProperty(CartridgeAgentConstants.DOMAIN_MAPPING_ADDED_SCRIPT);
             String command = prepareCommand(script);
             addPayloadParameters(envParameters);
             cleanProcessParameters(envParameters);
             String output = CommandUtils.executeCommand(command, envParameters);
             if (log.isDebugEnabled()) {
-                log.debug("Subscription domain added script returned:" + output);
+                log.debug("Domain mapping added script returned:" + output);
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not execute subscription domain added extension", e);
+                log.error("Could not execute domain mapping added extension", e);
             }
         }
     }
 
-    public static void executeSubscriptionDomainRemovedExtension(Map<String, String> envParameters) {
+    public static void executeDomainMappingRemovedExtension(Map<String, String> envParameters) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug("Executing subscription domain removed extension");
+                log.debug("Executing domain mapping removed extension");
             }
-            String script = System.getProperty(CartridgeAgentConstants.SUBSCRIPTION_DOMAIN_REMOVED_SCRIPT);
+            String script = System.getProperty(CartridgeAgentConstants.DOMAIN_MAPPING_REMOVED_SCRIPT);
             String command = prepareCommand(script);
             addPayloadParameters(envParameters);
             cleanProcessParameters(envParameters);
             String output = CommandUtils.executeCommand(command, envParameters);
             if (log.isDebugEnabled()) {
-                log.debug("Subscription domain removed script returned:" + output);
+                log.debug("Domain mapping removed script returned:" + output);
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not execute subscription domain removed extension", e);
+                log.error("Could not execute domain mapping removed extension", e);
             }
 
         }

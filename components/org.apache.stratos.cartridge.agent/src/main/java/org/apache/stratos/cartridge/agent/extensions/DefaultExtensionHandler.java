@@ -442,30 +442,32 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     }
 
     @Override
-    public void onSubscriptionDomainAddedEvent(DomainMappingAddedEvent subscriptionDomainAddedEvent) {
-        String tenantDomain = findTenantDomain(subscriptionDomainAddedEvent.getTenantId());
+    public void onDomainMappingAddedEvent(DomainMappingAddedEvent domainMappingAddedEvent) {
+        String tenantDomain = findTenantDomain(domainMappingAddedEvent.getTenantId());
         if (log.isInfoEnabled()) {
-            log.info(String.format("Subscription domain added event received: [tenant-id] %d [tenant-domain] %s " +
+            log.info(String.format("Domain mapping added event received: [tenant-id] %d [tenant-domain] %s " +
                             "[domain-name] %s [application-context] %s",
-                    subscriptionDomainAddedEvent.getTenantId(),
+                    domainMappingAddedEvent.getTenantId(),
                     tenantDomain,
-                    subscriptionDomainAddedEvent.getDomainName(),
-                    subscriptionDomainAddedEvent.getContextPath()
+                    domainMappingAddedEvent.getDomainName(),
+                    domainMappingAddedEvent.getContextPath()
             ));
         }
 
         if (log.isDebugEnabled()) {
-            String msg = gson.toJson(subscriptionDomainAddedEvent);
-            log.debug("Subscription domain added event msg:" + msg);
+            String msg = gson.toJson(domainMappingAddedEvent);
+            log.debug("Domain mapping added event msg:" + msg);
         }
 
         Map<String, String> env = new HashMap<String, String>();
-        env.put("STRATOS_SUBSCRIPTION_SERVICE_NAME", subscriptionDomainAddedEvent.getServiceName());
-        env.put("STRATOS_SUBSCRIPTION_DOMAIN_NAME", subscriptionDomainAddedEvent.getDomainName());
-        env.put("STRATOS_SUBSCRIPTION_TENANT_ID", Integer.toString(subscriptionDomainAddedEvent.getTenantId()));
+        env.put("STRATOS_SUBSCRIPTION_APPLICATION_ID", domainMappingAddedEvent.getApplicationId());
+        env.put("STRATOS_SUBSCRIPTION_SERVICE_NAME", domainMappingAddedEvent.getServiceName());
+        env.put("STRATOS_SUBSCRIPTION_DOMAIN_NAME", domainMappingAddedEvent.getDomainName());
+        env.put("STRATOS_SUBSCRIPTION_CLUSTER_ID", domainMappingAddedEvent.getClusterId());
+        env.put("STRATOS_SUBSCRIPTION_TENANT_ID", Integer.toString(domainMappingAddedEvent.getTenantId()));
         env.put("STRATOS_SUBSCRIPTION_TENANT_DOMAIN", tenantDomain);
-        env.put("STRATOS_SUBSCRIPTION_APPLICATION_CONTEXT", subscriptionDomainAddedEvent.getContextPath());
-        ExtensionUtils.executeSubscriptionDomainAddedExtension(env);
+        env.put("STRATOS_SUBSCRIPTION_CONTEXT_PATH", domainMappingAddedEvent.getContextPath());
+        ExtensionUtils.executeDomainMappingAddedExtension(env);
     }
 
     private String findTenantDomain(int tenantId) {
@@ -482,10 +484,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
     }
 
     @Override
-    public void onSubscriptionDomainRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent) {
+    public void onDomainMappingRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent) {
         String tenantDomain = findTenantDomain(subscriptionDomainRemovedEvent.getTenantId());
         if (log.isInfoEnabled()) {
-            log.info(String.format("Subscription domain removed event received: [tenant-id] %d [tenant-domain] %s " +
+            log.info(String.format("Domain mapping removed event received: [tenant-id] %d [tenant-domain] %s " +
                             "[domain-name] %s",
                     subscriptionDomainRemovedEvent.getTenantId(),
                     tenantDomain,
@@ -495,15 +497,17 @@ public class DefaultExtensionHandler implements ExtensionHandler {
 
         if (log.isDebugEnabled()) {
             String msg = gson.toJson(subscriptionDomainRemovedEvent);
-            log.debug("Subscription domain removed event msg:" + msg);
+            log.debug("Domain mapping removed event msg:" + msg);
         }
 
         Map<String, String> env = new HashMap<String, String>();
+        env.put("STRATOS_SUBSCRIPTION_APPLICATION_ID", subscriptionDomainRemovedEvent.getApplicationId());
         env.put("STRATOS_SUBSCRIPTION_SERVICE_NAME", subscriptionDomainRemovedEvent.getServiceName());
         env.put("STRATOS_SUBSCRIPTION_DOMAIN_NAME", subscriptionDomainRemovedEvent.getDomainName());
+        env.put("STRATOS_SUBSCRIPTION_CLUSTER_ID", subscriptionDomainRemovedEvent.getClusterId());
         env.put("STRATOS_SUBSCRIPTION_TENANT_ID", Integer.toString(subscriptionDomainRemovedEvent.getTenantId()));
         env.put("STRATOS_SUBSCRIPTION_TENANT_DOMAIN", tenantDomain);
-        ExtensionUtils.executeSubscriptionDomainRemovedExtension(env);
+        ExtensionUtils.executeDomainMappingRemovedExtension(env);
     }
 
     @Override

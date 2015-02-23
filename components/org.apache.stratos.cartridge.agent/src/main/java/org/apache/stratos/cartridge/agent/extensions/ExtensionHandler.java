@@ -64,9 +64,9 @@ public interface ExtensionHandler {
 
     public void volumeMountExtension(String persistenceMappingsPayload);
 
-    public void onSubscriptionDomainAddedEvent(DomainMappingAddedEvent subscriptionDomainAddedEvent);
+    public void onDomainMappingAddedEvent(DomainMappingAddedEvent subscriptionDomainAddedEvent);
 
-    public void onSubscriptionDomainRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent);
+    public void onDomainMappingRemovedEvent(DomainMappingRemovedEvent subscriptionDomainRemovedEvent);
 
     public void onCopyArtifactsExtension(String src, String des);
 

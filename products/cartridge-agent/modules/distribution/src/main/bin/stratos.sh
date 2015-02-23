@@ -64,8 +64,8 @@ properties="-Dmb.ip=MB-IP
             -Dextension.member.terminated=member-terminated.sh
             -Dextension.complete.topology=complete-topology.sh
             -Dextension.complete.tenant=complete-tenant.sh
-            -Dextension.subscription.domain.added=subscription-domain-added.sh
-            -Dextension.subscription.domain.removed=subscription-domain-removed.sh
+            -Dextension.domain.mapping.added=domain-mapping-added.sh
+            -Dextension.domain.mapping.removed=domain-mapping-removed.sh
             -Dextension.artifacts.copy=artifacts-copy.sh
             -Dextension.tenant.subscribed=tenant-subscribed.sh
             -Dextension.tenant.unsubscribed=tenant-unsubscribed.sh"
