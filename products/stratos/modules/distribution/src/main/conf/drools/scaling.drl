@@ -127,10 +127,11 @@ dialect "mvel"
                 if(clusterMaxMembers < numberOfRequiredInstances){
 
                     additionalInstances = clusterMaxMembers - nonTerminatedMembers;
-                    log.info("[scale-up] Required member count based on stat based scaling is higher than max, hence
-                            notifying to parent for possible group scaling or app bursting.
-                            [cluster] " + clusterId + " [instance id]" + clusterInstanceContext.getId() +
-                            " [max] " + clusterMaxMembers + " [number of required instances] " + numberOfRequiredInstances);
+                    log.info("[scale-up] Required member count based on stat based scaling is higher than max, hence"
+                            + " notifying to parent for possible group scaling or app bursting. [cluster] " + clusterId
+                            + " [instance id]" + clusterInstanceContext.getId() + " [max] " + clusterMaxMembers
+                            + " [number of required instances] " + numberOfRequiredInstances
+                            + " [additional instances to be created] " + additionalInstances);
                     delegator.delegateScalingOverMaxNotification(clusterId, clusterInstanceContext.getNetworkPartitionId(), clusterInstanceContext.getId());
                 } else {
 
@@ -139,7 +140,7 @@ dialect "mvel"
 
                 clusterInstanceContext.resetScaleDownRequestsCount();
 
-                log.debug("[scale-up] " + " has scaling dependents " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
+                log.debug("[scale-up] " + " [has scaling dependents] " + clusterInstanceContext.hasScalingDependants() + " [cluster] " + clusterId );
                 if(clusterInstanceContext.hasScalingDependants()) {
 
                     log.debug("[scale-up] Notifying dependencies [cluster] " + clusterId);
@@ -151,7 +152,7 @@ dialect "mvel"
 
                     while(count != additionalInstances && partitionsAvailable){
 
-                        ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+                        ClusterLevelPartitionContext partitionContext = (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
                         if(partitionContext != null){
 
                             log.info("[scale-up] Partition available, hence trying to spawn an instance to scale up!" );
@@ -160,6 +161,7 @@ dialect "mvel"
                             count++;
                         } else {
 
+                            log.debug("[scale-up] No partition available!, [cluster] " + clusterId);
                             partitionsAvailable = false;
                         }
                     }

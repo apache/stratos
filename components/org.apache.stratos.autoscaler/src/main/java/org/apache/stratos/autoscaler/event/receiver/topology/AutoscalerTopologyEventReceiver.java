@@ -314,7 +314,7 @@ public class AutoscalerTopologyEventReceiver {
             @Override
             protected void onEvent(Event event) {
                 try {
-                    log.info("[MemberReadyToShutdownEvent] Received: " + event.getClass());
+                        log.info("[MemberReadyToShutdownEvent] Received: " + event.getClass());
                     MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent) event;
                     String clusterId = memberReadyToShutdownEvent.getClusterId();
                     AutoscalerContext asCtx = AutoscalerContext.getInstance();
