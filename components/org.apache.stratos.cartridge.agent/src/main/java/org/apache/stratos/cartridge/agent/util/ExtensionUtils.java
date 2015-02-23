@@ -487,31 +487,17 @@ public class ExtensionUtils {
         }
     }
 
+    /**
+     * Check if the specified member is in the topology and is in MemberStatus.Initialized state
+     * @param serviceName
+     * @param clusterId
+     * @param memberId
+     * @return true if member is present in the topology and in initialized state, false otherwise
+     */
     public static boolean checkTopologyConsistency(String serviceName, String clusterId, String memberId) {
-        Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(serviceName);
-        if (service == null) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Service not found in topology [service] %s", serviceName));
-            }
-            return false;
-        }
 
-        Cluster cluster = service.getCluster(clusterId);
-        if (cluster == null) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Cluster id not found in topology [cluster] %s", clusterId));
-            }
-            return false;
-        }
-
-        Member activatedMember = cluster.getMember(memberId);
-        if (activatedMember == null) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Member id not found in topology [member] %s", memberId));
-            }
-            return false;
-        } else if (activatedMember.getStatus() != MemberStatus.Initialized) {
+        Member activatedMember = getMemberFromTopology(serviceName, clusterId, memberId);
+        if (activatedMember.getStatus() != MemberStatus.Initialized) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Member found in topology, but not in initialized state [member] %s", memberId));
             }
@@ -521,32 +507,39 @@ public class ExtensionUtils {
         return true;
     }
 
-    public static boolean memberExistsInTopology(String serviceNameInPayload, String clusterIdInPayload, String memberIdInPayload) {
+    /**
+     * Gets the specified member from the topology
+     * @param serviceName
+     * @param clusterId
+     * @param memberId
+     * @return {@link org.apache.stratos.messaging.domain.topology.Member} if member is in the topology, null otherwise
+     */
+    public static Member getMemberFromTopology(String serviceName, String clusterId, String memberId) {
         Topology topology = TopologyManager.getTopology();
-        Service service = topology.getService(serviceNameInPayload);
+        Service service = topology.getService(serviceName);
         if (service == null) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Service not found in topology [service] %s", serviceNameInPayload));
+                log.error(String.format("Service not found in topology [service] %s", serviceName));
             }
-            return false;
+            return null;
         }
 
-        Cluster cluster = service.getCluster(clusterIdInPayload);
+        Cluster cluster = service.getCluster(clusterId);
         if (cluster == null) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Cluster id not found in topology [cluster] %s", clusterIdInPayload));
+                log.error(String.format("Cluster id not found in topology [cluster] %s", clusterId));
             }
-            return false;
+            return null;
         }
 
-        Member activatedMember = cluster.getMember(memberIdInPayload);
+        Member activatedMember = cluster.getMember(memberId);
         if (activatedMember == null) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Member id not found in topology [member] %s", memberIdInPayload));
+                log.error(String.format("Member id not found in topology [member] %s", memberId));
             }
-            return false;
+            return null;
         }
 
-        return true;
+        return activatedMember;
     }
 }

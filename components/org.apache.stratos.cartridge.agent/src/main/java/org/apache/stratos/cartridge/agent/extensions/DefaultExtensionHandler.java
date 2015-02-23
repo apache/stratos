@@ -285,9 +285,8 @@ public class DefaultExtensionHandler implements ExtensionHandler {
         String clusterIdInPayload = CartridgeAgentConfiguration.getInstance().getClusterId();
         String memberIdInPayload = CartridgeAgentConfiguration.getInstance().getMemberId();
 
-//        boolean memberInitialized = ExtensionUtils.checkTopologyConsistency(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
-        boolean memberExists = ExtensionUtils.memberExistsInTopology(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
-        if (!memberExists) {
+        Member activatedMember = ExtensionUtils.getMemberFromTopology(serviceNameInPayload, clusterIdInPayload, memberIdInPayload);
+        if (activatedMember == null) {
             // if this member isn't there in the complete topology
         	if (log.isDebugEnabled()) {
                 log.debug("Member does not exist in topology, or not in initialized state.");
