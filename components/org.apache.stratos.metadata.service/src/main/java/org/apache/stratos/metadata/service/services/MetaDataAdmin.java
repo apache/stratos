@@ -19,6 +19,7 @@
 package org.apache.stratos.metadata.service.services;
 
 import org.apache.commons.configuration.XMLConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.metadata.service.annotation.AuthorizationAction;
@@ -135,6 +136,9 @@ public class MetaDataAdmin {
             throws RestAPIException {
 
         URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
+        if(StringUtils.isEmpty(property.getKey())){
+            throw new RestAPIException("Property key can not be empty");
+        }
 
 	    try {
 		    registry.addPropertyToCluster(applicationId, clusterId, property);

@@ -21,11 +21,13 @@ package org.apache.stratos.metadata.service.registry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.manager.internal.ServiceReferenceHolder;
 import org.apache.stratos.metadata.service.definition.NewProperty;
-import org.wso2.carbon.registry.api.Registry;
-import org.wso2.carbon.registry.api.RegistryException;
-import org.wso2.carbon.registry.api.Resource;
+import org.wso2.carbon.context.PrivilegedCarbonContext;
+import org.wso2.carbon.registry.core.Registry;
+import org.wso2.carbon.registry.core.Resource;
+import org.wso2.carbon.registry.core.exceptions.RegistryException;
+import org.wso2.carbon.registry.core.session.UserRegistry;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
@@ -34,7 +36,6 @@ import java.util.*;
 
 /**
  * Carbon registry implementation
- *
  */
 
 public class CarbonRegistry implements DataStore {
@@ -43,7 +44,7 @@ public class CarbonRegistry implements DataStore {
     @Context
     HttpServletRequest httpServletRequest;
 
-    private static final String mainResource = "/stratos/";
+    private static final String mainResource = "metadata/";
 
     public CarbonRegistry() {
     }
@@ -51,18 +52,26 @@ public class CarbonRegistry implements DataStore {
 
     /**
      * Get Properties of clustor
+     *
      * @param applicationName
      * @param clusterId
      * @return
      * @throws RegistryException
      */
     public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws RegistryException {
-        Registry tempRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
+        Registry tempRegistry = getRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
+
+
         if (!tempRegistry.resourceExists(resourcePath)) {
             return null;
             //throw new RegistryException("Cluster does not exist at " + resourcePath);
         }
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
         Resource regResource = tempRegistry.get(resourcePath);
 
         ArrayList<NewProperty> newProperties = new ArrayList<NewProperty>();
@@ -85,67 +94,105 @@ public class CarbonRegistry implements DataStore {
 
     /**
      * Add property to cluster
+     *
      * @param applicationId
      * @param clusterId
      * @param property
      * @throws RegistryException
      */
     public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException {
-        Registry tempRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
+        Registry registry = getRegistry();
         String resourcePath = mainResource + applicationId + "/" + clusterId;
-        Resource regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
 
-        regResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
-        tempRegistry.put(resourcePath, regResource);
-        log.info(String.format("Property %s is added to cluster %s of application %s", property.getKey(), clusterId, applicationId));
+        try {
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
 
+            registry.beginTransaction();
+            Resource nodeResource = null;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+            } else {
+                nodeResource = registry.newResource();
+                if (log.isDebugEnabled()) {
+                    log.debug("Registry resource is create at path for cluster" + nodeResource.getPath() + " for cluster");
+                }
+            }
+
+            nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
+            registry.put(resourcePath, nodeResource);
+
+            registry.commitTransaction();
+
+            log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
+                    resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+
+        } catch (Exception e) {
+            String msg = "Failed to persist properties in registry: " + resourcePath;
+            registry.rollbackTransaction();
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
+
+    }
+
+    private UserRegistry getRegistry() throws RegistryException {
+        return org.apache.stratos.common.internal.ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
     }
 
     /**
      * Delete the resource identified by the applicationId, if exist.
+     *
      * @param applicationId ID of the application.
      * @return True if resource exist and able to delete, else false.
      * @throws RegistryException
      */
     public boolean deleteApplication(String applicationId) throws RegistryException {
-        if(StringUtils.isBlank(applicationId)){
+        if (StringUtils.isBlank(applicationId)) {
             throw new IllegalArgumentException("Application ID can not be null");
         }
-        Registry tempRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getRegistry();
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+        Registry registry = null;
         String resourcePath = mainResource + applicationId;
-
-        if(tempRegistry.resourceExists(resourcePath)){
-            tempRegistry.delete(resourcePath);
-            log.info(String.format("Application removed from registry %s", applicationId));
-            return true;
+        try {
+            registry = getRegistry();
+            registry.beginTransaction();
+            if (registry.resourceExists(resourcePath)) {
+                registry.delete(resourcePath);
+                registry.commitTransaction();
+                log.info(String.format("Application removed from registry %s", applicationId));
+                return true;
+            }
+        } catch (RegistryException e) {
+            registry.rollbackTransaction();
+            log.error("Could not remove registry resource: [resource-path] " + resourcePath);
         }
-
         return false;
     }
 
     /**
      * Add properties to cluster
+     *
      * @param applicationName
      * @param clusterId
      * @param properties
      * @throws RegistryException
      */
     public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws RegistryException {
-        Registry tempRegistry = ServiceReferenceHolder.getInstance().getRegistryService().getGovernanceSystemRegistry();
-        String resourcePath = mainResource + applicationName + "/" + clusterId;
-        Resource regResource;
-        regResource = createOrGetResourceforCluster(tempRegistry, resourcePath);
-
         for (NewProperty property : properties) {
-            regResource.setProperty(property.getKey(), (Arrays.asList(property.getValues())));
+            this.addPropertyToCluster(applicationName, clusterId, property);
 
         }
-        tempRegistry.put(resourcePath, regResource);
-        log.info(String.format("Properties  are added to cluster %s of application %s", clusterId, applicationName));
     }
 
     /**
      * Create or get resource for application
+     *
      * @param tempRegistry
      * @param resourcePath
      * @return
@@ -166,6 +213,7 @@ public class CarbonRegistry implements DataStore {
 
     /**
      * Create and get resources for Clustor
+     *
      * @param tempRegistry
      * @param resourcePath
      * @return
