@@ -73,7 +73,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         if (endpoint == null) {
             endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":8080/api/" + KubernetesConstants.KUBERNETES_API_VERSION + "/";
         }
-        log.info("Kubernetes endpoint: " +endpoint);
+        log.info("Kubernetes endpoint: " + endpoint);
         client = new KubernetesApiClient(endpoint);
 
         dockerImage = System.getProperty("docker.image");
@@ -104,7 +104,6 @@ public class KubernetesApiClientLiveTest extends TestCase{
     @AfterClass
     public void tearDown() {
         log.info("Cleaning kubernetes resources...");
-        deleteReplicationControllers();
         deletePods();
         deleteServices();
         log.info("Kubernetes resources cleaned");
@@ -213,23 +212,14 @@ public class KubernetesApiClientLiveTest extends TestCase{
         log.info("Service deleted successfully");
     }
 
-    public void deleteReplicationControllers() {
-        try {
-            List<ReplicationController> replicationControllers = client.getReplicationControllers();
-            for(ReplicationController replicationController : replicationControllers) {
-                client.deleteReplicationController(replicationController.getId());
-            }
-        } catch (KubernetesClientException e) {
-            log.error("Could not delete replication controllers", e);
-        }
-    }
-
     public void deleteServices() {
         try {
             List<Service> services = client.getServices();
-            for(Service service : services) {
-                if(!service.getId().contains("kubernetes")) {
-                    client.deleteService(service.getId());
+            if(services != null) {
+                for (Service service : services) {
+                    if (!service.getId().contains("kubernetes")) {
+                        client.deleteService(service.getId());
+                    }
                 }
             }
         } catch (KubernetesClientException e) {
@@ -240,8 +230,10 @@ public class KubernetesApiClientLiveTest extends TestCase{
     public void deletePods() {
         try {
             List<Pod> pods = client.getPods();
-            for(Pod replicationController : pods) {
-                client.deletePod(replicationController.getId());
+            if(pods != null) {
+                for (Pod replicationController : pods) {
+                    client.deletePod(replicationController.getId());
+                }
             }
         } catch (KubernetesClientException e) {
             log.error("Could not delete pods", e);
