@@ -594,6 +594,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                         Runnable monitoringRunnable = new Runnable() {
                             @Override
                             public void run() {
+                                getObsoleteCheckKnowledgeSession().setGlobal("clusterId", clusterId);
                                 obsoleteCheckFactHandle = AutoscalerRuleEvaluator.evaluate(
                                         getObsoleteCheckKnowledgeSession(), obsoleteCheckFactHandle, partitionContext);
                             }

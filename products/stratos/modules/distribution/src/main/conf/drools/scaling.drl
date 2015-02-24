@@ -67,7 +67,6 @@ dialect "mvel"
 
         eval(log.debug("Running scale up rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId))
         eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm name: " + algorithmName))
-        eval(log.debug("[scaling] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster] " + clusterId + " Algorithm: " + autoscaleAlgorithm))
 
 	
         rifThreshold : Float() from  loadThresholds.getRequestsInFlightThreshold()
