@@ -56,6 +56,10 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
 
+            if(log.isDebugEnabled()){
+                log.debug(String.format("[round-robin algorithm] [scale-up] [partition] %s has space to create members."
+                        , partitionContexts[selectedIndex].getPartitionId()));
+            }
             return partitionContexts[selectedIndex];
         } else {
 
@@ -80,6 +84,10 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
 
+            if(log.isDebugEnabled()){
+                log.debug(String.format("[round-robin algorithm] [scale-down] [partition] %s has has members that" +
+                        " can be removed.", partitionContexts[selectedIndex].getPartitionId()));
+            }
             return partitionContexts[selectedIndex];
         } else {
 

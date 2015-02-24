@@ -264,21 +264,21 @@ public class RuleTasksDelegator {
             //Moving member to pending termination list
             if (clusterMonitorPartitionContext.activeMemberAvailable(memberId)) {
 
-                log.info(String.format("Moving active member to termination pending list [member id] %s [partition] %s " +
+                log.info(String.format("[scale-down] Moving active member to termination pending list [member id] %s [partition] %s " +
                                 "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
                 clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
 
-                log.info(String.format("Moving pending member to termination pending list [member id] %s [partition] %s " +
+                log.info(String.format("[scale-down] Moving pending member to termination pending list [member id] %s [partition] %s " +
                                 "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
                 clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
                 clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             }
         } catch (Exception e) {
-            log.error("Cannot move member to termination pending list ", e);
+            log.error("[scale-down] Cannot move member to termination pending list ", e);
         }
     }
 
