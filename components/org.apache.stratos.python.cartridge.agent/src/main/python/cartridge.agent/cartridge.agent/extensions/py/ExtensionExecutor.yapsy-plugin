@@ -1,0 +1,9 @@
+[Core]
+Name = ExtensionExecutor
+Module = ExtensionExecutor
+
+[Documentation]
+Description = ExtensionExecutor
+Author = Op1
+Version = 0.1
+Website = stratos.apache.org

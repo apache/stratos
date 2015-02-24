@@ -17,6 +17,7 @@
 
 PARAM_FILE_PATH = "param.file.path"
 PLUGINS_DIR = "plugins.dir"
+EXTENSIONS_DIR = "extensions.dir"
 
 MB_IP = "mb.ip"
 MB_PORT = "mb.port"
@@ -109,17 +110,25 @@ APPLICATION_SIGNUP = "application/signup/#"
 # Messaging Model
 TENANT_RANGE_DELIMITER = "-"
 
+# MB events
+ARTIFACT_UPDATED_EVENT = "ArtifactUpdatedEvent"
 INSTANCE_STARTED_EVENT = "InstanceStartedEvent"
 INSTANCE_ACTIVATED_EVENT = "InstanceActivatedEvent"
 INSTANCE_MAINTENANCE_MODE_EVENT = "InstanceMaintenanceModeEvent"
 INSTANCE_READY_TO_SHUTDOWN_EVENT = "InstanceReadyToShutdownEvent"
-
-PUBLISHER_SERVICE_NAME = "publisher"
-APISTORE_SERVICE_NAME = "apistore"
-APIMANAGER_SERVICE_NAME = "apim"
-GATEWAY_SERVICE_NAME = "gatewaymgt"
-GATEWAY_MGT_SERVICE_NAME = "gateway"
-KEY_MANAGER_SERVICE_NAME = "keymanager"
+INSTANCE_CLEANUP_CLUSTER_EVENT = "InstanceCleanupClusterEvent"
+INSTANCE_CLEANUP_MEMBER_EVENT = "InstanceCleanupMemberEvent"
+COMPLETE_TOPOLOGY_EVENT = "CompleteTopologyEvent"
+COMPLETE_TENANT_EVENT = "CompleteTenantEvent"
+DOMAIN_MAPPING_ADDED_EVENT = "DomainMappingAddedEvent"
+DOMAIN_MAPPING_REMOVED_EVENT = "DomainMappingRemovedEvent"
+MEMBER_INITIALIZED_EVENT = "MemberInitializedEvent"
+MEMBER_ACTIVATED_EVENT = "MemberActivatedEvent"
+MEMBER_TERMINATED_EVENT = "MemberTerminatedEvent"
+MEMBER_SUSPENDED_EVENT = "MembeSuspendedEvent"
+MEMBER_STARTED_EVENT = "MemberStartedEvent"
+TENANT_SUBSCRIBED_EVENT = "TenantSubscribedEvent"
+APPLICATION_SIGNUP_REMOVAL_EVENT = "ApplicationSignUpRemovedEvent"
 
 PRIMARY = "PRIMARY"
 MIN_COUNT = "MIN_COUNT"

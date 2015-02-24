@@ -402,6 +402,14 @@ public class PythonCartridgeAgentTest {
             String srcPayloadPath = getResourcesFolderPath() + "/payload";
             String destPayloadPath = destAgentPath + "/payload";
             FileUtils.copyDirectory(new File(srcPayloadPath), new File(destPayloadPath));
+
+            log.info("Changing extension scripts permissions");
+            File extensionsPath = new File(destAgentPath + "/extensions/bash");
+            File[] extensions = extensionsPath.listFiles();
+            for (File extension:extensions){
+                extension.setExecutable(true);
+            }
+
             log.info("Python cartridge agent setup completed");
 
             return destAgentPath;

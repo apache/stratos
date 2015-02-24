@@ -280,6 +280,9 @@ class CartridgeAgentConfiguration:
             plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/plugins"
             self.__properties.set("agent", constants.PLUGINS_DIR, plugins_dir)
 
+            plugins_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0] + "/extensions/py"
+            self.__properties.set("agent", constants.EXTENSIONS_DIR, plugins_dir)
+
         def __read_parameter_file(self):
             """
             Reads the payload file of the cartridge and stores the values in a dictionary
