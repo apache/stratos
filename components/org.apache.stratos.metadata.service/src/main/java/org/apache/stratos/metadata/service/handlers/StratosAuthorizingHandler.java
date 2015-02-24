@@ -51,15 +51,14 @@ import java.util.*;
  * by the {@link org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter}
  */
 public class StratosAuthorizingHandler implements RequestHandler {
-    private final Log log = LogFactory.getLog(StratosAuthorizingHandler.class);
-
-    private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
     private static final String AUTHORIZATION_ANNOTATION_CLASS_NAME =
             "org.apache.stratos.metadata.service.annotation.AuthorizationAction";
     private static final String TENANT_ANNOTATION_CLASS_NAME =
             "org.apache.stratos.metadata.service.annotation.SuperTenantService";
     private static final String ACTION_ON_RESOURCE = "ui.execute";
     private static final Set<String> SKIP_METHODS;
+    private static String SUPPORTED_AUTHENTICATION_TYPE = "Basic";
+    private final Log log = LogFactory.getLog(StratosAuthorizingHandler.class);
     private Map<String, String> authorizationActionMap = Collections.emptyMap();
     private Set<String> superTenantServiceSet = Collections.emptySet();
 

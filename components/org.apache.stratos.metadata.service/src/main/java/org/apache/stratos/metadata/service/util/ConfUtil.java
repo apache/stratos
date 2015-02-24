@@ -34,43 +34,41 @@ import java.io.File;
  */
 public class ConfUtil {
 
-	private static Log log = LogFactory.getLog(ConfUtil.class);
+    private static Log log = LogFactory.getLog(ConfUtil.class);
+    private static ConfUtil instance = null;
+    private XMLConfiguration config;
 
-	private XMLConfiguration config;
-
-	private static ConfUtil instance = null;
-
-	private ConfUtil(String configFilePath) {
+    private ConfUtil(String configFilePath) {
         log.debug("Loading configuration.....");
 
-		try {
+        try {
 
-			File confFile;
-			if (StringUtils.isNotEmpty(configFilePath)) {
-				confFile = new File(configFilePath);
+            File confFile;
+            if (StringUtils.isNotEmpty(configFilePath)) {
+                confFile = new File(configFilePath);
 
-			} else {
-				confFile =
-				           new File(CarbonUtils.getCarbonConfigDirPath(),
-				                    Constants.METADATASERVICE_CONFIG_FILE_NAME);
-			}
+            } else {
+                confFile =
+                        new File(CarbonUtils.getCarbonConfigDirPath(),
+                                Constants.METADATASERVICE_CONFIG_FILE_NAME);
+            }
 
-			config = new XMLConfiguration(confFile);
-		} catch (ConfigurationException e) {
-			log.error("Unable to load autoscaler configuration file", e);
-			config = new XMLConfiguration(); // continue with default values
-		}
-	}
+            config = new XMLConfiguration(confFile);
+        } catch (ConfigurationException e) {
+            log.error("Unable to load autoscaler configuration file", e);
+            config = new XMLConfiguration(); // continue with default values
+        }
+    }
 
-	public static ConfUtil getInstance(String configFilePath) {
-		if (instance == null) {
-			instance = new ConfUtil(configFilePath);
-		}
-		return instance;
-	}
+    public static ConfUtil getInstance(String configFilePath) {
+        if (instance == null) {
+            instance = new ConfUtil(configFilePath);
+        }
+        return instance;
+    }
 
-	public XMLConfiguration getConfiguration() {
-		return config;
-	}
+    public XMLConfiguration getConfiguration() {
+        return config;
+    }
 
 }

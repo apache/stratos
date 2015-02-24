@@ -81,9 +81,9 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
                 String basePath = (String) message.get(Message.BASE_PATH);
                 String requestedAppId = extractApplicationIdFromUrl(requestUrl, basePath);
 
-                if(org.apache.commons.lang3.StringUtils.isEmpty(appId) || org.apache.commons.lang3.StringUtils.isEmpty(requestedAppId)){
+                if (org.apache.commons.lang3.StringUtils.isEmpty(appId) || org.apache.commons.lang3.StringUtils.isEmpty(requestedAppId)) {
                     valid = false;
-                }else{
+                } else {
                     valid = appId.equals(requestedAppId);
                 }
 
@@ -121,7 +121,7 @@ public class OAuthHandler extends AbstractAuthenticationAuthorizationHandler {
                     new RSASSAVerifier((RSAPublicKey) keyStoreManager.getDefaultPublicKey());
             SignedJWT jwsObject = SignedJWT.parse(token);
             if (jwsObject.verify(verifier)) {
-               appId = jwsObject.getJWTClaimsSet().getStringClaim("appId");
+                appId = jwsObject.getJWTClaimsSet().getStringClaim("appId");
             }
 
         } catch (Exception e) {

@@ -18,11 +18,11 @@
  */
 package org.apache.stratos.metadata.service.security;
 
-import java.security.Principal;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.security.SecurityContext;
+
+import java.security.Principal;
 
 /**
  * {@link StratosSecurityContext} is what get passed between authentication
@@ -30,21 +30,21 @@ import org.apache.cxf.security.SecurityContext;
  * and the authorization handler.
  */
 public class StratosSecurityContext implements SecurityContext {
-	private static Log log = LogFactory.getLog(StratosSecurityContext.class);
-	Principal principal;
+    private static Log log = LogFactory.getLog(StratosSecurityContext.class);
+    Principal principal;
 
-	public StratosSecurityContext(String user) {
-		this.principal = new StratosPrincipal(user);
-	}
+    public StratosSecurityContext(String user) {
+        this.principal = new StratosPrincipal(user);
+    }
 
-	@Override
-	public Principal getUserPrincipal() {
-		return principal;
-	}
+    @Override
+    public Principal getUserPrincipal() {
+        return principal;
+    }
 
-	@Override
-	public boolean isUserInRole(String role) {
-		return false;
-	}
+    @Override
+    public boolean isUserInRole(String role) {
+        return false;
+    }
 
 }

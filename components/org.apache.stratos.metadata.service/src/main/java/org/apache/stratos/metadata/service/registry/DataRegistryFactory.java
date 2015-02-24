@@ -23,11 +23,11 @@ package org.apache.stratos.metadata.service.registry;
  */
 public class DataRegistryFactory {
 
-	public static DataStore getDataStore(String registryName) {
-		if (registryName.equals("carbon")) {
-			return new CarbonRegistry();
-		} else {
-			return null;
-		}
-	}
+    public static DataStore getDataStore(String registryName) {
+        if (registryName.equals("carbon")) {
+            return new CarbonRegistry();
+        } else {
+            return null;
+        }
+    }
 }

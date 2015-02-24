@@ -39,22 +39,18 @@ import java.util.List;
 
 @Path("/")
 public class MetaDataAdmin {
+    private static Log log = LogFactory.getLog(MetaDataAdmin.class);
     @Context
     UriInfo uriInfo;
-
-    private static Log log = LogFactory.getLog(MetaDataAdmin.class);
-
-
-
     private DataStore registry;
 
     /**
      * Meta data admin configuration loading
      */
-    public MetaDataAdmin(){
+    public MetaDataAdmin() {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
         String DEFAULT_REG_TYPE = "carbon";
-        String registryType =  conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
+        String registryType = conf.getString("metadataservice.govenanceregistrytype", DEFAULT_REG_TYPE);
         registry = DataRegistryFactory.getDataStore(registryType);
     }
 
@@ -67,18 +63,18 @@ public class MetaDataAdmin {
 
         List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
-	    try {
-		    properties = registry
-				    .getPropertiesOfCluster(applicationId, clusterId);
-		    if (properties != null) {
-			    propertiesArr = new NewProperty[properties.size()];
-			    propertiesArr = properties.toArray(propertiesArr);
-		    }
-	    } catch (RegistryException e) {
-		    String msg = "Error occurred while getting properties ";
-		    log.error(msg, e);
-		    throw new RestAPIException(msg, e);
-	    }
+        try {
+            properties = registry
+                    .getPropertiesOfCluster(applicationId, clusterId);
+            if (properties != null) {
+                propertiesArr = new NewProperty[properties.size()];
+                propertiesArr = properties.toArray(propertiesArr);
+            }
+        } catch (RegistryException e) {
+            String msg = "Error occurred while getting properties ";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
 
         Response.ResponseBuilder rb;
         if (propertiesArr == null) {
@@ -94,29 +90,29 @@ public class MetaDataAdmin {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName) throws RestAPIException{
+    public Response getClusterProperty(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, @PathParam("property_name") String propertyName) throws RestAPIException {
         List<NewProperty> properties;
 
 
         NewProperty property = null;
 
-	    try {
-		    properties = registry
-				    .getPropertiesOfCluster(applicationId, clusterId);
-		    if (properties == null) {
-			    return Response.status(Response.Status.NOT_FOUND).build();
-		    }
-		    for (NewProperty p : properties) {
-			    if (propertyName.equals(p.getKey())) {
-				    property = p;
-				    break;
-			    }
-		    }
-	    } catch (RegistryException e) {
-		    String msg = "Error occurred while getting property";
-		    log.error(msg, e);
-		    throw new RestAPIException(msg, e);
-	    }
+        try {
+            properties = registry
+                    .getPropertiesOfCluster(applicationId, clusterId);
+            if (properties == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            for (NewProperty p : properties) {
+                if (propertyName.equals(p.getKey())) {
+                    property = p;
+                    break;
+                }
+            }
+        } catch (RegistryException e) {
+            String msg = "Error occurred while getting property";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
 
         Response.ResponseBuilder rb;
         if (property == null) {
@@ -135,18 +131,18 @@ public class MetaDataAdmin {
     public Response addPropertyToACluster(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, NewProperty property)
             throws RestAPIException {
 
-        URI url =  uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
-        if(StringUtils.isEmpty(property.getKey())){
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
+        if (StringUtils.isEmpty(property.getKey())) {
             throw new RestAPIException("Property key can not be empty");
         }
 
-	    try {
-		    registry.addPropertyToCluster(applicationId, clusterId, property);
-	    } catch (RegistryException e) {
-		    String msg = "Error occurred while adding property";
-		    log.error(msg, e);
-		    throw new RestAPIException(msg, e);
-	    }
+        try {
+            registry.addPropertyToCluster(applicationId, clusterId, property);
+        } catch (RegistryException e) {
+            String msg = "Error occurred while adding property";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
 
         return Response.created(url).build();
     }
@@ -160,13 +156,13 @@ public class MetaDataAdmin {
             throws RestAPIException {
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
 
-	    try {
-		    registry.addPropertiesToCluster(applicationId, clusterId, properties);
-	    } catch (RegistryException e) {
-		    String msg = "Error occurred while adding properties ";
-		    log.error(msg, e);
-		    throw new RestAPIException(msg, e);
-	    }
+        try {
+            registry.addPropertiesToCluster(applicationId, clusterId, properties);
+        } catch (RegistryException e) {
+            String msg = "Error occurred while adding properties ";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
 
         return Response.created(url).build();
     }
@@ -179,18 +175,18 @@ public class MetaDataAdmin {
     public Response deleteApplicationProperties(@PathParam("application_id") String applicationId)
             throws RestAPIException {
 
-	    try {
-		    boolean deleted = registry.deleteApplication(applicationId);
-		    if (!deleted) {
-			    log.warn(String.format(
-					    "Either no metadata is associated with given appId %s Or resources could not be deleted",
-					    applicationId));
-		    }
-	    } catch (RegistryException e) {
-		    String msg = "Resource attached with appId could not be deleted";
-		    log.error(msg, e);
-		    throw new RestAPIException(msg, e);
-	    }
+        try {
+            boolean deleted = registry.deleteApplication(applicationId);
+            if (!deleted) {
+                log.warn(String.format(
+                        "Either no metadata is associated with given appId %s Or resources could not be deleted",
+                        applicationId));
+            }
+        } catch (RegistryException e) {
+            String msg = "Resource attached with appId could not be deleted";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
 
         return Response.ok().build();
     }

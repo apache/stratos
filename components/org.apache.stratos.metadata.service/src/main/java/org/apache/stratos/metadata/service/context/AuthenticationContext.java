@@ -20,21 +20,21 @@ package org.apache.stratos.metadata.service.context;
  */
 
 public class AuthenticationContext {
-	// maintaining the authenticated state in threadLocal. We want to skip
-	// subsequent authentication handlers
-	// once a request get authenticated by a handler.
-	private static final ThreadLocal<Boolean> authenticated = new ThreadLocal<Boolean>() {
-		@Override
-		protected Boolean initialValue() {
-			return false;
-		}
-	};
+    // maintaining the authenticated state in threadLocal. We want to skip
+    // subsequent authentication handlers
+    // once a request get authenticated by a handler.
+    private static final ThreadLocal<Boolean> authenticated = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return false;
+        }
+    };
 
-	public static boolean isAthenticated() {
-		return authenticated.get();
-	}
+    public static boolean isAthenticated() {
+        return authenticated.get();
+    }
 
-	public static void setAuthenticated(boolean isAuthenticated) {
-		authenticated.set(isAuthenticated);
-	}
+    public static void setAuthenticated(boolean isAuthenticated) {
+        authenticated.set(isAuthenticated);
+    }
 }

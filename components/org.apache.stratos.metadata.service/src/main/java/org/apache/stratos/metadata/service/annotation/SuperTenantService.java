@@ -30,5 +30,5 @@ import java.lang.annotation.Target;
 @Retention(value = RetentionPolicy.RUNTIME)
 @Target(value = ElementType.METHOD)
 public @interface SuperTenantService {
-	boolean value();
+    boolean value();
 }

@@ -19,26 +19,26 @@
 
 package org.apache.stratos.metadata.service.definition;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@XmlRootElement(name="properties")
-public class NewProperty implements Serializable{
+@XmlRootElement(name = "properties")
+public class NewProperty implements Serializable {
 
     private String key;
     private List<String> values = new ArrayList<String>();
 
-    public NewProperty(){}
-    public NewProperty(String key, String value){
-        this.key=key;
+    public NewProperty() {
+    }
+
+    public NewProperty(String key, String value) {
+        this.key = key;
         this.values.add(value);
     }
-    
+
     public String getKey() {
         return key;
     }
@@ -47,22 +47,21 @@ public class NewProperty implements Serializable{
         this.key = key;
     }
 
-    public String[] getValues(){
+    public String[] getValues() {
         String[] values = new String[this.values.size()];
         values = this.values.toArray(values);
         return values;
+    }
+
+    public void setValues(String value) {
+        this.values.add(value);
     }
 
     public void setValues(String[] values) {
         this.values.addAll(Arrays.asList(values));
     }
 
-
-    public void setValues(String value) {
-        this.values.add(value);
-    }
-
-    public void addValue(String value){
+    public void addValue(String value) {
         this.values.add(value);
     }
 }

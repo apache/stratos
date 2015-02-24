@@ -40,11 +40,10 @@ import java.util.*;
 
 public class CarbonRegistry implements DataStore {
 
+    private static final String mainResource = "metadata/";
     private static Log log = LogFactory.getLog(CarbonRegistry.class);
     @Context
     HttpServletRequest httpServletRequest;
-
-    private static final String mainResource = "metadata/";
 
     public CarbonRegistry() {
     }

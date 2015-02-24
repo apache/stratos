@@ -18,9 +18,9 @@
   #  under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jaxrs="http://cxf.apache.org/jaxrs"
+       xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
@@ -31,16 +31,18 @@
         </jaxrs:serviceBeans>
 
         <jaxrs:providers>
-			<ref bean="throwableExceptionHandler"/>
+            <ref bean="throwableExceptionHandler"/>
             <bean class="org.apache.cxf.jaxrs.provider.json.JSONProvider">
                 <property name="dropRootElement" value="true"/>
                 <property name="supportUnwrapped" value="true"/>
-            </bean>>
+            </bean>
+            >
             <ref bean="exceptionHandler"/>
         </jaxrs:providers>
     </jaxrs:server>
 
     <bean id="stratosRestEndpointTestBean" class="org.apache.stratos.rest.endpoint.mock.StratosTestAdmin"/>
     <bean id="exceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomExceptionMapper"/>
-    <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <bean id="throwableExceptionHandler"
+          class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
 </beans>
