@@ -16,7 +16,8 @@
 # under the License.
 
 from plugins.contracts import ICartridgeAgentPlugin
-import util
+import os
+import subprocess
 
 
 class ExtensionExecutor(ICartridgeAgentPlugin):
@@ -29,9 +30,27 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
             extension_values["STRATOS_" + key] = values[key]
             log.debug("%s => %s" % ("STRATOS_" + key, extension_values["STRATOS_" + key]))
 
-        # script_name = "mount-volumes.sh"
-        output, errors = util.execute_bash(event_name)
+        try:
+            output, errors = ExtensionExecutor.execute_bash(event_name + ".sh")
+        except OSError:
+            raise RuntimeError("Could not find an extension file for event %s" % event_name)
+
         if len(errors) > 0:
             raise RuntimeError("Extension execution failed for script %s: %s" % (event_name, errors))
 
         log.info("%s Extension executed. [output]: %s" % (event_name, output))
+
+    @staticmethod
+    def execute_bash(bash_file):
+        """ Execute the given bash files in the <PCA_HOME>/extensions/bash folder
+        :param bash_file: name of the bash file to execute
+        :return: tuple of (output, errors)
+        """
+        working_dir = os.path.abspath(os.path.dirname(__file__)).split("modules")[0]
+        command = working_dir[:-2] + "bash/" + bash_file
+        extension_values = os.environ.copy()
+
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=extension_values)
+        output, errors = p.communicate()
+
+        return output, errors

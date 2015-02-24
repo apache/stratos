@@ -56,6 +56,7 @@ class EventHandler:
 
     def on_instance_started_event(self):
         self.__log.debug("Processing instance started event...")
+        # TODO: copy artifacts extension
         self.execute_event_extendables(constants.INSTANCE_STARTED_EVENT, {})
 
     def on_instance_activated_event(self):
@@ -357,7 +358,7 @@ class EventHandler:
 
         cartridgeagentpublisher.publish_maintenance_mode_event()
 
-        self.execute_event_extendables(event, {})
+        self.execute_event_extendables("clean", {})
         self.__log.info("cleaning up finished in the cartridge instance...")
 
         self.__log.info("publishing ready to shutdown event...")
@@ -512,6 +513,8 @@ class EventHandler:
                 extension_thread.join()
             else:
                 self.__log.debug("No extensions registered for event %s" % event)
+        except OSError:
+            self.__log.warn("No extension was found for event %s" % event)
         except Exception as e:
             self.__log.exception("Error while executing extension for event %s: %s" % (event, e))
 
