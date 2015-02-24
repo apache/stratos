@@ -517,7 +517,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                     }
                                 }
 
-                                getScaleCheckKnowledgeSession().setGlobal("primaryMembers", primaryMemberListInClusterInstance);
+                                getMinCheckKnowledgeSession().setGlobal("primaryMemberCount",
+                                        primaryMemberListInClusterInstance.size());
                                 getMinCheckKnowledgeSession().setGlobal("clusterId", getClusterId());
                                 getMinCheckKnowledgeSession().setGlobal("isPrimary", hasPrimary);
                                 //FIXME when parent chosen the partition
