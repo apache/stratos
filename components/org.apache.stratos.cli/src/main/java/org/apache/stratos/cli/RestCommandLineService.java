@@ -1120,24 +1120,24 @@ public class RestCommandLineService {
                     ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId),
                     listType, "domain mappings");
             if ((list != null) && (list.size() > 0)) {
-                RowMapper<DomainMappingBean> rowMapper = new RowMapper<DomainMappingBean>() {
-                    public String[] getData(DomainMappingBean domainMappingBean) {
-                        String[] data = new String[3];
-                        data[0] = domainMappingBean.getCartridgeAlias();
-                        data[1] = domainMappingBean.getDomainName();
-                        data[2] = domainMappingBean.getContextPath();
-                        return data;
-                    }
-                };
-
-                DomainMappingBean[] array = new DomainMappingBean[list.size()];
-                array = list.toArray(array);
-                System.out.println("Domain mappings found in application: [application-id] " + applicationId);
-                CliUtils.printTable(array, rowMapper, "Cartridge Alias", "Domain Name", "Context Path");
-            } else {
                 System.out.println("No domain mappings found in application: [application-id] " + applicationId);
                 return;
             }
+
+            RowMapper<DomainMappingBean> rowMapper = new RowMapper<DomainMappingBean>() {
+                public String[] getData(DomainMappingBean domainMappingBean) {
+                    String[] data = new String[3];
+                    data[0] = domainMappingBean.getCartridgeAlias();
+                    data[1] = domainMappingBean.getDomainName();
+                    data[2] = domainMappingBean.getContextPath();
+                    return data;
+                }
+            };
+
+            DomainMappingBean[] array = new DomainMappingBean[list.size()];
+            array = list.toArray(array);
+            System.out.println("Domain mappings found in application: [application-id] " + applicationId);
+            CliUtils.printTable(array, rowMapper, "Cartridge Alias", "Domain Name", "Context Path");
         } catch (Exception e) {
             String message = "Could not list domain mappings in application: [application-id] " + applicationId;
             printError(message, e);
@@ -1271,15 +1271,15 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_UNDEPLOY_APPLICATION + "/" + applicationId, "");
+                    + ENDPOINT_UNDEPLOY_APPLICATION.replace("{id}",applicationId), "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
 
-            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully undelopyed application: " + applicationId);
+            if (Integer.parseInt(responseCode) < 300 && Integer.parseInt(responseCode) >= 200) {
+                System.out.println("You have successfully undeployed application: " + applicationId);
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -1343,7 +1343,7 @@ public class RestCommandLineService {
      * @throws CommandException
      */
     public void addApplicationSignup (String entityBody, String applicationId) {
-        restClient.deployEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), entityBody, "application");
+        restClient.deployEntity(ENDPOINT_APPLICATION_SIGNUP.replace("{applicationId}", applicationId), entityBody, "application signup");
     }
 
     /**

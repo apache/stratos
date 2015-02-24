@@ -1,9 +1,5 @@
 {
-	"domainMappings": [
-		{
-			"cartridgeAlias":"tomcat",
-			"domainName":"abc.com",
-			"contextPath":"/abc/app"
-		}
-	]
+	"cartridgeAlias":"php1",
+	"domainName":"abc.com",
+	"contextPath":"/abc/app"
 }
