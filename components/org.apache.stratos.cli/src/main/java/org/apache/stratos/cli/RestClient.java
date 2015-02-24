@@ -157,7 +157,7 @@ public class RestClient implements GenericRestClient {
     public void deployEntity(String serviceEndpoint, String entityBody, String entityName) {
         try {
             int responseCode = executePost(serviceEndpoint, entityBody);
-            if (responseCode == 201) {
+            if (responseCode == 201 || responseCode == 200) {
                 System.out.println(String.format("Successfully added %s", entityName));
             }
         } catch (Exception e) {
@@ -335,7 +335,7 @@ public class RestClient implements GenericRestClient {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             System.out.println(getBaseURL() + serviceEndpoint.replace("{id}", identifier));
-            HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint.replace("{id}", identifier));
+            HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint);
 
             int responseCode = response.getStatusLine().getStatusCode();
             if (responseCode < 200 || responseCode >= 300) {
