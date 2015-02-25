@@ -23,16 +23,18 @@ echo ${artifacts_path}/autoscale-policy.json
 echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding deploy policy..."
+echo "Adding network partition..."
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/network-partition.json" -k -v -u admin:admin https://${host_ip}:9443/api/networkPartitions
+
+echo "Adding deployment policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
 
-
 echo "Adding php cartridge..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
 sleep 1
 
-echo "Creating application..."
+echo "Adding application..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
