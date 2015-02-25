@@ -1,11 +1,11 @@
 {
-    "applicationId": "sample-groups-app",
-    "alias": "sample-groups-app",
+    "applicationId": "dependency-scaling-groups-app",
+    "alias": "my-dependency-scaling-groups-app",
     "components": {
         "groups": [
             {
-                "name": "group6",
-                "alias": "mygroup6",
+                "name": "esb-php-group",
+                "alias": "my-esb-php-group",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 2,
                 "cartridges": [
@@ -14,7 +14,7 @@
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "esbgroup6",
+                            "alias": "my-esb",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                 "privateRepo":false,
@@ -29,7 +29,7 @@
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "phpgroup6",
+                            "alias": "my-php",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                 "privateRepo":false,
@@ -48,7 +48,7 @@
                 "cartridgeMin": 2,
                 "cartridgeMax": 4,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
@@ -61,7 +61,7 @@
         ],
         "dependencies": {
             "scalingDependants": [
-                "group.group6, cartridge.tomcat"
+                "group.my-esb-php-group, cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }
