@@ -629,4 +629,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     }
+
+	@Override
+	public ApplicationPolicy getApplicationPolicy(String applicationId) {
+		return PolicyManager.getInstance().getApplicationPolicy(applicationId);
+	}
 }

@@ -1,0 +1,15 @@
+{
+    "id": "deployment-policy-1",
+    "networkPartition": [
+        {
+            "id": "network-partition-1",
+            "partitionAlgo": "one-after-another",
+            "partitions": [
+                {
+                    "id": "partition-1",
+                    "max": 5
+                }
+            ]
+        }
+    ]
+}

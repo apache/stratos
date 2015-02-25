@@ -1037,6 +1037,18 @@ public class StratosApiV41Utils {
             throw new RestAPIException(message, e);
         }
     }
+    
+    public static ApplicationPolicyBean getApplicationPolicy(String applicationId) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationId);
+            return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
+        } catch (Exception e) {
+            String message = String.format("Could not get application policy [application-id] %s", applicationId);
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
 
 	/**
 	 * Validate deployment policy

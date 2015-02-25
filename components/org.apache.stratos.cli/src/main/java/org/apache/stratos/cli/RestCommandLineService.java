@@ -44,6 +44,7 @@ import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.cartridge.IaasProviderBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
@@ -110,13 +111,14 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
-    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/applications/{applicationId}/deploymentPolicy";
+    private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{deploymentPolicyId}";
     private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
-    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/master";
-    private static final String ENDPOINT_GET_KUBERNETES_HOST = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}/hosts";
+    private static final String ENDPOINT_GET_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
+    private static final String ENDPOINT_GET_KUBERNETES_HOST_CLUSTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}";
     private static final String ENDPOINT_GET_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{networkPartitionId}";
+    private static final String ENDPOINT_GET_APPLICATION_RUNTIME = API_CONTEXT + "/applications/{applicationId}/runtime";
 
     private static final String ENDPOINT_UPDATE_KUBERNETES_MASTER = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/master";
     private static final String ENDPOINT_UPDATE_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion/{minionId}";
@@ -128,6 +130,8 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
+    private static final String ENDPOINT_UPDATE_USER = API_CONTEXT + "/users";
+    private static final String ENDPOINT_UPDATE_TENANT = API_CONTEXT + "/tenants";
 
     private static class SingletonHolder {
         private final static RestCommandLineService INSTANCE = new RestCommandLineService();
@@ -450,6 +454,46 @@ public class RestCommandLineService {
     }
 
     /**
+     * Update an existing tenant
+     * @throws CommandException
+     */
+    public void updateTenant(int id,String admin, String firstName, String lastName, String password, String domain, String email)
+            throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            TenantInfoBean tenantInfo = new TenantInfoBean();
+            tenantInfo.setAdmin(admin);
+            tenantInfo.setFirstname(firstName);
+            tenantInfo.setLastname(lastName);
+            tenantInfo.setAdminPassword(password);
+            tenantInfo.setTenantDomain(domain);
+            tenantInfo.setEmail(email);
+            tenantInfo.setTenantId(id);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(tenantInfo, TenantInfoBean.class);
+
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_UPDATE_TENANT, jsonString);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
+                System.out.println("Tenant updated successfully: "+domain);
+                return;
+            }
+        } catch (Exception e) {
+            String message = "Could not update tenant: "+domain;
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    /**
      * Add user
      * @throws CommandException
      */
@@ -483,6 +527,46 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             String message = "Could not add user";
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+    }
+
+    /**
+     * Update user
+     * @throws CommandException
+     */
+    public void updateUser(String userName, String credential, String role, String firstName, String lastName, String email, String profileName)
+            throws CommandException {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            UserInfoBean userInfoBean = new UserInfoBean();
+            userInfoBean.setUserName(userName);
+            userInfoBean.setCredential(credential);
+            userInfoBean.setRole(role);
+            userInfoBean.setFirstName(firstName);
+            userInfoBean.setLastName(lastName);
+            userInfoBean.setEmail(email);
+            userInfoBean.setProfileName(profileName);
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            String jsonString = gson.toJson(userInfoBean, UserInfoBean.class);
+
+            HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
+                    + ENDPOINT_UPDATE_USER, jsonString);
+
+            int responseCode = response.getStatusLine().getStatusCode();
+            if (responseCode < 200 || responseCode >= 300) {
+                CliUtils.printError(response);
+            } else {
+                System.out.println("User updated successfully: "+userName);
+                return;
+            }
+        } catch (Exception e) {
+            String message = "Could not update user: "+userName;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -561,7 +645,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_DEACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain),"");
+                    + ENDPOINT_DEACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain), "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -593,7 +677,7 @@ public class RestCommandLineService {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             HttpResponse response = restClient.doPut(httpClient, restClient.getBaseURL()
-                    + ENDPOINT_ACTIVATE_TENANT .replace("{tenantDomain}", tenantDomain), "");
+                    + ENDPOINT_ACTIVATE_TENANT.replace("{tenantDomain}", tenantDomain), "");
 
             String responseCode = "" + response.getStatusLine().getStatusCode();
 
@@ -812,20 +896,20 @@ public class RestCommandLineService {
      * Describe deployment policy
      * @throws CommandException
      */
-    public void describeDeploymentPolicy(String applicationId) throws CommandException {
+    public void describeDeploymentPolicy(String deploymentPolicyId) throws CommandException {
         try {
             DeploymentPolicyBean policy = (DeploymentPolicyBean) restClient.getEntity(ENDPOINT_GET_DEPLOYMENT_POLICY,
-                    DeploymentPolicyBean.class, "{applicationId}", applicationId, "deployment policy");
+                    DeploymentPolicyBean.class, "{deploymentPolicyId}", deploymentPolicyId, "deployment policy");
 
             if (policy == null) {
-                System.out.println("Deployment policy not found: " + applicationId);
+                System.out.println("Deployment policy not found: " + deploymentPolicyId);
                 return;
             }
 
-            System.out.println("Deployment policy: " + applicationId);
+            System.out.println("Deployment policy: " + deploymentPolicyId);
             System.out.println(getGson().toJson(policy));
         } catch (Exception e) {
-            String message = "Error in describing deployment policy: " + applicationId;
+            String message = "Error in describing deployment policy: " + deploymentPolicyId;
             printError(message, e);
         }
     }
@@ -866,7 +950,7 @@ public class RestCommandLineService {
      */
     public void listKubernetesClusters() {
         try {
-            Type listType = new TypeToken<ArrayList<KubernetesHostBean>>() {
+            Type listType = new TypeToken<ArrayList<KubernetesClusterBean>>() {
             }.getType();
             List<KubernetesClusterBean> list = (List<KubernetesClusterBean>) restClient.
                     listEntity(ENDPOINT_LIST_KUBERNETES_CLUSTERS, listType, "kubernetes cluster");
@@ -917,8 +1001,8 @@ public class RestCommandLineService {
             GsonBuilder gsonBuilder = new GsonBuilder();
             Gson gson = gsonBuilder.create();
 
-            if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully deployed host to Kubernetes cluster: " + clusterId);
+            if (responseCode.equals(CliConstants.RESPONSE_OK) || responseCode.equals(CliConstants.RESPONSE_CREATED)) {
+                System.out.println("You have successfully deployed host to Kubernetes cluster: " + clusterId);
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -965,6 +1049,58 @@ public class RestCommandLineService {
             }
         } catch (Exception e) {
             String message = "Could not list kubernetes hosts";
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Get the master of a Kubernetes Cluster
+     * @param clusterId
+     * @throws CommandException
+     */
+    public void getKubernetesMaster(final String clusterId) throws CommandException {
+        try {
+            Type listType = new TypeToken<KubernetesMasterBean>() {
+            }.getType();
+            KubernetesMasterBean master = (KubernetesMasterBean) restClient
+                    .getEntity(ENDPOINT_GET_KUBERNETES_MASTER, KubernetesMasterBean.class, "{kubernetesClusterId}", clusterId,
+                            "network partition");
+
+            if (master == null) {
+                System.out.println("Kubernetes master not found in: " + clusterId);
+                return;
+            }
+
+            System.out.println("Cluster: " + clusterId);
+            System.out.println(getGson().toJson(master));
+        } catch (Exception e) {
+            String message = "Could not get the master of " + clusterId;
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Describe a Kubernetes cluster
+     * @param clusterId
+     * @throws CommandException
+     */
+    public void describeKubernetesCluster(final String clusterId) throws CommandException {
+        try {
+            Type listType = new TypeToken<KubernetesClusterBean>() {
+            }.getType();
+            KubernetesClusterBean cluster = (KubernetesClusterBean) restClient
+                    .getEntity(ENDPOINT_GET_KUBERNETES_HOST_CLUSTER, KubernetesClusterBean.class, "{kubernetesClusterId}", clusterId,
+                            "kubernetes cluster");
+
+            if (cluster == null) {
+                System.out.println("Kubernetes cluster not found: " + clusterId);
+                return;
+            }
+
+            System.out.println("Kubernetes cluster: " + clusterId);
+            System.out.println(getGson().toJson(cluster));
+        } catch (Exception e) {
+            String message = "Could not describe kubernetes cluster: " + clusterId;
             printError(message, e);
         }
     }
@@ -1170,7 +1306,7 @@ public class RestCommandLineService {
      * @throws CommandException
      */// This method helps to remove applications
     public void deleteApplication (String applicationId) {
-        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{applicationId}", applicationId), applicationId,
+        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION.replace("{appId}", applicationId), applicationId,
                 "application");
     }
 
@@ -1204,6 +1340,31 @@ public class RestCommandLineService {
             System.out.println(getGson().toJson(application));
         } catch (Exception e) {
             String message = "Could not describe application: " + applicationID;
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Describe application runtime
+     * @throws CommandException
+     */
+    public void describeApplicationRuntime (String applicationID) {
+        try {
+            Type listType = new TypeToken<ApplicationBean>() {
+            }.getType();
+            ApplicationBean application = (ApplicationBean) restClient
+                    .getEntity(ENDPOINT_GET_APPLICATION_RUNTIME, ApplicationBean.class, "{applicationId}", applicationID,
+                            "application");
+
+            if (application == null) {
+                System.out.println("Application not found: " + applicationID);
+                return;
+            }
+
+            System.out.println("Application: " + applicationID);
+            System.out.println(getGson().toJson(application));
+        } catch (Exception e) {
+            String message = "Could not describe application runtime: " + applicationID;
             printError(message, e);
         }
     }
@@ -1384,4 +1545,42 @@ public class RestCommandLineService {
         restClient.deleteEntity(ENDPOINT_REMOVE_DEPLOYMENT_POLICY.replace("{policyId}", policyId), policyId,
                 "deployment policy");
     }
+
+    /**
+     * List deployment policies
+     * @throws CommandException
+     */
+    public void listDeploymentPolicies() throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<DeploymentPolicyBean>>() {
+            }.getType();
+            List<DeploymentPolicyBean> list = (List<DeploymentPolicyBean>) restClient.listEntity(ENDPOINT_LIST_DEPLOYMENT_POLICIES,
+                    listType, "deployment policies");
+
+            if ((list == null) || (list == null) || (list.size() == 0)) {
+                System.out.println("No deployment policies found");
+                return;
+            }
+
+            RowMapper<DeploymentPolicyBean> rowMapper = new RowMapper<DeploymentPolicyBean>() {
+
+                public String[] getData(DeploymentPolicyBean policy) {
+                    String[] data = new String[2];
+                    data[0] = policy.getId();
+                    data[1] = String.valueOf(policy.getNetworkPartition().size());
+                    return data;
+                }
+            };
+
+            DeploymentPolicyBean[] array = new DeploymentPolicyBean[list.size()];
+            array = list.toArray(array);
+
+            System.out.println("Deployment policies found:");
+            CliUtils.printTable(array, rowMapper, "ID", "Accessibility");
+        } catch (Exception e) {
+            String message = "Could not list deployment policies";
+            printError(message, e);
+        }
+    }
+
 }

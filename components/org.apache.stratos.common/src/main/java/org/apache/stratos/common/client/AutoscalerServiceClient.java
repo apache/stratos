@@ -105,6 +105,10 @@ public class AutoscalerServiceClient {
             AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceApplicationDefinitionExceptionException {
 		return stub.deployApplication(applicationId, ap);
     }
+    
+    public ApplicationPolicy getApplicationPolicy(String applicationId) throws RemoteException {
+    	return stub.getApplicationPolicy(applicationId);
+    }
 
     public void undeployApplication(String applicationId) throws
             AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {

@@ -42,7 +42,7 @@ public class DeleteApplicationCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getArgumentSyntax() {
-        return "[Application Id]";
+        return "[application-id]";
     }
 
     @Override

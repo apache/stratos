@@ -709,6 +709,16 @@ $(document).ready(function(){
         tabData($(this));
     });
 
+    $('#whiteboard').on('dblclick', '.stepnode', function(){
+        var target = $('#component-data');
+        if( target.length ) {
+            event.preventDefault();
+            $('html, body').animate({
+                scrollTop: target.offset().top
+            }, 1000);
+        }
+    });
+
     function tabData(node){
         //get tab activated
         if(node.attr('id') == 'applicationId'){

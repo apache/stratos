@@ -16,9 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.Options;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -27,44 +28,40 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DescribeDeploymentPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DescribeDeploymentPolicyCommand.class);
+public class DescribeApplicationRuntimeCommand implements Command<StratosCommandContext> {
 
-    @Override
+    private static final Logger logger = LoggerFactory.getLogger(DescribeApplicationRuntimeCommand.class);
+
+    public DescribeApplicationRuntimeCommand() {
+    }
+
     public String getName() {
-        return "describe-deployment-policy";
+        return "describe-application-runtime";
     }
 
-    @Override
     public String getDescription() {
-        return "Describing the deployment Policy";
+        return "Describe application runtime";
     }
 
-    @Override
     public String getArgumentSyntax() {
         return "[application-id]";
     }
 
-    @Override
-    public Options getOptions() {
-        return null;
-    }
-
-    @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
-		}
-		if (args != null && args.length == 1) {
-			String deploymentPolicyId = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting deployment policy {}", deploymentPolicyId);
-			}
-			 RestCommandLineService.getInstance().describeDeploymentPolicy(deploymentPolicyId);
-			return CliConstants.COMMAND_SUCCESSFULL;
-		} else {
-			context.getStratosApplication().printUsage(getName());
-			return CliConstants.COMMAND_FAILED;
-		}
+            logger.debug("Executing command: ", getName());
+        }
+        if ((args == null) || (args.length == 0)) {
+            context.getStratosApplication().printUsage(getName());
+            return CliConstants.COMMAND_FAILED;
+        } else {
+            String applicationId = args[0];
+            RestCommandLineService.getInstance().describeApplicationRuntime(applicationId);
+            return CliConstants.COMMAND_SUCCESSFULL;
+        }
+    }
+
+    public Options getOptions() {
+        return null;
     }
 }

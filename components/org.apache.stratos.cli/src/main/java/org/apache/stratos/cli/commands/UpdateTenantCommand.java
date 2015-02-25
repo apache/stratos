@@ -16,14 +16,10 @@
  *  specific language governing permissions and limitations
  *  under the License.
  */
+
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -32,13 +28,12 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AddUserCommand implements Command<StratosCommandContext> {
-
-    private static final Logger logger = LoggerFactory.getLogger(AddUserCommand.class);
+public class UpdateTenantCommand implements Command<StratosCommandContext> {
+    private static final Logger logger = LoggerFactory.getLogger(UpdateTenantCommand.class);
 
     private final Options options;
 
-    public AddUserCommand(){
+    public UpdateTenantCommand(){
         options = constructOptions();
     }
 
@@ -46,49 +41,49 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         final Options options = new Options();
 
         Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
-                "User name");
-        usernameOption.setArgName("userName");
+                "Tenant user name");
+        usernameOption.setArgName("username");
         options.addOption(usernameOption);
 
-        Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
-                                           "User credential");
-        passwordOption.setArgName("credential");
-        options.addOption(passwordOption);
-
-        Option roleOption = new Option(CliConstants.ROLE_NAME_OPTION, CliConstants.ROLE_NAME_LONG_OPTION, true,
-                                           "User Role");
-        roleOption.setArgName("role");
-        options.addOption(roleOption);
-
         Option fistnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
-                "User first name");
-        fistnameOption.setArgName("firstName");
+                "Tenant first name");
+        fistnameOption.setArgName("firstname");
         options.addOption(fistnameOption);
 
         Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
-                "User last name");
-        lastnameOption.setArgName("lastName");
+                "Tenant last name");
+        lastnameOption.setArgName("lastname");
         options.addOption(lastnameOption);
 
+        Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
+                "Tenant password");
+        passwordOption.setArgName("password");
+        options.addOption(passwordOption);
+
+        Option domainOption = new Option(CliConstants.DOMAIN_NAME_OPTION, CliConstants.DOMAIN_NAME_LONG_OPTION, true,
+                "Tenant domain");
+        domainOption.setArgName("domain");
+        options.addOption(domainOption);
+
         Option emailOption = new Option(CliConstants.EMAIL_OPTION, CliConstants.EMAIL_LONG_OPTION, true,
-                                        "User email");
+                "Tenant email");
         emailOption.setArgName("email");
         options.addOption(emailOption);
 
-        Option profileNameOption = new Option(CliConstants.PROFILE_NAME_OPTION, CliConstants.PROFILE_NAME_LONG_OPTION, true,
-                "Profile name");
-        profileNameOption.setArgName("profileName");
-        options.addOption(profileNameOption);
+        Option idOption = new Option(CliConstants.ID_OPTION, CliConstants.ID_LONG_OPTION, true,
+                "Tenant id");
+        emailOption.setArgName("id");
+        options.addOption(idOption);
 
         return options;
     }
 
     public String getName() {
-        return "add-user";
+        return "update-tenant";
     }
 
     public String getDescription() {
-        return "Add new user";
+        return "Update an existing tenant";
     }
 
     public String getArgumentSyntax() {
@@ -101,13 +96,13 @@ public class AddUserCommand implements Command<StratosCommandContext> {
         }
 
         if (args != null && args.length > 0) {
-            String userName= null;
-            String credential= null;
-            String role= null;
-            String firstName= null;
-            String lastName= null;
-            String email= null;
-            String profileName= null;
+            String admin = null;
+            String firstName = null;
+            String lastaName = null;
+            String password = null;
+            String domain = null;
+            String email = null;
+            int id=0;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -116,26 +111,14 @@ public class AddUserCommand implements Command<StratosCommandContext> {
                 commandLine = parser.parse(options, args);
 
                 if (logger.isDebugEnabled()) {
-                    logger.debug("Add user");
+                    logger.debug("Update tenant");
                 }
 
                 if (commandLine.hasOption(CliConstants.USERNAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Username option is passed");
                     }
-                    userName = commandLine.getOptionValue(CliConstants.USERNAME_OPTION);
-                }
-                if (commandLine.hasOption(CliConstants.PASSWORD_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Credential option is passed");
-                    }
-                    credential = commandLine.getOptionValue(CliConstants.PASSWORD_OPTION);
-                }
-                if (commandLine.hasOption(CliConstants.ROLE_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Role option is passed");
-                    }
-                    role = commandLine.getOptionValue(CliConstants.ROLE_NAME_OPTION);
+                    admin = commandLine.getOptionValue(CliConstants.USERNAME_OPTION);
                 }
                 if (commandLine.hasOption(CliConstants.FIRST_NAME_OPTION)) {
                     if (logger.isTraceEnabled()) {
@@ -147,28 +130,42 @@ public class AddUserCommand implements Command<StratosCommandContext> {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Last name option is passed");
                     }
-                    lastName = commandLine.getOptionValue(CliConstants.LAST_NAME_OPTION);
+                    lastaName = commandLine.getOptionValue(CliConstants.LAST_NAME_OPTION);
+                }
+                if (commandLine.hasOption(CliConstants.PASSWORD_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Password option is passed");
+                    }
+                    password = commandLine.getOptionValue(CliConstants.PASSWORD_OPTION);
+                }
+                if (commandLine.hasOption(CliConstants.DOMAIN_NAME_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Domain name option is passed");
+                    }
+                    domain = commandLine.getOptionValue(CliConstants.DOMAIN_NAME_OPTION);
                 }
                 if (commandLine.hasOption(CliConstants.EMAIL_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Email option is passed");
                     }
                     email = commandLine.getOptionValue(CliConstants.EMAIL_OPTION);
+
                 }
-                if (commandLine.hasOption(CliConstants.PROFILE_NAME_OPTION)) {
+
+                if (commandLine.hasOption(CliConstants.ID_OPTION)) {
                     if (logger.isTraceEnabled()) {
-                        logger.trace("Profile name option is passed");
+                        logger.trace("Id option is passed");
                     }
-                    profileName = commandLine.getOptionValue(CliConstants.PROFILE_NAME_OPTION);
+                    id = Integer.parseInt(commandLine.getOptionValue(CliConstants.ID_OPTION));
+
                 }
 
-
-                if (userName == null || credential == null || role == null || firstName == null || lastName == null || email == null) {
-                    System.out.println("usage: " + getName() + " [-u <user name>] [-p <credential>] [-r <role>] [-f <first name>] [-l <last name>] [-e <email>] [-pr <profile name>]");
+                if (id == 0 ||admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null) {
+                    System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>] [-i <tenant-id>]");
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().addUser(userName, credential, role, firstName, lastName, email, profileName);
+                RestCommandLineService.getInstance().updateTenant(id,admin, firstName, lastaName, password, domain, email);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {

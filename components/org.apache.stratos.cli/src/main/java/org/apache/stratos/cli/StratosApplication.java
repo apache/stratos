@@ -234,6 +234,30 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
         command = new DescribeNetworkPartitionCommand();
         commands.put(command.getName(), command);
 
+        command = new ListDeploymentPoliciesCommand();
+        commands.put(command.getName(), command);
+
+        command = new DescribeDeploymentPolicyCommand();
+        commands.put(command.getName(), command);
+
+        command = new DescribeKubernetesMasterCommand();
+        commands.put(command.getName(), command);
+
+        command = new DescribeKubernetesClusterCommand();
+        commands.put(command.getName(), command);
+
+        command = new DeleteApplicationCommand();
+        commands.put(command.getName(), command);
+
+        command = new DescribeApplicationRuntimeCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateUserCommand();
+        commands.put(command.getName(), command);
+
+        command = new UpdateTenantCommand();
+        commands.put(command.getName(), command);
+
         if (logger.isDebugEnabled()) {
             logger.debug("Created {} commands for the application. {}", commands.size(), commands.keySet());
         }

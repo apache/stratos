@@ -387,6 +387,37 @@ public class ObjectConverter {
         }
         return networkPartition;
     }
+    
+    public static ApplicationPolicyBean convertASStubApplicationPolicyToApplicationPolicy(ApplicationPolicy applicationPolicy) {
+        
+    	if(applicationPolicy == null) {
+            return null;
+        }
+    	
+    	ApplicationPolicyNetworkPartitionReference[] applicationPolicyNetworkPartitionReferences = 
+    			applicationPolicy.getNetworkPartitionReferences();
+    	if (applicationPolicyNetworkPartitionReferences == null || applicationPolicyNetworkPartitionReferences.length == 0) {
+			return null;
+		}
+    	
+    	List<ApplicationPolicyNetworkPartitionReferenceBean> applicationPolicyNetworkPartitionReferenceBeans = 
+    			new ArrayList<ApplicationPolicyNetworkPartitionReferenceBean>();
+    	
+    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : applicationPolicyNetworkPartitionReferences) {
+			ApplicationPolicyNetworkPartitionReferenceBean applicationPolicyNetworkPartitionReferenceBean = new ApplicationPolicyNetworkPartitionReferenceBean();
+			applicationPolicyNetworkPartitionReferenceBean.setId(applicationPolicyNetworkPartitionReference.getNetworkPartitionId());
+			applicationPolicyNetworkPartitionReferenceBean.setActiveByDefault(applicationPolicyNetworkPartitionReference.getActiveByDefault());
+			applicationPolicyNetworkPartitionReferenceBeans.add(applicationPolicyNetworkPartitionReferenceBean);
+		}
+    	
+    	ApplicationPolicyNetworkPartitionReferenceBean[] applicationPolicyNetworkPartitionReferenceBeansArray = 
+    			applicationPolicyNetworkPartitionReferenceBeans.toArray(new ApplicationPolicyNetworkPartitionReferenceBean[applicationPolicyNetworkPartitionReferenceBeans.size()]);
+    	ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
+    	applicationPolicyBean.setNetworkPartition(applicationPolicyNetworkPartitionReferenceBeansArray);
+    	
+    	
+    	return applicationPolicyBean;
+    }
 
 	public static Partition convertPartitionToCCPartitionPojo(PartitionBean partitionBean) {
 

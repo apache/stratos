@@ -640,6 +640,21 @@ public class StratosApiV41 extends AbstractApi {
 		                                String.format("Application deployed successfully: [application] %s",
 		                                              applicationId))).build();
     }
+    
+    /**
+     * Get network partition by network partition id
+     * @return
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/applications/{applicationId}/applicationPolicy")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/getApplicationPolicy")
+    public Response getApplicationPolicy(@PathParam("applicationId") String applicationId) throws RestAPIException {
+        ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationId);
+        return Response.ok(applicationPolicyBean).build();
+    }
 
     /**
      * Signs up for an application.
