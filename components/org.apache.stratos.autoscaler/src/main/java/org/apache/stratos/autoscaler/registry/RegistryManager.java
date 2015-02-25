@@ -29,8 +29,6 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
@@ -124,14 +122,6 @@ public class RegistryManager {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
                     autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
-        }
-    }
-
-    public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getApplicationId();
-        persist(deploymentPolicy, resourcePath);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
         }
     }
 
@@ -422,36 +412,37 @@ public class RegistryManager {
         }
         return asPolicyList;
     }
-
-    public List<DeploymentPolicy> retrieveDeploymentPolicies() {
-        List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
+    
+    public List<ApplicationPolicy> retrieveApplicationPolicies() {
+        List<ApplicationPolicy> applicationPolicyList = new ArrayList<ApplicationPolicy>();
         RegistryManager registryManager = RegistryManager.getInstance();
-        String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE);
+        String[] applicationPoliciesResourceList = (String[]) registryManager.retrieve(
+        		AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_POLICY_RESOURCE);
 
-        if (depPolicyResourceList != null) {
-            DeploymentPolicy depPolicy;
-            for (String resourcePath : depPolicyResourceList) {
+        if (applicationPoliciesResourceList != null) {
+        	ApplicationPolicy applicationPolicy;
+            for (String resourcePath : applicationPoliciesResourceList) {
                 Object serializedObj = registryManager.retrieve(resourcePath);
                 if (serializedObj != null) {
                     try {
                         Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof DeploymentPolicy) {
-                            depPolicy = (DeploymentPolicy) dataObj;
+                        if (dataObj instanceof ApplicationPolicy) {
+                        	applicationPolicy = (ApplicationPolicy) dataObj;
                             if (log.isDebugEnabled()) {
-                                log.debug(depPolicy.toString());
+                                log.debug(String.format("Application policy read from registry %s", applicationPolicy.toString()));
                             }
-                            depPolicyList.add(depPolicy);
+                            applicationPolicyList.add(applicationPolicy);
                         } else {
                             return null;
                         }
                     } catch (Exception e) {
-                        String msg = "Unable to retrieve data from Registry. Hence, any historical deployment policies will not get reflected.";
+                        String msg = "Unable to retrieve data from Registry. Hence, any historical application policies will not get reflected.";
                         log.warn(msg, e);
                     }
                 }
             }
         }
-        return depPolicyList;
+        return applicationPolicyList;
     }
 
     public ServiceGroup getServiceGroup(String name) throws Exception {
@@ -539,14 +530,15 @@ public class RegistryManager {
         }
 
     }
-
-    public void removeDeploymentPolicy(DeploymentPolicy depPolicy) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE;
+    
+    public void removeApplicationPolicy(String applicationId) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" +
+        		applicationId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Deployment policy deleted from registry: [id] %s",
-                    depPolicy.getApplicationId()));
+            log.debug(String.format("Application policy deleted from registry [application-id] %s", applicationId));
         }
+
     }
 
     private void delete(String resourcePath) {
@@ -568,9 +560,10 @@ public class RegistryManager {
 
     }
 
-	public void persistApplicationPolicy(String applicationId, ApplicationPolicy applicationPolicy) {
+	public void persistApplicationPolicy(ApplicationPolicy applicationPolicy) {
 
-		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationId;
+		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + 
+				AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getApplicationId();
         persist(applicationPolicy, resourcePath);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Application policy written to registry"));

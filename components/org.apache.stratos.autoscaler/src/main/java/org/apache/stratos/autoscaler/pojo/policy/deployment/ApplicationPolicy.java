@@ -23,16 +23,23 @@ import java.io.Serializable;
 public class ApplicationPolicy implements Serializable{
 
 	private static final long serialVersionUID = -2851334419121310395L;
+	private String applicationId;
 	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences;
+	
+	public String getApplicationId() {
+		return applicationId;
+	}
+	
+	public void setApplicationId(String applicationId) {
+		this.applicationId = applicationId;
+	}
 	
 	public ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences() {
 		return networkPartitionReferences;
 	}
+	
 	public void setNetworkPartitionReferences(
 	        ApplicationPolicyNetworkPartitionReference[] networkPartitionReference) {
 		this.networkPartitionReferences = networkPartitionReference;
 	}
-	
-	
-	
 }

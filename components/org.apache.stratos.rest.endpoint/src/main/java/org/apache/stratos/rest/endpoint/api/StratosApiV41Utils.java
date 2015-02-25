@@ -1015,9 +1015,12 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
-
-            autoscalerServiceClient.deployApplication(applicationId, 
-            		ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicy));
+            
+            ApplicationPolicy ccStubApplicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicy);
+            // setting the application id since application-policy.json doesn't have this attribute explicitly
+            // reason is deployApplication() api path is containing the application id
+            ccStubApplicationPolicy.setApplicationId(applicationId);
+			autoscalerServiceClient.deployApplication(applicationId, ccStubApplicationPolicy);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }

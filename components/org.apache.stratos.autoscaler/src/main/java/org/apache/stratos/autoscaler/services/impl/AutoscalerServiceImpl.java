@@ -53,9 +53,6 @@ import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
@@ -126,11 +123,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 		return canRemove;
 	}
 
-	@Override
-    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyId) {
-        return PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
-    }
-
     @Override
     public AutoscalePolicy getAutoscalingPolicy(String autoscalingPolicyId) {
         return PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
@@ -193,7 +185,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			validateApplicationPolicy(applicationId, applicationPolicy);
 			
 			// Add application policy
-			PolicyManager.getInstance().addApplicationPolicy(applicationId, applicationPolicy);
+			PolicyManager.getInstance().addApplicationPolicy(applicationPolicy);
 			if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
 			    addApplicationSignUp(applicationContext, application.getKey());
@@ -376,16 +368,16 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // Remove Application SignUp(s) in stratos manager
             removeApplicationSignUp(application);
+            
+            // Remove application policy
+            PolicyManager.getInstance().removeApplicationPolicy(applicationId);
 
             ApplicationBuilder.handleApplicationUndeployed(applicationId);
 
             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
             applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
             AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
-
-            DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(applicationId);
-            PolicyManager.getInstance().removeDeploymentPolicy(deploymentPolicy);
-
+            
             if (log.isInfoEnabled()) {
                 log.info("Application undeployed successfully: [application-id] " + applicationId);
             }
