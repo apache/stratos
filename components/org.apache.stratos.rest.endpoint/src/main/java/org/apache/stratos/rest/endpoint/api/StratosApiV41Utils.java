@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
@@ -1031,6 +1032,18 @@ public class StratosApiV41Utils {
             String message = e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
+        }
+    }
+    
+    public static ApplicationPolicyBean getApplicationPolicy(String applicationId) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationId);
+            return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
+        } catch (Exception e) {
+            String message = String.format("Could not get application policy [application-id] %s", applicationId);
+            log.error(message);
+            throw new RuntimeException(message, e);
         }
     }
 

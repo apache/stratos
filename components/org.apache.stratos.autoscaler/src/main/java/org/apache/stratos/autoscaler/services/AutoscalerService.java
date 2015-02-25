@@ -96,6 +96,13 @@ public interface AutoscalerService {
      * @return
      */
     public boolean deployApplication(String applicationId, ApplicationPolicy applicationPolicy) throws ApplicationDefinitionException;
+    
+    /**
+     * Get application policy by application id
+     * @param applicationId the application id
+     * @return {@link ApplicationPolicy} used by the given application
+     */
+    public ApplicationPolicy getApplicationPolicy(String applicationId);
 
     /**
      * Undeploy an application in deployed state

@@ -60,5 +60,9 @@
             <DisplayName>Remove Kubernetes Host Cluster</DisplayName>
             <ResourceId>/permission/admin/manage/removeKubernetesHostCluster</ResourceId>
         </ManagementPermission>
+        <ManagementPermission>
+            <DisplayName>Get Application Policy</DisplayName>
+            <ResourceId>/permission/protected/manage/getApplicationPolicy</ResourceId>
+        </ManagementPermission>
     </ManagementPermissions>
 </component>

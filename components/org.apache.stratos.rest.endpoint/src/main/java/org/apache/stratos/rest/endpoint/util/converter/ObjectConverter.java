@@ -62,7 +62,6 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.rest.endpoint.exception.ServiceGroupDefinitionException;
-import org.apache.xerces.dom.DeepNodeListImpl;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 
 import java.util.*;
@@ -468,6 +467,37 @@ public class ObjectConverter {
             networkPartition.setPartitions(partitionList);
         }
         return networkPartition;
+    }
+    
+    public static ApplicationPolicyBean convertASStubApplicationPolicyToApplicationPolicy(ApplicationPolicy applicationPolicy) {
+        
+    	if(applicationPolicy == null) {
+            return null;
+        }
+    	
+    	ApplicationPolicyNetworkPartitionReference[] applicationPolicyNetworkPartitionReferences = 
+    			applicationPolicy.getNetworkPartitionReferences();
+    	if (applicationPolicyNetworkPartitionReferences == null || applicationPolicyNetworkPartitionReferences.length == 0) {
+			return null;
+		}
+    	
+    	List<ApplicationPolicyNetworkPartitionReferenceBean> applicationPolicyNetworkPartitionReferenceBeans = 
+    			new ArrayList<ApplicationPolicyNetworkPartitionReferenceBean>();
+    	
+    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : applicationPolicyNetworkPartitionReferences) {
+			ApplicationPolicyNetworkPartitionReferenceBean applicationPolicyNetworkPartitionReferenceBean = new ApplicationPolicyNetworkPartitionReferenceBean();
+			applicationPolicyNetworkPartitionReferenceBean.setId(applicationPolicyNetworkPartitionReference.getNetworkPartitionId());
+			applicationPolicyNetworkPartitionReferenceBean.setActiveByDefault(applicationPolicyNetworkPartitionReference.getActiveByDefault());
+			applicationPolicyNetworkPartitionReferenceBeans.add(applicationPolicyNetworkPartitionReferenceBean);
+		}
+    	
+    	ApplicationPolicyNetworkPartitionReferenceBean[] applicationPolicyNetworkPartitionReferenceBeansArray = 
+    			applicationPolicyNetworkPartitionReferenceBeans.toArray(new ApplicationPolicyNetworkPartitionReferenceBean[applicationPolicyNetworkPartitionReferenceBeans.size()]);
+    	ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
+    	applicationPolicyBean.setNetworkPartition(applicationPolicyNetworkPartitionReferenceBeansArray);
+    	
+    	
+    	return applicationPolicyBean;
     }
 
 	public static org.apache.stratos.autoscaler.stub.deployment.partition.Partition convertToCCPartitionPojo
