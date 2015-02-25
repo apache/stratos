@@ -23,6 +23,10 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
+import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
+import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -40,7 +44,9 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import javax.xml.namespace.QName;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -341,7 +347,106 @@ public class AutoscalerUtil {
         }
         return "*";
     }
+    
+    public static String getDeploymentPolicyIdByAlias(String applicationId, String alias) {
+    	
+    	if (alias == null || alias.isEmpty()) {
+			return null;
+		}
+    	
+    	Map<String, String> aliasToDeploymentPolicyIdMap = new HashMap<String, String>();
+    	
+    	ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+    	if (applicationContext == null) {
+			return null;
+		}
+    	
+    	ComponentContext componentContext = applicationContext.getComponents();
+    	if (componentContext == null) {
+			return null;
+		}
+    	
+    	CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+    		getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(aliasToDeploymentPolicyIdMap, cartridgeContexts);
+		}
+    	
+    	GroupContext[] groupContexts = componentContext.getGroupContexts();
+    	if (groupContexts != null && groupContexts.length != 0) {
+    		getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContexts);
+		}
+    	
+    	return aliasToDeploymentPolicyIdMap.get(alias);
+    }
+    
+    private static void getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, CartridgeContext[] cartridgeContexts) {
+    	
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+			for (CartridgeContext cartridgeContext : cartridgeContexts) {
+				if (cartridgeContext != null) {
+					aliasToDeploymentPolicyIdMap.put(
+							cartridgeContext.getSubscribableInfoContext().getAlias(), 
+							cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy());
+				}
+			}
+		}
+    }
+    
+    private static void getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, GroupContext[] groupContexts) {
+    	
+    	if (groupContexts != null && groupContexts.length != 0) {
+			for (GroupContext groupContext : groupContexts) {
+				if (groupContext != null) {
+					if (groupContext.getDeploymentPolicy() == null || groupContext.getDeploymentPolicy().isEmpty()) {
+						// if group does not have a deployment policy, children should have
+						getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(aliasToDeploymentPolicyIdMap, groupContext.getCartridgeContexts());
+						getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContext.getGroupContexts());
+					} else {
+						// if group have a deployment policy, it is the same for all the children
+						String deploymentPolicyId = groupContext.getDeploymentPolicy();
+						if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
+							setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+						}
+						if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
+							setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+						}
+						
+					}
+				}
+			}
+		}
+    }
+    
+    private static void setDeploymentPolicyIdToChildCartridgeContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId, CartridgeContext[] cartridgeContexts) {
+    	
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+    		for (CartridgeContext cartridgeContext : cartridgeContexts) {
+				if (cartridgeContext != null) {
+					aliasToDeploymentPolicyIdMap.put(cartridgeContext.getSubscribableInfoContext().getAlias(), deploymentPolicyId);
+				}
+			}
+		}
+    }
 
+    private static void setDeploymentPolicyIdToChildGroupContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId, GroupContext[] groupContexts) {
+    	
+    	if (groupContexts != null && groupContexts.length != 0) {
+    		for (GroupContext groupContext : groupContexts) {
+				if (groupContext != null) {
+					if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
+						setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+					}
+					if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
+						setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+					}
+				}
+			}
+		}
+    }
 
 //    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
 //        if (null == cluster) {

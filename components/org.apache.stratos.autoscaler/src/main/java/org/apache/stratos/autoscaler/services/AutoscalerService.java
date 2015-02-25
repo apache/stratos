@@ -24,14 +24,11 @@ package org.apache.stratos.autoscaler.services;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.exception.*;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.ChildLevelNetworkPartition;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.common.Properties;
 
 public interface AutoscalerService {
@@ -111,13 +108,6 @@ public interface AutoscalerService {
      * @param applicationId
      */
     public void deleteApplication(String applicationId);
-
-    /**
-     * Returns a deployment policy of an application
-     * @param applicationId
-     * @return
-     */
-    public DeploymentPolicy getDeploymentPolicy(String applicationId);
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor

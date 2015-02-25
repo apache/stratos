@@ -29,7 +29,7 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
@@ -49,6 +49,7 @@ import com.hazelcast.core.HazelcastInstance;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -138,22 +139,6 @@ public class AutoscalerServiceComponent {
 			log.debug("Health statistics receiver thread started");
 		}
 
-        // Adding the registry stored partitions to the information model
-        List<Partition> partitions = RegistryManager.getInstance().retrievePartitions();
-        Iterator<Partition> partitionIterator = partitions.iterator();
-        while (partitionIterator.hasNext()) {
-            Partition partition = partitionIterator.next();
-//            PartitionManager.getInstance().addPartitionToInformationModel(partition);
-        }
-
-        // Adding the network partitions stored in registry to the information model
-//        List<NetworkPartitionLbHolder> nwPartitionHolders = RegistryManager.getInstance().retrieveNetworkPartitionLbHolders();
-//        Iterator<NetworkPartitionLbHolder> nwPartitionIterator = nwPartitionHolders.iterator();
-//        while (nwPartitionIterator.hasNext()) {
-//            NetworkPartitionLbHolder nwPartition = nwPartitionIterator.next();
-//            PartitionManager.getInstance().addNetworkPartitionLbHolder(nwPartition);
-//        }
-
         // Add AS policies to information model
         List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
         Iterator<AutoscalePolicy> asPolicyIterator = asPolicies.iterator();
@@ -161,15 +146,15 @@ public class AutoscalerServiceComponent {
             AutoscalePolicy asPolicy = asPolicyIterator.next();
             PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
         }
-
-        // Add Deployment policies to information model
-		List<DeploymentPolicy> depPolicies = RegistryManager.getInstance().retrieveDeploymentPolicies();
-		Iterator<DeploymentPolicy> depPolicyIterator = depPolicies.iterator();
-		while (depPolicyIterator.hasNext()) {
-			DeploymentPolicy depPolicy = depPolicyIterator.next();
-			PolicyManager.getInstance().addDeploymentPolicy(depPolicy);
-		}
-
+        
+        // Add application policies to information model
+        List<ApplicationPolicy> applicationPolicies = RegistryManager.getInstance().retrieveApplicationPolicies();
+        Iterator<ApplicationPolicy> applicationPolicyIterator = applicationPolicies.iterator();
+        while (applicationPolicyIterator.hasNext()) {
+            ApplicationPolicy applicationPolicy = applicationPolicyIterator.next();
+            PolicyManager.getInstance().addApplicationPolicyToInformationModel(applicationPolicy);
+        }
+        
 		//starting the processor chain
 		ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
 		ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);

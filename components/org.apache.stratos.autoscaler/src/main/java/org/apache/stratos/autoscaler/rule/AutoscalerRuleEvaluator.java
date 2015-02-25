@@ -34,7 +34,6 @@ import org.wso2.carbon.utils.CarbonUtils;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * This class is responsible for evaluating the current details of topology, statistics, and health

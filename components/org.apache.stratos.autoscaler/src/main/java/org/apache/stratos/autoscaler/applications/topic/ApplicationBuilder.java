@@ -18,6 +18,10 @@
  */
 package org.apache.stratos.autoscaler.applications.topic;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -27,12 +31,17 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.NetworkPartitionContext;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
-import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
-import org.apache.stratos.messaging.domain.application.*;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ApplicationStatus;
+import org.apache.stratos.messaging.domain.application.Applications;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.application.Group;
+import org.apache.stratos.messaging.domain.application.GroupStatus;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
@@ -41,10 +50,6 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This will build the application.
@@ -236,9 +241,9 @@ public class ApplicationBuilder {
                 return;
             } else {
                 // Check whether given application is deployed
-                org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy policy =
-                        PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
-                if (policy != null) {
+            	// if there is an application policy with appId, it means application is deployed
+            	ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
+                if (applicationPolicy != null) {
                     log.warn(String.format("Application has been found in the ApplicationsTopology" +
                                     ": [application-id] %s, Please unDeploy the Application Policy " +
                                     "before deleting the Application definition.",
@@ -315,15 +320,14 @@ public class ApplicationBuilder {
                                 setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().
                                 setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-                        String policyId = PolicyManager.getInstance().
-                                getDeploymentPolicyIdByApplication(appId);
-                        if (policyId != null) {
+                        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
+                        if (applicationPolicy != null) {
                             try {
-                                PolicyManager.getInstance().undeployDeploymentPolicy(policyId);
-                                log.info("Deployment policy for the [Application] " + appId +
+                                PolicyManager.getInstance().removeApplicationPolicy(appId);
+                                log.info("Application policy for the [Application] " + appId +
                                         "has been removed.");
-                            } catch (InvalidPolicyException e) {
-                                log.error("Error while unDeploying the policy for [application] " + appId);
+                            } catch (Exception e) {
+                                log.error("Error while removing the policy for [application] " + appId);
                             }
                         }
                     } finally {

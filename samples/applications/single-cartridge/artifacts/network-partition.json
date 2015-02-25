@@ -2,7 +2,7 @@
     "id": "network-partition-1",
     "partitions": [
         {
-            "id": "p1",
+            "id": "partition-1",
             "provider": "mock",
             "property": [
                 {
