@@ -23,7 +23,6 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.autoscaler.stub.deployment.policy.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeAlreadyExistsExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
@@ -109,25 +108,25 @@ public class StratosApiV40Utils {
         return stratosApiResponse;
     }
 
-    @SuppressWarnings("unused")
-    private static DeploymentPolicy[] intersection(
-            DeploymentPolicy[] cartridgeDepPolicies,
-            DeploymentPolicy[] lbCartridgeDepPolicies) {
-
-        List<DeploymentPolicy> commonPolicies =
-                new ArrayList<DeploymentPolicy>();
-        for (DeploymentPolicy policy1
-                : cartridgeDepPolicies) {
-            for (DeploymentPolicy policy2
-                    : lbCartridgeDepPolicies) {
-                if(policy1.equals(policy2)) {
-                    commonPolicies.add(policy1);
-                }
-            }
-
-        }
-        return commonPolicies.toArray(new DeploymentPolicy[0]);
-    }
+//    @SuppressWarnings("unused")
+//    private static DeploymentPolicy[] intersection(
+//            DeploymentPolicy[] cartridgeDepPolicies,
+//            DeploymentPolicy[] lbCartridgeDepPolicies) {
+//
+//        List<DeploymentPolicy> commonPolicies =
+//                new ArrayList<DeploymentPolicy>();
+//        for (DeploymentPolicy policy1
+//                : cartridgeDepPolicies) {
+//            for (DeploymentPolicy policy2
+//                    : lbCartridgeDepPolicies) {
+//                if(policy1.equals(policy2)) {
+//                    commonPolicies.add(policy1);
+//                }
+//            }
+//
+//        }
+//        return commonPolicies.toArray(new DeploymentPolicy[0]);
+//    }
 
     static ApiResponseBean undeployCartridge(String cartridgeType) throws RestAPIException {
 
@@ -319,13 +318,13 @@ public class StratosApiV40Utils {
         return ObjectConverter.convertStubAutoscalePolicyToAutoscalePolicy(autoscalePolicy);
     }
 
-    public static DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
-
-        DeploymentPolicy deploymentPolicy = null;
-
-
-        return null;
-    }
+//    public static DeploymentPolicyBean getDeploymentPolicy(String deploymentPolicyId) throws RestAPIException {
+//
+//        DeploymentPolicy deploymentPolicy = null;
+//
+//
+//        return null;
+//    }
 
     static CartridgeBean getAvailableCartridgeInfo(String cartridgeType, Boolean multiTenant, ConfigurationContext configurationContext) throws RestAPIException {
         List<CartridgeBean> cartridges = getAvailableCartridges(null, multiTenant, configurationContext);

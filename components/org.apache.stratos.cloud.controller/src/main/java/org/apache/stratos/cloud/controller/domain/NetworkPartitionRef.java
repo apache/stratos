@@ -59,6 +59,22 @@ public class NetworkPartitionRef implements Serializable{
 		this.partitions = partitions;
 	}
 	
+	/**
+	 * Get partition reference by partition id
+	 * @param partitionId
+	 * @return {@link PartitionRef}
+	 */
+	public PartitionRef getPartitionRef(String partitionId) {
+		if (partitions != null && partitions.length != 0) {
+			for (PartitionRef partitionRef : partitions) {
+				if (partitionRef.getId().equals(partitionId)) {
+					return partitionRef;
+				}
+			}
+		}
+		return null;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("{ network-partition-id : %s, partition-algo : %s, partitions : %s }", id, partitionAlgo, Arrays.toString(partitions));

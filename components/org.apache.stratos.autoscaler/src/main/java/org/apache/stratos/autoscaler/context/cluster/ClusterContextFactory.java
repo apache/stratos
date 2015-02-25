@@ -25,14 +25,7 @@ import org.apache.stratos.autoscaler.exception.partition.PartitionValidationExce
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.messaging.domain.topology.Cluster;
-
-import java.util.Map;
-
-//import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.PartitionManager;
 
 public class ClusterContextFactory {
 
@@ -44,31 +37,14 @@ public class ClusterContextFactory {
         if (null == cluster) {
             return null;
         }
+        
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
-        AutoscalePolicy autoscalePolicy =
-                PolicyManager.getInstance()
-                        .getAutoscalePolicy(autoscalePolicyName);
+        AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
 
         if (log.isDebugEnabled()) {
             log.debug("Autoscaler policy name: " + autoscalePolicyName);
         }
-        DeploymentPolicy deploymentPolicy;
-        deploymentPolicy = PolicyManager.getInstance().
-                                getDeploymentPolicyByApplication(cluster.getAppId());
 
-        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy,
-                deploymentPolicy, hasScalingDependents);
-    }
-
-    private static Properties convertMemberPropsToMemberContextProps(
-            java.util.Properties properties) {
-        Properties props = new Properties();
-        for (Map.Entry<Object, Object> e : properties.entrySet()) {
-            Property property = new Property();
-            property.setName((String) e.getKey());
-            property.setValue((String) e.getValue());
-            props.addProperty(property);
-        }
-        return props;
+        return new ClusterContext(cluster.getClusterId(), cluster.getServiceName(), autoscalePolicy, hasScalingDependents);
     }
 }

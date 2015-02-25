@@ -5,12 +5,12 @@
    "components":{  
       "cartridges":[  
          {  
-            "type":"php",
+                "type":"php",
                 "cartridgeMin": 1,
                 "cartridgeMax": 10,    
 				"subscribableInfo":{  
                	"alias":"php1",
-               	"autoscalingPolicy":"autoscale-policy-1",
+               	"autoscalingPolicy":"autoscaling-policy-1",
                 "deploymentPolicy":"deployment-policy-1",
                 "artifactRepository":{
                    "privateRepo":false,

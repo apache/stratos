@@ -26,6 +26,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
+import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
+import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
@@ -44,7 +48,9 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import javax.xml.namespace.QName;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -357,4 +363,165 @@ public class AutoscalerUtil {
         }
         return "*";
     }
+    
+    public static String getDeploymentPolicyIdByAlias(String applicationId, String alias) {
+    	
+    	if (alias == null || alias.isEmpty()) {
+			return null;
+		}
+    	
+    	Map<String, String> aliasToDeploymentPolicyIdMap = new HashMap<String, String>();
+    	
+    	ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
+    	if (applicationContext == null) {
+			return null;
+		}
+    	
+    	ComponentContext componentContext = applicationContext.getComponents();
+    	if (componentContext == null) {
+			return null;
+		}
+    	
+    	CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+    		getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(aliasToDeploymentPolicyIdMap, cartridgeContexts);
+		}
+    	
+    	GroupContext[] groupContexts = componentContext.getGroupContexts();
+    	if (groupContexts != null && groupContexts.length != 0) {
+    		getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContexts);
+		}
+    	
+    	return aliasToDeploymentPolicyIdMap.get(alias);
+    }
+    
+    private static void getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, CartridgeContext[] cartridgeContexts) {
+    	
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+			for (CartridgeContext cartridgeContext : cartridgeContexts) {
+				if (cartridgeContext != null) {
+					aliasToDeploymentPolicyIdMap.put(
+							cartridgeContext.getSubscribableInfoContext().getAlias(), 
+							cartridgeContext.getSubscribableInfoContext().getDeploymentPolicy());
+				}
+			}
+		}
+    }
+    
+    private static void getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, GroupContext[] groupContexts) {
+    	
+    	if (groupContexts != null && groupContexts.length != 0) {
+			for (GroupContext groupContext : groupContexts) {
+				if (groupContext != null) {
+					if (groupContext.getDeploymentPolicy() == null || groupContext.getDeploymentPolicy().isEmpty()) {
+						// if group does not have a deployment policy, children should have
+						getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(aliasToDeploymentPolicyIdMap, groupContext.getCartridgeContexts());
+						getAliasToDeployloymentPolicyIdMapFromChildGroupContexts(aliasToDeploymentPolicyIdMap, groupContext.getGroupContexts());
+					} else {
+						// if group have a deployment policy, it is the same for all the children
+						String deploymentPolicyId = groupContext.getDeploymentPolicy();
+						if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
+							setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+						}
+						if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
+							setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+						}
+						
+					}
+				}
+			}
+		}
+    }
+    
+    private static void setDeploymentPolicyIdToChildCartridgeContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId, CartridgeContext[] cartridgeContexts) {
+    	
+    	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
+    		for (CartridgeContext cartridgeContext : cartridgeContexts) {
+				if (cartridgeContext != null) {
+					aliasToDeploymentPolicyIdMap.put(cartridgeContext.getSubscribableInfoContext().getAlias(), deploymentPolicyId);
+				}
+			}
+		}
+    }
+
+    private static void setDeploymentPolicyIdToChildGroupContexts(
+    		Map<String, String> aliasToDeploymentPolicyIdMap, String deploymentPolicyId, GroupContext[] groupContexts) {
+    	
+    	if (groupContexts != null && groupContexts.length != 0) {
+    		for (GroupContext groupContext : groupContexts) {
+				if (groupContext != null) {
+					if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
+						setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
+					}
+					if (groupContext.getGroupContexts() != null && groupContext.getGroupContexts().length != 0) {
+						setDeploymentPolicyIdToChildGroupContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getGroupContexts());
+					}
+				}
+			}
+		}
+    }
+
+//    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
+//        if (null == cluster) {
+//               return null;
+//           }
+//
+//           String autoscalePolicyName = cluster.getAutoscalePolicyName();
+//           String deploymentPolicyName = cluster.getDeploymentPolicyName();
+//
+//           if (log.isDebugEnabled()) {
+//               log.debug("Deployment policy name: " + deploymentPolicyName);
+//               log.debug("Autoscaler policy name: " + autoscalePolicyName);
+//           }
+//
+//           AutoscalePolicy policy =
+//                                    PolicyManager.getInstance()
+//                                                 .getAutoscalePolicy(autoscalePolicyName);
+//           DeploymentPolicy deploymentPolicy =
+//                                               PolicyManager.getInstance()
+//                                                            .getDeploymentPolicy(deploymentPolicyName);
+//
+//           if (deploymentPolicy == null) {
+//               String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
+//               log.error(msg);
+//               throw new PolicyValidationException(msg);
+//           }
+//
+//           Partition[] allPartitions = deploymentPolicy.getAllPartitions();
+//           if (allPartitions == null) {
+//               String msg =
+//                            "Deployment Policy's Partitions are null. Policy name: " +
+//                                    deploymentPolicyName;
+//               log.error(msg);
+//               throw new PolicyValidationException(msg);
+//           }
+//
+//           try {
+//               validateExistenceOfPartions(allPartitions);
+//           } catch (InvalidPartitionException e) {
+//               String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
+//               log.error(msg, e);
+//               throw new PolicyValidationException(msg, e);
+//           }
+//
+//           CloudControllerClient.getInstance()
+//                                .validateDeploymentPolicy(cluster.getServiceName(),
+//                                                            allPartitions);
+//
+//           LbClusterMonitor clusterMonitor =
+//                                           new LbClusterMonitor(cluster.getClusterId(),
+//                                                              cluster.getServiceName(),
+//                                                              deploymentPolicy, policy);
+//           fNetworkPartitionroup partitionGroup: deploymentPoliNetworkPartitionnGroups()){
+//
+//               NetworkPartitionContext networkPartitionContext
+//                       = PartitionManager.getInstance().getNetworkPartitionLbHolder(partitionGroup.getNetworkPartitionId());
+//               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
+//           }
+//        return null;
+//    }
+
 }

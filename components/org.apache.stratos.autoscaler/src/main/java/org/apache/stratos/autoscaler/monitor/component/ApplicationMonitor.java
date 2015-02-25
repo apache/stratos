@@ -36,8 +36,6 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.NetworkPartition;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -309,14 +307,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             throws TopologyInConsistentException, PolicyValidationException {
         boolean initialStartup = true;
         List<String> instanceIds = new ArrayList<String>();
-        DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId;
 
-        if (deploymentPolicy == null) {
-            //FIXME for docker with deployment policy
-            ApplicationInstance appInstance = createApplicationInstance(application, null);
-            instanceIds.add(appInstance.getInstanceId());
-        } else {
+//        if (deploymentPolicy == null) {
+//            //FIXME for docker with deployment policy
+//            ApplicationInstance appInstance = createApplicationInstance(application, null);
+//            instanceIds.add(appInstance.getInstanceId());
+//        } else {
         	
         	for (ApplicationPolicyNetworkPartitionReference 
         			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
@@ -343,8 +340,8 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 	            }
             }
             
-        }
 
+//        }
         startDependency(application, instanceIds);
         return initialStartup;
     }
@@ -408,15 +405,14 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             throw new TopologyInConsistentException(msg);
         }
         boolean burstNPFound = false;
-        DeploymentPolicy deploymentPolicy = getDeploymentPolicy(application);
         String instanceId = null;
         //Find out the inactive network partition
-        if (deploymentPolicy == null) {
-            //FIXME for docker with deployment policy
-            ApplicationInstance appInstance = createApplicationInstance(application, null);
-            instanceId = appInstance.getInstanceId();
-
-        } else {
+//        if (deploymentPolicy == null) {
+//            //FIXME for docker with deployment policy
+//            ApplicationInstance appInstance = createApplicationInstance(application, null);
+//            instanceId = appInstance.getInstanceId();
+//
+//        } else {
             for (ApplicationPolicyNetworkPartitionReference 
         			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
                 //Checking whether any not active NP found
@@ -444,7 +440,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
                     }
                 }
             }
-        }
+//        }
         if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
         } else {
@@ -452,22 +448,22 @@ public class ApplicationMonitor extends ParentComponentMonitor {
         }
     }
 
-    private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
-        String deploymentPolicyName = application.getDeploymentPolicy();
-        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
-                getDeploymentPolicyByApplication(application.getUniqueIdentifier());
-        if (deploymentPolicyName != null) {
-            deploymentPolicy = PolicyManager.getInstance()
-                    .getDeploymentPolicy(deploymentPolicyName);
-            if (deploymentPolicy == null) {
-                String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
-                log.error(msg);
-                throw new PolicyValidationException(msg);
-            }
-        }
-
-        return deploymentPolicy;
-    }
+//    private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
+//        String deploymentPolicyName = application.getDeploymentPolicy();
+//        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
+//                getDeploymentPolicyByApplication(application.getUniqueIdentifier());
+//        if (deploymentPolicyName != null) {
+//            deploymentPolicy = PolicyManager.getInstance()
+//                    .getDeploymentPolicy(deploymentPolicyName);
+//            if (deploymentPolicy == null) {
+//                String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
+//                log.error(msg);
+//                throw new PolicyValidationException(msg);
+//            }
+//        }
+//
+//        return deploymentPolicy;
+//    }
 
     private ApplicationInstance createApplicationInstance(Application application, String networkPartitionId) {
         //String instanceId = this.generateInstanceId(application);

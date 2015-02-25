@@ -230,6 +230,13 @@ public class CloudControllerServiceClient {
     public DeploymentPolicy[] getDeploymentPolicies() throws RemoteException{
     	return stub.getDeploymentPolicies();
     }
+    
+    public void validateDeploymentPolicy(String cartridgeType, Partition[] partitions) 
+    		throws RemoteException, 
+    		CloudControllerServiceInvalidPartitionExceptionException, 
+    		CloudControllerServiceInvalidCartridgeTypeExceptionException {
+    	stub.validateDeploymentPolicy(cartridgeType, partitions);
+    }
 	
     public void addNetworkPartition(NetworkPartition networkPartition) throws RemoteException, 
     CloudControllerServiceNetworkPartitionAlreadyExistsExceptionException {

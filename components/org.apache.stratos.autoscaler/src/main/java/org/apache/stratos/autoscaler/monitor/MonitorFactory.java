@@ -33,6 +33,12 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
+import org.apache.stratos.autoscaler.util.AutoscalerUtil;
+import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
+import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
@@ -41,6 +47,7 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -242,6 +249,51 @@ public class MonitorFactory {
                         serviceName, clusterId);
                 throw new RuntimeException(msg);
             }
+            
+            
+            // deployment policy validation
+            String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId, AutoscalerUtil.getAliasFromClusterId(clusterId));
+            DeploymentPolicy deploymentPolicy = null;
+			try {
+				deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyId);
+			} catch (Exception e) {
+				String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicy);
+				log.error(msg, e);
+				//TODO throw an exception
+				return null;
+			} 
+			
+            List<Partition> partitionList = new ArrayList<Partition>();
+            for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionsRef()) {
+            	
+            	if (networkPartitionRef != null) {
+            		NetworkPartition networkPartition = null;
+					try {
+						networkPartition = CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionRef.getId());
+					} catch (Exception e) {
+						String msg = String.format("Error while getting deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
+						log.error(msg, e);
+						//TODO throw an exception
+						return null;
+					}
+					
+            		if (networkPartition != null) {
+            			for (Partition partition : networkPartition.getPartitions()) {
+            				partitionList.add(partition);
+            			}
+            		}
+            		
+            		try {
+						CloudControllerServiceClient.getInstance().validateDeploymentPolicy(serviceName, partitionList.toArray(new Partition[partitionList.size()]));
+					} catch (Exception e) {
+						String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
+						log.error(msg, e);
+						//TODO throw an exception
+						return null;
+					}
+            	}
+            }
+            // deployment policy validation ends
 
             boolean hasScalingDependents = false;
             if(parentMonitor.getScalingDependencies() != null) {

@@ -46,6 +46,38 @@ public class DeploymentPolicy implements Serializable{
 	public void setNetworkPartitionsRef(NetworkPartitionRef[] applicationLevelNetworkPartitions) {
 		this.applicationLevelNetworkPartitions = applicationLevelNetworkPartitions;
 	}
+	
+	/**
+	 * Get network partition reference object by network partition id.
+	 * @param networkPartitionId
+	 * @return the {@link NetworkPartitionRef}
+	 */
+	public NetworkPartitionRef getNetworkPartitionRefByNetworkPartitionId(String networkPartitionId) {
+		if (applicationLevelNetworkPartitions != null) {
+			for (NetworkPartitionRef networkPartitionRef : applicationLevelNetworkPartitions) {
+				if (networkPartitionRef.getId().equals(networkPartitionId)) {
+					return networkPartitionRef;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get partition references by network partition id.
+	 * @param networkPartitionId
+	 * @return an array of {@link PartitionRef}
+	 */
+	public PartitionRef[] getPartitionRefsByNetworkPartitionId(String networkPartitionId) {
+		if (applicationLevelNetworkPartitions != null) {
+			for (NetworkPartitionRef networkPartitionRef : applicationLevelNetworkPartitions) {
+				if (networkPartitionRef.getId().equals(networkPartitionId)) {
+					return networkPartitionRef.getPartitions();
+				}
+			}
+		}
+		return null;
+	}
 
 	public String toString() {
 		return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID, 

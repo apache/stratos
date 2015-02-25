@@ -19,12 +19,14 @@
 
 package org.apache.stratos.autoscaler.event.receiver.topology;
 
+import java.util.concurrent.ExecutorService;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
-import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
+import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
 import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher;
 import org.apache.stratos.autoscaler.event.publisher.InstanceNotificationPublisher;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
@@ -33,7 +35,7 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.events.ClusterStatusEvent;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.messaging.domain.application.Application;
@@ -43,12 +45,33 @@ import org.apache.stratos.messaging.domain.topology.Cluster;
 import org.apache.stratos.messaging.domain.topology.ClusterStatus;
 import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.event.Event;
-import org.apache.stratos.messaging.event.topology.*;
-import org.apache.stratos.messaging.listener.topology.*;
+import org.apache.stratos.messaging.event.topology.ApplicationClustersCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceActivatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceCreatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceInactivateEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceTerminatedEvent;
+import org.apache.stratos.messaging.event.topology.ClusterInstanceTerminatingEvent;
+import org.apache.stratos.messaging.event.topology.ClusterResetEvent;
+import org.apache.stratos.messaging.event.topology.MemberActivatedEvent;
+import org.apache.stratos.messaging.event.topology.MemberMaintenanceModeEvent;
+import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
+import org.apache.stratos.messaging.event.topology.MemberTerminatedEvent;
+import org.apache.stratos.messaging.listener.topology.ApplicationClustersCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInstanceActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInstanceCreatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInstanceInactivateEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInstanceTerminatedEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterInstanceTerminatingEventListener;
+import org.apache.stratos.messaging.listener.topology.ClusterResetEventListener;
+import org.apache.stratos.messaging.listener.topology.CompleteTopologyEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberActivatedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberMaintenanceListener;
+import org.apache.stratos.messaging.listener.topology.MemberReadyToShutdownEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener;
+import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
-
-import java.util.concurrent.ExecutorService;
 
 /**
  * Autoscaler topology receiver.
@@ -92,10 +115,9 @@ public class AutoscalerTopologyEventReceiver {
                         if (applications != null) {
                             for (Application application : applications.getApplications().values()) {
                                 if (AutoscalerUtil.allClustersInitialized(application)) {
-                                    DeploymentPolicy policy = PolicyManager.getInstance().
-                                            getDeploymentPolicyByApplication(
-                                                    application.getUniqueIdentifier());
-                                    if (policy != null) {
+                                	ApplicationPolicy applicationPolicy = 
+                                			PolicyManager.getInstance().getApplicationPolicy(application.getUniqueIdentifier());
+                                    if (applicationPolicy != null) {
                                         AutoscalerUtil.getInstance().
                                                 startApplicationMonitor(application.getUniqueIdentifier());
                                     } else {
@@ -134,8 +156,8 @@ public class AutoscalerTopologyEventReceiver {
                         //acquire read lock
                         ApplicationHolder.acquireReadLock();
                         //start the application monitor if the policy exists
-                        DeploymentPolicy policy = PolicyManager.getInstance().getDeploymentPolicyByApplication(appId);
-                        if (policy != null && !AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
+                        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
+                        if (applicationPolicy != null && !AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
                             AutoscalerUtil.getInstance().startApplicationMonitor(appId);
                         }
                     } catch (Exception e) {

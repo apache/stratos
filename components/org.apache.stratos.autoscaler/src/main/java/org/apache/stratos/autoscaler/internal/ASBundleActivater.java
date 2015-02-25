@@ -21,8 +21,6 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.commands.ASPolicyCommands;
-import org.apache.stratos.autoscaler.commands.DeploymentPolicyCommands;
-//import org.apache.stratos.autoscaler.commands.PartitionsCommands;
 import org.eclipse.osgi.framework.console.CommandProvider;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -37,10 +35,7 @@ public class ASBundleActivater implements BundleActivator{
     		log.debug("AutoScaler bundle is activated.");
     	
 		context.registerService(CommandProvider.class.getName(),new ASPolicyCommands(), null);
-		context.registerService(CommandProvider.class.getName(),new DeploymentPolicyCommands(), null);
-//		context.registerService(CommandProvider.class.getName(),new PartitionsCommands(), null);
 	}
-
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
