@@ -27,6 +27,7 @@ import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -119,10 +120,9 @@ public class ClusterContext extends AbstractClusterContext {
    	 	try {
    	 		deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyName);
    	 	} catch (Exception e) {
-   	 		String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", clusterId);
+   	 		String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyName);
    	 		log.error(msg, e);
-   	 		//TODO throw an exception
-   	 		return;
+   	 		throw new AutoScalerException(msg, e);
    	 	}
         
         if (networkPartitionCtxts.containsKey(clusterInstance.getNetworkPartitionId())) {
@@ -177,10 +177,9 @@ public class ClusterContext extends AbstractClusterContext {
 		} catch (Exception e) {
 			String msg = String
 					.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s",
-							clusterId);
+							deploymentPolicyName);
 			log.error(msg, e);
-			// TODO throw an exception
-			return null;
+			throw new AutoScalerException(msg, e);
 		}
 
 		// TODO introduce methods in network/partition reference classes
@@ -291,8 +290,7 @@ public class ClusterContext extends AbstractClusterContext {
 		} catch (Exception e) {
 			String msg = String.format("Error while getting network partitioin from cloud controller : [network-partition-id] %s", nPartitionId);
 			log.error(msg, e);
-			//TODO thrown an exception
-			return null;
+			throw new AutoScalerException(msg, e);
 		}
 		
         Partition partition = null;
