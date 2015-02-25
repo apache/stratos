@@ -32,8 +32,8 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/esb.jso
 echo "Adding php cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
-echo "Adding group6c2 group..."
-curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/group6c2.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups
+echo "Adding esb-php-group group..."
+curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/esb-php-group.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups
 
 sleep 1
 
@@ -43,4 +43,4 @@ curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/applicat
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/sample-groups-app/deploy
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/dependency-scaling-groups-app/deploy

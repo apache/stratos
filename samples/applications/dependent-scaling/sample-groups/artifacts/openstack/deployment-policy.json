@@ -1,5 +1,5 @@
 {
-    "applicationId": "sample-groups-app",
+    "applicationId": "dependency-scaling-groups-app",
     "applicationPolicy": {
         "networkPartition": [
             {
@@ -22,7 +22,7 @@
     },
     "childPolicies": [
         {
-            "alias": "mytomcat",
+            "alias": "my-tomcat",
             "networkPartition": [
                 {
                     "id": "network-partition-1",
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "alias": "mygroup6",
+            "alias": "myesb-php-group",
             "networkPartition": [
                 {
                     "id": "network-partition-1",
