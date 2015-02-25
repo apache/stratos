@@ -23,8 +23,9 @@ echo ${artifacts_path}/autoscale-policy.json
 echo "Adding autoscale policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/autoscaling-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies
 
-echo "Adding network partition..."
+echo "Adding network partitions..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/network-partition.json" -k -v -u admin:admin https://${host_ip}:9443/api/networkPartitions
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/network-partition-2.json" -k -v -u admin:admin https://${host_ip}:9443/api/networkPartitions
 
 echo "Adding deployment policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/deployment-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
