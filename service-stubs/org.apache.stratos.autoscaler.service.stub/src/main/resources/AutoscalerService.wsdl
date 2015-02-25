@@ -1,7 +1,13 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax21="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax22="http://common.stratos.apache.org/xsd" xmlns:ax219="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax211="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
 =======
+=======
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
 <wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
+=======
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax221="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax223="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
     <wsdl:documentation>AutoscalerService</wsdl:documentation>
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
     <wsdl:types>
@@ -22,7 +28,7 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="instanceRoundingFactor" type="xs:float"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax23:LoadThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax25:LoadThresholds"></xs:element>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 </xs:sequence>
@@ -134,8 +140,13 @@
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
 =======
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
+<<<<<<< HEAD
                     <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax220:Dependencies"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="ax220:ServiceGroup"></xs:element>
+=======
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax223:Dependencies"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="ax223:ServiceGroup"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     <xs:element minOccurs="0" name="groupscalingEnabled" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
@@ -149,6 +160,7 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
+<<<<<<< HEAD
 <<<<<<< HEAD
         <xs:schema xmlns:ax28="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax218="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax220="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://common.stratos.apache.org/xsd" xmlns:ax223="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
             <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"/>
@@ -203,9 +215,15 @@
             </xs:element>
             <xs:element name="getAutoscalingPolicy">
 =======
+=======
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
         <xs:schema xmlns:ax214="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
             <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
+=======
+        <xs:schema xmlns:ax214="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax224="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://application.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
@@ -213,6 +231,7 @@
             <xs:import namespace="http://common.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
+<<<<<<< HEAD
             <xs:element name="getAutoScalingPolicies">
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 <xs:complexType>
@@ -230,10 +249,12 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+=======
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:element name="AutoscalerServiceInvalidPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax25:InvalidPolicyException"></xs:element>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -241,9 +262,13 @@
                 <xs:complexType>
                     <xs:sequence>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax215:DeploymentPolicy"/>
 =======
                         <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
+=======
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -255,6 +280,21 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
+=======
+            <xs:element name="getAutoScalingPolicies">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoScalingPoliciesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:element name="AutoscalerServiceApplicationDefinitionException">
                 <xs:complexType>
                     <xs:sequence>
@@ -310,6 +350,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="getApplicationPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:ApplicationPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="undeployApplication">
                 <xs:complexType>
                     <xs:sequence>
@@ -332,10 +386,42 @@
                 <xs:complexType>
                     <xs:sequence>
 <<<<<<< HEAD
+<<<<<<< HEAD
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:ServiceGroup"/>
 =======
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
+=======
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateAutoScalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAutoScalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalePolicyId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeAutoScalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -476,13 +562,18 @@
             <xs:element name="AutoscalerServiceInvalidServiceGroupException">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax219:InvalidServiceGroupException"></xs:element>
+=======
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax221:InvalidServiceGroupException"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
 <<<<<<< HEAD
                         <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax27:ServiceGroup"/>
                     </xs:sequence>
@@ -495,6 +586,12 @@
 =======
                         <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
+=======
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
+=======
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax223:ServiceGroup"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -515,7 +612,11 @@
             <xs:element name="getServiceGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
+=======
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax223:ServiceGroup"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -547,8 +648,15 @@
             <xs:element name="getServiceGroupsResponse">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
+<<<<<<< HEAD
 >>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
+=======
+=======
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax223:ServiceGroup"></xs:element>
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
+>>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
