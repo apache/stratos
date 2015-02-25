@@ -1119,17 +1119,16 @@ public class RestCommandLineService {
             List<DomainMappingBean> list = (List<DomainMappingBean>) restClient.listEntity(
                     ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId),
                     listType, "domain mappings");
-            if ((list != null) && (list.size() > 0)) {
+            if ((list == null) && (list.size() <= 0)) {
                 System.out.println("No domain mappings found in application: [application-id] " + applicationId);
                 return;
             }
 
             RowMapper<DomainMappingBean> rowMapper = new RowMapper<DomainMappingBean>() {
                 public String[] getData(DomainMappingBean domainMappingBean) {
-                    String[] data = new String[3];
-                    data[0] = domainMappingBean.getCartridgeAlias();
-                    data[1] = domainMappingBean.getDomainName();
-                    data[2] = domainMappingBean.getContextPath();
+                    String[] data = new String[2];
+                    data[0] = domainMappingBean.getDomainName();
+                    data[1] = domainMappingBean.getContextPath();
                     return data;
                 }
             };
@@ -1137,7 +1136,7 @@ public class RestCommandLineService {
             DomainMappingBean[] array = new DomainMappingBean[list.size()];
             array = list.toArray(array);
             System.out.println("Domain mappings found in application: [application-id] " + applicationId);
-            CliUtils.printTable(array, rowMapper, "Cartridge Alias", "Domain Name", "Context Path");
+            CliUtils.printTable(array, rowMapper, "Domain Name", "Context Path");
         } catch (Exception e) {
             String message = "Could not list domain mappings in application: [application-id] " + applicationId;
             printError(message, e);
