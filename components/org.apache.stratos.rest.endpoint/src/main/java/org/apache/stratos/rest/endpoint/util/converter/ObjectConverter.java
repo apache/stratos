@@ -38,6 +38,7 @@ import org.apache.stratos.common.beans.cartridge.*;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
+import org.apache.stratos.common.beans.kubernetes.KubernetesServiceBean;
 import org.apache.stratos.common.beans.kubernetes.PortRangeBean;
 import org.apache.stratos.common.beans.partition.*;
 import org.apache.stratos.common.beans.policy.autoscale.*;
@@ -696,18 +697,6 @@ public class ObjectConverter {
         return kubernetesServiceBeans;
     }
 
-    private static org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] convertToCCPartitionPojos
-            (List<PartitionBean> partitionList) {
-
-        org.apache.stratos.autoscaler.stub.deployment.partition.Partition[] partitions =
-                new org.apache.stratos.autoscaler.stub.deployment.partition.Partition[partitionList.size()];
-        for (int i = 0; i < partitionList.size(); i++) {
-            partitions[i] = convertToCCPartitionPojo(partitionList.get(i));
-        }
-
-        return partitions;
-    }
-    
 	private static Partition[] convertPartitionToCCPartitionPojos(
 			List<PartitionBean> partitionList) {
 

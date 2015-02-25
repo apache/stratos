@@ -1,24 +1,11 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax228="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax231="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax222="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax224="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax226="http://common.stratos.apache.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax228="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax233="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax222="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ax231="http://domain.common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax224="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax226="http://common.stratos.apache.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
     <wsdl:documentation>CloudControllerService</wsdl:documentation>
     <wsdl:types>
-        <xs:schema xmlns:ax232="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax230="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax223="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ax225="http://domain.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
+        <xs:schema xmlns:ax230="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax223="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ax234="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax225="http://domain.controller.cloud.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
             <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"></xs:import>
-=======
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.controller.cloud.stratos.apache.org" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax229="http://common.stratos.apache.org/xsd" xmlns:ax227="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax231="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax234="http://topology.domain.messaging.stratos.apache.org/xsd" xmlns:ax225="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
-    <wsdl:documentation>CloudControllerService</wsdl:documentation>
-    <wsdl:types>
-        <xs:schema xmlns:ax233="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax228="http://exception.controller.cloud.stratos.apache.org/xsd" xmlns:ax226="http://domain.controller.cloud.stratos.apache.org/xsd" xmlns:ax235="http://topology.domain.messaging.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.controller.cloud.stratos.apache.org">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:import namespace="http://domain.controller.cloud.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://exception.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://kubernetes.domain.controller.cloud.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://topology.domain.messaging.stratos.apache.org/xsd"></xs:import>
-<<<<<<< HEAD
-<<<<<<< HEAD
             <xs:element name="CloudControllerServiceDeploymentPolicyNotExistsException">
                 <xs:complexType>
                     <xs:sequence>
@@ -37,6 +24,34 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidMemberException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax222:InvalidMemberException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax222:InvalidCartridgeTypeException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCloudControllerException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax222:CloudControllerException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -63,6 +78,178 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax222:InvalidIaasProviderException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax222:CartridgeDefinitionNotExistsException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax224:CartridgeConfig"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridges">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getCartridgesResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNetworkPartitionAlreadyExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NetworkPartitionAlreadyExistsException" nillable="true" type="ax222:NetworkPartitionAlreadyExistsException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addNetworkPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNetworkPartitions">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNetworkPartitionsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNetworkPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getNetworkPartitionResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNetworkPartitionNotExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NetworkPartitionNotExistsException" nillable="true" type="ax222:NetworkPartitionNotExistsException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeNetworkPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateNetworkPartition">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax222:InvalidKubernetesHostException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax222:NonExistingKubernetesClusterException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesHost">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax228:KubernetesHost"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addKubernetesHostResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax222:InvalidKubernetesMasterException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax222:NonExistingKubernetesMasterException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateKubernetesMaster">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax228:KubernetesMaster"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateKubernetesMasterResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax222:NonExistingKubernetesHostException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateKubernetesHost">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax228:KubernetesHost"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="updateKubernetesHostResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -80,640 +267,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax222:CartridgeDefinitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax224:CartridgeConfig"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridges">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
-=======
-            <xs:element name="CloudControllerServiceDeploymentPolicyNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="DeploymentPolicyNotExistsException" nillable="true" type="ax222:DeploymentPolicyNotExistsException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax222:InvalidCartridgeTypeException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionAlreadyExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionAlreadyExistsException" nillable="true" type="ax222:NetworkPartitionAlreadyExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitions">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitionsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartition">
-=======
-            <xs:element name="getDeploymentPolicies">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax225:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax228:InvalidCartridgeDefinitionException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax228:InvalidIaasProviderException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax228:CartridgeDefinitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax225:CartridgeConfig"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridges">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax228:InvalidCartridgeTypeException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionAlreadyExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionAlreadyExistsException" nillable="true" type="ax228:NetworkPartitionAlreadyExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax225:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitions">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitionsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax225:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionNotExistsException" nillable="true" type="ax228:NetworkPartitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeNetworkPartition">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="getNetworkPartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionNotExistsException" nillable="true" type="ax222:NetworkPartitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeNetworkPartition">
-=======
-                        <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPolicies">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax222:InvalidCartridgeDefinitionException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax222:InvalidIaasProviderException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeDefinitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeDefinitionNotExistsException" nillable="true" type="ax222:CartridgeDefinitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax224:CartridgeConfig"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridges">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getCartridgesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax222:InvalidCartridgeTypeException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeCartridge">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionAlreadyExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionAlreadyExistsException" nillable="true" type="ax222:NetworkPartitionAlreadyExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitions">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitionsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getNetworkPartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNetworkPartitionNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NetworkPartitionNotExistsException" nillable="true" type="ax222:NetworkPartitionNotExistsException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax222:InvalidKubernetesHostException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax222:NonExistingKubernetesClusterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax230:KubernetesHost"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHostResponse">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="updateNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax224:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax222:InvalidKubernetesHostException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax222:NonExistingKubernetesClusterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax230:KubernetesHost"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHostResponse">
-=======
-            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax222:InvalidKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax222:NonExistingKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
-=======
-            <xs:element name="updateNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax225:NetworkPartition"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesHostException" nillable="true" type="ax228:InvalidKubernetesHostException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesClusterException" nillable="true" type="ax228:NonExistingKubernetesClusterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax233:KubernetesHost"></xs:element>
-=======
-            <xs:element name="updateKubernetesMaster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax230:KubernetesMaster"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesMasterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax222:NonExistingKubernetesHostException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax230:KubernetesHost"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax222:CartridgeAlreadyExistsException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesMasterException">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax228:InvalidKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax228:NonExistingKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesMaster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax233:KubernetesMaster"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesMasterResponse">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidKubernetesMasterException" nillable="true" type="ax222:InvalidKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="CloudControllerServiceNonExistingKubernetesMasterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesMasterException" nillable="true" type="ax222:NonExistingKubernetesMasterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesMaster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesMaster" nillable="true" type="ax230:KubernetesMaster"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesMasterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax222:NonExistingKubernetesHostException"></xs:element>
-=======
-            <xs:element name="CloudControllerServiceNonExistingKubernetesHostException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="NonExistingKubernetesHostException" nillable="true" type="ax228:NonExistingKubernetesHostException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax233:KubernetesHost"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="kubernetesHost" nillable="true" type="ax230:KubernetesHost"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax228:CartridgeAlreadyExistsException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax225:CartridgeConfig"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidKubernetesClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidKubernetesClusterException" nillable="true" type="ax222:InvalidKubernetesClusterException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="InvalidKubernetesClusterException" nillable="true" type="ax228:InvalidKubernetesClusterException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax230:KubernetesCluster"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax233:KubernetesCluster"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addKubernetesClusterResponse">
-=======
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax224:CartridgeConfig"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="CloudControllerServiceInvalidKubernetesClusterException">
                 <xs:complexType>
                     <xs:sequence>
@@ -724,7 +277,7 @@
             <xs:element name="addKubernetesCluster">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax230:KubernetesCluster"></xs:element>
+                        <xs:element minOccurs="0" name="kubernetesCluster" nillable="true" type="ax228:KubernetesCluster"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -745,7 +298,7 @@
             <xs:element name="getKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax230:KubernetesCluster"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax228:KubernetesCluster"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -774,6 +327,27 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax222:CartridgeNotFoundException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax224:InstanceContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -806,58 +380,12 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="getServiceGroupCartridgesResponse">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-<<<<<<< HEAD
-            <xs:element name="getKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getKubernetesClusterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax230:KubernetesCluster"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax233:KubernetesCluster"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesCluster">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesClusterResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesHost">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="kubernetesHostId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeKubernetesHostResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-=======
             <xs:element name="getServiceGroupDependencies">
                 <xs:complexType>
                     <xs:sequence>
@@ -872,40 +400,17 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax222:CartridgeNotFoundException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceCloudControllerException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax222:CloudControllerException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="startInstances">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax224:InstanceContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="startInstancesResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax222:InvalidServiceGroupException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax228:InvalidServiceGroupException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -947,143 +452,8 @@
             <xs:element name="validateDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:Dependencies"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:Dependencies"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
                         <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:Partition"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validateDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax222:CartridgeNotFoundException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax228:CartridgeNotFoundException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartition">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax222:CloudControllerException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax228:CloudControllerException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validatePartitionResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax224:InstanceContext"></xs:element>
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="instanceContexts" nillable="true" type="ax225:InstanceContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContext">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax225:MemberContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getClusterContextResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax222:InvalidClusterException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="InvalidClusterException" nillable="true" type="ax228:InvalidClusterException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ClusterContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateClusterStatus">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="status" nillable="true" type="ax232:ClusterStatus"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" type="ax222:ApplicationClusterRegistrationException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="createApplicationClusters">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:CartridgeInfo"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:CartridgeInfo"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidPartitionException">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax222:InvalidPartitionException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="InvalidPartitionException" nillable="true" type="ax228:InvalidPartitionException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="validateDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:Partition"></xs:element>
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax225:Partition"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1097,11 +467,7 @@
             <xs:element name="validatePartition">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="partition" nillable="true" type="ax225:Partition"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1122,11 +488,7 @@
             <xs:element name="getClusterContextResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ClusterContext"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:ClusterContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1136,22 +498,14 @@
                         <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"></xs:element>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
                         <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="status" nillable="true" type="ax232:ClusterStatus"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="status" nillable="true" type="ax234:ClusterStatus"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
+                        <xs:element minOccurs="0" name="status" nillable="true" type="ax233:ClusterStatus"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceApplicationClusterRegistrationException">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" type="ax222:ApplicationClusterRegistrationException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="ApplicationClusterRegistrationException" nillable="true" type="ax228:ApplicationClusterRegistrationException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1159,30 +513,14 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax224:ApplicationClusterContext"></xs:element>
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax225:ApplicationClusterContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="appId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="appClustersContexts" nillable="true" type="ax224:ApplicationClusterContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceClusterInstanceCreationException">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="ClusterInstanceCreationException" nillable="true" type="ax222:ClusterInstanceCreationException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="ClusterInstanceCreationException" nillable="true" type="ax228:ClusterInstanceCreationException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="ClusterInstanceCreationException" nillable="true" type="ax222:ClusterInstanceCreationException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1206,7 +544,7 @@
             <xs:element name="getKubernetesClustersResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax230:KubernetesCluster"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax228:KubernetesCluster"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1220,7 +558,7 @@
             <xs:element name="getMasterForKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax230:KubernetesMaster"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax228:KubernetesMaster"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1234,74 +572,35 @@
             <xs:element name="getHostsForKubernetesClusterResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax230:KubernetesHost"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax228:KubernetesHost"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceDeploymentPolicyAlreadyExistsException">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="DeploymentPolicyAlreadyExistsException" nillable="true" type="ax222:DeploymentPolicyAlreadyExistsException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="DeploymentPolicyAlreadyExistsException" nillable="true" type="ax228:DeploymentPolicyAlreadyExistsException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="DeploymentPolicyAlreadyExistsException" nillable="true" type="ax222:DeploymentPolicyAlreadyExistsException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="CloudControllerServiceInvalidDeploymentPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="InvalidDeploymentPolicyException" nillable="true" type="ax222:InvalidDeploymentPolicyException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="InvalidDeploymentPolicyException" nillable="true" type="ax228:InvalidDeploymentPolicyException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="InvalidDeploymentPolicyException" nillable="true" type="ax222:InvalidDeploymentPolicyException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addDeployementPolicy">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax225:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceDeploymentPolicyNotExistsException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="DeploymentPolicyNotExistsException" nillable="true" type="ax228:DeploymentPolicyNotExistsException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="updateDeployementPolicy">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax225:DeploymentPolicy"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1312,119 +611,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax222:InvalidMemberException"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax228:UnregisteredClusterException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax222:InvalidMemberException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="unregisterService">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax222:UnregisteredClusterException"></xs:element>
-=======
-            <xs:element name="getDeploymentPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="CloudControllerServiceInvalidMemberException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax228:InvalidMemberException"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax222:UnregisteredClusterException"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="terminateInstance">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstance">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax224:InstanceContext"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax225:InstanceContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax224:InstanceContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="startInstanceResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:MemberContext"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax224:ServiceGroup"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax225:ServiceGroup"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax224:ServiceGroup"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeServiceGroup">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1438,30 +628,35 @@
             <xs:element name="getServiceGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ServiceGroup"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax225:ServiceGroup"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ServiceGroup"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceUnregisteredClusterException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax222:UnregisteredClusterException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="unregisterService">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element minOccurs="0" name="registrant" nillable="true" type="ax224:Registrant"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax225:Registrant"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="registrant" nillable="true" type="ax224:Registrant"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1487,15 +682,7 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax226:Property"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax229:Property"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax226:Property"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">
@@ -1506,13 +693,26 @@
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.controller.cloud.stratos.apache.org/xsd">
-<<<<<<< HEAD
-<<<<<<< HEAD
             <xs:complexType name="DeploymentPolicyNotExistsException">
                 <xs:sequence></xs:sequence>
             </xs:complexType>
-=======
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
+            <xs:complexType name="InvalidMemberException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidCartridgeTypeException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CloudControllerException">
+                <xs:complexContent>
+                    <xs:extension base="xs:RuntimeException">
+                        <xs:sequence></xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
+            </xs:complexType>
             <xs:complexType name="InvalidCartridgeDefinitionException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
@@ -1523,46 +723,7 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-<<<<<<< HEAD
-            <xs:complexType name="CartridgeAlreadyExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
-=======
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:complexType name="CartridgeDefinitionNotExistsException">
-=======
-            <xs:complexType name="DeploymentPolicyNotExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeDefinitionException">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-<<<<<<< HEAD
-            <xs:complexType name="InvalidCartridgeTypeException">
-=======
-            <xs:complexType name="InvalidIaasProviderException">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-<<<<<<< HEAD
-            <xs:complexType name="NetworkPartitionAlreadyExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NetworkPartitionNotExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
-=======
-            <xs:complexType name="CartridgeDefinitionNotExistsException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -1573,7 +734,6 @@
             <xs:complexType name="NetworkPartitionNotExistsException">
                 <xs:sequence></xs:sequence>
             </xs:complexType>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
             <xs:complexType name="InvalidKubernetesHostException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
@@ -1599,24 +759,10 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
             <xs:complexType name="CartridgeAlreadyExistsException">
                 <xs:sequence></xs:sequence>
             </xs:complexType>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-            <xs:complexType name="CartridgeAlreadyExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
             <xs:complexType name="InvalidKubernetesClusterException">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="InvalidServiceGroupException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -1626,12 +772,10 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="CloudControllerException">
-                <xs:complexContent>
-                    <xs:extension base="xs:RuntimeException">
-                        <xs:sequence></xs:sequence>
-                    </xs:extension>
-                </xs:complexContent>
+            <xs:complexType name="InvalidServiceGroupException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InvalidClusterException">
                 <xs:sequence>
@@ -1659,25 +803,17 @@
             <xs:complexType name="InvalidDeploymentPolicyException">
                 <xs:sequence></xs:sequence>
             </xs:complexType>
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <xs:complexType name="InvalidMemberException">
-=======
-            <xs:complexType name="DeploymentPolicyNotExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
             <xs:complexType name="UnregisteredClusterException">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-            <xs:complexType name="InvalidMemberException">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidMemberException">
+        </xs:schema>
+        <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.common.stratos.apache.org/xsd">
+            <xs:complexType name="NameValuePair">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="value" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -1686,9 +822,10 @@
             <xs:complexType name="KubernetesHost">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="hostId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="hostIpAddress" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostname" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="privateIPAddress" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="publicIPAddress" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="KubernetesMaster">
@@ -1717,43 +854,20 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <xs:schema xmlns:ax227="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
-=======
-        <xs:schema xmlns:ax230="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-        <xs:schema xmlns:ax227="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
+        <xs:schema xmlns:ax232="http://domain.common.stratos.apache.org/xsd" xmlns:ax227="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://domain.controller.cloud.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://domain.common.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="DeploymentPolicy">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="deploymentPolicyID" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionsRef" nillable="true" type="ax224:NetworkPartitionRef"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionsRef" nillable="true" type="ax225:NetworkPartitionRef"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionsRef" nillable="true" type="ax224:NetworkPartitionRef"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkPartitionRef">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:PartitionRef"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax225:PartitionRef"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:PartitionRef"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="PartitionRef">
@@ -1774,8 +888,6 @@
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="exportingProperties" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax224:IaasConfig"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax224:LoadbalancerConfig"></xs:element>
@@ -1784,26 +896,6 @@
                     <xs:element minOccurs="0" name="persistence" nillable="true" type="ax224:Persistence"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax224:PortMapping"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax225:IaasConfig"></xs:element>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax225:LoadbalancerConfig"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax225:Persistence"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax225:PortMapping"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="iaasConfigs" nillable="true" type="ax224:IaasConfig"></xs:element>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax224:LoadbalancerConfig"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax224:Persistence"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax224:PortMapping"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="tenantPartitions" nillable="true" type="xs:string"></xs:element>
@@ -1818,65 +910,29 @@
                     <xs:element minOccurs="0" name="identity" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="imageId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax224:NetworkInterfaces"></xs:element>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax225:NetworkInterfaces"></xs:element>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="networkInterfaces" nillable="true" type="ax224:NetworkInterfaces"></xs:element>
-                    <xs:element minOccurs="0" name="payload" nillable="true" type="xs:base64Binary"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterfaces">
                 <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax224:NetworkInterface"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax225:NetworkInterface"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkInterfaces" nillable="true" type="ax224:NetworkInterface"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="NetworkInterface">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="fixedIp" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="floatingNetworks" nillable="true" type="ax224:FloatingNetworks"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="floatingNetworks" nillable="true" type="ax225:FloatingNetworks"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="floatingNetworks" nillable="true" type="ax224:FloatingNetworks"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="networkUuid" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="portUuid" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="FloatingNetworks">
                 <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="floatingNetworks" nillable="true" type="ax224:FloatingNetwork"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="floatingNetworks" nillable="true" type="ax225:FloatingNetwork"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="floatingNetworks" nillable="true" type="ax224:FloatingNetwork"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="FloatingNetwork">
@@ -1888,30 +944,14 @@
             </xs:complexType>
             <xs:complexType name="LoadbalancerConfig">
                 <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Persistence">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax224:Volume"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax225:Volume"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax224:Volume"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Volume">
@@ -1940,15 +980,7 @@
                     <xs:element minOccurs="0" name="activeByDefault" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:Partition"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax225:Partition"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax224:Partition"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Partition">
@@ -1957,22 +989,8 @@
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="Dependencies">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="InstanceContext">
@@ -1983,18 +1001,8 @@
                     <xs:element minOccurs="0" name="initTime" type="xs:long"></xs:element>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="obsoleteExpiryTime" type="xs:long"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax225:Partition"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="MemberContext">
@@ -2006,38 +1014,20 @@
                     <xs:element minOccurs="0" name="clusterInstanceId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="defaultPrivateIP" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="defaultPublicIP" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="dynamicPayload" nillable="true" type="xs:anyType"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="dynamicPayload" nillable="true" type="ax232:NameValuePair"></xs:element>
                     <xs:element minOccurs="0" name="initTime" type="xs:long"></xs:element>
                     <xs:element minOccurs="0" name="instanceId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax224:InstanceMetadata"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax225:InstanceMetadata"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="instanceMetadata" nillable="true" type="ax224:InstanceMetadata"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
+                    <xs:element minOccurs="0" name="kubernetesPodId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="kubernetesPodName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="lbClusterId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="obsoleteExpiryTime" type="xs:long"></xs:element>
                     <xs:element minOccurs="0" name="obsoleteInitTime" type="xs:long"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="privateIPs" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax225:Partition"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="privateIPs" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="partition" nillable="true" type="ax224:Partition"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="privateIPs" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="publicIPs" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
@@ -2054,17 +1044,15 @@
                     <xs:element minOccurs="0" name="ram" type="xs:int"></xs:element>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
             <xs:complexType name="CartridgeInfo">
                 <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax224:AppType"></xs:element>
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax225:AppType"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="appTypes" nillable="true" type="ax224:AppType"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="baseDir" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="category" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="defaultAutoscalingPolicy" nillable="true" type="xs:string"></xs:element>
@@ -2074,27 +1062,12 @@
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax224:LoadbalancerConfig"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="persistence" nillable="true" type="ax224:Persistence"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax224:PortMapping"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax226:Property"></xs:element>
-<<<<<<< HEAD
-=======
-                    <xs:element minOccurs="0" name="lbConfig" nillable="true" type="ax225:LoadbalancerConfig"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="metadataKeys" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax225:Persistence"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="portMappings" nillable="true" type="ax225:PortMapping"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax230:Property"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="serviceGroup" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="tenantPartitions" nillable="true" type="xs:string"></xs:element>
@@ -2118,23 +1091,10 @@
                     <xs:element minOccurs="0" name="kubernetesServices" nillable="true" type="xs:anyType"></xs:element>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
                     <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"></xs:element>
                     <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax224:Volume"></xs:element>
-<<<<<<< HEAD
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
-                    <xs:element minOccurs="0" name="timeoutInMillis" type="xs:long"></xs:element>
-                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax225:Volume"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationClusterContext">
@@ -2146,15 +1106,7 @@
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -2162,15 +1114,7 @@
             <xs:complexType name="ServiceGroup">
                 <xs:sequence>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax224:Dependencies"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax225:Dependencies"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax224:Dependencies"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="subGroups" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -2183,18 +1127,8 @@
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="payload" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
                     <xs:element minOccurs="0" name="persistence" nillable="true" type="ax224:Persistence"></xs:element>
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
-=======
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax225:Persistence"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                    <xs:element minOccurs="0" name="persistence" nillable="true" type="ax224:Persistence"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax226:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
