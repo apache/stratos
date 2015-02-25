@@ -90,6 +90,8 @@ public abstract class PartitionContext implements Serializable {
 
     public abstract int getActiveInstanceCount();
 
+    public abstract int getNonTerminatedMemberCount();
+
     public int getMax() {
         return max;
     }

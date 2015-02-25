@@ -156,6 +156,11 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         return activeInstances.size();
     }
 
+    @Override
+    public int getNonTerminatedMemberCount() {
+        return activeInstances.size() + pendingInstances.size();
+    }
+
     public String getPartitionId() {
         return partitionId;
     }

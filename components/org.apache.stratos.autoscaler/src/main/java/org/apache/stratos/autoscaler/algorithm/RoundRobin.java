@@ -47,18 +47,21 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         for(int partitionIndex = 0; partitionIndex < partitionContexts.length - 1; partitionIndex++) {
 
-            if(partitionContexts[partitionIndex].getActiveInstanceCount() < lowestInstanceCount) {
+            if(partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount) {
 
-                lowestInstanceCount = partitionContexts[partitionIndex].getActiveInstanceCount();
+                lowestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
             }
         }
 
-        if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
+        if(partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
 
             if(log.isDebugEnabled()){
-                log.debug(String.format("[round-robin algorithm] [scale-up] [partition] %s has space to create members."
-                        , partitionContexts[selectedIndex].getPartitionId()));
+                log.debug(String.format("[round-robin algorithm] [scale-up] [partition] %s has space to create members. " +
+                        "[non terminated count] %s [max] %s"
+                        , partitionContexts[selectedIndex].getPartitionId(),
+                        partitionContexts[selectedIndex].getNonTerminatedMemberCount(),
+                        partitionContexts[selectedIndex].getMax()));
             }
             return partitionContexts[selectedIndex];
         } else {
@@ -75,18 +78,19 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
         for(int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
 
-            if(partitionContexts[partitionIndex].getActiveInstanceCount() > highestInstanceCount) {
+            if(partitionContexts[partitionIndex].getNonTerminatedMemberCount() > highestInstanceCount) {
 
-                highestInstanceCount = partitionContexts[partitionIndex].getActiveInstanceCount();
+                highestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
             }
         }
 
-        if(partitionContexts[selectedIndex].getActiveInstanceCount() < partitionContexts[selectedIndex].getMax()) {
+        if(partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
 
             if(log.isDebugEnabled()){
                 log.debug(String.format("[round-robin algorithm] [scale-down] [partition] %s has has members that" +
-                        " can be removed.", partitionContexts[selectedIndex].getPartitionId()));
+                        " can be removed.[non terminated count] %s ", partitionContexts[selectedIndex].getPartitionId(),
+                        partitionContexts[selectedIndex].getNonTerminatedMemberCount()));
             }
             return partitionContexts[selectedIndex];
         } else {
