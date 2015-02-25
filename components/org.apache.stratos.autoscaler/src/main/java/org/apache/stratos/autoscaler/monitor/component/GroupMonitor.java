@@ -327,7 +327,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                         // as it has group scaling enabled.
                         if (group != null) {
                             // notify parent
-                            log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                            log.info("[Group] " + this.id + " is notifying the [parent] " + this.parent.getId() +
                                     " [instance] " + parentInstanceId);
                             MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                                     status, this.id, parentInstanceId);
@@ -338,7 +338,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 }
             } else {
                 // notifying the parent
-                log.info("[Group] " + this.id + "is notifying the [parent] " + this.parent.getId() +
+                log.info("[Group] " + this.id + " is notifying the [parent] " + this.parent.getId() +
                         " [instance] " + instanceId);
                 MonitorStatusEventBuilder.handleGroupStatusEvent(this.parent,
                         status, this.id, instanceId);
