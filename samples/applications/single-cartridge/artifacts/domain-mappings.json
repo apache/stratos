@@ -1,5 +1,9 @@
 {
-	"cartridgeAlias":"php1",
-	"domainName":"abc.com",
-	"contextPath":"/abc/app"
+    "domainMappings": [
+        {
+            "cartridgeAlias":"php1",
+            "domainName":"abc.com",
+            "contextPath":"/abc/app"
+        }
+    ]
 }
