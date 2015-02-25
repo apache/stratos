@@ -110,14 +110,12 @@ public class ClusterContext extends AbstractClusterContext {
     }
 
     public ClusterLevelNetworkPartitionContext getNetworkPartitionCtxt(Member member) {
-        log.info("***** getNetworkPartitionCtxt " + member.getNetworkPartitionId());
+
         String networkPartitionId = member.getNetworkPartitionId();
         if (networkPartitionCtxts.containsKey(networkPartitionId)) {
-            log.info("returnnig network partition context " + networkPartitionCtxts.get(networkPartitionId));
+
             return networkPartitionCtxts.get(networkPartitionId);
         }
-
-        log.info("returning null getNetworkPartitionCtxt");
         return null;
     }
 
