@@ -42,8 +42,6 @@ public class PolicyManager {
     private static final String AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP = "AS_POLICY_ID_TO_AUTOSCALE_POLICY_MAP";
     private static final String APPLICATION_ID_TO_APPLICATION_POLICY_MAP = "APPLICATION_ID_TO_APPLICATION_POLICY_MAP";
     
-    private final transient DistributedObjectProvider distributedObjectProvider;
-
     private static Map<String, AutoscalePolicy> autoscalePolicyListMap;
 
     private static Map<String, ApplicationPolicy> applicationPolicyListMap;

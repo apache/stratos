@@ -1,868 +1,878 @@
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.services.manager.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax23="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax21="http://exception.manager.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.manager.stratos.apache.org">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ns="http://impl.services.manager.stratos.apache.org" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax237="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax235="http://exception.manager.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.manager.stratos.apache.org">
+    <wsdl:documentation>StratosManagerService</wsdl:documentation>
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://signup.application.domain.messaging.stratos.apache.org/xsd">
             <xs:complexType name="ApplicationSignUp">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="artifactRepositories" nillable="true" type="ax23:ArtifactRepository"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="clusterIds" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="domainMappings" nillable="true" type="ax23:DomainMapping"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="artifactRepositories" nillable="true" type="ax237:ArtifactRepository"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="clusterIds" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="domainMappings" nillable="true" type="ax237:DomainMapping"></xs:element>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ArtifactRepository">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="cartridgeType" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="privateRepo" type="xs:boolean"></xs:element>
+                    <xs:element minOccurs="0" name="repoPassword" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="repoUsername" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="DomainMapping">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="contextPath" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="serviceName" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax24="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax22="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
-            <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://signup.application.domain.messaging.stratos.apache.org/xsd"/>
-            <xs:element name="canCartridgeBeRemoved">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeName" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="canCartridgeBeRemovedResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemoved">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="canCartirdgeGroupBeRemovedResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
+        <xs:schema xmlns:ax238="http://signup.application.domain.messaging.stratos.apache.org/xsd" xmlns:ax236="http://exception.manager.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.manager.stratos.apache.org">
+            <xs:import namespace="http://exception.manager.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://signup.application.domain.messaging.stratos.apache.org/xsd"></xs:import>
             <xs:element name="StratosManagerServiceApplicationSignUpException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationSignUpException" nillable="true" type="ax21:ApplicationSignUpException"/>
+                        <xs:element minOccurs="0" name="ApplicationSignUpException" nillable="true" type="ax236:ApplicationSignUpException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addApplicationSignUp">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax23:ApplicationSignUp"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUps">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationSignUpsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeApplicationSignUp">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="applicationSignUp" nillable="true" type="ax238:ApplicationSignUp"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getApplicationSignUp">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getApplicationSignUpResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:ApplicationSignUp"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax238:ApplicationSignUp"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeApplicationSignUp">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="StratosManagerServiceDomainMappingException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="DomainMappingException" nillable="true" type="ax21:DomainMappingException"/>
+                        <xs:element minOccurs="0" name="DomainMappingException" nillable="true" type="ax236:DomainMappingException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDomainMappings">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="getDomainMappingsResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:DomainMapping"/>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax238:DomainMapping"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="removeDomainMapping">
+            <xs:element name="getApplicationSignUps">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-                        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationSignUpsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax238:ApplicationSignUp"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="StratosManagerServiceArtifactDistributionCoordinatorException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="ArtifactDistributionCoordinatorException" nillable="true" type="ax21:ArtifactDistributionCoordinatorException"/>
+                        <xs:element minOccurs="0" name="ArtifactDistributionCoordinatorException" nillable="true" type="ax236:ArtifactDistributionCoordinatorException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="notifyArtifactUpdatedEventForSignUp">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="notifyArtifactUpdatedEventForRepository">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="repoUrl" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addDomainMapping">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="domainMapping" nillable="true" type="ax23:DomainMapping"/>
+                        <xs:element minOccurs="0" name="domainMapping" nillable="true" type="ax238:DomainMapping"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeDomainMapping">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
+                        <xs:element minOccurs="0" name="domainName" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addUsedCartridgesInCartridgeGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="removeUsedCartridgesInCartridgeGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addUsedCartridgesInApplications">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="removeUsedCartridgesInApplications">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeNames" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartridgeBeRemoved">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeName" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartridgeBeRemovedResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addUsedCartridgeGroupsInCartridgeSubGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="removeUsedCartridgeGroupsInCartridgeSubGroups">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="cartridgeSubGroupName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addUsedCartridgeGroupsInApplications">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="removeUsedCartridgeGroupsInApplications">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"/>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="applicationName" nillable="true" type="xs:string"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeGroupNames" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartirdgeGroupBeRemoved">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeGroupName" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="canCartirdgeGroupBeRemovedResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://exception.manager.stratos.apache.org/xsd">
             <xs:complexType name="ApplicationSignUpException">
-                <xs:sequence/>
+                <xs:sequence></xs:sequence>
             </xs:complexType>
             <xs:complexType name="DomainMappingException">
-                <xs:sequence/>
+                <xs:sequence></xs:sequence>
             </xs:complexType>
             <xs:complexType name="ArtifactDistributionCoordinatorException">
-                <xs:sequence/>
+                <xs:sequence></xs:sequence>
             </xs:complexType>
         </xs:schema>
     </wsdl:types>
     <wsdl:message name="addUsedCartridgeGroupsInApplicationsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInApplications"/>
+        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInApplications"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="canCartridgeBeRemovedRequest">
-        <wsdl:part name="parameters" element="ns:canCartridgeBeRemoved"/>
+        <wsdl:part name="parameters" element="ns:canCartridgeBeRemoved"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="canCartridgeBeRemovedResponse">
-        <wsdl:part name="parameters" element="ns:canCartridgeBeRemovedResponse"/>
+        <wsdl:part name="parameters" element="ns:canCartridgeBeRemovedResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpsRequest">
-        <wsdl:part name="parameters" element="ns:getApplicationSignUps"/>
+        <wsdl:part name="parameters" element="ns:getApplicationSignUps"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpsResponse">
-        <wsdl:part name="parameters" element="ns:getApplicationSignUpsResponse"/>
+        <wsdl:part name="parameters" element="ns:getApplicationSignUpsResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="StratosManagerServiceApplicationSignUpException">
-        <wsdl:part name="parameters" element="ns:StratosManagerServiceApplicationSignUpException"/>
+        <wsdl:part name="parameters" element="ns:StratosManagerServiceApplicationSignUpException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getDomainMappingsRequest">
-        <wsdl:part name="parameters" element="ns:getDomainMappings"/>
+        <wsdl:part name="parameters" element="ns:getDomainMappings"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getDomainMappingsResponse">
-        <wsdl:part name="parameters" element="ns:getDomainMappingsResponse"/>
+        <wsdl:part name="parameters" element="ns:getDomainMappingsResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="StratosManagerServiceDomainMappingException">
-        <wsdl:part name="parameters" element="ns:StratosManagerServiceDomainMappingException"/>
+        <wsdl:part name="parameters" element="ns:StratosManagerServiceDomainMappingException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="notifyArtifactUpdatedEventForSignUpRequest">
-        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForSignUp"/>
+        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForSignUp"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="StratosManagerServiceArtifactDistributionCoordinatorException">
-        <wsdl:part name="parameters" element="ns:StratosManagerServiceArtifactDistributionCoordinatorException"/>
+        <wsdl:part name="parameters" element="ns:StratosManagerServiceArtifactDistributionCoordinatorException"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeUsedCartridgesInApplicationsRequest">
-        <wsdl:part name="parameters" element="ns:removeUsedCartridgesInApplications"/>
+        <wsdl:part name="parameters" element="ns:removeUsedCartridgesInApplications"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeUsedCartridgeGroupsInCartridgeSubGroupsRequest">
-        <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+        <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInCartridgeSubGroups"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="addUsedCartridgesInCartridgeGroupsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgesInCartridgeGroups"/>
+        <wsdl:part name="parameters" element="ns:addUsedCartridgesInCartridgeGroups"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeUsedCartridgeGroupsInApplicationsRequest">
-        <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInApplications"/>
+        <wsdl:part name="parameters" element="ns:removeUsedCartridgeGroupsInApplications"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="addUsedCartridgeGroupsInCartridgeSubGroupsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInCartridgeSubGroups"/>
+        <wsdl:part name="parameters" element="ns:addUsedCartridgeGroupsInCartridgeSubGroups"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeUsedCartridgesInCartridgeGroupsRequest">
-        <wsdl:part name="parameters" element="ns:removeUsedCartridgesInCartridgeGroups"/>
+        <wsdl:part name="parameters" element="ns:removeUsedCartridgesInCartridgeGroups"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="addDomainMappingRequest">
-        <wsdl:part name="parameters" element="ns:addDomainMapping"/>
+        <wsdl:part name="parameters" element="ns:addDomainMapping"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="addUsedCartridgesInApplicationsRequest">
-        <wsdl:part name="parameters" element="ns:addUsedCartridgesInApplications"/>
+        <wsdl:part name="parameters" element="ns:addUsedCartridgesInApplications"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeApplicationSignUpRequest">
-        <wsdl:part name="parameters" element="ns:removeApplicationSignUp"/>
+        <wsdl:part name="parameters" element="ns:removeApplicationSignUp"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="removeDomainMappingRequest">
-        <wsdl:part name="parameters" element="ns:removeDomainMapping"/>
+        <wsdl:part name="parameters" element="ns:removeDomainMapping"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="notifyArtifactUpdatedEventForRepositoryRequest">
-        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForRepository"/>
+        <wsdl:part name="parameters" element="ns:notifyArtifactUpdatedEventForRepository"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="canCartirdgeGroupBeRemovedRequest">
-        <wsdl:part name="parameters" element="ns:canCartirdgeGroupBeRemoved"/>
+        <wsdl:part name="parameters" element="ns:canCartirdgeGroupBeRemoved"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="canCartirdgeGroupBeRemovedResponse">
-        <wsdl:part name="parameters" element="ns:canCartirdgeGroupBeRemovedResponse"/>
+        <wsdl:part name="parameters" element="ns:canCartirdgeGroupBeRemovedResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpRequest">
-        <wsdl:part name="parameters" element="ns:getApplicationSignUp"/>
+        <wsdl:part name="parameters" element="ns:getApplicationSignUp"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getApplicationSignUpResponse">
-        <wsdl:part name="parameters" element="ns:getApplicationSignUpResponse"/>
+        <wsdl:part name="parameters" element="ns:getApplicationSignUpResponse"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="addApplicationSignUpRequest">
-        <wsdl:part name="parameters" element="ns:addApplicationSignUp"/>
+        <wsdl:part name="parameters" element="ns:addApplicationSignUp"></wsdl:part>
     </wsdl:message>
     <wsdl:portType name="StratosManagerServicePortType">
         <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <wsdl:input message="ns:addUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInApplications"/>
+            <wsdl:input message="ns:addUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInApplications"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="canCartridgeBeRemoved">
-            <wsdl:input message="ns:canCartridgeBeRemovedRequest" wsaw:Action="urn:canCartridgeBeRemoved"/>
-            <wsdl:output message="ns:canCartridgeBeRemovedResponse" wsaw:Action="urn:canCartridgeBeRemovedResponse"/>
+            <wsdl:input message="ns:canCartridgeBeRemovedRequest" wsaw:Action="urn:canCartridgeBeRemoved"></wsdl:input>
+            <wsdl:output message="ns:canCartridgeBeRemovedResponse" wsaw:Action="urn:canCartridgeBeRemovedResponse"></wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
-            <wsdl:input message="ns:getApplicationSignUpsRequest" wsaw:Action="urn:getApplicationSignUps"/>
-            <wsdl:output message="ns:getApplicationSignUpsResponse" wsaw:Action="urn:getApplicationSignUpsResponse"/>
-            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:getApplicationSignUpsStratosManagerServiceApplicationSignUpException"/>
+            <wsdl:input message="ns:getApplicationSignUpsRequest" wsaw:Action="urn:getApplicationSignUps"></wsdl:input>
+            <wsdl:output message="ns:getApplicationSignUpsResponse" wsaw:Action="urn:getApplicationSignUpsResponse"></wsdl:output>
+            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:getApplicationSignUpsStratosManagerServiceApplicationSignUpException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getDomainMappings">
-            <wsdl:input message="ns:getDomainMappingsRequest" wsaw:Action="urn:getDomainMappings"/>
-            <wsdl:output message="ns:getDomainMappingsResponse" wsaw:Action="urn:getDomainMappingsResponse"/>
-            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:getDomainMappingsStratosManagerServiceDomainMappingException"/>
+            <wsdl:input message="ns:getDomainMappingsRequest" wsaw:Action="urn:getDomainMappings"></wsdl:input>
+            <wsdl:output message="ns:getDomainMappingsResponse" wsaw:Action="urn:getDomainMappingsResponse"></wsdl:output>
+            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:getDomainMappingsStratosManagerServiceDomainMappingException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
-            <wsdl:input message="ns:notifyArtifactUpdatedEventForSignUpRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUp"/>
-            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUpStratosManagerServiceArtifactDistributionCoordinatorException"/>
+            <wsdl:input message="ns:notifyArtifactUpdatedEventForSignUpRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUp"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForSignUpStratosManagerServiceArtifactDistributionCoordinatorException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInApplications">
-            <wsdl:input message="ns:removeUsedCartridgesInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgesInApplications"/>
+            <wsdl:input message="ns:removeUsedCartridgesInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgesInApplications"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <wsdl:input message="ns:removeUsedCartridgeGroupsInCartridgeSubGroupsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+            <wsdl:input message="ns:removeUsedCartridgeGroupsInCartridgeSubGroupsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInCartridgeSubGroups"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <wsdl:input message="ns:addUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:addUsedCartridgesInCartridgeGroups"/>
+            <wsdl:input message="ns:addUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:addUsedCartridgesInCartridgeGroups"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInApplications">
-            <wsdl:input message="ns:removeUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInApplications"/>
+            <wsdl:input message="ns:removeUsedCartridgeGroupsInApplicationsRequest" wsaw:Action="urn:removeUsedCartridgeGroupsInApplications"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInCartridgeSubGroups">
-            <wsdl:input message="ns:addUsedCartridgeGroupsInCartridgeSubGroupsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInCartridgeSubGroups"/>
+            <wsdl:input message="ns:addUsedCartridgeGroupsInCartridgeSubGroupsRequest" wsaw:Action="urn:addUsedCartridgeGroupsInCartridgeSubGroups"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInCartridgeGroups">
-            <wsdl:input message="ns:removeUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:removeUsedCartridgesInCartridgeGroups"/>
+            <wsdl:input message="ns:removeUsedCartridgesInCartridgeGroupsRequest" wsaw:Action="urn:removeUsedCartridgesInCartridgeGroups"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addDomainMapping">
-            <wsdl:input message="ns:addDomainMappingRequest" wsaw:Action="urn:addDomainMapping"/>
-            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:addDomainMappingStratosManagerServiceDomainMappingException"/>
+            <wsdl:input message="ns:addDomainMappingRequest" wsaw:Action="urn:addDomainMapping"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:addDomainMappingStratosManagerServiceDomainMappingException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInApplications">
-            <wsdl:input message="ns:addUsedCartridgesInApplicationsRequest" wsaw:Action="urn:addUsedCartridgesInApplications"/>
+            <wsdl:input message="ns:addUsedCartridgesInApplicationsRequest" wsaw:Action="urn:addUsedCartridgesInApplications"></wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
-            <wsdl:input message="ns:removeApplicationSignUpRequest" wsaw:Action="urn:removeApplicationSignUp"/>
-            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:removeApplicationSignUpStratosManagerServiceApplicationSignUpException"/>
+            <wsdl:input message="ns:removeApplicationSignUpRequest" wsaw:Action="urn:removeApplicationSignUp"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:removeApplicationSignUpStratosManagerServiceApplicationSignUpException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeDomainMapping">
-            <wsdl:input message="ns:removeDomainMappingRequest" wsaw:Action="urn:removeDomainMapping"/>
-            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:removeDomainMappingStratosManagerServiceDomainMappingException"/>
+            <wsdl:input message="ns:removeDomainMappingRequest" wsaw:Action="urn:removeDomainMapping"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceDomainMappingException" name="StratosManagerServiceDomainMappingException" wsaw:Action="urn:removeDomainMappingStratosManagerServiceDomainMappingException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
-            <wsdl:input message="ns:notifyArtifactUpdatedEventForRepositoryRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForRepository"/>
-            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForRepositoryStratosManagerServiceArtifactDistributionCoordinatorException"/>
+            <wsdl:input message="ns:notifyArtifactUpdatedEventForRepositoryRequest" wsaw:Action="urn:notifyArtifactUpdatedEventForRepository"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceArtifactDistributionCoordinatorException" name="StratosManagerServiceArtifactDistributionCoordinatorException" wsaw:Action="urn:notifyArtifactUpdatedEventForRepositoryStratosManagerServiceArtifactDistributionCoordinatorException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="canCartirdgeGroupBeRemoved">
-            <wsdl:input message="ns:canCartirdgeGroupBeRemovedRequest" wsaw:Action="urn:canCartirdgeGroupBeRemoved"/>
-            <wsdl:output message="ns:canCartirdgeGroupBeRemovedResponse" wsaw:Action="urn:canCartirdgeGroupBeRemovedResponse"/>
+            <wsdl:input message="ns:canCartirdgeGroupBeRemovedRequest" wsaw:Action="urn:canCartirdgeGroupBeRemoved"></wsdl:input>
+            <wsdl:output message="ns:canCartirdgeGroupBeRemovedResponse" wsaw:Action="urn:canCartirdgeGroupBeRemovedResponse"></wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
-            <wsdl:input message="ns:getApplicationSignUpRequest" wsaw:Action="urn:getApplicationSignUp"/>
-            <wsdl:output message="ns:getApplicationSignUpResponse" wsaw:Action="urn:getApplicationSignUpResponse"/>
-            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:getApplicationSignUpStratosManagerServiceApplicationSignUpException"/>
+            <wsdl:input message="ns:getApplicationSignUpRequest" wsaw:Action="urn:getApplicationSignUp"></wsdl:input>
+            <wsdl:output message="ns:getApplicationSignUpResponse" wsaw:Action="urn:getApplicationSignUpResponse"></wsdl:output>
+            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:getApplicationSignUpStratosManagerServiceApplicationSignUpException"></wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addApplicationSignUp">
-            <wsdl:input message="ns:addApplicationSignUpRequest" wsaw:Action="urn:addApplicationSignUp"/>
-            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:addApplicationSignUpStratosManagerServiceApplicationSignUpException"/>
+            <wsdl:input message="ns:addApplicationSignUpRequest" wsaw:Action="urn:addApplicationSignUp"></wsdl:input>
+            <wsdl:fault message="ns:StratosManagerServiceApplicationSignUpException" name="StratosManagerServiceApplicationSignUpException" wsaw:Action="urn:addApplicationSignUpStratosManagerServiceApplicationSignUpException"></wsdl:fault>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="StratosManagerServiceSoap11Binding" type="ns:StratosManagerServicePortType">
-        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap:binding>
         <wsdl:operation name="canCartridgeBeRemoved">
-            <soap:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
+            <soap:operation soapAction="urn:canCartridgeBeRemoved" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <soap:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
+            <soap:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
-            <soap:operation soapAction="urn:getApplicationSignUps" style="document"/>
+            <soap:operation soapAction="urn:getApplicationSignUps" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getDomainMappings">
-            <soap:operation soapAction="urn:getDomainMappings" style="document"/>
+            <soap:operation soapAction="urn:getDomainMappings" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
-            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"/>
+            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
-                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInApplications">
-            <soap:operation soapAction="urn:removeUsedCartridgesInApplications" style="document"/>
+            <soap:operation soapAction="urn:removeUsedCartridgesInApplications" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <soap:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
+            <soap:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap:operation soapAction="urn:addUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+            <soap:operation soapAction="urn:addUsedCartridgeGroupsInCartridgeSubGroups" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInApplications">
-            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInApplications" style="document"/>
+            <soap:operation soapAction="urn:removeUsedCartridgeGroupsInApplications" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInCartridgeGroups">
-            <soap:operation soapAction="urn:removeUsedCartridgesInCartridgeGroups" style="document"/>
+            <soap:operation soapAction="urn:removeUsedCartridgesInCartridgeGroups" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addDomainMapping">
-            <soap:operation soapAction="urn:addDomainMapping" style="document"/>
+            <soap:operation soapAction="urn:addDomainMapping" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInApplications">
-            <soap:operation soapAction="urn:addUsedCartridgesInApplications" style="document"/>
+            <soap:operation soapAction="urn:addUsedCartridgesInApplications" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
-            <soap:operation soapAction="urn:removeApplicationSignUp" style="document"/>
+            <soap:operation soapAction="urn:removeApplicationSignUp" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeDomainMapping">
-            <soap:operation soapAction="urn:removeDomainMapping" style="document"/>
+            <soap:operation soapAction="urn:removeDomainMapping" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
-            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"/>
+            <soap:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
-                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+                <soap:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="canCartirdgeGroupBeRemoved">
-            <soap:operation soapAction="urn:canCartirdgeGroupBeRemoved" style="document"/>
+            <soap:operation soapAction="urn:canCartirdgeGroupBeRemoved" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
-            <soap:operation soapAction="urn:getApplicationSignUp" style="document"/>
+            <soap:operation soapAction="urn:getApplicationSignUp" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:output>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addApplicationSignUp">
-            <soap:operation soapAction="urn:addApplicationSignUp" style="document"/>
+            <soap:operation soapAction="urn:addApplicationSignUp" style="document"></soap:operation>
             <wsdl:input>
-                <soap:body use="literal"/>
+                <soap:body use="literal"></soap:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceSoap12Binding" type="ns:StratosManagerServicePortType">
-        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"></soap12:binding>
         <wsdl:operation name="canCartridgeBeRemoved">
-            <soap12:operation soapAction="urn:canCartridgeBeRemoved" style="document"/>
+            <soap12:operation soapAction="urn:canCartridgeBeRemoved" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"/>
+            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInApplications" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
-            <soap12:operation soapAction="urn:getApplicationSignUps" style="document"/>
+            <soap12:operation soapAction="urn:getApplicationSignUps" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="getDomainMappings">
-            <soap12:operation soapAction="urn:getDomainMappings" style="document"/>
+            <soap12:operation soapAction="urn:getDomainMappings" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
-            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"/>
+            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForSignUp" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
-                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInApplications">
-            <soap12:operation soapAction="urn:removeUsedCartridgesInApplications" style="document"/>
+            <soap12:operation soapAction="urn:removeUsedCartridgesInApplications" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <soap12:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"/>
+            <soap12:operation soapAction="urn:addUsedCartridgesInCartridgeGroups" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInCartridgeSubGroups" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInCartridgeSubGroups">
-            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInCartridgeSubGroups" style="document"/>
+            <soap12:operation soapAction="urn:addUsedCartridgeGroupsInCartridgeSubGroups" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInApplications">
-            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInApplications" style="document"/>
+            <soap12:operation soapAction="urn:removeUsedCartridgeGroupsInApplications" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInCartridgeGroups">
-            <soap12:operation soapAction="urn:removeUsedCartridgesInCartridgeGroups" style="document"/>
+            <soap12:operation soapAction="urn:removeUsedCartridgesInCartridgeGroups" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addDomainMapping">
-            <soap12:operation soapAction="urn:addDomainMapping" style="document"/>
+            <soap12:operation soapAction="urn:addDomainMapping" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInApplications">
-            <soap12:operation soapAction="urn:addUsedCartridgesInApplications" style="document"/>
+            <soap12:operation soapAction="urn:addUsedCartridgesInApplications" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
-            <soap12:operation soapAction="urn:removeApplicationSignUp" style="document"/>
+            <soap12:operation soapAction="urn:removeApplicationSignUp" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="removeDomainMapping">
-            <soap12:operation soapAction="urn:removeDomainMapping" style="document"/>
+            <soap12:operation soapAction="urn:removeDomainMapping" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceDomainMappingException">
-                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceDomainMappingException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
-            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"/>
+            <soap12:operation soapAction="urn:notifyArtifactUpdatedEventForRepository" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceArtifactDistributionCoordinatorException">
-                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceArtifactDistributionCoordinatorException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="canCartirdgeGroupBeRemoved">
-            <soap12:operation soapAction="urn:canCartirdgeGroupBeRemoved" style="document"/>
+            <soap12:operation soapAction="urn:canCartirdgeGroupBeRemoved" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
-            <soap12:operation soapAction="urn:getApplicationSignUp" style="document"/>
+            <soap12:operation soapAction="urn:getApplicationSignUp" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:output>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:output>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
         <wsdl:operation name="addApplicationSignUp">
-            <soap12:operation soapAction="urn:addApplicationSignUp" style="document"/>
+            <soap12:operation soapAction="urn:addApplicationSignUp" style="document"></soap12:operation>
             <wsdl:input>
-                <soap12:body use="literal"/>
+                <soap12:body use="literal"></soap12:body>
             </wsdl:input>
             <wsdl:fault name="StratosManagerServiceApplicationSignUpException">
-                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"/>
+                <soap12:fault use="literal" name="StratosManagerServiceApplicationSignUpException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="StratosManagerServiceHttpBinding" type="ns:StratosManagerServicePortType">
-        <http:binding verb="POST"/>
+        <http:binding verb="POST"></http:binding>
         <wsdl:operation name="canCartridgeBeRemoved">
-            <http:operation location="canCartridgeBeRemoved"/>
+            <http:operation location="canCartridgeBeRemoved"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInApplications">
-            <http:operation location="addUsedCartridgeGroupsInApplications"/>
+            <http:operation location="addUsedCartridgeGroupsInApplications"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUps">
-            <http:operation location="getApplicationSignUps"/>
+            <http:operation location="getApplicationSignUps"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getDomainMappings">
-            <http:operation location="getDomainMappings"/>
+            <http:operation location="getDomainMappings"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForSignUp">
-            <http:operation location="notifyArtifactUpdatedEventForSignUp"/>
+            <http:operation location="notifyArtifactUpdatedEventForSignUp"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInApplications">
-            <http:operation location="removeUsedCartridgesInApplications"/>
+            <http:operation location="removeUsedCartridgesInApplications"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInCartridgeGroups">
-            <http:operation location="addUsedCartridgesInCartridgeGroups"/>
+            <http:operation location="addUsedCartridgesInCartridgeGroups"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInCartridgeSubGroups">
-            <http:operation location="removeUsedCartridgeGroupsInCartridgeSubGroups"/>
+            <http:operation location="removeUsedCartridgeGroupsInCartridgeSubGroups"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgeGroupsInCartridgeSubGroups">
-            <http:operation location="addUsedCartridgeGroupsInCartridgeSubGroups"/>
+            <http:operation location="addUsedCartridgeGroupsInCartridgeSubGroups"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgeGroupsInApplications">
-            <http:operation location="removeUsedCartridgeGroupsInApplications"/>
+            <http:operation location="removeUsedCartridgeGroupsInApplications"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeUsedCartridgesInCartridgeGroups">
-            <http:operation location="removeUsedCartridgesInCartridgeGroups"/>
+            <http:operation location="removeUsedCartridgesInCartridgeGroups"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addDomainMapping">
-            <http:operation location="addDomainMapping"/>
+            <http:operation location="addDomainMapping"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="addUsedCartridgesInApplications">
-            <http:operation location="addUsedCartridgesInApplications"/>
+            <http:operation location="addUsedCartridgesInApplications"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeApplicationSignUp">
-            <http:operation location="removeApplicationSignUp"/>
+            <http:operation location="removeApplicationSignUp"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="removeDomainMapping">
-            <http:operation location="removeDomainMapping"/>
+            <http:operation location="removeDomainMapping"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="notifyArtifactUpdatedEventForRepository">
-            <http:operation location="notifyArtifactUpdatedEventForRepository"/>
+            <http:operation location="notifyArtifactUpdatedEventForRepository"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
         <wsdl:operation name="canCartirdgeGroupBeRemoved">
-            <http:operation location="canCartirdgeGroupBeRemoved"/>
+            <http:operation location="canCartirdgeGroupBeRemoved"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="getApplicationSignUp">
-            <http:operation location="getApplicationSignUp"/>
+            <http:operation location="getApplicationSignUp"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
             <wsdl:output>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
         </wsdl:operation>
         <wsdl:operation name="addApplicationSignUp">
-            <http:operation location="addApplicationSignUp"/>
+            <http:operation location="addApplicationSignUp"></http:operation>
             <wsdl:input>
-                <mime:content type="text/xml" part="parameters"/>
+                <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="StratosManagerService">
+        <wsdl:port name="StratosManagerServiceHttpsSoap11Endpoint" binding="ns:StratosManagerServiceSoap11Binding">
+            <soap:address location="https://172.17.42.1:9443/services/StratosManagerService.StratosManagerServiceHttpsSoap11Endpoint/"></soap:address>
+        </wsdl:port>
         <wsdl:port name="StratosManagerServiceHttpSoap11Endpoint" binding="ns:StratosManagerServiceSoap11Binding">
-            <soap:address location="http://localhost:8080/axis2/services/StratosManagerService"/>
+            <soap:address location="http://172.17.42.1:9763/services/StratosManagerService.StratosManagerServiceHttpSoap11Endpoint/"></soap:address>
+        </wsdl:port>
+        <wsdl:port name="StratosManagerServiceHttpsSoap12Endpoint" binding="ns:StratosManagerServiceSoap12Binding">
+            <soap12:address location="https://172.17.42.1:9443/services/StratosManagerService.StratosManagerServiceHttpsSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="StratosManagerServiceHttpSoap12Endpoint" binding="ns:StratosManagerServiceSoap12Binding">
-            <soap12:address location="http://localhost:8080/axis2/services/StratosManagerService"/>
+            <soap12:address location="http://172.17.42.1:9763/services/StratosManagerService.StratosManagerServiceHttpSoap12Endpoint/"></soap12:address>
         </wsdl:port>
         <wsdl:port name="StratosManagerServiceHttpEndpoint" binding="ns:StratosManagerServiceHttpBinding">
-            <http:address location="http://localhost:8080/axis2/services/StratosManagerService"/>
+            <http:address location="http://172.17.42.1:9763/services/StratosManagerService.StratosManagerServiceHttpEndpoint/"></http:address>
+        </wsdl:port>
+        <wsdl:port name="StratosManagerServiceHttpsEndpoint" binding="ns:StratosManagerServiceHttpBinding">
+            <http:address location="https://172.17.42.1:9443/services/StratosManagerService.StratosManagerServiceHttpsEndpoint/"></http:address>
         </wsdl:port>
     </wsdl:service>
 </wsdl:definitions>
