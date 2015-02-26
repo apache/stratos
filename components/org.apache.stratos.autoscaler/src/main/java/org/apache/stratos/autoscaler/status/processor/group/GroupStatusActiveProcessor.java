@@ -92,14 +92,20 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
                 //send activation event
                 if (component instanceof Application) {
                     //send application activated event
-                    log.info("sending application active for [application] " + appId + " [instance] "
-                                + instanceId);
+
+                    if(log.isInfoEnabled()){
+                        log.info(String.format("Sending application active for [application] %s [instance] %s ", appId
+                                , instanceId));
+                    }
                     ApplicationBuilder.handleApplicationInstanceActivatedEvent(appId, instanceId);
                     return true;
                 } else if (component instanceof Group) {
                     //send activation to the parent
-                    log.info("sending group instance active for [group] " +
-                            component.getUniqueIdentifier() + " [instance] " + instanceId);
+
+                    if(log.isInfoEnabled()){
+                        log.info(String.format("Sending group instance active for [group] %s [instance] %s ", component.getUniqueIdentifier()
+                                , instanceId));
+                    }
                     ApplicationBuilder.handleGroupInstanceActivatedEvent(appId, component.getUniqueIdentifier(), instanceId);
                     return true;
                 }
