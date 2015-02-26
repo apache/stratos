@@ -182,8 +182,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String msg = String.format("Could not create kubernetes pod: [pod-id] %s [message] %s", pod.getId(),
                         extractMessageInResponse(response));
                 log.error(msg);
@@ -216,8 +215,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String message = String.format("Could not delete kubernetes pod: [pod-id] %s [message] %s",
                         podId, extractMessageInResponse(response));
                 log.error(message);
@@ -397,8 +395,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String message = "Could not create kubernetes replication controller: [replication-controller-id] " +
                         replicationController.getId() + " [message] " + extractMessageInResponse(response);
                 log.error(message);
@@ -434,8 +431,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             handleNullResponse("Could not update kubernetes replication controller: [replication-controller-id] " +
                     replicationController.getId(), response);
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED
-                    && response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String message = "Could not update kubernetes replication controller: [replication-controller-id] " +
                         replicationController.getId() + ": " + response.getReason();
                 log.error(message);
@@ -478,8 +474,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String message = "Could not delete kubernetes replication controller: [replication-controller-id] " +
                         replicationControllerId + ": " + response.getReason();
                 log.error(message);
@@ -509,11 +504,12 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
      * @param serviceName Service name to be used by the label name
      * @param servicePort Port to be exposed by the service
      * @param containerPortName Container port name defined in the port label
+     * @param publicIPs
      * @throws KubernetesClientException
      */
     @Override
     public void createService(String serviceId, String serviceName, int servicePort,
-                              String containerPortName) throws KubernetesClientException {
+                              String containerPortName, String[] publicIPs) throws KubernetesClientException {
         try {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Creating kubernetes service: [service-id] %s [service-name] %s [service-port] %d " +
@@ -527,6 +523,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
             service.setKind(KubernetesConstants.KIND_SERVICE);
             service.setId(serviceId);
             service.setPort(servicePort);
+            service.setPublicIPs(publicIPs);
             service.setContainerPort(containerPortName);
 
             // Set service labels
@@ -637,8 +634,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String msg = String.format("Could not create kubernetes service: [service-id] %s [message] %s", service.getId(),
                         extractMessageInResponse(response));
                 log.error(msg);
@@ -674,8 +670,7 @@ public class KubernetesApiClient implements KubernetesAPIClientInterface {
                 return;
             }
 
-            if (response.getStatusCode() != HttpStatus.SC_ACCEPTED &&
-                    response.getStatusCode() != HttpStatus.SC_OK) {
+            if ((response.getStatusCode() < 200) || (response.getStatusCode() >= 300)) {
                 String msg = String.format("Could not delete kubernetes service: [service-id] %s [message] %s", serviceId,
                         extractMessageInResponse(response));
                 log.error(msg);
