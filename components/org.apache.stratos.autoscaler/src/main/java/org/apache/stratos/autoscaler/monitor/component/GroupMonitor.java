@@ -48,6 +48,7 @@ import org.apache.stratos.autoscaler.monitor.events.builder.MonitorStatusEventBu
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.cloud.controller.stub.CloudControllerServiceDeploymentPolicyNotExistsExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
 import org.apache.stratos.cloud.controller.stub.domain.PartitionRef;
@@ -538,12 +539,16 @@ public class GroupMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = null;
 		try {
 			deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyId);
+		} catch (CloudControllerServiceDeploymentPolicyNotExistsExceptionException e) {
+			//ignore it
+			String msg = String.format("Deployment policy not exists [deployment-policy-id] %s ", deploymentPolicyId);
+			log.warn(msg);
 		} catch (Exception e) {
 			String msg = String.format("Error occured while getting deployment policy [%s] from cloud controller service %s", deploymentPolicyId, e);
 			log.error(msg, e);
-			return null;
+			throw new org.apache.stratos.autoscaler.exception.AutoScalerException(msg, e);
 		}
-
+		
         String networkPartitionId = parentInstanceContext.getNetworkPartitionId();
         if (this.networkPartitionCtxts.containsKey(networkPartitionId)) {
             groupLevelNetworkPartitionContext = (GroupLevelNetworkPartitionContext) this.networkPartitionCtxts.
@@ -599,37 +604,53 @@ public class GroupMonitor extends ParentComponentMonitor {
         DeploymentPolicy deploymentPolicy = null;
 		try {
 			deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyId);
+		} catch (CloudControllerServiceDeploymentPolicyNotExistsExceptionException e) {
+			//ignore it
+			String msg = String.format("Deployment policy not exists [deployment-policy-id] %s ", deploymentPolicyId);
+			log.warn(msg);
 		} catch (Exception e) {
-			String msg = String.format("Error while getting deployment policy from cloud controller for "
-					+ "[application] %s [group-alias] %s", this.appId, groupAlias);
+			String msg = String.format("Error occured while getting deployment policy [%s] from cloud controller service %s", deploymentPolicyId, e);
 			log.error(msg, e);
-			//TODO throw an exception
-			return;
+			throw new org.apache.stratos.autoscaler.exception.AutoScalerException(msg, e);
 		}
-
-        NetworkPartitionRef[] networkPartitionRefs = deploymentPolicy.getNetworkPartitionsRef();
-        NetworkPartitionRef networkPartitionRef = null;
-        if (networkPartitionRefs != null && networkPartitionRefs.length != 0) {
-			for (NetworkPartitionRef i : networkPartitionRefs) {
-				if (i.getId().equals(networkPartitionId)) {
-					networkPartitionRef = i;
+		
+		if (deploymentPolicy == null) {
+			
+			String parentPartitionId = parentInstanceContext.getPartitionId();
+			if (parentPartitionId != null && networkPartitionContext.getPartitionCtxt(parentPartitionId) == null) {
+				GroupLevelPartitionContext partitionContext = new GroupLevelPartitionContext(parentPartitionId, networkPartitionId);
+				networkPartitionContext.addPartitionContext((GroupLevelPartitionContext) partitionContext);
+				if (log.isInfoEnabled()) {
+					log.info("[Partition] " + parentPartitionId + "has been added for the " + "[Group] " + this.id);
 				}
 			}
-		}
-        
-		if (networkPartitionRef != null) {
-			if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
-				PartitionRef[] partitionRefs = networkPartitionRef.getPartitions();
-				if (partitionRefs != null && partitionRefs.length != 0) {
-					for (PartitionRef partitionRef : partitionRefs) {
-						if (networkPartitionContext.getPartitionCtxt(partitionRef.getId()) == null) {
-							GroupLevelPartitionContext groupLevelPartitionContext = new GroupLevelPartitionContext(partitionRef.getMax(),
-									partitionRef.getId(), networkPartitionId);
-							childPartitionContexts.add(groupLevelPartitionContext);
-							networkPartitionContext.addPartitionContext(groupLevelPartitionContext);
-							if (log.isInfoEnabled()) {
-								log.info(String.format("[Partition] %s has been added for the [Group] %s",
-										partitionRef.getId(), this.id));
+		
+		} else {
+			
+			NetworkPartitionRef[] networkPartitionRefs = deploymentPolicy.getNetworkPartitionsRef();
+			NetworkPartitionRef networkPartitionRef = null;
+			if (networkPartitionRefs != null && networkPartitionRefs.length != 0) {
+				for (NetworkPartitionRef i : networkPartitionRefs) {
+					if (i.getId().equals(networkPartitionId)) {
+						networkPartitionRef = i;
+					}
+				}
+			}
+			
+			if (networkPartitionRef != null) {
+				if (networkPartitionContext.getPartitionCtxts().isEmpty()) {
+					PartitionRef[] partitionRefs = networkPartitionRef.getPartitions();
+					if (partitionRefs != null && partitionRefs.length != 0) {
+						for (PartitionRef partitionRef : partitionRefs) {
+							if (networkPartitionContext.getPartitionCtxt(partitionRef.getId()) == null) {
+								GroupLevelPartitionContext groupLevelPartitionContext = new GroupLevelPartitionContext(partitionRef.getMax(),
+										partitionRef.getId(), networkPartitionId);
+								childPartitionContexts.add(groupLevelPartitionContext);
+								networkPartitionContext.addPartitionContext(groupLevelPartitionContext);
+								if (log.isInfoEnabled()) {
+									log.info(String.format("[Partition] %s has been added for the [Group] %s",
+											partitionRef.getId(), this.id));
+								}
 							}
 						}
 					}
