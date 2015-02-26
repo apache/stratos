@@ -5,16 +5,17 @@
         "groups": [
             {
                 "name": "mysql-php-group",
-                "alias": "mysql-php-group1",
+                "alias": "my-mysql-php-group",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
+	     	"deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "mysql",
                         "cartridgeMin": 2,
                         "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "mysql1",
+                            "alias": "my-mysql",
                             "autoscalingPolicy": "autoscaling-policy-1"
                         }
                     },
@@ -23,7 +24,7 @@
                         "cartridgeMin": 2,
                         "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "php1",
+                            "alias": "my-php",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -40,8 +41,9 @@
                 "cartridgeMin": 2,
                 "cartridgeMax": 5,
                 "subscribableInfo": {
-                    "alias": "tomcat1",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+		    "deploymentPolicy":"deployment-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git"
@@ -51,7 +53,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mysql-php-group1,cartridge.tomcat1"
+                "group.my-mysql-php-group,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }
