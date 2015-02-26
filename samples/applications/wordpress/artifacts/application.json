@@ -8,6 +8,7 @@
                 "alias": "mysql-php-group",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
+		"deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "mysql",
@@ -15,6 +16,7 @@
                         "cartridgeMax": 5,
                         "subscribableInfo": {
                             "alias": "mysql1",
+			    "deploymentPolicy":"deployment-policy-1",
                             "autoscalingPolicy": "autoscaling-policy-1"
                         }
                     },
@@ -24,6 +26,7 @@
                         "cartridgeMax": 5,
                         "subscribableInfo": {
                             "alias": "php1",
+                            "deploymentPolicy":"deployment-policy-1",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
