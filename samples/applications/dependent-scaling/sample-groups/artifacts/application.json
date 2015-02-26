@@ -8,7 +8,7 @@
                 "alias": "my-esb-php-group",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 2,
-	        "deploymentPolicy":"deployment-policy-1",
+		"deploymentPolicy": "deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "esb",
