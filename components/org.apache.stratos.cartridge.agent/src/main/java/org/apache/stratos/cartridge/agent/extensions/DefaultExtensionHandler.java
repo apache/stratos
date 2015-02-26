@@ -243,8 +243,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
+        
+        Map<String, String> env = new HashMap<String, String>();
 
-        ExtensionUtils.executeMemberActivatedExtension(Collections.<String, String>emptyMap());
+        ExtensionUtils.executeMemberActivatedExtension(env);
     }
     
     @Override
@@ -350,8 +352,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
+        
+        Map<String, String> env = new HashMap<String, String>();
 
-        ExtensionUtils.executeMemberTerminatedExtension(Collections.<String, String>emptyMap());
+        ExtensionUtils.executeMemberTerminatedExtension(env);
     }
 
     @Override
@@ -374,8 +378,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
+        
+        Map<String, String> env = new HashMap<String, String>();
 
-        ExtensionUtils.executeMemberSuspendedExtension(Collections.<String, String>emptyMap());
+        ExtensionUtils.executeMemberSuspendedExtension(env);
     }
 
     @Override
@@ -398,8 +404,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
+        
+        Map<String, String> env = new HashMap<String, String>();
 
-        ExtensionUtils.executeMemberStartedExtension(Collections.<String, String>emptyMap());
+        ExtensionUtils.executeMemberStartedExtension(env);
     }
 
     @Override
@@ -422,8 +430,10 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             }
             return;
         }
+        
+        Map<String, String> env = new HashMap<String, String>();
 
-        ExtensionUtils.executeStartServersExtension(Collections.<String, String>emptyMap());
+        ExtensionUtils.executeStartServersExtension(env);
     }
 
     @Override
