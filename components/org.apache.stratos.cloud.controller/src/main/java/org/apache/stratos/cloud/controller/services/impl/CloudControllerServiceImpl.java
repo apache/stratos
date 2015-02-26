@@ -583,11 +583,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 if (cluster != null) {
                     Member member = cluster.getMember(memberId);
                     if (member != null) {
-                        // change member status if termination on a faulty member
-                        if (fixMemberStatus(member, topology)) {
-                            // set the time this member was added to ReadyToShutdown status
-                            memberContext.setObsoleteInitTime(System.currentTimeMillis());
-                        }
 
                         // check if ready to shutdown member is expired and send
                         // member terminated if it is.
@@ -638,45 +633,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // member detected faulty, calculate ready to shutdown waiting period
             long timeInReadyToShutdownStatus = System.currentTimeMillis() - initTime;
             return timeInReadyToShutdownStatus >= expiryTime;
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Corrects the member status upon termination call if the member is in an Active state
-     *
-     * @param member   The {@link org.apache.stratos.messaging.domain.topology.Member} object that is being
-     *                 checked for status
-     * @param topology The {@link org.apache.stratos.messaging.domain.topology.Topology} object to update
-     *                 the topology if needed.
-     */
-    private boolean fixMemberStatus(Member member, Topology topology) {
-        if (member.getStatus() == MemberStatus.Active) {
-            MemberReadyToShutdownEvent memberReadyToShutdownEvent = new MemberReadyToShutdownEvent(
-                    member.getServiceName(),
-                    member.getClusterId(),
-                    member.getClusterInstanceId(), member.getMemberId(),
-                    member.getNetworkPartitionId(),
-                    member.getPartitionId());
-
-            member.setStatus(MemberStatus.ReadyToShutDown);
-            log.info("Member Ready to shut down event adding status started");
-
-            TopologyManager.updateTopology(topology);
-
-            TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
-            //publishing data
-            StatisticsDataPublisher.publish(member.getMemberId(),
-                    member.getPartitionId(),
-                    member.getNetworkPartitionId(),
-                    member.getClusterId(),
-                    member.getServiceName(),
-                    MemberStatus.ReadyToShutDown.toString(),
-                    null);
-
-            return true;
         }
 
         return false;
