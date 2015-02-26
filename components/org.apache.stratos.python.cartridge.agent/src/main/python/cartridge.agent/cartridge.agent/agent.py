@@ -88,13 +88,6 @@ class CartridgeAgent(threading.Thread):
         except Exception as e:
             self.__log.exception("Error processing start servers event: %s" % e)
 
-        # Wait for all ports to be active
-        cartridgeagentutils.wait_until_ports_active(
-            self.__config.listen_address,
-            self.__config.ports,
-            int(self.__config.read_property("port.check.timeout", critical=False))
-        )
-
         # check if artifact management is required before publishing instance activated event
         repo_url = self.__config.repo_url
         if repo_url is None or str(repo_url).strip() == "":

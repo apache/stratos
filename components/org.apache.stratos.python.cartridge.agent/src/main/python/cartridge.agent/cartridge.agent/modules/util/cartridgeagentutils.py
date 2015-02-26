@@ -84,10 +84,12 @@ def wait_until_ports_active(ip_address, ports, ports_check_timeout=600000):
 
         if duration > ports_check_timeout:
             log.info("Port check timeout reached: [ip] %r [ports] %r [timeout] %r" % (ip_address, ports, ports_check_timeout))
-            return
+            return False
 
         time.sleep(5)
+
     log.info("Ports activated: [ip] %r [ports] %r" % (ip_address, ports))
+    return True
 
 
 def check_ports_active(ip_address, ports):
