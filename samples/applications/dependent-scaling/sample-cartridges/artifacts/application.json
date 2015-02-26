@@ -1,6 +1,6 @@
 {
-    "applicationId": "sample-cartridges-app",
-    "alias": "sample-cartridges-app",
+    "applicationId": "dependency-scaling-cartridges-app",
+    "alias": “my-dependency-scaling-cartridges-app”,
     "components": {
         "cartridges": [
             {
@@ -8,8 +8,9 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 2,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+	            "deploymentPolicy":"deployment-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
@@ -23,8 +24,9 @@
                 "cartridgeMin": 2,
                 "cartridgeMax": 4,
                 "subscribableInfo": {
-                    "alias": "myphp",
+                    "alias": "my-php",
                     "autoscalingPolicy": "autoscaling-policy-1",
+	            "deploymentPolicy":"deployment-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
@@ -36,7 +38,7 @@
         ],
         "dependencies": {
             "scalingDependants": [
-                "cartridge.tomcat, cartridge.php"
+                "cartridge.my-tomcat, cartridge.my-php"
             ],
             "terminationBehaviour": "terminate-none"
         }
