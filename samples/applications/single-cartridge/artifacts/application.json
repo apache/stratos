@@ -9,7 +9,7 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 10,    
 				"subscribableInfo":{  
-               	"alias":"php1",
+               	"alias":"my-php",
                	"autoscalingPolicy":"autoscaling-policy-1",
                 "deploymentPolicy":"deployment-policy-1",
                 "artifactRepository":{
