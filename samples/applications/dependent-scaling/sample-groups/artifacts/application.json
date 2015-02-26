@@ -16,6 +16,7 @@
                         "subscribableInfo": {
                             "alias": "my-esb",
                             "autoscalingPolicy": "autoscaling-policy-1",
+	                    "deploymentPolicy":"deployment-policy-1",
                             "artifactRepository":{
                                 "privateRepo":false,
                                 "repoUrl":"https://github.com/imesh/stratos-esb-applications.git",
@@ -31,6 +32,7 @@
                         "subscribableInfo": {
                             "alias": "my-php",
                             "autoscalingPolicy": "autoscaling-policy-1",
+	        	    "deploymentPolicy":"deployment-policy-1",
                             "artifactRepository":{
                                 "privateRepo":false,
                                 "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
@@ -50,6 +52,7 @@
                 "subscribableInfo": {
                     "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+	            "deploymentPolicy":"deployment-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
