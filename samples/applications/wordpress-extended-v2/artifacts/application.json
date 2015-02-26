@@ -1,11 +1,11 @@
 {
     "applicationId": "wordpress-extended",
-    "alias": "wordpress",
+    "alias": "my-wordpress",
     "components": {
         "groups": [
             {
                 "name": "mysql-php-group",
-                "alias": "mysql-php-group1",
+                "alias": "my-mysql-php-group",
                 "groupMinInstances": 2,
                 "groupMaxInstances": 2,
                 "cartridges": [
@@ -14,7 +14,8 @@
                         "cartridgeMin": 2,
                         "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "mysql1",
+                            "alias": "my-mysql",
+			    "deploymentPolicy":"deployment-policy-1",
                             "autoscalingPolicy": "autoscaling-policy-1"
                         }
                     },
@@ -23,7 +24,8 @@
                         "cartridgeMin": 2,
                         "cartridgeMax": 5,
                         "subscribableInfo": {
-                            "alias": "php1",
+                            "alias": "my-php",
+			    "deploymentPolicy":"deployment-policy-1",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -40,7 +42,8 @@
                 "cartridgeMin": 2,
                 "cartridgeMax": 5,
                 "subscribableInfo": {
-                    "alias": "tomcat1",
+                    "alias": "my-tomcat",
+		    "deploymentPolicy":"deployment-policy-1",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "artifactRepository":{
                         "privateRepo":false,
@@ -51,7 +54,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.mysql-php-group1,cartridge.tomcat1"
+                "group.my-mysql-php-group,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }
