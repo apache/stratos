@@ -149,8 +149,8 @@ public class CartridgeAgentEventPublisher {
 					for (Integer port: ports){
 						portsStr += port + ", ";
 					}
-					log.info(String.format(
-							"Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAdress] %s [Ports] %s",
+					log.error(String.format(
+							"Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAddress] %s [Ports] %s",
 							listenAddress,
 							portsStr));
 				}

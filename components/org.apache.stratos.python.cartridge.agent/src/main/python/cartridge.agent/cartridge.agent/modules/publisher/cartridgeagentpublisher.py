@@ -61,44 +61,57 @@ def publish_instance_started_event():
 def publish_instance_activated_event():
     global activated, log
     if not activated:
+        # Wait for all ports to be active
+
+        listen_address = CartridgeAgentConfiguration().listen_address
+        configuration__ports = CartridgeAgentConfiguration().ports
+        ports_active = cartridgeagentutils.wait_until_ports_active(
+            listen_address,
+            configuration__ports,
+            int(CartridgeAgentConfiguration().read_property("port.check.timeout", critical=False))
+        )
         log.info("Publishing instance activated event")
 
-        service_name = CartridgeAgentConfiguration().service_name
-        cluster_id = CartridgeAgentConfiguration().cluster_id
-        member_id = CartridgeAgentConfiguration().member_id
-        instance_id = CartridgeAgentConfiguration().instance_id
-        cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
-        network_partition_id = CartridgeAgentConfiguration().network_partition_id
-        partition_id = CartridgeAgentConfiguration().partition_id
+        if ports_active:
+            service_name = CartridgeAgentConfiguration().service_name
+            cluster_id = CartridgeAgentConfiguration().cluster_id
+            member_id = CartridgeAgentConfiguration().member_id
+            instance_id = CartridgeAgentConfiguration().instance_id
+            cluster_instance_id = CartridgeAgentConfiguration().cluster_instance_id
+            network_partition_id = CartridgeAgentConfiguration().network_partition_id
+            partition_id = CartridgeAgentConfiguration().partition_id
 
-        instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, cluster_instance_id, member_id,
-                                                          instance_id, network_partition_id, partition_id)
+            instance_activated_event = InstanceActivatedEvent(service_name, cluster_id, cluster_instance_id, member_id,
+                                                              instance_id, network_partition_id, partition_id)
 
-        publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
-        publisher.publish(instance_activated_event)
+            publisher = get_publisher(constants.INSTANCE_STATUS_TOPIC + constants.INSTANCE_ACTIVATED_EVENT)
+            publisher.publish(instance_activated_event)
 
-        log.info("Instance activated event published")
-        log.info("Starting health statistics notifier")
+            log.info("Instance activated event published")
+            log.info("Starting health statistics notifier")
 
-        if CEPPublisherConfiguration.get_instance().enabled:
-            interval_default = 15  # seconds
-            interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval", False)
-            if interval is not None and len(interval) > 0:
-                try:
-                    interval = int(interval)
-                except ValueError:
+            if CEPPublisherConfiguration.get_instance().enabled:
+                interval_default = 15  # seconds
+                interval = CartridgeAgentConfiguration().read_property("stats.notifier.interval", False)
+                if interval is not None and len(interval) > 0:
+                    try:
+                        interval = int(interval)
+                    except ValueError:
+                        interval = interval_default
+                else:
                     interval = interval_default
+
+                health_stats_publisher = HealthStatisticsPublisherManager(interval)
+                log.info("Starting Health statistics publisher with interval %r" % interval)
+                health_stats_publisher.start()
             else:
-                interval = interval_default
+                log.warn("Statistics publisher is disabled")
 
-            health_stats_publisher = HealthStatisticsPublisherManager(interval)
-            log.info("Starting Health statistics publisher with interval %r" % interval)
-            health_stats_publisher.start()
+            activated = True
+            log.info("Health statistics notifier started")
         else:
-            log.warn("Statistics publisher is disabled")
-
-        activated = True
-        log.info("Health statistics notifier started")
+            log.error("Ports activation timed out. Aborting InstanceActivatedEvent publishing. [IPAddress] %s [Ports] %s"
+                      % (listen_address, configuration__ports))
     else:
         log.warn("Instance already activated")
 
