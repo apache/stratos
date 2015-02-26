@@ -8,7 +8,7 @@
                 "type":"php",
                 "cartridgeMin": 1,
                 "cartridgeMax": 10,    
-				"subscribableInfo":{  
+		"subscribableInfo":{  
                	"alias":"my-php",
                	"autoscalingPolicy":"autoscaling-policy-1",
                 "deploymentPolicy":"deployment-policy-1",
