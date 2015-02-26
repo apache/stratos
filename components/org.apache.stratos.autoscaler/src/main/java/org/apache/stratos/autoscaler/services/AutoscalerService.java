@@ -22,9 +22,8 @@
 package org.apache.stratos.autoscaler.services;
 
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.autoscaler.exception.*;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.kubernetes.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
@@ -152,4 +151,6 @@ public interface AutoscalerService {
      * @return
      */
     public String findClusterId(String applicationId, String alias);
+    
+    public String[] getApplicationNetworkPartitions(String applicationId) throws AutoScalerException;
 }
