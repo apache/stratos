@@ -7,7 +7,7 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.mysql1,cartridge.php1"
+            "cartridge.my-mysql,cartridge.my-php"
         ],
         "scalingDependants": [
         ],
