@@ -109,6 +109,11 @@ public class AutoscalerServiceClient {
     public ApplicationPolicy getApplicationPolicy(String applicationId) throws RemoteException {
     	return stub.getApplicationPolicy(applicationId);
     }
+    
+    public String[] getApplicationNetworkPartitions(String applicationId) throws RemoteException, 
+    AutoscalerServiceAutoScalerExceptionException {
+    	return stub.getApplicationNetworkPartitions(applicationId);
+    }
 
     public void undeployApplication(String applicationId) throws
             AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {

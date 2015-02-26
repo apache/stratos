@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.beans.*;
 import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
 import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
@@ -72,6 +73,7 @@ import javax.ws.rs.core.UriInfo;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -654,6 +656,21 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationPolicy(@PathParam("applicationId") String applicationId) throws RestAPIException {
         ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationId);
         return Response.ok(applicationPolicyBean).build();
+    }
+    
+    /**
+     * Get network partition ids used in an application
+     * @return
+     * @throws RestAPIException
+     */
+    @GET
+    @Path("/applications/{applicationId}/networkPartitions")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/getApplicationNetworkPartitions")
+    public Response getApplicationNetworkPartitions(@PathParam("applicationId") String applicationId) throws RestAPIException {
+    	ApplicationNetworkPartitionIdListBean appNetworkPartitionsBean = StratosApiV41Utils.getApplicationNetworkPartitions(applicationId);
+        return Response.ok(appNetworkPartitionsBean).build();
     }
 
     /**

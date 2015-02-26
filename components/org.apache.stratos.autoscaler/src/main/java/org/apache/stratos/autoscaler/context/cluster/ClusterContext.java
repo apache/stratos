@@ -182,7 +182,6 @@ public class ClusterContext extends AbstractClusterContext {
 			throw new AutoScalerException(msg, e);
 		}
 
-		// TODO introduce methods in network/partition reference classes
 		NetworkPartitionRef[] networkPartitionRefs = deploymentPolicy
 				.getNetworkPartitionsRef();
 		PartitionRef[] partitionRefs = null;
@@ -283,7 +282,6 @@ public class ClusterContext extends AbstractClusterContext {
         }
         
         //Retrieving the actual partition from application
-        //TODO introduce a method in network partition class
         Partition[] partitions = null;
 		try {
 			partitions = CloudControllerServiceClient.getInstance().getNetworkPartition(nPartitionId).getPartitions();

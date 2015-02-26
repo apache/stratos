@@ -65,7 +65,6 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Applica
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
@@ -653,5 +652,15 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 	@Override
 	public ApplicationPolicy getApplicationPolicy(String applicationId) {
 		return PolicyManager.getInstance().getApplicationPolicy(applicationId);
+	}
+
+	@Override
+	public String[] getApplicationNetworkPartitions(String applicationId)
+			throws AutoScalerException {
+		List<String> networkPartitionIds = AutoscalerUtil.getNetworkPartitionIdsReferedInApplication(applicationId);
+		if (networkPartitionIds == null) {
+			return null;
+		}
+		return networkPartitionIds.toArray(new String[networkPartitionIds.size()]);
 	}
 }

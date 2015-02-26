@@ -32,6 +32,7 @@ import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
+import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
 import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.GroupReferenceBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
@@ -1045,6 +1046,20 @@ public class StratosApiV41Utils {
             return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
         } catch (Exception e) {
             String message = String.format("Could not get application policy [application-id] %s", applicationId);
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
+    
+    public static ApplicationNetworkPartitionIdListBean getApplicationNetworkPartitions(String applicationId) {
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            String[] networkPartitions = serviceClient.getApplicationNetworkPartitions(applicationId);
+            ApplicationNetworkPartitionIdListBean appNetworkPartitionsBean = new ApplicationNetworkPartitionIdListBean();
+            appNetworkPartitionsBean.setNetworkPartitionIds(Arrays.asList(networkPartitions));
+            return appNetworkPartitionsBean;
+        } catch (Exception e) {
+            String message = String.format("Could not get application network partitions [application-id] %s", applicationId);
             log.error(message);
             throw new RuntimeException(message, e);
         }
