@@ -487,6 +487,7 @@ public class AutoscalerUtil {
 					} else {
 						// if group have a deployment policy, it is the same for all the children
 						String deploymentPolicyId = groupContext.getDeploymentPolicy();
+						aliasToDeploymentPolicyIdMap.put(groupContext.getAlias(), deploymentPolicyId);
 						if (groupContext.getCartridgeContexts() != null && groupContext.getCartridgeContexts().length != 0) {
 							setDeploymentPolicyIdToChildCartridgeContexts(aliasToDeploymentPolicyIdMap, deploymentPolicyId, groupContext.getCartridgeContexts());
 						}
