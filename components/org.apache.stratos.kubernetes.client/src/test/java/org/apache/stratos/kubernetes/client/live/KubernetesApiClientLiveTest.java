@@ -27,7 +27,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
-import org.apache.stratos.kubernetes.client.model.*;
+import org.apache.stratos.kubernetes.client.model.Pod;
+import org.apache.stratos.kubernetes.client.model.Port;
+import org.apache.stratos.kubernetes.client.model.Service;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,6 +58,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
     private static final int DEFAULT_CONTAINER_PORT = 6379; //80;
     private static final int SERVICE_PORT = 4500;
     private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
+    private static final int KUBERNETES_API_PORT = 8080;
     private static final String DEFAULT_DOCKER_IMAGE =  "gurpartap/redis"; //"stratos/php:4.1.0-alpha";
     private static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
 
@@ -71,7 +74,7 @@ public class KubernetesApiClientLiveTest extends TestCase{
         log.info("Setting up live test...");
         endpoint = System.getProperty("kubernetes.api.endpoint");
         if (endpoint == null) {
-            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":8080/api/" + KubernetesConstants.KUBERNETES_API_VERSION + "/";
+            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT + "/api/" + KubernetesConstants.KUBERNETES_API_VERSION + "/";
         }
         log.info("Kubernetes endpoint: " + endpoint);
         client = new KubernetesApiClient(endpoint);
@@ -214,13 +217,21 @@ public class KubernetesApiClientLiveTest extends TestCase{
 
     public void deleteServices() {
         try {
+            int count = 0;
             List<Service> services = client.getServices();
-            if(services != null) {
+            while((services != null) && (services.size() > 0)) {
                 for (Service service : services) {
-                    if (!service.getId().contains("kubernetes")) {
+                    if ((StringUtils.isNotBlank(service.getId())) && (!service.getId().contains("kubernetes"))) {
                         client.deleteService(service.getId());
+                        count++;
+                        log.info(String.format("Service deleted: [service] %s", service.getId()));
                     }
                 }
+                services = client.getServices();
+            }
+
+            if(count > 0) {
+                log.info(String.format("%d services deleted", count));
             }
         } catch (KubernetesClientException e) {
             log.error("Could not delete services", e);
@@ -229,11 +240,21 @@ public class KubernetesApiClientLiveTest extends TestCase{
 
     public void deletePods() {
         try {
+            int count = 0;
             List<Pod> pods = client.getPods();
-            if(pods != null) {
-                for (Pod replicationController : pods) {
-                    client.deletePod(replicationController.getId());
+            while ((pods != null) || (pods.size() > 0)) {
+                for (Pod pod : pods) {
+                    if (StringUtils.isNotBlank(pod.getId())) {
+                        client.deletePod(pod.getId());
+                        count++;
+                        log.info(String.format("Pod deleted: [pod] %s", pod.getId()));
+                    }
                 }
+                pods = client.getPods();
+            }
+
+            if(count > 0) {
+                log.info(String.format("%d pods deleted", count));
             }
         } catch (KubernetesClientException e) {
             log.error("Could not delete pods", e);

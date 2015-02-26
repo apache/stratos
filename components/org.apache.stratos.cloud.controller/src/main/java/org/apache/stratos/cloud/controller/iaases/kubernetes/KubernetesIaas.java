@@ -40,7 +40,6 @@ import org.apache.stratos.kubernetes.client.KubernetesApiClient;
 import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
-import org.apache.stratos.kubernetes.client.model.Labels;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
@@ -278,25 +277,14 @@ public class KubernetesIaas extends Iaas {
     private Pod waitForPodToBeActivated(MemberContext memberContext, KubernetesApiClient kubernetesApi)
             throws KubernetesClientException, InterruptedException {
 
-        Labels labels = new Labels();
-        String podName = memberContext.getKubernetesPodName();
-        labels.setName(podName);
-
         Pod pod;
-        List<Pod> pods;
         boolean podCreated = false;
         boolean podRunning = false;
         long startTime = System.currentTimeMillis();
 
         while (!podRunning) {
-            pods = kubernetesApi.queryPods(new Labels[]{labels});
-            if ((pods != null) && (pods.size() > 0)) {
-                if (pods.size() > 1) {
-                    throw new RuntimeException("System error, more than one pod found with the same pod name: "
-                            + podName);
-                }
-
-                pod = pods.get(0);
+            pod = kubernetesApi.getPod(memberContext.getKubernetesPodId());
+            if (pod != null) {
                 podCreated = true;
                 if (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING)) {
                     log.info(String.format("Pod status changed to running: [application] %s [cartridge] %s [member] %s " +

@@ -1,0 +1,12 @@
+{
+   "networkPartition":[
+      {
+         "id":"network-partition-1",
+         "activeByDefault":"true"
+      },
+      {
+         "id":"network-partition-2",
+         "activeByDefault":"false"
+      }
+   ]
+}
