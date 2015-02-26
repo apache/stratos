@@ -369,6 +369,12 @@ public class AutoscalerUtil {
         return "*";
     }
     
+    /**
+     * Get network partition ids referred in an application. Network partition ids are not referred directly.
+     * Cartridge or cartridge group can refer deployment policy which has network partition references.
+     * @param applicationId the application id
+     * @return list of network partition ids
+     */
     public static List<String> getNetworkPartitionIdsReferedInApplication(String applicationId) {
     	
     	List<String> deploymentPolicyIdsReferedInApplication = getDeploymentPolicyIdsReferedInApplication(applicationId);
@@ -399,6 +405,11 @@ public class AutoscalerUtil {
     	return networkPartitionIds;
 	}    
     
+    /**
+     * Get deployment policy ids referred in an application.
+     * @param applicationId the application id
+     * @return list of deployment policy ids
+     */
     private static List<String> getDeploymentPolicyIdsReferedInApplication(String applicationId) {
     	
     	Map<String, String> aliasToDeploymentPolicyIdMap = getAliasToDeploymentPolicyIdMapOfApplication(applicationId);
@@ -418,6 +429,12 @@ public class AutoscalerUtil {
 		return deploymentPolicyIds;
     }
     
+    /**
+     * Get deployment policy id of an alias in the given application
+     * @param applicationId the application id
+     * @param alias the cartridge or cartridge-group alias
+     * @return the deployment policy id if found, null otherwise
+     */
     public static String getDeploymentPolicyIdByAlias(String applicationId, String alias) {
     	
     	if (alias == null || alias.isEmpty()) {
@@ -433,6 +450,11 @@ public class AutoscalerUtil {
     	return aliasToDeploymentPolicyIdMap.get(alias);
     }
     
+    /**
+     * Get alias to deployment policy id map in the given application.
+     * @param applicationId the application id
+     * @return alias to deployment policy map
+     */
     private static Map<String, String> getAliasToDeploymentPolicyIdMapOfApplication(String applicationId) {
     	
     	Map<String, String> aliasToDeploymentPolicyIdMap = new HashMap<String, String>();
@@ -529,65 +551,4 @@ public class AutoscalerUtil {
 			}
 		}
     }
-
-//    public static LbClusterMonitor getLbClusterMonitor(Cluster cluster) throws PolicyValidationException, PartitionValidationException {
-//        if (null == cluster) {
-//               return null;
-//           }
-//
-//           String autoscalePolicyName = cluster.getAutoscalePolicyName();
-//           String deploymentPolicyName = cluster.getDeploymentPolicyName();
-//
-//           if (log.isDebugEnabled()) {
-//               log.debug("Deployment policy name: " + deploymentPolicyName);
-//               log.debug("Autoscaler policy name: " + autoscalePolicyName);
-//           }
-//
-//           AutoscalePolicy policy =
-//                                    PolicyManager.getInstance()
-//                                                 .getAutoscalePolicy(autoscalePolicyName);
-//           DeploymentPolicy deploymentPolicy =
-//                                               PolicyManager.getInstance()
-//                                                            .getDeploymentPolicy(deploymentPolicyName);
-//
-//           if (deploymentPolicy == null) {
-//               String msg = "Deployment Policy is null. Policy name: " + deploymentPolicyName;
-//               log.error(msg);
-//               throw new PolicyValidationException(msg);
-//           }
-//
-//           Partition[] allPartitions = deploymentPolicy.getAllPartitions();
-//           if (allPartitions == null) {
-//               String msg =
-//                            "Deployment Policy's Partitions are null. Policy name: " +
-//                                    deploymentPolicyName;
-//               log.error(msg);
-//               throw new PolicyValidationException(msg);
-//           }
-//
-//           try {
-//               validateExistenceOfPartions(allPartitions);
-//           } catch (InvalidPartitionException e) {
-//               String msg = "Deployment Policy is invalid. Policy name: " + deploymentPolicyName;
-//               log.error(msg, e);
-//               throw new PolicyValidationException(msg, e);
-//           }
-//
-//           CloudControllerClient.getInstance()
-//                                .validateDeploymentPolicy(cluster.getServiceName(),
-//                                                            allPartitions);
-//
-//           LbClusterMonitor clusterMonitor =
-//                                           new LbClusterMonitor(cluster.getClusterId(),
-//                                                              cluster.getServiceName(),
-//                                                              deploymentPolicy, policy);
-//           fNetworkPartitionroup partitionGroup: deploymentPoliNetworkPartitionnGroups()){
-//
-//               NetworkPartitionContext networkPartitionContext
-//                       = PartitionManager.getInstance().getNetworkPartitionLbHolder(partitionGroup.getNetworkPartitionId());
-//               clusterMonitor.addNetworkPartitionCtxt(networkPartitionContext);
-//           }
-//        return null;
-//    }
-
 }
