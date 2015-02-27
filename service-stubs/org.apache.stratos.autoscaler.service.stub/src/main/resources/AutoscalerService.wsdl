@@ -1,50 +1,16 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<?xml version="1.0" encoding="UTF-8"?><wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax21="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax22="http://common.stratos.apache.org/xsd" xmlns:ax219="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax212="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:ax211="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-=======
-=======
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-=======
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax221="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax223="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://common.stratos.apache.org/xsd" xmlns:ax25="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax211="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax25="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://common.stratos.apache.org/xsd" xmlns:ax23="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax211="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> fixing merging issues
-=======
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax27="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax25="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:ax29="http://common.stratos.apache.org/xsd" xmlns:ax27="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ns="http://impl.services.autoscaler.stratos.apache.org" xmlns:ax25="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax23="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ax218="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ns1="http://org.apache.axis2/xsd" xmlns:ax220="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax213="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:wsaw="http://www.w3.org/2006/05/addressing/wsdl" xmlns:ax211="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
     <wsdl:documentation>AutoscalerService</wsdl:documentation>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
     <wsdl:types>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="AutoscalePolicy">
                 <xs:sequence>
-<<<<<<< HEAD
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="instanceRoundingFactor" type="xs:float"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax29:LoadThresholds"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-=======
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="displayName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="instanceRoundingFactor" type="xs:float"></xs:element>
                     <xs:element minOccurs="0" name="isPublic" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax25:LoadThresholds"></xs:element>
+                    <xs:element minOccurs="0" name="loadThresholds" nillable="true" type="ax23:LoadThresholds"></xs:element>
                     <xs:element minOccurs="0" name="tenantId" type="xs:int"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="LoadThresholds">
@@ -55,17 +21,17 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-        <xs:schema xmlns:ax211="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
+        <xs:schema xmlns:ax214="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd">
             <xs:import namespace="http://common.stratos.apache.org/xsd"></xs:import>
             <xs:complexType name="ApplicationContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="components" nillable="true" type="ax29:ComponentContext"></xs:element>
+                    <xs:element minOccurs="0" name="components" nillable="true" type="ax213:ComponentContext"></xs:element>
                     <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="multiTenant" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax210:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"></xs:element>
                     <xs:element minOccurs="0" name="status" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="tenantAdminUsername" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="tenantDomain" nillable="true" type="xs:string"></xs:element>
@@ -74,10 +40,10 @@
             </xs:complexType>
             <xs:complexType name="ComponentContext">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationClusterContexts" nillable="true" type="ax29:ApplicationClusterContext"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax29:CartridgeContext"></xs:element>
-                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax29:DependencyContext"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax29:GroupContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationClusterContexts" nillable="true" type="ax213:ApplicationClusterContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax213:CartridgeContext"></xs:element>
+                    <xs:element minOccurs="0" name="dependencyContext" nillable="true" type="ax213:DependencyContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax213:GroupContext"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationClusterContext">
@@ -89,7 +55,7 @@
                     <xs:element minOccurs="0" name="deploymentPolicyName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="hostName" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="lbCluster" type="xs:boolean"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax210:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"></xs:element>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -98,20 +64,20 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="cartridgeMax" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="cartridgeMin" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax29:SubscribableInfoContext"></xs:element>
+                    <xs:element minOccurs="0" name="subscribableInfoContext" nillable="true" type="ax213:SubscribableInfoContext"></xs:element>
                     <xs:element minOccurs="0" name="type" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="SubscribableInfoContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="artifactRepositoryContext" nillable="true" type="ax29:ArtifactRepositoryContext"></xs:element>
+                    <xs:element minOccurs="0" name="artifactRepositoryContext" nillable="true" type="ax213:ArtifactRepositoryContext"></xs:element>
                     <xs:element minOccurs="0" name="autoscalingPolicy" nillable="true" type="xs:string"></xs:element>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="dependencyAliases" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="maxMembers" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="minMembers" type="xs:int"></xs:element>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax210:Properties"></xs:element>
+                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ArtifactRepositoryContext">
@@ -133,9 +99,9 @@
             <xs:complexType name="GroupContext">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax29:CartridgeContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridgeContexts" nillable="true" type="ax213:CartridgeContext"></xs:element>
                     <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="xs:string"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax29:GroupContext"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groupContexts" nillable="true" type="ax213:GroupContext"></xs:element>
                     <xs:element minOccurs="0" name="groupMaxInstances" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="groupMinInstances" type="xs:int"></xs:element>
                     <xs:element minOccurs="0" name="groupScalingEnabled" type="xs:boolean"></xs:element>
@@ -146,19 +112,11 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://pojo.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="ServiceGroup">
                 <xs:sequence>
-<<<<<<< HEAD
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax27:Dependencies"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="ax27:ServiceGroup"/>
-                    <xs:element minOccurs="0" name="groupscalingEnabled" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-=======
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="cartridges" nillable="true" type="xs:string"></xs:element>
-                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax218:Dependencies"></xs:element>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="ax218:ServiceGroup"></xs:element>
+                    <xs:element minOccurs="0" name="dependencies" nillable="true" type="ax220:Dependencies"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="groups" nillable="true" type="ax220:ServiceGroup"></xs:element>
                     <xs:element minOccurs="0" name="groupscalingEnabled" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Dependencies">
@@ -169,101 +127,17 @@
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <xs:schema xmlns:ax28="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax216="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax218="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax215="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax220="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://common.stratos.apache.org/xsd" xmlns:ax223="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://application.exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://common.stratos.apache.org/xsd"/>
-            <xs:import namespace="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd"/>
-            <xs:element name="getApplications">
-                <xs:complexType>
-                    <xs:sequence/>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax24:ApplicationContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="AutoscalerServiceApplicationDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax25:ApplicationDefinitionException"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addApplication">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax24:ApplicationContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroup">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax27:ServiceGroup"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoscalingPolicy">
-=======
-=======
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-        <xs:schema xmlns:ax214="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
+        <xs:schema xmlns:ax215="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://common.stratos.apache.org/xsd" xmlns:ax26="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
             <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
-=======
-        <xs:schema xmlns:ax214="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax222="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax224="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
-=======
-        <xs:schema xmlns:ax214="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-        <xs:schema xmlns:ax214="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax210="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
->>>>>>> fixing merging issues
-=======
-        <xs:schema xmlns:ax214="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax221="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax212="http://pojo.applications.autoscaler.stratos.apache.org/xsd" xmlns:ax28="http://application.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax26="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd" xmlns:ax24="http://policy.exception.autoscaler.stratos.apache.org/xsd" xmlns:ax217="http://common.stratos.apache.org/xsd" xmlns:ax216="http://exception.autoscaler.stratos.apache.org/xsd" xmlns:ax219="http://pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://impl.services.autoscaler.stratos.apache.org">
-            <xs:import namespace="http://policy.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://autoscale.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
+            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://common.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://application.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://pojo.applications.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://exception.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:import namespace="http://common.stratos.apache.org/xsd"></xs:import>
+            <xs:import namespace="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
             <xs:import namespace="http://pojo.autoscaler.stratos.apache.org/xsd"></xs:import>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
             <xs:element name="getAutoScalingPolicies">
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 <xs:complexType>
                     <xs:sequence></xs:sequence>
                 </xs:complexType>
@@ -271,37 +145,21 @@
             <xs:element name="getAutoScalingPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:AutoscalePolicy"/>
-=======
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-<<<<<<< HEAD
-=======
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:element name="AutoscalerServiceInvalidPolicyException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"></xs:element>
-=======
-=======
->>>>>>> fixing merging issues
-=======
-            <xs:import namespace="http://kubernetes.exception.autoscaler.stratos.apache.org/xsd"></xs:import>
-            <xs:element name="AutoscalerServiceInvalidPolicyException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax23:InvalidPolicyException"></xs:element>
+                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax25:InvalidPolicyException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -312,206 +170,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
-            <xs:element name="AutoscalerServiceApplicationDefinitionException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax27:ApplicationDefinitionException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addApplication">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:DeploymentPolicy"/>
-=======
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax27:ApplicationContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax28:ApplicationContext"></xs:element>
->>>>>>> fixing merging issues
-=======
-                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax29:ApplicationContext"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplications">
-                <xs:complexType>
-<<<<<<< HEAD
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-                    </xs:sequence>
-=======
-                    <xs:sequence></xs:sequence>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax216:NetworkPartition"/>
-=======
-                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax27:ApplicationDefinitionException"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:ApplicationContext"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax28:ApplicationContext"></xs:element>
->>>>>>> fixing merging issues
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:ApplicationContext"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="deployApplication">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax214:ApplicationPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="deployApplicationResponse">
-                <xs:complexType>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax216:NetworkPartition"/>
-                    </xs:sequence>
-=======
-                    <xs:sequence></xs:sequence>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
-                    </xs:sequence>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getApplicationPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax216:NetworkPartition"/>
-=======
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax214:ApplicationPolicy"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ApplicationPolicy"></xs:element>
->>>>>>> fixing merging issues
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax214:ApplicationPolicy"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="undeployApplication">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoscalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoscalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoScalingPolicies">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getAutoScalingPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-<<<<<<< HEAD
-            <xs:element name="removeAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax217:AutoScalerException"/>
-=======
-                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                        <xs:element minOccurs="0" name="autoscalePolicyId" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax27:ServiceGroup"/>
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-=======
->>>>>>> fixing merging issues
             <xs:element name="updateAutoScalingPolicy">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax25:AutoscalePolicy"></xs:element>
+                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -533,43 +195,13 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-<<<<<<< HEAD
-            <xs:element name="updateAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="updateAutoScalingPolicyResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidPolicyException" nillable="true" type="ax219:InvalidPolicyException"/>
-=======
-                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="removeAutoScalingPolicy">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax29:AutoscalePolicy"/>
-=======
-                        <xs:element minOccurs="0" name="autoscalePolicyId" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
             <xs:element name="AutoscalerServiceInvalidArgumentException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax216:InvalidArgumentException"></xs:element>
->>>>>>> fixing merging issues
+                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax27:InvalidArgumentException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -577,43 +209,22 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax217:Properties"></xs:element>
+                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax29:Properties"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="findClusterId">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax29:AutoscalePolicy"/>
-=======
-                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax216:InvalidArgumentException"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
                         <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
                         <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing merging issues
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="findClusterIdResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="autoscalePolicy" nillable="true" type="ax29:AutoscalePolicy"/>
-=======
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax217:Properties"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                        <xs:element minOccurs="0" name="properties" nillable="true" type="ax28:Properties"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
                         <xs:element minOccurs="0" name="return" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing merging issues
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -634,17 +245,10 @@
             <xs:element name="AutoscalerServiceAutoScalerException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax216:AutoScalerException"></xs:element>
+                        <xs:element minOccurs="0" name="AutoScalerException" nillable="true" type="ax27:AutoScalerException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-<<<<<<< HEAD
-            <xs:element name="deployApplication">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                        <xs:element minOccurs="0" name="deploymentPolicy" nillable="true" type="ax215:DeploymentPolicy"/>
-=======
             <xs:element name="undeployServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
@@ -652,11 +256,65 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="AutoscalerServiceApplicationDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="ApplicationDefinitionException" nillable="true" type="ax212:ApplicationDefinitionException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addApplication">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationContext" nillable="true" type="ax215:ApplicationContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplications">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationsResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax215:ApplicationContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployApplication">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="applicationPolicy" nillable="true" type="ax217:ApplicationPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="deployApplicationResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" type="xs:boolean"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getApplicationPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax217:ApplicationPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="getApplicationNetworkPartitions">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -667,6 +325,27 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+            <xs:element name="undeployApplication">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoscalingPolicy">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="autoscalingPolicyId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getAutoscalingPolicyResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax23:AutoscalePolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
             <xs:element name="deleteApplication">
                 <xs:complexType>
                     <xs:sequence>
@@ -674,86 +353,31 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroup">
+            <xs:element name="getApplication">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="InvalidArgumentException" nillable="true" type="ax217:InvalidArgumentException"/>
-=======
                         <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
->>>>>>> fixing merging issues
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupResponse">
+            <xs:element name="getApplicationResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax219:ServiceGroup"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroups">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getServiceGroupsResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax27:ServiceGroup"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="addNetworkPartition">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="networkPartition" nillable="true" type="ax216:NetworkPartition"/>
-=======
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-=======
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
-=======
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax223:ServiceGroup"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-<<<<<<< HEAD
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-=======
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
->>>>>>> fixing merging issues
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax219:ServiceGroup"></xs:element>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax215:ApplicationContext"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="AutoscalerServiceInvalidServiceGroupException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax220:InvalidServiceGroupException"></xs:element>
+                        <xs:element minOccurs="0" name="InvalidServiceGroupException" nillable="true" type="ax219:InvalidServiceGroupException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
             <xs:element name="addServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax219:ServiceGroup"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax220:ServiceGroup"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -764,34 +388,20 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getApplication">
+            <xs:element name="getServiceGroup">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <xs:element name="getApplication">
+            <xs:element name="getServiceGroupResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getApplicationResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax24:ApplicationContext"/>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="deleteApplication">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-=======
             <xs:element name="getServiceGroups">
                 <xs:complexType>
                     <xs:sequence></xs:sequence>
@@ -800,129 +410,29 @@
             <xs:element name="getServiceGroupsResponse">
                 <xs:complexType>
                     <xs:sequence>
-<<<<<<< HEAD
-<<<<<<< HEAD
                         <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
-<<<<<<< HEAD
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax223:ServiceGroup"></xs:element>
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-<<<<<<< HEAD
->>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
-=======
-=======
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax220:ServiceGroup"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-            <xs:element name="getApplicationResponse">
-                <xs:complexType>
-                    <xs:sequence>
-<<<<<<< HEAD
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax28:ApplicationContext"></xs:element>
->>>>>>> fixing merging issues
-=======
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax29:ApplicationContext"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
         </xs:schema>
-<<<<<<< HEAD
-        <xs:schema xmlns:ax214="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd"/>
-            <xs:complexType name="DeploymentPolicy">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="allPartitions" nillable="true" type="ax214:Partition"/>
-                    <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="applicationLevelNetworkPartitions" nillable="true" type="ax214:NetworkPartition"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelNetworkPartitions" nillable="true" type="ax214:ChildLevelNetworkPartition"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childPolicies" nillable="true" type="ax211:ChildPolicy"/>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="tenantId" type="xs:int"/>
-=======
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://deployment.policy.pojo.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="ApplicationPolicy">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="applicationId" nillable="true" type="xs:string"></xs:element>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionReferences" nillable="true" type="ax213:ApplicationPolicyNetworkPartitionReference"></xs:element>
-<<<<<<< HEAD
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
-=======
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionReferences" nillable="true" type="ax211:ApplicationPolicyNetworkPartitionReference"></xs:element>
->>>>>>> fixing STRATOS-1214 - deployement policy changes
->>>>>>> fixing STRATOS-1214 - deployement policy changes
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionReferences" nillable="true" type="ax29:ApplicationPolicyNetworkPartitionReference"></xs:element>
->>>>>>> fixing merging issues
-=======
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionReferences" nillable="true" type="ax213:ApplicationPolicyNetworkPartitionReference"></xs:element>
->>>>>>> implementing getApplicationNetworkPartitions web service method, rest API and updating AS wsdl
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="networkPartitionReferences" nillable="true" type="ax216:ApplicationPolicyNetworkPartitionReference"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="ApplicationPolicyNetworkPartitionReference">
                 <xs:sequence>
-<<<<<<< HEAD
-                    <xs:element minOccurs="0" name="alias" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelNetworkPartitions" nillable="true" type="ax214:ChildLevelNetworkPartition"/>
-=======
                     <xs:element minOccurs="0" name="activeByDefault" type="xs:boolean"></xs:element>
                     <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://application.exception.autoscaler.stratos.apache.org/xsd">
             <xs:complexType name="ApplicationDefinitionException">
                 <xs:sequence>
-<<<<<<< HEAD
-                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-        </xs:schema>
-        <xs:schema xmlns:ax213="http://common.stratos.apache.org/xsd" attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://network.partition.deployment.policy.pojo.autoscaler.stratos.apache.org/xsd">
-            <xs:import namespace="http://common.stratos.apache.org/xsd"/>
-            <xs:complexType name="Partition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="description" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="isPublic" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="properties" nillable="true" type="ax22:Properties"/>
-                    <xs:element minOccurs="0" name="provider" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="NetworkPartition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="activeByDefault" type="xs:boolean"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="kubernetesClusterId" nillable="true" type="xs:string"/>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="partitions" nillable="true" type="ax212:Partition"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ChildLevelNetworkPartition">
-                <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="childLevelPartitions" nillable="true" type="ax212:ChildLevelPartition"/>
-                    <xs:element minOccurs="0" name="id" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="min" type="xs:int"/>
-                    <xs:element minOccurs="0" name="partitionAlgo" nillable="true" type="xs:string"/>
-                </xs:sequence>
-            </xs:complexType>
-            <xs:complexType name="ChildLevelPartition">
-                <xs:sequence>
-                    <xs:element minOccurs="0" name="max" type="xs:int"/>
-                    <xs:element minOccurs="0" name="networkPartitionId" nillable="true" type="xs:string"/>
-                    <xs:element minOccurs="0" name="partitionId" nillable="true" type="xs:string"/>
-=======
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
->>>>>>> Adding back missing commit 954488432a60f6e80a34a8b5d3f868568d4f8a0c on application policy deployment
                 </xs:sequence>
             </xs:complexType>
         </xs:schema>
@@ -936,7 +446,7 @@
         <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" targetNamespace="http://common.stratos.apache.org/xsd">
             <xs:complexType name="Properties">
                 <xs:sequence>
-                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax210:Property"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="properties" nillable="true" type="ax29:Property"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="Property">

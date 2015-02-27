@@ -390,7 +390,7 @@ public class KubernetesIaas extends Iaas {
 
         // Add pod id to member context and persist
         memberContext.setKubernetesPodId(podId);
-        memberContext.setKubernetesPodName(podLabel);
+        memberContext.setKubernetesPodLabel(podLabel);
         CloudControllerContext.getInstance().persist();
 
         if (log.isInfoEnabled()) {
