@@ -60,14 +60,20 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         try {
             initializeApplicationEventReceiver();
 
-            String scriptPath = getApplicationsPath() + "/single-cartridge/scripts/mock/deploy.sh";
-            executeCommand(scriptPath);
-
-            assertApplicationActivation("single-cartridge-app");
+            runApplicationTest("single-cartridge", "single-cartridge-app");
         } catch (Exception e) {
             log.error(e);
             assertTrue("An error occurred", false);
         }
+    }
+
+    private void runApplicationTest(String applicationId) {
+        runApplicationTest(applicationId, applicationId);
+    }
+
+    private void runApplicationTest(String applicationFolderName, String applicationId) {
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
+        assertApplicationActivation(applicationId);
     }
 
     /**

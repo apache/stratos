@@ -49,7 +49,7 @@ public class StratosTestServerManager extends TestServerManager {
     private final static String CARBON_ZIP = SampleApplicationsTest.class.getResource("/").getPath() +
             "/../../../distribution/target/apache-stratos-4.1.0-SNAPSHOT.zip";
     private final static int PORT_OFFSET = 0;
-    private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61616";
+    private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
     private static final String MOCK_IAAS_XML = "mock-iaas.xml";
 
     private ServerUtils serverUtils;
