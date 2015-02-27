@@ -2,11 +2,11 @@
    "networkPartition":[
       {
          "id":"network-partition-1",
-         "activeByDefault":"true"
+         "activeByDefault":"false"
       },
       {
          "id":"network-partition-2",
-         "activeByDefault":"false"
+         "activeByDefault":"true"
       }
    ]
 }
