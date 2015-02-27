@@ -56,7 +56,7 @@ public class KubernetesPartitionValidator implements PartitionValidator {
 
         String kubernetesClusterId = partition.getKubernetesClusterId();
         if (StringUtils.isBlank(kubernetesClusterId)) {
-            String message = "Kubernetes cluster id not found in partition: [partition-id] " + partition.getId();
+            String message = "Kubernetes cluster not defined in partition: [partition-id] " + partition.getId();
             log.error(message);
             throw new InvalidPartitionException(message);
         }

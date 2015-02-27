@@ -26,7 +26,6 @@ import java.util.List;
 public class NetworkPartitionBean {
 
     private String id;
-    private String kubernetesClusterId;
     private List<PartitionBean> partitions;
 
     public String getId() {
@@ -35,14 +34,6 @@ public class NetworkPartitionBean {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getKubernetesClusterId() {
-        return kubernetesClusterId;
-    }
-
-    public void setKubernetesClusterId(String kubernetesClusterId) {
-        this.kubernetesClusterId = kubernetesClusterId;
     }
 
     public List<PartitionBean> getPartitions() {

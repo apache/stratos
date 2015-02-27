@@ -32,8 +32,6 @@ import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
 import org.apache.stratos.cloud.controller.exception.*;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
-import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
@@ -42,7 +40,6 @@ import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.event.topology.MemberReadyToShutdownEvent;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -1501,10 +1498,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     }
                 }
             }
-            
-            // overwrites partitions' kubernetes cluster ids with network partition's kubernetes cluster id
-            CloudControllerServiceUtil.overwritesPartitionsKubernetesClusterIdsWithNetworkPartitionKubernetesClusterId(networkPartition);
-            
+
             // adding network partition to CC-Context
             CloudControllerContext.getInstance().addNetworkPartition(networkPartition);
             // persisting CC-Context

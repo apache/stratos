@@ -19,22 +19,11 @@
 
 package org.apache.stratos.cloud.controller.services.impl;
 
-import java.util.List;
-import java.util.Properties;
-
 import com.google.common.net.InetAddresses;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.domain.NetworkPartition;
-import org.apache.stratos.cloud.controller.domain.NetworkPartitionRef;
-import org.apache.stratos.cloud.controller.domain.Partition;
-import org.apache.stratos.cloud.controller.domain.PartitionRef;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.InvalidDeploymentPolicyException;
 import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderException;
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
@@ -45,6 +34,8 @@ import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+
+import java.util.Properties;
 
 /**
  * Cloud controller service utility methods.
@@ -235,28 +226,5 @@ public class CloudControllerServiceUtil {
 				}
 			}
 		}
-    }
-    
-    /**
-     * Overwrites partition's kubernetes cluster ids with network partition's kubernetes cluster ids.
-     * @param networkPartitions
-     */
-    public static void overwritesPartitionsKubernetesClusterIdsWithNetworkPartitionKubernetesClusterId(NetworkPartition networkPartition) {
-
-    	if(StringUtils.isNotBlank(networkPartition.getKubernetesClusterId())) {
-    		Partition[] partitions = networkPartition.getPartitions();
-    		if(partitions != null) {
-    			for(Partition partition : partitions) {
-    				if(partition != null) {
-    					if(log.isInfoEnabled()) {
-    						log.info(String.format("Overwriting partition's kubernetes cluster id: " +
-    								"[network-partition-id] %s [partition-id] %s [kubernetes-cluster-id] %s", 
-    								networkPartition.getId(), partition.getId(), networkPartition.getKubernetesClusterId()));
-    					}
-    					partition.setKubernetesClusterId(networkPartition.getKubernetesClusterId());
-    				}
-    			}
-    		}
-    	}
     }
 }

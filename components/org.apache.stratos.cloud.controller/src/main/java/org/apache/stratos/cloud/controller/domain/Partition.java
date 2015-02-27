@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
 
 import java.io.Serializable;
 
@@ -28,6 +29,9 @@ import java.io.Serializable;
 public class Partition implements Serializable {
 
     private static final long serialVersionUID = 3725971287992010720L;
+
+    private static final String KUBERNETES_CLUSTER = "cluster";
+
     /**
      * provider should match with an IaasProvider type.
      */
@@ -35,7 +39,6 @@ public class Partition implements Serializable {
     private String id;
     private String description;
     private boolean isPublic;
-    private String kubernetesClusterId;
     private Properties properties = new Properties();
 
     /**
@@ -121,6 +124,14 @@ public class Partition implements Serializable {
         this.provider = provider;
     }
 
+    public String getKubernetesClusterId() {
+        Property property = properties.getProperty(KUBERNETES_CLUSTER);
+        if(property != null) {
+            return property.getValue();
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Partition [id=" + id + ", description=" + description + ", isPublic=" + isPublic
@@ -138,13 +149,5 @@ public class Partition implements Serializable {
     @Override
     public int hashCode() {
         return this.id.hashCode();
-    }
-
-    public String getKubernetesClusterId() {
-        return kubernetesClusterId;
-    }
-
-    public void setKubernetesClusterId(String kubernetesClusterId) {
-        this.kubernetesClusterId = kubernetesClusterId;
     }
 }

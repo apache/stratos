@@ -1598,10 +1598,9 @@ public class RestCommandLineService {
 
             RowMapper<NetworkPartitionBean> networkPartitionMapper = new RowMapper<NetworkPartitionBean>() {
                 public String[] getData(NetworkPartitionBean partition) {
-                    String[] data = new String[3];
+                    String[] data = new String[2];
                     data[0] = partition.getId();
-                    data[1] = (partition.getKubernetesClusterId() != null) ? partition.getKubernetesClusterId() : "";
-                    data[2] = String.valueOf(partition.getPartitions().size());;
+                    data[1] = String.valueOf(partition.getPartitions().size());;
                     return data;
                 }
             };
@@ -1610,7 +1609,7 @@ public class RestCommandLineService {
             partitions = networkPartitionsList.toArray(partitions);
 
             System.out.println("Network partitions found:");
-            CliUtils.printTable(partitions, networkPartitionMapper, "PartitionId", "Kubernetes Cluster Id", "Partitions");
+            CliUtils.printTable(partitions, networkPartitionMapper, "Network Partition ID", "Number of Partitions");
         } catch (Exception e) {
             String message = "Error in listing network partitions";
             printError(message, e);
