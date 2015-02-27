@@ -270,7 +270,7 @@ public class MemberContext implements Serializable {
         return kubernetesPodId;
     }
 
-    public void setKubernetesPodLabel(String kubernetesPodName) {
+    public void setKubernetesPodName(String kubernetesPodName) {
         this.kubernetesPodName = kubernetesPodName;
     }
 
