@@ -31,12 +31,12 @@ public interface KubernetesAPIClientInterface {
 	/**
 	 * Create pod.
 	 * @param podId
-	 * @param podName
+	 * @param podLabel
 	 * @param dockerImage
 	 * @param ports
 	 * @throws KubernetesClientException
 	 */
-	public void createPod(String podId, String podName, String dockerImage, List<Port> ports,
+	public void createPod(String podId, String podLabel, String dockerImage, List<Port> ports,
                           EnvironmentVariable[] environmentVariables)
 			throws KubernetesClientException;
 
@@ -80,11 +80,11 @@ public interface KubernetesAPIClientInterface {
 	 * @throws KubernetesClientException
 	 */
 	public void createReplicationController(String replicationControllerId,
-															 String replicationControllerName,
-															 String dockerImage,
-															 List<Port> ports,
-															 EnvironmentVariable[] environmentVariables,
-															 int replicas) throws KubernetesClientException;
+                                            String replicationControllerName,
+                                            String dockerImage,
+                                            List<Port> ports,
+                                            EnvironmentVariable[] environmentVariables,
+                                            int replicas) throws KubernetesClientException;
 
 	/**
 	 * Get a Replication Controller Info
@@ -118,13 +118,14 @@ public interface KubernetesAPIClientInterface {
 	/**
 	 * Create service.
 	 * @param serviceId
-	 * @param serviceName
+	 * @param serviceLabel
 	 * @param servicePort
 	 * @param containerPortName
-	 * @throws KubernetesClientException
+	 * @param publicIPs
+     * @throws KubernetesClientException
 	 */
-	public void createService(String serviceId, String serviceName, int servicePort,
-								 String containerPortName) throws KubernetesClientException;
+	public void createService(String serviceId, String serviceLabel, int servicePort,
+                              String containerPortName, String[] publicIPs) throws KubernetesClientException;
 
 	/**
 	 * Get the Service with the given id.
