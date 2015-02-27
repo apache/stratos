@@ -236,6 +236,7 @@ public class StratosApplication extends CommandLineApplication<StratosCommandCon
 
         command = new DeleteApplicationSignupCommand();
         commands.put(command.getName(),command);
+
         command = new AddDeploymentPolicyCommand();
         commands.put(command.getName(), command);
 
