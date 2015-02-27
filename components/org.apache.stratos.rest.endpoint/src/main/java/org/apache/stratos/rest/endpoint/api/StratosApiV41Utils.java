@@ -1008,6 +1008,12 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
+            if (applicationPolicy == null) {
+                String message = String.format("Application policy cannot be null : [application-id] %s. "
+                		+ "Are you passing application policy?", applicationId);
+                log.error(message);
+                throw new RestAPIException(message);
+			}
 
             ApplicationBean applicationBean = getApplication(applicationId);
             int tenantId = CarbonContext.getThreadLocalCarbonContext().getTenantId();
