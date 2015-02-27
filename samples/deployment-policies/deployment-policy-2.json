@@ -1,0 +1,29 @@
+{
+   "id": "deployment-policy-2",
+   "networkPartition": [
+      {
+         "id": "network-partition-1",
+         "partitionAlgo": "one-after-another",
+         "partitions": [
+            {
+               "id": "partition-1",
+               "max": 5
+            }
+         ]
+      },
+      {
+         "id": "network-partition-2",
+         "partitionAlgo": "round-robin",
+         "partitions": [
+            {
+               "id": "network-partition-2-partition-1",
+               "max": 5
+            },
+            {
+               "id": "network-partition-2-partition-2",
+               "max": 5
+            }
+         ]
+      }
+   ]
+}
