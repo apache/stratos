@@ -1,24 +1,25 @@
-{  
-   "applicationId":"tomcat",
-   "alias":"tomcat",
-   "multiTenant":false,
-   "components":{  
-      "cartridges":[  
-         {  
-            "type":"tomcat",
+{
+    "applicationId": "tomcat",
+    "alias": "tomcat",
+    "multiTenant": false,
+    "components": {
+        "cartridges": [
+            {
+                "type": "tomcat",
                 "cartridgeMin": 1,
                 "cartridgeMax": 5,
-				"subscribableInfo":{  
-               	"alias":"tomcat-1",
-               	"autoscalingPolicy":"autoscaling-policy-1",
-                "artifactRepository":{
-                   "privateRepo":false,
-                   "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
-                   "repoUsername":"",
-                   "repoPassword":""
+                "subscribableInfo": {
+                    "alias": "tomcat-1",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-tomcat-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
                 }
             }
-         }
-      ]
-   }
+        ]
+    }
 }

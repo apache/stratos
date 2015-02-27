@@ -1,11 +1,11 @@
 {
     "clusterId": "kubernetes-cluster-1",
-    "description": "Kubernetes CoreOS cluster",
+    "description": "Kubernetes Cluster 1",
     "kubernetesMaster": {
-        "hostId": "KubHostMaster1",
-        "hostname": "master.dev.kubernetes.example.org",
-        "privateIPAddress": "172.17.8.100",
-        "publicIPAddress": "172.17.8.100",
+        "hostId": "master",
+        "hostname": "master.dev.kubernetes.org",
+        "privateIPAddress": "172.17.8.101",
+        "publicIPAddress": "172.17.8.101",
         "property": [
         ]
     },
@@ -15,16 +15,8 @@
     },
     "kubernetesHosts": [
         {
-            "hostId": "KubHostSlave1",
-            "hostname": "slave1.dev.kubernetes.example.org",
-            "privateIPAddress": "172.17.8.101",
-            "publicIPAddress": "172.17.8.101",
-            "property": [
-            ]
-        },
-        {
-            "hostId": "KubHostSlave2",
-            "hostname": "slave2.dev.kubernetes.example.org",
+            "hostId": "minion-1",
+            "hostname": "minion-1.dev.kubernetes.org",
             "privateIPAddress": "172.17.8.102",
             "publicIPAddress": "172.17.8.102",
             "property": [
