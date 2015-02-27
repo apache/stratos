@@ -97,6 +97,7 @@
                 </xs:complexType>
             </xs:element>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:element name="getDeploymentPolicies">
                 <xs:complexType>
                     <xs:sequence></xs:sequence>
@@ -317,11 +318,17 @@
                     <xs:sequence>
                         <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax21:CartridgeNotFoundException"/>
                     </xs:sequence>
+=======
+            <xs:element name="getDeploymentPolicies">
+                <xs:complexType>
+                    <xs:sequence></xs:sequence>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceCloudControllerException">
+            <xs:element name="getDeploymentPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax21:CloudControllerException"/>
                     </xs:sequence>
                 </xs:complexType>
@@ -732,6 +739,37 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="kubernetesHostId" nillable="true" type="xs:string"></xs:element>
+=======
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax224:DeploymentPolicy"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax222:InvalidCartridgeDefinitionException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceInvalidIaasProviderException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidIaasProviderException" nillable="true" type="ax222:InvalidIaasProviderException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax222:CartridgeAlreadyExistsException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax224:CartridgeConfig"></xs:element>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -764,7 +802,18 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="getServiceGroupCartridges">
+=======
+            <xs:element name="CloudControllerServiceInvalidCartridgeTypeException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="InvalidCartridgeTypeException" nillable="true" type="ax222:InvalidCartridgeTypeException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="removeCartridge">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
@@ -936,6 +985,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="getServiceGroupDependenciesResponse">
                 <xs:complexType>
                     <xs:sequence>
@@ -951,6 +1001,9 @@
                 </xs:complexType>
             </xs:element>
             <xs:element name="validatePartition">
+=======
+            <xs:element name="CloudControllerServiceInvalidKubernetesClusterException">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="partition" nillable="true" type="ax26:Partition"/>
@@ -1027,6 +1080,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="validateDeploymentPolicy">
                 <xs:complexType>
                     <xs:sequence>
@@ -1062,6 +1116,8 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+=======
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             <xs:element name="CloudControllerServiceInvalidServiceGroupException">
                 <xs:complexType>
                     <xs:sequence>
@@ -1109,6 +1165,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="return" nillable="true" type="ax224:Dependencies"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeNotFoundException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeNotFoundException" nillable="true" type="ax222:CartridgeNotFoundException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCloudControllerException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CloudControllerException" nillable="true" type="ax222:CloudControllerException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1476,9 +1546,10 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addServiceGroup">
+            <xs:element name="CloudControllerServiceUnregisteredClusterException">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                         <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
@@ -1522,22 +1593,30 @@
             </xs:element>
             <xs:element name="getServiceGroup">
 >>>>>>> fixing merging issues
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+=======
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax222:UnregisteredClusterException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupResponse">
+            <xs:element name="unregisterService">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ServiceGroup"></xs:element>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
+            <xs:element name="startInstance">
                 <xs:complexType>
                     <xs:sequence>
+                        <xs:element minOccurs="0" name="instanceContext" nillable="true" type="ax224:InstanceContext"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="startInstanceResponse">
+                <xs:complexType>
+                    <xs:sequence>
+<<<<<<< HEAD
                         <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax222:UnregisteredClusterException"></xs:element>
 <<<<<<< HEAD
 >>>>>>> fixing STRATOS-1214 - deployement policy changes
@@ -1587,12 +1666,16 @@
 >>>>>>> fixing STRATOS-1214 - deployement policy changes
 =======
 >>>>>>> fixing merging issues
+=======
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:MemberContext"></xs:element>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="unregisterService">
+            <xs:element name="CloudControllerServiceInvalidMemberException">
                 <xs:complexType>
                     <xs:sequence>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -1613,6 +1696,23 @@
 =======
                         <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
 >>>>>>> fixing merging issues
+=======
+                        <xs:element minOccurs="0" name="InvalidMemberException" nillable="true" type="ax222:InvalidMemberException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="terminateInstance">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="memberId" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="servicegroup" nillable="true" type="ax224:ServiceGroup"></xs:element>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -1658,6 +1758,7 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
+<<<<<<< HEAD
             <xs:element name="updateKubernetesMaster">
                 <xs:complexType>
                     <xs:sequence>
@@ -1683,6 +1784,22 @@
 >>>>>>> fixing STRATOS-1214 - deployement policy changes
 >>>>>>> fixing STRATOS-1214 - deployement policy changes
 =======
+=======
+            <xs:element name="getServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax224:ServiceGroup"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             <xs:element name="registerService">
                 <xs:complexType>
                     <xs:sequence>
@@ -1771,13 +1888,17 @@
             <xs:complexType name="DeploymentPolicyNotExistsException">
                 <xs:sequence></xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
             <xs:complexType name="InvalidMemberException">
 >>>>>>> fixing merging issues
+=======
+            <xs:complexType name="InvalidCartridgeDefinitionException">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidCartridgeTypeException">
+            <xs:complexType name="InvalidIaasProviderException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -1796,6 +1917,7 @@
                 <xs:sequence></xs:sequence>
 >>>>>>> Add deployment policy
             </xs:complexType>
+<<<<<<< HEAD
 =======
 >>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
             <xs:complexType name="CartridgeDefinitionNotExistsException">
@@ -1815,13 +1937,17 @@
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
+=======
+            <xs:complexType name="CartridgeAlreadyExistsException">
+                <xs:sequence></xs:sequence>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             </xs:complexType>
-            <xs:complexType name="InvalidIaasProviderException">
+            <xs:complexType name="CartridgeDefinitionNotExistsException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="CartridgeDefinitionNotExistsException">
+            <xs:complexType name="InvalidCartridgeTypeException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
@@ -1902,6 +2028,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="UnregisteredClusterException">
 =======
 =======
@@ -1926,12 +2053,15 @@
                 <xs:sequence></xs:sequence>
             </xs:complexType>
 >>>>>>> fixing merging issues
+=======
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             <xs:complexType name="InvalidKubernetesClusterException">
 >>>>>>> Add deployment policy
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="ApplicationClusterRegistrationException">
@@ -1941,10 +2071,14 @@
 =======
             <xs:complexType name="CartridgeNotFoundException">
 >>>>>>> fixing merging issues
+=======
+            <xs:complexType name="InvalidServiceGroupException">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
             <xs:complexType name="ClusterInstanceCreationException">
@@ -1954,9 +2088,19 @@
 =======
             <xs:complexType name="InvalidServiceGroupException">
 >>>>>>> fixing merging issues
+=======
+            <xs:complexType name="CartridgeNotFoundException">
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"/>
                 </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="CloudControllerException">
+                <xs:complexContent>
+                    <xs:extension base="xs:RuntimeException">
+                        <xs:sequence></xs:sequence>
+                    </xs:extension>
+                </xs:complexContent>
             </xs:complexType>
             <xs:complexType name="InvalidClusterException">
                 <xs:sequence>
@@ -2018,6 +2162,11 @@
                 <xs:sequence></xs:sequence>
             </xs:complexType>
             <xs:complexType name="UnregisteredClusterException">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="InvalidMemberException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -2295,6 +2444,7 @@
                     <xs:element minOccurs="0" name="portUuid" nillable="true" type="xs:string"/>
                 </xs:sequence>
             </xs:complexType>
+<<<<<<< HEAD
             <xs:complexType name="FloatingNetworks">
                 <xs:sequence>
 <<<<<<< HEAD
@@ -2303,6 +2453,14 @@
             </xs:complexType>
             <xs:complexType name="FloatingNetwork">
 =======
+=======
+            <xs:complexType name="Dependencies">
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="killBehaviour" nillable="true" type="xs:string"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
+                </xs:sequence>
+            </xs:complexType>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             <xs:complexType name="InstanceContext">
 >>>>>>> fixing merging issues
                 <xs:sequence>
@@ -2380,6 +2538,7 @@
                 </xs:sequence>
             </xs:complexType>
 <<<<<<< HEAD
+<<<<<<< HEAD
             <xs:complexType name="Volume">
                 <xs:sequence>
 <<<<<<< HEAD
@@ -2410,6 +2569,8 @@
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="startupOrders" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
+=======
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
             <xs:complexType name="CartridgeInfo">
                 <xs:sequence>
 >>>>>>> fixing merging issues
@@ -2958,17 +3119,26 @@
     <wsdl:message name="removeCartridgeRequest">
         <wsdl:part name="parameters" element="ns:removeCartridge"/>
     </wsdl:message>
+<<<<<<< HEAD
     <wsdl:message name="addCartridgeRequest">
         <wsdl:part name="parameters" element="ns:addCartridge"/>
     </wsdl:message>
     <wsdl:message name="CloudControllerServiceCartridgeAlreadyExistsException">
         <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeAlreadyExistsException"/>
     </wsdl:message>
+=======
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
     <wsdl:message name="getNetworkPartitionsRequest">
         <wsdl:part name="parameters" element="ns:getNetworkPartitions"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getNetworkPartitionsResponse">
         <wsdl:part name="parameters" element="ns:getNetworkPartitionsResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="addCartridgeRequest">
+        <wsdl:part name="parameters" element="ns:addCartridge"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceCartridgeAlreadyExistsException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeAlreadyExistsException"></wsdl:part>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="getDeploymentPolicies">
@@ -3203,15 +3373,15 @@
             <wsdl:input message="ns:removeCartridgeRequest" wsaw:Action="urn:removeCartridge"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:removeCartridgeCloudControllerServiceInvalidCartridgeTypeException"/>
         </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"></wsdl:input>
+            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"></wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <wsdl:input message="ns:addCartridgeRequest" wsaw:Action="urn:addCartridge"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"/>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidIaasProviderException"/>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeAlreadyExistsException" name="CloudControllerServiceCartridgeAlreadyExistsException" wsaw:Action="urn:addCartridgeCloudControllerServiceCartridgeAlreadyExistsException"/>
-        </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"></wsdl:input>
-            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"></wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
@@ -3742,15 +3912,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap:operation soapAction="urn:getNetworkPartitions" style="document"></soap:operation>
-            <wsdl:input>
-                <soap:body use="literal"></soap:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"></soap:body>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap:operation soapAction="urn:addCartridge" style="document"/>
             <wsdl:input>
@@ -3765,6 +3926,15 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap:operation soapAction="urn:getNetworkPartitions" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
@@ -4291,15 +4461,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"/>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"></soap12:operation>
-            <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap12:operation soapAction="urn:addCartridge" style="document"/>
             <wsdl:input>
@@ -4314,6 +4475,15 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"/>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
@@ -4683,6 +4853,7 @@
             </wsdl:input>
         </wsdl:operation>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <wsdl:operation name="addCartridge">
             <http:operation location="addCartridge"/>
             <wsdl:input>
@@ -4691,6 +4862,14 @@
         </wsdl:operation>
 =======
 >>>>>>> adding getApplicationPolicy web service, rest API and updating AS CC wsdls
+=======
+        <wsdl:operation name="addCartridge">
+            <http:operation location="addCartridge"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
+>>>>>>> fixing axis2 fault - property kubernetesPodLabel is not readable in the bean class
         <wsdl:operation name="getNetworkPartitions">
             <http:operation location="getNetworkPartitions"></http:operation>
             <wsdl:input>
@@ -4699,12 +4878,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="addCartridge">
-            <http:operation location="addCartridge"></http:operation>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
-            </wsdl:input>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
