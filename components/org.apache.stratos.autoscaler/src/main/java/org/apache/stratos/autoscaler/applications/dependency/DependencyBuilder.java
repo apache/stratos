@@ -188,8 +188,8 @@ public class DependencyBuilder {
                         String id = getClusterFromStartupOrder(string);
                         //getting the cluster-id from cluster alias
 
-                        if(component.getClusterDataForType().containsKey(id)) {
-                            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForType().get(id);
+                        if(component.getClusterDataForAlias().containsKey(id)) {
+                            ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForAlias().get(id);
                             scalingDependencies.add(clusterDataHolder.getClusterId());
                         } else{
 

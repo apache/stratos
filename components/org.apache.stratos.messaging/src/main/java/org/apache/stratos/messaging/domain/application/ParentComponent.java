@@ -405,7 +405,11 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
 		return typeToClusterDataMap;
 	}
 
-	/**
+    public Map<String, ClusterDataHolder> getClusterDataForAlias() {
+        return aliasToClusterDataMap;
+    }
+
+    /**
 	 * Setter for alias to Cluster Data map
 	 *
 	 * @param typeToClusterData Map, key = alias given to the cluster, value =  ClusterData object
