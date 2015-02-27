@@ -507,8 +507,12 @@ public class CloudControllerContext implements Serializable {
 
     public void addKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
         kubClusterIdToKubClusterContextMap.put(
-                kubernetesClusterContext.getKubernetesClusterId(),
-                kubernetesClusterContext);
+                kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
+    }
+
+    public void updateKubernetesClusterContext(KubernetesClusterContext kubernetesClusterContext) {
+        kubClusterIdToKubClusterContextMap.put(
+                kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
     }
     
     /**

@@ -24,7 +24,6 @@ import org.apache.stratos.common.domain.NameValuePair;
 
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * Holds information about a Member.
@@ -271,7 +270,7 @@ public class MemberContext implements Serializable {
         return kubernetesPodId;
     }
 
-    public void setKubernetesPodName(String kubernetesPodName) {
+    public void setKubernetesPodLabel(String kubernetesPodName) {
         this.kubernetesPodName = kubernetesPodName;
     }
 

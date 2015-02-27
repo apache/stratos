@@ -35,8 +35,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
+import java.io.IOException;
 import java.net.Socket;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,70 +45,93 @@ import java.util.List;
  * Please ssh into the kubernetes custer and pull the docker image before running
  * the live tests. Otherwise tests would fail when running for the first time on a fresh
  * kubernetes cluster.
- *
+ * <p/>
  * Caution!
  * At the end of the tests it will remove all the replication controllers, pods and services
  * available in the given kubernetes environment.
  */
 @Category(org.apache.stratos.kubernetes.client.LiveTests.class)
-public class KubernetesApiClientLiveTest extends TestCase{
+public class KubernetesApiClientLiveTest extends TestCase {
 
     private static final Log log = LogFactory.getLog(KubernetesApiClientLiveTest.class);
 
-    private static final int DEFAULT_CONTAINER_PORT = 6379; //80;
-    private static final int SERVICE_PORT = 4500;
-    private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.100";
+    private static final String DEFAULT_KUBERNETES_MASTER_IP = "172.17.8.101";
     private static final int KUBERNETES_API_PORT = 8080;
-    private static final String DEFAULT_DOCKER_IMAGE =  "gurpartap/redis"; //"stratos/php:4.1.0-alpha";
+
+    private static final String DEFAULT_DOCKER_IMAGE = "fnichol/uhttpd";
+    private static final int DEFAULT_CONTAINER_PORT = 80;
+    private static final int SERVICE_PORT = 4500;
     private static final int POD_ACTIVATION_WAIT_TIME = 10000; // 10 seconds
+
+    private static final String KUBERNETES_API_ENDPOINT = "kubernetes.api.endpoint";
+    private static final String MINION_PUBLIC_IPS = "minion.public.ips";
+    private static final String DOCKER_IMAGE = "docker.image";
+    private static final String CONTAINER_PORT = "container.port";
+    private static final String TEST_SERVICE_SOCKET = "test.service.socket";
+    private static final String TEST_POD_ACTIVATION = "test.pod.activation";
 
     private KubernetesApiClient client;
     private String dockerImage;
     private String endpoint;
     private int containerPort;
     private boolean testPodActivation;
-    private boolean testProxyServiceSocket;
+    private boolean testServiceSocket;
+    private String[] minionPublicIPs = { "172.17.8.102" };
+    private List<String> podIdList = new ArrayList<String>();
+    private List<String> serviceIdList = new ArrayList<String>();
 
     @BeforeClass
     public void setUp() {
         log.info("Setting up live test...");
-        endpoint = System.getProperty("kubernetes.api.endpoint");
+        endpoint = System.getProperty(KUBERNETES_API_ENDPOINT);
         if (endpoint == null) {
-            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT + "/api/" + KubernetesConstants.KUBERNETES_API_VERSION + "/";
+            endpoint = "http://" + DEFAULT_KUBERNETES_MASTER_IP + ":" + KUBERNETES_API_PORT + "/api/"
+                    + KubernetesConstants.KUBERNETES_API_VERSION + "/";
         }
-        log.info("Kubernetes endpoint: " + endpoint);
+        log.info(KUBERNETES_API_ENDPOINT + ": " + endpoint);
         client = new KubernetesApiClient(endpoint);
 
-        dockerImage = System.getProperty("docker.image");
+        dockerImage = System.getProperty(DOCKER_IMAGE);
         if (dockerImage == null) {
             dockerImage = DEFAULT_DOCKER_IMAGE;
         }
-        log.info("Docker image: " + dockerImage);
+        log.info(DOCKER_IMAGE + ": " + dockerImage);
 
-        String containerPortStr = System.getProperty("container.port");
-        if(StringUtils.isNotBlank(containerPortStr)) {
+        String containerPortStr = System.getProperty(CONTAINER_PORT);
+        if (StringUtils.isNotBlank(containerPortStr)) {
             containerPort = Integer.parseInt(containerPortStr);
         } else {
             containerPort = DEFAULT_CONTAINER_PORT;
         }
+        log.info(CONTAINER_PORT + ": " + containerPort);
 
-        String testPodActivationStr = System.getProperty("test.pod.activation");
-        if(StringUtils.isNotBlank(testPodActivationStr)) {
+        testPodActivation = false;
+        String testPodActivationStr = System.getProperty(TEST_POD_ACTIVATION);
+        if (StringUtils.isNotBlank(testPodActivationStr)) {
             testPodActivation = Boolean.parseBoolean(testPodActivationStr);
         }
+        log.info(TEST_POD_ACTIVATION + ": " + testPodActivation);
 
-        String testProxyServiceSocketStr = System.getProperty("test.proxy.service.socket");
-        if(StringUtils.isNotBlank(testProxyServiceSocketStr)) {
-            testProxyServiceSocket = Boolean.parseBoolean(testProxyServiceSocketStr);
+        testServiceSocket = false;
+        String testServiceSocketStr = System.getProperty(TEST_SERVICE_SOCKET);
+        if (StringUtils.isNotBlank(testServiceSocketStr)) {
+            testServiceSocket = Boolean.parseBoolean(testServiceSocketStr);
         }
-        log.info("Live test setup completed");
+        log.info(TEST_SERVICE_SOCKET + ": " + testServiceSocket);
+
+        String minionPublicIPsStr = System.getProperty(MINION_PUBLIC_IPS);
+        if(StringUtils.isNotBlank(minionPublicIPsStr)) {
+            minionPublicIPs = minionPublicIPsStr.split(",");
+        }
+        log.info(MINION_PUBLIC_IPS + ": " + minionPublicIPsStr);
+        log.info("Kubernetes live test setup completed");
     }
 
     @AfterClass
     public void tearDown() {
         log.info("Cleaning kubernetes resources...");
-        deletePods();
         deleteServices();
+        deletePods();
         log.info("Kubernetes resources cleaned");
     }
 
@@ -116,42 +139,11 @@ public class KubernetesApiClientLiveTest extends TestCase{
     public void testPodCreation() throws Exception {
         log.info("Testing pod creation...");
 
-        String podId = "stratos-test-pod-1";
-        String podName = "stratos-test-pod";
-        String containerPortName = "http-1";
+        createPod("stratos-test-pod-1", "stratos-test-pod", "http-1");
+        createPod("stratos-test-pod-2", "stratos-test-pod", "http-1");
 
-        log.info("Creating pod: [pod-id] " + podId);
-        List<Port> ports = createPorts(containerPortName);
-        client.createPod(podId, podName, dockerImage, ports, null);
-
-        Thread.sleep(2000);
-        Pod pod = client.getPod(podId);
-        assertNotNull(pod);
-        log.info("Pod created successfully: [pod-id] " + podId);
-
-        if(testPodActivation) {
-            log.info("Waiting pod status to be changed to running: [pod-id] " + podId);
-            Thread.sleep(POD_ACTIVATION_WAIT_TIME);
-            pod = client.getPod(podId);
-            assertNotNull(pod);
-            assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
-            log.info("Pod state changed to running: [pod-id]" + pod.getId());
-        }
-
-        log.info("Deleting pod: " + pod.getId());
-        client.deletePod(pod.getId());
-        assertNull(client.getPod(pod.getId()));
-        log.info("Pod deleted successfully: " + pod.getId());
-    }
-
-    private List<Port> createPorts(String containerPortName) {
-        List<Port> ports = new ArrayList<Port>();
-        Port port = new Port();
-        port.setName(containerPortName);
-        port.setContainerPort(containerPort);
-        port.setHostPort(SERVICE_PORT);
-        ports.add(port);
-        return ports;
+        deletePod("stratos-test-pod-1");
+        deletePod("stratos-test-pod-2");
     }
 
     @Test
@@ -167,97 +159,130 @@ public class KubernetesApiClientLiveTest extends TestCase{
     public void testServiceCreation() throws Exception {
         log.info("Testing service creation...");
 
-        String podId = "stratos-test-pod-1";
-        String podName = "stratos-test-pod";
-        String serviceId = "tomcat-1-tomcat-domain-1";
-        String serviceName = serviceId;
+        String serviceId = "tomcat-domain-1";
+        String serviceName = "stratos-test-pod";
         String containerPortName = "http-1";
 
-        String masterPublicIp = new URL(endpoint).getHost();
+        createService(serviceId, serviceName, SERVICE_PORT, containerPortName, minionPublicIPs);
 
-        log.info("Creating pod...");
+        createPod("stratos-test-pod-1", serviceName, containerPortName);
+        createPod("stratos-test-pod-2", serviceName, containerPortName);
+
+        if (testServiceSocket) {
+            // test service accessibility
+            log.info(String.format("Connecting to service: [portal] %s:%d", minionPublicIPs[0], SERVICE_PORT));
+            sleep(4000);
+            Socket socket = new Socket(minionPublicIPs[0], SERVICE_PORT);
+            assertTrue(socket.isConnected());
+            log.info(String.format("Connecting to service successful: [portal] %s:%d", minionPublicIPs[0], SERVICE_PORT));
+        }
+
+        deleteService(serviceId);
+
+        deletePod("stratos-test-pod-1");
+        deletePod("stratos-test-pod-2");
+    }
+
+    private void createPod(String podId, String podName, String containerPortName) throws KubernetesClientException {
+        log.info("Creating pod: [pod] " + podId);
         List<Port> ports = createPorts(containerPortName);
         client.createPod(podId, podName, dockerImage, ports, null);
+        podIdList.add(podId);
 
-        Thread.sleep(2000);
-        Pod podCreated = client.getPod(podId);
-        assertNotNull(podCreated);
-        log.info("Pod created successfully");
+        sleep(2000);
+        Pod pod = client.getPod(podId);
+        assertNotNull(pod);
+        log.info("Pod created successfully: [pod] " + podId);
 
+        if (testPodActivation) {
+            boolean activated = false;
+            long startTime = System.currentTimeMillis();
+            while(!activated) {
+                if((System.currentTimeMillis() - startTime) > POD_ACTIVATION_WAIT_TIME) {
+                    log.info(String.format("Pod did not activate within %d seconds: [pod] %s",
+                            POD_ACTIVATION_WAIT_TIME/1000, podId));
+                    break;
+                }
+
+                log.info("Waiting pod status to be changed to running: [pod] " + podId);
+                sleep(2000);
+                pod = client.getPod(podId);
+                if((pod != null) && (pod.getCurrentState().getStatus().equals(KubernetesConstants.POD_STATUS_RUNNING))) {
+                    activated = true;
+                    log.info("Pod state changed to running: [pod]" + pod.getId());
+                }
+            }
+
+            assertNotNull(pod);
+            assertEquals(KubernetesConstants.POD_STATUS_RUNNING, pod.getCurrentState().getStatus());
+        }
+    }
+
+    private void deletePod(String podId) throws KubernetesClientException {
+        log.info("Deleting pod: " + podId);
+        client.deletePod(podId);
+        podIdList.remove(podId);
+
+        assertNull(client.getPod(podId));
+        log.info("Pod deleted successfully: " + podId);
+    }
+
+    public void deletePods() {
+        try {
+            for(String podId : podIdList) {
+                deletePod(podId);
+            }
+        } catch (KubernetesClientException e) {
+            log.error("Could not delete pods", e);
+        }
+    }
+
+    private void createService(String serviceId, String serviceName, int servicePort, String containerPortName,
+                               String[] publicIPs) throws KubernetesClientException, InterruptedException, IOException {
         log.info("Creating service...");
-        client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName);
+        client.createService(serviceId, serviceName, servicePort, containerPortName, publicIPs);
+        serviceIdList.add(serviceId);
 
-        Thread.sleep(2000);
+        sleep(1000);
         Service service = client.getService(serviceId);
         assertNotNull(service);
         log.info("Service creation successful");
+    }
 
-        // test recreation using same id
-        log.info("Creating a service with an existing id...");
-        client.createService(serviceId, serviceName, SERVICE_PORT, containerPortName);
-
-        Thread.sleep(2000);
-        service = client.getService(serviceId);
-        assertNotNull(service);
-        log.info("Service re-creation with an existing id successful");
-
-        if(testProxyServiceSocket) {
-            // test service proxy is accessibility
-            log.info("Connecting to service proxy...");
-            Socket socket = new Socket(masterPublicIp, SERVICE_PORT);
-            assertTrue(socket.isConnected());
-            log.info("Connecting to service proxy successful");
-        }
-
-        log.info("Deleting service...");
+    private void deleteService(String serviceId) throws KubernetesClientException {
+        log.info(String.format("Deleting service: [service] %s", serviceId));
         client.deleteService(serviceId);
+        serviceIdList.remove(serviceId);
+
+        sleep(1000);
         assertNull(client.getService(serviceId));
-        log.info("Service deleted successfully");
+        log.info(String.format("Service deleted successfully: [service] %s", serviceId));
     }
 
     public void deleteServices() {
         try {
-            int count = 0;
-            List<Service> services = client.getServices();
-            while((services != null) && (services.size() > 0)) {
-                for (Service service : services) {
-                    if ((StringUtils.isNotBlank(service.getId())) && (!service.getId().contains("kubernetes"))) {
-                        client.deleteService(service.getId());
-                        count++;
-                        log.info(String.format("Service deleted: [service] %s", service.getId()));
-                    }
-                }
-                services = client.getServices();
-            }
-
-            if(count > 0) {
-                log.info(String.format("%d services deleted", count));
+            for(String serviceId : serviceIdList) {
+                deleteService(serviceId);
             }
         } catch (KubernetesClientException e) {
             log.error("Could not delete services", e);
         }
     }
 
-    public void deletePods() {
+    private void sleep(long time) {
         try {
-            int count = 0;
-            List<Pod> pods = client.getPods();
-            while ((pods != null) || (pods.size() > 0)) {
-                for (Pod pod : pods) {
-                    if (StringUtils.isNotBlank(pod.getId())) {
-                        client.deletePod(pod.getId());
-                        count++;
-                        log.info(String.format("Pod deleted: [pod] %s", pod.getId()));
-                    }
-                }
-                pods = client.getPods();
-            }
-
-            if(count > 0) {
-                log.info(String.format("%d pods deleted", count));
-            }
-        } catch (KubernetesClientException e) {
-            log.error("Could not delete pods", e);
+            Thread.sleep(time);
+        } catch (InterruptedException ignore) {
         }
+    }
+
+    private List<Port> createPorts(String containerPortName) {
+        List<Port> ports = new ArrayList<Port>();
+        Port port = new Port();
+        port.setName(containerPortName);
+        port.setContainerPort(containerPort);
+        port.setProtocol("tcp");
+        ports.add(port);
+        return ports;
     }
 }

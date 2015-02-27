@@ -207,12 +207,12 @@ public class KubernetesIaas extends Iaas {
             // Generate kubernetes service ports and update port mappings in cartridge
             updateKubernetesServicePorts(kubClusterContext, clusterContext.getClusterId(), cartridge);
 
-            // Create pod
-            KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
-            createPod(clusterContext, memberContext, kubernetesApi);
-
             // Create kubernetes services for port mappings
-            createKubernetesServices(kubernetesApi, clusterContext, kubClusterContext);
+            KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
+            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster);
+
+            // Create pod
+            createPod(clusterContext, memberContext, kubernetesApi);
 
             // Wait for pod status to be changed to running
             Pod pod = waitForPodToBeActivated(memberContext, kubernetesApi);
@@ -344,6 +344,7 @@ public class KubernetesIaas extends Iaas {
 
         String applicationId = memberContext.getApplicationId();
         String cartridgeType = memberContext.getCartridgeType();
+        String clusterId = memberContext.getClusterId();
         String memberId = memberContext.getMemberId();
 
         if (log.isInfoEnabled()) {
@@ -379,17 +380,17 @@ public class KubernetesIaas extends Iaas {
 
         // Create pod
         String podId = KubernetesIaasUtil.fixSpecialCharacters(memberId);
-        String podName = podId;
+        String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
 
-        kubernetesApi.createPod(podId, podName, dockerImage,
+        kubernetesApi.createPod(podId, podLabel, dockerImage,
                 KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings()), environmentVariables);
 
         // Add pod id to member context and persist
         memberContext.setKubernetesPodId(podId);
-        memberContext.setKubernetesPodName(podName);
+        memberContext.setKubernetesPodLabel(podLabel);
         CloudControllerContext.getInstance().persist();
 
         if (log.isInfoEnabled()) {
@@ -404,11 +405,11 @@ public class KubernetesIaas extends Iaas {
      *
      * @param kubernetesApi
      * @param clusterContext
-     * @param kubernetesClusterContext
+     * @param kubernetesCluster
      * @throws KubernetesClientException
      */
     private void createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
-                                                             KubernetesClusterContext kubernetesClusterContext) throws KubernetesClientException {
+                                                             KubernetesCluster kubernetesCluster) throws KubernetesClientException {
 
         String clusterId = clusterContext.getClusterId();
         String cartridgeType = clusterContext.getCartridgeType();
@@ -426,6 +427,22 @@ public class KubernetesIaas extends Iaas {
             kubernetesServices = new ArrayList<KubernetesService>();
         }
 
+        // Prepare minion public IP addresses
+        List<String> minionPublicIPs = new ArrayList<String>();
+        KubernetesHost[] kubernetesHosts = kubernetesCluster.getKubernetesHosts();
+        if((kubernetesHosts == null) || (kubernetesHosts.length == 0) || (kubernetesHosts[0] == null)) {
+            throw new RuntimeException("Hosts not found in kubernetes cluster: [cluster] "
+                    + kubernetesCluster.getClusterId());
+        }
+        for(KubernetesHost host : kubernetesHosts) {
+            if(host != null) {
+                minionPublicIPs.add(host.getPublicIPAddress());
+            }
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Minion public IPs: %s", minionPublicIPs));
+        }
+
         int i = kubernetesServices.size();
         for (PortMapping portMapping : cartridge.getPortMappings()) {
 
@@ -437,7 +454,7 @@ public class KubernetesIaas extends Iaas {
 
             // Service id = cluster id + kubernetes service seq number of cluster
             String serviceId = KubernetesIaasUtil.fixSpecialCharacters(clusterId + "-" + (++i));
-            String serviceName = serviceId;
+            String serviceLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Creating kubernetes service: [cluster] %s [service] %s " +
@@ -449,7 +466,8 @@ public class KubernetesIaas extends Iaas {
             // Create kubernetes service for port mapping
             int servicePort = portMapping.getKubernetesServicePort();
             String containerPortName = KubernetesIaasUtil.preparePortNameFromPortMapping(portMapping);
-            kubernetesApi.createService(serviceId, serviceName, servicePort, containerPortName);
+            kubernetesApi.createService(serviceId, serviceLabel, servicePort, containerPortName,
+                    minionPublicIPs.toArray(new String[minionPublicIPs.size()]));
 
             try {
                 Thread.sleep(1000);
@@ -510,6 +528,7 @@ public class KubernetesIaas extends Iaas {
             }
             if(servicePortsUpdated) {
                 // Persist service ports added to port mappings
+                CloudControllerContext.getInstance().updateKubernetesClusterContext(kubernetesClusterContext);
                 CloudControllerContext.getInstance().persist();
             }
         }
