@@ -73,7 +73,7 @@ public class MemberContext implements Serializable {
     private Properties properties;
     private NameValuePair[] dynamicPayload;
     private String kubernetesPodId;
-    private String kubernetesPodName;
+    private String kubernetesPodLabel;
 
     public MemberContext(String applicationId, String cartridgeType, String clusterId, String memberId) {
 
@@ -270,12 +270,12 @@ public class MemberContext implements Serializable {
         return kubernetesPodId;
     }
 
-    public void setKubernetesPodName(String kubernetesPodName) {
-        this.kubernetesPodName = kubernetesPodName;
+    public void setKubernetesPodLabel(String kubernetesPodLabel) {
+        this.kubernetesPodLabel = kubernetesPodLabel;
     }
 
-    public String getKubernetesPodName() {
-        return kubernetesPodName;
+    public String getKubernetesPodLabel() {
+        return kubernetesPodLabel;
     }
 
     @Override
@@ -296,7 +296,7 @@ public class MemberContext implements Serializable {
                 + ", lbClusterId=" + lbClusterId
                 + ", networkPartitionId=" + networkPartitionId
                 + ", kubernetesPodId=" + kubernetesPodId
-                + ", kubernetesPodName=" + kubernetesPodName
+                + ", kubernetesPodLabel=" + kubernetesPodLabel
                 + ", instanceMetadata=" + instanceMetadata
                 + ", properties=" + properties + "]";
     }
