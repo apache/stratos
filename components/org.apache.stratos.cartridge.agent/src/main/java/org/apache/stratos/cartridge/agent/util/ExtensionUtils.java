@@ -497,9 +497,11 @@ public class ExtensionUtils {
     public static boolean checkTopologyConsistency(String serviceName, String clusterId, String memberId) {
 
         Member activatedMember = getMemberFromTopology(serviceName, clusterId, memberId);
-        if (activatedMember.getStatus() != MemberStatus.Initialized) {
+        // this doesn't work for all events: if (activatedMember.getStatus() != MemberStatus.Initialized) {
+        if (activatedMember == null) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Member found in topology, but not in initialized state [member] %s", memberId));
+                //log.error(String.format("Member found in topology, but not in initialized state [member] %s", memberId));
+            	log.error(String.format("Member not found in topology [member] %s %s %s ", memberId, clusterId, serviceName));
             }
             return false;
         }
