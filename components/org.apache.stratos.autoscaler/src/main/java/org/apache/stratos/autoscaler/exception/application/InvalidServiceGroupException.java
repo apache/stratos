@@ -1,5 +1,4 @@
 /*
- *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -16,34 +15,32 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- *
-*/
-
-package org.apache.stratos.autoscaler.exception.kubernetes;
-
-/**
- * Exception class for handling non-existing Kubernetes cluster
  */
-public class NonExistingKubernetesClusterException extends Exception {
+package org.apache.stratos.autoscaler.exception.application;
+
+public class InvalidServiceGroupException extends Exception {
+
+
+    private static final long serialVersionUID = 2651280146514042590L;
 
     private String message;
 
-    public NonExistingKubernetesClusterException(String message, Exception exception){
-        super(message, exception);
+    public InvalidServiceGroupException(String msg) {
+        super(msg);
+        this.setMessage(msg);
+    }
+
+    public InvalidServiceGroupException(String msg, Exception ex) {
+        super(msg, ex);
+        this.setMessage(msg);
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
         this.message = message;
     }
 
-    public NonExistingKubernetesClusterException(Exception exception){
-        super(exception);
-    }
-
-    public NonExistingKubernetesClusterException(String msg){
-        super(msg);
-        this.message = msg;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
-    }
 }
