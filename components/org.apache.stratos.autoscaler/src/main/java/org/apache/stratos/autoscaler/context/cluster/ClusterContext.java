@@ -139,8 +139,14 @@ public class ClusterContext extends AbstractClusterContext {
 					}
 				}
 			}
-        	networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionRef.getId(),
-        			networkPartitionRef.getPartitionAlgo(), 0);
+        	
+        	if (networkPartitionRef == null) {
+        		 //Parent should have the partition specified
+        		networkPartitionContext = new ClusterLevelNetworkPartitionContext(clusterInstance.getNetworkPartitionId());
+			} else {
+				networkPartitionContext = new ClusterLevelNetworkPartitionContext(networkPartitionRef.getId(),
+						networkPartitionRef.getPartitionAlgo(), 0);
+			}
         }
 
         if (clusterInstance.getPartitionId() != null) {
@@ -196,7 +202,7 @@ public class ClusterContext extends AbstractClusterContext {
 
 		if (partitionRefs == null) {
 			String msg = "PartitionRefs are null in deployment policy for [cluster-alias] "
-					+ clusterInstance.getAlias();
+					+ AutoscalerUtil.getAliasFromClusterId(clusterId);
 			log.error(msg);
 			throw new PolicyValidationException(msg);
 		}
