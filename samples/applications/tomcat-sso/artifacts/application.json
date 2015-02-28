@@ -1,0 +1,38 @@
+{
+    "applicationId": "tomcat-sso",
+    "alias": "tomcat-sso",
+    "components": {
+
+        "cartridges": [
+            {
+                "type": "tomcat",
+                "cartridgeMin": 1,
+                "cartridgeMax": 1,
+                "subscribableInfo": {
+                    "alias": "mytomcat",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/chamilad/travelocity-sample",
+                        "repoUsername":"",
+                        "repoPassword":""
+                    }
+                }
+            },
+            {
+                "type": "wso2is",
+                "cartridgeMin": 1,
+                "cartridgeMax": 1,
+                "subscribableInfo": {
+                    "alias": "mywso2is",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "deployment-policy-1"
+                }
+            }
+        ],
+        "dependencies": {
+            "terminationBehaviour": "terminate-none"
+        }
+    }
+}
