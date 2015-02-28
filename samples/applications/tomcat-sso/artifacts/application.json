@@ -11,7 +11,7 @@
                 "subscribableInfo": {
                     "alias": "mytomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-1",
+                    "deploymentPolicy": "deployment-policy-3",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/chamilad/travelocity-sample",
@@ -27,7 +27,7 @@
                 "subscribableInfo": {
                     "alias": "mywso2is",
                     "autoscalingPolicy": "autoscaling-policy-1",
-                    "deploymentPolicy": "deployment-policy-1"
+                    "deploymentPolicy": "deployment-policy-3"
                 }
             }
         ],
