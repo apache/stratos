@@ -50,7 +50,8 @@ public class StratosTestServerManager extends TestServerManager {
             "/../../../distribution/target/apache-stratos-4.1.0-SNAPSHOT.zip";
     private final static int PORT_OFFSET = 0;
     private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
-    private static final String MOCK_IAAS_XML = "mock-iaas.xml";
+    private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
+    private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
 
     private ServerUtils serverUtils;
     private String carbonHome;
@@ -123,13 +124,18 @@ public class StratosTestServerManager extends TestServerManager {
     }
 
     protected void copyArtifacts(String carbonHome) throws IOException {
-        log.info("Copying " + MOCK_IAAS_XML + " configuration file...");
-        URL mockIaasUrl = getClass().getResource("/" + MOCK_IAAS_XML);
-        assertNotNull(mockIaasUrl);
-        File srcFile = new File(mockIaasUrl.getFile());
-        File destFile = new File(carbonHome + "/repository/conf/" + MOCK_IAAS_XML);
+        copyConfigFile(carbonHome, MOCK_IAAS_XML_FILE);
+        copyConfigFile(carbonHome, JNDI_PROPERTIES_FILE);
+    }
+
+    private void copyConfigFile(String carbonHome, String fileName) throws IOException {
+        log.info("Copying " + fileName + " configuration file...");
+        URL fileURL = getClass().getResource("/" + fileName);
+        assertNotNull(fileURL);
+        File srcFile = new File(fileURL.getFile());
+        File destFile = new File(carbonHome + "/repository/conf/" + fileName);
         FileUtils.copyFile(srcFile, destFile);
-        log.info(MOCK_IAAS_XML + " configuration file copied");
+        log.info(fileName + " configuration file copied");
     }
 
     private boolean serverStarted(TestLogAppender testLogAppender) {
