@@ -5,7 +5,7 @@
 
         "cartridges": [
             {
-                "type": "tomcat",
+                "type": "tomcat-sso",
                 "cartridgeMin": 1,
                 "cartridgeMax": 1,
                 "subscribableInfo": {
