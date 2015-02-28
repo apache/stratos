@@ -116,7 +116,6 @@ public class KubernetesIaasUtil {
             Port port = new Port();
             port.setName(preparePortNameFromPortMapping(portMapping));
             port.setContainerPort(portMapping.getPort());
-            port.setHostPort(portMapping.getKubernetesServicePort());
             ports.add(port);
         }
         return ports;

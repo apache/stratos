@@ -42,6 +42,7 @@ import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Service;
+import org.apache.stratos.kubernetes.client.model.Port;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.util.ArrayList;
@@ -59,6 +60,7 @@ public class KubernetesIaas extends Iaas {
     private static final String PAYLOAD_PARAMETER_SEPARATOR = ",";
     private static final String PAYLOAD_PARAMETER_NAME_VALUE_SEPARATOR = "=";
     private static final String PAYLOAD_PARAMETER_PREFIX = "payload_parameter.";
+    private static final String PORT_MAPPINGS = "PORT_MAPPINGS";
 
     private PartitionValidator partitionValidator;
     private List<NameValuePair> payload;
@@ -385,8 +387,8 @@ public class KubernetesIaas extends Iaas {
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
                 clusterContext, memberContext);
 
-        kubernetesApi.createPod(podId, podLabel, dockerImage,
-                KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings()), environmentVariables);
+        List<Port> ports = KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings());
+        kubernetesApi.createPod(podId, podLabel, dockerImage, ports, environmentVariables);
 
         // Add pod id to member context and persist
         memberContext.setKubernetesPodId(podId);
@@ -510,6 +512,7 @@ public class KubernetesIaas extends Iaas {
                                               Cartridge cartridge) {
         if(cartridge != null) {
             boolean servicePortsUpdated = false;
+            StringBuilder portMappingStrBuilder = new StringBuilder();
             for (PortMapping portMapping : cartridge.getPortMappings()) {
                 if(portMapping.getKubernetesServicePort() == 0) {
                     int nextServicePort = kubernetesClusterContext.getNextServicePort();
@@ -520,12 +523,24 @@ public class KubernetesIaas extends Iaas {
                     portMapping.setKubernetesServicePort(nextServicePort);
                     servicePortsUpdated = true;
 	                portMapping.setKubernetesServicePortMapping(true);
+
+                    if(portMappingStrBuilder.toString().length() > 0) {
+                        portMappingStrBuilder.append(":");
+                    }
+
+                    portMappingStrBuilder.append(String.format("PROTOCOL=%s|PORT=%d|PROXY_PORT=%d",
+                            portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort()));
+
                     if (log.isInfoEnabled()) {
                         log.info(String.format("Kubernetes service port generated: [cluster-id] %s [port] %d " +
                                 "[service-port] %d", clusterId, portMapping.getPort(), nextServicePort));
                     }
                 }
             }
+
+            NameValuePair nameValuePair = new NameValuePair(PORT_MAPPINGS, portMappingStrBuilder.toString());
+            payload.add(nameValuePair);
+
             if(servicePortsUpdated) {
                 // Persist service ports added to port mappings
                 CloudControllerContext.getInstance().updateKubernetesClusterContext(kubernetesClusterContext);
