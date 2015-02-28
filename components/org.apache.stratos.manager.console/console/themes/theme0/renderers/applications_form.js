@@ -272,6 +272,7 @@ var render = function (theme, data, meta, require) {
                                 editorCartridges: data.editorCartridges,
                                 editorGroups:data.editorGroups,
                                 editorAutoscalePolicies: data.editorAutoscalePolicies,
+                                editorDeploymentPolicies: data.editorDeploymentPolicies,
                                 form_action: data.form_action,
                                 formHtml: data.formHtml,
                                 formData: data.formData,
