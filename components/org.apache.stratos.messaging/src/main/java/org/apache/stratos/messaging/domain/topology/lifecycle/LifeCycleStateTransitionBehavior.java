@@ -17,9 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.messaging.domain.topology;
-
-import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleState;
+package org.apache.stratos.messaging.domain.topology.lifecycle;
 
 import java.util.Stack;
 
