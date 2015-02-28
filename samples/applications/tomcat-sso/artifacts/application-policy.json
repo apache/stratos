@@ -1,7 +1,7 @@
 {
    "networkPartition":[
       {
-         "id":"network-partition-1",
+         "id":"network-partition-3",
          "activeByDefault":"true"
       }
    ]
