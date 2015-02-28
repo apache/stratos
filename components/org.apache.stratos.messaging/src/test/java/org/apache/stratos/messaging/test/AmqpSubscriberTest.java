@@ -64,7 +64,7 @@ public class AmqpSubscriberTest {
             log.info("Initializing ActiveMQ...");
             broker = new BrokerService();
             broker.setBrokerName("testBroker");
-            broker.addConnector("tcp://localhost:61616");
+            broker.addConnector("tcp://localhost:61617");
         } catch (Exception e) {
             throw new RuntimeException("Could not initialize ActiveMQ", e);
         }
