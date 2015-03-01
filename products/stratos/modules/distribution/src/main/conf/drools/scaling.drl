@@ -84,12 +84,14 @@ dialect "mvel"
         laPredictedValue : Double() from delegator.getLoadAveragePredictedValue(clusterInstanceContext)
 
         activeInstancesCount : Integer() from clusterInstanceContext.getActiveMemberCount()
+        maxInstancesCount : Integer() from clusterInstanceContext.getMaxInstanceCount()
+        minInstancesCount : Integer() from clusterInstanceContext.getMinInstanceCount()
         requestsServedPerInstance : Float() from  clusterInstanceContext.getRequestsServedPerInstance()
         averageRequestsServedPerInstance : Float() from  clusterInstanceContext.getAverageRequestsServedPerInstance()
 
         numberOfInstancesReuquiredBasedOnRif : Integer() from delegator.getNumberOfInstancesRequiredBasedOnRif(rifPredictedValue, requestsServedPerInstance, averageRequestsServedPerInstance, arspiReset)
-        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, activeInstancesCount)
-        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laThreshold, laPredictedValue, activeInstancesCount)
+        numberOfInstancesReuquiredBasedOnMemoryConsumption : Integer() from delegator.getNumberOfInstancesRequiredBasedOnMemoryConsumption(mcThreshold, mcPredictedValue, minInstancesCount, maxInstancesCount)
+        numberOfInstancesReuquiredBasedOnLoadAverage : Integer() from delegator.getNumberOfInstancesRequiredBasedOnLoadAverage(laThreshold, laPredictedValue, minInstancesCount)
 
         numberOfRequiredInstances : Integer() from delegator.getMaxNumberOfInstancesRequired(numberOfInstancesReuquiredBasedOnRif, numberOfInstancesReuquiredBasedOnMemoryConsumption ,mcReset ,numberOfInstancesReuquiredBasedOnLoadAverage, laReset) 
 
