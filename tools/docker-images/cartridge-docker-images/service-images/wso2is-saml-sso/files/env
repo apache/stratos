@@ -1,2 +1,2 @@
 JAVA_HOME=/opt/jdk1.7.0_67
-CARBON_HOME=/opt/wso2is-5.0.0
+CARBON_HOME=/opt/wso2is-5.0.0-SP1
