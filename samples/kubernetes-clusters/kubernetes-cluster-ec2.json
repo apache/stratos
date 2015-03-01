@@ -59,6 +59,10 @@
         {
             "name": "payload_parameter.LOG_LEVEL",
             "value": "DEBUG"
+        },
+        {
+            "name": "payload_parameter.METADATA_SERVICE_URL",
+            "value": "https://54.179.197.243:9443"
         }
     ]
 }
