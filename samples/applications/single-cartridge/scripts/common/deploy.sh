@@ -30,7 +30,7 @@ curl -X POST -H "Content-Type: application/json" -d "@${network_partitions_path}
 curl -X POST -H "Content-Type: application/json" -d "@${network_partitions_path}/network-partition-2.json" -k -v -u admin:admin https://${host_ip}:9443/api/networkPartitions
 
 echo "Adding deployment policy..."
-curl -X POST -H "Content-Type: application/json" -d "@${deployment_policies_path}/deployment-policy-1.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
+curl -X POST -H "Content-Type: application/json" -d "@${deployment_policies_path}/deployment-policy-4.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
 
 echo "Adding php cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
