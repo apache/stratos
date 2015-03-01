@@ -516,40 +516,48 @@ public class KubernetesIaas extends Iaas {
         return false;
     }
 
+    /**
+     * Generate kubernetes service ports for cluster.
+     * @param kubernetesClusterContext
+     * @param clusterId
+     * @param cartridge
+     */
     private void generateKubernetesServicePorts(KubernetesClusterContext kubernetesClusterContext, String clusterId,
                                                 Cartridge cartridge) {
-        if(cartridge != null) {
-            StringBuilder portMappingStrBuilder = new StringBuilder();
-            for (PortMapping portMapping : cartridge.getPortMappings()) {
-                if(portMapping.getKubernetesServicePort() == 0) {
-                    int nextServicePort = kubernetesClusterContext.getNextServicePort();
-                    if (nextServicePort == -1) {
-                        throw new RuntimeException(String.format("Could not generate service port: [cluster-id] %s " +
-                                        "[port] %d", clusterId, portMapping.getPort()));
-                    }
-                    portMapping.setKubernetesServicePort(nextServicePort);
-	                portMapping.setKubernetesServicePortMapping(true);
+        synchronized (KubernetesIaas.class) {
+            if (cartridge != null) {
+                StringBuilder portMappingStrBuilder = new StringBuilder();
+                for (PortMapping portMapping : cartridge.getPortMappings()) {
+                    if (portMapping.getKubernetesServicePort() == 0) {
+                        int nextServicePort = kubernetesClusterContext.getNextServicePort();
+                        if (nextServicePort == -1) {
+                            throw new RuntimeException(String.format("Could not generate service port: [cluster-id] %s " +
+                                    "[port] %d", clusterId, portMapping.getPort()));
+                        }
+                        portMapping.setKubernetesServicePort(nextServicePort);
+                        portMapping.setKubernetesServicePortMapping(true);
 
-                    // Add port mappings to payload
-                    if(portMappingStrBuilder.toString().length() > 0) {
-                        portMappingStrBuilder.append(":");
-                    }
-                    portMappingStrBuilder.append(String.format("PROTOCOL=%s|PORT=%d|PROXY_PORT=%d",
-                            portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort()));
+                        // Add port mappings to payload
+                        if (portMappingStrBuilder.toString().length() > 0) {
+                            portMappingStrBuilder.append(":");
+                        }
+                        portMappingStrBuilder.append(String.format("PROTOCOL=%s|PORT=%d|PROXY_PORT=%d",
+                                portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort()));
 
-                    if (log.isInfoEnabled()) {
-                        log.info(String.format("Kubernetes service port generated: [cluster-id] %s [port] %d " +
-                                "[service-port] %d", clusterId, portMapping.getPort(), nextServicePort));
+                        if (log.isInfoEnabled()) {
+                            log.info(String.format("Kubernetes service port generated: [cluster-id] %s [port] %d " +
+                                    "[service-port] %d", clusterId, portMapping.getPort(), nextServicePort));
+                        }
                     }
                 }
+
+                NameValuePair nameValuePair = new NameValuePair(PORT_MAPPINGS, portMappingStrBuilder.toString());
+                payload.add(nameValuePair);
+
+                // Persist service ports added to port mappings
+                CloudControllerContext.getInstance().updateKubernetesClusterContext(kubernetesClusterContext);
+                CloudControllerContext.getInstance().persist();
             }
-
-            NameValuePair nameValuePair = new NameValuePair(PORT_MAPPINGS, portMappingStrBuilder.toString());
-            payload.add(nameValuePair);
-
-            // Persist service ports added to port mappings
-            CloudControllerContext.getInstance().updateKubernetesClusterContext(kubernetesClusterContext);
-            CloudControllerContext.getInstance().persist();
         }
     }
 
