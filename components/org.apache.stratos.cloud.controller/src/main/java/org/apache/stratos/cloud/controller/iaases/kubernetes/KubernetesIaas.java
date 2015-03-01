@@ -542,7 +542,7 @@ public class KubernetesIaas extends Iaas {
                             portMappingStrBuilder.append(":");
                         }
                         portMappingStrBuilder.append(String.format("PROTOCOL:%s|PORT:%d|PROXY_PORT:%d",
-                                portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort()));
+                                portMapping.getProtocol(), portMapping.getKubernetesServicePort(), portMapping.getProxyPort()));
 
                         if (log.isInfoEnabled()) {
                             log.info(String.format("Kubernetes service port generated: [cluster-id] %s [port] %d " +
