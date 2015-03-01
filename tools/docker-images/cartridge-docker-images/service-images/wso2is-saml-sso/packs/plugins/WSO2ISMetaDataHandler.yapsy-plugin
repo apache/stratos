@@ -1,0 +1,9 @@
+[Core]
+Name = WSO2ISMetaDataHandler to read  and publish metadata from and to Metadata service
+Module = WSO2ISMetaDataHandler
+
+[Documentation]
+Description = InstanceStartedEvent
+Author = Op1
+Version = 0.1
+Website = stratos.apache.org

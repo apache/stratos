@@ -1,0 +1,9 @@
+[Core]
+Name = TomcatServerStarterPlugin to read SAML SSO related metadata needed to configure SAML SSO for apps and start tomcat
+Module = TomcatServerStarterPlugin
+
+[Documentation]
+Description = ArtifactUpdatedEvent
+Author = Op1
+Version = 0.1
+Website = stratos.apache.org

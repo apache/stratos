@@ -1,0 +1,2 @@
+JAVA_HOME=/opt/jdk1.7.0_67
+CATALINA_HOME=/opt/tomcat

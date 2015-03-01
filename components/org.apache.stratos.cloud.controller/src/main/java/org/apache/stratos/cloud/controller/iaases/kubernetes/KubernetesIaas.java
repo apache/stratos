@@ -541,7 +541,7 @@ public class KubernetesIaas extends Iaas {
                         if (portMappingStrBuilder.toString().length() > 0) {
                             portMappingStrBuilder.append(":");
                         }
-                        portMappingStrBuilder.append(String.format("PROTOCOL=%s|PORT=%d|PROXY_PORT=%d",
+                        portMappingStrBuilder.append(String.format("PROTOCOL:%s|PORT:%d|PROXY_PORT:%d",
                                 portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort()));
 
                         if (log.isInfoEnabled()) {

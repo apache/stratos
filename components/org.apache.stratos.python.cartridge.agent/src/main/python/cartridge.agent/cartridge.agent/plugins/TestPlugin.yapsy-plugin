@@ -1,9 +1,0 @@
-[Core]
-Name = Test plugin for MemberInitializedEvent and ArtifactUpdatedEvent
-Module = TestPlugin
-
-[Documentation]
-Description = MemberInitializedEvent,ArtifactUpdatedEvent
-Author = Op1
-Version = 0.1
-Website = stratos.apache.org

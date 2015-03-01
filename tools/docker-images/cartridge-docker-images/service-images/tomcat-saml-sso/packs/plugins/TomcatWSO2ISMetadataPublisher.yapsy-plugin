@@ -1,0 +1,9 @@
+[Core]
+Name = TomcatWSO2ISMetadataPublisher to publish metadata needed for a WSO2IS SAML SSO service provider
+Module = TomcatWSO2ISMetadataPublisher
+
+[Documentation]
+Description = InstanceStartedEvent
+Author = Op1
+Version = 0.1
+Website = stratos.apache.org

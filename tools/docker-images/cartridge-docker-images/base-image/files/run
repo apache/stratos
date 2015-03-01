@@ -160,9 +160,15 @@ else
 fi
 
 if [ -z "${APPLICATION_PATH}" ]; then
-	sed -i "s/APPLICATION_PATH/ /g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+	sed -i "s/APPLICATION-PATH/ /g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
 else
-	sed -i "s#APPLICATION_PATH#${APPLICATION_PATH}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+	sed -i "s#APPLICATION-PATH#${APPLICATION_PATH}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+fi
+
+if [ -z "${METADATA_SERVICE_URL}" ]; then
+	sed -i "s/METADATA-SERVICE-URL/ /g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
+else
+	sed -i "s#METADATA-SERVICE-URL#${METADATA_SERVICE_URL}#g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/agent.conf
 fi
 
 if [ -z "${LOG_LEVEL}" ]; then
@@ -171,7 +177,10 @@ else
 	sed -i "s/LOG_LEVEL/${LOG_LEVEL}/g" /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/logging.ini
 fi
 
+# copy plugins to PCA
+cp -R /mnt/plugins /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/
+
 # Start cartridge agent
 cd /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT
 python agent.py > /tmp/agent.screen.log 2>&1 &
-/usr/sbin/apache2ctl -D FOREGROUND
+#/usr/sbin/apache2ctl -D FOREGROUND
