@@ -13,7 +13,7 @@
       },
       {
          "id": "network-partition-2",
-         "partitionAlgo": "network-partition-1",
+         "partitionAlgo": "one-after-another",
          "partitions": [
             {
                "id": "network-partition-2-partition-1",
