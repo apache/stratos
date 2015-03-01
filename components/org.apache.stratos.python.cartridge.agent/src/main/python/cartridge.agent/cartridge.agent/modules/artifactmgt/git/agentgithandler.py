@@ -182,10 +182,11 @@ class AgentGitHandler:
 
     @staticmethod
     def clone(git_repo):
-        if os.path.isdir(git_repo.local_repo_path):
-            # delete and recreate local repo path if exists
+        if os.path.isdir(git_repo.local_repo_path) and os.listdir(git_repo.local_repo_path) != []:
+            # delete and recreate local repo path if not empty dir
             AgentGitHandler.log.debug("Local repository path not empty. Cleaning.")
             GitUtils.delete_folder_tree(git_repo.local_repo_path)
+            GitUtils.create_dir(git_repo.local_repo_path)
 
         try:
             Repo.clone_from(git_repo.repo_url, git_repo.local_repo_path)

@@ -296,7 +296,11 @@ class CartridgeAgentConfiguration:
                     for param in metadata_payload_content.split(","):
                         if param.strip() != "":
                             param_value = param.strip().split("=")
-                            self.__payload_params[param_value[0]] = param_value[1]
+                            try:
+                                self.__payload_params[param_value[0]] = param_value[1]
+                            except IndexError:
+                                # If an index error comes when reading values, keep on reading
+                                pass
 
                     # self.payload_params = dict(
                     #     param.split("=") for param in metadata_payload_content.split(","))

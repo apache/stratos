@@ -113,7 +113,11 @@ class EventHandler:
             if plugins_for_event is not None:
                 for plugin_info in plugins_for_event:
                     self.__log.debug("Executing plugin %s for event %s" % (plugin_info.name, event))
-                    PluginExecutor(plugin_info, plugin_values).start()
+                    plugin_thread = PluginExecutor(plugin_info, plugin_values)
+                    plugin_thread.start()
+
+                    # block till plugin run completes.
+                    plugin_thread.join()
             else:
                 self.__log.debug("No plugins registered for event %s" % event)
         except Exception as e:
@@ -610,6 +614,6 @@ class PluginExecutor(Thread):
 
     def run(self):
         try:
-            self.__plugin_info.plugin_object.run_plugin(self.__values, self.__log)
+            self.__plugin_info.plugin_object.run_plugin(self.__values)
         except Exception as e:
             self.__log.exception("Error while executing plugin %s: %s" % (self.__plugin_info.name, e))
