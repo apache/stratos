@@ -43,6 +43,10 @@
         {
             "name": "payload_parameter.LOG_LEVEL",
             "value": "DEBUG"
+        },
+        {
+            "name": "payload_parameter.METADATA_SERVICE_URL",
+            "value": "https://172.17.8.1:9443"
         }
     ]
 }
