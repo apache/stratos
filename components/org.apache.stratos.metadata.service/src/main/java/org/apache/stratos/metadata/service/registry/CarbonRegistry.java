@@ -48,6 +48,35 @@ public class CarbonRegistry implements DataStore {
     public CarbonRegistry() {
     }
 
+    public List<NewProperty> getApplicationProperties(String applicationName) throws RegistryException {
+        Registry tempRegistry = getRegistry();
+        String resourcePath = mainResource + applicationName;
+
+        if (!tempRegistry.resourceExists(resourcePath)) {
+            return null;
+        }
+
+        PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+        ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+        ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+        Resource regResource = tempRegistry.get(resourcePath);
+        ArrayList<NewProperty> newProperties = new ArrayList<NewProperty>();
+
+        Properties props = regResource.getProperties();
+        Enumeration<?> x = props.propertyNames();
+        while (x.hasMoreElements()) {
+            String key = (String) x.nextElement();
+            List<String> values = regResource.getPropertyValues(key);
+            NewProperty property = new NewProperty();
+            property.setKey(key);
+            String[] valueArr = new String[values.size()];
+            property.setValues(values.toArray(valueArr));
+
+            newProperties.add(property);
+        }
+        return newProperties;
+    }
 
     /**
      * Get Properties of clustor
@@ -57,7 +86,7 @@ public class CarbonRegistry implements DataStore {
      * @return
      * @throws RegistryException
      */
-    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId) throws RegistryException {
+    public List<NewProperty> getClusterProperties(String applicationName, String clusterId) throws RegistryException {
         Registry tempRegistry = getRegistry();
         String resourcePath = mainResource + applicationName + "/" + clusterId;
 
@@ -89,6 +118,46 @@ public class CarbonRegistry implements DataStore {
         }
 
         return newProperties;
+    }
+
+    public void addPropertiesToApplication(String applicationId, NewProperty[] properties) throws RegistryException {
+        for (NewProperty property : properties) {
+            addPropertyToApplication(applicationId, property);
+        }
+    }
+
+    public void addPropertyToApplication(String applicationId, NewProperty property) throws RegistryException {
+        Registry registry = getRegistry();
+        String resourcePath = mainResource + applicationId;
+
+        try {
+            PrivilegedCarbonContext ctx = PrivilegedCarbonContext.getThreadLocalCarbonContext();
+            ctx.setTenantId(MultitenantConstants.SUPER_TENANT_ID);
+            ctx.setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+
+            registry.beginTransaction();
+            Resource nodeResource = null;
+            if (registry.resourceExists(resourcePath)) {
+                nodeResource = registry.get(resourcePath);
+            } else {
+                nodeResource = registry.newResource();
+                if (log.isDebugEnabled()) {
+                    log.debug("Registry resource is create at path for application: " + nodeResource.getPath());
+                }
+            }
+
+            nodeResource.setProperty(property.getKey(), Arrays.asList(property.getValues()));
+            registry.put(resourcePath, nodeResource);
+            registry.commitTransaction();
+
+            log.info(String.format("Registry property is persisted: [resource-path] %s [Property Name] %s [Property Values] %s",
+                    resourcePath, property.getKey(), Arrays.asList(property.getValues())));
+        } catch (Exception e) {
+            String msg = "Failed to persist properties in registry: " + resourcePath;
+            registry.rollbackTransaction();
+            log.error(msg, e);
+            throw new RegistryException(msg, e);
+        }
     }
 
     /**
@@ -133,7 +202,6 @@ public class CarbonRegistry implements DataStore {
             log.error(msg, e);
             throw new RegistryException(msg, e);
         }
-
     }
 
     private UserRegistry getRegistry() throws RegistryException {
@@ -185,7 +253,6 @@ public class CarbonRegistry implements DataStore {
     public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties) throws RegistryException {
         for (NewProperty property : properties) {
             this.addPropertyToCluster(applicationName, clusterId, property);
-
         }
     }
 

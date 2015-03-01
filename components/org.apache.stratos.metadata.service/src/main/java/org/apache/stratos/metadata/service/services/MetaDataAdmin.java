@@ -55,17 +55,18 @@ public class MetaDataAdmin {
     }
 
     @GET
-    @Path("/application/{application_id}/cluster/{cluster_id}/properties")
+    @Path("/application/{application_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId) throws RestAPIException {
+    public Response getApplicationProperties(@PathParam("application_id") String applicationId)
+            throws RestAPIException {
 
         List<NewProperty> properties;
         NewProperty[] propertiesArr = null;
         try {
             properties = registry
-                    .getPropertiesOfCluster(applicationId, clusterId);
+                    .getApplicationProperties(applicationId);
             if (properties != null) {
                 propertiesArr = new NewProperty[properties.size()];
                 propertiesArr = properties.toArray(propertiesArr);
@@ -86,6 +87,75 @@ public class MetaDataAdmin {
     }
 
     @GET
+    @Path("/application/{application_id}/cluster/{cluster_id}/properties")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getClusterProperties(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId) throws RestAPIException {
+
+        List<NewProperty> properties;
+        NewProperty[] propertiesArr = null;
+        try {
+            properties = registry
+                    .getClusterProperties(applicationId, clusterId);
+            if (properties != null) {
+                propertiesArr = new NewProperty[properties.size()];
+                propertiesArr = properties.toArray(propertiesArr);
+            }
+        } catch (RegistryException e) {
+            String msg = "Error occurred while getting properties ";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+
+        Response.ResponseBuilder rb;
+        if (propertiesArr == null) {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        } else {
+            rb = Response.ok().entity(propertiesArr);
+        }
+        return rb.build();
+    }
+
+    @GET
+    @Path("/application/{application_id}/property/{property_name}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response getApplicationProperty(@PathParam("application_id") String applicationId,
+                                           @PathParam("property_name") String propertyName)
+            throws RestAPIException {
+        List<NewProperty> properties;
+
+
+        NewProperty property = null;
+        try {
+            properties = registry.getApplicationProperties(applicationId);
+            if (properties == null) {
+                return Response.status(Response.Status.NOT_FOUND).build();
+            }
+            for (NewProperty p : properties) {
+                if (propertyName.equals(p.getKey())) {
+                    property = p;
+                    break;
+                }
+            }
+        } catch (RegistryException e) {
+            String msg = "Error occurred while getting property";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+
+        Response.ResponseBuilder rb;
+        if (property == null) {
+            rb = Response.status(Response.Status.NOT_FOUND);
+        } else {
+            rb = Response.ok().entity(property);
+        }
+        return rb.build();
+    }
+
+    @GET
     @Path("/application/{application_id}/cluster/{cluster_id}/property/{property_name}")
     @Produces("application/json")
     @Consumes("application/json")
@@ -95,10 +165,8 @@ public class MetaDataAdmin {
 
 
         NewProperty property = null;
-
         try {
-            properties = registry
-                    .getPropertiesOfCluster(applicationId, clusterId);
+            properties = registry.getClusterProperties(applicationId, clusterId);
             if (properties == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -124,11 +192,36 @@ public class MetaDataAdmin {
     }
 
     @POST
+    @Path("application/{application_id}/property")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addPropertyToApplication(@PathParam("application_id") String applicationId,
+                                             NewProperty property)
+            throws RestAPIException {
+
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + property.getKey()).build();
+        if (StringUtils.isEmpty(property.getKey())) {
+            throw new RestAPIException("Property key can not be empty");
+        }
+
+        try {
+            registry.addPropertyToApplication(applicationId, property);
+        } catch (RegistryException e) {
+            String msg = "Error occurred while adding property";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+        return Response.created(url).build();
+    }
+
+    @POST
     @Path("application/{application_id}/cluster/{cluster_id}/property")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addPropertyToACluster(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, NewProperty property)
+    public Response addPropertyToCluster(@PathParam("application_id") String applicationId,
+                                         @PathParam("cluster_id") String clusterId, NewProperty property)
             throws RestAPIException {
 
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId + "/" + property.getKey()).build();
@@ -148,11 +241,32 @@ public class MetaDataAdmin {
     }
 
     @POST
+    @Path("application/{application_id}/properties")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/protected/manage/monitor/tenants")
+    public Response addPropertiesToApplication(@PathParam("application_id") String applicationId,
+                                               NewProperty[] properties)
+            throws RestAPIException {
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationId).build();
+
+        try {
+            registry.addPropertiesToApplication(applicationId, properties);
+        } catch (RegistryException e) {
+            String msg = "Error occurred while adding properties ";
+            log.error(msg, e);
+            throw new RestAPIException(msg, e);
+        }
+        return Response.created(url).build();
+    }
+
+    @POST
     @Path("application/{application_id}/cluster/{cluster_id}/properties")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/monitor/tenants")
-    public Response addPropertiesToACluster(@PathParam("application_id") String applicationId, @PathParam("cluster_id") String clusterId, NewProperty[] properties)
+    public Response addPropertiesToCluster(@PathParam("application_id") String applicationId,
+                                           @PathParam("cluster_id") String clusterId, NewProperty[] properties)
             throws RestAPIException {
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationId + "/" + clusterId).build();
 

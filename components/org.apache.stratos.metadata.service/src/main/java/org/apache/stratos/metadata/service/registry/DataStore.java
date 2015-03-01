@@ -29,10 +29,17 @@ import java.util.List;
  */
 public interface DataStore {
 
+    public void addPropertyToApplication(String applicationId, NewProperty property) throws RegistryException;
+
+    public void addPropertiesToApplication(String applicationName, NewProperty[] properties)
+            throws RegistryException;
+
     public void addPropertiesToCluster(String applicationName, String clusterId, NewProperty[] properties)
             throws RegistryException;
 
-    public List<NewProperty> getPropertiesOfCluster(String applicationName, String clusterId)
+    public List<NewProperty> getApplicationProperties(String applicationName) throws RegistryException;
+
+    public List<NewProperty> getClusterProperties(String applicationName, String clusterId)
             throws RegistryException;
 
     public void addPropertyToCluster(String applicationId, String clusterId, NewProperty property) throws RegistryException;
