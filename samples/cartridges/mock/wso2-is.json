@@ -1,0 +1,27 @@
+{
+    "type": "wso2is",
+    "provider": "data",
+    "host": "wso2is.stratos.org",
+    "category": "data",
+    "displayName": "WSO2 IS 5.0.0",
+    "description": "WSO2 IS 5.0.0 Cartridge",
+    "version": "7",
+    "multiTenant": "false",
+    "portMapping": [
+        {
+            "protocol": "http",
+            "port": "9443",
+            "proxyPort": "8280"
+        }
+    ],
+    "iaasProvider":[
+        {
+            "type":"mock",
+            "imageId":"not-needed",
+            "networkInterfaces":[
+            ],
+            "property":[
+            ]
+        }
+    ]
+}

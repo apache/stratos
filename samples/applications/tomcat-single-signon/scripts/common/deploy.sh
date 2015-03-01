@@ -8,7 +8,6 @@ prgdir=`dirname "$0"`
 script_path=`cd "$prgdir"; pwd`
 
 artifacts_path=`cd "${script_path}/../../artifacts"; pwd`
-iaas_artifacts_path=`cd "${script_path}/../../artifacts/${iaas}"; pwd`
 iaas_cartridges_path=`cd "${script_path}/../../../../cartridges/${iaas}"; pwd`
 cartridges_groups_path=`cd "${script_path}/../../../../cartridges-groups"; pwd`
 autoscaling_policies_path=`cd "${script_path}/../../../../autoscaling-policies"; pwd`
@@ -33,7 +32,7 @@ echo "Adding deployment policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${deployment_policies_path}/deployment-policy-3.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/deploymentPolicies
 
 echo "Adding tomcat cartridge..."
-curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/tomcat-sso.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
+curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/tomcat3.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
 echo "Adding wso2-is cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/wso2-is.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
@@ -46,4 +45,4 @@ curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/applicat
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/tomcat-sso/deploy
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/tomcat-single-signon/deploy

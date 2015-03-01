@@ -1,5 +1,5 @@
 {
-    "type": "tomcat-sso",
+    "type": "tomcat3",
     "provider": "apache",
     "host": "tomcat.stratos.org",
     "category": "data",

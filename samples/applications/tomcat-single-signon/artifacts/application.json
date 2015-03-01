@@ -1,15 +1,15 @@
 {
-    "applicationId": "tomcat-sso",
-    "alias": "tomcat-sso",
+    "applicationId": "tomcat-single-signon",
+    "alias": "tomcat-single-signon",
     "components": {
 
         "cartridges": [
             {
-                "type": "tomcat-sso",
+                "type": "tomcat3",
                 "cartridgeMin": 1,
                 "cartridgeMax": 1,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "mytomcat3",
                     "autoscalingPolicy": "autoscaling-policy-1",
                     "deploymentPolicy": "deployment-policy-3",
                     "artifactRepository":{
