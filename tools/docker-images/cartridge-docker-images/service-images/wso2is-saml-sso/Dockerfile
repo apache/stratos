@@ -19,11 +19,14 @@ ENV JAVA_HOME /opt/jdk${JDK_VERSION}
 # Install WSO2 Identity Server
 # -----------------------------
 ADD packs/wso2is-${WSO2_IS_VERSION}.zip /opt/wso2is-${WSO2_IS_VERSION}.zip
-RUN unzip /opt/wso2is-${WSO2_IS_VERSION}.zip -d /opt/
+RUN unzip /opt/wso2is-${WSO2_IS_VERSION}.zip -d /opt/ && \
+    rm /opt/wso2is-${WSO2_IS_VERSION}.zip
 ENV CARBON_HOME /opt/wso2is-${WSO2_IS_VERSION}
 
 ADD files/env /tmp/env
-RUN cat /tmp/env >> /etc/environment
+RUN chmod +x /tmp/env && \
+    sleep 1 && \
+    /tmp/env ${JAVA_HOME} ${CARBON_HOME}
 
 ADD files/carbon.xml ${CARBON_HOME}/repository/conf/carbon.xml
 

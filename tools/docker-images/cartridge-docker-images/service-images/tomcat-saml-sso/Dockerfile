@@ -23,7 +23,8 @@ ENV CATALINA_HOME /opt/tomcat
 # Install Tomcat
 # ----------------------
 ADD packs/apache-tomcat-${TOMCAT_VERSION}.tar.gz /opt/apache-tomcat-${TOMCAT_VERSION}.tar.gz
-RUN mv /opt/apache-tomcat-${TOMCAT_VERSION}.tar.gz/apache-tomcat-${TOMCAT_VERSION} /opt/tomcat
+RUN mv /opt/apache-tomcat-${TOMCAT_VERSION}.tar.gz/apache-tomcat-${TOMCAT_VERSION} /opt/tomcat && \
+    rm -rf /opt/apache-tomcat-${TOMCAT_VERSION}.tar.gz
 
 # -----------------------
 # Add shell scripts
@@ -34,7 +35,9 @@ RUN chmod +x /opt/create-admin-user.sh && \
     bash /opt/create-admin-user.sh
 
 ADD files/env /tmp/env
-RUN cat /tmp/env >> /etc/environment
+RUN chmod +x /tmp/env && \
+    sleep 1 && \
+    /tmp/env ${JAVA_HOME} ${CATALINA_HOME}
 
 #------------------------
 # Copy Tomcat related PCA plugins

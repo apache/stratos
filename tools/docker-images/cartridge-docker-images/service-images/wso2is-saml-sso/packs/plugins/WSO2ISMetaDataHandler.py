@@ -36,9 +36,10 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
                       % values["APPLICATION_ID"])
             time.sleep(5)
             mds_response = mdsclient.get(app=True)
-            if mds_response is not None and mds_response.properties.get("SSO_ISSUER") is None or \
-                    mds_response.properties.get("CALLBACK_URL") is None:
-                mds_response = None
+            if mds_response is not None:
+                if mds_response.properties.get("SSO_ISSUER") is None or \
+                        mds_response.properties.get("CALLBACK_URL") is None:
+                    mds_response = None
         # mds_response = mdsclient.get()
         issuer = mds_response.properties["SSO_ISSUER"]
         acs = mds_response.properties["CALLBACK_URL"]
@@ -130,15 +131,14 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         log.info("Starting WSO2 IS server")
 
         # set configurations
-        carbon_replace_command = "sed -i \"s/CLUSTER_HOST_NAME/%s/g\" %s" % (member_hostname, "/opt/wso2is-5.0.0/repository/conf/carbon.xml")
+        carbon_replace_command = "sed -i \"s/CLUSTER_HOST_NAME/%s/g\" %s" % (member_hostname, "${CARBON_HOME}/repository/conf/carbon.xml")
 
         p = subprocess.Popen(carbon_replace_command, shell=True)
         output, errors = p.communicate()
         log.debug("Set carbon.xml hostname")
 
-        wso2is_start_command = "exec /opt/wso2is-5.0.0/bin/wso2server.sh start"
+        wso2is_start_command = "exec ${CARBON_HOME}/bin/wso2server.sh start"
         env_var = os.environ.copy()
-        env_var["JAVA_HOME"] = "/opt/jdk1.7.0_67"
         p = subprocess.Popen(wso2is_start_command, env=env_var, shell=True)
         output, errors = p.communicate()
         log.debug("WSO2 IS server started")

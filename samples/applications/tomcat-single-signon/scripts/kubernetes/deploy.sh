@@ -11,6 +11,6 @@ kubernetes_clusters_path=`cd "${script_path}/../../../../kubernetes-clusters"; p
 
 
 echo "Adding kubernetes cluster..."
-curl -X POST -H "Content-Type: application/json" -d "@${kubernetes_clusters_path}/kubernetes-cluster-ec2.json" -k -u admin:admin https://${host_ip}:${host_port}/api/kubernetesClusters
+curl -X POST -H "Content-Type: application/json" -d "@${kubernetes_clusters_path}/kubernetes-cluster-1.json" -k -u admin:admin https://${host_ip}:${host_port}/api/kubernetesClusters
 
 bash ${common_folder}/deploy.sh ${iaas}

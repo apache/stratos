@@ -45,7 +45,15 @@ class TomcatServerStarterPlugin(ICartridgeAgentPlugin):
         log.info("Starting Tomcat server: [command] %s, [STRATOS_SAML_ENDPOINT] %s" % (tomcat_start_command, saml_endpoint))
         env_var = os.environ.copy()
         env_var["STRATOS_SAML_ENDPOINT"] = saml_endpoint
-        env_var["JAVA_HOME"] = "/opt/jdk1.7.0_67"
+
+        env_var["STRATOS_HOST_NAME"] = values["HOST_NAME"]
+        payload_ports = values["PORT_MAPPINGS"].split("|")
+        if values.get("LB_CLUSTER_ID") is not None:
+            port_no = payload_ports[2].split(":")[1]
+        else:
+            port_no = payload_ports[1].split(":")[1]
+        env_var["STRATOS_HOST_PORT"] = port_no
+
         p = subprocess.Popen(tomcat_start_command, env=env_var, shell=True)
         output, errors = p.communicate()
         log.debug("Tomcat server started")

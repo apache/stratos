@@ -1,2 +1,5 @@
-JAVA_HOME=/opt/jdk1.7.0_67
-CARBON_HOME=/opt/wso2is-5.0.0-SP1
+JAVA_HOME=$1
+CARBON_HOME=$2
+
+echo "JAVA_HOME=${JAVA_HOME}" >> /etc/environment
+echo "CARBON_HOME=${CARBON_HOME}" >> /etc/environment
