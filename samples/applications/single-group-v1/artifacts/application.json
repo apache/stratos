@@ -1,20 +1,21 @@
 {
-    "applicationId": "single_group_v1",
-    "alias": "single_group_v1",
+    "applicationId": "single-group-v1",
+    "alias": "my-single-group-v1",
     "components": {
         "groups": [
             {
                 "name": "group6",
-                "alias": "mygroup6",
+                "alias": "my-group6",
                 "groupMinInstances": 2,
                 "groupMaxInstances": 3,
+                "deploymentPolicy":"deployment-policy-3",
                 "cartridges": [
                     {
-                        "type": "tomcat2",
+                        "type": "tomcat1",
                         "cartridgeMin": 1,
                         "cartridgeMax": 1,
                         "subscribableInfo": {
-                            "alias": "tom2group6",
+                            "alias": "my-tomcat1",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -33,8 +34,9 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 1,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy":"deployment-policy-3",
                     "artifactRepository":{
                        "privateRepo":false,
                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
@@ -46,7 +48,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.group6,cartridge.tomcat"
+                "group.my-group6,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }
