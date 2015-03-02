@@ -31,13 +31,13 @@ class ApplicationSignUpAddedEvent:
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
-        applicationSignUp = ApplicationSignUpAddedEvent()
+        app_signup_added = ApplicationSignUpAddedEvent()
 
-        applicationSignUp.applicationId = json_obj["applicationId"] if "applicationId" in json_obj else None
-        applicationSignUp.tenantId = json_obj["tenantId"] if "tenantId" in json_obj else None
-        applicationSignUp.clusterIds = json_obj["clusterIds"] if "clusterIds" in json_obj else None
+        app_signup_added.applicationId = json_obj["applicationId"] if "applicationId" in json_obj else None
+        app_signup_added.tenantId = json_obj["tenantId"] if "tenantId" in json_obj else None
+        app_signup_added.clusterIds = json_obj["clusterIds"] if "clusterIds" in json_obj else None
 
-        return applicationSignUp
+        return app_signup_added
 
 
 class ApplicationSignUpRemovedEvent:
@@ -53,10 +53,10 @@ class ApplicationSignUpRemovedEvent:
     @staticmethod
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
-        applicationSignUp = ApplicationSignUpRemovedEvent()
+        app_signup_removed = ApplicationSignUpRemovedEvent()
 
-        applicationSignUp.applicationId = json_obj["applicationId"] if "applicationId" in json_obj else None
-        applicationSignUp.tenantId = json_obj["tenantId"] if "tenantId" in json_obj else None
+        app_signup_removed.applicationId = json_obj["applicationId"] if "applicationId" in json_obj else None
+        app_signup_removed.tenantId = json_obj["tenantId"] if "tenantId" in json_obj else None
 
-        return applicationSignUp
+        return app_signup_removed
 

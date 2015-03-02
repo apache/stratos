@@ -66,7 +66,7 @@ class MemberActivatedEvent:
         instance.instance_id = json_obj["instanceId"] if "instanceId" in json_obj else None
         instance.network_partition_id = json_obj["networkPartitionId"] if "networkPartitionId" in json_obj else None
         instance.partition_id = json_obj["partitionId"] if "partitionId" in json_obj else None
-        #instance.port_map = json_obj["portMap"] if "portMap" in json_obj else {}
+        # instance.port_map = json_obj["portMap"] if "portMap" in json_obj else {}
         instance.member_private_ips = json_obj["memberPrivateIPs"] if "memberPrivateIPs" in json_obj else None
         instance.member_public_ips = json_obj["memberPublicIPs"] if "memberPublicIPs" in json_obj else None
         instance.member_default_public_ip = json_obj["defaultPublicIP"] if "defaultPublicIP" in json_obj else None
@@ -168,7 +168,7 @@ class CompleteTopologyEvent:
             topology_obj.initialized = True if str(topology_str["initialized"]).lower == "true" else False
             topology_obj.json_str = topology_str
 
-            #add service map
+            # add service map
             for service_name in topology_str["serviceMap"]:
                 service_str = topology_str["serviceMap"][service_name]
 
@@ -180,7 +180,7 @@ class CompleteTopologyEvent:
                     port_obj = Port(port_str["protocol"], port_str["value"], port_proxy)
                     service_obj.add_port(port_obj)
 
-                #add cluster map
+                # add cluster map
                 for cluster_id in service_str["clusterIdClusterMap"]:
                     cluster_str = service_str["clusterIdClusterMap"][cluster_id]
                     cl_service_name = cluster_str["serviceName"]

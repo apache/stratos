@@ -34,7 +34,7 @@ class ArtifactUpdatedEvent:
         """ :type : int  """
         self.commit_enabled = None
         """ :type : bool  """
-        self.instance_id=None
+        self.instance_id = None
         """ :type : str  """
 
     @staticmethod
@@ -64,7 +64,7 @@ class InstanceCleanupClusterEvent:
     def create_from_json(json_str):
         json_obj = json.loads(json_str)
         cluster_id = json_obj["clusterId"] if "clusterId" in json_obj else None
-        instance_cluster_id = json_obj["instanceClusterId"] if "clusterId" in json_obj else None
+        instance_cluster_id = json_obj["instanceClusterId"] if "instanceClusterId" in json_obj else None
 
         return InstanceCleanupClusterEvent(cluster_id, instance_cluster_id)
 
