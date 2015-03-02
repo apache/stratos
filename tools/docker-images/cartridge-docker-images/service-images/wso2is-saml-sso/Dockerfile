@@ -29,6 +29,7 @@ RUN chmod +x /tmp/env && \
     /tmp/env ${JAVA_HOME} ${CARBON_HOME}
 
 ADD files/carbon.xml ${CARBON_HOME}/repository/conf/carbon.xml
+ADD files/catalina-server.xml ${CARBON_HOME}/repository/conf/tomcat/catalina-server.xml
 
 #---------------------------------
 # Copy Tomcat related PCA plugins

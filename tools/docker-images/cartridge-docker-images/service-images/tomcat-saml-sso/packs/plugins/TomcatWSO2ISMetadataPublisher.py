@@ -36,7 +36,7 @@ class TomcatWSO2ISMetadataPublisher(ICartridgeAgentPlugin):
         else:
             port_no = payload_ports[1].split(":")[1]
 
-        callback_url = "https://%s:%s/travelocity.com/home.jsp" % (cluster_hostname, port_no)
+        callback_url = "http://%s:%s/travelocity.com/home.jsp" % (cluster_hostname, port_no)
         saml_callback_entry = {"key": "CALLBACK_URL", "values": callback_url}
         issuer_entry = {"key": "SSO_ISSUER", "values": "travelocity.com"}
         # properties_data = [hostname_entry, saml_callback_entry]

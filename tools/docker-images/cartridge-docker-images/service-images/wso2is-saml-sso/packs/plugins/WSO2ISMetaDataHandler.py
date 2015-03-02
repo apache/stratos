@@ -137,6 +137,12 @@ class WSO2ISMetaDataHandler(ICartridgeAgentPlugin):
         output, errors = p.communicate()
         log.debug("Set carbon.xml hostname")
 
+        catalina_replace_command = "sed -i \"s/STRATOS_IS_PROXY_PORT/%s/g\" %s" % (port_no, "${CARBON_HOME}/repository/conf/tomcat/catalina-server.xml")
+
+        p = subprocess.Popen(catalina_replace_command, shell=True)
+        output, errors = p.communicate()
+        log.debug("Set catalina-server.xml proxy port")
+
         wso2is_start_command = "exec ${CARBON_HOME}/bin/wso2server.sh start"
         env_var = os.environ.copy()
         p = subprocess.Popen(wso2is_start_command, env=env_var, shell=True)
