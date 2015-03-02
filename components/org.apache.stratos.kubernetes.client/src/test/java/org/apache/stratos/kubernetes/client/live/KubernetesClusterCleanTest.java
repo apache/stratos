@@ -21,10 +21,12 @@ package org.apache.stratos.kubernetes.client.live;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.Pod;
 import org.apache.stratos.kubernetes.client.model.Service;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,16 +48,26 @@ public class KubernetesClusterCleanTest extends AbstractLiveTest {
                 podList = client.getPods();
             }
 
-            List<Service> serviceList = client.getServices();
+            List<Service> serviceList = getServices();
             while((serviceList != null) && (serviceList.size() > 0)) {
                 for(Service service : serviceList) {
                     deleteService(service.getId());
                 }
-                serviceList = client.getServices();
+                serviceList = getServices();
             }
             log.info("Kubernetes cluster cleaned successfully");
         } catch (Exception e) {
             log.error(e);
         }
+    }
+
+    private List<Service> getServices() throws KubernetesClientException {
+        List<Service> serviceList = new ArrayList<Service>();
+        for(Service service : client.getServices()) {
+            if(!service.getId().startsWith("kubernetes")) {
+                serviceList.add(service);
+            }
+        }
+        return serviceList;
     }
 }

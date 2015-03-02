@@ -163,6 +163,7 @@ public class AbstractLiveTest extends TestCase {
         client.deletePod(podId);
         podIdList.remove(podId);
 
+        sleep(1000);
         assertNull(client.getPod(podId));
         log.info("Pod deleted successfully: " + podId);
     }
@@ -194,7 +195,7 @@ public class AbstractLiveTest extends TestCase {
         client.deleteService(serviceId);
         serviceIdList.remove(serviceId);
 
-        sleep(1000);
+        sleep(2000);
         assertNull(client.getService(serviceId));
         log.info(String.format("Service deleted successfully: [service] %s", serviceId));
     }
