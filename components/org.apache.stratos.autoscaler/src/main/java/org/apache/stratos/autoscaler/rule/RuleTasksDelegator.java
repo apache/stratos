@@ -99,11 +99,8 @@ public class RuleTasksDelegator {
                 numberOfAdditionalInstancesRequired = (predictedValue - threshold) / gradient;
             }
         }
-        if(min + numberOfAdditionalInstancesRequired > max){
-            return max;
-        } else {
-            return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);
-        }
+
+        return (int) Math.ceil(min + numberOfAdditionalInstancesRequired);
     }
 
     public int getNumberOfInstancesRequiredBasedOnLoadAverage(float threshold, double predictedValue,
