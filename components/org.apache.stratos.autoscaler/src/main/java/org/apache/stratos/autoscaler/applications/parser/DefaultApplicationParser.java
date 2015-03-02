@@ -77,16 +77,16 @@ public class DefaultApplicationParser implements ApplicationParser {
     public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException {
 
         if (applicationContext == null) {
-            handleError("Application context is null");
+            handleError("Invalid application definition, application context is null");
         }
 
         assert applicationContext != null;
         if (applicationContext.getAlias() == null || applicationContext.getAlias().isEmpty()) {
-            handleError("Application alias not found application");
+            handleError("Invalid application definition, application alias is not found in application context");
         }
 
         if (applicationContext.getApplicationId() == null || applicationContext.getApplicationId().isEmpty()) {
-            handleError("Application id not found in application");
+            handleError("Invalid application definition, application id is not found in application context");
         }
 
         // get the Subscribables Information
@@ -101,7 +101,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         }
 
         if (subscribablesInfo == null) {
-            handleError("Invalid application definition, subscribable information not found");
+            handleError("Invalid application definition, subscribable information is not found in application context");
         }
 
         oauthToken = createToken(applicationContext.getApplicationId());
@@ -115,25 +115,24 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Find subscribable information in cartridge contexts
+     * @param applicationId TODO
      * @param subscribableInfoContextMap Map to return subscribable information
-     * @param applicationContext Application to read cartridge contexts
+     * @param cartridgeContexts Application to read cartridge contexts
      * @return
      * @throws ApplicationDefinitionException
      */
-    private void findSubscribableInfoOfCartridgeContexts(
-            Map<String, SubscribableInfoContext> subscribableInfoContextMap, ApplicationContext applicationContext)
+    private void findSubscribableInfoOfCartridgeContexts(String applicationId, 
+    		Map<String, SubscribableInfoContext> subscribableInfoContextMap, CartridgeContext[] cartridgeContexts)
             throws ApplicationDefinitionException {
 
-        CartridgeContext[] cartridgeContexts = applicationContext.getComponents().getCartridgeContexts();
-        if(cartridgeContexts != null) {
-            for(CartridgeContext cartridgeContext : cartridgeContexts) {
-                if(cartridgeContext != null) {
-                    SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-                    addSubscribableInfo(applicationContext.getApplicationId(),
-                            cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
-                }
-            }
-        }
+    	if(cartridgeContexts != null) {
+    		for(CartridgeContext cartridgeContext : cartridgeContexts) {
+    			if(cartridgeContext != null) {
+    				SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+    				addSubscribableInfo(applicationId,cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
+    			}
+    		}
+    	}
     }
 
     private void addSubscribableInfo(String applicationId, String cartridgeType,
@@ -185,25 +184,20 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return
      * @throws ApplicationDefinitionException
      */
-    private void findSubscribableInfoOfGroupContexts(String applicationId,
-                                                     Map<String, SubscribableInfoContext> subscribableInfoContextMap,
-                                                     GroupContext[] groupContexts) throws
-            ApplicationDefinitionException {
+    private void findSubscribableInfoOfGroupContexts(String applicationId, 
+    		Map<String, SubscribableInfoContext> subscribableInfoContextMap, GroupContext[] groupContexts) 
+    				throws ApplicationDefinitionException {
 
         if (groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
+            	// finding SubscribableInfo in group
                 if (groupContext.getGroupContexts() != null) {
                     findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContext.getGroupContexts());
-                } else {
-                    CartridgeContext[] cartridgeContexts = groupContext.getCartridgeContexts();
-                    for (CartridgeContext cartridgeContext : cartridgeContexts) {
-                        if(cartridgeContext != null) {
-                            SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-                            addSubscribableInfo(applicationId, cartridgeContext.getType(),
-                                    subscribableInfoContextMap, subscribableInfoContext);
-                        }
-                    }
                 }
+                // finding SubscribableInfo in cartridge
+                if (groupContext.getCartridgeContexts() != null) {
+                	findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, groupContext.getCartridgeContexts());
+				}
             }
         }
     }
@@ -220,9 +214,18 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         Map<String, SubscribableInfoContext> subscribableInfoContextMap = new HashMap<String, SubscribableInfoContext>();
 
-        findSubscribableInfoOfCartridgeContexts(subscribableInfoContextMap, applicationContext);
-        findSubscribableInfoOfGroupContexts(applicationContext.getApplicationId(),
-                subscribableInfoContextMap, applicationContext.getComponents().getGroupContexts());
+        String applicationId = applicationContext.getApplicationId();
+        ComponentContext componentContext = applicationContext.getComponents();
+        if (componentContext != null) {
+			CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
+			if (cartridgeContexts != null) {
+				findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, cartridgeContexts);
+			}
+			GroupContext[] groupContexts = componentContext.getGroupContexts();
+			if (groupContexts != null) {
+				findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContexts);
+			}
+		}
 
         return subscribableInfoContextMap;
     }
