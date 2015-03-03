@@ -41,15 +41,21 @@ public class RoundRobin implements AutoscaleAlgorithm{
 
     @Override
     public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts) {
+    	
+    	if (partitionContexts == null) {
+			return null;
+		}
 
         int selectedIndex = 0;
         int lowestInstanceCount = partitionContexts[0].getNonTerminatedMemberCount();
 
         for(int partitionIndex = 0; partitionIndex < partitionContexts.length; partitionIndex++) {
-        	// it means we have to choose partitionIndex, no need to continue the loop
+        	
+        	// it means we have to choose the current partitionIndex, no need to continue the loop
         	if (lowestInstanceCount == 0) {
 				break;
 			}
+        	
             if(partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount) {
                 lowestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
@@ -75,8 +81,12 @@ public class RoundRobin implements AutoscaleAlgorithm{
     @Override
     public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts) {
 
+    	if (partitionContexts == null) {
+			return null;
+		}
+    	
         int selectedIndex = 0;
-        int highestInstanceCount = 0;
+        int highestInstanceCount = partitionContexts[0].getNonTerminatedMemberCount();
 
         for(int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
 
