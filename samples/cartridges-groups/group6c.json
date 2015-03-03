@@ -2,12 +2,14 @@
     "name": "group6",
     "groups": [
         {
-            "name": "group6-1",
+            "name": "group7",
             "cartridges": [
-                "tomcat1",
-		"tomcat2"
+                "tomcat1"
             ]
         }
+    ],
+    "cartridges": [
+        "tomcat2"
     ],
     "dependencies": {
         "terminationBehaviour": "terminate-all"

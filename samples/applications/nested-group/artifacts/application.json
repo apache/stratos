@@ -5,13 +5,14 @@
         "groups": [
             {
                 "name": "group6",
-                "alias": "mygroup6",
+                "alias": "my-group6",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
+                "deploymentPolicy":"deployment-policy-2",
                 "groups": [
                     {
                         "name": "group7",
-                        "alias": "mygroup7",
+                        "alias": "my-group7",
                         "groupMinInstances": 1,
                         "groupMaxInstances": 1,
                         "cartridges": [
@@ -20,7 +21,7 @@
                                 "cartridgeMin": 1,
                                 "cartridgeMax": 2,
                                 "subscribableInfo": {
-                                    "alias": "group7tom",
+                                    "alias": "my-tomcat1-group7",
                                     "autoscalingPolicy": "autoscaling-policy-1",
                                     "artifactRepository":{
                                         "privateRepo":false,
@@ -39,7 +40,7 @@
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "group6tom",
+                            "alias": "my-tomcat2-group6",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                 "privateRepo":false,
@@ -58,8 +59,9 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 2,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy":"deployment-policy-2",
                     "artifactRepository":{
                         "privateRepo":false,
                         "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
@@ -71,7 +73,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.group6,cartridge.tomcat"
+                "group.my-group6,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-all"
         }
