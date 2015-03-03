@@ -124,11 +124,12 @@ public class TopologyProvider {
     }
 
     /**
-     * Add cluster for tenant.
-     * @param cluster
+     * Add tenant signup for cluster.
+     * @param clusterId
      * @param tenantId
      */
-    public void addCluster(Cluster cluster, int tenantId) {
+    public void addTenantSignUp(String clusterId, int tenantId) {
+        Cluster cluster = getClusterByClusterId(clusterId);
         if(cluster != null) {
             boolean subscribed = false;
             for(String hostName : cluster.getHostNames()) {
@@ -141,21 +142,21 @@ public class TopologyProvider {
                 subscribed = true;
             }
             if(subscribed) {
-                log.info(String.format("Tenant subscribed to cluster: [tenant] %d [cluster] %s [hostnames] %s",
+                log.info(String.format("Tenant signed up to cluster: [tenant] %d [cluster] %s [hostnames] %s",
                         tenantId, cluster.getClusterId(), cluster.getHostNames()));
             }
         }
     }
 
     /**
-     * Remove cluster added for tenant.
+     * Remove tenant signup for cluster.
      * @param clusterId
      * @param tenantId
      */
-    public void removeCluster(String clusterId, int tenantId) {
+    public void removeTenantSignUp(String clusterId, int tenantId) {
         Cluster cluster = getClusterByClusterId(clusterId);
         if(cluster == null) {
-            log.warn(String.format("Could not remove cluster, cluster not found: [cluster] %s", clusterId));
+            log.warn(String.format("Could not remove tenant signup from cluster, cluster not found: [cluster] %s", clusterId));
         }
 
         for(String hostName : cluster.getHostNames()) {
@@ -164,7 +165,7 @@ public class TopologyProvider {
                 Cluster cluster_ = tenantIdToClusterMap.get(tenantId);
                 if (cluster_ != null) {
                     tenantIdToClusterMap.remove(tenantId);
-                    log.info(String.format("Tenant un-subscribed from cluster: [tenant] %d [cluster] %s [hostnames] %s",
+                    log.info(String.format("Tenant signup removed from cluster: [tenant] %d [cluster] %s [hostnames] %s",
                             tenantId, cluster.getClusterId(), cluster.getHostNames()));
                 }
             }

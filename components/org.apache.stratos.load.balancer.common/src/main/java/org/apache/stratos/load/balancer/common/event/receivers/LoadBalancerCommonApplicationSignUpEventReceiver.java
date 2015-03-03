@@ -21,13 +21,20 @@ package org.apache.stratos.load.balancer.common.event.receivers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.messaging.domain.application.Application;
+import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.event.Event;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpAddedEvent;
+import org.apache.stratos.messaging.event.application.signup.ApplicationSignUpRemovedEvent;
 import org.apache.stratos.messaging.event.application.signup.CompleteApplicationSignUpsEvent;
+import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpAddedEventListener;
+import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpRemovedEventListener;
 import org.apache.stratos.messaging.listener.application.signup.CompleteApplicationSignUpsEventListener;
+import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 
 /**
@@ -53,13 +60,20 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
                     log.debug("Complete application signup event received");
                 }
 
-                CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = (CompleteApplicationSignUpsEvent)event;
-                for(ApplicationSignUp applicationSignUp : completeApplicationSignUpsEvent.getApplicationSignUps()) {
-                    if(applicationSignUp.getDomainMappings() != null) {
+                CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = (CompleteApplicationSignUpsEvent) event;
+                for (ApplicationSignUp applicationSignUp : completeApplicationSignUpsEvent.getApplicationSignUps()) {
+
+                    // Add tenant signups
+                    for (String clusterId : applicationSignUp.getClusterIds()) {
+                        topologyProvider.addTenantSignUp(clusterId, applicationSignUp.getTenantId());
+                    }
+
+                    // Add domain mappings
+                    if (applicationSignUp.getDomainMappings() != null) {
                         for (DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
-                            if(domainMapping != null) {
+                            if (domainMapping != null) {
                                 Cluster cluster = topologyProvider.getClusterByClusterId(domainMapping.getClusterId());
-                                if(cluster != null) {
+                                if (cluster != null) {
                                     cluster.addHostName(domainMapping.getDomainName());
                                     log.info(String.format("Domain mapping added: [cluster] %s [domain] %s",
                                             cluster.getClusterId(), domainMapping.getDomainName()));
@@ -67,6 +81,31 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
                             }
                         }
                     }
+                }
+            }
+        });
+
+        addEventListener(new ApplicationSignUpAddedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ApplicationSignUpAddedEvent applicationSignUpAddedEvent = (ApplicationSignUpAddedEvent) event;
+                for (String clusterId : applicationSignUpAddedEvent.getClusterIds()) {
+                    topologyProvider.addTenantSignUp(clusterId, applicationSignUpAddedEvent.getTenantId());
+                }
+            }
+        });
+
+        addEventListener(new ApplicationSignUpRemovedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent = (ApplicationSignUpRemovedEvent) event;
+                String applicationId = applicationSignUpRemovedEvent.getApplicationId();
+
+                Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                if(application != null) {
+                    for(ClusterDataHolder clusterDataHolder : application.getClusterDataMap().values())
+                    topologyProvider.removeTenantSignUp(clusterDataHolder.getClusterId(),
+                            applicationSignUpRemovedEvent.getTenantId());
                 }
             }
         });
