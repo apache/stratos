@@ -33,16 +33,16 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyEventRecei
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
- * Load balancer topology receiver updates the topology in the given topology provider
+ * Load balancer common topology receiver updates the topology in the given topology provider
  * according to topology events.
  */
-public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
+public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiver {
 
-    private static final Log log = LogFactory.getLog(LoadBalancerTopologyEventReceiver.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerCommonTopologyEventReceiver.class);
 
     private TopologyProvider topologyProvider;
 
-    public LoadBalancerTopologyEventReceiver(TopologyProvider topologyProvider) {
+    public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
         addEventListeners();
     }
@@ -232,7 +232,7 @@ public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
      * Remove cluster from topology provider
      * @param cluster
      */
-    private void removeCluster(Cluster cluster) {
+    protected void removeCluster(Cluster cluster) {
         for(Member member : cluster.getMembers()) {
             removeMember(member.getServiceName(), member.getClusterId(), member.getMemberId());
         }
@@ -244,7 +244,7 @@ public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
      * @param clusterId
      * @param memberId
      */
-    private void addMember(String serviceName, String clusterId, String memberId) {
+    protected void addMember(String serviceName, String clusterId, String memberId) {
         Service service = TopologyManager.getTopology().getService(serviceName);
         if (service == null) {
             if (log.isWarnEnabled()) {
@@ -286,7 +286,7 @@ public class LoadBalancerTopologyEventReceiver extends TopologyEventReceiver {
      * @param clusterId
      * @param memberId
      */
-    private void removeMember(String serviceName, String clusterId, String memberId) {
+    protected void removeMember(String serviceName, String clusterId, String memberId) {
         Service service = TopologyManager.getTopology().getService(serviceName);
         if (service == null) {
             if (log.isWarnEnabled()) {

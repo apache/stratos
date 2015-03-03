@@ -19,14 +19,13 @@
 
 package org.apache.stratos.load.balancer.context;
 
-import org.apache.stratos.load.balancer.context.AlgorithmContext;
-
 import java.util.Properties;
 
 /**
  * Defines cluster context properties.
  */
 public class ClusterContext {
+
     private String serviceName;
     private String clusterId;
     private AlgorithmContext algorithmContext;

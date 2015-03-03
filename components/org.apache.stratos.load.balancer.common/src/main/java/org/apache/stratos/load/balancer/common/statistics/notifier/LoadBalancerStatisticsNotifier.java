@@ -101,7 +101,6 @@ public class LoadBalancerStatisticsNotifier implements Runnable {
                                     // Load balancer cluster found in topology; we do not need to publish request counts for them.
                                 }
                             }
-
                         }
                     } finally {
                         TopologyManager.releaseReadLock();

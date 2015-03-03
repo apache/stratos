@@ -21,7 +21,10 @@ package org.apache.stratos.load.balancer.context;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.context.map.*;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Defines load balancer context information.
@@ -33,25 +36,13 @@ public class LoadBalancerContext {
     private static volatile LoadBalancerContext instance;
 
     // Map<ClusterId, ClusterContext>
-    private ClusterIdClusterContextMap clusterIdClusterContextMap;
-
-    // Following maps are updated by load balancer topology & tenant receivers.
-    // Map<ClusterId, Cluster>
-    // Keep track of all clusters
-    // Map<Host/Domain-Name, Cluster>
-    // Keep tack of all clusters
-
-    // Map<Host/Domain-Name, AppContext>
-    private HostNameAppContextMap hostNameAppContextMap;
-    // Map<HostName, Map<TenantId, Cluster>>
-    // Map<MemberIp, Hostname>
-    // Keep track of cluster hostnames of of all members  against their ip addresses
-    private MemberIpHostnameMap memberIpHostnameMap;
+    private Map<String, ClusterContext> clusterIdToClusterContextMap;
+    // Map<Host/Domain-Name, DomainMappingContextPath>
+    private Map<String, String> hostNameToDomainMappingContextPathMap;
 
     private LoadBalancerContext() {
-        clusterIdClusterContextMap = new ClusterIdClusterContextMap();
-        hostNameAppContextMap = new HostNameAppContextMap();
-        memberIpHostnameMap = new MemberIpHostnameMap();
+        clusterIdToClusterContextMap = new ConcurrentHashMap<String, ClusterContext>();
+        hostNameToDomainMappingContextPathMap = new ConcurrentHashMap<String, String>();
     }
 
     public static LoadBalancerContext getInstance() {
@@ -66,20 +57,45 @@ public class LoadBalancerContext {
     }
 
     public void clear() {
-        clusterIdClusterContextMap.clear();
-        hostNameAppContextMap.clear();
-        memberIpHostnameMap.clear();
+        clusterIdToClusterContextMap.clear();
+        hostNameToDomainMappingContextPathMap.clear();
     }
 
-    public ClusterIdClusterContextMap getClusterIdClusterContextMap() {
-        return clusterIdClusterContextMap;
+    public Collection<ClusterContext> getClusterContexts() {
+        return clusterIdToClusterContextMap.values();
     }
 
-    public HostNameAppContextMap getHostNameContextPathMap() {
-        return hostNameAppContextMap;
+    public ClusterContext getClusterContext(String clusterId) {
+        return clusterIdToClusterContextMap.get(clusterId);
     }
 
-    public MemberIpHostnameMap getMemberIpHostnameMap() {
-        return memberIpHostnameMap;
+    public boolean containsClusterContext(String clusterId) {
+        return clusterIdToClusterContextMap.containsKey(clusterId);
+    }
+
+    public void addClusterContext(ClusterContext clusterContext) {
+        clusterIdToClusterContextMap.put(clusterContext.getClusterId(), clusterContext);
+    }
+
+    public void removeClusterContext(String clusterId) {
+        clusterIdToClusterContextMap.remove(clusterId);
+    }
+
+    public void addDomainMappingContextPath(String hostName, String appContext) {
+        hostNameToDomainMappingContextPathMap.put(hostName, appContext);
+    }
+
+    public String getDomainMappingContextPath(String hostName) {
+        return hostNameToDomainMappingContextPathMap.get(hostName);
+    }
+
+    public void removeDomainMappingContextPath(String hostName) {
+        if(containsDomainMappingContextPath(hostName)) {
+            hostNameToDomainMappingContextPathMap.remove(hostName);
+        }
+    }
+
+    public boolean containsDomainMappingContextPath(String hostName) {
+        return hostNameToDomainMappingContextPathMap.containsKey(hostName);
     }
 }

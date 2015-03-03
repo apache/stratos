@@ -31,16 +31,16 @@ import org.apache.stratos.messaging.listener.application.signup.CompleteApplicat
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 
 /**
- * Load balancer application signup event receiver updates the topology in the given topology provider
+ * Load balancer common application signup event receiver updates the topology in the given topology provider
  * with the hostnames found in application signup events.
  */
-public class LoadBalancerApplicationSignUpEventReceiver extends ApplicationSignUpEventReceiver {
+public class LoadBalancerCommonApplicationSignUpEventReceiver extends ApplicationSignUpEventReceiver {
 
-    private static final Log log = LogFactory.getLog(LoadBalancerApplicationSignUpEventReceiver.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerCommonApplicationSignUpEventReceiver.class);
 
     private TopologyProvider topologyProvider;
 
-    public LoadBalancerApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
+    public LoadBalancerCommonApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
         addEventListeners();
     }

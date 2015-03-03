@@ -26,9 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
-import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerApplicationSignUpEventReceiver;
-import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerDomainMappingEventReceiver;
-import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerTopologyEventReceiver;
+import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerCommonApplicationSignUpEventReceiver;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
@@ -36,6 +34,8 @@ import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
 import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
+import org.apache.stratos.load.balancer.event.receivers.LoadBalancerDomainMappingEventReceiver;
+import org.apache.stratos.load.balancer.event.receivers.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
@@ -91,10 +91,10 @@ public class LoadBalancerServiceComponent {
 
     private boolean activated = false;
     private ExecutorService executorService;
-    private LoadBalancerTopologyEventReceiver topologyReceiver;
     private TenantEventReceiver tenantReceiver;
-    private LoadBalancerApplicationSignUpEventReceiver applicationSignUpEventReceiver;
+    private LoadBalancerTopologyEventReceiver topologyReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
+    private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
 
     protected void activate(ComponentContext ctxt) {
@@ -220,7 +220,7 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-        applicationSignUpEventReceiver = new LoadBalancerApplicationSignUpEventReceiver(topologyProvider);
+        applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
         applicationSignUpEventReceiver.setExecutorService(executorService);
         applicationSignUpEventReceiver.execute();
         if (log.isInfoEnabled()) {

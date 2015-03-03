@@ -31,16 +31,16 @@ import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemoved
 import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingEventReceiver;
 
 /**
- * Load balancer domain mapping event receiver updates the topology in the given topology provider
+ * Load balancer common domain mapping event receiver updates the topology in the given topology provider
  * with the domains found in domain mapping events.
  */
-public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventReceiver {
+public class LoadBalancerCommonDomainMappingEventReceiver extends DomainMappingEventReceiver {
 
-    private static final Log log = LogFactory.getLog(LoadBalancerDomainMappingEventReceiver.class);
+    private static final Log log = LogFactory.getLog(LoadBalancerCommonDomainMappingEventReceiver.class);
 
     private TopologyProvider topologyProvider;
 
-    public LoadBalancerDomainMappingEventReceiver(TopologyProvider topologyProvider) {
+    public LoadBalancerCommonDomainMappingEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
         addEventListeners();
     }
@@ -61,8 +61,7 @@ public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventRe
                     log.warn(String.format("Could not add domain mapping, cluster not found: [cluster] %s", clusterId));
                 }
 
-                cluster.addHostName(domainName, contextPath);
-                log.info(String.format("Domain mapping added: [cluster] %s [domain] %s", clusterId, domainName));
+                addDomainMapping(cluster, domainName, contextPath);
             }
         });
 
@@ -78,9 +77,29 @@ public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventRe
                 }
 
                 String domainName = domainMappingRemovedEvent.getDomainName();
-                cluster.removeHostName(domainName);
-                log.info(String.format("Domain mapping removed: [cluster] %s [domain] %s", clusterId, domainName));
+                removeDomainMapping(cluster, domainName);
             }
         });
+    }
+
+    /**
+     * Add domain mapping.
+     * @param cluster
+     * @param domainName
+     * @param contextPath
+     */
+    protected void addDomainMapping(Cluster cluster, String domainName, String contextPath) {
+        cluster.addHostName(domainName, contextPath);
+        log.info(String.format("Domain mapping added: [cluster] %s [domain] %s [context-path]", cluster.getClusterId(), domainName));
+    }
+
+    /**
+     * Remove domain mapping.
+     * @param cluster
+     * @param domainName
+     */
+    protected void removeDomainMapping(Cluster cluster, String domainName) {
+        cluster.removeHostName(domainName);
+        log.info(String.format("Domain mapping removed: [cluster] %s [domain] %s", cluster.getClusterId(), domainName));
     }
 }

@@ -121,11 +121,10 @@ public class RequestDelegator {
 	 */
     private synchronized Member findNextMemberInCluster(Cluster cluster) {
         // Find algorithm context of the cluster
-        ClusterContext clusterContext = LoadBalancerContext.getInstance().
-                getClusterIdClusterContextMap().getClusterContext(cluster.getClusterId());
+        ClusterContext clusterContext = LoadBalancerContext.getInstance().getClusterContext(cluster.getClusterId());
         if (clusterContext == null) {
             clusterContext = new ClusterContext(cluster.getServiceName(), cluster.getClusterId());
-            LoadBalancerContext.getInstance().getClusterIdClusterContextMap().addClusterContext(clusterContext);
+            LoadBalancerContext.getInstance().addClusterContext(clusterContext);
         }
 
         AlgorithmContext algorithmContext = clusterContext.getAlgorithmContext();

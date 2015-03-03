@@ -97,7 +97,7 @@ public class Cluster {
         return memberMap.get(memberId);
     }
 
-    public Collection getMembers() {
+    public Collection<Member> getMembers() {
         return memberMap.values();
     }
 

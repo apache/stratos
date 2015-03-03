@@ -21,7 +21,6 @@ package org.apache.stratos.load.balancer.mediators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
-import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.core.axis2.Axis2MessageContext;
@@ -65,22 +64,23 @@ public class LocationReWriter extends AbstractMediator {
                     }
 
                     // Check whether the location host is an ip address of a known member
-                    String hostname = LoadBalancerContext.getInstance().getMemberIpHostnameMap().get(inLocationUrl.getHost());
-                    if (StringUtils.isEmpty(hostname)) {
-                        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
+                    TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
+                    String clusterHostname = topologyProvider.getClusterHostname(inLocationUrl.getHost());
+                    if (StringUtils.isEmpty(clusterHostname)) {
                         if (topologyProvider.getClusterByHostName(inLocationUrl.getHost()) == null) {
                         	if (log.isDebugEnabled()) {
-                                log.debug(String.format("A hostname not found for ip: [ip-address] %s", inLocationUrl.getHost()));
+                                log.debug(String.format("A cluster hostname not found for ip: [ip-address] %s",
+                                        inLocationUrl.getHost()));
                             }
                         	return;
                         } else {
-                        	hostname = inLocationUrl.getHost();
+                        	clusterHostname = inLocationUrl.getHost();
                         }
                     }
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A location header found with member ip: [member-ip] %s " +
-                                "[hostname] %s ", inLocationUrl.getHost(), hostname));
+                                "[cluster-hostname] %s ", inLocationUrl.getHost(), clusterHostname));
                     }
 
                     int targetPort = -1;
@@ -96,7 +96,7 @@ public class LocationReWriter extends AbstractMediator {
 
                     if (targetPort != -1) {
                         // Re-write location header
-                        URL outLocationUrl = new URL(inLocationUrl.getProtocol(), hostname, targetPort, inLocationUrl.getFile());
+                        URL outLocationUrl = new URL(inLocationUrl.getProtocol(), clusterHostname, targetPort, inLocationUrl.getFile());
                         transportHeaders.put(LOCATION, outLocationUrl.toString());
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Location header re-written: %s", outLocationUrl.toString()));

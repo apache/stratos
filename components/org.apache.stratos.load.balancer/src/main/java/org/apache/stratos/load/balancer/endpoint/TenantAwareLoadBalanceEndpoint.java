@@ -612,12 +612,14 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 }
             }
 
+            // Map domain mapping app context
             String hostName = extractTargetHost(synCtx);
-            if (LoadBalancerContext.getInstance().getHostNameContextPathMap().contains(hostName)) {
-                String appContext = LoadBalancerContext.getInstance().getHostNameContextPathMap().getAppContext(hostName);
+            if (LoadBalancerContext.getInstance().containsDomainMappingContextPath(hostName)) {
+                String appContext = LoadBalancerContext.getInstance().getDomainMappingContextPath(hostName);
                 if(StringUtils.isNotBlank(appContext)) {
                     if (log.isDebugEnabled()) {
-                        log.debug(String.format("Domain mapping found with application context: [domain-name] %s [app-context] %s", hostName, appContext));
+                        log.debug(String.format("Domain mapping found with application context: [domain-name] %s " +
+                                "[app-context] %s", hostName, appContext));
                         log.debug(String.format("Incoming request address: %s", address));
                     }
                     address = "/" + cleanURLPath(appContext) + "/" + cleanURLPath(address);

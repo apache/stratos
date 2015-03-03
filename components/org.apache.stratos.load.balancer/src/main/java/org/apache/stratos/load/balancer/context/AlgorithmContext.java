@@ -19,8 +19,10 @@
 
 package org.apache.stratos.load.balancer.context;
 
-import org.apache.stratos.load.balancer.context.map.AlgorithmContextMap;
+import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.load.balancer.internal.ServiceReferenceHolder;
 
+import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -28,19 +30,30 @@ import java.util.concurrent.locks.Lock;
  * Key: service name, cluster id
  */
 public class AlgorithmContext {
+
+    private static final String LOAD_BALANCER_ALGORITHM_CONTEXT_MAP = "load.balancer.algorithm.context.map";
+    private static final String CURRENT_MEMBER_INDEX_MAP_LOCK = "current.member.index.map.lock";
+
     private String serviceName;
     private String clusterId;
+    private final Map<String, Integer> clusterMemberIndexMap;
+    private final DistributedObjectProvider distributedObjectProvider;
 
     public AlgorithmContext(String serviceName, String clusterId) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
+        // Initialize distributed object provider
+        distributedObjectProvider = ServiceReferenceHolder.getInstance().getDistributedObjectProvider();
+        // Initialize cluster->memberIndex map
+        clusterMemberIndexMap = distributedObjectProvider.getMap(LOAD_BALANCER_ALGORITHM_CONTEXT_MAP);
+
         Lock lock = null;
         try {
-            lock = AlgorithmContextMap.getInstance().acquireCurrentMemberIndexLock();
-            AlgorithmContextMap.getInstance().putCurrentMemberIndex(serviceName, clusterId, 0);
+            lock = acquireCurrentMemberIndexLock();
+            putCurrentMemberIndex(serviceName, clusterId, 0);
         } finally {
             if(lock != null) {
-                AlgorithmContextMap.getInstance().releaseCurrentMemberIndexLock(lock);
+                releaseCurrentMemberIndexLock(lock);
             }
         }
     }
@@ -54,18 +67,42 @@ public class AlgorithmContext {
     }
 
     public int getCurrentMemberIndex() {
-        return AlgorithmContextMap.getInstance().getCurrentMemberIndex(getServiceName(), getClusterId());
+        return getCurrentMemberIndex(getServiceName(), getClusterId());
     }
 
     public void setCurrentMemberIndex(int currentMemberIndex) {
         Lock lock = null;
         try {
-            lock = AlgorithmContextMap.getInstance().acquireCurrentMemberIndexLock();
-            AlgorithmContextMap.getInstance().putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
+            lock = acquireCurrentMemberIndexLock();
+            putCurrentMemberIndex(getServiceName(), getClusterId(), currentMemberIndex);
         } finally {
             if(lock != null) {
-                AlgorithmContextMap.getInstance().releaseCurrentMemberIndexLock(lock);
+                releaseCurrentMemberIndexLock(lock);
             }
         }
+    }
+
+    private String constructKey(String serviceName, String clusterId) {
+        return String.format("%s-%s", serviceName, clusterId);
+    }
+
+    private Lock acquireCurrentMemberIndexLock() {
+        return distributedObjectProvider.acquireLock(CURRENT_MEMBER_INDEX_MAP_LOCK);
+    }
+
+    private void releaseCurrentMemberIndexLock(Lock lock) {
+        if(lock != null) {
+            distributedObjectProvider.releaseLock(lock);
+        }
+    }
+
+    public void putCurrentMemberIndex(String serviceName, String clusterId, int currentMemberIndex) {
+        String key = constructKey(serviceName, clusterId);
+        clusterMemberIndexMap.put(key, currentMemberIndex);
+    }
+
+    public int getCurrentMemberIndex(String serviceName, String clusterId) {
+        String key = constructKey(serviceName, clusterId);
+        return clusterMemberIndexMap.get(key);
     }
 }
