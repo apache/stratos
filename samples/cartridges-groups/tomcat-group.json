@@ -1,0 +1,16 @@
+{
+    "name": "tomcat-group",
+    "groups": [
+        {
+            "name": "tomcat-group",
+            "cartridges": [
+                "tomcat1",
+		        "tomcat2"
+            ]
+        }
+    ],
+    "dependencies": {
+        "terminationBehaviour": "terminate-all"
+    }
+}
+

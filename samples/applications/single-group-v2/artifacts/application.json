@@ -4,8 +4,8 @@
     "components": {
         "groups": [
             {
-                "name": "group6",
-                "alias": "my-group6",
+                "name": "tomcat-group",
+                "alias": "my-tomcat-group",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
                 "deploymentPolicy":"deployment-policy-3",
@@ -63,7 +63,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.my-group6,cartridge.my-tomcat"
+                "group.my-tomcat-group,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }

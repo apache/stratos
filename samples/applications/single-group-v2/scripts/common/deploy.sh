@@ -41,8 +41,8 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/tomcat1
 echo "Adding tomcat2 cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${cartridges_path}/tomcat2.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
-echo "Adding group6c group..."
-curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/group6c.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups
+echo "Adding tomcat-group group..."
+curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/tomcat-group.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridgeGroups
 
 sleep 1
 
