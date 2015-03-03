@@ -21,13 +21,7 @@ package org.apache.stratos.autoscaler.algorithm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.context.cluster.ClusterInstanceContext;
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
-import org.apache.stratos.autoscaler.context.partition.network.ClusterLevelNetworkPartitionContext;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
 * This class is used for selecting a {@link PartitionContext} in round robin manner and checking availability of
