@@ -291,7 +291,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                     }
                 }
 
-                // Set termination behaviour
+                // Set termination behavior
                 String terminationBehaviour = dependencyContext.getTerminationBehaviour();
                 validateTerminationBehavior(terminationBehaviour);
                 dependencyOrder.setTerminationBehaviour(terminationBehaviour);
@@ -700,14 +700,24 @@ public class DefaultApplicationParser implements ApplicationParser {
         if (startupOrders != null) {
             setStartUpOrder = ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
             dependencyOrder.setStartupOrders(setStartUpOrder);
+        } else {
+        	if (log.isDebugEnabled()) {
+        		String msg = String.format("No start up order defined [group-alias] %s", groupCtxt.getAlias());
+        		log.debug(msg);
+			}
         }
 
         String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
         if (scaleDependents != null) {
             dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
+        } else {
+        	if (log.isDebugEnabled()) {
+        		String msg = String.format("No scaling dependent defined [group-alias] %s", groupCtxt.getAlias());
+        		log.debug(msg);
+			}
         }
 
-        dependencyOrder.setTerminationBehaviour(getKillbehaviour(groupCtxt.getName(), serviceGroup));
+        dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getName(), serviceGroup));
         group.setDependencyOrder(dependencyOrder);
 
         Map<String, Map<String, ClusterDataHolder>> clusterDataMap;
@@ -828,7 +838,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return String indicating the kill behavior
      * @throws ApplicationDefinitionException if an error occurs
      */
-    private String getKillbehaviour(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
+    private String getTerminationBehaviour(String serviceGroupName, ServiceGroup serviceGroup) throws ApplicationDefinitionException {
 
         ServiceGroup nestedServiceGroup = getNestedServiceGroup(serviceGroupName, serviceGroup);
 

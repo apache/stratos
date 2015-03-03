@@ -607,7 +607,16 @@ public class AutoscalerUtil {
 				throw new InvalidApplicationPolicyException(msg);
 			}
 			
-			//TODO validate application policy against the given application
+			// validate application policy against the given application
+			if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
+				String msg = String.format("Invalid Application Policy. "
+						+ "Cause -> Network partition [network-partition-id] %s is not used in application [application-id] %s. "
+						+ "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s", 
+						networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
+				log.error(msg);
+				throw new InvalidApplicationPolicyException(msg);
+			}
+			
 			
 			// counting number of network partitions which are active by default
 			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
@@ -622,4 +631,18 @@ public class AutoscalerUtil {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     }
+	
+	private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
+		if (applicationId == null || StringUtils.isBlank(applicationId) 
+				|| networkPartitionId == null || StringUtils.isBlank(networkPartitionId)) {
+			return false;
+		}
+		List<String> networkPartitionsReferredInApplication = AutoscalerUtil.getNetworkPartitionIdsReferedInApplication(applicationId);
+		for (String appNetworkPartitionId : networkPartitionsReferredInApplication) {
+			if (appNetworkPartitionId != null && appNetworkPartitionId.equals(networkPartitionId)) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
