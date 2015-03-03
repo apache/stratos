@@ -1,20 +1,21 @@
 {
-    "applicationId": "single_group_v3",
-    "alias": "single_group_v3",
+    "applicationId": "single-group-v3",
+    "alias": "my-single-group-v3",
     "components": {
         "groups": [
             {
-                "name": "group6",
-                "alias": "mygroup6",
+                "name": "tomcat2-group",
+                "alias": "my-tomcat2-group",
                 "groupMinInstances": 2,
                 "groupMaxInstances": 3,
+                "deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "tomcat2",
                         "cartridgeMin": 1,
                         "cartridgeMax": 1,
                         "subscribableInfo": {
-                            "alias": "tom2group6",
+                            "alias": "my-tomcat2",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
