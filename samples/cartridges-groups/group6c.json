@@ -4,17 +4,12 @@
         {
             "name": "group6-1",
             "cartridges": [
-                "tomcat1"
+                "tomcat1",
+		"tomcat2"
             ]
         }
     ],
-    "cartridges": [
-        "tomcat2"
-    ],
     "dependencies": {
-        "startupOrders": [
-            "group.tom1group6,cartridge.tom2group6"
-        ],
         "terminationBehaviour": "terminate-all"
     }
 }

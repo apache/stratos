@@ -1,20 +1,21 @@
 {
     "applicationId": "single_group_v2",
-    "alias": "single_group_v2",
+    "alias": "my-single_group_v2",
     "components": {
         "groups": [
             {
                 "name": "group6",
-                "alias": "mygroup6",
+                "alias": "my-group6",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 1,
+                "deploymentPolicy":"deployment-policy-3",
                 "cartridges": [
                     {
                         "type": "tomcat2",
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "tom2group6",
+                            "alias": "my-tomcat2",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -29,7 +30,7 @@
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "tom1group6",
+                            "alias": "my-tomcat1",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
@@ -48,8 +49,9 @@
                 "cartridgeMin": 1,
                 "cartridgeMax": 2,
                 "subscribableInfo": {
-                    "alias": "mytomcat",
+                    "alias": "my-tomcat",
                     "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy":"deployment-policy-3",
                     "artifactRepository":{
                        "privateRepo":false,
                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git",
@@ -61,7 +63,7 @@
         ],
         "dependencies": {
             "startupOrders": [
-                "group.group6,cartridge.tomcat"
+                "group.my-group6,cartridge.my-tomcat"
             ],
             "terminationBehaviour": "terminate-none"
         }
