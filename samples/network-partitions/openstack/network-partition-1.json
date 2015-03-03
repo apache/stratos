@@ -3,7 +3,7 @@
     "partitions": [
         {
             "id": "partition-1",
-            "provider": "mock",
+            "provider": "openstack",
             "property": [
                 {
                     "name": "region",
