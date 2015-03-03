@@ -12,9 +12,6 @@
         "tomcat2"
     ],
     "dependencies": {
-        "startupOrders": [
-            "group.group9,cartridge.tomcat2"
-        ],
         "terminationBehaviour": "terminate-all"
     }
 }
