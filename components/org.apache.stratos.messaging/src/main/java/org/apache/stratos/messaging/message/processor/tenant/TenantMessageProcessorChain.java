@@ -35,8 +35,6 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
     private TenantCreatedMessageProcessor tenantCreatedMessageProcessor;
     private TenantUpdatedMessageProcessor tenantUpdatedMessageProcessor;
     private TenantRemovedMessageProcessor tenantRemovedMessageProcessor;
-    private TenantSubscribedMessageProcessor tenantSubscribedMessageProcessor;
-    private TenantUnSubscribedMessageProcessor tenantUnSubscribedMessageProcessor;
 
     public void initialize() {
         // Initialize tenant event processors
@@ -52,12 +50,6 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
         tenantRemovedMessageProcessor = new TenantRemovedMessageProcessor();
         add(tenantRemovedMessageProcessor);
 
-        tenantSubscribedMessageProcessor = new TenantSubscribedMessageProcessor();
-        add(tenantSubscribedMessageProcessor);
-
-        tenantUnSubscribedMessageProcessor = new TenantUnSubscribedMessageProcessor();
-        add(tenantUnSubscribedMessageProcessor);
-
         if (log.isDebugEnabled()) {
             log.debug("Tenant message processor chain initialized");
         }
@@ -72,10 +64,6 @@ public class TenantMessageProcessorChain extends MessageProcessorChain {
             tenantUpdatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof TenantRemovedEventListener) {
             tenantRemovedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof TenantSubscribedEventListener) {
-            tenantSubscribedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof TenantUnSubscribedEventListener) {
-            tenantUnSubscribedMessageProcessor.addEventListener(eventListener);
         }
         else {
             throw new RuntimeException("Unknown event listener");

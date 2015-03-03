@@ -25,7 +25,9 @@ import java.io.Serializable;
  * Defines an application port.
  */
 public class Port implements Serializable{
+
     private static final long serialVersionUID = -2530288421360188256L;
+
     private String protocol;
     private int value;
     private int proxy;
