@@ -32,6 +32,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.context.ApplicationChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.ClusterChildContext;
 import org.apache.stratos.autoscaler.applications.dependency.context.GroupChildContext;
@@ -416,7 +417,7 @@ public class AutoscalerUtil {
      */
     private static List<String> getDeploymentPolicyIdsReferedInApplication(String applicationId) {
     	
-    	Map<String, String> aliasToDeploymentPolicyIdMap = getAliasToDeploymentPolicyIdMapOfApplication(applicationId);
+    	Map<String, String> aliasToDeploymentPolicyIdMap = ApplicationHolder.getApplications().getApplication(applicationId).getAliasToDeploymentPolicyIdMap();
     	if (aliasToDeploymentPolicyIdMap == null) {
 			return null;
 		}
@@ -424,7 +425,6 @@ public class AutoscalerUtil {
     	List<String> deploymentPolicyIds = new ArrayList<String>();
 
 		for (Map.Entry<String, String> entry : aliasToDeploymentPolicyIdMap.entrySet()) {
-			System.out.println(entry.getKey() + "/" + entry.getValue());
 			if (!deploymentPolicyIds.contains(entry.getValue())) {
 				deploymentPolicyIds.add(entry.getValue());
 			}
@@ -445,7 +445,7 @@ public class AutoscalerUtil {
 			return null;
 		}
     	
-    	Map<String, String> aliasToDeploymentPolicyIdMap = getAliasToDeploymentPolicyIdMapOfApplication(applicationId);
+    	Map<String, String> aliasToDeploymentPolicyIdMap = ApplicationHolder.getApplications().getApplication(applicationId).getAliasToDeploymentPolicyIdMap();
     	
     	if (aliasToDeploymentPolicyIdMap == null) {
 			return null;
@@ -459,11 +459,8 @@ public class AutoscalerUtil {
      * @param applicationId the application id
      * @return alias to deployment policy map
      */
-    private static Map<String, String> getAliasToDeploymentPolicyIdMapOfApplication(String applicationId) {
+    public static Map<String, String> getAliasToDeploymentPolicyIdMapOfApplication(ApplicationContext applicationContext) {
     	
-    	Map<String, String> aliasToDeploymentPolicyIdMap = new HashMap<String, String>();
-    	
-    	ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
     	if (applicationContext == null) {
 			return null;
 		}
@@ -473,6 +470,8 @@ public class AutoscalerUtil {
 			return null;
 		}
     	
+    	Map<String, String> aliasToDeploymentPolicyIdMap = new HashMap<String, String>();
+
     	CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
     	if (cartridgeContexts != null && cartridgeContexts.length != 0) {
     		getAliasToDeployloymentPolicyIdMapFromChildCartridgeContexts(aliasToDeploymentPolicyIdMap, cartridgeContexts);

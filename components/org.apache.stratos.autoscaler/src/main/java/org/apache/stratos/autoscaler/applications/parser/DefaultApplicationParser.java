@@ -318,6 +318,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 		                            subscribableInfoCtxts));
             }
         }
+        
+        // setting alias to deployment policy id map to the application
+        application.setAliasToDeploymentPolicyIdMap(
+        		AutoscalerUtil.getAliasToDeploymentPolicyIdMapOfApplication(applicationContext));
 
         if (log.isDebugEnabled()) {
             log.debug("Application parsed successfully: [application-id] " + applicationContext.getApplicationId());

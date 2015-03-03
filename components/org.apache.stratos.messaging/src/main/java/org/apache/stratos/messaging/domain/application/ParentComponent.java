@@ -38,6 +38,8 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     protected final Map<String, ClusterDataHolder> aliasToClusterDataMap;
 	// Cluster Id map, key = cartridge type
 	private final Map<String, ClusterDataHolder> typeToClusterDataMap;
+	// alias to deployment policy id, key = cartridge or cartridge-group alias
+	private Map<String, String> aliasToDeploymentPolicyIdMap;
     // Group/Cluster Instance Context map, key = instance id
     private Map<String, T> instanceIdToInstanceContextMap;
     // Dependency Order
@@ -418,4 +420,12 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
 		this.typeToClusterDataMap.putAll(typeToClusterData);
 	}
 
+	public Map<String, String> getAliasToDeploymentPolicyIdMap() {
+		return aliasToDeploymentPolicyIdMap;
+	}
+
+	public void setAliasToDeploymentPolicyIdMap(
+			Map<String, String> aliasToDeploymentPolicyIdMap) {
+		this.aliasToDeploymentPolicyIdMap = aliasToDeploymentPolicyIdMap;
+	}
 }
