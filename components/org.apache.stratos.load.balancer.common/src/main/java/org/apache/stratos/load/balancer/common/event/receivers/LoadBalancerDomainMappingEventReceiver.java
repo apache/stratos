@@ -17,9 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.messaging.receiver;
+package org.apache.stratos.load.balancer.common.event.receivers;
 
-import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingAddedEvent;
 import org.apache.stratos.messaging.event.domain.mapping.DomainMappingRemovedEvent;
@@ -28,11 +31,17 @@ import org.apache.stratos.messaging.listener.domain.mapping.DomainMappingRemoved
 import org.apache.stratos.messaging.message.receiver.domain.mapping.DomainMappingEventReceiver;
 
 /**
- * Load balancer domain mapping event receiver.
+ * Load balancer domain mapping event receiver updates the topology in the given topology provider
+ * with the domains found in domain mapping events.
  */
 public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventReceiver {
 
-    public LoadBalancerDomainMappingEventReceiver() {
+    private static final Log log = LogFactory.getLog(LoadBalancerDomainMappingEventReceiver.class);
+
+    private TopologyProvider topologyProvider;
+
+    public LoadBalancerDomainMappingEventReceiver(TopologyProvider topologyProvider) {
+        this.topologyProvider = topologyProvider;
         addEventListeners();
     }
 
@@ -43,14 +52,17 @@ public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventRe
             protected void onEvent(Event event) {
                 DomainMappingAddedEvent domainMappingAddedEvent = (DomainMappingAddedEvent)event;
 
-                LoadBalancerContextUtil.addClusterAgainstDomain(
-                        domainMappingAddedEvent.getServiceName(),
-                        domainMappingAddedEvent.getClusterId(),
-                        domainMappingAddedEvent.getDomainName());
+                String domainName = domainMappingAddedEvent.getDomainName();
+                String contextPath = domainMappingAddedEvent.getContextPath();
 
-                LoadBalancerContextUtil.addContextPathAgainstDomain(
-                        domainMappingAddedEvent.getDomainName(),
-                        domainMappingAddedEvent.getContextPath());
+                String clusterId = domainMappingAddedEvent.getClusterId();
+                Cluster cluster = topologyProvider.getClusterByClusterId(clusterId);
+                if(cluster == null) {
+                    log.warn(String.format("Could not add domain mapping, cluster not found: [cluster] %s", clusterId));
+                }
+
+                cluster.addHostName(domainName, contextPath);
+                log.info(String.format("Domain mapping added: [cluster] %s [domain] %s", clusterId, domainName));
             }
         });
 
@@ -59,13 +71,15 @@ public class LoadBalancerDomainMappingEventReceiver extends DomainMappingEventRe
             protected void onEvent(Event event) {
                 DomainMappingRemovedEvent domainMappingRemovedEvent = (DomainMappingRemovedEvent)event;
 
-                LoadBalancerContextUtil.removeClusterAgainstDomain(
-                        domainMappingRemovedEvent.getServiceName(),
-                        domainMappingRemovedEvent.getClusterId(),
-                        domainMappingRemovedEvent.getDomainName());
+                String clusterId = domainMappingRemovedEvent.getClusterId();
+                Cluster cluster = topologyProvider.getClusterByClusterId(clusterId);
+                if(cluster == null) {
+                    log.warn(String.format("Could not remove domain mapping, cluster not found: [cluster] %s", clusterId));
+                }
 
-                LoadBalancerContextUtil.removeContextPathAgainstDomain(
-                        domainMappingRemovedEvent.getDomainName());
+                String domainName = domainMappingRemovedEvent.getDomainName();
+                cluster.removeHostName(domainName);
+                log.info(String.format("Domain mapping removed: [cluster] %s [domain] %s", clusterId, domainName));
             }
         });
     }

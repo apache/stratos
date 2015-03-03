@@ -20,7 +20,7 @@
 package org.apache.stratos.load.balancer.algorithm;
 
 import org.apache.stratos.load.balancer.context.AlgorithmContext;
-import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.load.balancer.common.domain.Member;
 
 import java.util.List;
 

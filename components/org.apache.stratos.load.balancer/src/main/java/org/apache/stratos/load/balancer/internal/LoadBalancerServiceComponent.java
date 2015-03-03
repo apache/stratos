@@ -26,23 +26,23 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerApplicationSignUpEventReceiver;
+import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerDomainMappingEventReceiver;
+import org.apache.stratos.load.balancer.common.event.receivers.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.common.statistics.notifier.LoadBalancerStatisticsNotifier;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.configurator.CEPConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.SynapseConfigurator;
 import org.apache.stratos.load.balancer.conf.configurator.TopologyFilterConfigurator;
-import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.endpoint.EndpointDeployer;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerApplicationSignUpEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerDomainMappingEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTenantEventReceiver;
-import org.apache.stratos.load.balancer.messaging.receiver.LoadBalancerTopologyEventReceiver;
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsCollector;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -62,8 +62,7 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 
 import java.io.File;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 
 /**
@@ -93,7 +92,7 @@ public class LoadBalancerServiceComponent {
     private boolean activated = false;
     private ExecutorService executorService;
     private LoadBalancerTopologyEventReceiver topologyReceiver;
-    private LoadBalancerTenantEventReceiver tenantReceiver;
+    private TenantEventReceiver tenantReceiver;
     private LoadBalancerApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
@@ -102,14 +101,12 @@ public class LoadBalancerServiceComponent {
         try {
             ClusteringAgent clusteringAgent = ServiceReferenceHolder.getInstance().getAxisConfiguration().getClusteringAgent();
             boolean clusteringEnabled = (clusteringAgent != null);
-            LoadBalancerContext.getInstance().setClustered(clusteringEnabled);
-
             if(log.isInfoEnabled()) {
                 log.info(String.format("Load balancer clustering is %s", (clusteringEnabled ? "enabled" : "disabled")));
             }
 
             // Register endpoint deployer
-            SynapseEnvironmentService synEnvService = LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
+            SynapseEnvironmentService synEnvService = ServiceReferenceHolder.getInstance()
                     .getSynapseEnvironmentService(MultitenantConstants.SUPER_TENANT_ID);
             registerDeployer(ServiceReferenceHolder.getInstance().getAxisConfiguration(),
                     synEnvService.getSynapseEnvironment());
@@ -129,22 +126,28 @@ public class LoadBalancerServiceComponent {
             executorService = StratosThreadPool.getExecutorService(LoadBalancerConstants.LOAD_BALANCER_THREAD_POOL_ID,
                     threadPoolSize);
 
+            TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
+            if(topologyProvider == null) {
+                topologyProvider = new TopologyProvider();
+                LoadBalancerConfiguration.getInstance().setTopologyProvider(topologyProvider);
+            }
+
             if (configuration.isMultiTenancyEnabled()) {
                 // Start tenant event receiver
-                startTenantEventReceiver(executorService);
+                startTenantEventReceiver(executorService, topologyProvider);
             }
 
             if(configuration.isDomainMappingEnabled()) {
                 // Start application signup event receiver
-                startApplicationSignUpEventReceiver(executorService);
+                startApplicationSignUpEventReceiver(executorService, topologyProvider);
 
                 // Start domain mapping event receiver
-                startDomainMappingEventReceiver(executorService);
+                startDomainMappingEventReceiver(executorService, topologyProvider);
             }
 
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
-                startTopologyEventReceiver(executorService);
+                startTopologyEventReceiver(executorService, topologyProvider);
 
                 if (log.isInfoEnabled()) {
                     if (TopologyServiceFilter.getInstance().isActive()) {
@@ -197,8 +200,9 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTenantEventReceiver(ExecutorService executorService) {
-	    tenantReceiver = new LoadBalancerTenantEventReceiver();
+    private void startTenantEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+
+        tenantReceiver = new TenantEventReceiver();
         tenantReceiver.setExecutorService(executorService);
 	    tenantReceiver.execute();
         if (log.isInfoEnabled()) {
@@ -206,8 +210,8 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startDomainMappingEventReceiver(ExecutorService executorService) {
-        domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver();
+    private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+        domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver(topologyProvider);
         domainMappingEventReceiver.setExecutorService(executorService);
         domainMappingEventReceiver.execute();
         if (log.isInfoEnabled()) {
@@ -215,8 +219,8 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startApplicationSignUpEventReceiver(ExecutorService executorService) {
-        applicationSignUpEventReceiver = new LoadBalancerApplicationSignUpEventReceiver();
+    private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+        applicationSignUpEventReceiver = new LoadBalancerApplicationSignUpEventReceiver(topologyProvider);
         applicationSignUpEventReceiver.setExecutorService(executorService);
         applicationSignUpEventReceiver.execute();
         if (log.isInfoEnabled()) {
@@ -224,8 +228,9 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTopologyEventReceiver(ExecutorService executorService) {
-	    topologyReceiver = new LoadBalancerTopologyEventReceiver();
+    private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+
+        topologyReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
 	    topologyReceiver.setExecutorService(executorService);
 	    topologyReceiver.execute();
         if (log.isInfoEnabled()) {
@@ -278,36 +283,41 @@ public class LoadBalancerServiceComponent {
 
     protected void deactivate(ComponentContext context) {
         try {
-            Set<Map.Entry<Integer, SynapseEnvironmentService>> entrySet = LoadBalancerContext
-                    .getInstance().getTenantIdSynapseEnvironmentServiceMap().getTenantIdSynapseEnvironmentServiceMap().entrySet();
-            for (Map.Entry<Integer, SynapseEnvironmentService> entry : entrySet) {
-                unregisterDeployer(entry.getValue().getConfigurationContext()
-                        .getAxisConfiguration(), entry.getValue()
-                        .getSynapseEnvironment());
+            Collection<SynapseEnvironmentService> synapseEnvironmentServices =
+                    ServiceReferenceHolder.getInstance().getSynapseEnvironmentServices();
+            for (SynapseEnvironmentService synapseEnvironmentService : synapseEnvironmentServices) {
+                unregisterDeployer(synapseEnvironmentService.getConfigurationContext()
+                        .getAxisConfiguration(), synapseEnvironmentService.getSynapseEnvironment());
             }
         } catch (Exception e) {
             log.warn("An error occurred while removing endpoint deployer", e);
         }
 
         // Terminate tenant receiver
-        try {
-            tenantReceiver.terminate();
-        } catch (Exception e) {
-            log.warn("An error occurred while terminating tenant event receiver", e);
+        if(tenantReceiver != null) {
+            try {
+                tenantReceiver.terminate();
+            } catch (Exception e) {
+                log.warn("An error occurred while terminating tenant event receiver", e);
+            }
         }
 
         // Terminate topology receiver
-        try {
-            topologyReceiver.terminate();
-        } catch (Exception e) {
-            log.warn("An error occurred while terminating topology event receiver", e);
+        if(topologyReceiver != null) {
+            try {
+                topologyReceiver.terminate();
+            } catch (Exception e) {
+                log.warn("An error occurred while terminating topology event receiver", e);
+            }
         }
 
         // Terminate statistics notifier
-        try {
-            statisticsNotifier.terminate();
-        } catch (Exception e) {
-            log.warn("An error occurred while terminating health statistics notifier", e);
+        if(statisticsNotifier != null) {
+            try {
+                statisticsNotifier.terminate();
+            } catch (Exception e) {
+                log.warn("An error occurred while terminating health statistics notifier", e);
+            }
         }
 
         // Shutdown executor service
@@ -402,13 +412,11 @@ public class LoadBalancerServiceComponent {
      *                                  new Synapse Instance
      */
     protected void setSynapseEnvironmentService(SynapseEnvironmentService synapseEnvironmentService) {
-        boolean alreadyCreated = LoadBalancerContext.getInstance()
-                .getTenantIdSynapseEnvironmentServiceMap()
+        boolean alreadyCreated = ServiceReferenceHolder.getInstance()
                 .containsSynapseEnvironmentService(synapseEnvironmentService.getTenantId());
 
-        LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
-                .addSynapseEnvironmentService(synapseEnvironmentService.getTenantId(),
-                        synapseEnvironmentService);
+        ServiceReferenceHolder.getInstance().addSynapseEnvironmentService(synapseEnvironmentService.getTenantId(),
+                synapseEnvironmentService);
         if (activated) {
             if (!alreadyCreated) {
                 try {
@@ -431,10 +439,8 @@ public class LoadBalancerServiceComponent {
      *
      * @param synapseEnvironmentService synapseEnvironment
      */
-    protected void unsetSynapseEnvironmentService(
-            SynapseEnvironmentService synapseEnvironmentService) {
-        LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap().removeSynapseEnvironmentService(
-                synapseEnvironmentService.getTenantId());
+    protected void unsetSynapseEnvironmentService(SynapseEnvironmentService synapseEnvironmentService) {
+        ServiceReferenceHolder.getInstance().removeSynapseEnvironmentService(synapseEnvironmentService.getTenantId());
     }
 
     protected void setRegistryService(RegistryService regService) {
@@ -481,16 +487,12 @@ public class LoadBalancerServiceComponent {
     protected void unsetSynapseRegistrationsService(
             SynapseRegistrationsService synapseRegistrationsService) {
         int tenantId = synapseRegistrationsService.getTenantId();
-        if (LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
-                .containsSynapseEnvironmentService(tenantId)) {
-            SynapseEnvironment env = LoadBalancerContext.getInstance()
-                    .getTenantIdSynapseEnvironmentServiceMap()
-                    .getSynapseEnvironmentService(tenantId)
+        if (ServiceReferenceHolder.getInstance().containsSynapseEnvironmentService(tenantId)) {
+            SynapseEnvironment env = ServiceReferenceHolder.getInstance().getSynapseEnvironmentService(tenantId)
                     .getSynapseEnvironment();
 
-            LoadBalancerContext.getInstance().getTenantIdSynapseEnvironmentServiceMap()
-                    .removeSynapseEnvironmentService(
-                            synapseRegistrationsService.getTenantId());
+            ServiceReferenceHolder.getInstance().removeSynapseEnvironmentService(
+                    synapseRegistrationsService.getTenantId());
 
             AxisConfiguration axisConfig = synapseRegistrationsService
                     .getConfigurationContext().getAxisConfiguration();

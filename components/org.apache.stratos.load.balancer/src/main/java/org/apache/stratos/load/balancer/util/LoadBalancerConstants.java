@@ -37,4 +37,5 @@ public class LoadBalancerConstants {
     public static final String LOAD_BALANCER_THREAD_POOL_ID = "load.balancer.thread.pool";
     public static final String LOAD_BALANCER_THREAD_POOL_SIZE_KEY = "load.balancer.thread.pool.size";
     public static final int LOAD_BALANCER_DEFAULT_THREAD_POOL_SIZE = 20;
+    public static final String CLUSTER_HOSTNAME = "CLUSTER_HOSTNAME";
 }

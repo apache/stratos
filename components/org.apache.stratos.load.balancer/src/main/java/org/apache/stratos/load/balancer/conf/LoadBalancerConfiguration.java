@@ -23,6 +23,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
@@ -30,10 +34,7 @@ import org.apache.stratos.load.balancer.conf.structure.Node;
 import org.apache.stratos.load.balancer.conf.structure.NodeBuilder;
 import org.apache.stratos.load.balancer.conf.util.Constants;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
-import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
 import org.apache.stratos.load.balancer.exception.InvalidConfigurationException;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 import java.io.File;
 import java.util.*;
@@ -66,6 +67,7 @@ public class LoadBalancerConfiguration {
     private String networkPartitionId;
     private boolean reWriteLocationHeader;
     private boolean domainMappingEnabled;
+    private TopologyProvider topologyProvider;
 
     /**
      * Load balancer configuration is singleton.
@@ -100,8 +102,6 @@ public class LoadBalancerConfiguration {
             instance = null;
             // Clear load balancer context
             LoadBalancerContext.getInstance().clear();
-            // Clear topology
-            TopologyManager.getTopology().clear();
         }
     }
 
@@ -269,6 +269,14 @@ public class LoadBalancerConfiguration {
         this.domainMappingEnabled = domainMappingEnabled;
     }
 
+    public void setTopologyProvider(TopologyProvider topologyProvider) {
+        this.topologyProvider = topologyProvider;
+    }
+
+    public TopologyProvider getTopologyProvider() {
+        return topologyProvider;
+    }
+
     private static class LoadBalancerConfigurationReader {
 
         public LoadBalancerConfiguration readFromFile() {
@@ -323,7 +331,7 @@ public class LoadBalancerConfiguration {
             } else {
                 // Endpoint timeout is not found, set default value
                 configuration.setEndpointTimeout(Constants.DEFAULT_ENDPOINT_TIMEOUT);
-                if(log.isWarnEnabled()) {
+                if (log.isWarnEnabled()) {
                     log.warn(String.format("Endpoint timeout not found, using default: %d", configuration.getEndpointTimeout()));
                 }
             }
@@ -334,7 +342,7 @@ public class LoadBalancerConfiguration {
             } else {
                 // Session timeout is not found, set default value
                 configuration.setSessionTimeout(Constants.DEFAULT_SESSION_TIMEOUT);
-                if(log.isWarnEnabled()) {
+                if (log.isWarnEnabled()) {
                     log.warn(String.format("Session timeout not found, using default: %d", configuration.getSessionTimeout()));
                 }
             }
@@ -343,8 +351,8 @@ public class LoadBalancerConfiguration {
             validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TOPOLOGY_EVENT_LISTENER, topologyEventListenerEnabled, Constants.CONF_ELEMENT_LOADBALANCER);
             configuration.setTopologyEventListenerEnabled(Boolean.parseBoolean(topologyEventListenerEnabled));
 
-            if(configuration.isTopologyEventListenerEnabled()) {
-                String topologyMemberIpType =  loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE);
+            if (configuration.isTopologyEventListenerEnabled()) {
+                String topologyMemberIpType = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE);
                 validateRequiredPropertyInNode(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_IP_TYPE, topologyMemberIpType, Constants.CONF_ELEMENT_LOADBALANCER);
                 configuration.setTopologyMemberIpType(transformMemberIpType(topologyMemberIpType));
             }
@@ -366,7 +374,7 @@ public class LoadBalancerConfiguration {
                 }
                 String clusterFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_CLUSTER_FILTER);
                 if (StringUtils.isNotBlank(clusterFilter)) {
-	                log.info("Cluster filter::: " +clusterFilter);
+                    log.info("Cluster filter::: " + clusterFilter);
                     configuration.setTopologyClusterFilter(clusterFilter);
                 }
                 String memberFilter = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_TOPOLOGY_MEMBER_FILTER);
@@ -410,11 +418,11 @@ public class LoadBalancerConfiguration {
                     throw new InvalidConfigurationException(String.format("Invalid tenant identifier regular expression: %s", tenantIdentifierRegex), e);
                 }
                 List<String> regexList = new ArrayList<String>();
-                if(tenantIdentifierRegex.contains(StratosConstants.FILTER_VALUE_SEPARATOR)) {
+                if (tenantIdentifierRegex.contains(StratosConstants.FILTER_VALUE_SEPARATOR)) {
                     String[] regexArray;
                     regexArray = tenantIdentifierRegex.split(StratosConstants.FILTER_VALUE_SEPARATOR);
-                    for(String regex: regexArray) {
-                       regexList.add(regex);
+                    for (String regex : regexArray) {
+                        regexList.add(regex);
                     }
                 } else {
                     regexList.add(tenantIdentifierRegex);
@@ -433,12 +441,12 @@ public class LoadBalancerConfiguration {
             }
 
             String rewriteLocationHeader = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_REWRITE_LOCATION_HEADER);
-            if(StringUtils.isNotEmpty(rewriteLocationHeader)) {
+            if (StringUtils.isNotEmpty(rewriteLocationHeader)) {
                 configuration.setRewriteLocationHeader(Boolean.parseBoolean(topologyEventListenerEnabled));
             }
 
             String mapDomainNames = loadBalancerNode.getProperty(Constants.CONF_PROPERTY_MAP_DOMAIN_NAMES);
-            if(StringUtils.isNotEmpty(mapDomainNames)) {
+            if (StringUtils.isNotEmpty(mapDomainNames)) {
                 configuration.setDomainMappingEnabled(Boolean.parseBoolean(mapDomainNames));
             }
 
@@ -446,24 +454,26 @@ public class LoadBalancerConfiguration {
                 Node servicesNode = loadBalancerNode.findChildNodeByName(Constants.CONF_ELEMENT_SERVICES);
                 validateRequiredNode(servicesNode, Constants.CONF_ELEMENT_SERVICES);
 
+                TopologyProvider topologyProvider = new TopologyProvider();
                 for (Node serviceNode : servicesNode.getChildNodes()) {
-                    ServiceType serviceType = ServiceType.SingleTenant;
+                    boolean isMultiTenant = false;
                     String multiTenant = serviceNode.getProperty(Constants.CONF_PROPERTY_MULTI_TENANT);
                     if (StringUtils.isNotBlank(multiTenant) && (Boolean.parseBoolean(multiTenant))) {
-                        serviceType = ServiceType.MultiTenant;
+                        isMultiTenant = true;
                     }
-                    Service service = new Service(serviceNode.getName(), serviceType);
+
+                    String serviceName = serviceNode.getName();
                     Node clustersNode = serviceNode.findChildNodeByName(Constants.CONF_ELEMENT_CLUSTERS);
 
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
-                        Cluster cluster = new Cluster(service.getServiceName(), clusterId, null, null, null);
+                        Cluster cluster = new Cluster(serviceName, clusterId);
 
                         String tenantRange = clusterNode.getProperty(Constants.CONF_PROPERTY_TENANT_RANGE);
                         if (StringUtils.isNotBlank(tenantRange)) {
-                            if (service.getServiceType() != ServiceType.MultiTenant) {
+                            if (!isMultiTenant) {
                                 throw new InvalidConfigurationException(String.format("%s property is not valid for non multi-tenant service cluster: [service] %s [cluster] %s",
-                                        Constants.CONF_PROPERTY_TENANT_RANGE, service.getServiceName(), cluster.getClusterId()));
+                                        Constants.CONF_PROPERTY_TENANT_RANGE, serviceName, cluster.getClusterId()));
                             }
                             cluster.setTenantRange(tenantRange);
                         }
@@ -488,14 +498,10 @@ public class LoadBalancerConfiguration {
                             String memberId = memberNode.getName();
                             // we are making it as 1 because we are not using this for static loadbalancer configuration
                             long initTime = -1;
-                            Member member = new Member(cluster.getServiceName(), cluster.getClusterId(), memberId,
-                                    memberId, Constants.STATIC_NETWORK_PARTITION, Constants.STATIC_PARTITION, initTime);
                             String ip = memberNode.getProperty(Constants.CONF_PROPERTY_IP);
                             validateRequiredPropertyInNode(Constants.CONF_PROPERTY_IP, ip, String.format("member %s", memberId));
-                            List<String> memberPrivateIPs = new ArrayList<String>();
-                            memberPrivateIPs.add(ip);
-                            member.setMemberPrivateIPs(memberPrivateIPs);
-                            member.setDefaultPrivateIP(ip);
+                            Member member = new Member(cluster.getServiceName(), cluster.getClusterId(), memberId, ip);
+
                             Node portsNode = memberNode.findChildNodeByName(Constants.CONF_ELEMENT_PORTS);
                             validateRequiredNode(portsNode, Constants.CONF_ELEMENT_PORTS, String.format("member %s", memberId));
 
@@ -509,29 +515,13 @@ public class LoadBalancerConfiguration {
                                 Port port = new Port(portNode.getName(), Integer.valueOf(value), Integer.valueOf(proxy));
                                 member.addPort(port);
                             }
-                            member.setStatus(MemberStatus.Active);
                             cluster.addMember(member);
                         }
                         // Add cluster to service
-                        service.addCluster(cluster);
-
-                        // Add service to topology manager if not exists
-                        try {
-                            // TODO - fix properly!
-                            // this lock is not needed since, this Topology is not shared. This is
-                            // used by LB only
-                            //TopologyManager.acquireWriteLock();
-                            if (!TopologyManager.getTopology().serviceExists(service.getServiceName())) {
-                                TopologyManager.getTopology().addService(service);
-                            }
-                        } finally {
-                            //TopologyManager.releaseWriteLock();
-                        }
-
-                        // Add cluster to load balancer context
-                        LoadBalancerContextUtil.addClusterAgainstHostNames(cluster);
+                        topologyProvider.addCluster(cluster);
                     }
                 }
+                configuration.setTopologyProvider(topologyProvider);
             }
             return configuration;
         }

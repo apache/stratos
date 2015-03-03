@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.messaging.receiver;
+package org.apache.stratos.load.balancer.common.event.receivers;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.load.balancer.context.LoadBalancerContextUtil;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.DomainMapping;
 import org.apache.stratos.messaging.event.Event;
@@ -30,13 +31,17 @@ import org.apache.stratos.messaging.listener.application.signup.CompleteApplicat
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 
 /**
- * Load balancer application signup event receiver.
+ * Load balancer application signup event receiver updates the topology in the given topology provider
+ * with the hostnames found in application signup events.
  */
 public class LoadBalancerApplicationSignUpEventReceiver extends ApplicationSignUpEventReceiver {
 
     private static final Log log = LogFactory.getLog(LoadBalancerApplicationSignUpEventReceiver.class);
 
-    public LoadBalancerApplicationSignUpEventReceiver() {
+    private TopologyProvider topologyProvider;
+
+    public LoadBalancerApplicationSignUpEventReceiver(TopologyProvider topologyProvider) {
+        this.topologyProvider = topologyProvider;
         addEventListeners();
     }
 
@@ -47,18 +52,18 @@ public class LoadBalancerApplicationSignUpEventReceiver extends ApplicationSignU
                 if (log.isDebugEnabled()) {
                     log.debug("Complete application signup event received");
                 }
+
                 CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = (CompleteApplicationSignUpsEvent)event;
                 for(ApplicationSignUp applicationSignUp : completeApplicationSignUpsEvent.getApplicationSignUps()) {
                     if(applicationSignUp.getDomainMappings() != null) {
                         for (DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
                             if(domainMapping != null) {
-                                LoadBalancerContextUtil.addClusterAgainstDomain(
-                                        domainMapping.getServiceName(),
-                                        domainMapping.getClusterId(),
-                                        domainMapping.getDomainName());
-
-                                LoadBalancerContextUtil.addContextPathAgainstDomain(domainMapping.getDomainName(),
-                                        domainMapping.getContextPath());
+                                Cluster cluster = topologyProvider.getClusterByClusterId(domainMapping.getClusterId());
+                                if(cluster != null) {
+                                    cluster.addHostName(domainMapping.getDomainName());
+                                    log.info(String.format("Domain mapping added: [cluster] %s [domain] %s",
+                                            cluster.getClusterId(), domainMapping.getDomainName()));
+                                }
                             }
                         }
                     }

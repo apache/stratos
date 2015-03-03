@@ -27,7 +27,6 @@ import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
-import org.apache.stratos.messaging.domain.tenant.SubscriptionDomain;
 import org.apache.stratos.rest.endpoint.exception.RestAPIException;
 import org.wso2.carbon.context.CarbonContext;
 
@@ -37,7 +36,6 @@ import java.util.*;
 public class MockContext {
     private static MockContext mockContext = new MockContext(); // singleton
 
-    private Map<String, List<SubscriptionDomain>> subscriptionAliasToDomainMap = new HashMap<String, List<SubscriptionDomain>>();
     private Map<Integer, List<String>> tenantIdToAliasesMap = new HashMap<Integer, List<String>>();
     private Map<Integer, List<CartridgeBean>> cartridgeDefinitionBeanList = new HashMap<Integer, List<CartridgeBean>>();
     private Map<Integer, Map<String,CartridgeBean>> availableSingleTenantCartridges = new HashMap<Integer, Map<String,CartridgeBean>>();
@@ -739,27 +737,6 @@ public class MockContext {
         	return (deploymentPolicyMap.get(tenantId)).values().toArray(new DeploymentPolicyBean[0]);
         }
     }
-
-	public ApiResponseBean removeSubscriptionDomain(int tenantId,
-			String subscriptionAlias, String domainName) {
-		ApiResponseBean stratosApiResponse = new ApiResponseBean();
-		
-		List<String> tenantAliases = tenantIdToAliasesMap.get(tenantId);
-		if(tenantAliases != null && tenantAliases.contains(subscriptionAlias)) {
-			for (Iterator<SubscriptionDomain> iterator = subscriptionAliasToDomainMap.get(subscriptionAlias).iterator(); iterator
-					.hasNext();) {
-				SubscriptionDomain subscriptionDomain = (SubscriptionDomain) iterator.next();
-				if (subscriptionDomain.getDomainName().equals(domainName)) {
-					iterator.remove();
-					stratosApiResponse.setMessage("Successfully removed the subscription domain: "+domainName);
-				}
-			}
-		} else {		
-			stratosApiResponse.setMessage("Failed to remove the subscription domain: "+domainName);
-		}
-		
-        return stratosApiResponse;
-	}
 	
 	public void addUser(UserInfoBean user) {
 		int tenantId = getTenantId();

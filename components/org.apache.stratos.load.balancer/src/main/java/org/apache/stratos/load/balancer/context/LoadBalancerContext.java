@@ -32,41 +32,25 @@ public class LoadBalancerContext {
 
     private static volatile LoadBalancerContext instance;
 
-    // Following map is updated by the service component.
-    // Map<TenantId, SynapseEnvironmentService>
-    private TenantIdSynapseEnvironmentServiceMap tenantIdSynapseEnvironmentServiceMap;
-
-    // Following maps are updated on demand by the request delegator.
-    // Map<ServiceName, ServiceContext>
-    private ServiceNameServiceContextMap serviceNameServiceContextMap;
     // Map<ClusterId, ClusterContext>
     private ClusterIdClusterContextMap clusterIdClusterContextMap;
 
     // Following maps are updated by load balancer topology & tenant receivers.
     // Map<ClusterId, Cluster>
     // Keep track of all clusters
-    private ClusterIdClusterMap clusterIdClusterMap;
     // Map<Host/Domain-Name, Cluster>
     // Keep tack of all clusters
-    private HostNameClusterMap hostNameClusterMap;
+
     // Map<Host/Domain-Name, AppContext>
     private HostNameAppContextMap hostNameAppContextMap;
     // Map<HostName, Map<TenantId, Cluster>>
-    // Keep track of multi-tenant service clusters
-    private MultiTenantClusterMap multiTenantClusterMap;
     // Map<MemberIp, Hostname>
     // Keep track of cluster hostnames of of all members  against their ip addresses
     private MemberIpHostnameMap memberIpHostnameMap;
-    private boolean clustered;
 
     private LoadBalancerContext() {
-        tenantIdSynapseEnvironmentServiceMap = new TenantIdSynapseEnvironmentServiceMap();
-        serviceNameServiceContextMap = new ServiceNameServiceContextMap();
         clusterIdClusterContextMap = new ClusterIdClusterContextMap();
-        clusterIdClusterMap = new ClusterIdClusterMap();
-        hostNameClusterMap = new HostNameClusterMap();
         hostNameAppContextMap = new HostNameAppContextMap();
-        multiTenantClusterMap = new MultiTenantClusterMap();
         memberIpHostnameMap = new MemberIpHostnameMap();
     }
 
@@ -82,49 +66,20 @@ public class LoadBalancerContext {
     }
 
     public void clear() {
-        tenantIdSynapseEnvironmentServiceMap.clear();
-        serviceNameServiceContextMap.clear();
         clusterIdClusterContextMap.clear();
-        multiTenantClusterMap.clear();
-    }
-
-    public TenantIdSynapseEnvironmentServiceMap getTenantIdSynapseEnvironmentServiceMap() {
-        return tenantIdSynapseEnvironmentServiceMap;
-    }
-
-    public ServiceNameServiceContextMap getServiceNameServiceContextMap() {
-        return serviceNameServiceContextMap;
+        hostNameAppContextMap.clear();
+        memberIpHostnameMap.clear();
     }
 
     public ClusterIdClusterContextMap getClusterIdClusterContextMap() {
         return clusterIdClusterContextMap;
     }
 
-    public ClusterIdClusterMap getClusterIdClusterMap() {
-        return clusterIdClusterMap;
-    }
-
-    public HostNameClusterMap getHostNameClusterMap() {
-        return hostNameClusterMap;
-    }
-
     public HostNameAppContextMap getHostNameContextPathMap() {
         return hostNameAppContextMap;
     }
 
-    public MultiTenantClusterMap getMultiTenantClusterMap() {
-       return multiTenantClusterMap;
-    }
-
     public MemberIpHostnameMap getMemberIpHostnameMap() {
         return memberIpHostnameMap;
-    }
-
-    public boolean isClustered() {
-        return clustered;
-    }
-
-    public void setClustered(boolean clustered) {
-        this.clustered = clustered;
     }
 }

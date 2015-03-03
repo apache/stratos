@@ -48,4 +48,8 @@ public class HostNameAppContextMap {
     public boolean contains(String hostName) {
         return concurrentHashMap.containsKey(hostName);
     }
+
+    public void clear() {
+        concurrentHashMap.clear();
+    }
 }

@@ -23,9 +23,13 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.protocol.HTTP;
+import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
-import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.statistics.InFlightRequestDecrementCallable;
@@ -33,11 +37,7 @@ import org.apache.stratos.load.balancer.statistics.InFlightRequestIncrementCalla
 import org.apache.stratos.load.balancer.statistics.LoadBalancerStatisticsExecutor;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Port;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantManager;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.synapse.MessageContext;
 import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
@@ -84,7 +84,9 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     public void init(SynapseEnvironment synapseEnvironment) {
         super.init(synapseEnvironment);
 
-        requestDelegator = new RequestDelegator(LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName));
+        LoadBalanceAlgorithm algorithm = LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName);
+        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
+        requestDelegator = new RequestDelegator(algorithm, topologyProvider);
         synapseEnvironment.getSynapseConfiguration().setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, String.valueOf(sessionTimeout));
         setDispatcher(new HttpSessionDispatcher());
     }
@@ -252,7 +254,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
                 throwSynapseException(synCtx, 403, String.format("You are unauthorized to access"));
             }
         } else {
-
             member = requestDelegator.findNextMemberFromHostName(targetHost, synCtx.getMessageID());
         }
 
@@ -260,12 +261,24 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
             return null;
 
         // Create Axi2 member object
-        org.apache.axis2.clustering.Member axis2Member = new org.apache.axis2.clustering.Member(
-                getMemberIp(synCtx, member), -1);
+        return createAxis2Member(synCtx, targetHost, member);
+    }
+
+    /**
+     * Create axis2 member from load balancer member object.
+     * @param synCtx
+     * @param member
+     * @return
+     */
+    private org.apache.axis2.clustering.Member createAxis2Member(MessageContext synCtx, String clusterHostName,
+                                                                 Member member) {
+        org.apache.axis2.clustering.Member axis2Member =
+                new org.apache.axis2.clustering.Member(member.getHostName(), -1);
         axis2Member.setDomain(member.getClusterId());
-        axis2Member.setActive(member.isActive());
+        axis2Member.setActive(true);
         // Set cluster id and member id in member properties
         axis2Member.getProperties().setProperty(LoadBalancerConstants.CLUSTER_ID, member.getClusterId());
+        axis2Member.getProperties().setProperty(LoadBalancerConstants.CLUSTER_HOSTNAME, clusterHostName);
         axis2Member.getProperties().setProperty(LoadBalancerConstants.MEMBER_ID, member.getMemberId());
         // Update axis2 member ports
         updateAxis2MemberPorts(synCtx, axis2Member);
@@ -364,7 +377,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     }
 
     /**
->>>>>>> 400
      * Find topology member from axis2 member using cluster id and member id defined in axis2 member properties.
      *
      * @param synCtx
@@ -372,35 +384,38 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @return
      */
     private Member findMemberFromAxis2Member(MessageContext synCtx, org.apache.axis2.clustering.Member axis2Member) {
-        String clusterId = axis2Member.getProperties().getProperty(LoadBalancerConstants.CLUSTER_ID);
+        String hostName = axis2Member.getProperties().getProperty(LoadBalancerConstants.CLUSTER_HOSTNAME);
         String memberId = axis2Member.getProperties().getProperty(LoadBalancerConstants.MEMBER_ID);
-        if (StringUtils.isBlank(clusterId) || StringUtils.isBlank(memberId)) {
+        if (StringUtils.isBlank(hostName)) {
             if (log.isErrorEnabled()) {
-                log.error(String.format("Could not find cluster id and/or member id properties in axis2 member: [cluster-id] %s " +
-                        "[member-id] %s", clusterId, memberId));
+                log.error(String.format("Could not find hostname in axis2 member: [hostname] %s ", hostName));
             }
             throwSynapseException(synCtx, 500, "Internal server error");
         }
-        try {
-            TopologyManager.acquireReadLock();
-            Cluster cluster = LoadBalancerContext.getInstance().getClusterIdClusterMap().getCluster(clusterId);
-            if (cluster == null) {
-                if (log.isErrorEnabled()) {
-                    log.error(String.format("Cluster not found in load balancer context: [cluster-id] %s ", clusterId));
-                }
-                throwSynapseException(synCtx, 500, "Internal server error");
+        if (StringUtils.isBlank(memberId)) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Could not find member id in axis2 member: [member] %s ",
+                        axis2Member.getHostName()));
             }
-            Member member = cluster.getMember(memberId);
-            if (member == null) {
-                if (log.isErrorEnabled()) {
-                    log.error(String.format("Member not found in load balancer context: [cluster-id] %s [member-id] %s", clusterId, memberId));
-                }
-                throwSynapseException(synCtx, 500, "Internal server error");
-            }
-            return member;
-        } finally {
-            TopologyManager.releaseReadLock();
+            throwSynapseException(synCtx, 500, "Internal server error");
         }
+
+        Cluster cluster = requestDelegator.getCluster(hostName);
+        if (cluster == null) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Cluster not found in load balancer context: [hostname] %s ", hostName));
+            }
+            throwSynapseException(synCtx, 500, "Internal server error");
+        }
+        Member member = cluster.getMember(memberId);
+        if (member == null) {
+            if (log.isErrorEnabled()) {
+                log.error(String.format("Member not found in load balancer context: [hostname] %s [member-id] %s",
+                        hostName, memberId));
+            }
+            throwSynapseException(synCtx, 500, "Internal server error");
+        }
+        return member;
     }
 
     /**
@@ -410,34 +425,34 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
      * @param member
      * @return
      */
-    private String getMemberIp(MessageContext synCtx, Member member) {
-        if (LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
-            if (LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
-                // Return member's public IP address
-                if (StringUtils.isBlank(member.getDefaultPublicIP())) {
-                    if (log.isErrorEnabled()) {
-                        log.error(String.format("Member public IP address not found: [member] %s", member.getMemberId()));
-                    }
-                    throwSynapseException(synCtx, 500, "Internal server error");
-                }
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPublicIP()));
-                }
-                return member.getDefaultPublicIP();
-            }
-        }
-        // Return member's private IP address
-        if (StringUtils.isBlank(member.getDefaultPrivateIP())) {
-            if (log.isErrorEnabled()) {
-                log.error(String.format("Member IP address not found: [member] %s", member.getMemberId()));
-            }
-            throwSynapseException(synCtx, 500, "Internal server error");
-        }
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPrivateIP()));
-        }
-        return member.getDefaultPrivateIP();
-    }
+//    private String getMemberIp(MessageContext synCtx, Member member) {
+//        if (LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
+//            if (LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
+//                // Return member's public IP address
+//                if (StringUtils.isBlank(member.getDefaultPublicIP())) {
+//                    if (log.isErrorEnabled()) {
+//                        log.error(String.format("Member public IP address not found: [member] %s", member.getMemberId()));
+//                    }
+//                    throwSynapseException(synCtx, 500, "Internal server error");
+//                }
+//                if (log.isDebugEnabled()) {
+//                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPublicIP()));
+//                }
+//                return member.getDefaultPublicIP();
+//            }
+//        }
+//        // Return member's private IP address
+//        if (StringUtils.isBlank(member.getDefaultPrivateIP())) {
+//            if (log.isErrorEnabled()) {
+//                log.error(String.format("Member IP address not found: [member] %s", member.getMemberId()));
+//            }
+//            throwSynapseException(synCtx, 500, "Internal server error");
+//        }
+//        if (log.isDebugEnabled()) {
+//            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPrivateIP()));
+//        }
+//        return member.getDefaultPrivateIP();
+//    }
 
     /**
      * Extract incoming request URL from message context.

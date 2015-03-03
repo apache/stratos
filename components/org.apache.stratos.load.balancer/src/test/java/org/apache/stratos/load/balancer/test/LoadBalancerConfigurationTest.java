@@ -18,10 +18,12 @@
  */
 package org.apache.stratos.load.balancer.test;
 
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.common.domain.Port;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
-import org.apache.stratos.messaging.domain.topology.*;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,18 +103,10 @@ public class LoadBalancerConfigurationTest {
         try {
             String validationError = "Static topology validation failed";
 
-            TopologyManager.acquireReadLock();
-            Topology topology = TopologyManager.getTopology();
-            Assert.assertTrue(String.format("%s, services not found", validationError), topology.getServices().size() > 0);
-
-            String serviceName = "app-server";
-            Service appServer = topology.getService(serviceName);
-            Assert.assertNotNull(String.format("%s, service not found: [service] %s", validationError, serviceName), appServer);
-
-            Assert.assertTrue(String.format("%s, multi-tenant is not true: [service] %s", validationError, serviceName), appServer.getServiceType() == ServiceType.MultiTenant);
+            TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
 
             String clusterId = "app-server-cluster1";
-            Cluster cluster1 = appServer.getCluster(clusterId);
+            Cluster cluster1 = topologyProvider.getClusterByClusterId(clusterId);
             Assert.assertNotNull(String.format("%s, cluster not found: [cluster] %s", validationError, clusterId), cluster1);
             Assert.assertEquals(String.format("%s, tenant range is not valid: [cluster] %s", validationError, clusterId), cluster1.getTenantRange(), "1-100");
 
@@ -126,7 +120,7 @@ public class LoadBalancerConfigurationTest {
             String memberId = "m1";
             Member m1 = cluster1.getMember(memberId);
             Assert.assertNotNull(String.format("%s, member not found: [member] %s", validationError, memberId), m1);
-            Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getDefaultPrivateIP());
+            Assert.assertEquals(String.format("%s, member ip not valid", validationError), "10.0.0.10", m1.getHostName());
 
             int proxyPort = 80;
             Port m1Http = m1.getPort(proxyPort);
@@ -138,7 +132,6 @@ public class LoadBalancerConfigurationTest {
             Assert.assertTrue(String.format("%s, map-domain-names is not true", validationError), LoadBalancerConfiguration.getInstance().isDomainMappingEnabled());
 
         } finally {
-            TopologyManager.releaseReadLock();
             LoadBalancerConfiguration.clear();
         }
     }

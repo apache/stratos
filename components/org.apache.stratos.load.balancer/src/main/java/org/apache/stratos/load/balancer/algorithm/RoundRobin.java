@@ -22,7 +22,7 @@ package org.apache.stratos.load.balancer.algorithm;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.context.AlgorithmContext;
-import org.apache.stratos.messaging.domain.topology.Member;
+import org.apache.stratos.load.balancer.common.domain.Member;
 
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -67,7 +67,7 @@ public class RoundRobin implements LoadBalanceAlgorithm {
                     currentMemberIndex++;
                 }
                 index--;
-            } while ((!current.isActive()) && index > 0);
+            } while (index > 0);
             algorithmContext.setCurrentMemberIndex(currentMemberIndex);
         } finally {
             lock.unlock();

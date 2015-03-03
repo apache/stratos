@@ -27,8 +27,12 @@ import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;
+import org.wso2.carbon.mediation.initializer.services.SynapseEnvironmentService;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.user.core.service.RealmService;
+
+import java.util.Collection;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service reference holder keeps references of bind OSGi services.
@@ -46,8 +50,10 @@ public class ServiceReferenceHolder {
     private DependencyManagementService dependencyManager;
     private RealmService realmService;
     private DistributedObjectProvider distributedObjectProvider;
+    private ConcurrentHashMap<Integer, SynapseEnvironmentService> synapseEnvironmentServiceMap;
 
     private ServiceReferenceHolder() {
+        synapseEnvironmentServiceMap = new ConcurrentHashMap<Integer, SynapseEnvironmentService>();
     }
 
     public static ServiceReferenceHolder getInstance() {
@@ -134,5 +140,25 @@ public class ServiceReferenceHolder {
 
     public DistributedObjectProvider getDistributedObjectProvider() {
         return distributedObjectProvider;
+    }
+
+    public SynapseEnvironmentService getSynapseEnvironmentService(int tenantId) {
+        return synapseEnvironmentServiceMap.get(tenantId);
+    }
+
+    public boolean containsSynapseEnvironmentService(int tenantId) {
+        return synapseEnvironmentServiceMap.containsKey(tenantId);
+    }
+
+    public void addSynapseEnvironmentService(int tenantId, SynapseEnvironmentService synapseEnvironmentService) {
+        synapseEnvironmentServiceMap.put(tenantId, synapseEnvironmentService);
+    }
+
+    public void removeSynapseEnvironmentService(int tenantId) {
+        synapseEnvironmentServiceMap.remove(tenantId);
+    }
+
+    public Collection<SynapseEnvironmentService> getSynapseEnvironmentServices() {
+        return synapseEnvironmentServiceMap.values();
     }
 }

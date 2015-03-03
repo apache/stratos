@@ -19,6 +19,7 @@
 package org.apache.stratos.load.balancer.mediators;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
 import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
@@ -66,8 +67,8 @@ public class LocationReWriter extends AbstractMediator {
                     // Check whether the location host is an ip address of a known member
                     String hostname = LoadBalancerContext.getInstance().getMemberIpHostnameMap().get(inLocationUrl.getHost());
                     if (StringUtils.isEmpty(hostname)) {
-                        
-                        if (!LoadBalancerContext.getInstance().getHostNameClusterMap().containsCluster(inLocationUrl.getHost())) {
+                        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
+                        if (topologyProvider.getClusterByHostName(inLocationUrl.getHost()) == null) {
                         	if (log.isDebugEnabled()) {
                                 log.debug(String.format("A hostname not found for ip: [ip-address] %s", inLocationUrl.getHost()));
                             }

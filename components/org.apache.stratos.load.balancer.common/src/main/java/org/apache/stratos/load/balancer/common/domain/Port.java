@@ -7,7 +7,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *  http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -17,28 +17,37 @@
  * under the License.
  */
 
-package org.apache.stratos.load.balancer.common.statistics;
-
-import org.apache.stratos.messaging.domain.topology.Cluster;
+package org.apache.stratos.load.balancer.common.domain;
 
 /**
- * Load balancer statistics reader interface.
+ * Load balancer port definition.
  */
-public interface LoadBalancerStatisticsReader {
+public class Port {
 
-    /**
-     * Returns in-flight request count of sliding window configured.
-     * @param clusterId
-     */
-    int getInFlightRequestCount(String clusterId);
+    private String protocol;
+    private int value;
+    private int proxy;
 
-    int getActiveInstancesCount(Cluster cluster);
+    public Port(String protocol, int value, int proxy) {
+        this.protocol = protocol;
+        this.value = value;
+        this.proxy = proxy;
+    }
 
+    public String getProtocol() {
+        return protocol;
+    }
 
-    /**
-     * Returns the number of requests served since the last time this method was called.
-     * @param clusterId
-     * @return
-     */
-    int getServedRequestCount(String clusterId);
+    public int getValue() {
+        return value;
+    }
+
+    public int getProxy() {
+        return proxy;
+    }
+
+    @Override
+    public String toString() {
+        return "Port [protocol=" + protocol + ", value=" + value + ", proxy=" + proxy + "]";
+    }
 }
