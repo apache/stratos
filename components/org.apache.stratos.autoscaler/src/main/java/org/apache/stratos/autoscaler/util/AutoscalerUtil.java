@@ -417,7 +417,16 @@ public class AutoscalerUtil {
      */
     private static List<String> getDeploymentPolicyIdsReferedInApplication(String applicationId) {
     	
-    	Map<String, String> aliasToDeploymentPolicyIdMap = ApplicationHolder.getApplications().getApplication(applicationId).getAliasToDeploymentPolicyIdMap();
+    	if (applicationId == null || StringUtils.isBlank(applicationId)) {
+			return null;
+		}
+    	
+    	Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+    	if (application == null) {
+			return null;
+		}
+    	
+    	Map<String, String> aliasToDeploymentPolicyIdMap = application.getAliasToDeploymentPolicyIdMap();
     	if (aliasToDeploymentPolicyIdMap == null) {
 			return null;
 		}
@@ -441,11 +450,20 @@ public class AutoscalerUtil {
      */
     public static String getDeploymentPolicyIdByAlias(String applicationId, String alias) {
     	
-    	if (alias == null || alias.isEmpty()) {
+    	if (alias == null || StringUtils.isBlank(alias)) {
 			return null;
 		}
     	
-    	Map<String, String> aliasToDeploymentPolicyIdMap = ApplicationHolder.getApplications().getApplication(applicationId).getAliasToDeploymentPolicyIdMap();
+    	if (applicationId == null || StringUtils.isBlank(applicationId)) {
+			return null;
+		}
+    	
+    	Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+    	if (application == null) {
+			return null;
+		}
+    	
+		Map<String, String> aliasToDeploymentPolicyIdMap = application.getAliasToDeploymentPolicyIdMap();
     	
     	if (aliasToDeploymentPolicyIdMap == null) {
 			return null;
