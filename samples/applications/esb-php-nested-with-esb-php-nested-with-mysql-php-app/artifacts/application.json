@@ -1,0 +1,141 @@
+{
+    "applicationId": "esb-php-nested-with-esb-php-nested-with-mysql-php-app",
+    "alias": "my-esb-php-nested-with-esb-php-nested-with-mysql-php-app",
+    "components": {
+        "groups": [
+            {
+                "name": "esb-php-nested-with-esb-php-nested-with-mysql-php",
+                "alias": "my-esb-php-nested-with-esb-php-nested-with-mysql-php",
+                "groupMinInstances": 1,
+                "groupMaxInstances": 2,
+	        "groups": [
+	            {
+        	        "name": "esb-php-nested-with-mysql-php",
+        	        "alias": "my-esb-php-nested-with-mysql-php",
+        	        "groupMinInstances": 1,
+        	        "groupMaxInstances": 2,
+			"groups": [
+                    	    {
+                        	"name": "mysql-php",
+                        	"alias": "my-mysql-php",
+                        	"groupMinInstances": 1,
+                        	"groupMaxInstances": 2,
+                        	"cartridges": [
+                        	    {
+                        	        "type": "mysql",
+                        	        "cartridgeMin": 2,
+                        	        "cartridgeMax": 5,
+                        	        "subscribableInfo": {
+                        	            "alias": "my-mysql-php-mysql",
+                        	            "deploymentPolicy":"deployment-policy-1",
+                        	            "autoscalingPolicy": "autoscaling-policy-1"
+                        	        }
+                        	    },
+                        	    {
+                        	        "type": "php",
+                        	        "cartridgeMin": 2,
+                        	        "cartridgeMax": 5,
+                        	        "subscribableInfo": {
+                        	            "alias": "my-mysql-php-php",
+                        	            "deploymentPolicy":"deployment-policy-1",
+                        	            "autoscalingPolicy": "autoscaling-policy-1",
+                        	            "artifactRepository":{
+                        	               "privateRepo":false,
+                        	               "repoUrl":"https://github.com/imesh/stratos-php-applications.git"
+                        	            }
+                        	        }
+                        	    }
+                        	]
+                    	    }
+                	],
+	                "cartridges": [
+	                    {
+        	                "type": "esb",
+                	        "cartridgeMin": 2,
+                	        "cartridgeMax": 5,
+                	        "subscribableInfo": {
+                	            "alias": "my-esb-php-nested-with-mysql-php-esb",
+                	            "deploymentPolicy":"deployment-policy-1",
+                	            "autoscalingPolicy": "autoscaling-policy-1"
+                	        }
+                	    },
+                	    {
+                	        "type": "php",
+                	        "cartridgeMin": 2,
+                	        "cartridgeMax": 5,
+                	        "subscribableInfo": {
+                	            "alias": "my-esb-php-nested-with-mysql-php-php",
+                	            "deploymentPolicy":"deployment-policy-1",
+                	            "autoscalingPolicy": "autoscaling-policy-1",
+                	            "artifactRepository":{
+                	               "privateRepo":false,
+                	               "repoUrl":"https://github.com/imesh/stratos-php-applications.git"
+                	            }
+                	        }
+                	    }
+                	]
+            	    }
+        	],
+                "cartridges": [
+                    {
+                        "type": "esb",
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 5,
+                        "subscribableInfo": {
+                            "alias": "my-esb-php-nested-with-esb-php-nested-with-mysql-php-esb",
+			    "deploymentPolicy":"deployment-policy-1",
+                            "autoscalingPolicy": "autoscaling-policy-1"
+                        }
+                    },
+                    {
+                        "type": "php",
+                        "cartridgeMin": 2,
+                        "cartridgeMax": 5,
+                        "subscribableInfo": {
+                            "alias": "my-esb-php-nested-with-esb-php-nested-with-mysql-php-php",
+			    "deploymentPolicy":"deployment-policy-1",
+                            "autoscalingPolicy": "autoscaling-policy-1",
+                            "artifactRepository":{
+                               "privateRepo":false,
+                               "repoUrl":"https://github.com/imesh/stratos-php-applications.git"
+                            }
+                        }
+                    }
+                ]
+            }
+        ],
+        "cartridges" : [
+            {
+                "type": "esb",
+                "cartridgeMin": 2,
+                "cartridgeMax": 5,
+                "subscribableInfo": {
+                    "alias": "my-esb",
+		    "deploymentPolicy":"deployment-policy-1",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git"
+                    }
+                }
+            }
+        ],
+        "cartridges" : [
+            {
+                "type": "php",
+                "cartridgeMin": 2,
+                "cartridgeMax": 5,
+                "subscribableInfo": {
+                    "alias": "my-php",
+                    "deploymentPolicy":"deployment-policy-1",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "artifactRepository":{
+                        "privateRepo":false,
+                        "repoUrl":"https://github.com/imesh/stratos-tomcat-applications.git"
+                    }
+                }
+            }
+        ]
+    }
+}
+
