@@ -23,3 +23,9 @@ curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://
 
 echo "Removing autoscale policies..."
 curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/autoscalingPolicies/autoscaling-policy-1
+
+echo "Removing application policies..."
+curl -X DELETE -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies/application-policy-1
+
+
+
