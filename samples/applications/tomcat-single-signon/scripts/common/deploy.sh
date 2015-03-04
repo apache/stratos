@@ -41,12 +41,12 @@ curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/ws
 sleep 1
 
 echo "Adding application policy..."
-curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
+curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy-2.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
 
 sleep 1
 
 echo "Creating application..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-2.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
+curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
 
