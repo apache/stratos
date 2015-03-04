@@ -7,10 +7,7 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.c3,cartridge.c2"
-        ],
-        "scalingDependants": [
-            "cartridge.c3, cartridge.c2"
+            "cartridge.my-c3,cartridge.my-c2"
         ],
         "terminationBehaviour": "terminate-all"
     }
