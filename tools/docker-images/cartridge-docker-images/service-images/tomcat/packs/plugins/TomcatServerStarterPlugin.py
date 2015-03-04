@@ -1,6 +1,3 @@
-#!/bin/bash
-# --------------------------------------------------------------
-#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -9,7 +6,7 @@
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing,
 # software distributed under the License is distributed on an
@@ -17,12 +14,25 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-#
-# --------------------------------------------------------------
-# This extension script will be executed when member terminated
-# event is received.
-# --------------------------------------------------------------
-#
 
-log=/var/log/apache-stratos/cartridge-agent-extensions.log
-OUTPUT=`date`": Member Terminated Event: "
+import mdsclient
+from plugins.contracts import ICartridgeAgentPlugin
+import time
+import zipfile
+import subprocess
+from modules.util.log import LogFactory
+import os
+
+
+class TomcatServerStarterPlugin(ICartridgeAgentPlugin):
+
+    def run_plugin(self, values):
+        log = LogFactory().get_log(__name__)
+        # start tomcat
+        tomcat_start_command = "exec ${CATALINA_HOME}/bin/startup.sh"
+        log.info("Starting Tomcat server: [command] %s" % tomcat_start_command)
+
+        p = subprocess.Popen(tomcat_start_command, shell=True)
+        output, errors = p.communicate()
+        log.debug("Tomcat server started: [command] %s, [output] %s" % (p.args, output))
+

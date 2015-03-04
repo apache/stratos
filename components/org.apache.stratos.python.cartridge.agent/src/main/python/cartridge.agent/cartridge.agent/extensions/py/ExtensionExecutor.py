@@ -18,20 +18,22 @@
 from plugins.contracts import ICartridgeAgentPlugin
 import os
 import subprocess
+from modules.util.log import LogFactory
 
 
 class ExtensionExecutor(ICartridgeAgentPlugin):
 
-    def run_plugin(self, values, log):
+    def run_plugin(self, values):
+        log = LogFactory().get_log(__name__)
         event_name = values["EVENT"]
         log.debug("Running extension for %s" % event_name)
         extension_values = {}
         for key in values.keys():
             extension_values["STRATOS_" + key] = values[key]
-            log.debug("%s => %s" % ("STRATOS_" + key, extension_values["STRATOS_" + key]))
+            # log.debug("%s => %s" % ("STRATOS_" + key, extension_values["STRATOS_" + key]))
 
         try:
-            output, errors = ExtensionExecutor.execute_bash(event_name + ".sh")
+            output, errors = ExtensionExecutor.execute_script(event_name + ".sh")
         except OSError:
             raise RuntimeError("Could not find an extension file for event %s" % event_name)
 
@@ -41,7 +43,7 @@ class ExtensionExecutor(ICartridgeAgentPlugin):
         log.info("%s Extension executed. [output]: %s" % (event_name, output))
 
     @staticmethod
-    def execute_bash(bash_file):
+    def execute_script(bash_file):
         """ Execute the given bash files in the <PCA_HOME>/extensions/bash folder
         :param bash_file: name of the bash file to execute
         :return: tuple of (output, errors)

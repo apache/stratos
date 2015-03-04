@@ -29,6 +29,11 @@ RUN apt-get install -y apache2 php5 zip stress
 RUN rm -f /etc/apache2/sites-enabled/000-default.conf
 ADD files/000-default.conf /etc/apache2/sites-enabled/000-default.conf
 
+#------------------------
+# Copy PHP related PCA plugins
+#-----------------------
+ADD packs/plugins /mnt/plugins
+
 EXPOSE 80
 
 # ----------------

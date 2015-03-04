@@ -1,0 +1,9 @@
+[Core]
+Name = PhpServerStarterPlugin to start Apache server with PHP
+Module = PhpServerStarterPlugin
+
+[Documentation]
+Description = ArtifactUpdatedEvent
+Author = Op1
+Version = 0.1
+Website = stratos.apache.org

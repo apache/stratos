@@ -1,0 +1,5 @@
+JAVA_HOME=$1
+CATALINA_HOME=$2
+
+echo "JAVA_HOME=${JAVA_HOME}" >> /etc/environment
+echo "CATALINA_HOME=${CATALINA_HOME}" >> /etc/environment

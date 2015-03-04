@@ -47,11 +47,14 @@ RUN pip install yapsy
 # Install cartridge agent 
 # -------------------------
 WORKDIR /mnt/
+
 ADD packs/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip
 RUN unzip -q /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip -d /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/
 RUN rm /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT.zip
+
 RUN mkdir -p /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/payload
-RUN chmod +x /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/extensions/*
+
+RUN chmod +x /mnt/apache-stratos-python-cartridge-agent-4.1.0-SNAPSHOT/extensions/bash/*
 RUN mkdir -p /var/log/apache-stratos/
 RUN touch /var/log/apache-stratos/cartridge-agent-extensions.log
 
@@ -60,5 +63,3 @@ RUN touch /var/log/apache-stratos/cartridge-agent-extensions.log
 # -----------------------
 ADD files/run /usr/local/bin/run
 RUN chmod +x /usr/local/bin/run
-ADD files/populate-user-data.sh /usr/local/bin/populate-user-data.sh
-RUN chmod +x /usr/local/bin/populate-user-data.sh

@@ -1,4 +1,25 @@
-FROM chamilad/base-image:4.1.0-beta
+# --------------------------------------------------------------
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# --------------------------------------------------------------
+
+FROM stratos/base-image:4.1.0-beta
 MAINTAINER dev@stratos.apache.org
 
 ENV JDK_VERSION 1.7.0_60
@@ -8,14 +29,10 @@ ENV TOMCAT_VERSION 7.0.55
 # ----------------------
 # Install prerequisites
 # ----------------------
-# RUN apt-get update && \ apt-get install -yq --no-install-recommends openjdk-7-jre wget ca-certificates && \apt-get clean && \rm -rf /var/lib/apt/lists/*
 WORKDIR /opt
-# RUN wget --no-check-certificate --no-cookies --header "Cookie: oraclelicense=accept-securebackup-cookie" http://download.oracle.com/otn-pub/java/jdk/7u67-b01/jdk-7u60-linux-x64.tar.gz
 ADD packs/${JDK_TAR_FILENAME} /mnt/${JDK_TAR_FILENAME}
-# RUN tar zxvf /mnt/${JDK_TAR_FILENAME}
 RUN mv /mnt/${JDK_TAR_FILENAME}/jdk${JDK_VERSION} /opt/jdk${JDK_VERSION}
 ENV JAVA_HOME /opt/jdk${JDK_VERSION}
-
 
 ENV CATALINA_HOME /opt/tomcat
 
@@ -30,7 +47,6 @@ RUN mv /opt/apache-tomcat-${TOMCAT_VERSION}.tar.gz/apache-tomcat-${TOMCAT_VERSIO
 # Add shell scripts
 # -----------------------
 ADD files/create-admin-user.sh /opt/create-admin-user.sh
-# ADD files/run.sh /opt/run.sh
 RUN chmod +x /opt/create-admin-user.sh && \
     bash /opt/create-admin-user.sh
 
