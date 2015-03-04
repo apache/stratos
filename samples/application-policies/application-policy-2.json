@@ -1,0 +1,9 @@
+{
+   "id" : "application-policy-2",
+   "networkPartition":[
+      {
+         "id":"network-partition-3",
+         "activeByDefault":"true"
+      }
+   ]
+}
