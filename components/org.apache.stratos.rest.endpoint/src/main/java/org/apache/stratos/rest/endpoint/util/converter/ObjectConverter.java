@@ -1717,8 +1717,14 @@ public class ObjectConverter {
 	
 	public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
 	        ApplicationPolicyBean appPolicy) {
+		
+		if (appPolicy == null) {
+			return null;
+		}
+		
 		ApplicationPolicyNetworkPartitionReferenceBean[] nps = appPolicy.getNetworkPartition();
 		ApplicationPolicy applicationPolicy = new ApplicationPolicy();
+		applicationPolicy.setApplicationPolicyId(appPolicy.getId());
 		List<ApplicationPolicyNetworkPartitionReference> nprList = new ArrayList<ApplicationPolicyNetworkPartitionReference>();
 
 		for (ApplicationPolicyNetworkPartitionReferenceBean np : nps) {

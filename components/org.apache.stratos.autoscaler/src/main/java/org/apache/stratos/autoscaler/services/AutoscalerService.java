@@ -21,10 +21,13 @@
 
 package org.apache.stratos.autoscaler.services;
 
+import java.rmi.RemoteException;
+
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -92,18 +95,11 @@ public interface AutoscalerService {
     /**
      * Deploy an application in created state
      * @param applicationId
-     * @param applicationPolicy
+     * @param applicationPolicyId
      * @return
      */
-    public boolean deployApplication(String applicationId, ApplicationPolicy applicationPolicy) throws ApplicationDefinitionException;
+    public boolean deployApplication(String applicationId, String applicationPolicyId) throws ApplicationDefinitionException;
     
-    /**
-     * Get application policy by application id
-     * @param applicationId the application id
-     * @return {@link ApplicationPolicy} used by the given application
-     */
-    public ApplicationPolicy getApplicationPolicy(String applicationId);
-
     /**
      * Undeploy an application in deployed state
      * @param applicationId
@@ -116,6 +112,29 @@ public interface AutoscalerService {
      * @param applicationId
      */
     public void deleteApplication(String applicationId);
+    
+    /**
+     * Add application policy
+     * @param applicationPolicy the application policy to be added
+     * @throws InvalidApplicationPolicyException 
+     * @throws RemoteException 
+     * @throws InvalidPolicyException 
+     */
+    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException;
+    
+    /**
+     * Get application policy by application id
+     * @param applicationPolicyId the application policy id
+     * @return {@link ApplicationPolicy} used by the given application
+     */
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId);
+    
+    /**
+     * Remove application policy
+     * @param applicationPolicyId the application policy id
+     * @throws InvalidPolicyException 
+     */
+    public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException;
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor

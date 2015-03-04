@@ -73,7 +73,6 @@ import javax.ws.rs.core.UriInfo;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -629,34 +628,57 @@ public class StratosApiV41 extends AbstractApi {
      * @throws RestAPIException the rest api exception
      */
     @POST
-    @Path("/applications/{applicationId}/deploy")
+    @Path("/applications/{applicationId}/deploy/{applicationPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/deployApplication")
-    public Response deployApplication(@PathParam("applicationId") String applicationId, ApplicationPolicyBean
-		    applicationPolicy)
+    public Response deployApplication(@PathParam("applicationId") String applicationId, 
+    		@PathParam("applicationPolicyId") String applicationPolicyId)
             throws RestAPIException {
-        StratosApiV41Utils.deployApplication(applicationId, applicationPolicy);
+        StratosApiV41Utils.deployApplication(applicationId, applicationPolicyId);
         return Response.accepted().entity(
 		        new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
 		                                String.format("Application deployed successfully: [application] %s",
 		                                              applicationId))).build();
     }
     
-    /**
-     * Get network partition by network partition id
-     * @return
-     * @throws RestAPIException
-     */
+    @POST
+    @Path("/applicationPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/addApplicationPolicy")
+    public Response addApplicationPolicy(ApplicationPolicyBean applicationPolicy)
+            throws RestAPIException {
+        StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
+        URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
+        return Response.created(url).entity(
+        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        				String.format("Application policy added successfully: [application-policy] %s", applicationPolicy.getId() ))).build();
+    }
+
     @GET
-    @Path("/applications/{applicationId}/applicationPolicy")
+    @Path("/applicationPolicies/{applicationPolicyId}")
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/getApplicationPolicy")
-    public Response getApplicationPolicy(@PathParam("applicationId") String applicationId) throws RestAPIException {
-        ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationId);
+    public Response getApplicationPolicy(@PathParam("applicationPolicyId") String applicationPolicyId) throws RestAPIException {
+        ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationPolicyId);
         return Response.ok(applicationPolicyBean).build();
     }
+    
+	@DELETE
+	@Path("/applicationPolicies/{applicationPolicyId}")
+	@Produces("application/json")
+	@Consumes("application/json")
+	@AuthorizationAction("/permission/admin/manage/removeApplicationPolicy")
+	public Response removeApplicationPolicy(@PathParam("applicationPolicyId") String applicationPolicyId)
+			throws RestAPIException {
+
+		StratosApiV41Utils.removeApplicationPolicy(applicationPolicyId);
+		return Response.ok().entity(
+        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        				String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s", applicationPolicyId))).build();
+	}
     
     /**
      * Get network partition ids used in an application

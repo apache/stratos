@@ -18,6 +18,7 @@
  */
 package org.apache.stratos.autoscaler.services.impl;
 
+import java.rmi.RemoteException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
+import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
@@ -161,7 +163,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     @Override
-    public boolean deployApplication(String applicationId, ApplicationPolicy applicationPolicy) throws ApplicationDefinitionException {
+    public boolean deployApplication(String applicationId, String applicationPolicyId) throws ApplicationDefinitionException {
         try {
             Application application = RegistryManager.getInstance().getApplication(applicationId);
             if (application == null) {
@@ -172,16 +174,24 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             if (applicationContext == null) {
                 throw new RuntimeException("Application context not found: " + applicationId);
             }
-
+            
             // Create application clusters in cloud controller and send application created event
             ApplicationBuilder.handleApplicationCreatedEvent(application, applicationContext.getComponents().getApplicationClusterContexts());
 
-			// validating application policy
-			AutoscalerUtil.validateApplicationPolicy(applicationId, applicationPolicy);
-			
-			// Add application policy
-			PolicyManager.getInstance().addApplicationPolicy(applicationPolicy);
-			if(!applicationContext.isMultiTenant()) {
+			// validating application policy against the application
+            AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
+
+            // setting application policy id in application object
+            try {
+            	ApplicationHolder.acquireWriteLock();
+            	application = ApplicationHolder.getApplications().getApplication(applicationId);
+            	application.setApplicationPolicyId(applicationPolicyId);
+            	ApplicationHolder.persistApplication(application);
+            } finally {
+            	ApplicationHolder.releaseWriteLock();
+            }
+
+            if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
 			    addApplicationSignUp(applicationContext, application.getKey());
 			}
@@ -199,7 +209,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             } finally {
                 ApplicationHolder.releaseReadLock();
             }
-
+            
             if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(applicationId)) {
                 if (allClusterInitialized) {
                     AutoscalerUtil.getInstance().startApplicationMonitor(applicationId);
@@ -364,9 +374,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             // Remove Application SignUp(s) in stratos manager
             removeApplicationSignUp(application);
             
-            // Remove application policy
-            PolicyManager.getInstance().removeApplicationPolicy(applicationId);
-
             ApplicationBuilder.handleApplicationUndeployed(applicationId);
 
             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
@@ -579,11 +586,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
     
 	@Override
-	public ApplicationPolicy getApplicationPolicy(String applicationId) {
-		return PolicyManager.getInstance().getApplicationPolicy(applicationId);
-	}
-
-	@Override
 	public String[] getApplicationNetworkPartitions(String applicationId)
 			throws AutoScalerException {
 		List<String> networkPartitionIds = AutoscalerUtil.getNetworkPartitionIdsReferedInApplication(applicationId);
@@ -591,5 +593,25 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			return null;
 		}
 		return networkPartitionIds.toArray(new String[networkPartitionIds.size()]);
+	}
+
+	@Override
+	public void addApplicationPolicy(ApplicationPolicy applicationPolicy) 
+			throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException {
+		
+		// validating application policy
+		AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
+		// Add application policy to the registry
+		PolicyManager.getInstance().addApplicationPolicy(applicationPolicy);
+	}
+	
+	@Override
+	public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) {
+		return PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+	}
+
+	@Override
+	public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
+		PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
 	}
 }

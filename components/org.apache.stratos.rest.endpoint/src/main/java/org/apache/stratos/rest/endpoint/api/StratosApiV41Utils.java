@@ -24,7 +24,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidApplicationPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceRemoteExceptionException;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
@@ -557,6 +559,83 @@ public class StratosApiV41Utils {
             }
         }
     }
+    
+    public static void addApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException {
+    	
+		if (applicationPolicyBean == null) {
+			String msg = "Application policy bean is null";
+			log.error(msg);
+			throw new RestAPIException(msg);
+		}
+    	
+    	AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
+    	try {
+			ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicyBean);
+			if (applicationPolicy == null) {
+				String msg = "Application policy is null";
+				log.error(msg);
+				throw new RestAPIException(msg);
+			}
+			serviceClient.addApplicationPolicy(applicationPolicy);
+		} catch (RemoteException e) {
+			throw new RestAPIException(e);
+		} catch (AutoscalerServiceInvalidPolicyExceptionException e) {
+			throw new RestAPIException(e);
+		} catch (AutoscalerServiceRemoteExceptionException e) {
+			throw new RestAPIException(e);
+		} catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
+			throw new RestAPIException(e);
+		}
+    }
+    
+    public static ApplicationPolicyBean getApplicationPolicy(String applicationPolicyId) throws RestAPIException {
+    	
+		if (applicationPolicyId == null) {
+			String msg = "Application policy bean id null";
+			log.error(msg);
+			throw new RestAPIException(msg);
+		}
+    	
+    	if (StringUtils.isBlank(applicationPolicyId)) {
+			String msg = "Application policy id is empty";
+			log.error(msg);
+			throw new RestAPIException(msg);
+    	}
+    	
+        try {
+            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
+            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationPolicyId);
+            return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
+        } catch (Exception e) {
+            String message = String.format("Could not get application policy [application-policy-id] %s", applicationPolicyId);
+            log.error(message);
+            throw new RuntimeException(message, e);
+        }
+    }
+    
+    public static void removeApplicationPolicy(String applicationPolicyId) throws RestAPIException {
+    	
+		if (applicationPolicyId == null) {
+			String msg = "Application policy bean id null";
+			log.error(msg);
+			throw new RestAPIException(msg);
+		}
+    	
+    	if (StringUtils.isBlank(applicationPolicyId)) {
+			String msg = "Application policy id is empty";
+			log.error(msg);
+			throw new RestAPIException(msg);
+    	}
+    	
+    	AutoscalerServiceClient serviceClient = getAutoscalerServiceClient();
+    	try {
+			serviceClient.removeApplicationPolicy(applicationPolicyId);
+		} catch (RemoteException e) {
+			throw new RestAPIException(e);
+		} catch (AutoscalerServiceInvalidPolicyExceptionException e) {
+			throw new RestAPIException(e);
+		}
+    }
 
     public static void updateAutoscalingPolicy(AutoscalePolicyBean autoscalePolicyBean) throws RestAPIException {
 
@@ -979,10 +1058,10 @@ public class StratosApiV41Utils {
 	 * Deploy application with an application policy.
 	 * 
 	 * @param applicationId
-	 * @param applicationPolicy
+	 * @param applicationPolicyId
 	 * @throws RestAPIException
 	 */
-    public static void deployApplication(String applicationId, ApplicationPolicyBean applicationPolicy)
+    public static void deployApplication(String applicationId, String applicationPolicyId)
             throws RestAPIException {
 
         try {
@@ -1008,9 +1087,14 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
-            if (applicationPolicy == null) {
-                String message = String.format("Application policy cannot be null : [application-id] %s. "
-                		+ "Are you passing application policy?", applicationId);
+            if(applicationPolicyId == null) {
+                String message = String.format("Application policy id is not found: [application-policy-id] %s", applicationPolicyId);
+                log.error(message);
+                throw new RestAPIException(message);
+            }
+            if (StringUtils.isBlank(applicationPolicyId)) {
+                String message = String.format("Application policy id cannot be null : [application-policy-id] %s. "
+                		+ "Are you passing application policy?", applicationPolicyId);
                 log.error(message);
                 throw new RestAPIException(message);
 			}
@@ -1023,11 +1107,11 @@ public class StratosApiV41Utils {
                 throw new RestAPIException(message);
             }
             
-            ApplicationPolicy ccStubApplicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicy);
+//            ApplicationPolicy ccStubApplicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicy);
             // setting the application id since application-policy.json doesn't have this attribute explicitly
             // reason is deployApplication() api path is containing the application id
-            ccStubApplicationPolicy.setApplicationId(applicationId);
-			autoscalerServiceClient.deployApplication(applicationId, ccStubApplicationPolicy);
+//            ccStubApplicationPolicy.setApplicationId(applicationId);
+			autoscalerServiceClient.deployApplication(applicationId, applicationPolicyId);
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application deployed successfully: [application-id] %s", applicationId));
             }
@@ -1042,18 +1126,6 @@ public class StratosApiV41Utils {
             String message = e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
-        }
-    }
-    
-    public static ApplicationPolicyBean getApplicationPolicy(String applicationId) {
-        try {
-            AutoscalerServiceClient serviceClient = AutoscalerServiceClient.getInstance();
-            ApplicationPolicy applicationPolicy = serviceClient.getApplicationPolicy(applicationId);
-            return ObjectConverter.convertASStubApplicationPolicyToApplicationPolicy(applicationPolicy);
-        } catch (Exception e) {
-            String message = String.format("Could not get application policy [application-id] %s", applicationId);
-            log.error(message);
-            throw new RuntimeException(message, e);
         }
     }
     

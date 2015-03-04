@@ -24,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContextFactory;
@@ -115,13 +116,12 @@ public class AutoscalerTopologyEventReceiver {
                         if (applications != null) {
                             for (Application application : applications.getApplications().values()) {
                                 if (AutoscalerUtil.allClustersInitialized(application)) {
-                                	ApplicationPolicy applicationPolicy = 
-                                			PolicyManager.getInstance().getApplicationPolicy(application.getUniqueIdentifier());
-                                    if (applicationPolicy != null) {
-                                        AutoscalerUtil.getInstance().
-                                                startApplicationMonitor(application.getUniqueIdentifier());
-                                    } else {
-                                        log.info("The relevant application policy is not yet " +
+                                	ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                                			getApplicationContext(application.getUniqueIdentifier());
+                                	if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                                		AutoscalerUtil.getInstance().startApplicationMonitor(application.getUniqueIdentifier());
+									} else {
+                                        log.info("The application is not yet " +
                                                 "deployed for this [application] " +
                                                 application.getUniqueIdentifier());
                                     }
@@ -155,11 +155,13 @@ public class AutoscalerTopologyEventReceiver {
                     try {
                         //acquire read lock
                         ApplicationHolder.acquireReadLock();
-                        //start the application monitor if the policy exists
-                        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
-                        if (applicationPolicy != null && !AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
-                            AutoscalerUtil.getInstance().startApplicationMonitor(appId);
-                        }
+                        //start the application monitor
+                        ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
+                        if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                        	if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
+                        		AutoscalerUtil.getInstance().startApplicationMonitor(appId);
+                        	}
+						}
                     } catch (Exception e) {
                         String msg = "Error processing event " + e.getLocalizedMessage();
                         log.error(msg, e);

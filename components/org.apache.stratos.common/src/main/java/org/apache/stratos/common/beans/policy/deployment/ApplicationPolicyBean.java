@@ -26,7 +26,16 @@ import org.apache.stratos.common.beans.partition.ApplicationPolicyNetworkPartiti
 @XmlRootElement
 public class ApplicationPolicyBean {
 
+	private String id;
     private ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition;
+    
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public ApplicationPolicyNetworkPartitionReferenceBean[] getNetworkPartition() {
 		return networkPartition;
@@ -35,5 +44,4 @@ public class ApplicationPolicyBean {
 	public void setNetworkPartition(ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition) {
 		this.networkPartition = networkPartition;
 	}
-        
 }

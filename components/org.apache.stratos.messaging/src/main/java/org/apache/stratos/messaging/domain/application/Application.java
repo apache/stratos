@@ -48,6 +48,9 @@ public class Application extends ParentComponent<ApplicationInstance> {
     private String tenantAdminUserName;
     // Life cycle state manager
     //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
+    
+    // application policy id
+    private String applicationPolicyId;
 
     public Application(String id) {
         super();
@@ -169,4 +172,12 @@ public class Application extends ParentComponent<ApplicationInstance> {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	public String getApplicationPolicyId() {
+		return applicationPolicyId;
+	}
+
+	public void setApplicationPolicyId(String applicationPolicyId) {
+		this.applicationPolicyId = applicationPolicyId;
+	}
 }

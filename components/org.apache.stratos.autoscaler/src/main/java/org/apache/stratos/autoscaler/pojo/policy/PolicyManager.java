@@ -190,42 +190,42 @@ public class PolicyManager {
     }
 
 	public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
-		String applicationId = applicationPolicy.getApplicationId();
+		String applicationPolicyId = applicationPolicy.getApplicationPolicyId();
 		if (log.isInfoEnabled()) {
-			log.info(String.format("Adding application policy for application: [id] %s", applicationId));
+			log.info(String.format("Adding application policy : [application-policy-id] %s", applicationPolicyId));
 		}
 		this.addApplicationPolicyToInformationModel(applicationPolicy);
 		RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
 
 		if (log.isInfoEnabled()) {
 			log.info(String
-			        .format("Application policy is added successfully: [application-id] %s",
-			                applicationId));
+			        .format("Application policy is added successfully: [application-policy-id] %s",
+			                applicationPolicyId));
 		}
 
 	}
 	
-	public boolean removeApplicationPolicy(String applicationId) throws InvalidPolicyException {
-		if (StringUtils.isEmpty(applicationId)) {
+	public boolean removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
+		if (StringUtils.isEmpty(applicationPolicyId)) {
 			throw new AutoScalerException("Application policy id cannot be empty");
 		}
-		this.removeApplicationPolicyInInformationModel(applicationId);
-		RegistryManager.getInstance().removeApplicationPolicy(applicationId);
+		this.removeApplicationPolicyInInformationModel(applicationPolicyId);
+		RegistryManager.getInstance().removeApplicationPolicy(applicationPolicyId);
 		if (log.isInfoEnabled()) {
-			log.info(String.format("Application policy is removed successfully: [id] %s", applicationId));
+			log.info(String.format("Application policy is removed successfully: [id] %s", applicationPolicyId));
 		}
 		return true;
 	}
 
 	public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
-		String applicationId = applicationPolicy.getApplicationId();
-        if (!applicationPolicyListMap.containsKey(applicationId)) {
+		String applicationPolicyId = applicationPolicy.getApplicationPolicyId();
+        if (!applicationPolicyListMap.containsKey(applicationPolicyId)) {
             if (log.isDebugEnabled()) {
-                log.debug("Adding application policy for application Id: " + applicationId);
+                log.debug("Adding application policy : " + applicationPolicyId);
             }
-            applicationPolicyListMap.put(applicationId, applicationPolicy);
+            applicationPolicyListMap.put(applicationPolicyId, applicationPolicy);
         } else {
-        	String errMsg = "Application policy is already exists for appplication [" + applicationId + "] ";
+        	String errMsg = "Application policy already exists : " + applicationPolicyId;
         	log.error(errMsg);
             throw new InvalidPolicyException(errMsg);
         }
@@ -235,11 +235,11 @@ public class PolicyManager {
 	/**
 	 * Retruns an ApplicationPolicy of a given application
 	 * 
-	 * @param applicationId
+	 * @param applicationPolicyId
 	 * @return
 	 */
-    public ApplicationPolicy getApplicationPolicy(String applicationId) {
-        return applicationPolicyListMap.get(applicationId);
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) {
+        return applicationPolicyListMap.get(applicationPolicyId);
     }
 
 }

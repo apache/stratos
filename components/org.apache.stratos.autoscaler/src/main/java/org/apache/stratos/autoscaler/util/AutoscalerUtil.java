@@ -45,10 +45,12 @@ import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.DependencyBuilderException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.TopologyInConsistentException;
+import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
 import org.apache.stratos.autoscaler.exception.policy.PolicyValidationException;
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
@@ -575,12 +577,11 @@ public class AutoscalerUtil {
     
     /**
      * Validates Application Policy against the given application.
-     * @param applicationId the application id against which the application policy needs to be validated
      * @param applicationPolicy the application policy to be validated
      * @throws InvalidApplicationPolicyException if application policy is not valid
      * @throws RemoteException is anything went wrong while communicating with CC to validate network partitions
      */
-	public static void validateApplicationPolicy(String applicationId, ApplicationPolicy applicationPolicy) 
+	public static void validateApplicationPolicy(ApplicationPolicy applicationPolicy) 
     		throws InvalidApplicationPolicyException, RemoteException {
     	
     	// application policy can't be null
@@ -624,17 +625,6 @@ public class AutoscalerUtil {
 				throw new InvalidApplicationPolicyException(msg);
 			}
 			
-			// validate application policy against the given application
-			if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
-				String msg = String.format("Invalid Application Policy. "
-						+ "Cause -> Network partition [network-partition-id] %s is not used in application [application-id] %s. "
-						+ "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s", 
-						networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
-				log.error(msg);
-				throw new InvalidApplicationPolicyException(msg);
-			}
-			
-			
 			// counting number of network partitions which are active by default
 			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
 				activeByDefaultNetworkPartitionsCount++;
@@ -648,6 +638,41 @@ public class AutoscalerUtil {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     }
+	
+	
+	/**
+	 * Validates an application policy against the application
+	 * @param applicationId
+	 * @param applicationPolicyId
+	 * @throws ApplicatioinPolicyNotExistsException
+	 * @throws InvalidApplicationPolicyException
+	 */
+	public static void validateApplicationPolicyAgainstApplication(String applicationId, String applicationPolicyId) 
+			throws ApplicatioinPolicyNotExistsException, InvalidApplicationPolicyException {
+		
+		ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+		if (applicationPolicy == null) {
+			String msg = String.format("Application Policy not exists for [application-policy-id] %s", applicationPolicyId);
+			log.error(msg);
+			throw new ApplicatioinPolicyNotExistsException(msg);
+		}
+		
+		ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
+				applicationPolicy.getNetworkPartitionReferences();
+    	
+		for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : networkPartitionReferences) {
+			String networkPartitionId = applicationPolicyNetworkPartitionReference.getNetworkPartitionId();
+    		// validate application policy against the given application
+    		if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
+    			String msg = String.format("Invalid Application Policy. "
+    					+ "Cause -> Network partition [network-partition-id] %s is not used in application [application-id] %s. "
+    					+ "Hence application bursting will fail. Either remove %s from application policy or make all the cartridges available in %s", 
+    					networkPartitionId, applicationId, networkPartitionId, networkPartitionId);
+    			log.error(msg);
+    			throw new InvalidApplicationPolicyException(msg);
+    		}
+    	}
+	}
 	
 	private static boolean isAppUsingNetworkPartitionId(String applicationId, String networkPartitionId) {
 		if (applicationId == null || StringUtils.isBlank(applicationId) 

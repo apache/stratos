@@ -531,12 +531,12 @@ public class RegistryManager {
 
     }
     
-    public void removeApplicationPolicy(String applicationId) {
+    public void removeApplicationPolicy(String applicationPolicyId) {
         String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" +
-        		applicationId;
+        		applicationPolicyId;
         this.delete(resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Application policy deleted from registry [application-id] %s", applicationId));
+            log.debug(String.format("Application policy deleted from registry [application-policy-id] %s", applicationPolicyId));
         }
 
     }
@@ -563,10 +563,10 @@ public class RegistryManager {
 	public void persistApplicationPolicy(ApplicationPolicy applicationPolicy) {
 
 		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + 
-				AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getApplicationId();
+				AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getApplicationPolicyId();
         persist(applicationPolicy, resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Application policy written to registry"));
+            log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getApplicationPolicyId()));
         }
 	    
     }

@@ -26,6 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.partition.network.GroupLevelNetworkPartitionContext;
@@ -241,15 +242,14 @@ public class ApplicationBuilder {
                 return;
             } else {
                 // Check whether given application is deployed
-            	// if there is an application policy with appId, it means application is deployed
-            	ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
-                if (applicationPolicy != null) {
-                    log.warn(String.format("Application has been found in the ApplicationsTopology" +
-                                    ": [application-id] %s, Please unDeploy the Application Policy " +
-                                    "before deleting the Application definition.",
-                            appId));
-                    return;
-                }
+            	ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
+            	if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+            		log.warn(String.format("Application has been found in the ApplicationsTopology" +
+            				": [application-id] %s, Please unDeploy the Application Policy " +
+            				"before deleting the Application definition.",
+            				appId));
+            		return;
+				}
             }
 
             //get cluster data to send in event before deleting the application
@@ -320,16 +320,6 @@ public class ApplicationBuilder {
                                 setTenantDomain(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().
                                 setTenantId(MultitenantConstants.SUPER_TENANT_ID);
-                        ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(appId);
-                        if (applicationPolicy != null) {
-                            try {
-                                PolicyManager.getInstance().removeApplicationPolicy(appId);
-                                log.info("Application policy for the [Application] " + appId +
-                                        "has been removed.");
-                            } catch (Exception e) {
-                                log.error("Error while removing the policy for [application] " + appId);
-                            }
-                        }
                     } finally {
                         PrivilegedCarbonContext.endTenantFlow();
                     }

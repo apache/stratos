@@ -316,7 +316,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 //        } else {
         	
         	for (ApplicationPolicyNetworkPartitionReference 
-        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
+        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getApplicationPolicyId())) {
 	            if(appPolicyNetworkPartition.isActiveByDefault()) {
 	            	ApplicationLevelNetworkPartitionContext context =
                             new ApplicationLevelNetworkPartitionContext(appPolicyNetworkPartition.getNetworkPartitionId());
@@ -347,12 +347,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     }
 
 	private ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences(
-            String applicationId) throws PolicyValidationException {
-	    ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationId);
+            String applicationPolicyId) throws PolicyValidationException {
+		
+	    ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
 	    
 	    if(applicationPolicy == null) {
-	    	String msg = "Application policy is not found "
-	    			+ "for application ["+ applicationId + "] ";
+	    	String msg = String.format("Application policy is not found [application-policy-id] %s [application-id] %s", applicationPolicyId, appId);
 	    	log.error(msg);
 	    	throw new PolicyValidationException(msg);        		
 	    }
@@ -360,7 +360,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 	    
 	    if(npReference == null || npReference.length <= 0) {
 	    	String msg = "Network partition references cannot be found in application policy "+ applicationPolicy+ " is not found "
-	    			+ "for application ["+ applicationId + "] ";
+	    			+ "for application ["+ applicationPolicyId + "] ";
 	    	log.error(msg);        		
 	    	throw new PolicyValidationException(msg);  
 	    }
@@ -414,7 +414,7 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 //
 //        } else {
             for (ApplicationPolicyNetworkPartitionReference 
-        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getUniqueIdentifier())) {
+        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getApplicationPolicyId())) {
                 //Checking whether any not active NP found
                 if (!appPolicyNetworkPartition.isActiveByDefault()) {
 

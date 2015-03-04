@@ -101,13 +101,24 @@ public class AutoscalerServiceClient {
         return stub.getApplications();
     }
 
-    public boolean deployApplication(String applicationId, ApplicationPolicy ap) throws RemoteException,
+    public boolean deployApplication(String applicationId, String applicationPolicyId) throws RemoteException,
             AutoscalerServiceInvalidPolicyExceptionException, AutoscalerServiceApplicationDefinitionExceptionException {
-		return stub.deployApplication(applicationId, ap);
+		return stub.deployApplication(applicationId, applicationPolicyId);
     }
     
-    public ApplicationPolicy getApplicationPolicy(String applicationId) throws RemoteException {
-    	return stub.getApplicationPolicy(applicationId);
+    public void addApplicationPolicy(ApplicationPolicy applicationPolicy) 
+    		throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException, 
+    AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException {
+    	stub.addApplicationPolicy(applicationPolicy);
+    }
+    
+    public ApplicationPolicy getApplicationPolicy(String applicationPolicyId) throws RemoteException {
+    	return stub.getApplicationPolicy(applicationPolicyId);
+    }
+    
+    public void removeApplicationPolicy(String applicationPolicyId) 
+    		throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException {
+    	stub.removeApplicationPolicy(applicationPolicyId);
     }
     
     public String[] getApplicationNetworkPartitions(String applicationId) throws RemoteException, 
