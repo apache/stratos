@@ -1,20 +1,21 @@
 {
     "applicationId": "group-scaling-v1",
-    "alias": "group-scaling-v1",
+    "alias": "my-group-scaling-v1",
     "components": {
         "groups": [
             {
                 "name": "group2",
-                "alias": "mygroup2",
+                "alias": "my-group2",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 2,
+                "deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "c2",
                         "cartridgeMin": 2,
                         "cartridgeMax": 4,
                         "subscribableInfo": {
-                            "alias": "group2c2",
+                            "alias": "my-c2",
                             "autoscalingPolicy": "autoscaling-policy-c2",
                             "artifactRepository":{
                                 "privateRepo":false,
@@ -29,7 +30,7 @@
                         "cartridgeMin": 1,
                         "cartridgeMax": 2,
                         "subscribableInfo": {
-                            "alias": "group2c3",
+                            "alias": "my-c3",
                             "autoscalingPolicy": "autoscaling-policy-c3",
                             "artifactRepository":{
                                 "privateRepo":false,

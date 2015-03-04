@@ -5,15 +5,12 @@
             "name": "group2",
             "groupScalingEnabled": "true",
             "cartridges": [
-                "c2",
-                "c3"
+                "c3",
+                "c2"
             ],
             "dependencies": {
                 "startupOrders": [
-                    "cartridge.c3,cartridge.c2"
-                ],
-                "scalingDependants": [
-                    "cartridge.c3, cartridge.c2"
+                    "cartridge.my-c3-group2,cartridge.my-c2-group2"
                 ],
                 "terminationBehaviour": "terminate-all"
             }
@@ -24,10 +21,7 @@
     ],
     "dependencies": {
         "startupOrders": [
-            "cartridge.c1,group.group2"
-        ],
-        "scalingDependants": [
-            "cartridge.c1, group.group2"
+            "cartridge.my-c1-group1,group.group2"
         ],
         "terminationBehaviour": "terminate-dependents"
     }
