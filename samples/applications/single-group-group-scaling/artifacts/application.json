@@ -1,20 +1,21 @@
 {
     "applicationId": "single-group-group-scaling",
-    "alias": "single-group-group-scaling-v1",
+    "alias": "my-single-group-group-scaling",
     "components": {
         "groups": [
             {
                 "name": "group6",
-                "alias": "mygroup6",
+                "alias": "my-group6",
                 "groupMinInstances": 1,
                 "groupMaxInstances": 3,
+                "deploymentPolicy":"deployment-policy-1",
                 "cartridges": [
                     {
                         "type": "tomcat",
                         "cartridgeMin": 1,
                         "cartridgeMax": 4,
                         "subscribableInfo": {
-                            "alias": "tom1group6",
+                            "alias": "my-tomcat",
                             "autoscalingPolicy": "autoscaling-policy-1",
                             "artifactRepository":{
                                "privateRepo":false,
