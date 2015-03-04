@@ -14,6 +14,7 @@ cartridges_groups_path=`cd "${script_path}/../../../../cartridges-groups"; pwd`
 autoscaling_policies_path=`cd "${script_path}/../../../../autoscaling-policies"; pwd`
 network_partitions_path=`cd "${script_path}/../../../../network-partitions/${iaas}"; pwd`
 deployment_policies_path=`cd "${script_path}/../../../../deployment-policies"; pwd`
+application_policies_path=`cd "${script_path}/../../../../application-policies"; pwd`
 
 set -e
 
@@ -49,10 +50,15 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/
 
 sleep 1
 
+echo "Adding application policy..."
+curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
+
+sleep 1
+
 echo "Creating application..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
 
 echo "Deploying application..."
-curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/complex-app/deploy
+curl -X POST -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/complex-app/deploy/application-policy-1
