@@ -45,6 +45,7 @@ import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
@@ -613,5 +614,35 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 	@Override
 	public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException {
 		PolicyManager.getInstance().removeApplicationPolicy(applicationPolicyId);
+	}
+
+	@Override
+	public void updateApplicationPolicy(ApplicationPolicy applicationPolicy) 
+			throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException {
+		
+		if (applicationPolicy == null) {
+			String msg = "Application policy is null";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+		
+		String applicationPolicyId = applicationPolicy.getId();
+		ApplicationPolicy existingApplicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+		if (existingApplicationPolicy == null) {
+			String msg = String.format("No such application poliicy found [application-policy-id] %s", applicationPolicyId);
+			log.error(msg);
+			throw new ApplicatioinPolicyNotExistsException(msg);
+		}
+		
+		// validating application policy
+		AutoscalerUtil.validateApplicationPolicy(applicationPolicy);
+		
+		// updating application policy
+		PolicyManager.getInstance().updateApplicationPolicy(applicationPolicy);
+	}
+
+	@Override
+	public ApplicationPolicy[] getApplicationPolicies() {
+		return PolicyManager.getInstance().getApplicationPolicies();
 	}
 }

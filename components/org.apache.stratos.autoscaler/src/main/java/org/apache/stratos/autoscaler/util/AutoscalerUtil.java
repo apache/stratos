@@ -591,6 +591,13 @@ public class AutoscalerUtil {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     	
+    	// application policy id can't be null
+    	if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
+			String msg = "Invalid Application Policy. Cause -> Application policy id null or empty";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
     	// application policy should contain at least one network partition reference
     	ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
     			applicationPolicy.getNetworkPartitionReferences();

@@ -20,8 +20,6 @@
 package org.apache.stratos.rest.endpoint.util.converter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.stub.pojo.*;
@@ -63,8 +61,6 @@ import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import java.util.*;
 
 public class ObjectConverter {
-
-	private static Log log = LogFactory.getLog(ObjectConverter.class);
 
     public static CartridgeConfig convertCartridgeBeanToStubCartridgeConfig(
             CartridgeBean cartridgeBean) {
@@ -420,6 +416,21 @@ public class ObjectConverter {
     	
     	
     	return applicationPolicyBean;
+    }
+    
+    public static ApplicationPolicyBean[] convertASStubApplicationPoliciesToApplicationPolicies(ApplicationPolicy[] applicationPolicies) {
+
+        ApplicationPolicyBean[] applicationPolicyBeans;
+        if (applicationPolicies == null) {
+        	applicationPolicyBeans = new ApplicationPolicyBean[0];
+            return applicationPolicyBeans;
+        }
+
+        applicationPolicyBeans = new ApplicationPolicyBean[applicationPolicies.length];
+        for (int i = 0; i < applicationPolicies.length; i++) {
+        	applicationPolicyBeans[i] = convertASStubApplicationPolicyToApplicationPolicy(applicationPolicies[i]);
+        }
+        return applicationPolicyBeans;
     }
 
 	public static Partition convertPartitionToCCPartitionPojo(PartitionBean partitionBean) {
@@ -1724,7 +1735,7 @@ public class ObjectConverter {
 		
 		ApplicationPolicyNetworkPartitionReferenceBean[] nps = appPolicy.getNetworkPartition();
 		ApplicationPolicy applicationPolicy = new ApplicationPolicy();
-		applicationPolicy.setApplicationPolicyId(appPolicy.getId());
+		applicationPolicy.setId(appPolicy.getId());
 		List<ApplicationPolicyNetworkPartitionReference> nprList = new ArrayList<ApplicationPolicyNetworkPartitionReference>();
 
 		for (ApplicationPolicyNetworkPartitionReferenceBean np : nps) {

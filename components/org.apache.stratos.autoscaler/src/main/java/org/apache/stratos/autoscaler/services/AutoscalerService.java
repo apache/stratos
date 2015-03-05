@@ -29,6 +29,7 @@ import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
+import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
@@ -135,6 +136,22 @@ public interface AutoscalerService {
      * @throws InvalidPolicyException 
      */
     public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException;
+    
+    /**
+     * Update the given application policy if exists
+     * @param applicationPolicy
+     * @throws InvalidApplicationPolicyException 
+     * @throws RemoteException 
+     * @throws ApplicatioinPolicyNotExistsException 
+     */
+    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy) 
+    		throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException;
+    
+    /**
+     * Get all application policies
+     * @return
+     */
+    public ApplicationPolicy[] getApplicationPolicies();
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor

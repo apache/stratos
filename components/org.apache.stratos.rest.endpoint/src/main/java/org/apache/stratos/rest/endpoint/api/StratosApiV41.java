@@ -666,6 +666,15 @@ public class StratosApiV41 extends AbstractApi {
         return Response.ok(applicationPolicyBean).build();
     }
     
+    @GET
+    @Path("/applicationPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/getApplicationPolicies")
+    public Response getApplicationPolicies() throws RestAPIException {
+        return Response.ok().entity(StratosApiV41Utils.getApplicationPolicies()).build();
+    }
+    
 	@DELETE
 	@Path("/applicationPolicies/{applicationPolicyId}")
 	@Produces("application/json")
@@ -679,6 +688,20 @@ public class StratosApiV41 extends AbstractApi {
         		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
         				String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s", applicationPolicyId))).build();
 	}
+	
+    @PUT
+    @Path("/applicationPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/updateApplicationPolicy")
+    public Response updateApplicationPolicy(ApplicationPolicyBean applicationPolicy)
+            throws RestAPIException {
+
+        StratosApiV41Utils.updateApplicationPolicy(applicationPolicy);
+        return Response.ok().entity(
+        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        				String.format("Application policy updated successfully: [application-policy] %s", applicationPolicy.getId() ))).build();
+    }
     
     /**
      * Get network partition ids used in an application

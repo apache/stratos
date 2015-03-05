@@ -190,7 +190,7 @@ public class PolicyManager {
     }
 
 	public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
-		String applicationPolicyId = applicationPolicy.getApplicationPolicyId();
+		String applicationPolicyId = applicationPolicy.getId();
 		if (log.isInfoEnabled()) {
 			log.info(String.format("Adding application policy : [application-policy-id] %s", applicationPolicyId));
 		}
@@ -218,7 +218,7 @@ public class PolicyManager {
 	}
 
 	public void addApplicationPolicyToInformationModel(ApplicationPolicy applicationPolicy) throws InvalidPolicyException {
-		String applicationPolicyId = applicationPolicy.getApplicationPolicyId();
+		String applicationPolicyId = applicationPolicy.getId();
         if (!applicationPolicyListMap.containsKey(applicationPolicyId)) {
             if (log.isDebugEnabled()) {
                 log.debug("Adding application policy : " + applicationPolicyId);
@@ -242,4 +242,28 @@ public class PolicyManager {
         return applicationPolicyListMap.get(applicationPolicyId);
     }
 
+    public void updateApplicationPolicyInInformationModel(ApplicationPolicy applicationPolicy) {
+        if (applicationPolicyListMap.containsKey(applicationPolicy.getId())) {
+            if (log.isDebugEnabled()) {
+                log.debug("Updating application policy: " + applicationPolicy.getId());
+            }
+            applicationPolicyListMap.put(applicationPolicy.getId(), applicationPolicy);
+        }
+    }
+    
+    public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy) {
+        if(StringUtils.isEmpty(applicationPolicy.getId())){
+            throw new AutoScalerException("Application policy id cannot be empty");
+        }
+        this.updateApplicationPolicyInInformationModel(applicationPolicy);
+        RegistryManager.getInstance().persistApplicationPolicy(applicationPolicy);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Application policy is updated successfully: [id] %s", applicationPolicy.getId()));
+        }
+        return true;
+    }
+    
+    public ApplicationPolicy[] getApplicationPolicies() {        
+        return applicationPolicyListMap.values().toArray(new ApplicationPolicy[0]);
+    }
 }

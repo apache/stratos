@@ -23,16 +23,16 @@ import java.io.Serializable;
 public class ApplicationPolicy implements Serializable{
 
 	private static final long serialVersionUID = -2851334419121310395L;
-	private String applicationPolicyId;
+	private String id;
 	private String algorithm;
 	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences;
 	
-	public String getApplicationPolicyId() {
-		return applicationPolicyId;
+	public String getId() {
+		return id;
 	}
 	
-	public void setApplicationPolicyId(String applicationPolicyId) {
-		this.applicationPolicyId = applicationPolicyId;
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	public String getAlgorithm() {

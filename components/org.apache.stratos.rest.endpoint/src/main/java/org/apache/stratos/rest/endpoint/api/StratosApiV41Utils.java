@@ -23,6 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicatioinPolicyNotExistsExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidApplicationPolicyExceptionException;
 import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
@@ -586,6 +587,43 @@ public class StratosApiV41Utils {
 		} catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
 			throw new RestAPIException(e);
 		}
+    }
+    
+    public static void updateApplicationPolicy(ApplicationPolicyBean applicationPolicyBean) throws RestAPIException {
+
+        log.info(String.format("Updating application policy: [id] %s", applicationPolicyBean.getId()));
+
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+        	
+        	ApplicationPolicy applicationPolicy = ObjectConverter.convertApplicationPolicyBeanToStubAppPolicy(applicationPolicyBean);
+
+            try {
+				autoscalerServiceClient.updateApplicationPolicy(applicationPolicy);
+			} catch (RemoteException e) {
+				throw new RestAPIException(e);
+			} catch (AutoscalerServiceApplicatioinPolicyNotExistsExceptionException e) {
+				throw new RestAPIException(e);
+			} catch (AutoscalerServiceRemoteExceptionException e) {
+				throw new RestAPIException(e);
+			} catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
+				throw new RestAPIException(e);
+			}
+        }
+    }
+    
+    public static ApplicationPolicyBean[] getApplicationPolicies() throws RestAPIException {
+
+    	ApplicationPolicy[] applicationPolicies = null;
+        AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if (autoscalerServiceClient != null) {
+            try {
+				applicationPolicies = autoscalerServiceClient.getApplicationPolicies();
+			} catch (RemoteException e) {
+				throw new RestAPIException(e);
+			}
+        }
+        return ObjectConverter.convertASStubApplicationPoliciesToApplicationPolicies(applicationPolicies);
     }
     
     public static ApplicationPolicyBean getApplicationPolicy(String applicationPolicyId) throws RestAPIException {

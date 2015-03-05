@@ -563,10 +563,10 @@ public class RegistryManager {
 	public void persistApplicationPolicy(ApplicationPolicy applicationPolicy) {
 
 		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + 
-				AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getApplicationPolicyId();
+				AutoscalerConstants.APPLICATION_POLICY_RESOURCE + "/" + applicationPolicy.getId();
         persist(applicationPolicy, resourcePath);
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getApplicationPolicyId()));
+            log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getId()));
         }
 	    
     }

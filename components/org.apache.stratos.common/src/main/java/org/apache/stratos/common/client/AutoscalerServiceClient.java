@@ -116,6 +116,16 @@ public class AutoscalerServiceClient {
     	return stub.getApplicationPolicy(applicationPolicyId);
     }
     
+    public ApplicationPolicy[] getApplicationPolicies() throws RemoteException {
+    	return stub.getApplicationPolicies();
+    }
+    
+    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy) 
+    		throws RemoteException, AutoscalerServiceApplicatioinPolicyNotExistsExceptionException, 
+    		AutoscalerServiceRemoteExceptionException, AutoscalerServiceInvalidApplicationPolicyExceptionException{
+    	stub.updateApplicationPolicy(applicationPolicy);
+    }
+    
     public void removeApplicationPolicy(String applicationPolicyId) 
     		throws RemoteException, AutoscalerServiceInvalidPolicyExceptionException {
     	stub.removeApplicationPolicy(applicationPolicyId);
