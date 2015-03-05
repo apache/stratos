@@ -19,10 +19,9 @@
 
 package org.apache.stratos.haproxy.extension;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.messaging.domain.topology.*;
+import org.apache.stratos.load.balancer.common.domain.*;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -37,6 +36,7 @@ import java.io.StringWriter;
  * HAProxy load balancer configuration writer.
  */
 public class HAProxyConfigWriter {
+
     private static final Log log = LogFactory.getLog(Main.class);
     private static final String NEW_LINE = System.getProperty("line.separator");
 
@@ -57,10 +57,9 @@ public class HAProxyConfigWriter {
     private String frontEndHttpId, frontEndHttpsId;
     private boolean frontEndHttpAdded, frontEndHttpsAdded;
 
-    private String loadBalancerType;        // Load Balancer type (default, service aware, static)
-    private String loadBalancedServiceType; // Service type if load balancer is a service aware
+    public HAProxyConfigWriter(String templatePath, String templateName, String confFilePath,
+                               String statsSocketFilePath) {
 
-    public HAProxyConfigWriter(String templatePath, String templateName, String confFilePath, String statsSocketFilePath) {
         this.templatePath = templatePath;
         this.templateName = templateName;
         this.confFilePath = confFilePath;
@@ -79,41 +78,8 @@ public class HAProxyConfigWriter {
         frontEndHttpsAdded = false;
 
         for (Service service : topology.getServices()) {
-            if (service.getServiceName().equals(HAProxyContext.getInstance().getServiceName())) {
-                for (Cluster cluster : service.getClusters()) {
-                    if (cluster.getClusterId().equals(HAProxyContext.getInstance().getClusterId())) {
-                        if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER) != null) && (cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF) != null)) {
-                            loadBalancerType = cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF);
-                            if (cluster.getProperties().getProperty(Constants.LB_SERVICE_TYPE) != null)
-                                loadBalancedServiceType = cluster.getProperties().getProperty(Constants.LB_SERVICE_TYPE);
-                            break;
-                        } else {
-                            loadBalancerType = Constants.STATIC_LOAD_BALANCER;
-                            log.debug("Static load balancer");
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-
-        for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
-                if (cluster.getProperties().getProperty(Constants.LOAD_BALANCER) == null) {
-                    if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF) != null)) {
-                        if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF).equals(Constants.NO_LOAD_BALANCER)) &&
-                                Constants.STATIC_LOAD_BALANCER.equals(loadBalancerType) && cluster.getServiceName().equals(HAProxyContext.getInstance().getLbserviceType()))  {
-                            createConfig(service, cluster);
-                        } else if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF).equals(Constants.DEFAULT_LOAD_BALANCER)) &&
-                                Constants.DEFAULT_LOAD_BALANCER.equals(loadBalancerType)) {
-                            createConfig(service, cluster);
-                        } else if ((cluster.getProperties().getProperty(Constants.LOAD_BALANCER_REF).equals(Constants.SERVICE_LOAD_BALANCER)) &&
-                                Constants.SERVICE_LOAD_BALANCER.equals(loadBalancerType) &&
-                                cluster.getServiceName().equals(loadBalancedServiceType)) {
-                            createConfig(service, cluster);
-                        }
-                    }
-                }
+                createConfig(service, cluster);
             }
         }
 
@@ -164,46 +130,48 @@ public class HAProxyConfigWriter {
             if (port.getProtocol().equals("http")) {
                 if (!frontEndHttpAdded) {
                     frontEndHttp.append("frontend ").append(frontEndHttpId).append(NEW_LINE);
-                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp()).append(":").append(port.getProxy()).append(NEW_LINE);
+                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp())
+                            .append(":").append(port.getProxy()).append(NEW_LINE);
                     frontEndHttp.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
                     frontEndHttpAdded = true;
                 }
 
                 for (String hostname : cluster.getHostNames()) {
-                    frontEndHttp.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ").append(hostname).append(NEW_LINE);
-                    frontEndHttp.append("\tuse_backend ").append(hostname).append("-http-members if is_").append(hostname).append(NEW_LINE);
+                    frontEndHttp.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ")
+                            .append(hostname).append(NEW_LINE);
+                    frontEndHttp.append("\tuse_backend ").append(hostname).append("-http-members if is_")
+                            .append(hostname).append(NEW_LINE);
 
                     // Backend block
                     backEndHttp.append("backend ").append(hostname).append("-http-members").append(NEW_LINE);
                     backEndHttp.append("\tmode ").append("http").append(NEW_LINE);
                     for (Member member : cluster.getMembers()) {
-                        if (member.getNetworkPartitionId().equals(HAProxyContext.getInstance().getNetworkPartitionId())) {
-                            backEndHttp.append("\tserver ").append(member.getMemberId()).append(" ")
-                                    .append(member.getDefaultPrivateIP()).append(":").append(port.getValue()).append(NEW_LINE);
-                        }
+                        backEndHttp.append("\tserver ").append(member.getMemberId()).append(" ")
+                                .append(member.getHostName()).append(":").append(port.getValue()).append(NEW_LINE);
                     }
                     backEndHttp.append(NEW_LINE);
                 }
             } else if (port.getProtocol().equals("https")) {
                 if (!frontEndHttpsAdded) {
                     frontEndHttp.append("frontend ").append(frontEndHttpsId).append(NEW_LINE);
-                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp()).append(":").append(port.getProxy()).append(NEW_LINE);
+                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp())
+                            .append(":").append(port.getProxy()).append(NEW_LINE);
                     frontEndHttp.append("\tmode ").append("http").append(NEW_LINE);
                     frontEndHttpsAdded = true;
                 }
 
                 for (String hostname : cluster.getHostNames()) {
-                    frontEndHttps.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ").append(hostname).append(NEW_LINE);
-                    frontEndHttps.append("\tuse_backend ").append(hostname).append("-https-members if is_").append(hostname).append(NEW_LINE);
+                    frontEndHttps.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ")
+                            .append(hostname).append(NEW_LINE);
+                    frontEndHttps.append("\tuse_backend ").append(hostname).append("-https-members if is_")
+                            .append(hostname).append(NEW_LINE);
 
                     // Backend block
                     backEndHttps.append("backend ").append(hostname).append("-http-members").append(NEW_LINE);
                     backEndHttps.append("\tmode ").append("https").append(NEW_LINE);
                     for (Member member : cluster.getMembers()) {
-                        if (member.getNetworkPartitionId().equals(HAProxyContext.getInstance().getNetworkPartitionId())) {
-                            backEndHttps.append("\tserver ").append(member.getMemberId()).append(" ")
-                                    .append(member.getDefaultPrivateIP()).append(":").append(port.getValue()).append(NEW_LINE);
-                        }
+                        backEndHttps.append("\tserver ").append(member.getMemberId()).append(" ")
+                                .append(member.getHostName()).append(":").append(port.getValue()).append(NEW_LINE);
                     }
                     backEndHttps.append(NEW_LINE);
                 }

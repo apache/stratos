@@ -26,6 +26,7 @@ import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Member;
 import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.common.domain.Service;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.domain.Algorithm;
 import org.apache.stratos.load.balancer.conf.domain.MemberIpType;
@@ -464,7 +465,10 @@ public class LoadBalancerConfiguration {
 
                     String serviceName = serviceNode.getName();
                     Node clustersNode = serviceNode.findChildNodeByName(Constants.CONF_ELEMENT_CLUSTERS);
+                    Service service = new Service(serviceName);
+                    service.setMultiTenant(isMultiTenant);
 
+                    // Process clusters
                     for (Node clusterNode : clustersNode.getChildNodes()) {
                         String clusterId = clusterNode.getName();
                         Cluster cluster = new Cluster(serviceName, clusterId);
@@ -494,6 +498,7 @@ public class LoadBalancerConfiguration {
                         Node membersNode = clusterNode.findChildNodeByName(Constants.CONF_ELEMENT_MEMBERS);
                         validateRequiredNode(membersNode, Constants.CONF_ELEMENT_MEMBERS, String.format("cluster %s", clusterId));
 
+                        // Process members
                         for (Node memberNode : membersNode.getChildNodes()) {
                             String memberId = memberNode.getName();
                             // we are making it as 1 because we are not using this for static loadbalancer configuration
@@ -515,11 +520,17 @@ public class LoadBalancerConfiguration {
                                 Port port = new Port(portNode.getName(), Integer.valueOf(value), Integer.valueOf(proxy));
                                 member.addPort(port);
                             }
+
+                            // Add member to the cluster
                             cluster.addMember(member);
                         }
+
                         // Add cluster to service
-                        topologyProvider.addCluster(cluster);
+                        service.addCluster(cluster);
                     }
+
+                    // Add service to the topology provider
+                    topologyProvider.addService(service);
                 }
                 configuration.setTopologyProvider(topologyProvider);
             }

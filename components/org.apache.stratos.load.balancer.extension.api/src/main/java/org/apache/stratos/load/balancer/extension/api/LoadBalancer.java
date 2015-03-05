@@ -20,7 +20,7 @@
 package org.apache.stratos.load.balancer.extension.api;
 
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.load.balancer.common.domain.Topology;
 
 /**
  *  A generic load balancer life-cycle definition.
@@ -47,9 +47,8 @@ public interface LoadBalancer {
     void configure(Topology topology) throws LoadBalancerExtensionException;
 
     /**
-     * Reload load balancer configuration using the given topology without interrupting the incoming requests.
+     * Reload load balancer configuration using the configuration written in configure() method.
      * Throw an exception if the reload operation fails.
-     * @param topology
      */
-    void reload(Topology topology) throws LoadBalancerExtensionException;
+    void reload() throws LoadBalancerExtensionException;
 }

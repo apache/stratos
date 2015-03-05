@@ -22,10 +22,7 @@ package org.apache.stratos.load.balancer.common.event.receivers;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.MemberStatus;
-import org.apache.stratos.messaging.domain.topology.Service;
+import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.topology.*;
@@ -263,6 +260,11 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         }
         validateHostNames(cluster);
 
+        // Add service if not exists
+        if(!topologyProvider.serviceExists(serviceName)) {
+            topologyProvider.addService(transformService(service));
+        }
+
         // Add cluster if not exists
         if(!topologyProvider.clusterExistsByClusterId(cluster.getClusterId())) {
             topologyProvider.addCluster(transformCluster(cluster));
@@ -326,6 +328,22 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             throw new RuntimeException(String.format("Host names not found in cluster: " +
                     "[cluster] %s", cluster.getClusterId()));
         }
+    }
+
+    private org.apache.stratos.load.balancer.common.domain.Service transformService(Service messagingService) {
+        org.apache.stratos.load.balancer.common.domain.Service service =
+                new org.apache.stratos.load.balancer.common.domain.Service(messagingService.getServiceName());
+        for(Port port : messagingService.getPorts()) {
+            service.addPort(transformPort(port));
+        }
+        return service;
+    }
+
+    private org.apache.stratos.load.balancer.common.domain.Port transformPort(Port messagingPort) {
+        org.apache.stratos.load.balancer.common.domain.Port port =
+                new org.apache.stratos.load.balancer.common.domain.Port(messagingPort.getProtocol(),
+                        messagingPort.getValue(), messagingPort.getProxy());
+        return port;
     }
 
     private org.apache.stratos.load.balancer.common.domain.Cluster transformCluster(Cluster messagingCluster) {

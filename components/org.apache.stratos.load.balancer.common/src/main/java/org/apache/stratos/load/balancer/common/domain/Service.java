@@ -20,6 +20,7 @@
 package org.apache.stratos.load.balancer.common.domain;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,15 +29,15 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Service {
     private final String serviceName;
-    private final boolean isMultiTenant;
     // Key: Cluster.clusterId
     private Map<String, Cluster> clusterIdClusterMap;
+    private Map<Integer, Port> portMap;
     private boolean multiTenant;
 
-    public Service(String serviceName, boolean isMultiTenant) {
+    public Service(String serviceName) {
         this.serviceName = serviceName;
         this.clusterIdClusterMap = new ConcurrentHashMap<String, Cluster>();
-        this.isMultiTenant = isMultiTenant;
+        this.portMap = new ConcurrentHashMap<Integer, Port>();
     }
 
     public String getServiceName() {
@@ -69,5 +70,34 @@ public class Service {
 
     public void setMultiTenant(boolean multiTenant) {
         this.multiTenant = multiTenant;
+    }
+
+    public Collection<Port> getPorts() {
+        return Collections.unmodifiableCollection(portMap.values());
+    }
+
+    public Port getPort(int proxy) {
+        if(portMap.containsKey(proxy)) {
+            return portMap.get(proxy);
+        }
+        return null;
+    }
+
+    public void addPort(Port port) {
+        this.portMap.put(port.getProxy(), port);
+    }
+
+    public void addPorts(Collection<Port> ports) {
+        for(Port port : ports) {
+            addPort(port);
+        }
+    }
+
+    public void removePort(Port port) {
+        this.portMap.remove(port.getProxy());
+    }
+
+    public boolean portExists(Port port) {
+        return this.portMap.containsKey(port.getProxy());
     }
 }

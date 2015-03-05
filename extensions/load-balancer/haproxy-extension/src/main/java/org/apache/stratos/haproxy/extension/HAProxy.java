@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.util.CommandUtils;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancer;
 import org.apache.stratos.load.balancer.extension.api.exception.LoadBalancerExtensionException;
-import org.apache.stratos.messaging.domain.topology.Topology;
+import org.apache.stratos.load.balancer.common.domain.Topology;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,8 +35,8 @@ import java.util.Vector;
  * HAProxy load balancer life-cycle implementation.
  */
 public class HAProxy implements LoadBalancer {
+
     private static final Log log = LogFactory.getLog(HAProxy.class);
-    private static final String NEW_LINE = System.getProperty("line.separator");
 
     private String executableFilePath;
     private String processIdFilePath;
@@ -54,8 +54,64 @@ public class HAProxy implements LoadBalancer {
         this.statsSocketFilePath = HAProxyContext.getInstance().getStatsSocketFilePath();
     }
 
-    private void reloadConfiguration() throws LoadBalancerExtensionException {
+    /**
+     * Configure haproxy instance according to topology given
+     * @param topology
+     * @throws LoadBalancerExtensionException
+     */
+    public void configure(Topology topology) throws LoadBalancerExtensionException {
 
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Configuring haproxy instance...");
+            }
+
+            HAProxyConfigWriter writer = new HAProxyConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath);
+            writer.write(topology);
+
+            if (log.isInfoEnabled()) {
+                log.info("Configuration done");
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not configure haproxy");
+            }
+            throw new LoadBalancerExtensionException(e);
+        }
+    }
+
+    /**
+     * Start haproxy instance
+     * @throws LoadBalancerExtensionException
+     */
+    public void start() throws LoadBalancerExtensionException {
+
+        // Check for configuration file
+        File conf = new File(confFilePath);
+        if (!conf.exists()) {
+            throw new LoadBalancerExtensionException("Could not find haproxy configuration file");
+        }
+
+        // Start haproxy and write pid to processIdFilePath
+        try {
+            String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath;
+            CommandUtils.executeCommand(command);
+            if (log.isInfoEnabled()) {
+                log.info("haproxy started");
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Could not start haproxy");
+            }
+            throw new LoadBalancerExtensionException(e);
+        }
+    }
+
+    /**
+     * Reload haproxy instance according to the configuration written in configure() method.
+     * @throws LoadBalancerExtensionException
+     */
+    public void reload() throws LoadBalancerExtensionException {
         try {
             if (log.isInfoEnabled()) {
                 log.info("Reloading configuration...");
@@ -83,58 +139,10 @@ public class HAProxy implements LoadBalancer {
         }
     }
 
-    public void reload(Topology topology) throws LoadBalancerExtensionException {
-        if(log.isDebugEnabled()) {
-           log.info("Reconfigure and Reload the Load Balancer ");
-        }
-        configure(topology);
-        reloadConfiguration();
-    }
-
-    public void configure(Topology topology) throws LoadBalancerExtensionException {
-
-        try {
-            if (log.isInfoEnabled()) {
-                log.info("Configuring haproxy instance...");
-            }
-
-            HAProxyConfigWriter writer = new HAProxyConfigWriter(templatePath, templateName, confFilePath, statsSocketFilePath);
-            writer.write(topology);
-
-            if (log.isInfoEnabled()) {
-                log.info("Configuration done");
-            }
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("Could not configure haproxy");
-            }
-            throw new LoadBalancerExtensionException(e);
-        }
-    }
-
-    public void start() throws LoadBalancerExtensionException {
-
-        // Check for configuration file
-        File conf = new File(confFilePath);
-        if (!conf.exists()) {
-            throw new LoadBalancerExtensionException("Could not find haproxy configuration file");
-        }
-
-        // Start haproxy and write pid to processIdFilePath
-        try {
-            String command = executableFilePath + " -f " + confFilePath + " -p " + processIdFilePath;
-            CommandUtils.executeCommand(command);
-            if (log.isInfoEnabled()) {
-                log.info("haproxy started");
-            }
-        } catch (Exception e) {
-            if (log.isErrorEnabled()) {
-                log.error("Could not start haproxy");
-            }
-            throw new LoadBalancerExtensionException(e);
-        }
-    }
-
+    /**
+     * Stop haproxy instance
+     * @throws LoadBalancerExtensionException
+     */
     public void stop() throws LoadBalancerExtensionException {
 
         try {
