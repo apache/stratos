@@ -73,28 +73,18 @@ public class MemberCreatedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess (MemberCreatedEvent event,Topology topology){
 
+        String serviceName = event.getServiceName();
+        String clusterId = event.getClusterId();
+
         // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                // Service is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                }
-                return false;
-            }
+        if(TopologyServiceFilter.apply(serviceName)) {
+            return false;
         }
 
         // Apply cluster filter
-        if (TopologyClusterFilter.getInstance().isActive()) {
-            if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
-                // Cluster is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
-                }
-                return false;
-            }
+        if(TopologyClusterFilter.apply(clusterId)) {
+            return false;
         }
-
 
         // Validate event against the existing topology
         Service service = topology.getService(event.getServiceName());

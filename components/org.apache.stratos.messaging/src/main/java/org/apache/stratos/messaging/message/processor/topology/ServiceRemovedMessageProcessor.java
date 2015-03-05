@@ -70,15 +70,11 @@ public class ServiceRemovedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess (ServiceRemovedEvent event, Topology topology) {
 
+        String serviceName = event.getServiceName();
+
         // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                // Service is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                }
-                return false;
-            }
+        if(TopologyServiceFilter.apply(serviceName)) {
+            return false;
         }
 
         // Notify event listeners before removing service object

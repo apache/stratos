@@ -75,26 +75,18 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess (MemberSuspendedEvent event,Topology topology) {
 
+        String serviceName = event.getServiceName();
+        String clusterId = event.getClusterId();
+        String networkPartitionId = event.getNetworkPartitionId();
+
         // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                // Service is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                }
-                return false;
-            }
+        if(TopologyServiceFilter.apply(serviceName)) {
+            return false;
         }
 
         // Apply cluster filter
-        if (TopologyClusterFilter.getInstance().isActive()) {
-            if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
-                // Cluster is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
-                }
-                return false;
-            }
+        if(TopologyClusterFilter.apply(clusterId)) {
+            return false;
         }
 
         // Validate event against the existing topology
@@ -126,13 +118,8 @@ public class MemberSuspendedMessageProcessor extends MessageProcessor {
         }
 
         // Apply member filter
-        if(TopologyMemberFilter.getInstance().isActive()) {
-            if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
-                }
-                return false;
-            }
+        if(TopologyMemberFilter.apply(member.getLbClusterId(), networkPartitionId)) {
+            return false;
         }
 
         if (member.getStatus() == MemberStatus.Suspended) {

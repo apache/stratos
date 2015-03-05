@@ -79,67 +79,48 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
 
     private void doProcess (CompleteTopologyEvent event, Topology topology) {
 
-        // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            // Add services included in service filter
-            for (Service service : event.getTopology().getServices()) {
-                if (TopologyServiceFilter.getInstance()
-                        .serviceNameIncluded(service.getServiceName())) {
-                    topology.addService(service);
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Service is excluded: [service] %s",
-                                service.getServiceName()));
-                    }
-                }
+        for (Service service : event.getTopology().getServices()) {
+            // Apply service filter
+            if(TopologyServiceFilter.apply(service.getServiceName())) {
+                continue;
             }
-        } else {
-            // Add all services
-            topology.addServices(event.getTopology().getServices());
+            // Add service
+            topology.addService(service);
         }
 
         // Apply cluster filter
-        if (TopologyClusterFilter.getInstance().isActive()) {
-            for (Service service : topology.getServices()) {
-                List<Cluster> clustersToRemove = new ArrayList<Cluster>();
-                for (Cluster cluster : service.getClusters()) {
-                    if (TopologyClusterFilter.getInstance()
-                            .clusterIdExcluded(cluster.getClusterId())) {
-                        clustersToRemove.add(cluster);
-                    }
+        for (Service service : topology.getServices()) {
+            List<Cluster> clustersToRemove = new ArrayList<Cluster>();
+            for (Cluster cluster : service.getClusters()) {
+                if (TopologyClusterFilter.apply(cluster.getClusterId())) {
+                    clustersToRemove.add(cluster);
                 }
-                for (Cluster cluster : clustersToRemove) {
-                    service.removeCluster(cluster);
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format(
-                                "Cluster is excluded: [cluster] %s",
-                                cluster.getClusterId()));
-                    }
+            }
+            for (Cluster cluster : clustersToRemove) {
+                service.removeCluster(cluster);
+                if (log.isDebugEnabled()) {
+                    log.debug(String.format(
+                            "Cluster is excluded: [cluster] %s",
+                            cluster.getClusterId()));
                 }
             }
         }
 
         // Apply member filter
-        if (TopologyMemberFilter.getInstance().isActive()) {
-            for (Service service : topology.getServices()) {
-                for (Cluster cluster : service.getClusters()) {
-                    List<Member> membersToRemove = new ArrayList<Member>();
-                    for (Member member : cluster.getMembers()) {
-                        if (TopologyMemberFilter.getInstance()
-                                .lbClusterIdExcluded(
-                                        member.getLbClusterId())) {
-                            membersToRemove.add(member);
-                        }
+        for (Service service : topology.getServices()) {
+            for (Cluster cluster : service.getClusters()) {
+                List<Member> membersToRemove = new ArrayList<Member>();
+                for (Member member : cluster.getMembers()) {
+                    if (TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
+                        membersToRemove.add(member);
                     }
-                    for (Member member : membersToRemove) {
-                        cluster.removeMember(member);
-                        if (log.isDebugEnabled()) {
-                            log.debug(String
-                                    .format("Member is excluded: [member] %s [lb-cluster-id] %s",
-                                            member.getMemberId(),
-                                            member.getLbClusterId()));
-                        }
+                }
+                for (Member member : membersToRemove) {
+                    cluster.removeMember(member);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Member is excluded: [member] %s [lb-cluster-id] %s",
+                                member.getMemberId(),
+                                member.getLbClusterId()));
                     }
                 }
             }

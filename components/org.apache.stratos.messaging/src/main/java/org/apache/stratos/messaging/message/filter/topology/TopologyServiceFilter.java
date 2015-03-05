@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.message.filter.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -30,8 +31,10 @@ import java.util.Collection;
  * A filter to discard topology events which are not in a given service name list.
  */
 public class TopologyServiceFilter extends MessageFilter {
+
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
-	public static final String TOPOLOGY_SERVICE_FILTER_SERVICE_NAME = "service-name";
+
+    public static final String TOPOLOGY_SERVICE_FILTER_SERVICE_NAME = "service-name";
 
     private static volatile TopologyServiceFilter instance;
 
@@ -39,7 +42,25 @@ public class TopologyServiceFilter extends MessageFilter {
         super(StratosConstants.TOPOLOGY_SERVICE_FILTER);
     }
 
-    public static TopologyServiceFilter getInstance() {
+    /**
+     * Returns true if service is excluded else returns false.
+     * @param serviceName service name
+     * @return
+     */
+    public static boolean apply(String serviceName) {
+        boolean excluded = false;
+        if(getInstance().isActive()) {
+            if (StringUtils.isNotBlank(serviceName) && getInstance().serviceExcluded(serviceName)) {
+                excluded = true;
+            }
+            if (excluded && log.isDebugEnabled()) {
+                log.debug(String.format("Service is excluded: [lb-cluster] %s", serviceName));
+            }
+        }
+        return excluded;
+    }
+
+    private static TopologyServiceFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyServiceFilter.class) {
                 if (instance == null) {
@@ -53,15 +74,24 @@ public class TopologyServiceFilter extends MessageFilter {
         return instance;
     }
 
-    public boolean serviceNameIncluded(String value) {
-        return included(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
-    }
-
-    public boolean serviceNameExcluded(String value) {
+    private boolean serviceExcluded(String value) {
         return excluded(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME, value);
     }
 
-    public Collection<String> getIncludedServiceNames() {
+    private Collection<String> getIncludedServiceNames() {
         return getIncludedPropertyValues(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(TOPOLOGY_SERVICE_FILTER_SERVICE_NAME + "=");
+        for (String clusterId : getInstance().getIncludedServiceNames()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(clusterId);
+        }
+        return sb.toString();
     }
 }

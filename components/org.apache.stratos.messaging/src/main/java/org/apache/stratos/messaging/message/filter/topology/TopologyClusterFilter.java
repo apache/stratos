@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.message.filter.topology;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.message.filter.MessageFilter;
@@ -29,8 +30,10 @@ import java.util.Collection;
  * A filter to discard topology events which are not in a given cluster id list.
  */
 public class TopologyClusterFilter extends MessageFilter {
+
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
-	public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
+
+    public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
 	public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
 
     private static volatile TopologyClusterFilter instance;
@@ -39,7 +42,25 @@ public class TopologyClusterFilter extends MessageFilter {
         super(TOPOLOGY_CLUSTER_FILTER);
     }
 
-    public static TopologyClusterFilter getInstance() {
+    /**
+     * Returns true if cluster is excluded else returns false.
+     * @param clusterId
+     * @return
+     */
+    public static boolean apply(String clusterId) {
+        boolean excluded = false;
+        if(getInstance().isActive()) {
+            if (StringUtils.isNotBlank(clusterId) && getInstance().clusterExcluded(clusterId)) {
+                excluded = true;
+            }
+            if (excluded && log.isDebugEnabled()) {
+                log.debug(String.format("Cluster is excluded: [cluster] %s", clusterId));
+            }
+        }
+        return excluded;
+    }
+
+    private static TopologyClusterFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyClusterFilter.class) {
                 if (instance == null) {
@@ -53,15 +74,24 @@ public class TopologyClusterFilter extends MessageFilter {
         return instance;
     }
 
-    public boolean clusterIdIncluded(String value) {
-        return included(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
-    }
-
-    public boolean clusterIdExcluded(String value) {
+    private boolean clusterExcluded(String value) {
         return excluded(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID, value);
     }
 
-    public Collection<String> getIncludedClusterIds() {
+    private Collection<String> getIncludedClusterIds() {
         return getIncludedPropertyValues(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID + "=");
+        for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(clusterId);
+        }
+        return sb.toString();
     }
 }

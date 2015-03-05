@@ -78,25 +78,13 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
             try {
 
                 // Apply service filter
-                if (TopologyServiceFilter.getInstance().isActive()) {
-                    if (TopologyServiceFilter.getInstance().serviceNameExcluded(serviceName)) {
-                        // Service is excluded, do not update topology or fire event
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Service is excluded: [service] %s", serviceName));
-                        }
-                        return false;
-                    }
+                if(TopologyServiceFilter.apply(serviceName)) {
+                    continue;
                 }
 
                 // Apply cluster filter
-                if (TopologyClusterFilter.getInstance().isActive()) {
-                    if (TopologyClusterFilter.getInstance().clusterIdExcluded(clusterId)) {
-                        // Cluster is excluded, do not update topology or fire event
-                        if (log.isDebugEnabled()) {
-                            log.debug(String.format("Cluster is excluded: [cluster] %s", clusterId));
-                        }
-                        return false;
-                    }
+                if(TopologyClusterFilter.apply(clusterId)) {
+                    continue;
                 }
 
                 // Validate event against the existing topology

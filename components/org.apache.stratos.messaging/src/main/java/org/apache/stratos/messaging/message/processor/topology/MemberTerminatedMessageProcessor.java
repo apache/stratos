@@ -74,54 +74,39 @@ public class MemberTerminatedMessageProcessor extends MessageProcessor {
 
     private boolean doProcess (MemberTerminatedEvent event,Topology topology) {
 
+        String serviceName = event.getServiceName();
+        String clusterId = event.getClusterId();
+
         // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(event.getServiceName())) {
-                // Service is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", event.getServiceName()));
-                }
-                return false;
-            }
+        if(TopologyServiceFilter.apply(serviceName)) {
+            return false;
         }
 
         // Apply cluster filter
-        if (TopologyClusterFilter.getInstance().isActive()) {
-            if (TopologyClusterFilter.getInstance().clusterIdExcluded(event.getClusterId())) {
-                // Cluster is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster is excluded: [cluster] %s", event.getClusterId()));
-                }
-                return false;
-            }
+        if(TopologyClusterFilter.apply(clusterId)) {
+            return false;
         }
 
         // Validate event against the existing topology
-        Service service = topology.getService(event.getServiceName());
+        Service service = topology.getService(serviceName);
         if (service == null) {
             if (log.isWarnEnabled()) {
-                log.warn(String.format("Service does not exist: [service] %s", event.getServiceName()));
+                log.warn(String.format("Service does not exist: [service] %s", serviceName));
             }
             return false;
         }
         Cluster cluster = service.getCluster(event.getClusterId());
         if (cluster == null) {
             if (log.isWarnEnabled()) {
-                log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s",
-                        event.getServiceName(), event.getClusterId()));
+                log.warn(String.format("Cluster does not exist: [service] %s [cluster] %s", serviceName, clusterId));
             }
             return false;
         }
         Member member = cluster.getMember(event.getMemberId());
         if(member != null) {
             // Apply member filter
-            if(TopologyMemberFilter.getInstance().isActive()) {
-                if(TopologyMemberFilter.getInstance().lbClusterIdExcluded(member.getLbClusterId())) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(String.format("Member is excluded: [lb-cluster-id] %s", member.getLbClusterId()));
-                    }
-                    return false;
-                }
+            if(TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
+                return false;
             }
         }
 

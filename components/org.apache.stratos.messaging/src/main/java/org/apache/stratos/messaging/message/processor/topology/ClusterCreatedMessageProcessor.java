@@ -73,39 +73,17 @@ public class ClusterCreatedMessageProcessor extends MessageProcessor {
         Cluster cluster = event.getCluster();
         String serviceName = cluster.getServiceName();
         String clusterId = cluster.getClusterId();
+
         // Apply service filter
-        if (TopologyServiceFilter.getInstance().isActive()) {
-            if (TopologyServiceFilter.getInstance().serviceNameExcluded(serviceName)) {
-                // Service is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Service is excluded: [service] %s", serviceName));
-                }
-                return false;
-            }
+        if(TopologyServiceFilter.apply(serviceName)) {
+            return false;
         }
 
         // Apply cluster filter
-        if (TopologyClusterFilter.getInstance().isActive()) {
-            if (TopologyClusterFilter.getInstance().clusterIdExcluded(clusterId)) {
-                // Cluster is excluded, do not update topology or fire event
-                if (log.isDebugEnabled()) {
-                    log.debug(String.format("Cluster is excluded: [cluster] %s", clusterId));
-                }
-                return false;
-            }
+        if(TopologyClusterFilter.apply(clusterId)) {
+            return false;
         }
 
-        // Validate event properties
-        /*Cluster cluster = event.getCluster();
-
-        if(cluster == null) {
-            String msg = "Cluster object of cluster created event is null.";
-            log.error(msg);
-            throw new RuntimeException(msg);
-        }
-        if (cluster.getHostNames().isEmpty()) {
-            throw new RuntimeException("Host name/s not found in cluster created event");
-        }*/
         // Validate event against the existing topology
         Service service = topology.getService(serviceName);
         if (service == null) {
