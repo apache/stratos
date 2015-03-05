@@ -60,7 +60,7 @@ public class TopologyClusterFilter extends MessageFilter {
         return excluded;
     }
 
-    private static TopologyClusterFilter getInstance() {
+    public static TopologyClusterFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyClusterFilter.class) {
                 if (instance == null) {

@@ -148,40 +148,6 @@ public class LoadBalancerServiceComponent {
             if (configuration.isTopologyEventListenerEnabled()) {
                 // Start topology receiver
                 startTopologyEventReceiver(executorService, topologyProvider);
-
-                if (log.isInfoEnabled()) {
-                    if (TopologyServiceFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(serviceName);
-                        }
-                        log.info(String.format("Service filter activated: [services] %s", sb.toString()));
-                    }
-                    if (TopologyClusterFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(clusterId);
-                        }
-                        log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
-                    }
-                    if (TopologyMemberFilter.getInstance().isActive()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
-                            if (sb.length() > 0) {
-                                sb.append(", ");
-                            }
-                            sb.append(clusterId);
-                        }
-                        log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
-                    }
-                }
-
             }
 
             if(configuration.isCepStatsPublisherEnabled()) {
@@ -238,35 +204,19 @@ public class LoadBalancerServiceComponent {
         }
 
         if (log.isInfoEnabled()) {
-            if (TopologyServiceFilter.getInstance().isActive()) {
-                StringBuilder sb = new StringBuilder();
-                for (String serviceName : TopologyServiceFilter.getInstance().getIncludedServiceNames()) {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(serviceName);
-                }
-                log.info(String.format("Service filter activated: [services] %s", sb.toString()));
+            if(TopologyServiceFilter.getInstance().isActive()) {
+                log.info(String.format("Service filter activated: [filter] %s",
+                        TopologyServiceFilter.getInstance().toString()));
             }
-            if (TopologyClusterFilter.getInstance().isActive()) {
-                StringBuilder sb = new StringBuilder();
-                for (String clusterId : TopologyClusterFilter.getInstance().getIncludedClusterIds()) {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(clusterId);
-                }
-                log.info(String.format("Cluster filter activated: [clusters] %s", sb.toString()));
+
+            if(TopologyClusterFilter.getInstance().isActive()) {
+                log.info(String.format("Cluster filter activated: [filter] %s",
+                        TopologyClusterFilter.getInstance().toString()));
             }
-            if (TopologyMemberFilter.getInstance().isActive()) {
-                StringBuilder sb = new StringBuilder();
-                for (String clusterId : TopologyMemberFilter.getInstance().getIncludedLbClusterIds()) {
-                    if (sb.length() > 0) {
-                        sb.append(", ");
-                    }
-                    sb.append(clusterId);
-                }
-                log.info(String.format("Member filter activated: [lb-cluster-ids] %s", sb.toString()));
+
+            if(TopologyMemberFilter.getInstance().isActive()) {
+                log.info(String.format("Member filter activated: [filter] %s",
+                        TopologyMemberFilter.getInstance().toString()));
             }
         }
     }

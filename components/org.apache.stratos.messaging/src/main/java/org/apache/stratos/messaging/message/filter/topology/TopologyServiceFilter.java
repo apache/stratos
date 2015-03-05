@@ -60,7 +60,7 @@ public class TopologyServiceFilter extends MessageFilter {
         return excluded;
     }
 
-    private static TopologyServiceFilter getInstance() {
+    public static TopologyServiceFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyServiceFilter.class) {
                 if (instance == null) {

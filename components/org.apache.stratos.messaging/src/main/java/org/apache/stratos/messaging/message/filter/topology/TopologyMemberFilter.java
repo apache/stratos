@@ -67,7 +67,7 @@ public class TopologyMemberFilter extends MessageFilter {
         return excluded;
     }
 
-    private static TopologyMemberFilter getInstance() {
+    public static TopologyMemberFilter getInstance() {
         if (instance == null) {
             synchronized (TopologyMemberFilter.class){
                 if (instance == null) {
