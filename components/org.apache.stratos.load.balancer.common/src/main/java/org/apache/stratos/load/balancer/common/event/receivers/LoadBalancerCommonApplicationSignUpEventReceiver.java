@@ -54,33 +54,44 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
 
     private void addEventListeners() {
         addEventListener(new CompleteApplicationSignUpsEventListener() {
+            private boolean initialized = false;
+
             @Override
             protected void onEvent(Event event) {
-                if (log.isDebugEnabled()) {
-                    log.debug("Complete application signup event received");
-                }
-
-                CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = (CompleteApplicationSignUpsEvent) event;
-                for (ApplicationSignUp applicationSignUp : completeApplicationSignUpsEvent.getApplicationSignUps()) {
-
-                    // Add tenant signups
-                    for (String clusterId : applicationSignUp.getClusterIds()) {
-                        topologyProvider.addTenantSignUp(clusterId, applicationSignUp.getTenantId());
+                try {
+                    if (initialized) {
+                        return;
                     }
 
-                    // Add domain mappings
-                    if (applicationSignUp.getDomainMappings() != null) {
-                        for (DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
-                            if (domainMapping != null) {
-                                Cluster cluster = topologyProvider.getClusterByClusterId(domainMapping.getClusterId());
-                                if (cluster != null) {
-                                    cluster.addHostName(domainMapping.getDomainName());
-                                    log.info(String.format("Domain mapping added: [cluster] %s [domain] %s",
-                                            cluster.getClusterId(), domainMapping.getDomainName()));
+                    if (log.isDebugEnabled()) {
+                        log.debug("Complete application signup event received");
+                    }
+
+                    CompleteApplicationSignUpsEvent completeApplicationSignUpsEvent = (CompleteApplicationSignUpsEvent) event;
+                    for (ApplicationSignUp applicationSignUp : completeApplicationSignUpsEvent.getApplicationSignUps()) {
+
+                        // Add tenant signups
+                        for (String clusterId : applicationSignUp.getClusterIds()) {
+                            topologyProvider.addTenantSignUp(clusterId, applicationSignUp.getTenantId());
+                        }
+
+                        // Add domain mappings
+                        if (applicationSignUp.getDomainMappings() != null) {
+                            for (DomainMapping domainMapping : applicationSignUp.getDomainMappings()) {
+                                if (domainMapping != null) {
+                                    Cluster cluster = topologyProvider.getClusterByClusterId(domainMapping.getClusterId());
+                                    if (cluster != null) {
+                                        cluster.addHostName(domainMapping.getDomainName());
+                                        log.info(String.format("Domain mapping added: [cluster] %s [domain] %s",
+                                                cluster.getClusterId(), domainMapping.getDomainName()));
+                                    }
                                 }
                             }
                         }
                     }
+                    initialized = true;
+                } catch (Exception e) {
+                    log.error("Could not process complete application signup event", e);
                 }
             }
         });
@@ -88,9 +99,13 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
         addEventListener(new ApplicationSignUpAddedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                ApplicationSignUpAddedEvent applicationSignUpAddedEvent = (ApplicationSignUpAddedEvent) event;
-                for (String clusterId : applicationSignUpAddedEvent.getClusterIds()) {
-                    topologyProvider.addTenantSignUp(clusterId, applicationSignUpAddedEvent.getTenantId());
+                try {
+                    ApplicationSignUpAddedEvent applicationSignUpAddedEvent = (ApplicationSignUpAddedEvent) event;
+                    for (String clusterId : applicationSignUpAddedEvent.getClusterIds()) {
+                        topologyProvider.addTenantSignUp(clusterId, applicationSignUpAddedEvent.getTenantId());
+                    }
+                } catch (Exception e) {
+                    log.error("Could not process application signup added event", e);
                 }
             }
         });
@@ -98,14 +113,18 @@ public class LoadBalancerCommonApplicationSignUpEventReceiver extends Applicatio
         addEventListener(new ApplicationSignUpRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
-                ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent = (ApplicationSignUpRemovedEvent) event;
-                String applicationId = applicationSignUpRemovedEvent.getApplicationId();
+                try {
+                    ApplicationSignUpRemovedEvent applicationSignUpRemovedEvent = (ApplicationSignUpRemovedEvent) event;
+                    String applicationId = applicationSignUpRemovedEvent.getApplicationId();
 
-                Application application = ApplicationManager.getApplications().getApplication(applicationId);
-                if(application != null) {
-                    for(ClusterDataHolder clusterDataHolder : application.getClusterDataMap().values())
-                    topologyProvider.removeTenantSignUp(clusterDataHolder.getClusterId(),
-                            applicationSignUpRemovedEvent.getTenantId());
+                    Application application = ApplicationManager.getApplications().getApplication(applicationId);
+                    if (application != null) {
+                        for (ClusterDataHolder clusterDataHolder : application.getClusterDataMap().values())
+                            topologyProvider.removeTenantSignUp(clusterDataHolder.getClusterId(),
+                                    applicationSignUpRemovedEvent.getTenantId());
+                    }
+                } catch (Exception e) {
+                    log.error("Could not process application signup removed event", e);
                 }
             }
         });

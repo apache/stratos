@@ -58,24 +58,26 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
 
             @Override
             protected void onEvent(Event event) {
-                if (!initialized) {
-                    try {
-                        TopologyManager.acquireReadLock();
-                        for (Service service : TopologyManager.getTopology().getServices()) {
-                            for (Cluster cluster : service.getClusters()) {
-                                for (Member member : cluster.getMembers()) {
-                                    if (member.getStatus() == MemberStatus.Active) {
-                                        addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
-                                    }
+                if (initialized) {
+                    return;
+                }
+
+                try {
+                    TopologyManager.acquireReadLock();
+                    for (Service service : TopologyManager.getTopology().getServices()) {
+                        for (Cluster cluster : service.getClusters()) {
+                            for (Member member : cluster.getMembers()) {
+                                if (member.getStatus() == MemberStatus.Active) {
+                                    addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
                                 }
                             }
                         }
-                        initialized = true;
-                    } catch (Exception e) {
-                        log.error("Error processing event", e);
-                    } finally {
-                        TopologyManager.releaseReadLock();
                     }
+                    initialized = true;
+                } catch (Exception e) {
+                    log.error("Error processing complete topology event", e);
+                } finally {
+                    TopologyManager.releaseReadLock();
                 }
             }
         });
@@ -367,6 +369,11 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
                 new org.apache.stratos.load.balancer.common.domain.Member(messagingMember.getServiceName(),
                         messagingMember.getClusterId(), messagingMember.getMemberId(),
                         hostName);
+        if(messagingMember.getPorts() != null) {
+            for(Port port : messagingMember.getPorts()) {
+                member.addPort(transformPort(port));
+            }
+        }
         return member;
     }
 }

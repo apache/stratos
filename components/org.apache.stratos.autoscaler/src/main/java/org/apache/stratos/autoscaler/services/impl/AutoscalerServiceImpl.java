@@ -18,26 +18,13 @@
  */
 package org.apache.stratos.autoscaler.services.impl;
 
-import java.rmi.RemoteException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
-import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
-import org.apache.stratos.autoscaler.applications.pojo.ArtifactRepositoryContext;
-import org.apache.stratos.autoscaler.applications.pojo.CartridgeContext;
-import org.apache.stratos.autoscaler.applications.pojo.ComponentContext;
-import org.apache.stratos.autoscaler.applications.pojo.GroupContext;
-import org.apache.stratos.autoscaler.applications.pojo.SubscribableInfoContext;
+import org.apache.stratos.autoscaler.applications.pojo.*;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
@@ -69,6 +56,13 @@ import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 import org.wso2.carbon.registry.api.RegistryException;
+
+import java.rmi.RemoteException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -194,7 +188,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
-			    addApplicationSignUp(applicationContext, application.getKey());
+			    addApplicationSignUp(applicationContext, application.getKey(), findApplicationClusterIds(application));
 			}
 			applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
 			AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
@@ -235,7 +229,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    private void addApplicationSignUp(ApplicationContext applicationContext, String applicationKey) {
+    /**
+     * Find application cluster ids.
+     * @param application
+     * @return
+     */
+    private List<String> findApplicationClusterIds(Application application) {
+        List<String> clusterIds = new ArrayList<String>();
+        for(ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
+            clusterIds.add(clusterDataHolder.getClusterId());
+        }
+        return clusterIds;
+    }
+
+    /**
+     * Add application signup.
+     * @param applicationContext
+     * @param applicationKey
+     * @param clusterIds
+     */
+    private void addApplicationSignUp(ApplicationContext applicationContext, String applicationKey,
+                                      List<String> clusterIds) {
+
         try {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Adding application signup: [application-id] %s",
@@ -247,6 +262,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 ApplicationSignUp applicationSignUp = new ApplicationSignUp();
                 applicationSignUp.setApplicationId(applicationContext.getApplicationId());
                 applicationSignUp.setTenantId(applicationContext.getTenantId());
+                String[] clusterIdsArray = clusterIds.toArray(new String[clusterIds.size()]);
+                applicationSignUp.setClusterIds(clusterIdsArray);
 
                 List<ArtifactRepository> artifactRepositoryList = new ArrayList<ArtifactRepository>();
                 CartridgeContext[] cartridgeContexts = components.getCartridgeContexts();

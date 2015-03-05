@@ -28,7 +28,6 @@ import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithmFactory;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Member;
 import org.apache.stratos.load.balancer.common.domain.Port;
-import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.conf.domain.TenantIdentifier;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
@@ -85,8 +84,7 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         super.init(synapseEnvironment);
 
         LoadBalanceAlgorithm algorithm = LoadBalanceAlgorithmFactory.createAlgorithm(algorithmClassName);
-        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
-        requestDelegator = new RequestDelegator(algorithm, topologyProvider);
+        requestDelegator = new RequestDelegator(algorithm);
         synapseEnvironment.getSynapseConfiguration().setProperty(SynapseConstants.PROP_SAL_ENDPOINT_DEFAULT_SESSION_TIMEOUT, String.valueOf(sessionTimeout));
         setDispatcher(new HttpSessionDispatcher());
     }

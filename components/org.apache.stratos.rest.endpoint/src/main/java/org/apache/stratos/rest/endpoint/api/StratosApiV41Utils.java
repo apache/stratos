@@ -1696,6 +1696,9 @@ public class StratosApiV41Utils {
             ApplicationSignUp applicationSignUp = ObjectConverter.convertApplicationSignUpBeanToStubApplicationSignUp(applicationSignUpBean);
             applicationSignUp.setApplicationId(applicationId);
             applicationSignUp.setTenantId(tenantId);
+            List<String> clusterIds = findApplicationClusterIds(application);
+            String[] clusterIdsArray = clusterIds.toArray(new String[clusterIds.size()]);
+            applicationSignUp.setClusterIds(clusterIdsArray);
 
             // Encrypt artifact repository passwords
             encryptRepositoryPasswords(applicationSignUp, application.getKey());
@@ -1718,6 +1721,19 @@ public class StratosApiV41Utils {
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
+    }
+
+    /**
+     * Find application cluster ids.
+     * @param application
+     * @return
+     */
+    private static List<String> findApplicationClusterIds(Application application) {
+        List<String> clusterIds = new ArrayList<String>();
+        for(ClusterDataHolder clusterDataHolder : application.getClusterDataRecursively()) {
+            clusterIds.add(clusterDataHolder.getClusterId());
+        }
+        return clusterIds;
     }
 
     /**

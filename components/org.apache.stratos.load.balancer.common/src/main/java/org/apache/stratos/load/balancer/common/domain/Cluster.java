@@ -72,10 +72,6 @@ public class Cluster {
 
     public void addMember(Member member) {
         memberMap.put(member.getMemberId(), member);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Member added to cluster: [cluster] %s [member] %s [hostname] %s [ports] %s",
-                    clusterId, member.getMemberId(), member.getHostName(), member.getPorts()));
-        }
     }
 
     public void removeMember(String memberId) {
@@ -84,13 +80,10 @@ public class Cluster {
             if(log.isWarnEnabled()) {
                 log.warn(String.format("Could not remove member, member not found: [member] %s", memberId));
             }
+            return;
         }
 
         memberMap.remove(memberId);
-        if(log.isInfoEnabled()) {
-            log.info(String.format("Member removed from cluster: [cluster] %s [member] %s [hostname] %s",
-                    clusterId, member.getMemberId(), member.getHostName()));
-        }
     }
 
     public Member getMember(String memberId) {

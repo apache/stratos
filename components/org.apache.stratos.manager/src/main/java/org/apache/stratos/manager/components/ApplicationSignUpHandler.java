@@ -22,15 +22,11 @@ package org.apache.stratos.manager.components;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.util.CommonUtil;
+import org.apache.stratos.manager.exception.ApplicationSignUpException;
 import org.apache.stratos.manager.messaging.publisher.ApplicationSignUpEventPublisher;
-import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.manager.registry.RegistryManager;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.messaging.domain.application.signup.ArtifactRepository;
-import org.apache.stratos.manager.exception.ApplicationSignUpException;
-import org.apache.stratos.manager.registry.RegistryManager;
-import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +57,13 @@ public class ApplicationSignUpHandler {
 
         String applicationId = applicationSignUp.getApplicationId();
         int tenantId = applicationSignUp.getTenantId();
-        List<String> clusterIds = applicationSignUp.getClusterIds();
+        String[] clusterIdArray = applicationSignUp.getClusterIds();
+        List<String> clusterIdList = new ArrayList<String>();
+        if(clusterIdArray != null) {
+            for (String clusterId : clusterIdArray) {
+                clusterIdList.add(clusterId);
+            }
+        }
 
         try {
             if (log.isInfoEnabled()) {
@@ -78,7 +80,7 @@ public class ApplicationSignUpHandler {
             String resourcePath = prepareApplicationSignupResourcePath(applicationId, tenantId);
             RegistryManager.getInstance().persist(resourcePath, applicationSignUp);
 
-            ApplicationSignUpEventPublisher.publishApplicationSignUpAddedEvent(applicationId, tenantId, clusterIds);
+            ApplicationSignUpEventPublisher.publishApplicationSignUpAddedEvent(applicationId, tenantId, clusterIdList);
 
             if (log.isInfoEnabled()) {
                 log.info(String.format("Application signup added successfully: [application-id] %s [tenant-id] %d",

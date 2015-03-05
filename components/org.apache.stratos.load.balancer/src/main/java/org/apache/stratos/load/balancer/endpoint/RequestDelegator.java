@@ -25,6 +25,7 @@ import org.apache.stratos.load.balancer.algorithm.LoadBalanceAlgorithm;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.conf.LoadBalancerConfiguration;
 import org.apache.stratos.load.balancer.context.AlgorithmContext;
 import org.apache.stratos.load.balancer.context.ClusterContext;
 import org.apache.stratos.load.balancer.context.LoadBalancerContext;
@@ -40,11 +41,9 @@ public class RequestDelegator {
     private static final Log log = LogFactory.getLog(RequestDelegator.class);
 
     private LoadBalanceAlgorithm algorithm;
-    private TopologyProvider topologyProvider;
 
-    public RequestDelegator(LoadBalanceAlgorithm algorithm, TopologyProvider topologyProvider) {
+    public RequestDelegator(LoadBalanceAlgorithm algorithm) {
         this.algorithm = algorithm;
-        this.topologyProvider = topologyProvider;
     }
 
     /**
@@ -59,6 +58,7 @@ public class RequestDelegator {
 
         long startTime = System.currentTimeMillis();
 
+        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
         Cluster cluster = topologyProvider.getClusterByHostName(hostName);
         if (cluster != null) {
             if (log.isDebugEnabled()) {
@@ -92,6 +92,7 @@ public class RequestDelegator {
         long startTime = System.currentTimeMillis();
 
         // Find cluster from host name and tenant id
+        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
         Cluster cluster = topologyProvider.getClusterByHostName(hostName, tenantId);
         if (cluster != null) {
             Member member = findNextMemberInCluster(cluster);
@@ -147,11 +148,13 @@ public class RequestDelegator {
         if (hostName == null)
             return false;
 
+        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
         boolean valid = topologyProvider.clusterExistsByHostName(hostName);
         return valid;
     }
 
     public Cluster getCluster(String hostName) {
+        TopologyProvider topologyProvider = LoadBalancerConfiguration.getInstance().getTopologyProvider();
         return topologyProvider.getClusterByHostName(hostName);
     }
 }
