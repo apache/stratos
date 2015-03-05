@@ -579,13 +579,21 @@ public class StratosApiV41Utils {
 			}
 			serviceClient.addApplicationPolicy(applicationPolicy);
 		} catch (RemoteException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not add application policy" + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		} catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not add application policy. Invalid policy. " + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		} catch (AutoscalerServiceRemoteExceptionException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not add application policy" + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		} catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not add application policy. Invalid application policy. " + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		}
     }
     
@@ -601,13 +609,21 @@ public class StratosApiV41Utils {
             try {
 				autoscalerServiceClient.updateApplicationPolicy(applicationPolicy);
 			} catch (RemoteException e) {
-				throw new RestAPIException(e);
+				String msg = "Could not update application policy" + e.getLocalizedMessage();
+				log.error(msg, e);
+				throw new RestAPIException(msg);
 			} catch (AutoscalerServiceApplicatioinPolicyNotExistsExceptionException e) {
-				throw new RestAPIException(e);
+				String msg = "Could not update application policy. Application policy not exists" + e.getLocalizedMessage();
+				log.error(msg, e);
+				throw new RestAPIException(msg);
 			} catch (AutoscalerServiceRemoteExceptionException e) {
-				throw new RestAPIException(e);
+				String msg = "Could not update application policy" + e.getLocalizedMessage();
+				log.error(msg, e);
+				throw new RestAPIException(msg);
 			} catch (AutoscalerServiceInvalidApplicationPolicyExceptionException e) {
-				throw new RestAPIException(e);
+				String msg = "Could not update application policy. Invalid application policy" + e.getLocalizedMessage();
+				log.error(msg, e);
+				throw new RestAPIException(msg);
 			}
         }
     }
@@ -620,7 +636,9 @@ public class StratosApiV41Utils {
             try {
 				applicationPolicies = autoscalerServiceClient.getApplicationPolicies();
 			} catch (RemoteException e) {
-				throw new RestAPIException(e);
+				String msg = "Could not get application policies" + e.getLocalizedMessage();
+				log.error(msg, e);
+				throw new RestAPIException(msg);
 			}
         }
         return ObjectConverter.convertASStubApplicationPoliciesToApplicationPolicies(applicationPolicies);
@@ -669,9 +687,13 @@ public class StratosApiV41Utils {
     	try {
 			serviceClient.removeApplicationPolicy(applicationPolicyId);
 		} catch (RemoteException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not remove application policy. " + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		} catch (AutoscalerServiceInvalidPolicyExceptionException e) {
-			throw new RestAPIException(e);
+			String msg = "Could not update application policy. " + e.getLocalizedMessage();
+			log.error(msg, e);
+			throw new RestAPIException(msg);
 		}
     }
 
