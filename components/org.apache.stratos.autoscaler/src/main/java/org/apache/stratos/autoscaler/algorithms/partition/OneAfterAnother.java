@@ -17,10 +17,11 @@
 * under the License.
 */
 
-package org.apache.stratos.autoscaler.algorithm;
+package org.apache.stratos.autoscaler.algorithms.partition;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 
 /**
@@ -29,7 +30,7 @@ import org.apache.stratos.autoscaler.context.partition.PartitionContext;
  * {@link org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy}, and go to next if current one
  * reached the max limit
  */
-public class OneAfterAnother implements AutoscaleAlgorithm {
+public class OneAfterAnother implements PartitionAlgorithm {
 
     private static final Log log = LogFactory.getLog(OneAfterAnother.class);
 

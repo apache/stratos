@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
+import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.InstanceContext;
@@ -789,7 +789,7 @@ public class GroupMonitor extends ParentComponentMonitor {
                 new GroupLevelPartitionContext[partitionContexts.size()];
         if (parentPartitionId == null) {
             if (!partitionContexts.isEmpty()) {
-                AutoscaleAlgorithm algorithm = this.getAutoscaleAlgorithm(
+                PartitionAlgorithm algorithm = this.getAutoscaleAlgorithm(
                         groupLevelNetworkPartitionContext.getPartitionAlgorithm());
                 partitionContext = algorithm.getNextScaleUpPartitionContext(
                         (partitionContexts.toArray(groupLevelPartitionContexts)));

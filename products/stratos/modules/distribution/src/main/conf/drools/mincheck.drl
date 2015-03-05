@@ -28,9 +28,9 @@ import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadThresholds;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
+import org.apache.stratos.autoscaler.algorithms.partition.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithms.partition.RoundRobin;
 import org.apache.stratos.autoscaler.context.partition.ClusterLevelPartitionContext;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
@@ -54,7 +54,7 @@ dialect "mvel"
     when
         clusterInstanceContext : ClusterInstanceContext ()
 
-        autoscaleAlgorithm : AutoscaleAlgorithm() from  delegator.getAutoscaleAlgorithm(algorithmName)
+        partitionAlgorithm : PartitionAlgorithm() from  delegator.getPartitionAlgorithm(algorithmName)
 
         eval(log.debug("Running minimum rule: [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId()))
         eval(log.debug("[min-check] [network-partition] " + clusterInstanceContext.getNetworkPartitionId() + " [cluster-instance] " + clusterInstanceContext.getId() + " [cluster] " + clusterId + " Non terminated member count: " + clusterInstanceContext.getNonTerminatedMemberCount()))
@@ -79,7 +79,7 @@ dialect "mvel"
         boolean partitionsAvailable = true;
         while(count != additionalInstances && partitionsAvailable){
 
-            ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)autoscaleAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
+            ClusterLevelPartitionContext partitionContext =  (ClusterLevelPartitionContext)partitionAlgorithm.getNextScaleUpPartitionContext(clusterInstanceContext.getPartitionCtxtsAsAnArray());
              if(partitionContext != null){
 
                 log.info("[min-check] Partition available, hence trying to spawn an instance to fulfil minimum count!" + " [cluster] " + clusterId);

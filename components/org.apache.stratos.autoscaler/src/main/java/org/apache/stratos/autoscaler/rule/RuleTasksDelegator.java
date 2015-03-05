@@ -23,9 +23,9 @@ package org.apache.stratos.autoscaler.rule;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
+import org.apache.stratos.autoscaler.algorithms.partition.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithms.partition.RoundRobin;
 import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.context.cluster.ClusterContext;
@@ -137,9 +137,9 @@ public class RuleTasksDelegator {
         return numberOfInstances;
     }
 
-    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
+    public PartitionAlgorithm getPartitionAlgorithm(String partitionAlgorithm) {
 
-        AutoscaleAlgorithm autoscaleAlgorithm = null;
+        PartitionAlgorithm autoscaleAlgorithm = null;
         //FIXME to not parse for algo when partition is chosen by the parent
 
         if(partitionAlgorithm == null) {

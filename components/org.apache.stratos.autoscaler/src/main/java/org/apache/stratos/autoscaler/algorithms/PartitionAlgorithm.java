@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.autoscaler.algorithm;
+package org.apache.stratos.autoscaler.algorithms;
 
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 
@@ -25,7 +25,7 @@ import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 /**
  * This interface is should be implemented by all the algorithms that are there to select partitions context
  */
-public interface AutoscaleAlgorithm {
+public interface PartitionAlgorithm {
 
     /**
      * Returns a {@link PartitionContext} to scale up from the given list

@@ -20,9 +20,9 @@ package org.apache.stratos.autoscaler.monitor.component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
-import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
-import org.apache.stratos.autoscaler.algorithm.RoundRobin;
+import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
+import org.apache.stratos.autoscaler.algorithms.partition.OneAfterAnother;
+import org.apache.stratos.autoscaler.algorithms.partition.RoundRobin;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyBuilder;
 import org.apache.stratos.autoscaler.applications.dependency.DependencyTree;
@@ -725,8 +725,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         this.terminatingInstancesMap = terminatingInstancesMap;
     }
 
-    public AutoscaleAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
-        AutoscaleAlgorithm autoscaleAlgorithm = null;
+    public PartitionAlgorithm getAutoscaleAlgorithm(String partitionAlgorithm) {
+        PartitionAlgorithm autoscaleAlgorithm = null;
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
