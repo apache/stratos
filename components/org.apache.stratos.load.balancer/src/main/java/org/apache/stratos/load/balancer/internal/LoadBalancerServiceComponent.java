@@ -42,7 +42,6 @@ import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
-import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -91,8 +90,7 @@ public class LoadBalancerServiceComponent {
 
     private boolean activated = false;
     private ExecutorService executorService;
-    private TenantEventReceiver tenantReceiver;
-    private LoadBalancerTopologyEventReceiver topologyReceiver;
+    private LoadBalancerTopologyEventReceiver topologyEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
@@ -132,15 +130,12 @@ public class LoadBalancerServiceComponent {
                 LoadBalancerConfiguration.getInstance().setTopologyProvider(topologyProvider);
             }
 
-            if (configuration.isMultiTenancyEnabled()) {
-                // Start tenant event receiver
-                startTenantEventReceiver(executorService, topologyProvider);
+            if (configuration.isMultiTenancyEnabled() || configuration.isDomainMappingEnabled()) {
+                // Start application signup event receiver
+                startApplicationSignUpEventReceiver(executorService, topologyProvider);
             }
 
             if(configuration.isDomainMappingEnabled()) {
-                // Start application signup event receiver
-                startApplicationSignUpEventReceiver(executorService, topologyProvider);
-
                 // Start domain mapping event receiver
                 startDomainMappingEventReceiver(executorService, topologyProvider);
             }
@@ -166,17 +161,11 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startTenantEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
-
-        tenantReceiver = new TenantEventReceiver();
-        tenantReceiver.setExecutorService(executorService);
-	    tenantReceiver.execute();
-        if (log.isInfoEnabled()) {
-            log.info("Tenant event receiver thread started");
-        }
-    }
-
     private void startDomainMappingEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+        if(domainMappingEventReceiver != null) {
+            return;
+        }
+
         domainMappingEventReceiver = new LoadBalancerDomainMappingEventReceiver(topologyProvider);
         domainMappingEventReceiver.setExecutorService(executorService);
         domainMappingEventReceiver.execute();
@@ -186,6 +175,10 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startApplicationSignUpEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+        if(applicationSignUpEventReceiver != null) {
+            return;
+        }
+
         applicationSignUpEventReceiver = new LoadBalancerCommonApplicationSignUpEventReceiver(topologyProvider);
         applicationSignUpEventReceiver.setExecutorService(executorService);
         applicationSignUpEventReceiver.execute();
@@ -195,10 +188,13 @@ public class LoadBalancerServiceComponent {
     }
 
     private void startTopologyEventReceiver(ExecutorService executorService, TopologyProvider topologyProvider) {
+        if(topologyEventReceiver != null) {
+            return;
+        }
 
-        topologyReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
-	    topologyReceiver.setExecutorService(executorService);
-	    topologyReceiver.execute();
+        topologyEventReceiver = new LoadBalancerTopologyEventReceiver(topologyProvider);
+	    topologyEventReceiver.setExecutorService(executorService);
+	    topologyEventReceiver.execute();
         if (log.isInfoEnabled()) {
             log.info("Topology receiver thread started");
         }
@@ -243,21 +239,30 @@ public class LoadBalancerServiceComponent {
             log.warn("An error occurred while removing endpoint deployer", e);
         }
 
-        // Terminate tenant receiver
-        if(tenantReceiver != null) {
+        // Terminate topology receiver
+        if(topologyEventReceiver != null) {
             try {
-                tenantReceiver.terminate();
+                topologyEventReceiver.terminate();
             } catch (Exception e) {
-                log.warn("An error occurred while terminating tenant event receiver", e);
+                log.warn("An error occurred while terminating topology event receiver", e);
             }
         }
 
-        // Terminate topology receiver
-        if(topologyReceiver != null) {
+        // Terminate application signup event receiver
+        if(applicationSignUpEventReceiver != null) {
             try {
-                topologyReceiver.terminate();
+                applicationSignUpEventReceiver.terminate();
             } catch (Exception e) {
-                log.warn("An error occurred while terminating topology event receiver", e);
+                log.warn("An error occurred while terminating application signup event receiver", e);
+            }
+        }
+
+        // Terminate domain mapping event receiver
+        if(domainMappingEventReceiver != null) {
+            try {
+                domainMappingEventReceiver.terminate();
+            } catch (Exception e) {
+                log.warn("An error occurred while terminating domain mapping event receiver", e);
             }
         }
 
