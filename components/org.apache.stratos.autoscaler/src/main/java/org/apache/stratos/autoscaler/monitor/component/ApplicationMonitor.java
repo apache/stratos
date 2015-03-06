@@ -329,7 +329,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 		}
         
         String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
+        if (log.isDebugEnabled()) {
+			String msg = String.format("Network partition algorithm is %s [application-id] %s", networkPartitionAlgorithmName, appId);
+			log.debug(msg);
+		}
+        
         NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(networkPartitionAlgorithmName);
+        if (algorithm == null) {
+			String msg = String.format("Coudln't create network partition algorithm [application-id] %s", appId);
+			log.error(msg);
+			throw new RuntimeException(msg);
+		}
+        
         List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
         if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
 			String msg = String.format("No network partitions available for application bursting [application-id] %s", appId);
@@ -419,7 +430,18 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 		}
         
         String networkPartitionAlgorithmName = applicationPolicy.getAlgorithm();
+        if (log.isDebugEnabled()) {
+			String msg = String.format("Network partition algorithm is %s [application-id] %s", networkPartitionAlgorithmName, appId);
+			log.debug(msg);
+		}
+        
         NetworkPartitionAlgorithm algorithm = getNetworkPartitionAlgorithm(networkPartitionAlgorithmName);
+        if (algorithm == null) {
+			String msg = String.format("Coudln't create network partition algorithm [application-id] %s", appId);
+			log.error(msg);
+			throw new RuntimeException(msg);
+		}
+        
         List<String> nextNetworkPartitions = algorithm.getNextNetworkPartitions(algorithmContext);
         if (nextNetworkPartitions == null || nextNetworkPartitions.isEmpty()) {
 			String msg = String.format("No network partitions available for application bursting [application-id] %s", appId);
@@ -489,9 +511,25 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 		}
     	
     	if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)) {
+    		if (log.isDebugEnabled()) {
+    			String msg = String.format("Network partition algorithm is set to %s in applicatioin policy", 
+        				StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID);
+    			log.debug(msg);
+			}
 			return new OneAfterAnotherAlgorithm();
 		} else if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
+    		if (log.isDebugEnabled()) {
+    			String msg = String.format("Network partition algorithm is set to %s in applicatioin policy", 
+        				StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
+    			log.debug(msg);
+			}
 			return new AllAtOnceAlgorithm();
+		}
+    	
+		if (log.isDebugEnabled()) {
+			String msg = String.format("Invalid network partition algorithm %s found in applicatioin policy", 
+    				StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID);
+			log.debug(msg);
 		}
     	
     	return null;

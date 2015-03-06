@@ -431,7 +431,7 @@ public class RegistryManager {
                 if (serializedObj != null) {
                     try {
                         Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof ApplicationPolicy) {
+                        if (dataObj instanceof NetworkPartitionAlgorithmContext) {
                         	algorithmContext = (NetworkPartitionAlgorithmContext) dataObj;
                             if (log.isDebugEnabled()) {
                                 log.debug(String.format("Network partition algorithm context read from registry %s", algorithmContext.toString()));

@@ -58,6 +58,7 @@ import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
@@ -593,6 +594,25 @@ public class AutoscalerUtil {
     	// application policy id can't be null
     	if (applicationPolicy.getId() == null || StringUtils.isBlank(applicationPolicy.getId())) {
 			String msg = "Invalid Application Policy. Cause -> Application policy id null or empty";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// network partition algorithm can't null or empty
+    	String algorithm = applicationPolicy.getAlgorithm();
+		if (algorithm == null || StringUtils.isBlank(algorithm)) {
+			String msg = "Invalid Application Policy. Cause -> Network partition algorithm is null or empty";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// network partition algorithm should be either one-after-another or all-at-once
+    	if (!algorithm.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID) 
+    			&& !algorithm.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
+			String msg = String.format("Invalid Application Policy. Cause -> Invalid network partition algorithm. "
+					+ "It should be either %s or %s, but found %s", 
+					StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID, 
+					StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID, algorithm);
 			log.error(msg);
 			throw new InvalidApplicationPolicyException(msg);
 		}
