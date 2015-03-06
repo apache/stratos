@@ -1686,7 +1686,7 @@ public class RestCommandLineService {
                 public String[] getData(DeploymentPolicyBean policy) {
                     String[] data = new String[2];
                     data[0] = policy.getId();
-                    data[1] = String.valueOf(policy.getNetworkPartition().size());
+                    data[1] = String.valueOf(policy.getNetworkPartitions().size());
                     return data;
                 }
             };

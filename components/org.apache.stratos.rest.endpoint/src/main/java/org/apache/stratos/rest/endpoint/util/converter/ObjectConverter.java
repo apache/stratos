@@ -351,9 +351,9 @@ public class ObjectConverter {
 
 		deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
 
-		if (deploymentPolicyBean.getNetworkPartition()!= null) {
+		if (deploymentPolicyBean.getNetworkPartitions()!= null) {
 			deploymentPolicy.setNetworkPartitionsRef(convertNetworkPartitionRefToStubNetworkPartitionRef(
-					deploymentPolicyBean.getNetworkPartition()));
+					deploymentPolicyBean.getNetworkPartitions()));
 		}
 
 		return deploymentPolicy;
@@ -1731,7 +1731,7 @@ public class ObjectConverter {
 	public static DeploymentPolicyBean convetCCStubDeploymentPolicytoDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
 		DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
 		deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
-		deploymentPolicyBean.setNetworkPartition(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
+		deploymentPolicyBean.setNetworkPartitions(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
 		return deploymentPolicyBean;
 	}
 	
