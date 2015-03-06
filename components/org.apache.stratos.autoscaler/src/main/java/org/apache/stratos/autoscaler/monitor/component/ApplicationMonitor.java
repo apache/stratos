@@ -24,7 +24,6 @@ import org.apache.stratos.autoscaler.algorithms.NetworkPartitionAlgorithm;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.AllAtOnceAlgorithm;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.OneAfterAnotherAlgorithm;
-import org.apache.stratos.autoscaler.algorithms.networkpartition.WeightedOneAfterAnotherAlgorithm;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
@@ -359,57 +358,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             		networkPartitionIds + " [appInstanceId] " + instanceId);
 		}
         
-//        for (ApplicationPolicyNetworkPartitionReference 
-//        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getApplicationPolicyId())) {
-//	            if(appPolicyNetworkPartition.isActiveByDefault()) {
-//	            	ApplicationLevelNetworkPartitionContext context =
-//                            new ApplicationLevelNetworkPartitionContext(appPolicyNetworkPartition.getNetworkPartitionId());
-//                    //If application instances found in the ApplicationsTopology,
-//                    // then have to add them first before creating new one
-//                    ApplicationInstance appInstance = (ApplicationInstance) application.
-//                            getInstanceByNetworkPartitionId(context.getId());
-//                    if (appInstance != null) {
-//                        //use the existing instance in the Topology to create the data
-//                        instanceId = handleApplicationInstanceCreation(application, context, appInstance);
-//                        initialStartup = false;
-//                    } else {
-//                        //create new app instance as it doesn't exist in the Topology
-//                        instanceId = handleApplicationInstanceCreation(application, context, null);
-//
-//                    }
-//                    instanceIds.add(instanceId);
-//                    log.info("Application instance has been added for the [network partition] " +
-//                    		appPolicyNetworkPartition.getNetworkPartitionId() + " [appInstanceId] " + instanceId);
-//
-//	            }
-//            }
-            
-
-//        }
         startDependency(application, instanceIds);
         return initialStartup;
     }
-
-//	private ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences(
-//            String applicationPolicyId) throws PolicyValidationException {
-//		
-//	    ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
-//	    
-//	    if(applicationPolicy == null) {
-//	    	String msg = String.format("Application policy is not found [application-policy-id] %s [application-id] %s", applicationPolicyId, appId);
-//	    	log.error(msg);
-//	    	throw new PolicyValidationException(msg);        		
-//	    }
-//	    ApplicationPolicyNetworkPartitionReference[] npReference = applicationPolicy.getNetworkPartitionReferences();
-//	    
-//	    if(npReference == null || npReference.length <= 0) {
-//	    	String msg = "Network partition references cannot be found in application policy "+ applicationPolicy+ " is not found "
-//	    			+ "for application ["+ applicationPolicyId + "] ";
-//	    	log.error(msg);        		
-//	    	throw new PolicyValidationException(msg);  
-//	    }
-//	    return npReference;
-//    }
 
     private String handleApplicationInstanceCreation(Application application,
                                                      ApplicationLevelNetworkPartitionContext context,
@@ -498,57 +449,12 @@ public class ApplicationMonitor extends ParentComponentMonitor {
             }
 		}
         
-//            for (ApplicationPolicyNetworkPartitionReference 
-//        			appPolicyNetworkPartition : getNetworkPartitionReferences(application.getApplicationPolicyId())) {
-//                //Checking whether any not active NP found
-//                if (!appPolicyNetworkPartition.isActiveByDefault()) {
-//
-//                    if (!this.networkPartitionCtxts.containsKey(appPolicyNetworkPartition.getNetworkPartitionId())) {
-//
-//                        ApplicationLevelNetworkPartitionContext context =
-//                                new ApplicationLevelNetworkPartitionContext(appPolicyNetworkPartition.getNetworkPartitionId());
-//
-//                        //Setting flags saying that it has been created by burst
-//                        context.setCreatedOnBurst(true);
-//                        ApplicationInstance appInstance = (ApplicationInstance) application.
-//                                getInstanceByNetworkPartitionId(context.getId());
-//
-//                        if (appInstance == null) {
-//                            instanceId = handleApplicationInstanceCreation(application, context, null);
-//                        } else {
-//                            log.warn("The Network partition is already associated with an " +
-//                                    "[ApplicationInstance] " + appInstance.getInstanceId() +
-//                                    "in the ApplicationsTopology. Hence not creating new AppInstance.");
-//                            instanceId = handleApplicationInstanceCreation(application, context, appInstance);
-//                        }
-//                        burstNPFound = true;
-//                    }
-//                }
-//            }
-//        }
         if (!burstNPFound) {
             log.warn("[Application] " + appId + " cannot be burst as no available resources found");
         } else {
             startDependency(application, instanceId);
         }
     }
-
-//    private DeploymentPolicy getDeploymentPolicy(Application application) throws PolicyValidationException {
-//        String deploymentPolicyName = application.getDeploymentPolicy();
-//        DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().
-//                getDeploymentPolicyByApplication(application.getUniqueIdentifier());
-//        if (deploymentPolicyName != null) {
-//            deploymentPolicy = PolicyManager.getInstance()
-//                    .getDeploymentPolicy(deploymentPolicyName);
-//            if (deploymentPolicy == null) {
-//                String msg = "Deployment policy is null: [policy-name] " + deploymentPolicyName;
-//                log.error(msg);
-//                throw new PolicyValidationException(msg);
-//            }
-//        }
-//
-//        return deploymentPolicy;
-//    }
 
     private ApplicationInstance createApplicationInstance(Application application, String networkPartitionId) {
         //String instanceId = this.generateInstanceId(application);
@@ -584,8 +490,6 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     	
     	if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID)) {
 			return new OneAfterAnotherAlgorithm();
-		} else if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_WEIGHTED_ONE_AFTER_ANOTHER_ALGORITHM_ID)) {
-			return new WeightedOneAfterAnotherAlgorithm();
 		} else if (algorithmName.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
 			return new AllAtOnceAlgorithm();
 		}

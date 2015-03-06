@@ -606,10 +606,6 @@ public class AutoscalerUtil {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     	
-    	// to count the number of network partitions which are active by default
-    	// if the count is 0, we should raise the error
-//    	int activeByDefaultNetworkPartitionsCount = 0;
-    	
     	// validating all network partition references
     	for (String networkPartitionId : networkPartitionIds) {
 			
@@ -629,18 +625,7 @@ public class AutoscalerUtil {
 				throw new InvalidApplicationPolicyException(msg);
 			}
 			
-//			// counting number of network partitions which are active by default
-//			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
-//				activeByDefaultNetworkPartitionsCount++;
-//			}
 		}
-    	
-    	// there should be at least one network partition reference which is active by default
-//    	if (activeByDefaultNetworkPartitionsCount == 0) {
-//			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
-//			log.error(msg);
-//			throw new InvalidApplicationPolicyException(msg);
-//		}
     }
 	
 	

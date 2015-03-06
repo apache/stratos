@@ -34,7 +34,6 @@ import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.Deserializer;
 import org.apache.stratos.autoscaler.util.Serializer;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
 import org.wso2.carbon.registry.core.Registry;
@@ -353,39 +352,6 @@ public class RegistryManager {
 
     private boolean resourceExist(String resourcePath) {
         return this.retrieve(resourcePath) != null;
-    }
-
-    public List<Partition> retrievePartitions() {
-        List<Partition> partitionList = new ArrayList<Partition>();
-        RegistryManager registryManager = RegistryManager.getInstance();
-        String[] partitionsResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.PARTITION_RESOURCE);
-
-        if (partitionsResourceList != null) {
-            Partition partition;
-            for (String resourcePath : partitionsResourceList) {
-                Object serializedObj = registryManager.retrieve(resourcePath);
-                if (serializedObj != null) {
-                    try {
-
-                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
-                        if (dataObj instanceof Partition) {
-                            partition = (Partition) dataObj;
-                            if (log.isDebugEnabled()) {
-                                log.debug(String.format("Partition read from registry: [id] %s [provider] %s [min] %d [max] %d",
-                                        partition.getId(), partition.getProvider()));
-                            }
-                            partitionList.add(partition);
-                        } else {
-                            return null;
-                        }
-                    } catch (Exception e) {
-                        String msg = "Unable to retrieve data from Registry. Hence, any historical partitions will not get reflected.";
-                        log.warn(msg, e);
-                    }
-                }
-            }
-        }
-        return partitionList;
     }
 
     public List<AutoscalePolicy> retrieveASPolicies() {
