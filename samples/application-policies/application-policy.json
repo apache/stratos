@@ -1,6 +1,6 @@
 {
     "id": "application-policy-1",
-    "algorithm":"all-at-once",
+    "algorithm":"one-after-another",
     "networkPartitions":[
         "network-partition-1"
     ],
