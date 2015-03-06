@@ -229,10 +229,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     @Override
     public void onChildScalingEvent(ScalingEvent scalingEvent) {
-        log.info("Child scaling event received to [parent]: " + this.getId()
-                + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Child scaling event received to [parent] %s [network-partition] %s [event-id] %s " +
+                    "[group-instance] %s [factor] %s", this.getId(), scalingEvent.getNetworkPartitionId(),
+                    scalingEvent.getId(), scalingEvent.getInstanceId(), scalingEvent.getFactor()));
+        }
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         String instanceId = scalingEvent.getInstanceId();
         String id = scalingEvent.getId();
@@ -608,8 +609,6 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                 }
             }
         }
-        //Resetting the events
-        instanceContext.setIdToScalingEvent(new ConcurrentHashMap<String, ScalingEvent>());
     }
 
     // move to inactive monitors list to use in the Terminated event
@@ -730,10 +729,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
-        if (StratosConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new RoundRobin();
-        } else if (StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new OneAfterAnother();
         } else {

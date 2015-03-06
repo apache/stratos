@@ -52,7 +52,6 @@ import org.apache.stratos.autoscaler.monitor.MonitorFactory;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
 import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
@@ -599,9 +598,8 @@ public class AutoscalerUtil {
 		}
     	
     	// application policy should contain at least one network partition reference
-    	ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
-    			applicationPolicy.getNetworkPartitionReferences();
-		if (null == networkPartitionReferences || networkPartitionReferences.length == 0) {
+    	String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
+		if (null == networkPartitionIds || networkPartitionIds.length == 0) {
 			String msg = "Invalid Application Policy. "
 					+ "Cause -> Application Policy is not containing any network partition reference";
 			log.error(msg);
@@ -610,13 +608,12 @@ public class AutoscalerUtil {
     	
     	// to count the number of network partitions which are active by default
     	// if the count is 0, we should raise the error
-    	int activeByDefaultNetworkPartitionsCount = 0;
+//    	int activeByDefaultNetworkPartitionsCount = 0;
     	
     	// validating all network partition references
-    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : networkPartitionReferences) {
+    	for (String networkPartitionId : networkPartitionIds) {
 			
     		// network-partition-id can't be null or empty
-    		String networkPartitionId = applicationPolicyNetworkPartitionReference.getNetworkPartitionId();
 			if (null == networkPartitionId || networkPartitionId.isEmpty()) {
 				String msg = String.format("Invalid Application Policy. "
 						+ "Cause -> Invalid network-partition-id : %s", networkPartitionId);
@@ -632,18 +629,18 @@ public class AutoscalerUtil {
 				throw new InvalidApplicationPolicyException(msg);
 			}
 			
-			// counting number of network partitions which are active by default
-			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
-				activeByDefaultNetworkPartitionsCount++;
-			}
+//			// counting number of network partitions which are active by default
+//			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
+//				activeByDefaultNetworkPartitionsCount++;
+//			}
 		}
     	
     	// there should be at least one network partition reference which is active by default
-    	if (activeByDefaultNetworkPartitionsCount == 0) {
-			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
-			log.error(msg);
-			throw new InvalidApplicationPolicyException(msg);
-		}
+//    	if (activeByDefaultNetworkPartitionsCount == 0) {
+//			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
+//			log.error(msg);
+//			throw new InvalidApplicationPolicyException(msg);
+//		}
     }
 	
 	
@@ -664,11 +661,10 @@ public class AutoscalerUtil {
 			throw new ApplicatioinPolicyNotExistsException(msg);
 		}
 		
-		ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences = 
-				applicationPolicy.getNetworkPartitionReferences();
+		String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
     	
-		for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : networkPartitionReferences) {
-			String networkPartitionId = applicationPolicyNetworkPartitionReference.getNetworkPartitionId();
+		for (String applicationPolicyNetworkPartitionReference : networkPartitionIds) {
+			String networkPartitionId = applicationPolicyNetworkPartitionReference;
     		// validate application policy against the given application
     		if (!isAppUsingNetworkPartitionId(applicationId, networkPartitionId)) {
     			String msg = String.format("Invalid Application Policy. "

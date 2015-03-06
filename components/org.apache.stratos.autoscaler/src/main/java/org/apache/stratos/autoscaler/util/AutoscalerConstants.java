@@ -48,6 +48,7 @@ public final class AutoscalerConstants {
     public static final String APPLICATIONS_RESOURCE = "/applications";
     public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
     public static final String APPLICATION_POLICY_RESOURCE = "/policies/applicationPolicies";
+    public static final String NETWORK_PARTITION_ALGO_CTX_RESOURCE = "/algorithms/networkPartitionAlgorithmContext";
 
     /**
      * Cluster monitoring  interval

@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.internal;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
@@ -153,6 +154,14 @@ public class AutoscalerServiceComponent {
         while (applicationPolicyIterator.hasNext()) {
             ApplicationPolicy applicationPolicy = applicationPolicyIterator.next();
             PolicyManager.getInstance().addApplicationPolicyToInformationModel(applicationPolicy);
+        }
+        
+        // Add application policies to information model
+        List<NetworkPartitionAlgorithmContext> networkPartitionAlgorithmContexts = RegistryManager.getInstance().retrieveNetworkPartitionAlgorithmContexts();
+        Iterator<NetworkPartitionAlgorithmContext> networkPartitionAlgoCtxtIterator = networkPartitionAlgorithmContexts.iterator();
+        while (networkPartitionAlgoCtxtIterator.hasNext()) {
+            NetworkPartitionAlgorithmContext algorithmContext = networkPartitionAlgoCtxtIterator.next();
+            AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
         }
         
 		//starting the processor chain
