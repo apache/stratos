@@ -229,10 +229,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     @Override
     public void onChildScalingEvent(ScalingEvent scalingEvent) {
-        log.info("Child scaling event received to [parent]: " + this.getId()
-                + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId());
-
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Child scaling event received to [parent] %s [network-partition] %s [event-id] %s " +
+                    "[group-instance] %s [factor] %s", this.getId(), scalingEvent.getNetworkPartitionId(),
+                    scalingEvent.getId(), scalingEvent.getInstanceId(), scalingEvent.getFactor()));
+        }
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
         String instanceId = scalingEvent.getInstanceId();
         String id = scalingEvent.getId();
