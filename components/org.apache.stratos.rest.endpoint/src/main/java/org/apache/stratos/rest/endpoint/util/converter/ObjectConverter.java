@@ -427,7 +427,6 @@ public class ObjectConverter {
 		partition.setId(partitionBean.getId());
 		partition.setDescription(partitionBean.getDescription());
 		partition.setIsPublic(partitionBean.isPublic());
-		partition.setProvider(partitionBean.getProvider());
 
 		if (partitionBean.getProperty() != null
 				&& !partitionBean.getProperty().isEmpty()) {
@@ -514,7 +513,6 @@ public class ObjectConverter {
         partition.setId(stubPartition.getId());
         partition.setPublic(stubPartition.getIsPublic());
         partition.setDescription(stubPartition.getDescription());
-        partition.setProvider(stubPartition.getProvider());
         partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if(stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
@@ -544,6 +542,7 @@ public class ObjectConverter {
 
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
+        networkPartition.setProvider(networkPartitionBean.getProvider());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertPartitionToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }
@@ -780,7 +779,6 @@ public class ObjectConverter {
         partitionBeans.setId(partition.getId());
         partitionBeans.setDescription(partition.getDescription());
         partitionBeans.setPublic(partition.getIsPublic());
-        partitionBeans.setProvider(partition.getProvider());
         /*partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();*/
         //properties

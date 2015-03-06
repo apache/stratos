@@ -30,7 +30,6 @@ public class PartitionBean {
     private String id;
     private String description;
     private boolean isPublic;
-    private String provider;
     private String kubernetesClusterId;
     private List<PropertyBean> property;
 
@@ -40,14 +39,6 @@ public class PartitionBean {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public String getProvider() {
-        return provider;
-    }
-
-    public void setProvider(String provider) {
-        this.provider = provider;
     }
 
     public boolean getIsPublic() {

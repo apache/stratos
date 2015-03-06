@@ -1,9 +1,9 @@
 {
     "id": "network-partition-2",
+    "provider": "mock",
     "partitions": [
         {
             "id": "network-partition-2-partition-1",
-            "provider": "mock",
             "property": [
                 {
                     "name": "region",
@@ -13,7 +13,6 @@
         },
         {
             "id": "network-partition-2-partition-2",
-            "provider": "mock",
             "property": [
                 {
                     "name": "region",

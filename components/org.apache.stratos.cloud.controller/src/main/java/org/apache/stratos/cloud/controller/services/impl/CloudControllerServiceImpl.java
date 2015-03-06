@@ -1491,6 +1491,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
+                        // Overwrites partition provider with network partition provider
+                        partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
@@ -1568,6 +1570,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
+                        // Overwrites partition provider with network partition provider
+                        partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
