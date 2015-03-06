@@ -295,7 +295,7 @@ public class ObjectConverter {
 		        org.apache.stratos.cloud.controller.stub.domain.PartitionRef();
 
         stubPartition.setId(partition.getId());
-        stubPartition.setMax(partition.getMax());
+        stubPartition.setMax(partition.getPartitionMax());
 
         return stubPartition;
     }
@@ -745,7 +745,7 @@ public class ObjectConverter {
 		for (int i = 0; i < partitionRefs.length; i++) {
 			PartitionRefBean partitionRefBean = new PartitionRefBean();
 			partitionRefBean.setId(partitionRefs[i].getId());
-			partitionRefBean.setMax(partitionRefs[i].getMax());
+			partitionRefBean.setPartitionMax(partitionRefs[i].getMax());
 			partitionRefBeans.add(partitionRefBean);
 		}
 		

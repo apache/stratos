@@ -26,7 +26,7 @@ public class PartitionRefBean {
 
     private String id;
 
-    private int max;
+    private int partitionMax;
 
     public String getId() {
         return id;
@@ -36,11 +36,11 @@ public class PartitionRefBean {
         this.id = id;
     }
 
-	public int getMax() {
-		return max;
+	public int getPartitionMax() {
+		return partitionMax;
 	}
 
-	public void setMax(int max) {
-		this.max = max;
+	public void setPartitionMax(int partitionMax) {
+		this.partitionMax = partitionMax;
 	}
 }
