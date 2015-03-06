@@ -54,7 +54,6 @@ class php () {
     'mcrypt',
     'ufw',
     'fail2ban',
-    'git',
     'libboost-all-dev',
     'ruby']
 
@@ -132,5 +131,5 @@ class php () {
   }
 
   #install stratos_base before java before php before agent
-  Class['stratos_base'] -> Class['python_agent'] -> Class['php']
+  Class['stratos_base'] -> Class['php'] -> Class['python_agent']
 }

@@ -53,7 +53,8 @@ class stratos_base(
     'wget',    
     'zip',
     'unzip',
-    'tar']
+    'tar',
+    'git']
 
   package { $packages:
     ensure => $package_ensure,
