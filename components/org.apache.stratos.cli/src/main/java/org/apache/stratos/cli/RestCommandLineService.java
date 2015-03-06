@@ -465,14 +465,14 @@ public class RestCommandLineService {
      * Add new tenant
      * @throws CommandException
      */
-    public void addTenant(String admin, String firstName, String lastaName, String password, String domain, String email)
+    public void addTenant(String admin, String firstName, String lastName, String password, String domain, String email)
             throws CommandException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
             TenantInfoBean tenantInfo = new TenantInfoBean();
             tenantInfo.setAdmin(admin);
             tenantInfo.setFirstname(firstName);
-            tenantInfo.setLastname(lastaName);
+            tenantInfo.setLastname(lastName);
             tenantInfo.setAdminPassword(password);
             tenantInfo.setTenantDomain(domain);
             tenantInfo.setEmail(email);
@@ -488,11 +488,10 @@ public class RestCommandLineService {
             if (responseCode < 200 || responseCode >= 300) {
                 CliUtils.printError(response);
             } else {
-                System.out.println("Tenant added successfully");
-                return;
+                System.out.println("Tenant added successfully: " + domain);
             }
         } catch (Exception e) {
-            String message = "Could not add tenant";
+            String message = "Could not add tenant: " + domain;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -608,7 +607,6 @@ public class RestCommandLineService {
                 CliUtils.printError(response);
             } else {
                 System.out.println("Tenant updated successfully: "+domain);
-                return;
             }
         } catch (Exception e) {
             String message = "Could not update tenant: "+domain;
@@ -647,11 +645,10 @@ public class RestCommandLineService {
             if (responseCode < 200 || responseCode >= 300) {
                 CliUtils.printError(response);
             } else {
-                System.out.println("User added successfully");
-                return;
+                System.out.println("User added successfully: " + userName);
             }
         } catch (Exception e) {
-            String message = "Could not add user";
+            String message = "Could not add user: " + userName;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -688,7 +685,6 @@ public class RestCommandLineService {
                 CliUtils.printError(response);
             } else {
                 System.out.println("User updated successfully: "+userName);
-                return;
             }
         } catch (Exception e) {
             String message = "Could not update user: "+userName;
@@ -714,8 +710,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have succesfully delete " + tenantDomain + " tenant");
-                return;
+                System.out.println("You have successfully deleted the tenant: " + tenantDomain);
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
@@ -723,7 +718,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            String message = "Could not delete tenant";
+            String message = "Could not delete tenant: " + tenantDomain;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -746,8 +741,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_NO_CONTENT) || responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have successfully deleted " + userName + " user");
-                return;
+                System.out.println("You have successfully deleted user:" + userName);
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
@@ -755,7 +749,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            String message = "Could not delete user";
+            String message = "Could not delete user: " + userName;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -778,7 +772,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have successfully deactivated " + tenantDomain + " tenant");
+                System.out.println("You have successfully deactivated the tenant: " + tenantDomain );
                 return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
@@ -787,7 +781,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            String message = "Could not de-activate tenant";
+            String message = "Could not de-activate tenant: " + tenantDomain;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -810,8 +804,7 @@ public class RestCommandLineService {
             Gson gson = gsonBuilder.create();
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
-                System.out.println("You have successfully activated " + tenantDomain + " tenant");
-                return;
+                System.out.println("You have successfully activated the tenant: " + tenantDomain);
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
@@ -819,7 +812,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            String message = "Could not activate tenant";
+            String message = "Could not activate tenant: " + tenantDomain;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
@@ -1095,7 +1088,6 @@ public class RestCommandLineService {
                 CliUtils.printTable(array, partitionMapper, "Group ID", "Description");
             } else {
                 System.out.println("No kubernetes clusters found");
-                return;
             }
         } catch (Exception e) {
             String message = "Could not list kubernetes clusters";
@@ -1328,7 +1320,6 @@ public class RestCommandLineService {
 
             if (responseCode.equals(CliConstants.RESPONSE_OK)) {
                 System.out.println(String.format("Synchronizing artifacts for cartridge subscription alias: %s", cartridgeAlias));
-                return;
             } else {
                 GsonBuilder gsonBuilder = new GsonBuilder();
                 Gson gson = gsonBuilder.create();
@@ -1416,7 +1407,6 @@ public class RestCommandLineService {
 
             if (Integer.parseInt(responseCode) < 300 && Integer.parseInt(responseCode) >= 200) {
                 System.out.println("You have successfully undeployed application: " + applicationId);
-                return;
             } else {
                 String resultString = CliUtils.getHttpResponseString(response);
                 ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
@@ -1424,7 +1414,7 @@ public class RestCommandLineService {
             }
 
         } catch (Exception e) {
-            String message = "Could not undeploy application";
+            String message = "Could not undeploy application: " + applicationId;
             printError(message, e);
         } finally {
             httpClient.getConnectionManager().shutdown();
