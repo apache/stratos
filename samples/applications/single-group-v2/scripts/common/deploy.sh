@@ -48,7 +48,7 @@ curl -X POST -H "Content-Type: application/json" -d "@${cartridges_groups_path}/
 sleep 1
 
 echo "Adding application policy..."
-curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
+curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy-1.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
 
 sleep 1
 
