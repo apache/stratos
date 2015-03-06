@@ -169,14 +169,14 @@ public class RestClient implements GenericRestClient {
 
     public void undeployEntity(String serviceEndpoint, String entityName, String entityId) {
         try {
-            int responseCode = executeDelete(serviceEndpoint, entityId);
+            int responseCode = executeDelete(serviceEndpoint.replace("{id}", entityId));
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
             } else if (responseCode >= 200 && responseCode <300) {
-                System.out.println(String.format("Successfully un-deployed %s", entityName));
+                System.out.println(String.format("Successfully un-deployed %s : %s", entityName,entityId));
             }
         } catch (Exception e) {
-            String message = String.format("Error in un-deploying %s", entityName);
+            String message = String.format("Error in un-deploying %s : %s", entityName,entityId);
             System.out.println(message);
             logger.error(message, e);
         }
@@ -199,11 +199,11 @@ public class RestClient implements GenericRestClient {
 
     public void deleteEntity(String serviceEndpoint, String identifier, String entityName) {
         try {
-            int responseCode = executeDelete(serviceEndpoint, identifier);
+            int responseCode = executeDelete(serviceEndpoint);
             if (responseCode == 404) {
                 System.out.println(String.format("%s not found", StringUtils.capitalize(entityName)));
             } else if (responseCode >= 200 && responseCode < 300) {
-                System.out.println(String.format("Successfully deleted %s", entityName));
+                System.out.println(String.format("Successfully deleted %s : %s", entityName,identifier));
             }
         } catch (Exception e) {
             String message = String.format("Error in deleting %s", entityName);
@@ -217,7 +217,7 @@ public class RestClient implements GenericRestClient {
         try {
             return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseJsonClass);
         } catch (Exception e) {
-            String message = String.format("Error in getting %s", entityName);
+            String message = String.format("Error in getting %s : %s", entityName,identifier);
             System.out.println(message);
             logger.error(message, e);
             return null;
@@ -228,7 +228,7 @@ public class RestClient implements GenericRestClient {
         try {
             return executeGet(serviceEndpoint.replace(identifierPlaceHolder, identifier), responseType);
         } catch (Exception e) {
-            String message = String.format("Error in getting %s", entityName);
+            String message = String.format("Error in getting %s : %s", entityName,identifier);
             System.out.println(message);
             logger.error(message, e);
             return null;
@@ -331,10 +331,9 @@ public class RestClient implements GenericRestClient {
         }
     }
 
-    private int executeDelete(String serviceEndpoint, String identifier) throws IOException {
+    private int executeDelete(String serviceEndpoint) throws IOException {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         try {
-            System.out.println(getBaseURL() + serviceEndpoint.replace("{id}", identifier));
             HttpResponse response = doDelete(httpClient, getBaseURL() + serviceEndpoint);
 
             int responseCode = response.getStatusLine().getStatusCode();
