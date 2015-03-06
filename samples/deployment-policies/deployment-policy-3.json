@@ -1,6 +1,6 @@
 {
    "id": "deployment-policy-3",
-   "networkPartition": [
+   "networkPartitions": [
       {
          "id": "network-partition-3",
          "partitionAlgo": "one-after-another",
