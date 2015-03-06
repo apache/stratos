@@ -51,7 +51,7 @@ public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm{
 		
 		int selectedIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().incrementAndGet();
 		List<String> nextNetworkPartitions = new ArrayList<String>();
-		nextNetworkPartitions.add(networkPartitions[selectedIndex]);
+		nextNetworkPartitions.add(networkPartitions[selectedIndex-1]);
 		
 		return nextNetworkPartitions;
 	}
