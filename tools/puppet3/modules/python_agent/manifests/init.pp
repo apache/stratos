@@ -104,7 +104,7 @@ class python_agent(
   python_agent::push_templates {
     $service_templates:
       target    => $agent_home,
-      template_dir => "agent",
+      template_dir => "python_agent",
       require   => Exec['make extension log file'];
   }
 
