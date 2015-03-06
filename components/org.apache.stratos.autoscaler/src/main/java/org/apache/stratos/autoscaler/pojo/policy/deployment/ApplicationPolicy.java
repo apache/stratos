@@ -20,12 +20,15 @@ package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 import java.io.Serializable;
 
+import org.apache.stratos.common.Properties;
+
 public class ApplicationPolicy implements Serializable{
 
 	private static final long serialVersionUID = -2851334419121310395L;
 	private String id;
 	private String algorithm;
-	private ApplicationPolicyNetworkPartitionReference[] networkPartitionReferences;
+	private String[] networkPartitions;
+	private Properties properties;
 	
 	public String getId() {
 		return id;
@@ -43,12 +46,19 @@ public class ApplicationPolicy implements Serializable{
 		this.algorithm = algorithm;
 	}
 
-	public ApplicationPolicyNetworkPartitionReference[] getNetworkPartitionReferences() {
-		return networkPartitionReferences;
+	public String[] getNetworkPartitions() {
+		return networkPartitions;
 	}
-	
-	public void setNetworkPartitionReferences(
-	        ApplicationPolicyNetworkPartitionReference[] networkPartitionReference) {
-		this.networkPartitionReferences = networkPartitionReference;
+
+	public void setNetworkPartitions(String[] networkPartitions) {
+		this.networkPartitions = networkPartitions;
+	}
+
+	public Properties getProperties() {
+		return properties;
+	}
+
+	public void setProperties(Properties properties) {
+		this.properties = properties;
 	}
 }

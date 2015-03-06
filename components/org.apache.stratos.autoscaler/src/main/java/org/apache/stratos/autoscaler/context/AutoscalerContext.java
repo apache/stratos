@@ -21,9 +21,16 @@
 package org.apache.stratos.autoscaler.context;
 
 import org.apache.axis2.engine.AxisConfiguration;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
+import org.apache.stratos.autoscaler.exception.AutoScalerException;
+import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
@@ -36,11 +43,14 @@ import java.util.Map;
  * It holds all cluster monitors which are active in stratos.
  */
 public class AutoscalerContext {
+	
+	private static final Log log = LogFactory.getLog(AutoscalerContext.class);
 
 	private static final String AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP = "AS_APPLICATION_ID_TO_APPLICATION_CTX_MAP";
 	private static final String AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP = "AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP";
 	private static final String AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP = "AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP";
 	private static final String AS_PENDING_APPLICATION_MONITOR_LIST = "AS_PENDING_APPLICATION_MONITOR_LIST";
+	private static final String AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP = "AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP";
 	private boolean clustered;
 	private boolean coordinator;
 	
@@ -55,6 +65,8 @@ public class AutoscalerContext {
     private Map<String, ApplicationMonitor> applicationMonitors;
     //pending application monitors
     private List<String> pendingApplicationMonitors;
+    // Map<ApplicationId, NetworkPartitioinContext>
+    private Map<String, NetworkPartitionAlgorithmContext> applicationIdToNetworkPartitionAlgorithmContextMap;
 
     private AutoscalerContext() {
     	// Check clustering status
@@ -73,6 +85,7 @@ public class AutoscalerContext {
         setClusterMonitors(distributedObjectProvider.getMap(AS_CLUSTER_ID_TO_CLUSTER_MONITOR_MAP));
         setApplicationMonitors(distributedObjectProvider.getMap(AS_APPLICATION_ID_TO_APPLICATION_MONITOR_MAP));
         pendingApplicationMonitors = distributedObjectProvider.getList(AS_PENDING_APPLICATION_MONITOR_LIST);//new ArrayList<String>();
+        applicationIdToNetworkPartitionAlgorithmContextMap = distributedObjectProvider.getMap(AS_APPLICATIOIN_ID_TO_NETWORK_PARTITION_ALGO_CTX_MAP);
     }
 
     private Map<String, ApplicationContext> readApplicationContextsFromRegistry() {
@@ -88,7 +101,7 @@ public class AutoscalerContext {
         }
         return applicationContextMap;
     }
-
+    
     public static AutoscalerContext getInstance() {
         return INSTANCE;
     }
@@ -182,5 +195,61 @@ public class AutoscalerContext {
 
     public void setCoordinator(boolean coordinator) {
         this.coordinator = coordinator;
+    }
+    
+	public void addNetworkPartitionAlgorithmContext(NetworkPartitionAlgorithmContext algorithmContext) {
+		String applicationId = algorithmContext.getApplicationId();
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Adding network partition algorithm context : [application-id] %s", applicationId));
+		}
+		this.addNetworkPartitionAlgorithmContextToInformationModel(algorithmContext);
+		RegistryManager.getInstance().persistNetworkPartitionAlgorithmContext(algorithmContext);
+
+		if (log.isInfoEnabled()) {
+			log.info(String.format("network partition algorithm context is added successfully: [application-policy-id] %s", applicationId));
+		}
+
+	}
+	
+	public boolean removeNetworkPartitionAlgorithmContext(String applicationId) {
+		if (StringUtils.isEmpty(applicationId)) {
+			throw new AutoScalerException("Application id cannot be empty");
+		}
+		this.removeNetworkPartitionAlgorithmContextInInformationModel(applicationId);
+		RegistryManager.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
+		if (log.isInfoEnabled()) {
+			log.info(String.format("Network partition algorithm context is removed successfully: [id] %s", applicationId));
+		}
+		return true;
+	}
+	
+	private void removeNetworkPartitionAlgorithmContextInInformationModel(String applicationId) {
+		if (applicationIdToNetworkPartitionAlgorithmContextMap.containsKey(applicationId)) {
+			if (log.isDebugEnabled()) {
+				log.debug("Removing network partition algorithm context [application-id] " + applicationId);
+			}
+			applicationIdToNetworkPartitionAlgorithmContextMap.remove(applicationId);
+		}
+		else{
+			throw new AutoScalerException("No such application id [" + applicationId + "] exists");
+		}
+	}
+
+	private void addNetworkPartitionAlgorithmContextToInformationModel(NetworkPartitionAlgorithmContext algorithmContext) {
+		String applicationId = algorithmContext.getApplicationId();
+        if (!applicationIdToNetworkPartitionAlgorithmContextMap.containsKey(applicationId)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Adding network partition algorithm context : " + applicationId);
+            }
+            applicationIdToNetworkPartitionAlgorithmContextMap.put(applicationId, algorithmContext);
+        } else {
+        	String errMsg = "Network partition algorithm context already exists : " + applicationId;
+        	log.error(errMsg);
+            throw new AutoScalerException(errMsg);
+        }
+    }
+	
+    public NetworkPartitionAlgorithmContext getNetworkPartitionAlgorithmContext(String applicationId) {
+        return applicationIdToNetworkPartitionAlgorithmContextMap.get(applicationId);
     }
 }

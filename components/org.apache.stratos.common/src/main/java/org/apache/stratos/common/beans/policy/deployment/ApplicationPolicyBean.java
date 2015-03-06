@@ -19,29 +19,49 @@
 
 package org.apache.stratos.common.beans.policy.deployment;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.apache.stratos.common.beans.partition.ApplicationPolicyNetworkPartitionReferenceBean;
+import org.apache.stratos.common.beans.PropertyBean;
 
 @XmlRootElement
 public class ApplicationPolicyBean {
-
+	
 	private String id;
-    private ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition;
-    
+	private String algorithm;
+	String[] networkPartitions;
+	List<PropertyBean> properties;
+
 	public String getId() {
 		return id;
 	}
-
+	
 	public void setId(String id) {
 		this.id = id;
 	}
-
-	public ApplicationPolicyNetworkPartitionReferenceBean[] getNetworkPartition() {
-		return networkPartition;
+	
+	public String getAlgorithm() {
+		return algorithm;
 	}
-
-	public void setNetworkPartition(ApplicationPolicyNetworkPartitionReferenceBean[] networkPartition) {
-		this.networkPartition = networkPartition;
+	
+	public void setAlgorithm(String algorithm) {
+		this.algorithm = algorithm;
+	}
+	
+	public String[] getNetworkPartitions() {
+		return networkPartitions;
+	}
+	
+	public void setNetworkPartitions(String[] networkPartitions) {
+		this.networkPartitions = networkPartitions;
+	}
+	
+	public List<PropertyBean> getProperties() {
+		return properties;
+	}
+	
+	public void setProperties(List<PropertyBean> properties) {
+		this.properties = properties;
 	}
 }

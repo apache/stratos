@@ -144,14 +144,14 @@ public class RuleTasksDelegator {
 
         if(partitionAlgorithm == null) {
             //Send one after another as default
-            partitionAlgorithm = StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID;
+            partitionAlgorithm = StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID;
         }
         if (log.isDebugEnabled()) {
             log.debug(String.format("Retrieving partition algorithm [Partition algorithm]: ", partitionAlgorithm));
         }
-        if (StratosConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
             autoscaleAlgorithm = new RoundRobin();
-        } else if (StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
             autoscaleAlgorithm = new OneAfterAnother();
         } else {
             if (log.isErrorEnabled()) {

@@ -728,10 +728,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         if (log.isDebugEnabled()) {
             log.debug(String.format("Partition algorithm is ", partitionAlgorithm));
         }
-        if (StratosConstants.ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        if (StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new RoundRobin();
-        } else if (StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
+        } else if (StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(partitionAlgorithm)) {
 
             autoscaleAlgorithm = new OneAfterAnother();
         } else {

@@ -21,6 +21,7 @@ package org.apache.stratos.autoscaler.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
 import org.apache.stratos.autoscaler.applications.parser.ApplicationParser;
 import org.apache.stratos.autoscaler.applications.parser.DefaultApplicationParser;
@@ -185,6 +186,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             } finally {
             	ApplicationHolder.releaseWriteLock();
             }
+            
+            // adding network partition algorithm context to registry
+            ApplicationPolicy applicationPolicy = PolicyManager.getInstance().getApplicationPolicy(applicationPolicyId);
+			NetworkPartitionAlgorithmContext algorithmContext = new NetworkPartitionAlgorithmContext(applicationId, applicationPolicy, 0);
+			AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
 
             if(!applicationContext.isMultiTenant()) {
 			    // Add application signup for single tenant applications
@@ -391,6 +397,9 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // Remove Application SignUp(s) in stratos manager
             removeApplicationSignUp(application);
+            
+            // Remove network partition algorithm context
+            AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
             
             ApplicationBuilder.handleApplicationUndeployed(applicationId);
 

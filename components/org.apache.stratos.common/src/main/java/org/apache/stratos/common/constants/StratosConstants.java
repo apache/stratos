@@ -195,7 +195,12 @@ public class StratosConstants {
     public static final String DEFAULT_CLIENT_CONNECTION_TIMEOUT = "300000";
     
     // partition algorithm id constants
-	public static final String ROUND_ROBIN_ALGORITHM_ID = "round-robin";
-	public static final String ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+	public static final String PARTITION_ROUND_ROBIN_ALGORITHM_ID = "round-robin";
+	public static final String PARTITION_WEIGHTED_ROUND_ROBIN_ALGORITHM_ID = "weighted-round-robin";
+	public static final String PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+	// network partition algorithm id constants
+	public static final String NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
+	public static final String NETWORK_PARTITION_WEIGHTED_ONE_AFTER_ANOTHER_ALGORITHM_ID = "weighted-one-after-another";
+	public static final String NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID = "all-at-once";
 }
 

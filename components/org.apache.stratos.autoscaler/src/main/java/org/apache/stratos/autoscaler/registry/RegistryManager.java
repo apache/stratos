@@ -24,6 +24,7 @@ package org.apache.stratos.autoscaler.registry;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
@@ -444,6 +445,38 @@ public class RegistryManager {
         }
         return applicationPolicyList;
     }
+    
+    public List<NetworkPartitionAlgorithmContext> retrieveNetworkPartitionAlgorithmContexts() {
+        List<NetworkPartitionAlgorithmContext> algorithmContexts = new ArrayList<NetworkPartitionAlgorithmContext>();
+        RegistryManager registryManager = RegistryManager.getInstance();
+        String[] networkPartitionAlgoCtxtResourceList = (String[]) registryManager.retrieve(
+        		AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.NETWORK_PARTITION_ALGO_CTX_RESOURCE);
+
+        if (networkPartitionAlgoCtxtResourceList != null) {
+        	NetworkPartitionAlgorithmContext algorithmContext;
+            for (String resourcePath : networkPartitionAlgoCtxtResourceList) {
+                Object serializedObj = registryManager.retrieve(resourcePath);
+                if (serializedObj != null) {
+                    try {
+                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                        if (dataObj instanceof ApplicationPolicy) {
+                        	algorithmContext = (NetworkPartitionAlgorithmContext) dataObj;
+                            if (log.isDebugEnabled()) {
+                                log.debug(String.format("Network partition algorithm context read from registry %s", algorithmContext.toString()));
+                            }
+                            algorithmContexts.add(algorithmContext);
+                        } else {
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        String msg = "Unable to retrieve data from Registry. Hence, any historical application policies will not get reflected.";
+                        log.warn(msg, e);
+                    }
+                }
+            }
+        }
+        return algorithmContexts;
+    }
 
     public ServiceGroup getServiceGroup(String name) throws Exception {
         String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.SERVICE_GROUP + "/" + name;
@@ -540,6 +573,16 @@ public class RegistryManager {
         }
 
     }
+    
+    public void removeNetworkPartitionAlgorithmContext(String applicationPolicyId) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.NETWORK_PARTITION_ALGO_CTX_RESOURCE + "/" +
+        		applicationPolicyId;
+        this.delete(resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Network partition algorithm context deleted from registry [application-policy-id] %s", applicationPolicyId));
+        }
+
+    }
 
     private void delete(String resourcePath) {
         try {
@@ -569,5 +612,15 @@ public class RegistryManager {
             log.debug(String.format("Application policy written to registry : %s", applicationPolicy.getId()));
         }
 	    
+    }
+	
+	public void persistNetworkPartitionAlgorithmContext(NetworkPartitionAlgorithmContext algorithmContext) {
+		String applicationId = algorithmContext.getApplicationId();
+		String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + 
+				AutoscalerConstants.NETWORK_PARTITION_ALGO_CTX_RESOURCE + "/" + applicationId;
+        persist(algorithmContext, resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Network partition algorithm context written to registry : %s", applicationId));
+        }
     }
 }

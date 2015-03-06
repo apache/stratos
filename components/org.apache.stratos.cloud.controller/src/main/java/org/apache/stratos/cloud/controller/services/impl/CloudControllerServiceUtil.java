@@ -176,8 +176,8 @@ public class CloudControllerServiceUtil {
 			}
     		
     		// partition algorithm should be either one-after-another or round-robin
-    		if (!StratosConstants.ROUND_ROBIN_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())
-    				&& !StratosConstants.ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())) {
+    		if (!StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())
+    				&& !StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID.equals(networkPartitionRef.getPartitionAlgo())) {
 				String msg = String.format("Invalid deployment policy - [deployment-policy-id] %s. "
 						+ "Cause -> Invalid partition algorithm - [network-partition-id] %s [partition-algo] %s", 
 						deploymentPolicy.getDeploymentPolicyID(), networkPartitionRef.getId(), networkPartitionRef.getPartitionAlgo());

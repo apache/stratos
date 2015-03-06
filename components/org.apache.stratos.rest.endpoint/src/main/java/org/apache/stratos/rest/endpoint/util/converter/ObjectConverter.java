@@ -21,7 +21,6 @@ package org.apache.stratos.rest.endpoint.util.converter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
-import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicyNetworkPartitionReference;
 import org.apache.stratos.autoscaler.stub.pojo.*;
 import org.apache.stratos.autoscaler.stub.pojo.Dependencies;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
@@ -393,27 +392,23 @@ public class ObjectConverter {
             return null;
         }
     	
-    	ApplicationPolicyNetworkPartitionReference[] applicationPolicyNetworkPartitionReferences = 
-    			applicationPolicy.getNetworkPartitionReferences();
-    	if (applicationPolicyNetworkPartitionReferences == null || applicationPolicyNetworkPartitionReferences.length == 0) {
-			return null;
-		}
-    	
-    	List<ApplicationPolicyNetworkPartitionReferenceBean> applicationPolicyNetworkPartitionReferenceBeans = 
-    			new ArrayList<ApplicationPolicyNetworkPartitionReferenceBean>();
-    	
-    	for (ApplicationPolicyNetworkPartitionReference applicationPolicyNetworkPartitionReference : applicationPolicyNetworkPartitionReferences) {
-			ApplicationPolicyNetworkPartitionReferenceBean applicationPolicyNetworkPartitionReferenceBean = new ApplicationPolicyNetworkPartitionReferenceBean();
-			applicationPolicyNetworkPartitionReferenceBean.setId(applicationPolicyNetworkPartitionReference.getNetworkPartitionId());
-			applicationPolicyNetworkPartitionReferenceBean.setActiveByDefault(applicationPolicyNetworkPartitionReference.getActiveByDefault());
-			applicationPolicyNetworkPartitionReferenceBeans.add(applicationPolicyNetworkPartitionReferenceBean);
-		}
-    	
-    	ApplicationPolicyNetworkPartitionReferenceBean[] applicationPolicyNetworkPartitionReferenceBeansArray = 
-    			applicationPolicyNetworkPartitionReferenceBeans.toArray(new ApplicationPolicyNetworkPartitionReferenceBean[applicationPolicyNetworkPartitionReferenceBeans.size()]);
     	ApplicationPolicyBean applicationPolicyBean = new ApplicationPolicyBean();
-    	applicationPolicyBean.setNetworkPartition(applicationPolicyNetworkPartitionReferenceBeansArray);
+    	applicationPolicyBean.setId(applicationPolicy.getId());
+    	applicationPolicyBean.setAlgorithm(applicationPolicy.getAlgorithm());
+    	applicationPolicyBean.setNetworkPartitions(applicationPolicy.getNetworkPartitions());
     	
+        if(applicationPolicy.getProperties() != null) {
+            List<org.apache.stratos.common.beans.PropertyBean> propertyBeanList = new ArrayList<org.apache.stratos.common.beans.PropertyBean>();
+            for(org.apache.stratos.autoscaler.stub.Property stubProperty : applicationPolicy.getProperties().getProperties()) {
+                if(stubProperty != null) {
+                    org.apache.stratos.common.beans.PropertyBean propertyBean = new org.apache.stratos.common.beans.PropertyBean();
+                    propertyBean.setName(stubProperty.getName());
+                    propertyBean.setValue(String.valueOf(stubProperty.getValue()));
+                    propertyBeanList.add(propertyBean);
+                }
+            }
+            applicationPolicyBean.setProperties(propertyBeanList);
+        }
     	
     	return applicationPolicyBean;
     }
@@ -456,6 +451,29 @@ public class ObjectConverter {
 
 		//convert to an array
 		PropertyBean[] propertyBeansArray = new PropertyBean[propertyBeans.size()];
+		propertyBeans.toArray(propertyBeansArray);
+		org.apache.stratos.autoscaler.stub.Property[] propertyArray =
+				new org.apache.stratos.autoscaler.stub.Property[propertyBeansArray.length];
+
+		for (int j = 0; j < propertyBeansArray.length; j++) {
+			org.apache.stratos.autoscaler.stub.Property property = new org.apache.stratos.autoscaler.stub.Property();
+			property.setName(propertyBeansArray[j].getName());
+			property.setValue(propertyBeansArray[j].getValue());
+			propertyArray[j] = property;
+		}
+
+		org.apache.stratos.autoscaler.stub.Properties properties = new org.apache.stratos.autoscaler.stub.Properties();
+		properties.setProperties(propertyArray);
+		return properties;
+	}
+	
+	public static org.apache.stratos.autoscaler.stub.Properties getASPropertiesFromCommonProperties(List<org.apache.stratos.common.beans.PropertyBean> propertyBeans) {
+		if (propertyBeans == null || propertyBeans.isEmpty()) {
+			return null;
+		}
+
+		//convert to an array
+		org.apache.stratos.common.beans.PropertyBean[] propertyBeansArray = new org.apache.stratos.common.beans.PropertyBean[propertyBeans.size()];
 		propertyBeans.toArray(propertyBeansArray);
 		org.apache.stratos.autoscaler.stub.Property[] propertyArray =
 				new org.apache.stratos.autoscaler.stub.Property[propertyBeansArray.length];
@@ -1727,25 +1745,19 @@ public class ObjectConverter {
 	}
 	
 	public static ApplicationPolicy convertApplicationPolicyBeanToStubAppPolicy(
-	        ApplicationPolicyBean appPolicy) {
+	        ApplicationPolicyBean applicationPolicyBean) {
 		
-		if (appPolicy == null) {
+		if (applicationPolicyBean == null) {
 			return null;
 		}
 		
-		ApplicationPolicyNetworkPartitionReferenceBean[] nps = appPolicy.getNetworkPartition();
 		ApplicationPolicy applicationPolicy = new ApplicationPolicy();
-		applicationPolicy.setId(appPolicy.getId());
-		List<ApplicationPolicyNetworkPartitionReference> nprList = new ArrayList<ApplicationPolicyNetworkPartitionReference>();
-
-		for (ApplicationPolicyNetworkPartitionReferenceBean np : nps) {
-			ApplicationPolicyNetworkPartitionReference npRef = new ApplicationPolicyNetworkPartitionReference();
-			npRef.setActiveByDefault(np.isActiveByDefault());
-			npRef.setNetworkPartitionId(np.getId());
-			nprList.add(npRef);
+		applicationPolicy.setId(applicationPolicyBean.getId());
+		applicationPolicy.setAlgorithm(applicationPolicyBean.getAlgorithm());
+		applicationPolicy.setNetworkPartitions(applicationPolicyBean.getNetworkPartitions());
+		if (applicationPolicyBean.getProperties() != null || !applicationPolicyBean.getProperties().isEmpty()) {
+			applicationPolicy.setProperties(getASPropertiesFromCommonProperties(applicationPolicyBean.getProperties()));
 		}
-		applicationPolicy.setNetworkPartitionReferences(nprList
-		        .toArray(new ApplicationPolicyNetworkPartitionReference[nprList.size()]));
 		return applicationPolicy;
 	}
 }
