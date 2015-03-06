@@ -47,14 +47,11 @@ public class CartridgeConfig implements Serializable {
 	private String[] deploymentDirs;
 	private PortMapping[] portMappings;
 	private Persistence persistence;
-	private String defaultAutoscalingPolicy;
-	private String defaultDeploymentPolicy;
     private Properties properties;
     private IaasConfig[] iaasConfigs;
-    private LoadbalancerConfig lbConfig;
-    private String serviceGroup;
     private String[] exportingProperties;
     private String deployerType;
+    private String loadBalancingIPType;
 	private String[] metadataKeys;
 
     public String getType() {
@@ -225,30 +222,6 @@ public class CartridgeConfig implements Serializable {
         return propertyDetailBuilder.toString();
     }
 
-    public LoadbalancerConfig getLbConfig() {
-        return lbConfig;
-    }
-
-    public void setLbConfig(LoadbalancerConfig lbConfig) {
-        this.lbConfig = lbConfig;
-    }
-
-    public String getDefaultAutoscalingPolicy() {
-        return defaultAutoscalingPolicy;
-    }
-
-    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
-        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
-    }
-
-    public String getDefaultDeploymentPolicy() {
-        return defaultDeploymentPolicy;
-    }
-
-    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
-        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
-    }
-
     /**
 	 * @return the persistence
 	 */
@@ -262,15 +235,6 @@ public class CartridgeConfig implements Serializable {
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
-
-	public String getServiceGroup() {
-		return serviceGroup;
-	}
-
-	public void setServiceGroup(String serviceGroup) {
-		this.serviceGroup = serviceGroup;
-	}
-
 
     public String[] getExportingProperties() {
         return exportingProperties;
@@ -302,6 +266,14 @@ public class CartridgeConfig implements Serializable {
 
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
+    }
+
+    public String getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
+    public void setLoadBalancingIPType(String loadBalancingIPType) {
+        this.loadBalancingIPType = loadBalancingIPType;
     }
 
 	public String[] getMetadataKeys() {

@@ -105,9 +105,7 @@ public class CloudControllerUtil {
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setTenantPartitions(config.getTenantPartitions());
-        cartridge.setDefaultAutoscalingPolicy(config.getDefaultAutoscalingPolicy());
-        cartridge.setDefaultDeploymentPolicy(config.getDefaultDeploymentPolicy());
-        cartridge.setServiceGroup(config.getServiceGroup());
+        cartridge.setLoadBalancingIPType(config.getLoadBalancingIPType());
 	    cartridge.setMetadataKeys(config.getMetadataKeys());
 
         org.apache.stratos.common.Properties props = config.getProperties();
@@ -116,9 +114,6 @@ public class CloudControllerUtil {
                 cartridge.addProperty(prop.getName(), String.valueOf(prop.getValue()));
             }
         }
-        
-        // populate LB config
-        cartridge.setLbConfig(config.getLbConfig());
 
         List<IaasProvider> iaases = CloudControllerConfig.getInstance().getIaasProviders();
 
@@ -214,18 +209,12 @@ public class CloudControllerUtil {
 		cartridgeInfo.setVersion(cartridge.getVersion());
 		cartridgeInfo.setMultiTenant(cartridge.isMultiTenant());
 		cartridgeInfo.setBaseDir(cartridge.getBaseDir());
-		cartridgeInfo.setLbConfig(cartridge.getLbConfig());
         cartridgeInfo.setTenantPartitions(cartridge.getTenantPartitions());
-		cartridgeInfo.setDefaultAutoscalingPolicy(cartridge.getDefaultAutoscalingPolicy());
-        cartridgeInfo.setDefaultDeploymentPolicy(cartridge.getDefaultDeploymentPolicy());
 		cartridgeInfo.setPortMappings(cartridge.getPortMappings()
-                .toArray(new PortMapping[cartridge.getPortMappings()
-                        .size()]));
+                .toArray(new PortMapping[cartridge.getPortMappings().size()]));
 		cartridgeInfo.setAppTypes(cartridge.getAppTypeMappings()
-                .toArray(new AppType[cartridge.getAppTypeMappings()
-                        .size()]));
-        cartridgeInfo.setServiceGroup(cartridge.getServiceGroup());
-		
+                .toArray(new AppType[cartridge.getAppTypeMappings().size()]));
+
 		List<Property> propList = new ArrayList<Property>();
         cartridgeInfo.setPersistence(cartridge.getPersistence());
 		

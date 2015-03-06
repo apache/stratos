@@ -75,13 +75,11 @@ public class ObjectConverter {
 	    cartridgeConfig.setIsPublic(cartridgeBean.isPublic());
 	    cartridgeConfig.setDisplayName(cartridgeBean.getDisplayName());
 	    cartridgeConfig.setDescription(cartridgeBean.getDescription());
-	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeBean.getDefaultAutoscalingPolicy());
-	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeBean.getDefaultDeploymentPolicy());
-	    cartridgeConfig.setServiceGroup(cartridgeBean.getServiceGroup());
         cartridgeConfig.setTenantPartitions(cartridgeBean.getTenantPartitions());
+        cartridgeConfig.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
 	    cartridgeConfig.setMetadataKeys(cartridgeBean.getMetadataKeys());
 
-        //deployment information
+        // deployment information
         if (cartridgeBean.getDeployment() != null) {
             cartridgeConfig.setBaseDir(cartridgeBean.getDeployment().getBaseDir());
             if (cartridgeBean.getDeployment().getDir() != null && !cartridgeBean.getDeployment().getDir().isEmpty()) {
@@ -89,29 +87,24 @@ public class ObjectConverter {
                         toArray(new String[cartridgeBean.getDeployment().getDir().size()]));
             }
         }
-        //port mapping
+        // port mapping
         if (cartridgeBean.getPortMapping() != null && !cartridgeBean.getPortMapping().isEmpty()) {
             cartridgeConfig.setPortMappings(convertPortMappingBeansToStubPortMappings(cartridgeBean.getPortMapping()));
         }
 
-        //persistance mapping
+        // persistence mapping
         if (cartridgeBean.getPersistence() != null) {
             cartridgeConfig.setPersistence(convertPersistenceBeanToStubPersistence(cartridgeBean.getPersistence()));
         }
 
-        //IaaS
+        // iaas providers
         if (cartridgeBean.getIaasProvider() != null && !cartridgeBean.getIaasProvider().isEmpty()) {
             cartridgeConfig.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider()));
         }
-        //Properties
+
+        // properties
         if (cartridgeBean.getProperty() != null && !cartridgeBean.getProperty().isEmpty()) {
             cartridgeConfig.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty()));
-        }
-
-        if (cartridgeBean.getExportingProperties() != null) {
-            List<String> propertiesList = cartridgeBean.getExportingProperties();
-            String[] propertiesArray = propertiesList.toArray(new String[propertiesList.size()]);
-            cartridgeConfig.setExportingProperties(propertiesArray);
         }
         return cartridgeConfig;
     }

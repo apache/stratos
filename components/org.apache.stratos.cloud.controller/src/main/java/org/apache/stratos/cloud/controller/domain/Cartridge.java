@@ -44,13 +44,10 @@ public class Cartridge implements Serializable{
     private String version;
     private boolean multiTenant;
     private String tenantPartitions;
-    private String defaultAutoscalingPolicy;
-    private String defaultDeploymentPolicy;
-    private LoadbalancerConfig lbConfig;
     private List<PortMapping> portMappings;
     private Persistence persistence;
     private List<AppType> appTypeMappings;
-    private String serviceGroup;
+    private String loadBalancingIPType;
 	private String[] metadataKeys;
 
     /**
@@ -172,18 +169,6 @@ public class Cartridge implements Serializable{
     public List<IaasProvider> getIaases() {
         return iaases;
     }
-
-    @Override
-	public String toString() {
-		return "Cartridge [type=" + type + ", hostName=" + hostName
-				+ ", provider=" + provider + ", version=" + version
-				+ ", multiTenant=" + multiTenant
-				+ ", defaultAutoscalingPolicy=" + defaultAutoscalingPolicy
-				+ ", defaultDeploymentPolicy=" + defaultDeploymentPolicy
-				+ ", serviceGroup=" + serviceGroup + ", properties="
-				+ properties + ", partitionToIaasProvider="
-				+ partitionToIaasProvider + "]";
-	}
 
 	public void setIaases(List<IaasProvider> iaases) {
         this.iaases = iaases;
@@ -313,22 +298,6 @@ public class Cartridge implements Serializable{
         this.partitionToIaasProvider = partitionToIaasProvider;
     }
 
-    public LoadbalancerConfig getLbConfig() {
-        return lbConfig;
-    }
-
-    public void setLbConfig(LoadbalancerConfig lbConfig) {
-        this.lbConfig = lbConfig;
-    }
-
-    public String getDefaultAutoscalingPolicy() {
-        return defaultAutoscalingPolicy;
-    }
-
-    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
-        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
-    }
-
     /**
 	 * @return the persistence
 	 */
@@ -342,22 +311,6 @@ public class Cartridge implements Serializable{
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
-
-    public String getDefaultDeploymentPolicy() {
-        return defaultDeploymentPolicy;
-    }
-
-    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
-        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
-    }
-
-	public String getServiceGroup() {
-		return serviceGroup;
-	}
-
-	public void setServiceGroup(String serviceGroup) {
-		this.serviceGroup = serviceGroup;
-	}
 
     public String[] getExportingProperties() {
         return exportingProperties;
@@ -390,4 +343,23 @@ public class Cartridge implements Serializable{
 	public void setMetadataKeys(String[] metadataKeys) {
 		this.metadataKeys = metadataKeys;
 	}
+
+    public String getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
+    public void setLoadBalancingIPType(String loadBalancingIPType) {
+        this.loadBalancingIPType = loadBalancingIPType;
+    }
+
+    @Override
+    public String toString() {
+        return "Cartridge [type=" + type
+                + ", hostName=" + hostName
+                + ", provider=" + provider
+                + ", version=" + version
+                + ", multiTenant=" + multiTenant
+                + ", properties=" + properties
+                + ", partitionToIaasProvider=" + partitionToIaasProvider + "]";
+    }
 }
