@@ -530,7 +530,7 @@ public class RestCommandLineService {
             System.out.println("ID: " + tenant.getTenantId());
             System.out.println("Email: " + tenant.getEmail());
             System.out.println("Active: " + tenant.isActive());
-            System.out.println("Created date: " + tenant.getCreatedDate());
+            System.out.println("Created date: " + new Date(tenant.getCreatedDate()));
 
         } catch (Exception e) {
             String message = "Error in describing tenant: " + domainName;
@@ -561,7 +561,7 @@ public class RestCommandLineService {
                     data[1] = String.valueOf(tenant.getTenantId());
                     data[2] = String.valueOf(tenant.isActive());
                     data[3] = tenant.getEmail();
-                    data[4] = String.valueOf(tenant.getCreatedDate());
+                    data[4] = new Date(tenant.getCreatedDate()).toString();
                     return data;
                 }
             };
