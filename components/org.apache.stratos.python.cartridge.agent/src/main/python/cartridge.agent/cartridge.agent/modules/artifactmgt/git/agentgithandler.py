@@ -84,8 +84,8 @@ class AgentGitHandler:
             AgentGitHandler.log.debug("Cloning artifacts from %s for the first time to %s",
                                       git_repo.repo_url, git_repo.local_repo_path)
             subscribe_run = True
-            AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s",
-                                      git_repo.tenant_id, git_repo.repo_url)
+            AgentGitHandler.log.debug("Executing git clone: [tenant-id] %s [repo-url] %s, [repo path] %s",
+                                      git_repo.tenant_id, git_repo.repo_url, git_repo.local_repo_path)
             git_repo = AgentGitHandler.clone(git_repo)
             AgentGitHandler.log.debug("Git clone executed: [tenant-id] %s [repo-url] %s",
                                       git_repo.tenant_id, git_repo.repo_url)

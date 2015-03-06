@@ -22,7 +22,7 @@ import paho.mqtt.client as mqtt
 
 class EventSubscriber(threading.Thread):
     """
-    Provides functionality to subscribe to a given topic on the stratos MB and
+    Provides functionality to subscribe to a given topic on the Stratos MB and
     register event handlers for various events.
     """
 
