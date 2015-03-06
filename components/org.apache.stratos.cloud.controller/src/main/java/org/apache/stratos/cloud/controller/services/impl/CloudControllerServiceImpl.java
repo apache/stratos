@@ -25,8 +25,6 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.domain.Dependencies;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
@@ -38,6 +36,7 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
 
@@ -404,7 +403,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create member context
             String applicationId = clusterContext.getApplicationId();
-            MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId, instanceContext);
+            MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId,
+                    cartridge.getLoadBalancingIPType(), instanceContext);
 
             // Prepare payload
             StringBuilder payload = new StringBuilder(clusterContext.getPayload());
@@ -473,7 +473,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private MemberContext createMemberContext(String applicationId, String cartridgeType, String memberId,
-                                              InstanceContext instanceContext) {
+                                              LoadBalancingIPType loadBalancingIPType, InstanceContext instanceContext) {
         MemberContext memberContext = new MemberContext(
                 applicationId, cartridgeType, instanceContext.getClusterId(), memberId);
 
@@ -482,6 +482,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         memberContext.setPartition(instanceContext.getPartition());
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
+        memberContext.setLoadBalancingIPType(loadBalancingIPType);
         memberContext.setInitTime(System.currentTimeMillis());
 
         return memberContext;

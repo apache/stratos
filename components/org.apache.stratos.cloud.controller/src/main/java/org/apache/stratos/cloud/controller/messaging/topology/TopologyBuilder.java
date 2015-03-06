@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.messaging.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
@@ -402,7 +401,7 @@ public class TopologyBuilder {
 		try {
 			TopologyManager.acquireWriteLock();
 			Member member = new Member(service.getServiceName(), clusterId, memberId, clusterInstanceId,
-					networkPartitionId, partitionId, initTime);
+					networkPartitionId, partitionId, memberContext.getLoadBalancingIPType(), initTime);
 			member.setStatus(MemberStatus.Created);
 			member.setLbClusterId(lbClusterId);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));

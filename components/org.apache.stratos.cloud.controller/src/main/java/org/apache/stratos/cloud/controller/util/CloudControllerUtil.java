@@ -36,6 +36,7 @@ import org.apache.stratos.common.Property;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.Topology;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 
@@ -105,7 +106,12 @@ public class CloudControllerUtil {
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setTenantPartitions(config.getTenantPartitions());
-        cartridge.setLoadBalancingIPType(config.getLoadBalancingIPType());
+        cartridge.setLoadBalancingIPType(LoadBalancingIPType.Private);
+        if(StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
+            if(config.getLoadBalancingIPType().equals("public")) {
+                cartridge.setLoadBalancingIPType(LoadBalancingIPType.Public);
+            }
+        }
 	    cartridge.setMetadataKeys(config.getMetadataKeys());
 
         org.apache.stratos.common.Properties props = config.getProperties();

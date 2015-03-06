@@ -19,6 +19,8 @@
 package org.apache.stratos.messaging.event.topology;
 
 
+import org.apache.stratos.common.domain.LoadBalancingIPType;
+
 import java.io.Serializable;
 import java.util.Properties;
 
@@ -35,19 +37,22 @@ public class MemberCreatedEvent extends TopologyEvent implements Serializable {
     private final String networkPartitionId;
     private final String partitionId;
     private final String memberId;
-
+    private final LoadBalancingIPType loadBalancingIPType;
     private final long initTime;
     private Properties properties;
 
 
     public MemberCreatedEvent(String serviceName, String clusterId, String clusterInstanceId, String memberId,
-                              String networkPartitionId, String partitionId, long initTime) {
+                              String networkPartitionId, String partitionId, LoadBalancingIPType loadBalancingIPType,
+                              long initTime) {
+
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
         this.memberId = memberId;
         this.networkPartitionId = networkPartitionId;
         this.partitionId = partitionId;
+        this.loadBalancingIPType = loadBalancingIPType;
         this.initTime = initTime;
     }
 
@@ -70,7 +75,11 @@ public class MemberCreatedEvent extends TopologyEvent implements Serializable {
     public String getMemberId() {
         return memberId;
     }
-    
+
+    public LoadBalancingIPType getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
     public long getInitTime() {
     	return initTime;
     }

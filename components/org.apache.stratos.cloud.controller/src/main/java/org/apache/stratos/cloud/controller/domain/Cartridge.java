@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.domain;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 
 import java.io.Serializable;
 import java.util.*;
@@ -47,7 +48,7 @@ public class Cartridge implements Serializable{
     private List<PortMapping> portMappings;
     private Persistence persistence;
     private List<AppType> appTypeMappings;
-    private String loadBalancingIPType;
+    private LoadBalancingIPType loadBalancingIPType;
 	private String[] metadataKeys;
 
     /**
@@ -344,11 +345,11 @@ public class Cartridge implements Serializable{
 		this.metadataKeys = metadataKeys;
 	}
 
-    public String getLoadBalancingIPType() {
+    public LoadBalancingIPType getLoadBalancingIPType() {
         return loadBalancingIPType;
     }
 
-    public void setLoadBalancingIPType(String loadBalancingIPType) {
+    public void setLoadBalancingIPType(LoadBalancingIPType loadBalancingIPType) {
         this.loadBalancingIPType = loadBalancingIPType;
     }
 

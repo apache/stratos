@@ -7,11 +7,12 @@
     "description": "Tomcat 7 Cartridge",
     "version": "7",
     "multiTenant": "false",
+    "loadBalancingIPType" : "public",
     "portMapping": [
         {
             "protocol": "http",
             "port": "8080",
-            "proxyPort": "8280"
+            "proxyPort": "8281"
         }
     ],
     "deployment":{

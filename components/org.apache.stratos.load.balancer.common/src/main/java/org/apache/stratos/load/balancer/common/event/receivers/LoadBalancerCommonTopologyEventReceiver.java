@@ -19,8 +19,10 @@
 
 package org.apache.stratos.load.balancer.common.event.receivers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
@@ -362,15 +364,31 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     }
 
     private org.apache.stratos.load.balancer.common.domain.Member transformMember(Member messagingMember) {
-        boolean useMemberPublicIP = Boolean.getBoolean("load.balancer.member.public.ip");
-        String hostName = (useMemberPublicIP) ? messagingMember.getDefaultPublicIP() :
-                messagingMember.getDefaultPrivateIP();
+
+        String hostName;
+        if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Private) {
+            if (StringUtils.isEmpty(messagingMember.getDefaultPrivateIP())) {
+                throw new RuntimeException(String.format("Default private IP not found: [member] %s",
+                        messagingMember.getMemberId()));
+            }
+            hostName = messagingMember.getDefaultPrivateIP();
+        } else if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Public) {
+            if (StringUtils.isEmpty(messagingMember.getDefaultPublicIP())) {
+                throw new RuntimeException(String.format("Default public IP not found: [member] %s",
+                        messagingMember.getMemberId()));
+            }
+            hostName = messagingMember.getDefaultPublicIP();
+        } else {
+            throw new RuntimeException(String.format("Unknown load balancing IP type found: %s",
+                    messagingMember.getLoadBalancingIPType()));
+        }
+
         org.apache.stratos.load.balancer.common.domain.Member member =
                 new org.apache.stratos.load.balancer.common.domain.Member(messagingMember.getServiceName(),
-                        messagingMember.getClusterId(), messagingMember.getMemberId(),
-                        hostName);
-        if(messagingMember.getPorts() != null) {
-            for(Port port : messagingMember.getPorts()) {
+                        messagingMember.getClusterId(), messagingMember.getMemberId(), hostName);
+
+        if (messagingMember.getPorts() != null) {
+            for (Port port : messagingMember.getPorts()) {
                 member.addPort(transformPort(port));
             }
         }
