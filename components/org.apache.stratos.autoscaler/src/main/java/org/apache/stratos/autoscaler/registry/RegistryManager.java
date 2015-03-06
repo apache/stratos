@@ -118,11 +118,17 @@ public class RegistryManager {
     }
 
     public void persistAutoscalerPolicy(AutoscalePolicy autoscalePolicy) {
-        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
-        persist(autoscalePolicy, resourcePath);
-        if (log.isDebugEnabled()) {
-            log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
-                    autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+        try {
+            String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
+                    AutoscalerConstants.AS_POLICY_RESOURCE + "/" + autoscalePolicy.getId();
+            persist(autoscalePolicy, resourcePath);
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Autoscaler policy written to registry: [id] %s [name] %s [description] %s",
+                        autoscalePolicy.getId(), autoscalePolicy.getDisplayName(), autoscalePolicy.getDescription()));
+            }
+        } catch (Exception e) {
+            throw new AutoScalerException((String.format("Unable to persist autoscaler policy [autoscaler-policy-id] %s"
+                    , autoscalePolicy.getId())), e);
         }
     }
 
