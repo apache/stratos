@@ -26,7 +26,8 @@ class python_agent(
   $auto_checkout          = true,
   $module                 = 'undef',
   $custom_templates       = [],
-  $exclude_templates	  = []
+  $exclude_templates	    = [],
+  $custom_plugins         = []
 ){
 
   $service_code    = 'cartridge-agent'
@@ -145,6 +146,12 @@ class python_agent(
     ensure => file,
     content => template("python_agent/logging.ini.erb"),
     require => File["${agent_home}/agent.conf"],
+  }
+
+  python_agent::copy_plugins { $custom_plugins:
+    target => $agent_home,
+    plugins_dir => "${module}/agent",
+    require => File["${agent_home}/logging.ini"]
   }
 
   python_agent::start { $service_code:

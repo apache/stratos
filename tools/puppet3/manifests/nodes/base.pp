@@ -40,6 +40,7 @@ node 'base' {
   $bam_secure_port	= '7711'
   $bam_username		= 'admin'
   $bam_password		= 'admin'
+  $metadata_service_url = 'https://127.0.0.1:9443'
 
   require stratos_base 
 }

@@ -23,8 +23,10 @@
 class php () {
 
   $custom_agent_templates = ['extensions/artifacts-updated.sh']
+  $custom_plugins = ['plugins/PhpServerStarterPlugin.py', 'plugins/PhpServerStarterPlugin.yapsy-plugin']
   class {'python_agent':
     custom_templates => $custom_agent_templates,
+    custom_plugins => $custom_plugins,
     module=>'php'
   }
 
@@ -121,13 +123,13 @@ class php () {
                    Php::Importssl['import ssl']
                  ];
 
-    'apache2 restart':
-      path    => ['/bin', '/usr/bin', '/usr/sbin/'],
-      command => "/etc/init.d/apache2 restart",
-      require => [ Exec["enable ssl module"],
-                   File['/etc/apache2/sites-enabled/default'], 
-                   File['/etc/apache2/sites-enabled/default-ssl']
-                 ];
+#    'apache2 restart':
+#      path    => ['/bin', '/usr/bin', '/usr/sbin/'],
+#      command => "/etc/init.d/apache2 restart",
+#      require => [ Exec["enable ssl module"],
+#                   File['/etc/apache2/sites-enabled/default'],
+#                   File['/etc/apache2/sites-enabled/default-ssl']
+#                 ];
   }
 
   #install stratos_base before java before php before agent
