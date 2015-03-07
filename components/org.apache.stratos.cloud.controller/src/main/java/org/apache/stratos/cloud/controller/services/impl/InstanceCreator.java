@@ -26,7 +26,7 @@ import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
-import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
+import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
@@ -79,7 +79,7 @@ public class InstanceCreator implements Runnable {
             TopologyBuilder.handleMemberInitializedEvent(memberContext);
 
             // Publish instance creation statistics to BAM
-            StatisticsDataPublisher.publish(
+            BAMUsageDataPublisher.publish(
                     memberContext.getMemberId(),
                     memberContext.getPartition().getId(),
                     memberContext.getNetworkPartitionId(),

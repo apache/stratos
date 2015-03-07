@@ -16,20 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.stratos.cloud.controller.messaging.publisher;
+package org.apache.stratos.cloud.controller.statistics.publisher;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.InstanceMetadata;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.jclouds.compute.domain.NodeMetadata;
 import org.wso2.carbon.base.ServerConfiguration;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.databridge.agent.thrift.exception.AgentException;
@@ -45,11 +42,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *  Statistics data publisher for publishing instance statistics to BAM.
+ *  Usage data publisher for publishing instance usage data to BAM.
  */
-public class StatisticsDataPublisher {
+public class BAMUsageDataPublisher {
     
-    private static final Log log = LogFactory.getLog(StatisticsDataPublisher.class);
+    private static final Log log = LogFactory.getLog(BAMUsageDataPublisher.class);
+
     private static AsyncDataPublisher dataPublisher;
     private static StreamDefinition streamDefinition;
     private static final String cloudControllerEventStreamVersion = "1.0.0";
