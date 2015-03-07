@@ -5,11 +5,13 @@
         "network-partition-1"
     ],
     "properties":[
-        { 
-            "key1" : "value1" 
+        {
+            "name": "key-1",
+            "value": "value-1"
         },
         {
-            "key2" : "value2"
-        }
+            "name": "key-2",
+            "value": "value-2"
+        },
     ]
 }
