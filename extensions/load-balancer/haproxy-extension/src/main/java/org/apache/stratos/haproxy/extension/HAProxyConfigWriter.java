@@ -66,7 +66,7 @@ public class HAProxyConfigWriter {
         this.statsSocketFilePath = statsSocketFilePath;
     }
 
-    public void write(Topology topology) {
+    public boolean write(Topology topology) {
         // Prepare global parameters
         StringBuilder globalParameters = new StringBuilder();
         globalParameters.append("stats socket ");
@@ -113,6 +113,7 @@ public class HAProxyConfigWriter {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Configuration written to file: %s", confFilePath));
             }
+            return true;
         } catch (IOException e) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Could not write configuration file: %s", confFilePath));

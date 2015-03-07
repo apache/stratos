@@ -40,6 +40,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private static final Log log = LogFactory.getLog(LoadBalancerCommonTopologyEventReceiver.class);
 
     private TopologyProvider topologyProvider;
+    private boolean initialized;
 
     public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
@@ -53,33 +54,41 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         }
     }
 
+    public void initializeTopology() {
+        if (initialized) {
+            return;
+        }
+
+        try {
+            TopologyManager.acquireReadLock();
+            for (Service service : TopologyManager.getTopology().getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getStatus() == MemberStatus.Active) {
+                            addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
+                        }
+                    }
+                }
+            }
+            initialized = true;
+        } catch (Exception e) {
+            log.error("Error processing complete topology event", e);
+        } finally {
+            TopologyManager.releaseReadLock();
+        }
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     private void addEventListeners() {
 
         addEventListener(new CompleteTopologyEventListener() {
-            private boolean initialized;
-
             @Override
             protected void onEvent(Event event) {
-                if (initialized) {
-                    return;
-                }
-
-                try {
-                    TopologyManager.acquireReadLock();
-                    for (Service service : TopologyManager.getTopology().getServices()) {
-                        for (Cluster cluster : service.getClusters()) {
-                            for (Member member : cluster.getMembers()) {
-                                if (member.getStatus() == MemberStatus.Active) {
-                                    addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
-                                }
-                            }
-                        }
-                    }
-                    initialized = true;
-                } catch (Exception e) {
-                    log.error("Error processing complete topology event", e);
-                } finally {
-                    TopologyManager.releaseReadLock();
+                if(!initialized) {
+                    initializeTopology();
                 }
             }
         });
@@ -254,6 +263,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
             return;
         }
+
         Cluster cluster = service.getCluster(clusterId);
         if (cluster == null) {
             if (log.isWarnEnabled()) {

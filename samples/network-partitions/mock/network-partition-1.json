@@ -1,6 +1,6 @@
 {
     "id": "network-partition-1",
-     "provider": "mock",
+    "provider": "mock",
     "partitions": [
         {
             "id": "partition-1",

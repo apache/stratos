@@ -1,9 +1,9 @@
 {
     "id": "network-partition-2",
+    "provider": "kubernetes",
     "partitions": [
         {
             "id": "partition-1",
-            "provider": "kubernetes",
             "property": [
                 {
                     "name": "cluster",

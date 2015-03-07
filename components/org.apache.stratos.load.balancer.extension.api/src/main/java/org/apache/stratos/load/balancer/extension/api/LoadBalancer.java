@@ -43,8 +43,9 @@ public interface LoadBalancer {
      * Configure the load balancer using the given topology.
      * Throw an exception is the configure operation fails.
      * @param topology
+     * @return Returns true if configured correctly
      */
-    void configure(Topology topology) throws LoadBalancerExtensionException;
+    boolean configure(Topology topology) throws LoadBalancerExtensionException;
 
     /**
      * Reload load balancer configuration using the configuration written in configure() method.
