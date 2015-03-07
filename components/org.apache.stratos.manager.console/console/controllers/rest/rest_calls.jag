@@ -72,11 +72,11 @@ RESTCalls = new function(){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
-    this.deleteAutoscalePolicyDefinition = function(deploymentPolicyId){
+    this.deleteDeploymentPolicyDefinition = function(deploymentPolicyId){
         return this.send("DELETE","/deploymentPolicies/" + deploymentPolicyId,{});
     };
 
-    this.deleteDeploymentPolicyDefinition = function(autoscalePolicyId){
+    this.deleteAutoscalePolicyDefinition = function(autoscalePolicyId){
         return this.send("DELETE","/autoscalingPolicies/" + autoscalePolicyId,{});
     };
 
@@ -200,6 +200,10 @@ RESTCalls = new function(){
 
     this.getApplicationJSON = function(appId){
         return this.sendReceive("GET","/applications/"+appId ,{});
+    };
+
+    this.getApplicationPartitions = function(appId){
+        return this.sendReceive("GET","/applications/"+appId + "/networkPartitions" ,{});
     };
 
     this.getClusterInfo = function(clusterId){
