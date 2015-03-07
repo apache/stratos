@@ -315,7 +315,7 @@ var groupBlockTemplate = {
                 "terminationBehaviour": {
                     "id": "root/dependencies/terminationBehaviour",
                     "type": "string",
-                    "title": "Termination Behaviour: ",
+                    "title": "Termination Behavior: ",
                     "enum": ["terminate-none","terminate-dependents","terminate-all"]
                 },
                 "required": [
