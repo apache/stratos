@@ -69,8 +69,8 @@ if(isEdit == false && elements.action != 'new') {
     switch (formtype) {
 
         case "partitions":
-            formTitle = "Partition Definition",
-                    buttonText = "Partition Definition";
+            formTitle = "Network Partition Definition",
+                    buttonText = "Network Partition Definition";
             list_data = util.RESTCalls.getPartitions();
             if (list_data && list_data.length === 0) {
                 list_data = null;
