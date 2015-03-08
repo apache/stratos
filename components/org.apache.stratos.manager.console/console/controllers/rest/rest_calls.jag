@@ -173,6 +173,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/applicationPolicies/"+applicationPolicyId,{});
     };
 
+    this.getPolicyCartridgeGroup = function(cartridgeGroupId){
+        return this.sendReceive("GET","/cartridgeGroups/"+cartridgeGroupId,{});
+    };
+
     this.getPolicyAutoScale = function(autoscalePolicyId){
         return this.sendReceive("GET","/autoscalingPolicies/"+autoscalePolicyId,{});
     };

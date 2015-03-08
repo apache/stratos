@@ -43,35 +43,6 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 if (!elements) {
     elements = uriMatcher.match('/{context}/applications/{formtype}/{action}/');
-    isForm = true;
-
-    if (elements.action != 'new') {
-        isEdit = true;
-    }
-
-    try {
-        var formData = require('controllers/forms/schema/applications/' + elements.formtype + '.json'),
-                formDataRaw = require('controllers/forms/default/applications/' + elements.formtype + '.json'),
-                formTitle = formData.title,
-                buttonText = formData.name;
-    } catch (e) {
-        log.error(e.message);
-        error.push({"errorMessage": e.message});
-    }
-
-    //get the detail view for each listing
-    if (elements.action != 'new' && isEdit) {
-        formTitle = formData.title + ' Details - ' + elements.action;
-
-        var formtype = elements.formtype,
-                id = escape(elements.action);
-
-        switch (formtype) {
-            case "applicationpolicies":
-                formDataEdit = util.RESTCalls.getPolicyApplication(id);
-                break;
-        }
-    }
 
     if(!elements){
         elements = uriMatcher.match('/{context}/applications/{formtype}/{applicationId}/{action}');
@@ -88,6 +59,17 @@ if (!elements) {
         }
 
     }else{
+
+        try {
+            var formData = require('controllers/forms/schema/applications/' + elements.formtype + '.json'),
+                    formDataRaw = require('controllers/forms/default/applications/' + elements.formtype + '.json'),
+                    formTitle = formData.title,
+                    buttonText = formData.name;
+        } catch (e) {
+            log.error(e.message);
+            error.push({"errorMessage": e.message});
+        }
+
         isForm = true;
         if (elements.formtype == 'applications' && elements.action != 'new') {
 
@@ -102,9 +84,25 @@ if (!elements) {
         }else  if(elements.formtype == 'groups' && elements.action == 'new'){
             applicationHbs = 'applicationsGroupEditor';
             editorCartridges = util.RESTCalls.getCartridges();
-        }else  if(elements.formtype == 'groups' && elements.action != 'new'){
+        }else  if( (elements.formtype == 'groups' || elements.formtype == 'applicationpolicies') && elements.action != 'new'){
             isEdit = true;
 
+            //get the detail view for each listing
+            if (elements.action != 'new' && isEdit) {
+                formTitle = formData.title + ' Details - ' + elements.action;
+
+                var formtype = elements.formtype,
+                        id = escape(elements.action);
+
+                switch (formtype) {
+                    case "applicationpolicies":
+                        formDataEdit = util.RESTCalls.getPolicyApplication(id);
+                        break;
+                    case "groups":
+                        formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
+                        break;
+                }
+            }
         }
 
     }
@@ -121,13 +119,6 @@ switch (formtype) {
         list_data = util.RESTCalls.getGroups();
         if (list_data && list_data.length === 0) {
             list_data = null;
-        }else{
-            formDataEdit = list_data;
-            for (specNumber in list_data) {
-                if (list_data[specNumber].name == elements.action) {
-                    formDataEdit = list_data[specNumber];
-                }
-            }
         }
         break;
     case "applications":
