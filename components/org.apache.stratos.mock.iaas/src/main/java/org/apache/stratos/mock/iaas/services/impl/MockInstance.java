@@ -146,11 +146,15 @@ public class MockInstance implements Runnable, Serializable {
     }
 
     private void stopHealthStatisticsPublisher() {
-		healthStatNotifierScheduledFuture.cancel(true);
+        if(healthStatNotifierScheduledFuture != null) {
+            healthStatNotifierScheduledFuture.cancel(true);
+        }
 	}
     
     private void stopInstanceNotifierReceiver() {
-        instanceNotifierEventReceiver.terminate();
+        if(instanceNotifierEventReceiver != null) {
+            instanceNotifierEventReceiver.terminate();
+        }
     }
 
     private void sleep(long time) {
