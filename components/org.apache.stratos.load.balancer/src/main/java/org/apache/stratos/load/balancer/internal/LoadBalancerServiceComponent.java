@@ -147,7 +147,7 @@ public class LoadBalancerServiceComponent {
 
             if(configuration.isCepStatsPublisherEnabled()) {
                 // Start statistics notifier
-                startStatisticsNotifier();
+                startStatisticsNotifier(topologyProvider);
             }
 
             activated = true;
@@ -217,9 +217,10 @@ public class LoadBalancerServiceComponent {
         }
     }
 
-    private void startStatisticsNotifier() {
+    private void startStatisticsNotifier(TopologyProvider topologyProvider) {
         // Start stats notifier thread
-        statisticsNotifier = new LoadBalancerStatisticsNotifier(LoadBalancerStatisticsCollector.getInstance());
+        statisticsNotifier = new LoadBalancerStatisticsNotifier(LoadBalancerStatisticsCollector.getInstance(),
+                topologyProvider);
         Thread statsNotifierThread = new Thread(statisticsNotifier);
         statsNotifierThread.start();
         if (log.isInfoEnabled()) {

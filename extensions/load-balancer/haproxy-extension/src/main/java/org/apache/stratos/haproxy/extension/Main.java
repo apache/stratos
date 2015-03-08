@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.PropertyConfigurator;
 import org.apache.stratos.common.threading.StratosThreadPool;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.load.balancer.extension.api.LoadBalancerExtension;
 
 import java.util.concurrent.ExecutorService;
@@ -44,12 +45,31 @@ public class Main {
 			if (log.isInfoEnabled()) {
 				log.info("HAProxy extension started");
 			}
+
+            // Add shutdown hook
+            final Thread mainThread = Thread.currentThread();
+            final LoadBalancerExtension finalExtension = extension;
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                public void run() {
+                    try {
+                        if(finalExtension != null) {
+                            log.info("Shutting haproxy instance...");
+                            finalExtension.stop();
+                        }
+                        mainThread.join();
+                    } catch (Exception e) {
+                        log.error(e);
+                    }
+                }
+            });
+
 			executorService = StratosThreadPool.getExecutorService("haproxy.extension.thread.pool", 10);
 			// Validate runtime parameters
 			HAProxyContext.getInstance().validate();
-			extension = new LoadBalancerExtension(new HAProxy(),
-			                                      (HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ?
-			                                       new HAProxyStatisticsReader() : null));
+            TopologyProvider topologyProvider = new TopologyProvider();
+            HAProxyStatisticsReader statisticsReader = HAProxyContext.getInstance().isCEPStatsPublisherEnabled() ?
+                    new HAProxyStatisticsReader(topologyProvider) : null;
+            extension = new LoadBalancerExtension(new HAProxy(), statisticsReader, topologyProvider);
 			extension.setExecutorService(executorService);
 			extension.execute();
 		} catch (Exception e) {
@@ -57,7 +77,8 @@ public class Main {
 				log.error(e);
 			}
 			if (extension != null) {
-				extension.terminate();
+                log.info("Shutting haproxy instance...");
+				extension.stop();
 			}
 		}
 	}

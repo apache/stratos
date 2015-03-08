@@ -118,7 +118,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
 		if (log.isInfoEnabled()) {
-			log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
+			log.info("Updating cartridge: [cartridge-type] " + cartridgeConfig.getType());
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Cartridge definition: " + cartridgeConfig.toString());
@@ -133,12 +133,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new InvalidCartridgeDefinitionException(msg, e);
 		}
 
-		// TODO transaction begins
 		String cartridgeType = cartridge.getType();
-		// Undeploy if already deployed
 		if (cloudControllerContext.getCartridge(cartridgeType) != null) {
 			Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
-			// undeploy
 			try {
 				removeCartridge(cartridgeToBeRemoved.getType());
 			} catch (InvalidCartridgeTypeException ignore) {
@@ -152,15 +149,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// Add cartridge to the cloud controller context and persist
 		CloudControllerContext.getInstance().addCartridge(cartridge);
 		CloudControllerContext.getInstance().persist();
-
-		List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-		cartridgeList.add(cartridge);
-
-		TopologyBuilder.handleServiceCreated(cartridgeList);
 		// transaction ends
 
 		if (log.isInfoEnabled()) {
-			log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
+			log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
 		}
 	}
 

@@ -293,7 +293,16 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
             return;
         }
-        topologyProvider.addMember(transformMember(member));
+
+        org.apache.stratos.load.balancer.common.domain.Member lbMember = transformMember(member);
+        org.apache.stratos.load.balancer.common.domain.Service lbService = topologyProvider.getTopology().
+                getService(serviceName);
+        if(lbService == null) {
+            log.warn(String.format("Service not found: %s", serviceName));
+            return;
+        }
+        lbService.addPorts(lbMember.getPorts());
+        topologyProvider.addMember(lbMember);
     }
 
     /**
@@ -347,9 +356,6 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private org.apache.stratos.load.balancer.common.domain.Service transformService(Service messagingService) {
         org.apache.stratos.load.balancer.common.domain.Service service =
                 new org.apache.stratos.load.balancer.common.domain.Service(messagingService.getServiceName());
-        for(Port port : messagingService.getPorts()) {
-            service.addPort(transformPort(port));
-        }
         return service;
     }
 

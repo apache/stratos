@@ -62,10 +62,12 @@ public class LoadBalancerExtension {
 	 * @param loadBalancer Load balancer instance: Mandatory.
 	 * @param statsReader  Statistics reader: If null statistics notifier thread will not be started.
 	 */
-	public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader) {
-		this.loadBalancer = loadBalancer;
+	public LoadBalancerExtension(LoadBalancer loadBalancer, LoadBalancerStatisticsReader statsReader,
+                                 TopologyProvider topologyProvider) {
+
+        this.loadBalancer = loadBalancer;
 		this.statsReader = statsReader;
-        this.topologyProvider = new TopologyProvider();
+        this.topologyProvider = topologyProvider;
 	}
 
 
@@ -82,7 +84,7 @@ public class LoadBalancerExtension {
 
 			if (statsReader != null) {
 				// Start stats notifier thread
-				statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader);
+				statisticsNotifier = new LoadBalancerStatisticsNotifier(statsReader, topologyProvider);
 				Thread statsNotifierThread = new Thread(statisticsNotifier);
 				statsNotifierThread.start();
 			} else {
@@ -158,7 +160,7 @@ public class LoadBalancerExtension {
 
                         // Configure load balancer
                         Topology topology = topologyProvider.getTopology();
-                        if(topologyInitialized(topology) && loadBalancer.configure(topology)) {
+                        if(topologyPopulated(topology) && loadBalancer.configure(topology)) {
                             // Start load balancer
                             loadBalancer.start();
                             loadBalancerStarted = true;
@@ -168,7 +170,7 @@ public class LoadBalancerExtension {
                     if (log.isErrorEnabled()) {
                         log.error("Could not start load balancer", e);
                     }
-                    terminate();
+                    stop();
                 }
             }
         });
@@ -205,11 +207,11 @@ public class LoadBalancerExtension {
 	}
 
     /**
-     * Returns true if topology has initialized
+     * Returns true if topology has populated
      * @param topology
      * @return
      */
-    private boolean topologyInitialized(Topology topology) {
+    private boolean topologyPopulated(Topology topology) {
         for(Service service : topology.getServices()) {
             for(Cluster cluster : service.getClusters()) {
                 if(cluster.getMembers().size() > 0) {
@@ -240,15 +242,27 @@ public class LoadBalancerExtension {
 	}
 
     /**
-     * Terminate event receivers and publishers.
+     * Stop load balancer instance.
      */
-	public void terminate() {
-		if (topologyEventReceiver != null) {
-			topologyEventReceiver.terminate();
-		}
-		if (statisticsNotifier != null) {
-			statisticsNotifier.terminate();
-		}
+	public void stop() {
+        try {
+            if (topologyEventReceiver != null) {
+                topologyEventReceiver.terminate();
+            }
+        } catch (Exception ignore) {
+        }
+
+        try {
+            if (statisticsNotifier != null) {
+                statisticsNotifier.terminate();
+            }
+        } catch (Exception ignore) {
+        }
+
+        try {
+            loadBalancer.stop();
+        } catch (Exception ignore) {
+        }
 	}
 
 	public ExecutorService getExecutorService() {

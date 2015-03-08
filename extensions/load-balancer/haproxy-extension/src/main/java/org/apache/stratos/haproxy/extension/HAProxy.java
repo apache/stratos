@@ -151,9 +151,8 @@ public class HAProxy implements LoadBalancer {
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("Could not stop haproxy instance");
+                log.error("Could not stop haproxy instance", e);
             }
-            throw new LoadBalancerExtensionException(e);
         }
     }
 }
