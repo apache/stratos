@@ -74,6 +74,9 @@ public class MockInstance implements Runnable, Serializable {
         while (!terminated) {
             sleep(1000);
         }
+        
+        stopInstanceNotifierReceiver();
+        stopHealthStatisticsPublisher();
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Mock member terminated: [member-id] %s", mockMemberContext.getMemberId()));
@@ -137,6 +140,14 @@ public class MockInstance implements Runnable, Serializable {
         if (log.isDebugEnabled()) {
             log.debug(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));
         }
+    }
+
+    private void stopHealthStatisticsPublisher() {
+		healthStatNotifierExecutorService.shutdownNow();
+	}
+    
+    private void stopInstanceNotifierReceiver() {
+    	eventListenerExecutorService.shutdownNow();
     }
 
     private void sleep(long time) {
