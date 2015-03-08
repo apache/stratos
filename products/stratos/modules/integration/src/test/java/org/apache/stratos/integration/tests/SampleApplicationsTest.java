@@ -74,6 +74,8 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     private void runApplicationTest(String applicationFolderName, String applicationId) {
         executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/deploy.sh");
         assertApplicationActivation(applicationId);
+        executeCommand(getApplicationsPath() + "/" + applicationFolderName + "/scripts/mock/undeploy.sh");
+        assertApplicationNotExists(applicationId);
     }
 
     /**
@@ -124,6 +126,11 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         assertNotNull(String.format("Application is not found: [application-id] %s", applicationName), application);
         assertEquals(String.format("Application status did not change to active: [application-id] %s", applicationName),
                 ApplicationStatus.Active, application.getStatus());
+    }
+    
+    private void assertApplicationNotExists(String applicationName) {
+        Application application = ApplicationManager.getApplications().getApplication(applicationName);
+        assertNull(String.format("Application is found in the topology : [application-id] %s", applicationName), application);
     }
 
     /**
