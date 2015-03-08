@@ -40,6 +40,9 @@ try {
         case "applicationpolicies":
             formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
             break;
+        case "deleteapppolicy":
+            formSubmit = util.RESTCalls.deleteApplicationPolicyDefinition(formPayload);
+            break;
         case "applications":
             formSubmit = util.RESTCalls.deployApplicationDefinition(formPayload);
             break;

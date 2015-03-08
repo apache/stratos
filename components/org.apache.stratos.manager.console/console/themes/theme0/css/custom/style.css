@@ -253,3 +253,7 @@ button.hover-delete-autoscale{
     padding: 2px 10px;
     border-radius: 4px;
 }
+
+button.hover-delete-app-policy{
+    margin-top: .7em;
+}

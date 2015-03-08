@@ -104,6 +104,10 @@ RESTCalls = new function(){
         return this.send("DELETE","/applications/" + applicationId,{});
     };
 
+    this.deleteApplicationPolicyDefinition = function(applicationPolicyId){
+        return this.send("DELETE","/applicationPolicies/" + applicationPolicyId,{});
+    };
+
     this.undeployApplication = function(applicationId){
         return this.send("POST","/applications/"+applicationId+"/undeploy",{});
     };
