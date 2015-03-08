@@ -60,17 +60,21 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         }
 
         try {
+            boolean membersFound = false;
             TopologyManager.acquireReadLock();
             for (Service service : TopologyManager.getTopology().getServices()) {
                 for (Cluster cluster : service.getClusters()) {
                     for (Member member : cluster.getMembers()) {
                         if (member.getStatus() == MemberStatus.Active) {
                             addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
+                            membersFound = true;
                         }
                     }
                 }
             }
-            initialized = true;
+            if(membersFound) {
+                initialized = true;
+            }
         } catch (Exception e) {
             log.error("Error processing complete topology event", e);
         } finally {
