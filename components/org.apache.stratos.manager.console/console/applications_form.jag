@@ -43,6 +43,35 @@ var leftMenu = menuGenerator(context, menuJson.menu, userPermissions);
 
 if (!elements) {
     elements = uriMatcher.match('/{context}/applications/{formtype}/{action}/');
+    isForm = true;
+
+    if (elements.action != 'new') {
+        isEdit = true;
+    }
+
+    try {
+        var formData = require('controllers/forms/schema/applications/' + elements.formtype + '.json'),
+                formDataRaw = require('controllers/forms/default/applications/' + elements.formtype + '.json'),
+                formTitle = formData.title,
+                buttonText = formData.name;
+    } catch (e) {
+        log.error(e.message);
+        error.push({"errorMessage": e.message});
+    }
+
+    //get the detail view for each listing
+    if (elements.action != 'new' && isEdit) {
+        formTitle = formData.title + ' Details - ' + elements.action;
+
+        var formtype = elements.formtype,
+                id = escape(elements.action);
+
+        switch (formtype) {
+            case "applicationpolicies":
+                formDataEdit = util.RESTCalls.getPolicyApplication(id);
+                break;
+        }
+    }
 
     if(!elements){
         elements = uriMatcher.match('/{context}/applications/{formtype}/{applicationId}/{action}');
@@ -82,20 +111,13 @@ if (!elements) {
 
 }
 
-try {
-    var formData = require('controllers/forms/schema/applications/' + elements.formtype + '.json'),
-            formDataRaw = require('controllers/forms/default/applications/' + elements.formtype + '.json'),
-            formTitle = formData.title,
-            buttonText = formData.name;
-} catch (e) {
-    log.error(e.message);
-    error.push({"errorMessage": e.message});
-}
 
 var formtype = elements.formtype;
 
 switch (formtype) {
     case "groups":
+        formTitle = "Cartridge Group Definition",
+                buttonText = "Cartridge Group Definition";
         list_data = util.RESTCalls.getGroups();
         if (list_data && list_data.length === 0) {
             list_data = null;
@@ -109,11 +131,23 @@ switch (formtype) {
         }
         break;
     case "applications":
+        formTitle = "Application Definition",
+                buttonText = "Application Definition";
         list_data = util.RESTCalls.getApplications();
         if (list_data && list_data.length === 0) {
             list_data = null;
         }
         break;
+
+    case "applicationpolicies":
+        formTitle = "Application Policy Definition",
+                buttonText = "Application Policy Definition";
+        list_data = util.RESTCalls.getApplicationPolicies();
+        if (list_data && list_data.length === 0) {
+            list_data = null;
+        }
+        break;
+
     default:
         error.push({"errorMessage":"Incorrect resource path found"});
 }
@@ -136,6 +170,7 @@ var caramelData = {
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),
     formtype:elements.formtype,
+    buttonText: buttonText,
     //formDataRaw: JSON.stringify(partition_data.partition[0]),
     formDataEdit: JSON.stringify(formDataEdit),
     formData: JSON.stringify(formData),

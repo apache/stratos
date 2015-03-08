@@ -96,6 +96,10 @@ RESTCalls = new function(){
         return this.send("POST","/applications", applicationDefinition);
     };
 
+    this.deployApplicationPolicyDefinition = function(applicationPolicyDefinition){
+        return this.send("POST","/applicationPolicies", applicationPolicyDefinition);
+    };
+
     this.deleteApplication = function(applicationId){
         return this.send("DELETE","/applications/" + applicationId,{});
     };
@@ -165,6 +169,10 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/autoscalingPolicies",{});
     };
 
+    this.getPolicyApplication = function(applicationPolicyId){
+        return this.sendReceive("GET","/applicationPolicies/"+applicationPolicyId,{});
+    };
+
     this.getPolicyAutoScale = function(autoscalePolicyId){
         return this.sendReceive("GET","/autoscalingPolicies/"+autoscalePolicyId,{});
     };
@@ -192,6 +200,10 @@ RESTCalls = new function(){
 
     this.getApplications = function(){
         return this.sendReceive("GET","/applications",{});
+    };
+
+    this.getApplicationPolicies = function(){
+        return this.sendReceive("GET","/applicationPolicies",{});
     };
 
     this.getApplicationTopology = function(appId){

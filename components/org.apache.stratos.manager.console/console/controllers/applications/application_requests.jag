@@ -37,6 +37,9 @@ try {
         case "deletegroups":
             formSubmit = util.RESTCalls.deleteGroup(formPayload);
             break;
+        case "applicationpolicies":
+            formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
+            break;
         case "applications":
             formSubmit = util.RESTCalls.deployApplicationDefinition(formPayload);
             break;

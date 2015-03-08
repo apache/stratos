@@ -409,6 +409,7 @@ var render = function (theme, data, meta, require) {
                                 formDataRaw: data.formDataRaw,
                                 formDataEdit: data.formDataEdit,
                                 formtype:data.formtype,
+                                buttonText: data.buttonText,
                                 isForm: data.isForm,
                                 isEdit:data.isEdit,
                                 formTitle: data.formTitle,
