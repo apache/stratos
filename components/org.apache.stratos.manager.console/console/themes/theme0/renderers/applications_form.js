@@ -205,6 +205,7 @@ var render = function (theme, data, meta, require) {
                                 editorCartridges: data.editorCartridges,
                                 editorGroups:data.editorGroups,
                                 form_action: data.form_action,
+                                applicationPolicyData:data.applicationPolicyData,
                                 formHtml: data.formHtml,
                                 formData: data.formData,
                                 formDataRaw: data.formDataRaw,

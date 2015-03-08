@@ -44,7 +44,7 @@ try {
             formSubmit = util.RESTCalls.deployApplicationDefinition(formPayload);
             break;
         case "deployments":
-            formSubmit = util.RESTCalls.deployDeploymentPolicyDefinition(applicationId, formPayload);
+            formSubmit = util.RESTCalls.deployApplicationDeployment(applicationId, formPayload);
             break;
         case "deleteapplication":
             formSubmit = util.RESTCalls.deleteApplication(formPayload);

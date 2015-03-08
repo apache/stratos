@@ -33,7 +33,7 @@ var log = new Log("apachestratos.applications_form"),
         elements = uriMatcher.match('/{context}/applications/{formtype}/'),
         breadcrumbPathLevelOne = 'applications',
         formDataEdit = topologyData = editorGroups = editorCartridges = editorAutoscalePolicies = applicationHbs ='',
-        editorDeploymentPolicies = '',
+        editorDeploymentPolicies = applicationPolicyData ='',
         isEdit  = isForm = false,
         userPermissions = session.get('PERMISSIONS');
 
@@ -56,6 +56,7 @@ if (!elements) {
             applicationHbs = 'applicationView';
         }else if(elements.action == 'deploy'){
             applicationHbs = 'applicationDeploy';
+            applicationPolicyData = util.RESTCalls.getApplicationPolicies();
         }
 
     }else{
@@ -72,7 +73,6 @@ if (!elements) {
 
         isForm = true;
         if (elements.formtype == 'applications' && elements.action != 'new') {
-
             applicationHbs = 'applicationTopology';
             topologyData = util.RESTCalls.getApplicationTopology(elements.action);
         }else if(elements.formtype == 'applications' && elements.action == 'new'){
@@ -155,6 +155,7 @@ var caramelData = {
     editorAutoscalePolicies: JSON.stringify(editorAutoscalePolicies),
     editorDeploymentPolicies:JSON.stringify(editorDeploymentPolicies),
     applicationHbs: applicationHbs,
+    applicationPolicyData:applicationPolicyData,
     applicationAlias:applicationAlias,
     applicationName:applicationName,
     applicationJSON:JSON.stringify(applicationJSON),

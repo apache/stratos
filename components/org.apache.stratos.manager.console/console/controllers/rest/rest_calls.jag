@@ -60,8 +60,8 @@ RESTCalls = new function(){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployApplicationDeployment = function(applicationID, policyDefinition){
-        return this.send("POST","/applications/"+applicationID+"/deploy",policyDefinition);
+    this.deployApplicationDeployment = function(applicationID, applicationPolicyId){
+        return this.send("POST","/applications/"+applicationID+"/deploy/"+applicationPolicyId,{});
     };
 
     this.deployDeploymentPolicyDefinition = function(policyDefinition){

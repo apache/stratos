@@ -380,12 +380,12 @@ $(document).ready(function(){
 
     //trigger deploy button
     $('#deploy').click(function(){
-        var deployjson = $('textarea#deployjsonedit').val();
+        var deployjson = $('#app-policy-id').val();
         var formtype = 'deployments';
         var applicationId = applicationJSON.applicationId;
         var btn = $(this);
         console.log('hit kme')
-        btn.html("<i class='fa fa-spinner fa-spin'></i> Adding "+formtype);
+        btn.html("<i class='fa fa-spinner fa-spin'></i> Adding Application Policy ");
         $.ajax({
             type: "POST",
             url: caramel.context + "/controllers/applications/application_requests.jag",
