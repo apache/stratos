@@ -104,7 +104,7 @@
                     "description": "Manage cartridge groups"
                 },
                 {
-                    "link": "applications/applicationpolicy/",
+                    "link": "applications/applicationpolicies/",
                     "linkexternal": false,
                     "context": "/applications",
                     "title": "Application Policies",
