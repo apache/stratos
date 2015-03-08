@@ -104,6 +104,15 @@
                     "description": "Manage cartridge groups"
                 },
                 {
+                    "link": "applications/applicationpolicy/",
+                    "linkexternal": false,
+                    "context": "/applications",
+                    "title": "Application Policies",
+                    "icon": "fa-road",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "description": "Manage application policies"
+                },
+                {
                     "link": "applications/applications/",
                     "linkexternal": false,
                     "context": "/applications",
