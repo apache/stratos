@@ -42,6 +42,7 @@ import org.apache.stratos.load.balancer.util.LoadBalancerConstants;
 import org.apache.stratos.messaging.message.filter.topology.TopologyClusterFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyMemberFilter;
 import org.apache.stratos.messaging.message.filter.topology.TopologyServiceFilter;
+import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.config.xml.MultiXMLConfigurationBuilder;
 import org.apache.synapse.core.SynapseEnvironment;
@@ -91,6 +92,7 @@ public class LoadBalancerServiceComponent {
     private boolean activated = false;
     private ExecutorService executorService;
     private LoadBalancerTopologyEventReceiver topologyEventReceiver;
+    private TenantEventReceiver tenantEventReceiver;
     private LoadBalancerDomainMappingEventReceiver domainMappingEventReceiver;
     private LoadBalancerCommonApplicationSignUpEventReceiver applicationSignUpEventReceiver;
     private LoadBalancerStatisticsNotifier statisticsNotifier;
@@ -131,7 +133,8 @@ public class LoadBalancerServiceComponent {
             }
 
             if (configuration.isMultiTenancyEnabled() || configuration.isDomainMappingEnabled()) {
-                // Start application signup event receiver
+                // Start tenant & application signup event receivers
+                startTenantEventReceiver(executorService);
                 startApplicationSignUpEventReceiver(executorService, topologyProvider);
             }
 
@@ -214,6 +217,16 @@ public class LoadBalancerServiceComponent {
                 log.info(String.format("Member filter activated: [filter] %s",
                         TopologyMemberFilter.getInstance().toString()));
             }
+        }
+    }
+
+    private void startTenantEventReceiver(ExecutorService executorService) {
+
+        tenantEventReceiver = new TenantEventReceiver();
+        tenantEventReceiver.setExecutorService(executorService);
+        tenantEventReceiver.execute();
+        if (log.isInfoEnabled()) {
+            log.info("Tenant event receiver thread started");
         }
     }
 
