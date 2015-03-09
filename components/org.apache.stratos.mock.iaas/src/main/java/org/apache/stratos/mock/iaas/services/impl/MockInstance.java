@@ -52,8 +52,8 @@ public class MockInstance implements Runnable, Serializable {
 
     private final MockInstanceContext mockMemberContext;
     private boolean terminated;
-    private ScheduledFuture<?> healthStatNotifierScheduledFuture;
-    private InstanceNotifierEventReceiver instanceNotifierEventReceiver;
+    private transient ScheduledFuture<?> healthStatNotifierScheduledFuture;
+    private transient InstanceNotifierEventReceiver instanceNotifierEventReceiver;
 
     public MockInstance(MockInstanceContext mockMemberContext) {
         this.mockMemberContext = mockMemberContext;
