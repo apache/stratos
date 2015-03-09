@@ -377,8 +377,11 @@ public class CliConstants {
     public static final String HOST_ID_LONG_OPTION = "host-id";
 
     // Application options
-    public static final String APPLICATION_ID_OPTION = "app";
+    public static final String APPLICATION_ID_OPTION = "a";
     public static final String APPLICATION_ID_LONG_OPTION = "application-id";
+
+    public static final String APPLICATION_POLICY_ID_OPTION = "ap";
+    public static final String APPLICATION_POLICY_ID_LONG_OPTION = "application-policy-id";
 
     public static final String RESPONSE_INTERNAL_SERVER_ERROR = "500";
     public static final String RESPONSE_AUTHORIZATION_FAIL = "403";
