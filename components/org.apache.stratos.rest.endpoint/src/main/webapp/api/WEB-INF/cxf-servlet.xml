@@ -126,7 +126,7 @@
                 <value>childPolicies</value>
                 <value>childLevelNetworkPartition</value>
                 <value>childLevelPartitions</value>
-                <value>networkPartition</value>
+                <value>networkPartitions</value>
                 <value>partitions</value>
                 <value>dependencyAliases</value>
                 <value>groupInstances</value>
