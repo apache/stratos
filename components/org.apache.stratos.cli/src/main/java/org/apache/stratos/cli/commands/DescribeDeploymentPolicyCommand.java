@@ -42,7 +42,7 @@ public class DescribeDeploymentPolicyCommand implements Command<StratosCommandCo
 
     @Override
     public String getArgumentSyntax() {
-        return "[application-id]";
+        return "[deployment-policy-id]";
     }
 
     @Override
