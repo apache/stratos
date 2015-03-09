@@ -118,8 +118,9 @@ public class AutoscalerUtil {
         RegistryManager.getInstance().removeApplication(applicationId);
     }
 
+    //TODO we need to make sure that application id or cartridge alias should not have "."
     public static String getAliasFromClusterId(String clusterId) {
-        return clusterId.substring(0, clusterId.indexOf("."));
+        return StringUtils.substringBefore(StringUtils.substringAfter(clusterId, "."), ".");
     }
 
     public static boolean allClustersInitialized(Application application) {

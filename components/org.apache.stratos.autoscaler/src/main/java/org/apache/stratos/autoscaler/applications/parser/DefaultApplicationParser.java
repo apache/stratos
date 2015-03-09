@@ -349,7 +349,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
         Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
-	    createClusterDataMap(cartridgeContextList, clusterDataMap, clusterDataMapByType);
+	    createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType);
 
 	    for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
@@ -380,8 +380,8 @@ public class DefaultApplicationParser implements ApplicationParser {
                 clusterInfo = new STClusterInformation();
             }
 
-            String hostname = clusterInfo.getHostName(subscriptionAlias, cartridgeInfo.getHostName());
-            String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
+            String hostname = clusterInfo.getHostName(appId, subscriptionAlias, cartridgeInfo.getHostName());
+            String clusterId = clusterInfo.getClusterId(appId, subscriptionAlias, cartridgeType);
             String repoUrl = null;
             if (subscribableInfoContext.getArtifactRepositoryContext() != null) {
                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
@@ -472,9 +472,9 @@ public class DefaultApplicationParser implements ApplicationParser {
         return null;
     }
 
-    private void createClusterDataMap(List<CartridgeContext> cartridgeContextList,
-	                                  Map<String, ClusterDataHolder> clusterDataMap,
-	                                  Map<String, ClusterDataHolder> clusterDataMapByType)
+    private void createClusterDataMap(String applicationId,
+	                                  List<CartridgeContext> cartridgeContextList,
+	                                  Map<String, ClusterDataHolder> clusterDataMap, Map<String, ClusterDataHolder> clusterDataMapByType)
 			throws ApplicationDefinitionException {
 		for (CartridgeContext cartridgeContext : cartridgeContextList) {
 
@@ -498,7 +498,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 				clusterInfo = new STClusterInformation();
 			}
 
-			String clusterId = clusterInfo.getClusterId(subscriptionAlias, cartridgeType);
+			String clusterId = clusterInfo.getClusterId(applicationId, subscriptionAlias, cartridgeType);
 			// add relevant information to the map
 			ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
 			clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());

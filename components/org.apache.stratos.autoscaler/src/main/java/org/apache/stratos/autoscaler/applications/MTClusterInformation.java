@@ -22,24 +22,24 @@ package org.apache.stratos.autoscaler.applications;
 public class MTClusterInformation implements ClusterInformation {
 
     @Override
-    public String getClusterId(String alias, String cartridgeType) {
+    public String getClusterId(String applicationId, String alias, String cartridgeType) {
 
         if (!ApplicationUtils.isValid(cartridgeType)) {
             // cannot happen
             throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
         }
 
-        return alias + "."+cartridgeType + ".domain";
+        return applicationId + "." + alias + "."+cartridgeType + ".domain";
     }
 
     @Override
-    public String getHostName(String alias, String cartridgeDefinitionHostName) {
+    public String getHostName(String applicationId, String alias, String cartridgeDefinitionHostName) {
 
         if (!ApplicationUtils.isValid(cartridgeDefinitionHostName)) {
             // cannot happen
             throw new IllegalArgumentException("Invalid host name value provided: [ " + cartridgeDefinitionHostName + " ]");
         }
 
-        return cartridgeDefinitionHostName;
+        return applicationId + "." + cartridgeDefinitionHostName;
     }
 }

@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications;
 
 public interface ClusterInformation {
 
-    public String getClusterId (String alias, String cartridgeType);
+    public String getClusterId (String applicationId, String alias, String cartridgeType);
 
-    public String getHostName (String alias, String cartridgeDefinitionHostName);
+    public String getHostName (String applicationId, String alias, String cartridgeDefinitionHostName);
 }
