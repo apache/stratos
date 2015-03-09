@@ -1,4 +1,6 @@
 #!/bin/bash
+
+iaas=$1
 host_ip="localhost"
 host_port=9443
 
