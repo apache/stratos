@@ -1,4 +1,4 @@
-single_cartridge
+app-bursting-pattern
 ================
 i) In this artifact sample you can find we have listed them as mock and openstack.
 
