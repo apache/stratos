@@ -145,6 +145,7 @@ public class TopologyEventPublisher {
                 memberContext.getMemberId(),
                 memberContext.getNetworkPartitionId(),
                 memberContext.getPartition().getId(),
+                memberContext.getLoadBalancingIPType(),
                 memberContext.getInitTime());
 
         memberCreatedEvent.setProperties(CloudControllerUtil

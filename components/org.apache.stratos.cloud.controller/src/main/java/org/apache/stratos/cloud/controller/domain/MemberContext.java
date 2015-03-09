@@ -20,6 +20,7 @@ package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.domain.NameValuePair;
 
 import java.io.Serializable;
@@ -74,6 +75,7 @@ public class MemberContext implements Serializable {
     private NameValuePair[] dynamicPayload;
     private String kubernetesPodId;
     private String kubernetesPodLabel;
+    private LoadBalancingIPType loadBalancingIPType;
 
     public MemberContext(String applicationId, String cartridgeType, String clusterId, String memberId) {
 
@@ -278,6 +280,14 @@ public class MemberContext implements Serializable {
         return kubernetesPodLabel;
     }
 
+    public LoadBalancingIPType getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
+    public void setLoadBalancingIPType(LoadBalancingIPType loadBalancingIPType) {
+        this.loadBalancingIPType = loadBalancingIPType;
+    }
+
     @Override
     public String toString() {
         return "MemberContext ["
@@ -297,6 +307,7 @@ public class MemberContext implements Serializable {
                 + ", networkPartitionId=" + networkPartitionId
                 + ", kubernetesPodId=" + kubernetesPodId
                 + ", kubernetesPodLabel=" + kubernetesPodLabel
+                + ", loadBalancingIPType=" + loadBalancingIPType
                 + ", instanceMetadata=" + instanceMetadata
                 + ", properties=" + properties + "]";
     }

@@ -93,8 +93,8 @@ public class TopologyProvider {
             }
 
             if((cluster.getHostNames() != null) && (cluster.getHostNames().size() > 0)) {
-                log.info(String.format("Cluster added: [cluster] %s [hostnames] %s", cluster.getClusterId(),
-                        cluster.getHostNames()));
+                log.info(String.format("Cluster added to service: [service] %s [cluster] %s [hostnames] %s",
+                        cluster.getServiceName(), cluster.getClusterId(), cluster.getHostNames()));
             }
 
             Collection<Member> members = cluster.getMembers();

@@ -19,8 +19,10 @@
 
 package org.apache.stratos.load.balancer.common.event.receivers;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 import org.apache.stratos.messaging.domain.topology.*;
 import org.apache.stratos.messaging.event.Event;
@@ -38,6 +40,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private static final Log log = LogFactory.getLog(LoadBalancerCommonTopologyEventReceiver.class);
 
     private TopologyProvider topologyProvider;
+    private boolean initialized;
 
     public LoadBalancerCommonTopologyEventReceiver(TopologyProvider topologyProvider) {
         this.topologyProvider = topologyProvider;
@@ -51,33 +54,45 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
         }
     }
 
+    public void initializeTopology() {
+        if (initialized) {
+            return;
+        }
+
+        try {
+            boolean membersFound = false;
+            TopologyManager.acquireReadLock();
+            for (Service service : TopologyManager.getTopology().getServices()) {
+                for (Cluster cluster : service.getClusters()) {
+                    for (Member member : cluster.getMembers()) {
+                        if (member.getStatus() == MemberStatus.Active) {
+                            addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
+                            membersFound = true;
+                        }
+                    }
+                }
+            }
+            if(membersFound) {
+                initialized = true;
+            }
+        } catch (Exception e) {
+            log.error("Error processing complete topology event", e);
+        } finally {
+            TopologyManager.releaseReadLock();
+        }
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     private void addEventListeners() {
 
         addEventListener(new CompleteTopologyEventListener() {
-            private boolean initialized;
-
             @Override
             protected void onEvent(Event event) {
-                if (initialized) {
-                    return;
-                }
-
-                try {
-                    TopologyManager.acquireReadLock();
-                    for (Service service : TopologyManager.getTopology().getServices()) {
-                        for (Cluster cluster : service.getClusters()) {
-                            for (Member member : cluster.getMembers()) {
-                                if (member.getStatus() == MemberStatus.Active) {
-                                    addMember(cluster.getServiceName(), member.getClusterId(), member.getMemberId());
-                                }
-                            }
-                        }
-                    }
-                    initialized = true;
-                } catch (Exception e) {
-                    log.error("Error processing complete topology event", e);
-                } finally {
-                    TopologyManager.releaseReadLock();
+                if(!initialized) {
+                    initializeTopology();
                 }
             }
         });
@@ -252,6 +267,7 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
             return;
         }
+
         Cluster cluster = service.getCluster(clusterId);
         if (cluster == null) {
             if (log.isWarnEnabled()) {
@@ -281,7 +297,16 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
             }
             return;
         }
-        topologyProvider.addMember(transformMember(member));
+
+        org.apache.stratos.load.balancer.common.domain.Member lbMember = transformMember(member);
+        org.apache.stratos.load.balancer.common.domain.Service lbService = topologyProvider.getTopology().
+                getService(serviceName);
+        if(lbService == null) {
+            log.warn(String.format("Service not found: %s", serviceName));
+            return;
+        }
+        lbService.addPorts(lbMember.getPorts());
+        topologyProvider.addMember(lbMember);
     }
 
     /**
@@ -335,9 +360,6 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     private org.apache.stratos.load.balancer.common.domain.Service transformService(Service messagingService) {
         org.apache.stratos.load.balancer.common.domain.Service service =
                 new org.apache.stratos.load.balancer.common.domain.Service(messagingService.getServiceName());
-        for(Port port : messagingService.getPorts()) {
-            service.addPort(transformPort(port));
-        }
         return service;
     }
 
@@ -362,15 +384,31 @@ public class LoadBalancerCommonTopologyEventReceiver extends TopologyEventReceiv
     }
 
     private org.apache.stratos.load.balancer.common.domain.Member transformMember(Member messagingMember) {
-        boolean useMemberPublicIP = Boolean.getBoolean("load.balancer.member.public.ip");
-        String hostName = (useMemberPublicIP) ? messagingMember.getDefaultPublicIP() :
-                messagingMember.getDefaultPrivateIP();
+
+        String hostName;
+        if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Private) {
+            if (StringUtils.isEmpty(messagingMember.getDefaultPrivateIP())) {
+                throw new RuntimeException(String.format("Default private IP not found: [member] %s",
+                        messagingMember.getMemberId()));
+            }
+            hostName = messagingMember.getDefaultPrivateIP();
+        } else if(messagingMember.getLoadBalancingIPType() == LoadBalancingIPType.Public) {
+            if (StringUtils.isEmpty(messagingMember.getDefaultPublicIP())) {
+                throw new RuntimeException(String.format("Default public IP not found: [member] %s",
+                        messagingMember.getMemberId()));
+            }
+            hostName = messagingMember.getDefaultPublicIP();
+        } else {
+            throw new RuntimeException(String.format("Unknown load balancing IP type found: %s",
+                    messagingMember.getLoadBalancingIPType()));
+        }
+
         org.apache.stratos.load.balancer.common.domain.Member member =
                 new org.apache.stratos.load.balancer.common.domain.Member(messagingMember.getServiceName(),
-                        messagingMember.getClusterId(), messagingMember.getMemberId(),
-                        hostName);
-        if(messagingMember.getPorts() != null) {
-            for(Port port : messagingMember.getPorts()) {
+                        messagingMember.getClusterId(), messagingMember.getMemberId(), hostName);
+
+        if (messagingMember.getPorts() != null) {
+            for (Port port : messagingMember.getPorts()) {
                 member.addPort(transformPort(port));
             }
         }

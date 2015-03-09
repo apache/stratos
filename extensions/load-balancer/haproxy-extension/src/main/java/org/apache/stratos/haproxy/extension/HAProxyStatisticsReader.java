@@ -22,12 +22,12 @@ package org.apache.stratos.haproxy.extension;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.util.CommandUtils;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
+import org.apache.stratos.load.balancer.common.domain.Member;
+import org.apache.stratos.load.balancer.common.domain.Port;
+import org.apache.stratos.load.balancer.common.domain.Service;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
-import org.apache.stratos.messaging.domain.topology.Cluster;
-import org.apache.stratos.messaging.domain.topology.Member;
-import org.apache.stratos.messaging.domain.topology.Port;
-import org.apache.stratos.messaging.domain.topology.Service;
-import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.stratos.load.balancer.common.topology.TopologyProvider;
 
 import java.io.IOException;
 
@@ -35,14 +35,17 @@ import java.io.IOException;
  * HAProxy statistics reader.
  */
 public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
+
     private static final Log log = LogFactory.getLog(HAProxyStatisticsReader.class);
 
     private String scriptsPath;
     private String statsSocketFilePath;
+    private TopologyProvider topologyProvider;
 
-    public HAProxyStatisticsReader() {
+    public HAProxyStatisticsReader(TopologyProvider topologyProvider) {
         this.scriptsPath = HAProxyContext.getInstance().getScriptsPath();
         this.statsSocketFilePath = HAProxyContext.getInstance().getStatsSocketFilePath();
+        this.topologyProvider = topologyProvider;
     }
 
     @Override
@@ -51,7 +54,7 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
         String[] array;
         int totalWeight, weight;
 
-        for (Service service : TopologyManager.getTopology().getServices()) {
+        for (Service service : topologyProvider.getTopology().getServices()) {
             for (Cluster cluster : service.getClusters()) {
                 if (cluster.getClusterId().equals(clusterId)) {
                     totalWeight = 0;
@@ -63,25 +66,23 @@ public class HAProxyStatisticsReader implements LoadBalancerStatisticsReader {
                         for(String hostname : cluster.getHostNames()) {
                             backendId = hostname+"-http-members";
                             for (Member member : cluster.getMembers()) {
-                                if(member.getNetworkPartitionId().equals(HAProxyContext.getInstance().getNetworkPartitionId())) {
-                                    // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
-                                    command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
-                                    try {
-                                        output = CommandUtils.executeCommand(command);
-                                        if ((output != null) && (output.length() > 0)) {
-                                            array = output.split(" ");
-                                            if ((array != null) && (array.length > 0)) {
-                                                weight = Integer.parseInt(array[0]);
-                                                if (log.isDebugEnabled()) {
-                                                    log.debug(String.format("Member weight found: [cluster] %s [member] %s [weight] %d", member.getClusterId(), member.getMemberId(), weight));
-                                                }
-                                                totalWeight += weight;
+                                // echo "get weight <backend>/<server>" | socat stdio <stats-socket>
+                                command = String.format("%s/get-weight.sh %s %s %s", scriptsPath, backendId, member.getMemberId(), statsSocketFilePath);
+                                try {
+                                    output = CommandUtils.executeCommand(command);
+                                    if ((output != null) && (output.length() > 0)) {
+                                        array = output.split(" ");
+                                        if ((array != null) && (array.length > 0)) {
+                                            weight = Integer.parseInt(array[0]);
+                                            if (log.isDebugEnabled()) {
+                                                log.debug(String.format("Member weight found: [cluster] %s [member] %s [weight] %d", member.getClusterId(), member.getMemberId(), weight));
                                             }
+                                            totalWeight += weight;
                                         }
-                                    } catch (IOException e) {
-                                        if (log.isErrorEnabled()) {
-                                            log.error(e);
-                                        }
+                                    }
+                                } catch (IOException e) {
+                                    if (log.isErrorEnabled()) {
+                                        log.error(e);
                                     }
                                 }
                             }

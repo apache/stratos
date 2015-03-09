@@ -34,7 +34,6 @@ import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloa
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.partition.PartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
@@ -411,21 +410,6 @@ public class StratosApiV40Utils {
                     cartridge.setVersion(cartridgeInfo.getVersion());
                     cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
                     cartridge.setHost(cartridgeInfo.getHostName());
-                    cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-                    cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
-                    //cartridge.setStatus(CartridgeConstants.NOT_SUBSCRIBED);
-                    //cartridge.setCartridgeAlias("-");
-                    //cartridge.setPersistence(ObjectConverter.convertStubPersistenceToPersistence(cartridgeInfo.getPersistence()));
-                    cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
-
-                    if(cartridgeInfo.getLbConfig() != null && cartridgeInfo.getProperties() != null) {
-                        for(org.apache.stratos.cloud.controller.stub.Property property: cartridgeInfo.getProperties()) {
-                            if(property.getName().equals("load.balancer")) {
-                                //cartridge.setLoadBalancer(true);
-                            }
-                        }
-                    }
-                    //cartridge.setActiveInstances(0);
                     cartridges.add(cartridge);
 
 
@@ -438,7 +422,6 @@ public class StratosApiV40Utils {
                                 log.debug("Already subscribed to " + cartridgeType
                                         + ". This multi-tenant cartridge will not be available to createSubscription");
                             }
-                            //cartridge.setStatus(CartridgeConstants.SUBSCRIBED);
                         }
                     }
                 }

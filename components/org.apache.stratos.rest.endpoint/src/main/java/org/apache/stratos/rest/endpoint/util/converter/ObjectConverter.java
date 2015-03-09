@@ -75,13 +75,11 @@ public class ObjectConverter {
 	    cartridgeConfig.setIsPublic(cartridgeBean.isPublic());
 	    cartridgeConfig.setDisplayName(cartridgeBean.getDisplayName());
 	    cartridgeConfig.setDescription(cartridgeBean.getDescription());
-	    cartridgeConfig.setDefaultAutoscalingPolicy(cartridgeBean.getDefaultAutoscalingPolicy());
-	    cartridgeConfig.setDefaultDeploymentPolicy(cartridgeBean.getDefaultDeploymentPolicy());
-	    cartridgeConfig.setServiceGroup(cartridgeBean.getServiceGroup());
         cartridgeConfig.setTenantPartitions(cartridgeBean.getTenantPartitions());
+        cartridgeConfig.setLoadBalancingIPType(cartridgeBean.getLoadBalancingIPType());
 	    cartridgeConfig.setMetadataKeys(cartridgeBean.getMetadataKeys());
 
-        //deployment information
+        // deployment information
         if (cartridgeBean.getDeployment() != null) {
             cartridgeConfig.setBaseDir(cartridgeBean.getDeployment().getBaseDir());
             if (cartridgeBean.getDeployment().getDir() != null && !cartridgeBean.getDeployment().getDir().isEmpty()) {
@@ -89,29 +87,24 @@ public class ObjectConverter {
                         toArray(new String[cartridgeBean.getDeployment().getDir().size()]));
             }
         }
-        //port mapping
+        // port mapping
         if (cartridgeBean.getPortMapping() != null && !cartridgeBean.getPortMapping().isEmpty()) {
             cartridgeConfig.setPortMappings(convertPortMappingBeansToStubPortMappings(cartridgeBean.getPortMapping()));
         }
 
-        //persistance mapping
+        // persistence mapping
         if (cartridgeBean.getPersistence() != null) {
             cartridgeConfig.setPersistence(convertPersistenceBeanToStubPersistence(cartridgeBean.getPersistence()));
         }
 
-        //IaaS
+        // iaas providers
         if (cartridgeBean.getIaasProvider() != null && !cartridgeBean.getIaasProvider().isEmpty()) {
             cartridgeConfig.setIaasConfigs(convertIaasProviderBeansToStubIaasConfig(cartridgeBean.getIaasProvider()));
         }
-        //Properties
+
+        // properties
         if (cartridgeBean.getProperty() != null && !cartridgeBean.getProperty().isEmpty()) {
             cartridgeConfig.setProperties(convertPropertyBeansToCCStubProperties(cartridgeBean.getProperty()));
-        }
-
-        if (cartridgeBean.getExportingProperties() != null) {
-            List<String> propertiesList = cartridgeBean.getExportingProperties();
-            String[] propertiesArray = propertiesList.toArray(new String[propertiesList.size()]);
-            cartridgeConfig.setExportingProperties(propertiesArray);
         }
         return cartridgeConfig;
     }
@@ -302,7 +295,7 @@ public class ObjectConverter {
 		        org.apache.stratos.cloud.controller.stub.domain.PartitionRef();
 
         stubPartition.setId(partition.getId());
-        stubPartition.setMax(partition.getMax());
+        stubPartition.setMax(partition.getPartitionMax());
 
         return stubPartition;
     }
@@ -358,9 +351,9 @@ public class ObjectConverter {
 
 		deploymentPolicy.setDeploymentPolicyID(deploymentPolicyBean.getId());
 
-		if (deploymentPolicyBean.getNetworkPartition()!= null) {
+		if (deploymentPolicyBean.getNetworkPartitions()!= null) {
 			deploymentPolicy.setNetworkPartitionsRef(convertNetworkPartitionRefToStubNetworkPartitionRef(
-					deploymentPolicyBean.getNetworkPartition()));
+					deploymentPolicyBean.getNetworkPartitions()));
 		}
 
 		return deploymentPolicy;
@@ -434,7 +427,6 @@ public class ObjectConverter {
 		partition.setId(partitionBean.getId());
 		partition.setDescription(partitionBean.getDescription());
 		partition.setIsPublic(partitionBean.isPublic());
-		partition.setProvider(partitionBean.getProvider());
 
 		if (partitionBean.getProperty() != null
 				&& !partitionBean.getProperty().isEmpty()) {
@@ -521,7 +513,6 @@ public class ObjectConverter {
         partition.setId(stubPartition.getId());
         partition.setPublic(stubPartition.getIsPublic());
         partition.setDescription(stubPartition.getDescription());
-        partition.setProvider(stubPartition.getProvider());
         partition.setKubernetesClusterId(stubPartition.getKubernetesClusterId());
         if(stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
@@ -551,6 +542,7 @@ public class ObjectConverter {
 
         org.apache.stratos.cloud.controller.stub.domain.NetworkPartition networkPartition = new org.apache.stratos.cloud.controller.stub.domain.NetworkPartition();
         networkPartition.setId(networkPartitionBean.getId());
+        networkPartition.setProvider(networkPartitionBean.getProvider());
         if (networkPartitionBean.getPartitions() != null && !networkPartitionBean.getPartitions().isEmpty()) {
             networkPartition.setPartitions(convertPartitionToCCPartitionPojos(networkPartitionBean.getPartitions()));
         }
@@ -753,7 +745,7 @@ public class ObjectConverter {
 		for (int i = 0; i < partitionRefs.length; i++) {
 			PartitionRefBean partitionRefBean = new PartitionRefBean();
 			partitionRefBean.setId(partitionRefs[i].getId());
-			partitionRefBean.setMax(partitionRefs[i].getMax());
+			partitionRefBean.setPartitionMax(partitionRefs[i].getMax());
 			partitionRefBeans.add(partitionRefBean);
 		}
 		
@@ -787,7 +779,6 @@ public class ObjectConverter {
         partitionBeans.setId(partition.getId());
         partitionBeans.setDescription(partition.getDescription());
         partitionBeans.setPublic(partition.getIsPublic());
-        partitionBeans.setProvider(partition.getProvider());
         /*partitionBeans.partitionMin = partition.getPartitionMin();
         partitionBeans.partitionMax = partition.getPartitionMax();*/
         //properties
@@ -1740,7 +1731,7 @@ public class ObjectConverter {
 	public static DeploymentPolicyBean convetCCStubDeploymentPolicytoDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
 		DeploymentPolicyBean deploymentPolicyBean = new DeploymentPolicyBean();
 		deploymentPolicyBean.setId(deploymentPolicy.getDeploymentPolicyID());
-		deploymentPolicyBean.setNetworkPartition(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
+		deploymentPolicyBean.setNetworkPartitions(convertCCStubNetwotkPartitionRefsToNetworkPartitionRefs(deploymentPolicy.getNetworkPartitionsRef()));
 		return deploymentPolicyBean;
 	}
 	

@@ -60,8 +60,8 @@ RESTCalls = new function(){
         return this.send("POST","/tenant/availability/" + tenantDomain,{});
     };
 
-    this.deployApplicationDeployment = function(applicationID, policyDefinition){
-        return this.send("POST","/applications/"+applicationID+"/deploy",policyDefinition);
+    this.deployApplicationDeployment = function(applicationID, applicationPolicyId){
+        return this.send("POST","/applications/"+applicationID+"/deploy/"+applicationPolicyId,{});
     };
 
     this.deployDeploymentPolicyDefinition = function(policyDefinition){
@@ -72,11 +72,11 @@ RESTCalls = new function(){
         return this.send("POST","/autoscalingPolicies",policyDefinition);
     };
 
-    this.deleteAutoscalePolicyDefinition = function(deploymentPolicyId){
+    this.deleteDeploymentPolicyDefinition = function(deploymentPolicyId){
         return this.send("DELETE","/deploymentPolicies/" + deploymentPolicyId,{});
     };
 
-    this.deleteDeploymentPolicyDefinition = function(autoscalePolicyId){
+    this.deleteAutoscalePolicyDefinition = function(autoscalePolicyId){
         return this.send("DELETE","/autoscalingPolicies/" + autoscalePolicyId,{});
     };
 
@@ -96,8 +96,16 @@ RESTCalls = new function(){
         return this.send("POST","/applications", applicationDefinition);
     };
 
+    this.deployApplicationPolicyDefinition = function(applicationPolicyDefinition){
+        return this.send("POST","/applicationPolicies", applicationPolicyDefinition);
+    };
+
     this.deleteApplication = function(applicationId){
         return this.send("DELETE","/applications/" + applicationId,{});
+    };
+
+    this.deleteApplicationPolicyDefinition = function(applicationPolicyId){
+        return this.send("DELETE","/applicationPolicies/" + applicationPolicyId,{});
     };
 
     this.undeployApplication = function(applicationId){
@@ -165,6 +173,14 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/autoscalingPolicies",{});
     };
 
+    this.getPolicyApplication = function(applicationPolicyId){
+        return this.sendReceive("GET","/applicationPolicies/"+applicationPolicyId,{});
+    };
+
+    this.getPolicyCartridgeGroup = function(cartridgeGroupId){
+        return this.sendReceive("GET","/cartridgeGroups/"+cartridgeGroupId,{});
+    };
+
     this.getPolicyAutoScale = function(autoscalePolicyId){
         return this.sendReceive("GET","/autoscalingPolicies/"+autoscalePolicyId,{});
     };
@@ -194,12 +210,20 @@ RESTCalls = new function(){
         return this.sendReceive("GET","/applications",{});
     };
 
+    this.getApplicationPolicies = function(){
+        return this.sendReceive("GET","/applicationPolicies",{});
+    };
+
     this.getApplicationTopology = function(appId){
         return this.sendReceive("GET","/applications/" + appId + '/runtime',{});
     };
 
     this.getApplicationJSON = function(appId){
         return this.sendReceive("GET","/applications/"+appId ,{});
+    };
+
+    this.getApplicationPartitions = function(appId){
+        return this.sendReceive("GET","/applications/"+appId + "/networkPartitions" ,{});
     };
 
     this.getClusterInfo = function(clusterId){

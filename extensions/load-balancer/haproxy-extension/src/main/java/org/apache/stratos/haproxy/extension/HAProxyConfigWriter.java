@@ -45,18 +45,6 @@ public class HAProxyConfigWriter {
     private String confFilePath;
     private String statsSocketFilePath;
 
-    // Prepare frontend http collection
-    private StringBuilder frontEndHttp = new StringBuilder();
-    // Prepare frontend https collection
-    private StringBuilder frontEndHttps = new StringBuilder();
-    // Prepare backend http collection
-    private StringBuilder backEndHttp = new StringBuilder();
-    // Prepare backend https collection
-    private StringBuilder backEndHttps = new StringBuilder();
-
-    private String frontEndHttpId, frontEndHttpsId;
-    private boolean frontEndHttpAdded, frontEndHttpsAdded;
-
     public HAProxyConfigWriter(String templatePath, String templateName, String confFilePath,
                                String statsSocketFilePath) {
 
@@ -66,20 +54,18 @@ public class HAProxyConfigWriter {
         this.statsSocketFilePath = statsSocketFilePath;
     }
 
-    public void write(Topology topology) {
+    public boolean write(Topology topology) {
         // Prepare global parameters
         StringBuilder globalParameters = new StringBuilder();
         globalParameters.append("stats socket ");
         globalParameters.append(statsSocketFilePath);
 
-        frontEndHttpId = "http_frontend";
-        frontEndHttpsId = "https_frontend";
-        frontEndHttpAdded = false;
-        frontEndHttpsAdded = false;
+        StringBuilder frontendCollection = new StringBuilder();
+        StringBuilder backendCollection = new StringBuilder();
 
         for (Service service : topology.getServices()) {
             for (Cluster cluster : service.getClusters()) {
-                createConfig(service, cluster);
+                createConfig(service, cluster, frontendCollection, backendCollection);
             }
         }
 
@@ -94,10 +80,8 @@ public class HAProxyConfigWriter {
         // Insert strings into the template
         VelocityContext context = new VelocityContext();
         context.put("global_parameters", globalParameters.toString());
-        context.put("frontend_http_collection", frontEndHttp.toString());
-        context.put("frontend_https_collection", frontEndHttps.toString());
-        context.put("backend_http_collection", backEndHttp.toString());
-        context.put("backend_https_collection", backEndHttps.toString());
+        context.put("frontend_collection", frontendCollection.toString());
+        context.put("backend_collection", backendCollection.toString());
 
         // Create a new string from the template
         StringWriter stringWriter = new StringWriter();
@@ -113,6 +97,7 @@ public class HAProxyConfigWriter {
             if (log.isInfoEnabled()) {
                 log.info(String.format("Configuration written to file: %s", confFilePath));
             }
+            return true;
         } catch (IOException e) {
             if (log.isErrorEnabled()) {
                 log.error(String.format("Could not write configuration file: %s", confFilePath));
@@ -121,60 +106,41 @@ public class HAProxyConfigWriter {
         }
     }
 
-    private void createConfig(Service service, Cluster cluster) {
+    private void createConfig(Service service, Cluster cluster, StringBuilder frontendCollection,
+                              StringBuilder backendCollection) {
+
         if ((service.getPorts() == null) || (service.getPorts().size() == 0)) {
             throw new RuntimeException(String.format("No ports found in service: %s", service.getServiceName()));
         }
 
         for (Port port : service.getPorts()) {
-            if (port.getProtocol().equals("http")) {
-                if (!frontEndHttpAdded) {
-                    frontEndHttp.append("frontend ").append(frontEndHttpId).append(NEW_LINE);
-                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp())
-                            .append(":").append(port.getProxy()).append(NEW_LINE);
-                    frontEndHttp.append("\tmode ").append(port.getProtocol()).append(NEW_LINE);
-                    frontEndHttpAdded = true;
-                }
+            // Frontend block start
+            String protocol = port.getProtocol();
+            String frontendId = protocol + "_" + port.getValue() + "_frontend";
 
-                for (String hostname : cluster.getHostNames()) {
-                    frontEndHttp.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ")
-                            .append(hostname).append(NEW_LINE);
-                    frontEndHttp.append("\tuse_backend ").append(hostname).append("-http-members if is_")
-                            .append(hostname).append(NEW_LINE);
+            frontendCollection.append("frontend ").append(frontendId).append(NEW_LINE);
+            frontendCollection.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp())
+                    .append(":").append(port.getProxy()).append(NEW_LINE);
+            frontendCollection.append("\tmode ").append(protocol).append(NEW_LINE);
 
-                    // Backend block
-                    backEndHttp.append("backend ").append(hostname).append("-http-members").append(NEW_LINE);
-                    backEndHttp.append("\tmode ").append("http").append(NEW_LINE);
-                    for (Member member : cluster.getMembers()) {
-                        backEndHttp.append("\tserver ").append(member.getMemberId()).append(" ")
-                                .append(member.getHostName()).append(":").append(port.getValue()).append(NEW_LINE);
-                    }
-                    backEndHttp.append(NEW_LINE);
-                }
-            } else if (port.getProtocol().equals("https")) {
-                if (!frontEndHttpsAdded) {
-                    frontEndHttp.append("frontend ").append(frontEndHttpsId).append(NEW_LINE);
-                    frontEndHttp.append("\tbind ").append(HAProxyContext.getInstance().getHAProxyPrivateIp())
-                            .append(":").append(port.getProxy()).append(NEW_LINE);
-                    frontEndHttp.append("\tmode ").append("http").append(NEW_LINE);
-                    frontEndHttpsAdded = true;
-                }
+            for (String hostname : cluster.getHostNames()) {
+                String backendId = hostname + "_" + protocol + "_" + port.getValue() + "_backend";
 
-                for (String hostname : cluster.getHostNames()) {
-                    frontEndHttps.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ")
-                            .append(hostname).append(NEW_LINE);
-                    frontEndHttps.append("\tuse_backend ").append(hostname).append("-https-members if is_")
-                            .append(hostname).append(NEW_LINE);
+                frontendCollection.append("\tacl ").append("is_").append(hostname).append(" hdr_beg(host) -i ")
+                        .append(hostname).append(NEW_LINE);
+                frontendCollection.append("\tuse_backend ").append(backendId).append(" if is_")
+                        .append(hostname).append(NEW_LINE);
+                // Front end block end
 
-                    // Backend block
-                    backEndHttps.append("backend ").append(hostname).append("-http-members").append(NEW_LINE);
-                    backEndHttps.append("\tmode ").append("https").append(NEW_LINE);
-                    for (Member member : cluster.getMembers()) {
-                        backEndHttps.append("\tserver ").append(member.getMemberId()).append(" ")
-                                .append(member.getHostName()).append(":").append(port.getValue()).append(NEW_LINE);
-                    }
-                    backEndHttps.append(NEW_LINE);
+                // Backend block start
+                backendCollection.append("backend ").append(backendId).append(NEW_LINE);
+                backendCollection.append("\tmode ").append(protocol).append(NEW_LINE);
+                for (Member member : cluster.getMembers()) {
+                    backendCollection.append("\tserver ").append(member.getMemberId()).append(" ")
+                            .append(member.getHostName()).append(":").append(port.getValue()).append(NEW_LINE);
                 }
+                backendCollection.append(NEW_LINE);
+                // Backend block end
             }
         }
     }

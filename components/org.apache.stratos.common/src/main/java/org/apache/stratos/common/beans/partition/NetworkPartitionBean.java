@@ -26,6 +26,7 @@ import java.util.List;
 public class NetworkPartitionBean {
 
     private String id;
+    private String provider;
     private List<PartitionBean> partitions;
 
     public String getId() {
@@ -43,4 +44,12 @@ public class NetworkPartitionBean {
     public void setPartitions(List<PartitionBean> partitions) {
         this.partitions = partitions;
     }
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
 }

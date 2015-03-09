@@ -89,12 +89,16 @@ public class Service {
 
     public void addPorts(Collection<Port> ports) {
         for(Port port : ports) {
-            addPort(port);
+            if(!portExists(port)) {
+                addPort(port);
+            }
         }
     }
 
     public void removePort(Port port) {
-        this.portMap.remove(port.getProxy());
+        if(portExists(port)) {
+            this.portMap.remove(port.getProxy());
+        }
     }
 
     public boolean portExists(Port port) {

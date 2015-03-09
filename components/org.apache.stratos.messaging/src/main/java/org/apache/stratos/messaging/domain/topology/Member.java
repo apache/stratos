@@ -19,6 +19,7 @@
 
 package org.apache.stratos.messaging.domain.topology;
 
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateManager;
 import org.apache.stratos.messaging.adapters.MapAdapter;
 import org.apache.stratos.messaging.domain.topology.lifecycle.LifeCycleStateTransitionBehavior;
@@ -58,9 +59,11 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
     private String lbClusterId;
     // instance id to use if snapshot wise group scaling is enabled
     private LifeCycleStateManager<MemberStatus> memberStateManager;
+    private LoadBalancingIPType loadBalancingIPType;
 
     public Member(String serviceName, String clusterId, String memberId, String clusterInstanceId,
-                  String networkPartitionId, String partitionId, long initTime) {
+                  String networkPartitionId, String partitionId, LoadBalancingIPType loadBalancingIPType,
+                  long initTime) {
         this.serviceName = serviceName;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
@@ -68,6 +71,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         this.partitionId = partitionId;
         this.memberId = memberId;
         this.portMap = new HashMap<Integer, Port>();
+        this.loadBalancingIPType = loadBalancingIPType;
         this.initTime = initTime;
         this.memberStateManager = new LifeCycleStateManager<MemberStatus>(MemberStatus.Created, memberId);
     }
@@ -201,6 +205,10 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
         return clusterInstanceId;
     }
 
+    public LoadBalancingIPType getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
     @Override
     public String toString() {
         return "Member [serviceName=" + getServiceName()
@@ -217,6 +225,7 @@ public class Member implements Serializable, LifeCycleStateTransitionBehavior<Me
                 + ", defaultPrivateIP=" + getDefaultPrivateIP()
                 + ", memberPrivateIPs=" + ((memberPrivateIPs != null) ? memberPrivateIPs.toString() : "")
                 + ", lbClusterId=" + getLbClusterId()
+                + ", loadBalancingIPType=" + getLoadBalancingIPType()
                 + ", properties=" + getProperties() + "]";
     }
 }

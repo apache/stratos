@@ -58,6 +58,7 @@ import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
+import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Applications;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
@@ -597,6 +598,25 @@ public class AutoscalerUtil {
 			throw new InvalidApplicationPolicyException(msg);
 		}
     	
+    	// network partition algorithm can't null or empty
+    	String algorithm = applicationPolicy.getAlgorithm();
+		if (algorithm == null || StringUtils.isBlank(algorithm)) {
+			String msg = "Invalid Application Policy. Cause -> Network partition algorithm is null or empty";
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
+    	// network partition algorithm should be either one-after-another or all-at-once
+    	if (!algorithm.equals(StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID) 
+    			&& !algorithm.equals(StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID)) {
+			String msg = String.format("Invalid Application Policy. Cause -> Invalid network partition algorithm. "
+					+ "It should be either %s or %s, but found %s", 
+					StratosConstants.NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID, 
+					StratosConstants.NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID, algorithm);
+			log.error(msg);
+			throw new InvalidApplicationPolicyException(msg);
+		}
+    	
     	// application policy should contain at least one network partition reference
     	String[] networkPartitionIds = applicationPolicy.getNetworkPartitions();
 		if (null == networkPartitionIds || networkPartitionIds.length == 0) {
@@ -605,10 +625,6 @@ public class AutoscalerUtil {
 			log.error(msg);
 			throw new InvalidApplicationPolicyException(msg);
 		}
-    	
-    	// to count the number of network partitions which are active by default
-    	// if the count is 0, we should raise the error
-//    	int activeByDefaultNetworkPartitionsCount = 0;
     	
     	// validating all network partition references
     	for (String networkPartitionId : networkPartitionIds) {
@@ -629,18 +645,7 @@ public class AutoscalerUtil {
 				throw new InvalidApplicationPolicyException(msg);
 			}
 			
-//			// counting number of network partitions which are active by default
-//			if (true == applicationPolicyNetworkPartitionReference.isActiveByDefault()) {
-//				activeByDefaultNetworkPartitionsCount++;
-//			}
 		}
-    	
-    	// there should be at least one network partition reference which is active by default
-//    	if (activeByDefaultNetworkPartitionsCount == 0) {
-//			String msg = "Invalid Application Policy. Cause -> No active by default network partitions found";
-//			log.error(msg);
-//			throw new InvalidApplicationPolicyException(msg);
-//		}
     }
 	
 	

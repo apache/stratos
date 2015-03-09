@@ -417,42 +417,6 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
     }
 
     /**
-     * Get members private or public ip according to load balancer configuration.
-     *
-     * @param synCtx
-     * @param member
-     * @return
-     */
-//    private String getMemberIp(MessageContext synCtx, Member member) {
-//        if (LoadBalancerConfiguration.getInstance().isTopologyEventListenerEnabled()) {
-//            if (LoadBalancerConfiguration.getInstance().getTopologyMemberIpType() == MemberIpType.Public) {
-//                // Return member's public IP address
-//                if (StringUtils.isBlank(member.getDefaultPublicIP())) {
-//                    if (log.isErrorEnabled()) {
-//                        log.error(String.format("Member public IP address not found: [member] %s", member.getMemberId()));
-//                    }
-//                    throwSynapseException(synCtx, 500, "Internal server error");
-//                }
-//                if (log.isDebugEnabled()) {
-//                    log.debug(String.format("Using member public IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPublicIP()));
-//                }
-//                return member.getDefaultPublicIP();
-//            }
-//        }
-//        // Return member's private IP address
-//        if (StringUtils.isBlank(member.getDefaultPrivateIP())) {
-//            if (log.isErrorEnabled()) {
-//                log.error(String.format("Member IP address not found: [member] %s", member.getMemberId()));
-//            }
-//            throwSynapseException(synCtx, 500, "Internal server error");
-//        }
-//        if (log.isDebugEnabled()) {
-//            log.debug(String.format("Using member IP address: [member] %s [ip] %s", member.getMemberId(), member.getDefaultPrivateIP()));
-//        }
-//        return member.getDefaultPrivateIP();
-//    }
-
-    /**
      * Extract incoming request URL from message context.
      *
      * @param synCtx
@@ -509,6 +473,11 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         return tenantId;
     }
 
+    /**
+     * Check tenant exists.
+     * @param tenantId
+     * @return
+     */
     private boolean tenantExists(int tenantId) {
         try {
             TenantManager.acquireReadLock();
@@ -518,6 +487,11 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
     }
 
+    /**
+     * Find tenant id from tenant domain.
+     * @param tenantDomain
+     * @return
+     */
     private int findTenantIdFromTenantDomain(String tenantDomain) {
         try {
             TenantManager.acquireReadLock();
@@ -531,10 +505,13 @@ public class TenantAwareLoadBalanceEndpoint extends org.apache.synapse.endpoints
         }
     }
 
+    /**
+     * Extract target host from incoming request.
+     * @param synCtx
+     * @return
+     */
     private String extractTargetHost(MessageContext synCtx) {
-        org.apache.axis2.context.MessageContext msgCtx =
-                ((Axis2MessageContext) synCtx).getAxis2MessageContext();
-
+        org.apache.axis2.context.MessageContext msgCtx = ((Axis2MessageContext) synCtx).getAxis2MessageContext();
         Map headerMap = (Map) msgCtx.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS);
         String hostName = null;
         if (headerMap != null) {

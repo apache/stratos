@@ -71,11 +71,11 @@ public class PolicyManager {
         if (log.isInfoEnabled()) {
             log.info(String.format("Adding autoscaling policy: [id] %s", policy.getId()));
         }
-        if(StringUtils.isEmpty(policy.getId())){
+        if (StringUtils.isEmpty(policy.getId())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
-        this.addASPolicyToInformationModel(policy);
         RegistryManager.getInstance().persistAutoscalerPolicy(policy);
+        this.addASPolicyToInformationModel(policy);
         if (log.isInfoEnabled()) {
             log.info(String.format("Autoscaling policy is added successfully: [id] %s", policy.getId()));
         }

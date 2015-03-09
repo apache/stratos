@@ -497,6 +497,14 @@ var cartridgeBlockTemplate = {
                     "enum": [],
                     "required":false
                 },
+                "deploymentPolicy": {
+                    "type":"string",
+                        "id": "root/subscribableInfo/deploymentPolicy",
+                        "default": "deployment_policy_1",
+                        "title":"Deployment Policy: ",
+                        "enum": [],
+                        "required":false
+                },
                 "artifactRepository": {
                     "id": "root/subscribableInfo/artifactRepository",
                     "type": "object",
@@ -536,6 +544,7 @@ var cartridgeBlockDefault = {
     "subscribableInfo":{
         "alias":"alias2",
         "autoscalingPolicy":"",
+        "deploymentPolicy":"",
         "artifactRepository":{
             "privateRepo":"true",
             "repoUrl":"http://xxx:10080/git/default.git",
@@ -741,9 +750,17 @@ $(document).ready(function(){
             for(var i=0; i<policies.length; i++){
                 policiesEnum.push(policies[i].id);
             }
-
             cartridgeBlockTemplate['properties']['subscribableInfo']['properties']['autoscalingPolicy']['enum']
                 =policiesEnum;
+            //get list of deploymentpolicies
+            var dpolicies = editorDeploymentPolicies;
+            var dpoliciesEnum = [];
+            for(var i=0; i<dpolicies.length; i++){
+                dpoliciesEnum.push(dpolicies[i].id);
+            }
+            cartridgeBlockTemplate['properties']['subscribableInfo']['properties']['deploymentPolicy']['enum']
+                =dpoliciesEnum;
+
         }else{
             startval = groupBlockDefault;
             startval['name'] = ctype;

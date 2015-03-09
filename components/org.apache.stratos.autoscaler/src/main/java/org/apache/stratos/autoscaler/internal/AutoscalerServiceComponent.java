@@ -37,7 +37,6 @@ import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessor
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.osgi.service.component.ComponentContext;
@@ -50,7 +49,6 @@ import com.hazelcast.core.HazelcastInstance;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 /**

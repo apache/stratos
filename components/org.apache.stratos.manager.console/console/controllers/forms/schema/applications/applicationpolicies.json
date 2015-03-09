@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "root",
+    "type": "object",
+    "title": "Application Policy Definition",
+    "name": "Application Policy",
+    "options": {
+        "disable_properties": true,
+        "disable_collapse": true
+    },
+    "properties": {
+        "id": {
+            "id": "root/id",
+            "type": "string"
+        },
+        "algorithm": {
+            "id": "root/algorithm",
+            "type": "string"
+        },
+        "networkPartitions": {
+            "id": "root/networkPartitions",
+            "type": "array",
+            "items": {
+                "id": "root/networkPartitions/0",
+                "type": "string"
+            }
+        },
+        "properties": {
+            "id": "root/properties",
+            "type": "array",
+            "items": [
+                {
+                    "id": "root/properties/0",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "id": "root/properties/0/name",
+                            "type": "string"
+                        },
+                        "value": {
+                            "id": "root/properties/0/value",
+                            "type": "string"
+                        }
+                    }
+                },
+                {
+                    "id": "root/properties/1",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "id": "root/properties/1/name",
+                            "type": "string"
+                        },
+                        "value": {
+                            "id": "root/properties/1/value",
+                            "type": "string"
+                        }
+                    }
+                }
+            ]
+        }
+    },
+    "required": [
+        "id",
+        "algorithm",
+        "networkPartitions",
+        "properties"
+    ]
+}

@@ -1,13 +1,13 @@
 {
    "id": "deployment-policy-4",
-   "networkPartition": [
+   "networkPartitions": [
       {
          "id": "network-partition-1",
          "partitionAlgo": "one-after-another",
          "partitions": [
             {
                "id": "partition-1",
-               "max": 20
+               "partitionMax": 20
             }
          ]
       },
@@ -17,11 +17,11 @@
          "partitions": [
             {
                "id": "network-partition-2-partition-1",
-               "max": 20
+               "partitionMax": 20
             },
             {
                "id": "network-partition-2-partition-2",
-               "max": 20
+               "partitionMax": 20
             }
          ]
       }

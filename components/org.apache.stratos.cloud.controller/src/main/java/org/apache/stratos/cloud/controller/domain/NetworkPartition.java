@@ -30,6 +30,7 @@ public class NetworkPartition implements Serializable {
     private static final long serialVersionUID = -8043298009352097370L;
 
     private String id;
+    private String provider;
     private boolean activeByDefault;
     private Partition[] partitions;
 
@@ -81,4 +82,12 @@ public class NetworkPartition implements Serializable {
         }
         return null;
     }
+
+	public String getProvider() {
+		return provider;
+	}
+
+	public void setProvider(String provider) {
+		this.provider = provider;
+	}
 }

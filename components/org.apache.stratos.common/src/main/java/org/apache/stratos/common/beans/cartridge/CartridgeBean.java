@@ -22,17 +22,17 @@ package org.apache.stratos.common.beans.cartridge;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement(name = "cartridgeDefinitionBean")
+@XmlRootElement(name = "cartridgeBean")
 public class CartridgeBean {
 
 	private String type;
-	private String host;
 	private String provider;
     /**
-     * Category: Application|Framework|Data|LoadBalancer
+     * Category: framework|data|load-balancer
      */
     private String category;
-	private String displayName;
+    private String host;
+    private String displayName;
 	private String description;
 	private String version;
 	private boolean multiTenant;
@@ -40,26 +40,16 @@ public class CartridgeBean {
     private DeploymentBean deployment;
     private List<PortMappingBean> portMapping;
     private String tenantPartitions;
-    private PersistenceBean persistence;
     private List<IaasProviderBean> iaasProvider;
-    private String defaultAutoscalingPolicy;
-    private String defaultDeploymentPolicy;
-    private String serviceGroup;
+    private PersistenceBean persistence;
+    /**
+     * Load balancing ip type: public|private
+     */
+    private String loadBalancingIPType;
+    private String[] metadataKeys;
     private List<PropertyBean> property;
-    private List<String> exportingProperties;
-	private String[] metadataKeys;
-
-    public String toString () {
-
-        return "Type: " + getType() + ", Provider: " + getProvider() + ", Category: " + getCategory() + ", Host: " + getHost() + ", Display Name: " + getDisplayName() +
-                ", Description: " + getDescription() +  ", Version: " + getVersion() + ", Multitenant " + isMultiTenant() +", Public " + isPublic() + "\n" +
-                getDeploymentDetails() + "\n PortMapping: " + getPortMappings() + "\n IaaS: " + getIaasProviders() +
-                "\n Properties: " + getProperties() +"\n VolumeBean mappings "+ (getPersistence() == null ? "" : getPersistence().toString())
-                + "\n Exports " + (getExportingProperties() == null ? "" : getExportingProperties().toString()) ;
-    }
 
 	private String getDeploymentDetails () {
-
         if(getDeployment() != null) {
             return getDeployment().toString();
         }
@@ -67,7 +57,6 @@ public class CartridgeBean {
     }
 
     private String getPortMappings () {
-
         StringBuilder portMappingBuilder = new StringBuilder();
         if(getPortMapping() != null && !getPortMapping().isEmpty()) {
             for(PortMappingBean portMappingBean : getPortMapping()) {
@@ -98,15 +87,6 @@ public class CartridgeBean {
         }
         return propertyBuilder.toString();
     }
-
-    public List<String> getExportingProperties() {
-        return exportingProperties;
-    }
-
-    public void setExportingProperties(List<String> exportingProperties) {
-        this.exportingProperties = exportingProperties;
-    }
-
 
     public String getType() {
         return type;
@@ -220,36 +200,20 @@ public class CartridgeBean {
         this.property = property;
     }
 
-    public String getDefaultAutoscalingPolicy() {
-        return defaultAutoscalingPolicy;
-    }
-
-    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
-        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
-    }
-
-    public String getDefaultDeploymentPolicy() {
-        return defaultDeploymentPolicy;
-    }
-
-    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
-        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
-    }
-
-    public String getServiceGroup() {
-        return serviceGroup;
-    }
-
-    public void setServiceGroup(String serviceGroup) {
-        this.serviceGroup = serviceGroup;
-    }
-
     public String getTenantPartitions() {
         return tenantPartitions;
     }
 
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
+    }
+
+    public String getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
+    public void setLoadBalancingIPType(String loadBalancingIPType) {
+        this.loadBalancingIPType = loadBalancingIPType;
     }
 
 	public String[] getMetadataKeys() {
@@ -259,4 +223,25 @@ public class CartridgeBean {
 	public void setMetadataKeys(String[] metadataKeys) {
 		this.metadataKeys = metadataKeys;
 	}
+
+    public String toString () {
+
+        return "Type: " + getType() +
+                ", Provider: " + getProvider() +
+                ", Category: " + getCategory() +
+                ", Host: " + getHost() +
+                ", Display Name: " + getDisplayName() +
+                ", Description: " + getDescription() +
+                ", Version: " + getVersion() +
+                ", Multi-Tenant " + isMultiTenant() +
+                ", Public " + isPublic() +
+                ", Deployment" + getDeploymentDetails() +
+                ", Port Mapping: " + getPortMappings() +
+                ", Tenant Partitions: " +  getTenantPartitions() +
+                ", IaaS Providers: " + getIaasProviders() +
+                ", Persistence "+ (getPersistence() == null ? "" : getPersistence().toString()) +
+                ", Load Balancing IP Type: " + getLoadBalancingIPType() +
+                ", Metadata Keys: " + getMetadataKeys() +
+                ", Properties: " + getProperties();
+    }
 }

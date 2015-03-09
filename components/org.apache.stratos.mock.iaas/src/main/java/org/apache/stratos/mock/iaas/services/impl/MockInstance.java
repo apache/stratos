@@ -35,6 +35,7 @@ import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceN
 import java.io.Serializable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -51,6 +52,8 @@ public class MockInstance implements Runnable, Serializable {
 
     private final MockInstanceContext mockMemberContext;
     private boolean terminated;
+    private ScheduledFuture<?> healthStatNotifierScheduledFuture;
+    private InstanceNotifierEventReceiver instanceNotifierEventReceiver;
 
     public MockInstance(MockInstanceContext mockMemberContext) {
         this.mockMemberContext = mockMemberContext;
@@ -74,6 +77,9 @@ public class MockInstance implements Runnable, Serializable {
         while (!terminated) {
             sleep(1000);
         }
+        
+        stopInstanceNotifierReceiver();
+        stopHealthStatisticsPublisher();
 
         if (log.isInfoEnabled()) {
             log.info(String.format("Mock member terminated: [member-id] %s", mockMemberContext.getMemberId()));
@@ -85,7 +91,7 @@ public class MockInstance implements Runnable, Serializable {
             log.debug("Starting instance notifier event message receiver");
         }
 
-        final InstanceNotifierEventReceiver instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
+        instanceNotifierEventReceiver = new InstanceNotifierEventReceiver();
         instanceNotifierEventReceiver.addEventListener(new InstanceCleanupClusterEventListener() {
             @Override
             protected void onEvent(Event event) {
@@ -131,11 +137,23 @@ public class MockInstance implements Runnable, Serializable {
             log.debug(String.format("Starting health statistics notifier: [member-id] %s", mockMemberContext.getMemberId()));
         }
 
-        healthStatNotifierExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
+        healthStatNotifierScheduledFuture = healthStatNotifierExecutorService.scheduleAtFixedRate(new MockHealthStatisticsNotifier(mockMemberContext),
                 0, HEALTH_STAT_INTERVAL, TimeUnit.SECONDS);
 
         if (log.isDebugEnabled()) {
             log.debug(String.format("Health statistics notifier started: [member-id] %s", mockMemberContext.getMemberId()));
+        }
+    }
+
+    private void stopHealthStatisticsPublisher() {
+        if(healthStatNotifierScheduledFuture != null) {
+            healthStatNotifierScheduledFuture.cancel(true);
+        }
+	}
+    
+    private void stopInstanceNotifierReceiver() {
+        if(instanceNotifierEventReceiver != null) {
+            instanceNotifierEventReceiver.terminate();
         }
     }
 

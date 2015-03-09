@@ -21,11 +21,10 @@ package org.apache.stratos.cloud.controller.messaging.topology;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.exception.InvalidCartridgeTypeException;
 import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
-import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
+import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
@@ -402,7 +401,7 @@ public class TopologyBuilder {
 		try {
 			TopologyManager.acquireWriteLock();
 			Member member = new Member(service.getServiceName(), clusterId, memberId, clusterInstanceId,
-					networkPartitionId, partitionId, initTime);
+					networkPartitionId, partitionId, memberContext.getLoadBalancingIPType(), initTime);
 			member.setStatus(MemberStatus.Created);
 			member.setLbClusterId(lbClusterId);
 			member.setProperties(CloudControllerUtil.toJavaUtilProperties(memberContext.getProperties()));
@@ -468,7 +467,7 @@ public class TopologyBuilder {
 
                 TopologyEventPublisher.sendMemberInitializedEvent(memberContext);
                 //publishing data
-                StatisticsDataPublisher.publish(memberContext.getMemberId(),
+                BAMUsageDataPublisher.publish(memberContext.getMemberId(),
                         memberContext.getPartition().getId(),
                         memberContext.getNetworkPartitionId(),
                         memberContext.getClusterId(),
@@ -531,7 +530,7 @@ public class TopologyBuilder {
                     //memberStartedEvent.
                     TopologyEventPublisher.sendMemberStartedEvent(instanceStartedEvent);
                     //publishing data
-                    StatisticsDataPublisher.publish(instanceStartedEvent.getMemberId(),
+                    BAMUsageDataPublisher.publish(instanceStartedEvent.getMemberId(),
                             instanceStartedEvent.getPartitionId(),
                             instanceStartedEvent.getNetworkPartitionId(),
                             instanceStartedEvent.getClusterId(),
@@ -634,7 +633,7 @@ public class TopologyBuilder {
                 TopologyEventPublisher.sendMemberActivatedEvent(memberActivatedEvent);
 
                 // Publish statistics data
-                StatisticsDataPublisher.publish(memberActivatedEvent.getMemberId(),
+                BAMUsageDataPublisher.publish(memberActivatedEvent.getMemberId(),
                         memberActivatedEvent.getPartitionId(),
                         memberActivatedEvent.getNetworkPartitionId(),
                         memberActivatedEvent.getClusterId(),
@@ -696,7 +695,7 @@ public class TopologyBuilder {
         }
         TopologyEventPublisher.sendMemberReadyToShutdownEvent(memberReadyToShutdownEvent);
         //publishing data
-        StatisticsDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
+        BAMUsageDataPublisher.publish(instanceReadyToShutdownEvent.getMemberId(),
                 instanceReadyToShutdownEvent.getPartitionId(),
                 instanceReadyToShutdownEvent.getNetworkPartitionId(),
                 instanceReadyToShutdownEvent.getClusterId(),

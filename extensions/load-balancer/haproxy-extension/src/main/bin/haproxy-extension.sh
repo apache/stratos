@@ -35,14 +35,13 @@ properties="-Dhaproxy.private.ip=127.0.0.1
             -Dlog4j.properties.file.path=${script_path}/../conf/log4j.properties
             -Djavax.net.ssl.trustStore=${script_path}/../security/client-truststore.jks
             -Djavax.net.ssl.trustStorePassword=wso2carbon
+            -Dthrift.client.config.file.path=${script_path}/../conf/thrift-client-config.xml
             -Dcep.stats.publisher.enabled=false
             -Dthrift.receiver.ip=127.0.0.1
             -Dthrift.receiver.port=7615
             -Dnetwork.partition.id=network-partition-1
-            -Dcluster.id=cluster
-            -Dservice.name=service
-            -Dload.balanced.service.type=lb-service-type
-            -Dcep.stats.publisher.enabled=true"
+            -Dcluster.id=cluster-1
+            -Dservice.name=service-1"
 
 
 # Uncomment below line to enable remote debugging

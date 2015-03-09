@@ -115,7 +115,7 @@ public class MemberCreatedMessageProcessor extends MessageProcessor {
             // Apply changes to the topology
             Member member = new Member(event.getServiceName(), event.getClusterId(), event.getMemberId(),
                     event.getClusterInstanceId(), event.getNetworkPartitionId(),
-                    event.getPartitionId(), event.getInitTime());
+                    event.getPartitionId(), event.getLoadBalancingIPType(), event.getInitTime());
             member.setProperties(event.getProperties());
             cluster.addMember(member);
 

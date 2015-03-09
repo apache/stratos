@@ -29,7 +29,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidIaasProviderExceptio
 import org.apache.stratos.cloud.controller.exception.InvalidPartitionException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
-import org.apache.stratos.cloud.controller.messaging.publisher.StatisticsDataPublisher;
+import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -66,7 +66,7 @@ public class CloudControllerServiceUtil {
                 partitionId, memberContext.getMemberId());
 
         // Publish statistics to BAM
-        StatisticsDataPublisher.publish(memberContext.getMemberId(),
+        BAMUsageDataPublisher.publish(memberContext.getMemberId(),
                 partitionId,
                 memberContext.getNetworkPartitionId(),
                 memberContext.getClusterId(),

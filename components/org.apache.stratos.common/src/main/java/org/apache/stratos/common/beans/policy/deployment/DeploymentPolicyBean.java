@@ -29,7 +29,7 @@ public class DeploymentPolicyBean {
 
     private String id;
 
-	private List<NetworkPartitionRefBean> networkPartition;
+	private List<NetworkPartitionRefBean> networkPartitions;
 
 	public String getId() {
 		return id;
@@ -39,11 +39,11 @@ public class DeploymentPolicyBean {
 		this.id = id;
 	}
 
-	public List<NetworkPartitionRefBean> getNetworkPartition() {
-		return networkPartition;
+	public List<NetworkPartitionRefBean> getNetworkPartitions() {
+		return networkPartitions;
 	}
 
-	public void setNetworkPartition(List<NetworkPartitionRefBean> networkPartition) {
-		this.networkPartition = networkPartition;
+	public void setNetworkPartitions(List<NetworkPartitionRefBean> networkPartitions) {
+		this.networkPartitions = networkPartitions;
 	}
 }

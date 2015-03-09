@@ -30,8 +30,7 @@ public class AppType implements Serializable{
 	private String name;
 	private boolean appSpecificMapping = true;
 	
-	public AppType(){
-		
+	public AppType() {
 	}
 	
 	public AppType(String name){

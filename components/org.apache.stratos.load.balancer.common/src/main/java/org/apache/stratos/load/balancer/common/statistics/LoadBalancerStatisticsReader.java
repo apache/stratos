@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer.common.statistics;
 
-import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
 
 /**
  * Load balancer statistics reader interface.

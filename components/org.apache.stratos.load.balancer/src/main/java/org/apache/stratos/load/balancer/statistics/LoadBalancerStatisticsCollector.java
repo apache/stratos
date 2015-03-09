@@ -21,6 +21,7 @@ package org.apache.stratos.load.balancer.statistics;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.load.balancer.common.domain.Cluster;
 import org.apache.stratos.load.balancer.common.statistics.LoadBalancerStatisticsReader;
 
 import java.util.Map;
@@ -93,7 +94,7 @@ public class LoadBalancerStatisticsCollector implements LoadBalancerStatisticsRe
         }
     }
 
-    public int getActiveInstancesCount(org.apache.stratos.messaging.domain.topology.Cluster cluster) {
+    public int getActiveInstancesCount(Cluster cluster) {
         return cluster.getMembers().size();
     }
 

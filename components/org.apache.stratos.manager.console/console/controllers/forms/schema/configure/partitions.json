@@ -2,8 +2,8 @@
     "$schema": "http://json-schema.org/draft-04/schema#",
     "id": "root",
     "type": "object",
-    "title":"Partition Definition",
-    "name": "Partition Policy",
+    "title":"Network Partition Definition",
+    "name": "Network Partition Policy",
     "options": {
         "disable_properties": true,
         "disable_collapse": true
@@ -11,18 +11,22 @@
     "properties": {
         "id": {
             "id": "root/id",
-            "type": "string"
+            "type": "string",
+            "title":"Network Partition Id"
         },
         "activeByDefault": {
             "id": "root/activeByDefault",
-            "type": "boolean"
+            "type": "boolean",
+            "title":"Active By Default"
         },
         "partitions": {
             "id": "root/partitions",
             "type": "array",
+            "title":"Partitions",
             "items": {
                 "id": "root/partitions/0",
                 "type": "object",
+                "title":"Partition",
                 "properties": {
                     "id": {
                         "id": "root/partitions/0/id",

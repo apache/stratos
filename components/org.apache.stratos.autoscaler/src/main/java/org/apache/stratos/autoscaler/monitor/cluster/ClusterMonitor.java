@@ -31,7 +31,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.axis2.AxisFault;
 import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -328,30 +327,6 @@ public class ClusterMonitor extends Monitor implements Runnable {
     public void setHasFaultyMember(boolean hasFaultyMember) {
         this.hasFaultyMember = hasFaultyMember;
     }
-
-    /*public void addClusterContextForInstance (String instanceId, AbstractClusterContext clusterContext) {
-
-        if (instanceIdToClusterContextMap.get(instanceId) == null) {
-            synchronized (instanceIdToClusterContextMap) {
-                if (instanceIdToClusterContextMap.get(instanceId) == null) {
-                    instanceIdToClusterContextMap.put(instanceId, clusterContext);
-                } else {
-                    log.warn("ClusterContext for already exists for cluster instance id: " + instanceId +
-                            ", service type: " + serviceType + ", cluster id: " + clusterId);
-                }
-            }
-        } else {
-            log.warn("ClusterContext for already exists for cluster instance id: " + instanceId +
-                    ", service type: " + serviceType + ", cluster id: " + clusterId);
-        }
-    }
-
-    public AbstractClusterContext getClusterContext (String instanceId) {
-
-        // if instanceId is null, assume that map contains only one element and return that
-
-        return instanceIdToClusterContextMap.get(instanceId);
-    }*/
 
     public boolean isStop() {
         return stop;

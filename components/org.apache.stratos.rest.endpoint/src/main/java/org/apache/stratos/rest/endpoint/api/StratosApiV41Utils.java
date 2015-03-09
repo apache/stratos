@@ -99,8 +99,7 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
             }
 
-	        CartridgeConfig cartridgeConfig =
-			        createCartridgeConfig(cartridgeDefinition);
+	        CartridgeConfig cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
@@ -425,15 +424,14 @@ public class StratosApiV41Utils {
         cartridge.setType(cartridgeInfo.getType());
         cartridge.setProvider(cartridgeInfo.getProvider());
         cartridge.setCategory(cartridgeInfo.getCategory());
+        cartridge.setHost(cartridgeInfo.getHostName());
         cartridge.setDisplayName(cartridgeInfo.getDisplayName());
         cartridge.setDescription(cartridgeInfo.getDescription());
         cartridge.setVersion(cartridgeInfo.getVersion());
         cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-        cartridge.setHost(cartridgeInfo.getHostName());
-        cartridge.setDefaultAutoscalingPolicy(cartridgeInfo.getDefaultAutoscalingPolicy());
-        cartridge.setDefaultDeploymentPolicy(cartridgeInfo.getDefaultDeploymentPolicy());
         cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
-        cartridge.setServiceGroup(cartridgeInfo.getServiceGroup());
+        cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
+        cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
         return cartridge;
     }
 
@@ -1213,7 +1211,7 @@ public class StratosApiV41Utils {
 			log.error(message);
 			throw new RestAPIException(message);
 		}
-		if(deploymentPolicy.getNetworkPartition().size()==0){
+		if(deploymentPolicy.getNetworkPartitions().size()==0){
 			String message="No network partitions specify with the policy";
 			log.error(message);
 			throw new RestAPIException(message);

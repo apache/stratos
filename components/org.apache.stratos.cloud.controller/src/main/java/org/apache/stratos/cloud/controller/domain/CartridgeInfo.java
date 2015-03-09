@@ -42,14 +42,11 @@ public class CartridgeInfo {
     private boolean multiTenant;
     private boolean isPublic;
     private String baseDir;
-    private Property[] properties;
-    private String defaultAutoscalingPolicy;
-    private String defaultDeploymentPolicy;
-    private LoadbalancerConfig lbConfig;
     private String tenantPartitions;
     private Persistence persistence;
-    private String serviceGroup;
+    private String loadBalancingIPType;
 	private String[] metadataKeys;
+    private Property[] properties;
 
     public CartridgeInfo(){
         this.tenantPartitions = "*";
@@ -171,30 +168,6 @@ public class CartridgeInfo {
 	    this.properties = ArrayUtils.clone(properties);
     }
 
-    public String getDefaultAutoscalingPolicy() {
-        return defaultAutoscalingPolicy;
-    }
-
-    public void setDefaultAutoscalingPolicy(String defaultAutoscalingPolicy) {
-        this.defaultAutoscalingPolicy = defaultAutoscalingPolicy;
-    }
-
-    public LoadbalancerConfig getLbConfig() {
-        return lbConfig;
-    }
-
-    public void setLbConfig(LoadbalancerConfig lbConfig) {
-        this.lbConfig = lbConfig;
-    }
-
-    public String getDefaultDeploymentPolicy() {
-        return defaultDeploymentPolicy;
-    }
-
-    public void setDefaultDeploymentPolicy(String defaultDeploymentPolicy) {
-        this.defaultDeploymentPolicy = defaultDeploymentPolicy;
-    }
-
      /**
 	 * @return the persistence
 	 */
@@ -207,14 +180,6 @@ public class CartridgeInfo {
 	 */
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
-    }
-
-    public String getServiceGroup() {
-        return serviceGroup;
-    }
-
-    public void setServiceGroup(String serviceGroup) {
-        this.serviceGroup = serviceGroup;
     }
 
 	public String getCategory() {
@@ -231,6 +196,14 @@ public class CartridgeInfo {
 
     public void setTenantPartitions(String tenantPartitions) {
         this.tenantPartitions = tenantPartitions;
+    }
+
+    public String getLoadBalancingIPType() {
+        return loadBalancingIPType;
+    }
+
+    public void setLoadBalancingIPType(String loadBalancingIPType) {
+        this.loadBalancingIPType = loadBalancingIPType;
     }
 
 	public String[] getMetadataKeys() {

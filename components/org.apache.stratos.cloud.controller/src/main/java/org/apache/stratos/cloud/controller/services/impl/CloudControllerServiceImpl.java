@@ -25,8 +25,6 @@ import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.*;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.domain.Dependencies;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesMaster;
@@ -38,6 +36,7 @@ import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
 import org.apache.stratos.common.Property;
+import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.domain.topology.*;
 
@@ -119,7 +118,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		handleNullObject(cartridgeConfig, "Cartridge definition is null");
 
 		if (log.isInfoEnabled()) {
-			log.info("Adding cartridge: [cartridge-type] " + cartridgeConfig.getType());
+			log.info("Updating cartridge: [cartridge-type] " + cartridgeConfig.getType());
 		}
 		if (log.isDebugEnabled()) {
 			log.debug("Cartridge definition: " + cartridgeConfig.toString());
@@ -134,12 +133,9 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			throw new InvalidCartridgeDefinitionException(msg, e);
 		}
 
-		// TODO transaction begins
 		String cartridgeType = cartridge.getType();
-		// Undeploy if already deployed
 		if (cloudControllerContext.getCartridge(cartridgeType) != null) {
 			Cartridge cartridgeToBeRemoved = cloudControllerContext.getCartridge(cartridgeType);
-			// undeploy
 			try {
 				removeCartridge(cartridgeToBeRemoved.getType());
 			} catch (InvalidCartridgeTypeException ignore) {
@@ -153,15 +149,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 		// Add cartridge to the cloud controller context and persist
 		CloudControllerContext.getInstance().addCartridge(cartridge);
 		CloudControllerContext.getInstance().persist();
-
-		List<Cartridge> cartridgeList = new ArrayList<Cartridge>();
-		cartridgeList.add(cartridge);
-
-		TopologyBuilder.handleServiceCreated(cartridgeList);
 		// transaction ends
 
 		if (log.isInfoEnabled()) {
-			log.info("Successfully added cartridge: [cartridge-type] " + cartridgeType);
+			log.info("Successfully updated cartridge: [cartridge-type] " + cartridgeType);
 		}
 	}
 
@@ -404,7 +395,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             // Create member context
             String applicationId = clusterContext.getApplicationId();
-            MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId, instanceContext);
+            MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId,
+                    cartridge.getLoadBalancingIPType(), instanceContext);
 
             // Prepare payload
             StringBuilder payload = new StringBuilder(clusterContext.getPayload());
@@ -473,7 +465,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     private MemberContext createMemberContext(String applicationId, String cartridgeType, String memberId,
-                                              InstanceContext instanceContext) {
+                                              LoadBalancingIPType loadBalancingIPType, InstanceContext instanceContext) {
         MemberContext memberContext = new MemberContext(
                 applicationId, cartridgeType, instanceContext.getClusterId(), memberId);
 
@@ -482,6 +474,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         memberContext.setPartition(instanceContext.getPartition());
         memberContext.setInitTime(instanceContext.getInitTime());
         memberContext.setProperties(instanceContext.getProperties());
+        memberContext.setLoadBalancingIPType(loadBalancingIPType);
         memberContext.setInitTime(System.currentTimeMillis());
 
         return memberContext;
@@ -1490,6 +1483,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
+                        // Overwrites partition provider with network partition provider
+                        partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
@@ -1567,6 +1562,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             log.info(String.format("Validating partition: [network-partition-id] %s [partition-id] %s",
                                     networkPartition.getId(), partition.getId()));
                         }
+                        // Overwrites partition provider with network partition provider
+                        partition.setProvider(networkPartition.getProvider());
                         validatePartition(partition);
                         if(log.isInfoEnabled()) {
                             log.info(String.format("Partition validated successfully: [network-partition-id] %s " +
