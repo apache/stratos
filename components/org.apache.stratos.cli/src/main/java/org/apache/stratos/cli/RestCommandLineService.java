@@ -369,13 +369,12 @@ public class RestCommandLineService {
                 public String[] getData(GroupBean cartridgeGroup) {
                     String[] data = new String[4];
                     data[0] = cartridgeGroup.getName();
-                    data[1] = String.valueOf(cartridgeGroup.getCartridges().size());
-                    data[2] = String.valueOf(cartridgeGroup.getGroups().size());
+                    data[1] = cartridgeGroup.getCartridges()==null ? "" :String.valueOf(cartridgeGroup.getCartridges().size());
+                    data[2] = cartridgeGroup.getGroups() == null ? "0" : String.valueOf(cartridgeGroup.getGroups().size());
                     data[3] = String.valueOf(cartridgeGroup.isGroupScalingEnabled());
                     return data;
                 }
             };
-
             GroupBean[] cartridgeGroups = new GroupBean[cartridgeGroupList.size()];
             cartridgeGroups = cartridgeGroupList.toArray(cartridgeGroups);
 
