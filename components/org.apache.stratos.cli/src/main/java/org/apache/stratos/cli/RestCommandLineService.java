@@ -1566,7 +1566,7 @@ public class RestCommandLineService {
 
     // This method helps to remove network partitions
     public void removeNetworkPartition (String id) {
-        restClient.deleteEntity(ENDPOINT_REMOVE_NETWORK_PARTITION.replace("{networkPartitionId}", id), id,
+        restClient.deleteEntity(ENDPOINT_REMOVE_NETWORK_PARTITION.replace("{id}", id), id,
                 "network-partition");
     }
 
