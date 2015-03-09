@@ -117,7 +117,7 @@
                 <value>portMappings</value>
                 <value>volumes</value>
                 <value>domains</value>
-                <value>kubernetesHost</value>
+                <value>kubernetesHosts</value>
                 <value>cartridges</value>
                 <value>subGroups</value>
                 <value>groups</value>
@@ -136,6 +136,7 @@
                 <value>kubernetesServices</value>
                 <value>publicIPs</value>
                 <value>ports</value>
+                <value>metadataKeys</value>
             </list>
         </property>
     </bean>

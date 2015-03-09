@@ -1147,7 +1147,7 @@ public class RestCommandLineService {
             if ((list != null) && (list.size() > 0)) {
                 RowMapper<KubernetesHostBean> partitionMapper = new RowMapper<KubernetesHostBean>() {
                     public String[] getData(KubernetesHostBean kubernetesHost) {
-                        String[] data = new String[3];
+                        String[] data = new String[4];
                         data[0] = kubernetesHost.getHostId();
                         data[1] = kubernetesHost.getHostname();
                         data[2] = emptyStringIfNullOrEmpty(kubernetesHost.getPrivateIPAddress());
