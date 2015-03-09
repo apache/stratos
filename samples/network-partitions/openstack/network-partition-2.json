@@ -7,7 +7,7 @@
             "property": [
                 {
                     "name": "region",
-                    "value": "default"
+                    "value": "RegionOne"
                 }
             ]
         }
