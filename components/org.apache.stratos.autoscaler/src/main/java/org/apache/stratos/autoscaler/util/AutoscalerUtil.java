@@ -326,6 +326,7 @@ public class AutoscalerUtil {
                 throw new RuntimeException(msg);
             }
             AutoscalerContext autoscalerContext = AutoscalerContext.getInstance();
+            autoscalerContext.removeApplicationPendingMonitor(applicationId);
             autoscalerContext.removeAppMonitor(applicationId);
             autoscalerContext.addAppMonitor(applicationMonitor);
 

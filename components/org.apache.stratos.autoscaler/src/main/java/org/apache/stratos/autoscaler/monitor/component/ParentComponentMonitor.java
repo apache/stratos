@@ -58,6 +58,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -71,6 +72,8 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     //Scheduler executor service to execute this monitor in a thread
     private final ScheduledExecutorService scheduler = StratosThreadPool.getScheduledExecutorService(
             "autoscaler.monitor.scheduler.thread.pool", 100);
+    // future to cancel it when destroying monitors
+    private ScheduledFuture<?> schedulerFuture;
     //The monitors dependency tree with all the start-able/kill-able dependencies
     protected DependencyTree startupDependencyTree;
     //The monitors dependency tree with all the scaling dependencies
@@ -119,11 +122,11 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
     public abstract void monitor();
 
     public void startScheduler() {
-        scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
+        schedulerFuture = scheduler.scheduleAtFixedRate(this, 0, monitoringIntervalMilliseconds, TimeUnit.MILLISECONDS);
     }
 
     protected void stopScheduler() {
-        scheduler.shutdownNow();
+        schedulerFuture.cancel(true);
     }
 
     /**
