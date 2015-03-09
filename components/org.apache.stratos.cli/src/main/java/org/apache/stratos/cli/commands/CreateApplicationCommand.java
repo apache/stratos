@@ -52,7 +52,7 @@ public class CreateApplicationCommand implements Command<StratosCommandContext> 
     }
 
     public String getName() {
-    	return "create-application";
+    	return "add-application";
     }
 
     public String getDescription() {
