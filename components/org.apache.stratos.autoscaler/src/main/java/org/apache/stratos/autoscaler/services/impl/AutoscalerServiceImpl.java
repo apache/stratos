@@ -45,7 +45,6 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
-import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
@@ -53,9 +52,6 @@ import org.apache.stratos.manager.service.stub.domain.application.signup.Artifac
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
-import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
-import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
-import org.apache.stratos.metadata.client.exception.MetaDataServiceClientException;
 import org.wso2.carbon.registry.api.RegistryException;
 
 import java.rmi.RemoteException;
@@ -63,7 +59,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -419,22 +414,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void deleteApplication(String applicationId) {
-        //TODO oAuth application/service provider deletion is removed since app name is random. It should be equal to
-        // name of the composite application.
-        /*
-        try {
-            oAuthAdminServiceClient.getServiceClient().removeOauthApplication(applicationId);
-            IdentityApplicationManagementServiceClient.getServiceClient().removeApplication(applicationId);
-        } catch (RemoteException e) {
-           log.error(String.format("Error ocured while deleting oAuth application %s", applicationId), e);
-            throw new AutoScalerException(e);
-        } catch (OAuthAdminServiceException e) {
-            log.error(String.format("Error ocured while deleting oAuth application %s", applicationId), e);
-            throw new AutoScalerException(e);
-        } catch (IdentityApplicationManagementServiceIdentityApplicationManagementException e) {
-        }
-        */
-
         if (AutoscalerContext.getInstance().removeApplicationContext(applicationId) == null) {
             String msg = String.format("Application not found : [application-id] %s", applicationId);
             throw new RuntimeException(msg);
@@ -593,25 +572,6 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     }
 
-    private void publishMetadata(ApplicationParser applicationParser, String appId) {
-        MetaDataServiceClient metaDataServiceClien = null;
-        try {
-            metaDataServiceClien = new DefaultMetaDataServiceClient();
-            for (Map.Entry<String, Properties> entry : applicationParser.getAliasToProperties().entrySet()) {
-                String alias = entry.getKey();
-                Properties properties = entry.getValue();
-                if (properties != null) {
-                    for (Property property : properties.getProperties()) {
-                        metaDataServiceClien.addPropertyToCluster(appId, alias, property.getName(),
-                                String.valueOf(property.getValue()));
-                    }
-                }
-            }
-        } catch (MetaDataServiceClientException e) {
-            log.error("Could not publish to metadata service ", e);
-        }
-    }
-    
 	@Override
 	public String[] getApplicationNetworkPartitions(String applicationId)
 			throws AutoScalerException {
