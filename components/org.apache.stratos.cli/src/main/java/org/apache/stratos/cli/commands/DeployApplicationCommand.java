@@ -25,10 +25,8 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.IOException;
 
 /**
  * Deploy application command.
@@ -39,12 +37,24 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
 
     private Options options;
 
-    public DeployApplicationCommand() {
-        options = new Options();
-        Option option = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
-                "Application resource path");
-        option.setArgName("resource path");
-        options.addOption(option);
+    public DeployApplicationCommand(){
+        options = constructOptions();
+    }
+
+    private Options constructOptions() {
+        final Options options = new Options();
+
+        Option applicationOption = new Option(CliConstants.APPLICATION_ID_OPTION, CliConstants.APPLICATION_ID_LONG_OPTION, true,
+                "Application option");
+        applicationOption.setArgName("applicationId");
+        options.addOption(applicationOption);
+
+        Option applicationPolicyOption = new Option(CliConstants.APPLICATION_POLICY_ID_OPTION, CliConstants.APPLICATION_POLICY_ID_LONG_OPTION, true,
+                "Application policy");
+        applicationPolicyOption.setArgName("applicationPolicyId");
+        options.addOption(applicationPolicyOption);
+
+        return options;
     }
 
     @Override
@@ -70,42 +80,54 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
     @Override
     public int execute(StratosCommandContext context, String[] args) throws CommandException {
         if (logger.isDebugEnabled()) {
-            logger.debug("Executing command: ", getName());
+            logger.debug("Executing {} command...", getName());
         }
 
-        if ((args == null) || (args.length <= 0)) {
-            context.getStratosApplication().printUsage(getName());
-            return CliConstants.COMMAND_FAILED;
-        }
-        String applicationId = args[0];
+        if (args != null && args.length > 0) {
+            String applicationId= null;
+            String applicationPolicyId= null;
 
-        try {
-            CommandLineParser parser = new GnuParser();
-            CommandLine commandLine = parser.parse(options, args);
-            if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+            final CommandLineParser parser = new GnuParser();
+            CommandLine commandLine;
+
+            try {
+                commandLine = parser.parse(options, args);
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Deploy application");
+                }
+
+                if (commandLine.hasOption(CliConstants.APPLICATION_ID_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Application Id option is passed");
+                    }
+                    applicationId = commandLine.getOptionValue(CliConstants.APPLICATION_ID_OPTION);
+                }
+                if (commandLine.hasOption(CliConstants.APPLICATION_POLICY_ID_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Application policy Id option is passed");
+                    }
+                    applicationPolicyId = commandLine.getOptionValue(CliConstants.APPLICATION_POLICY_ID_OPTION);
+                }
+
+                if (applicationId == null || applicationPolicyId == null) {
+                    System.out.println("usage: " + getName() + " [-a <application id>] [-ap <application policy id>]");
                     return CliConstants.COMMAND_FAILED;
                 }
-                String resourceFileContent = CliUtils.readResource(resourcePath);
-                RestCommandLineService.getInstance().deployApplication(applicationId, resourceFileContent);
+
+                RestCommandLineService.getInstance().deployApplication(applicationId,applicationPolicyId);
                 return CliConstants.COMMAND_SUCCESSFULL;
-            } else {
-                System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " " + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+
+            } catch (ParseException e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error("Error parsing arguments", e);
+                }
+                System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
             }
-        } catch (ParseException e) {
-            logger.error("Error parsing arguments", e);
-            System.out.println(e.getMessage());
-            return CliConstants.COMMAND_FAILED;
-        } catch (IOException e) {
-            System.out.println("Invalid resource path");
-            return CliConstants.COMMAND_FAILED;
-        } catch (Exception e) {
-            String message = "Unknown error occurred: " + e.getMessage();
-            System.out.println(message);
-            logger.error(message, e);
+
+        } else {
+            context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
         }
     }

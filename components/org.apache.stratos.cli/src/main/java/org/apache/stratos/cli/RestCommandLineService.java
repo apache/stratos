@@ -81,7 +81,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_DEPLOY_KUBERNETES_CLUSTER = API_CONTEXT + "/kubernetesClusters";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion";
     private static final String ENDPOINT_DEPLOY_SERVICE_GROUP = API_CONTEXT + "/cartridgeGroups";
-    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications/{applicationId}/deploy";
+    private static final String ENDPOINT_DEPLOY_APPLICATION = API_CONTEXT + "/applications/{applicationId}/deploy/{applicationPolicyId}";
     private static final String ENDPOINT_DEPLOY_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions";
 
     private static final String ENDPOINT_UNDEPLOY_KUBERNETES_CLUSTER= API_CONTEXT + "/kubernetesClusters/{id}";
@@ -1384,9 +1384,34 @@ public class RestCommandLineService {
      * Deploy application
      * @throws CommandException
      */
-    public void deployApplication (String applicationId, String entityBody) {
-        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId), entityBody,
-                "application");
+    public void deployApplication (String applicationId,String applicationPolicyId) {
+        DefaultHttpClient httpClient = new DefaultHttpClient();
+        try {
+            String url=(ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId)).replace("{applicationPolicyId}",applicationPolicyId);
+            HttpResponse response = restClient.doPost(httpClient, restClient.getBaseURL()
+                    + url, "");
+
+            String responseCode = "" + response.getStatusLine().getStatusCode();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+            Gson gson = gsonBuilder.create();
+
+            if (Integer.parseInt(responseCode) < 300 && Integer.parseInt(responseCode) >= 200) {
+                System.out.println("You have successfully deployed application: " + applicationId);
+            } else {
+                String resultString = CliUtils.getHttpResponseString(response);
+                ExceptionMapper exception = gson.fromJson(resultString, ExceptionMapper.class);
+                System.out.println(exception);
+            }
+
+        } catch (Exception e) {
+            String message = "Could not deploy application: " + applicationId;
+            printError(message, e);
+        } finally {
+            httpClient.getConnectionManager().shutdown();
+        }
+
+        //restClient.deployEntity((ENDPOINT_DEPLOY_APPLICATION.replace("{applicationId}", applicationId)).replace("{applicationPolicyId",applicationPolicyId),"application");
     }
 
     /**
