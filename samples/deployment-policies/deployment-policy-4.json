@@ -24,6 +24,26 @@
                "partitionMax": 20
             }
          ]
+      },
+      {
+         "id": "network-partition-3",
+         "partitionAlgo": "one-after-another",
+         "partitions": [
+            {
+               "id": "partition-1",
+               "partitionMax": 20
+            }
+         ]
+      },
+      {
+         "id": "network-partition-4",
+         "partitionAlgo": "one-after-another",
+         "partitions": [
+            {
+               "id": "partition-1",
+               "partitionMax": 20
+            }
+         ]
       }
    ]
 }

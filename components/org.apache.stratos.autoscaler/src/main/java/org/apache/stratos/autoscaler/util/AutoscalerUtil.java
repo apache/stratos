@@ -646,6 +646,44 @@ public class AutoscalerUtil {
 			}
 			
 		}
+    	
+    	// if networkPartitionGroups property is set, we need to validate that too
+    	Properties properties = applicationPolicy.getProperties();
+		if (properties!= null) {
+			Property networkPartitionGroupsProperty = properties.getProperty(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS);
+			if (networkPartitionGroupsProperty != null) {
+				String networkPartitionGroupsPropertyValue = networkPartitionGroupsProperty.getValue();
+				if (networkPartitionGroupsPropertyValue != null) {
+					String[] networkPartitionGroups = networkPartitionGroupsPropertyValue.split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER);
+					if (networkPartitionGroups != null) {
+						for (String networkPartitionIdsString : networkPartitionGroups) {
+							networkPartitionIds = networkPartitionIdsString.split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
+							if (networkPartitionIds != null) {
+								for (String networkPartitionId : networkPartitionIds) {
+									// network-partition-id can't be null or empty
+									if (null == networkPartitionId || networkPartitionId.isEmpty()) {
+										String msg = String.format("Invalid Application Policy. "
+												+ "Cause -> Invalid network-partition-id : %s", networkPartitionId);
+										log.error(msg);
+										throw new InvalidApplicationPolicyException(msg);
+									}
+									
+									// network partitions should be added already
+									if (null == CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionId)) {
+										String msg = String.format("Invalid Application Policy. "
+												+ "Cause -> Network partition not found for network-partition-id : %s", networkPartitionId);
+										log.error(msg);
+										throw new InvalidApplicationPolicyException(msg);
+									}
+								}
+							}
+						}
+						// populating network partition groups in application policy
+						applicationPolicy.setNetworkPartitionGroups(networkPartitionGroups);
+					}
+				}
+			}
+		}
     }
 	
 	

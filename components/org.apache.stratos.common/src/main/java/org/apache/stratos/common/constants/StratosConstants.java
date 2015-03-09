@@ -201,5 +201,8 @@ public class StratosConstants {
 	// network partition algorithm id constants
 	public static final String NETWORK_PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID = "one-after-another";
 	public static final String NETWORK_PARTITION_ALL_AT_ONCE_ALGORITHM_ID = "all-at-once";
+	public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS = "networkPartitionGroups";
+	public static final String APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER = "\\|";
+	public static final String APPLICATION_POLICY_NETWORK_PARTITION_GROUPS_SPLITTER = ",";
 }
 

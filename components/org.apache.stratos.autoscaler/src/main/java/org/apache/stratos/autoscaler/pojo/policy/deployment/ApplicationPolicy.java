@@ -29,6 +29,8 @@ public class ApplicationPolicy implements Serializable{
 	private String algorithm;
 	private String[] networkPartitions;
 	private Properties properties;
+	// if networkPartitionGroups property is set, we are populating following variable.
+	private String[] networkPartitionGroups;
 	
 	public String getId() {
 		return id;
@@ -60,5 +62,13 @@ public class ApplicationPolicy implements Serializable{
 
 	public void setProperties(Properties properties) {
 		this.properties = properties;
+	}
+
+	public String[] getNetworkPartitionGroups() {
+		return networkPartitionGroups;
+	}
+
+	public void setNetworkPartitionGroups(String[] networkPartitionGroups) {
+		this.networkPartitionGroups = networkPartitionGroups;
 	}
 }
