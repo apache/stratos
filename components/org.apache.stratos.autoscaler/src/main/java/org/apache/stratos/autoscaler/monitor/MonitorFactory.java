@@ -257,10 +257,9 @@ public class MonitorFactory {
 			try {
 				deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyId);
 			} catch (Exception e) {
-				String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicy);
+				String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyId);
 				log.error(msg, e);
-				//TODO throw an exception
-				return null;
+				throw new RuntimeException(msg, e);
 			} 
 			
             List<Partition> partitionList = new ArrayList<Partition>();
@@ -273,8 +272,7 @@ public class MonitorFactory {
 					} catch (Exception e) {
 						String msg = String.format("Error while getting deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
 						log.error(msg, e);
-						//TODO throw an exception
-						return null;
+						throw new RuntimeException(msg, e);
 					}
 					
             		if (networkPartition != null) {
@@ -288,8 +286,7 @@ public class MonitorFactory {
 					} catch (Exception e) {
 						String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
 						log.error(msg, e);
-						//TODO throw an exception
-						return null;
+						throw new RuntimeException(msg, e);
 					}
             	}
             }

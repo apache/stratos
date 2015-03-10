@@ -112,8 +112,13 @@ public class CloudControllerUtil {
                 cartridge.setLoadBalancingIPType(LoadBalancingIPType.Public);
             }
         }
-	    cartridge.setMetadataKeys(config.getMetadataKeys());
 
+        if (config.getMetadataKeys() == null) {
+			cartridge.setMetadataKeys(new String[0]);
+		} else {
+			cartridge.setMetadataKeys(config.getMetadataKeys());
+		}
+        
         org.apache.stratos.common.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
