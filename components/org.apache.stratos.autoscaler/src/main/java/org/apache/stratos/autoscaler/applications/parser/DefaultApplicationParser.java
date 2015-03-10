@@ -409,13 +409,14 @@ public class DefaultApplicationParser implements ApplicationParser {
 		                    if (dataHolder != null) {
 			                    if (!dataHolder.getClusterId().equals(clusterId)) {
 				                    dependencyClusterIDs.add(dataHolder.getClusterId());
-				                    for (String str : dependencyCartridge.getMetadataKeys()) {
-					                    if (!StringUtils.isBlank(str)) {
-						                    importMetadataKeys.add(dataHolder.getClusterId().split("\\.")[0] +
-                                                    METADATA_APPENDER +
-                                                    str);
-					                    }
-				                    }
+                                    if(dependencyCartridge.getMetadataKeys() != null){
+                                        for (String str : dependencyCartridge.getMetadataKeys()) {
+                                            if (!StringUtils.isBlank(str)) {
+                                                importMetadataKeys.add(dataHolder.getClusterId().split("\\.")[0] +
+                                                        METADATA_APPENDER + str);
+                                            }
+                                        }
+                                    }
 				                    if (!dataHolder.getClusterId().equals(clusterId)) {
 					                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
 						                    break;
