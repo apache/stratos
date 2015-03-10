@@ -25,6 +25,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,7 +102,7 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
      * @throws org.apache.stratos.cli.exception.CommandException if any errors occur when executing the command
      */
     @Override
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
             logger.debug("Get name" + getName());
@@ -116,16 +117,18 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
 
             try {
                 commandLine = parser.parse(options, args);
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Network Partition deployment");
                 }
 
-                if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
+                if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Resource path option is passed");
                     }
-                    resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+                    
                     partitionJson = readResource(resourcePath);
                 }
 

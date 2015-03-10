@@ -34,6 +34,9 @@ import java.net.SocketException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+
 public class CliUtils {
     private static Log log = LogFactory.getLog(CliUtils.class);
 
@@ -183,4 +186,16 @@ public class CliUtils {
             System.out.println(response.getStatusLine().toString());
         }
     }
+    
+    public static Options mergeOptionArrays(Option[] a, Option[] b) {
+        Options opts = new Options();
+        for (Option o: a) {
+            opts.addOption(o);
+        }
+        for (Option o: b) {
+            opts.addOption(o);
+        }
+        return opts;
+    }
+
 }

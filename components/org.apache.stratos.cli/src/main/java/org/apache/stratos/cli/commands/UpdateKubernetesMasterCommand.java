@@ -25,6 +25,7 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +70,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing command: ", getName());
         }
@@ -82,17 +83,19 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
         try {
             CommandLineParser parser = new GnuParser();
             CommandLine commandLine = parser.parse(options, args);
-            if((commandLine.hasOption(CliConstants.RESOURCE_PATH)) && (commandLine.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
+            //merge newly discovered options with previously discovered ones.
+            Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+            if((opts.hasOption(CliConstants.RESOURCE_PATH)) && (opts.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
             	               
                 // get cluster id arg value
-            	String clusterId = commandLine.getOptionValue(CliConstants.CLUSTER_ID_OPTION);
+            	String clusterId = opts.getOption(CliConstants.CLUSTER_ID_OPTION).getValue();
                 if (clusterId == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 
                 // get resource path arg value
-            	String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+            	String resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                 if (resourcePath == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;

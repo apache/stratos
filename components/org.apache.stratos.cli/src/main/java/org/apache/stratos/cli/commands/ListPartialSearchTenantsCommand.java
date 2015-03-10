@@ -25,6 +25,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,7 @@ public class ListPartialSearchTenantsCommand implements Command<StratosCommandCo
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -74,16 +75,18 @@ public class ListPartialSearchTenantsCommand implements Command<StratosCommandCo
 
             try {
                 commandLine = parser.parse(options, args);
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("List cartridges by partial domain search");
                 }
 
-                if (commandLine.hasOption(CliConstants.TENANT_PARTIAL_SEARCH_OPTION)) {
+                if (opts.hasOption(CliConstants.TENANT_PARTIAL_SEARCH_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Partial domain option is passed");
                     }
-                    partialDomain = commandLine.getOptionValue(CliConstants.TENANT_PARTIAL_SEARCH_OPTION);
+                    partialDomain = opts.getOption(CliConstants.TENANT_PARTIAL_SEARCH_OPTION).getValue();
                 }
 
                 if (partialDomain == null) {
