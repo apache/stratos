@@ -47,6 +47,7 @@ import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
 import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.slf4j.Logger;
@@ -77,6 +78,7 @@ public class RestCommandLineService {
 
     private static final String ENDPOINT_DEPLOY_CARTRIDGE = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_DEPLOY_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
+    private static final String ENDPOINT_DEPLOY_APPLICATION_POLICY = API_CONTEXT + "/applicationPolicies";
     private static final String ENDPOINT_DEPLOY_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_CLUSTER = API_CONTEXT + "/kubernetesClusters";
     private static final String ENDPOINT_DEPLOY_KUBERNETES_HOST = API_CONTEXT + "/kubernetesClusters/{kubernetesClusterId}/minion";
@@ -94,9 +96,11 @@ public class RestCommandLineService {
     private static final String ENDPOINT_REMOVE_NETWORK_PARTITION = API_CONTEXT + "/networkPartitions/{id}";
     private static final String ENDPOINT_REMOVE_AUTOSCALINGPOLICY = API_CONTEXT + "/autoscalingPolicies/{policyId}";
     private static final String ENDPOINT_REMOVE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{policyId}";
+    private static final String ENDPOINT_REMOVE_APPLICATION_POLICY = API_CONTEXT + "/applicationPolicies/{policyId}";
 
     private static final String ENDPOINT_LIST_AUTOSCALING_POLICIES = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_LIST_DEPLOYMENT_POLICIES = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_LIST_APPLICATION_POLICIES = API_CONTEXT + "/applicationPolicies";
     private static final String ENDPOINT_LIST_CARTRIDGES = API_CONTEXT + "/cartridges";
     private static final String ENDPOINT_LIST_CARTRIDGE_GROUPS = API_CONTEXT + "/cartridgeGroups";
     private static final String ENDPOINT_LIST_TENANTS = API_CONTEXT + "/tenants";
@@ -114,6 +118,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_GET_APPLICATION = API_CONTEXT + "/applications/{appId}";
     private static final String ENDPOINT_GET_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies/{id}";
     private static final String ENDPOINT_GET_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies/{deploymentPolicyId}";
+    private static final String ENDPOINT_GET_APPLICATION_POLICY = API_CONTEXT + "/applicationPolicies/{applicationPolicyId}";
     private static final String ENDPOINT_GET_CARTRIDGE = API_CONTEXT + "/cartridges/{cartridgeType}";
     private static final String ENDPOINT_GET_CARTRIDGE_OF_TENANT = API_CONTEXT + "/subscriptions/{id}/cartridges";
     private static final String ENDPOINT_GET_KUBERNETES_GROUP = API_CONTEXT + "/kubernetesCluster/{kubernetesClusterId}";
@@ -131,6 +136,7 @@ public class RestCommandLineService {
     private static final String ENDPOINT_APPLICATION_SIGNUP = API_CONTEXT + "/applications/{applicationId}/signup";
 
     private static final String ENDPOINT_UPDATE_DEPLOYMENT_POLICY = API_CONTEXT + "/deploymentPolicies";
+    private static final String ENDPOINT_UPDATE_APPLICATION_POLICY = API_CONTEXT + "/applicationPolicies";
     private static final String ENDPOINT_UPDATE_AUTOSCALING_POLICY = API_CONTEXT + "/autoscalingPolicies";
     private static final String ENDPOINT_UPDATE_USER = API_CONTEXT + "/users";
     private static final String ENDPOINT_UPDATE_TENANT = API_CONTEXT + "/tenants";
@@ -1032,6 +1038,28 @@ public class RestCommandLineService {
     }
 
     /**
+     * Describe application policy
+     * @throws CommandException
+     */
+    public void describeApplicationPolicy(String applicationPolicyId) throws CommandException {
+        try {
+            ApplicationPolicyBean policy = (ApplicationPolicyBean) restClient.getEntity(ENDPOINT_GET_APPLICATION_POLICY,
+                    ApplicationPolicyBean.class, "{applicationPolicyId}", applicationPolicyId, "application policy");
+
+            if (policy == null) {
+                System.out.println("Application policy not found: " + applicationPolicyId);
+                return;
+            }
+
+            System.out.println("Application policy: " + applicationPolicyId);
+            System.out.println(getGson().toJson(policy));
+        } catch (Exception e) {
+            String message = "Error in describing application policy: " + applicationPolicyId;
+            printError(message, e);
+        }
+    }
+
+    /**
      * Describe autoscaling policy
      * @throws CommandException
      */
@@ -1673,6 +1701,14 @@ public class RestCommandLineService {
     }
 
     /**
+     * Deploy application policy
+     * @throws CommandException
+     */
+    public void addApplicationPolicy(String applicationPolicy) throws CommandException {
+        restClient.deployEntity(ENDPOINT_DEPLOY_APPLICATION_POLICY, applicationPolicy, "application policy");
+    }
+
+    /**
      * Update deployment policy
      * @throws CommandException
      */
@@ -1724,6 +1760,61 @@ public class RestCommandLineService {
             String message = "Could not list deployment policies";
             printError(message, e);
         }
+    }
+
+    /**
+     * List application policies
+     * @throws CommandException
+     */
+    public void listApplicationPolicies() throws CommandException {
+        try {
+            Type listType = new TypeToken<ArrayList<ApplicationPolicyBean>>() {
+            }.getType();
+            List<ApplicationPolicyBean> list = (List<ApplicationPolicyBean>) restClient.listEntity(ENDPOINT_LIST_APPLICATION_POLICIES,
+                    listType, "application policies");
+
+            if ((list == null) || (list == null) || (list.size() == 0)) {
+                System.out.println("No application policies found");
+                return;
+            }
+
+            RowMapper<ApplicationPolicyBean> rowMapper = new RowMapper<ApplicationPolicyBean>() {
+
+                public String[] getData(ApplicationPolicyBean policy) {
+                    String[] data = new String[3];
+                    data[0] = policy.getId();
+                    data[1] = String.valueOf(policy.getNetworkPartitions().length);
+                    data[2] = policy.getAlgorithm();
+                    return data;
+                }
+            };
+
+            ApplicationPolicyBean[] array = new ApplicationPolicyBean[list.size()];
+            array = list.toArray(array);
+
+            System.out.println("Application policies found:");
+            CliUtils.printTable(array, rowMapper, "ID", "No of Network partitions","algorithm");
+        } catch (Exception e) {
+            String message = "Could not list application policies";
+            printError(message, e);
+        }
+    }
+
+    /**
+     * Delete application policy
+     * @throws CommandException
+     */
+    public void deleteApplicationPolicy(String policyId) {
+        restClient.deleteEntity(ENDPOINT_REMOVE_APPLICATION_POLICY.replace("{policyId}", policyId), policyId,
+                "application policy");
+    }
+
+    /**
+     * Update application policy
+     * @throws CommandException
+     */
+    public void updateApplicationPolicy(String applicationPolicy) throws CommandException {
+        restClient.updateEntity(ENDPOINT_UPDATE_APPLICATION_POLICY, applicationPolicy, "application policy");
     }
 
 }
