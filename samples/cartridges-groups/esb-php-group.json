@@ -9,7 +9,7 @@
         "startupOrders": [
             "cartridge.my-esb,cartridge.my-php"
         ],
-        "terminationBehaviour": "terminate-all"
+        "terminationBehaviour": "terminate-none"
     }
 }
 
