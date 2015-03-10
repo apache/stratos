@@ -1,25 +1,23 @@
-{  
-   "applicationId":"single-cartridge-app",
-   "alias":"single-cartridge-app",
-   "multiTenant":false,
-   "components":{  
-      "cartridges":[  
-         {  
-                "type":"php",
-                "cartridgeMin": 1,
-                "cartridgeMax": 10,    
-		"subscribableInfo":{  
-               	"alias":"my-php",
-               	"autoscalingPolicy":"autoscaling-policy-1",
-                "deploymentPolicy":"deployment-policy-1",
-                "artifactRepository":{
-                   "privateRepo":false,
-                   "repoUrl":"https://github.com/imesh/stratos-php-applications.git",
-                   "repoUsername":"",
-                   "repoPassword":""
+{
+    "applicationId": "single-cartridge-app",
+    "alias": "single-cartridge-app",
+    "multiTenant": false,
+    "components": {
+        "cartridges": [
+            {
+                "type": "php",
+                "subscribableInfo": {
+                    "alias": "my-php",
+                    "autoscalingPolicy": "autoscaling-policy-1",
+                    "deploymentPolicy": "deployment-policy-1",
+                    "artifactRepository": {
+                        "privateRepo": false,
+                        "repoUrl": "https://github.com/imesh/stratos-php-applications.git",
+                        "repoUsername": "",
+                        "repoPassword": ""
+                    }
                 }
             }
-         }
-      ]
-   }
+        ]
+    }
 }

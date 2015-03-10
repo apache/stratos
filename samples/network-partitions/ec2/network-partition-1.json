@@ -1,9 +1,9 @@
 {
     "id": "network-partition-1",
+    "provider": "ec2",
     "partitions": [
         {
             "id": "partition-1",
-            "provider": "ec2",
             "property": [
                 {
                     "name": "region",
