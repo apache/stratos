@@ -89,10 +89,10 @@
             "link": "applications/",
             "linkexternal": false,
             "context": "/",
-            "title": "Applications",
+            "title": "Application Management",
             "icon": "fa-archive",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
-            "description": "Subscribe to Application.",
+            "description": "Manage cartridge groups, application policies and applications",
             "sub-menu": [
                 {
                     "link": "applications/groups/",
