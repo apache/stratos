@@ -1,10 +1,10 @@
 {
     "id": "network-p1",
     "activeByDefault": "true",
+    "provider": "mock",
     "partitions": [
         {
             "id": "p1",
-            "provider": "mock",
             "property": [
                 {
                     "name": "region",

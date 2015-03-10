@@ -14,6 +14,12 @@
             "type": "string",
             "title":"Network Partition Id"
         },
+        "provider": {
+            "id": "root/provider",
+            "type": "string",
+            "title":"Network Partition provider",
+            "enum": ["mock", "ec2", "openstack", "kubernetes"]
+        },
         "activeByDefault": {
             "id": "root/activeByDefault",
             "type": "boolean",
@@ -30,10 +36,6 @@
                 "properties": {
                     "id": {
                         "id": "root/partitions/0/id",
-                        "type": "string"
-                    },
-                    "provider": {
-                        "id": "root/partitions/0/provider",
                         "type": "string"
                     },
                     "property": {
