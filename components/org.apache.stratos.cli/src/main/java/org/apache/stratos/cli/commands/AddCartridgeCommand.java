@@ -24,8 +24,10 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -63,7 +65,7 @@ public class AddCartridgeCommand implements Command<StratosCommandContext> {
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -77,16 +79,18 @@ public class AddCartridgeCommand implements Command<StratosCommandContext> {
 
             try {
                 commandLine = parser.parse(options, args);
+              //merge newly discovered options with previously discovered ones.
+              Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("Cartridge deployment");
                 }
 
-                if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
+                if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Resource path option is passed");
                     }
-                    resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+                    resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                     cartridgeJson = readResource(resourcePath);
                 }
 

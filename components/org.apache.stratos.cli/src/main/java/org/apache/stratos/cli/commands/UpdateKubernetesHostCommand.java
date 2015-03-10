@@ -25,6 +25,7 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class UpdateKubernetesHostCommand implements Command<StratosCommandContex
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing command: ", getName());
         }
@@ -85,26 +86,28 @@ public class UpdateKubernetesHostCommand implements Command<StratosCommandContex
         try {
             CommandLineParser parser = new GnuParser();
             CommandLine commandLine = parser.parse(options, args);
+            //merge newly discovered options with previously discovered ones.
+            Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
             
-            if((commandLine.hasOption(CliConstants.RESOURCE_PATH)) && (commandLine.hasOption(CliConstants.HOST_ID_OPTION)) 
-            		&& (commandLine.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
+            if((opts.hasOption(CliConstants.RESOURCE_PATH)) && (opts.hasOption(CliConstants.HOST_ID_OPTION)) 
+            		&& (opts.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
             	               
                 // get cluster id arg value
-            	String clusterId = commandLine.getOptionValue(CliConstants.CLUSTER_ID_OPTION);
+            	String clusterId = opts.getOption(CliConstants.CLUSTER_ID_OPTION).getValue();
                 if (clusterId == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 
                 // get host id arg value
-            	String hostId = commandLine.getOptionValue(CliConstants.HOST_ID_OPTION);
+            	String hostId = opts.getOption(CliConstants.HOST_ID_OPTION).getValue();
                 if (hostId == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
                 
                 // get resource path arg value
-            	String resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
+            	String resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                 if (resourcePath == null) {
                     context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;

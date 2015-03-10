@@ -6,6 +6,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +46,7 @@ public class ListCartridgesByFilterCommand implements Command<StratosCommandCont
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -58,16 +59,18 @@ public class ListCartridgesByFilterCommand implements Command<StratosCommandCont
 
             try {
                 commandLine = parser.parse(options, args);
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
 
                 if (logger.isDebugEnabled()) {
                     logger.debug("List cartridges by a filter");
                 }
 
-                if (commandLine.hasOption(CliConstants.CARTRIDGE_FILTER_OPTION)) {
+                if (opts.hasOption(CliConstants.CARTRIDGE_FILTER_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Filter option is passed");
                     }
-                    filter = commandLine.getOptionValue(CliConstants.CARTRIDGE_FILTER_OPTION);
+                    filter = opts.getOption(CliConstants.CARTRIDGE_FILTER_OPTION).getValue();
                 }
 
                 if (filter == null) {

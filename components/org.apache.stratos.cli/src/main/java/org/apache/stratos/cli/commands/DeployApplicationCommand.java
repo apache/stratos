@@ -25,6 +25,7 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +79,7 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }
@@ -93,21 +94,24 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
             try {
                 commandLine = parser.parse(options, args);
 
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+
                 if (logger.isDebugEnabled()) {
                     logger.debug("Deploy application");
                 }
 
-                if (commandLine.hasOption(CliConstants.APPLICATION_ID_OPTION)) {
+                if (opts.hasOption(CliConstants.APPLICATION_ID_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Application Id option is passed");
                     }
-                    applicationId = commandLine.getOptionValue(CliConstants.APPLICATION_ID_OPTION);
+                    applicationId = opts.getOption(CliConstants.APPLICATION_ID_OPTION).getValue();
                 }
-                if (commandLine.hasOption(CliConstants.APPLICATION_POLICY_ID_OPTION)) {
+                if (opts.hasOption(CliConstants.APPLICATION_POLICY_ID_OPTION)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("Application policy Id option is passed");
                     }
-                    applicationPolicyId = commandLine.getOptionValue(CliConstants.APPLICATION_POLICY_ID_OPTION);
+                    applicationPolicyId = opts.getOption(CliConstants.APPLICATION_POLICY_ID_OPTION).getValue();
                 }
 
                 if (applicationId == null || applicationPolicyId == null) {
