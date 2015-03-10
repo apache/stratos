@@ -365,12 +365,15 @@ public class DefaultApplicationParser implements ApplicationParser {
             }
 
             // Add metadata keys defined in cartridges as export metadata keys
-		    for (String str : cartridgeInfo.getMetadataKeys()) {
-			    if(!StringUtils.isBlank(str)) {
-				    exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
-				                                           .getAlias() + METADATA_APPENDER + str);
-			    }
-		    }
+		    String[] metadataKeys = cartridgeInfo.getMetadataKeys();
+		    if (metadataKeys != null) {
+		    	for (String str : metadataKeys) {
+		    		if(!StringUtils.isBlank(str)) {
+		    			exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
+		    					.getAlias() + METADATA_APPENDER + str);
+		    		}
+		    	}
+			}
 
             // get hostname and cluster id
             ClusterInformation clusterInfo;
