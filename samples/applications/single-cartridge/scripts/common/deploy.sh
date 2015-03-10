@@ -37,14 +37,13 @@ echo "Adding php cartridge..."
 curl -X POST -H "Content-Type: application/json" -d "@${iaas_cartridges_path}/php.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/cartridges
 
 sleep 1
-
 echo "Adding application policy..."
 curl -X POST -H "Content-Type: application/json" -d "@${application_policies_path}/application-policy-1.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applicationPolicies
 
+sleep 1
 echo "Adding application..."
 curl -X POST -H "Content-Type: application/json" -d "@${artifacts_path}/application.json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications
 
 sleep 1
-
 echo "Deploying application..."
 curl -X POST -H "Content-Type: application/json" -k -v -u admin:admin https://${host_ip}:${host_port}/api/applications/single-cartridge-app/deploy/application-policy-1
