@@ -134,6 +134,7 @@ var render = function (theme, data, meta, require) {
                                 formContext: data.breadcrumbPathLevelTwo,
                                 appName: data.appName,
                                 topologyData: data.topologyData,
+                                applicationJSON:data.applicationJSON,
                                 form_action: data.form_action,
                                 formHtml: data.formHtml,
                                 formData: data.formData,
