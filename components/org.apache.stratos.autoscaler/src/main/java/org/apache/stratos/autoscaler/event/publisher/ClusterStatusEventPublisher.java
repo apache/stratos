@@ -184,15 +184,18 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminating)){
-                    if (clusterInstance.getStatus() != ClusterStatus.Terminating) {
-                        ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
-                                new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId, instanceId);
 
-                        publishEvent(appStatusClusterTerminatingEvent);
-                    } else {
-                        if (log.isDebugEnabled()) {
-                            log.warn("Cluster is already terminating, [cluster] " + clusterId);
+                if(clusterInstance != null){
+                    if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminating)){
+                        if (clusterInstance.getStatus() != ClusterStatus.Terminating) {
+                            ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
+                                    new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId, instanceId);
+
+                            publishEvent(appStatusClusterTerminatingEvent);
+                        } else {
+                            if (log.isDebugEnabled()) {
+                                log.warn("Cluster is already terminating, [cluster] " + clusterId);
+                            }
                         }
                     }
                 }
