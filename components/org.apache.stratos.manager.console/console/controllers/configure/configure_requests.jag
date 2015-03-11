@@ -55,7 +55,7 @@ try {
             formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
             break;
         case "delete-deploymentpolicy":
-            formSubmit = util.RESTCalls.deleteAutoscalePolicyDefinition(formPayload);
+            formSubmit = util.RESTCalls.deleteDeploymentPolicyDefinition(formPayload);
             break;
         case "delete-kubernetes-cluster":
             formSubmit = util.RESTCalls.deleteKubernetesClusterDefinition(formPayload);
