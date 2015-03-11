@@ -25,13 +25,14 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 public class AddNetworkPartitionCommand implements Command<StratosCommandContext> {
 
@@ -128,7 +129,8 @@ public class AddNetworkPartitionCommand implements Command<StratosCommandContext
                     if (logger.isTraceEnabled()) {
                         logger.trace("Resource path option is passed");
                     }
-                    
+
+                    resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                     partitionJson = readResource(resourcePath);
                 }
 
