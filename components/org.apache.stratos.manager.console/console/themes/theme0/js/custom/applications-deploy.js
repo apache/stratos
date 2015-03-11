@@ -384,7 +384,7 @@ $(document).ready(function(){
         var formtype = 'deployments';
         var applicationId = applicationJSON.applicationId;
         var btn = $(this);
-        console.log('hit kme')
+
         btn.html("<i class='fa fa-spinner fa-spin'></i> Adding Application Policy ");
         $.ajax({
             type: "POST",
@@ -398,6 +398,7 @@ $(document).ready(function(){
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'warning'});
                 } else {
                     var n = noty({text: data.message, layout: 'bottomRight', type: 'success'});
+
                 }
             }
         })
