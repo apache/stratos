@@ -480,19 +480,29 @@ public class GroupMonitor extends ParentComponentMonitor {
         int currentInstances = networkPartitionContext.getNonTerminatedInstancesCount();
         float requiredInstances = factor * ((GroupLevelNetworkPartitionContext)
                                 networkPartitionContext).getMinInstanceCount();
-        float additionalInstances = requiredInstances - currentInstances;
-        if(additionalInstances >= 1) {
-            createGroupInstanceOnScaling(networkPartitionContext, parentInstanceId);
-        } else {
-            //have to scale down
-            if(networkPartitionContext.getPendingInstancesCount() != 0) {
-                ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
-                        networkPartitionContext.getPendingInstances().get(0).getId());
+        int ceilingRequiredInstances = (int) Math.ceil(requiredInstances);
+        if(ceilingRequiredInstances > currentInstances) {
 
-            } else {
-                List<InstanceContext> activeInstances = networkPartitionContext.getActiveInstances();
-                ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
-                        activeInstances.get(activeInstances.size() - 1).toString());
+            int instancesToBeCreated = ceilingRequiredInstances - currentInstances;
+            for(int count = 0; count < instancesToBeCreated; count++){
+
+                createGroupInstanceOnScaling(networkPartitionContext, parentInstanceId);
+            }
+        } else if(ceilingRequiredInstances < currentInstances){
+
+            int instancesToBeTerminated = currentInstances - ceilingRequiredInstances;
+            for(int count = 0; count < instancesToBeTerminated; count++){
+
+                //have to scale down
+                if(networkPartitionContext.getPendingInstancesCount() != 0) {
+                    ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
+                            networkPartitionContext.getPendingInstances().get(0).getId());
+
+                } else {
+                    List<InstanceContext> activeInstances = networkPartitionContext.getActiveInstances();
+                    ApplicationBuilder.handleGroupTerminatingEvent(appId, this.id,
+                            activeInstances.get(activeInstances.size() - 1).toString());
+                }
             }
         }
 
