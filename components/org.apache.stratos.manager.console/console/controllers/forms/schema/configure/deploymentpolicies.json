@@ -14,43 +14,43 @@
             "type": "string",
             "title":"Deployment policy ID"
         },
-        "networkPartition": {
-            "id": "root/networkPartition",
+        "networkPartitions": {
+            "id": "root/networkPartitions",
             "title":"Network Partitions",
             "type": "array",
             "items": {
-                "id": "root/networkPartition/0",
+                "id": "root/networkPartitions/0",
                 "type": "object",
                 "title":"Network Partition",
                 "properties": {
                     "id": {
-                        "id": "root/networkPartition/0/id",
+                        "id": "root/networkPartitions/0/id",
                         "type": "string",
                         "title":"Network Partition ID",
                     },
                     "partitionAlgo": {
-                        "id": "root/networkPartition/0/partitionAlgo",
+                        "id": "root/networkPartitions/0/partitionAlgo",
                         "type": "string",
                         "title":"Network Partition Algorithm",
                         "enum": ["round-robin", "one-after-another"],
                         "maxItems":1
                     },
                     "partitions": {
-                        "id": "root/networkPartition/0/partitions",
+                        "id": "root/networkPartitions/0/partitions",
                         "type": "array",
                         "title":"Partitions",
                         "items": {
-                            "id": "root/networkPartition/0/partitions/0",
+                            "id": "root/networkPartitions/0/partitions/0",
                             "type": "object",
                             "title":"Partition",
                             "properties": {
                                 "id": {
-                                    "id": "root/networkPartition/0/partitions/0/id",
+                                    "id": "root/networkPartitions/0/partitions/0/id",
                                     "type": "string",
                                     "title":"Partition ID",
                                 },
-                                "max": {
-                                    "id": "root/networkPartition/0/partitions/0/max",
+                                "partitionMax": {
+                                    "id": "root/networkPartitions/0/partitions/0/partitionMax",
                                     "type": "integer",
                                     "format": "number"
                                 }
@@ -63,6 +63,6 @@
     },
     "required": [
         "id",
-        "networkPartition"
+        "networkPartitions"
     ]
 }
