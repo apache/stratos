@@ -20,11 +20,6 @@
             "title":"Network Partition provider",
             "enum": ["mock", "ec2", "openstack", "kubernetes"]
         },
-        "activeByDefault": {
-            "id": "root/activeByDefault",
-            "type": "boolean",
-            "title":"Active By Default"
-        },
         "partitions": {
             "id": "root/partitions",
             "type": "array",
@@ -62,7 +57,6 @@
     },
     "required": [
         "id",
-        "activeByDefault",
         "partitions"
     ]
 }
