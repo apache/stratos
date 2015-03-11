@@ -436,8 +436,8 @@ public class GroupMonitor extends ParentComponentMonitor {
             GroupInstance instance = (GroupInstance) this.instanceIdToInstanceMap.get(instanceId);
             if (instance != null) {
                 if (log.isInfoEnabled()) {
-                    log.info("Publishing Cluster terminating event for [application] " + appId +
-                            " [group] " + id + " [instance] " + instanceId);
+                    log.info(String.format("Publishing Group terminating event for [application] %s [group] %s " +
+                                    "[instance] %s", appId, id, instanceId));
                 }
                 ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId);
             } else {
@@ -447,8 +447,8 @@ public class GroupMonitor extends ParentComponentMonitor {
                 if (!instanceIds.isEmpty()) {
                     for (String instanceId1 : instanceIds) {
                         if (log.isInfoEnabled()) {
-                            log.info("Publishing Cluster terminating event for [application] " + appId +
-                                    " [group] " + id + " [instance] " + instanceId1);
+                            log.info(String.format("Publishing Group terminating event for [application] %s [group] %s " +
+                                    "[instance] %s", appId, id, instanceId1));
                         }
                         ApplicationBuilder.handleGroupTerminatingEvent(appId, id, instanceId1);
                     }
