@@ -113,6 +113,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
         .text(groupJSON.alias)
         .addClass('input-false')
         .addClass('stepnode')
+        .attr('data-toggle', 'tooltip')
+        .attr('title',groupJSON.alias )
         .appendTo('#whiteboard');
     $(divRoot).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
     jsPlumb.addEndpoint($(divRoot), {
@@ -134,6 +136,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .text(item[prop].type)
                 .addClass('input-false')
                 .addClass('stepnode')
+                .attr('data-toggle', 'tooltip')
+                .attr('title',item[prop].type )
                 .appendTo('#whiteboard');
             $(divCartridge).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
             jsPlumb.addEndpoint($(divCartridge), {
@@ -159,6 +163,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
             var divGroup = $('<div>').attr({'id':cartridgeCounter+'-'+parentName+'-'+item[prop]['name'],'data-type':'group','data-ctype':item[prop]['name'] })
                 .text(item[prop]['name'])
                 .addClass('stepnode')
+                .attr('data-toggle', 'tooltip')
+                .attr('title',item[prop]['name'] )
                 .addClass('input-false')
                 .appendTo('#whiteboard');
             $(divGroup).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
