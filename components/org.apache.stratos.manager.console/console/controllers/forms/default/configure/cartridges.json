@@ -7,8 +7,8 @@
     "displayName":"PHP",
     "description":"PHP Cartridge",
     "version":"7",
-    "defaultAutoscalingPolicy":"economyPolicy",
     "multiTenant":"false",
+    "loadBalancingIPType": "private",
     "portMapping":[
         {
             "protocol":"http",

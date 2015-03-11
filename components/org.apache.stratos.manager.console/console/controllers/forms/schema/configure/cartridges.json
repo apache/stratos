@@ -98,13 +98,16 @@
             "default": false,
             "maxItems": 1
         },
-        "defaultAutoscalingPolicy": {
+        "loadBalancingIPType": {
             "type": "string",
-            "id": "root/defaultAutoscalingPolicy",
-            "title": "Default Autoscaling Policy",
-            "name": "Default Autoscaling Policy",
-            "default": "economyPolicy",
-            "required": false
+            "id": "root/loadBalancingIPType",
+            "title": "Load Balancing IP Type",
+            "description": "This will use to load balance to either private or public IP of the member",
+            "name": "Load Balancing IP Type",
+            "default": "private",
+            "propertyOrder": 7,
+            "maxItems": 1,
+            "enum": ["private","public"]
         },
         "portMapping": {
             "type": "array",
