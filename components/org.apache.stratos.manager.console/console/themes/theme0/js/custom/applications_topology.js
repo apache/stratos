@@ -458,6 +458,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
         .text(groupJSON.alias)
         .addClass('input-false')
         .addClass('application')
+        .attr('data-toggle', 'tooltip')
+        .attr('title',groupJSON.alias)
         .addClass('stepnode')
         .appendTo('#whiteboard');
 
@@ -480,6 +482,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
                 .text(item[prop].type)
                 .addClass('input-false')
                 .addClass('stepnode')
+                .attr('data-toggle', 'tooltip')
+                .attr('title',item[prop].type )
                 .appendTo('#whiteboard');
 
 
@@ -506,6 +510,8 @@ function addJsplumbGroup(groupJSON, cartridgeCounter){
             var divGroup = $('<div>').attr({'id':cartridgeCounter+'-'+parentName+'-'+item[prop]['name'],'data-type':'group','data-ctype':item[prop]['name'] })
                 .text(item[prop]['name'])
                 .addClass('stepnode')
+                .attr('data-toggle', 'tooltip')
+                .attr('title',item[prop]['name'])
                 .addClass('input-false')
                 .appendTo('#whiteboard');
 
