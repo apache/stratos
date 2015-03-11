@@ -91,7 +91,7 @@ if [[ $answer = y ]] ; then
 	/root/bin/puppetinstall/puppetinstall "${ARGS[@]}"
 	#check for java agent lock file
 	if [ -e ${LOCKFILE} ]; then
-    ${RM} ${LOCKFILE}
+	${RM} ${LOCKFILE}
 	fi
 
 	${GREP} -q '/root/bin/init.sh > /tmp/puppet_log' /etc/rc.local || ${SED} -i 's/exit 0$/\/root\/bin\/init.sh \> \/tmp\/puppet_log\nexit 0/' /etc/rc.local
