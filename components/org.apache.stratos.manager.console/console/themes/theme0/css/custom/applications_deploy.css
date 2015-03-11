@@ -33,6 +33,9 @@
     padding-top: 24px;
     text-align: center;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .stepnode i {
     margin-top: 2px;
