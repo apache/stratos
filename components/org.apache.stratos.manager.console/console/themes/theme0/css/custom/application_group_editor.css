@@ -31,9 +31,15 @@
     padding-top: 24px;
     text-align: center;
     cursor: pointer;
+}
+
+.stepnode span{
+    position: absolute;
+    width: 4em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-left: -27px;
 }
 
 .block-cartridge {

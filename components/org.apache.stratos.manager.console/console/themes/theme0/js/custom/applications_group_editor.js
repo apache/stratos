@@ -90,8 +90,10 @@ var cartridgeCounter=0;
 function addJsplumbCartridge(idname, cartridgeCounter) {
 
     var Div = $('<div>').attr({'id':cartridgeCounter+'-'+idname, 'data-type':'cartridge', 'data-ctype':idname } )
-        .text(idname)
+        .attr('data-toggle', 'tooltip')
+        .attr('title',idname)
         .appendTo('#whiteboard');
+    $(Div).append('<span>'+idname+'</span>');
     $(Div).addClass('stepnode');
     jsPlumb.addEndpoint($(Div), {
         anchor: "TopCenter"
@@ -104,10 +106,12 @@ function addJsplumbCartridge(idname, cartridgeCounter) {
 function addJsplumbGroup(cartridgeCounter) {
 
     var div = $('<div>').attr({'id':cartridgeCounter+'-group','data-type':'group','data-ctype':''})
-        .text('Group')
         .addClass('input-false')
         .addClass('stepnode')
+        .attr('data-toggle', 'tooltip')
+        .attr('title','Group')
         .appendTo('#whiteboard');
+    $(div).append('<span>Group</span>');
     $(div).append('<div class="notification"><i class="fa fa-exclamation-circle fa-2x"></i></div>');
     jsPlumb.addEndpoint($(div), {
         anchor:"BottomCenter"
