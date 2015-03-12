@@ -23,9 +23,8 @@
        "iaasProvider": [
 	     {
           "type": "openstack",
-          "imageId": "RegionOne/f2ddf72a-4e76-4893-a9fa-e5f4352f1a86",
-          "maxInstanceLimit": "2",
-          "property": [
+           "imageId": "RegionOne/f2ddf72a-4e76-4893-a9fa-e5f4352f1a86",
+           "property": [
            {
              "name": "instanceType",
              "value": "RegionOne/3"

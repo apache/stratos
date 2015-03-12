@@ -20,7 +20,6 @@
         {
             "type": "mock",
             "imageId": "image1",
-            "maxInstanceLimit": "2",
             "property": [
                 {
                     "name": "instanceType",

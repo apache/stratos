@@ -26,7 +26,7 @@
                     "networkUuid": "b55f009a-1cc6-4b17-924f-4ae0ee18db5e"
                 }
             ],
-            "maxInstanceLimit": "2",
+
             "property": [
                 {
                     "name": "instanceType",

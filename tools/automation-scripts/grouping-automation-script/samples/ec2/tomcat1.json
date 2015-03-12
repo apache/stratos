@@ -18,9 +18,8 @@
        "iaasProvider": [
 	     {
           "type": "ec2",
-          "imageId": "ap-southeast-1/ami-3c0f5d6e",
-          "maxInstanceLimit": "2",
-          "property": [
+           "imageId": "ap-southeast-1/ami-3c0f5d6e",
+           "property": [
           ]
          }
       ],
