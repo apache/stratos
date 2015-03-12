@@ -19,8 +19,7 @@
 
 package org.apache.stratos.cli.commands;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import org.apache.commons.cli.*;
 import org.apache.stratos.cli.Command;
 import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
@@ -29,12 +28,28 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
+
 public class ListKubernetesHostsCommand implements Command<StratosCommandContext> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ListKubernetesHostsCommand.class);
 
-	public ListKubernetesHostsCommand() {
-	}
+    private final Options options;
+
+    public ListKubernetesHostsCommand(){
+        options = constructOptions();
+    }
+
+    private Options constructOptions() {
+        final Options options = new Options();
+
+        Option clusterId = new Option(CliConstants.CLUSTER_ID_OPTION, CliConstants.CLUSTER_ID_LONG_OPTION, true,
+                "Cluster id");
+        clusterId.setArgName("cluster id");
+        options.addOption(clusterId);
+
+        return options;
+    }
 
 	public String getName() {
 		return "list-kubernetes-hosts";
@@ -45,24 +60,59 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
 	}
 
 	public String getArgumentSyntax() {
-		return "[cluster-id]";
-	}
-
-	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing command: ", getName());
-		}
-		if ((args == null) || (args.length == 0)) {
-            context.getStratosApplication().printUsage(getName());
-            return CliConstants.COMMAND_FAILED;
-		} else {
-            String clusterId = args[0];
-            RestCommandLineService.getInstance().listKubernetesHosts(clusterId);
-            return CliConstants.COMMAND_SUCCESSFULL;
-		}
-	}
-
-	public Options getOptions() {
 		return null;
 	}
+
+    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Executing {} command...", getName());
+        }
+
+        if (args != null && args.length > 0) {
+            String clusterId= null;
+
+            final CommandLineParser parser = new GnuParser();
+            CommandLine commandLine;
+
+            try {
+                commandLine = parser.parse(options, args);
+                //merge newly discovered options with previously discovered ones.
+                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+
+                if (logger.isDebugEnabled()) {
+                    logger.debug("List kubernetes hosts of a cluster");
+                }
+
+                if (opts.hasOption(CliConstants.CLUSTER_ID_OPTION)) {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Cluster id option is passed");
+                    }
+                    clusterId = opts.getOption(CliConstants.CLUSTER_ID_OPTION).getValue();
+                }
+
+                if (clusterId == null) {
+                    System.out.println("usage: " + getName() + "usage: " + getName() + " [-c <cluster-id>]");
+                    return CliConstants.COMMAND_FAILED;
+                }
+
+                RestCommandLineService.getInstance().listKubernetesHosts(clusterId);
+                return CliConstants.COMMAND_SUCCESSFULL;
+
+            } catch (ParseException e) {
+                if (logger.isErrorEnabled()) {
+                    logger.error("Error parsing arguments", e);
+                }
+                System.out.println(e.getMessage());
+                return CliConstants.COMMAND_FAILED;
+            }
+
+        } else {
+            context.getStratosApplication().printUsage(getName());
+            return CliConstants.COMMAND_FAILED;
+        }
+    }
+
+    public Options getOptions() {
+        return options;
+    }
 }
