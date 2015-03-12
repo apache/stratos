@@ -27,9 +27,15 @@
     padding-top: 24px;
     text-align: center;
     cursor: pointer;
+}
+
+.stepnode span{
+    position: absolute;
+    width: 4em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    margin-left: -27px;
 }
 
 .block-cartridge {
@@ -58,6 +64,9 @@
     word-wrap: break-word;
     padding-top: 24px;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .app-creator {
@@ -145,8 +154,9 @@
 
 #component-data{margin-top: 20px}
 .stepnode i {
-    margin-top: 2px;
+    margin-top: 0px;
     color: #e67e22;
+    margin-left: -7px;
 }
 
 .notification {
