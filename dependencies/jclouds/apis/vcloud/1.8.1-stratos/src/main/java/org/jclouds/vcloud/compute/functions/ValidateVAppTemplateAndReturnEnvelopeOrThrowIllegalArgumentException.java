@@ -51,9 +51,6 @@ public class ValidateVAppTemplateAndReturnEnvelopeOrThrowIllegalArgumentExceptio
    public Envelope apply(VAppTemplate from) {
       checkArgument(from.getChildren().size() == 1, "multiple vms are not supported: %s", from);
 
-      checkArgument(from.getNetworkSection().getNetworks().size() == 1,
-               "multiple network connections are not supported: %s", from);
-
       checkArgument(from.isOvfDescriptorUploaded(), "ovf descriptor is not uploaded: %s", from);
       Envelope ovf = getOVFForVAppTemplateAndValidate(from);
       return ovf;

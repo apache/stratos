@@ -22,17 +22,22 @@ import static com.google.common.collect.Iterables.find;
 import static com.google.common.collect.Iterables.get;
 import static org.jclouds.compute.util.ComputeServiceUtils.getCores;
 import static org.jclouds.compute.util.ComputeServiceUtils.metadataAndTagsAsCommaDelimitedValue;
+import static org.jclouds.util.Predicates2.retry;
 import static org.jclouds.vcloud.compute.util.VCloudComputeUtils.getCredentialsFrom;
-import static org.jclouds.vcloud.options.InstantiateVAppTemplateOptions.Builder.addNetworkConfig;
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.net.URI;
-import java.util.Map;
+import java.net.URISyntaxException;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import org.jclouds.cim.ResourceAllocationSettingData;
 import org.jclouds.compute.ComputeServiceAdapter.NodeAndInitialCredentials;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.reference.ComputeServiceConstants;
@@ -44,16 +49,12 @@ import org.jclouds.rest.annotations.BuildVersion;
 import org.jclouds.vcloud.TaskStillRunningException;
 import org.jclouds.vcloud.VCloudApi;
 import org.jclouds.vcloud.compute.options.VCloudTemplateOptions;
-import org.jclouds.vcloud.domain.GuestCustomizationSection;
-import org.jclouds.vcloud.domain.NetworkConnection;
-import org.jclouds.vcloud.domain.NetworkConnectionSection;
+import org.jclouds.vcloud.domain.*;
 import org.jclouds.vcloud.domain.NetworkConnectionSection.Builder;
-import org.jclouds.vcloud.domain.Task;
-import org.jclouds.vcloud.domain.VApp;
-import org.jclouds.vcloud.domain.VAppTemplate;
-import org.jclouds.vcloud.domain.Vm;
+import org.jclouds.vcloud.domain.internal.VmImpl;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
 import org.jclouds.vcloud.domain.network.NetworkConfig;
+import org.jclouds.vcloud.domain.ovf.VCloudNetworkAdapter;
 import org.jclouds.vcloud.options.InstantiateVAppTemplateOptions;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -61,6 +62,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.ImmutableSet;
+import org.jclouds.vcloud.predicates.TaskSuccess;
 
 @Singleton
 public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployAndPowerOn {
@@ -132,7 +134,7 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
       waitForTask(updateVmWithNameAndCustomizationScript(vm, name, vOptions.getCustomizationScript()));
       logger.trace("<< updated customization vm(%s)", name);
 
-      ensureVmHasAllocationModeOrPooled(vAppResponse, vOptions.getIpAddressAllocationMode());
+       ensureVmHasDesiredNetworkConnectionSettings(vAppResponse, vOptions);
 
       int cpuCount = (int) getCores(template.getHardware());
       logger.trace(">> updating cpuCount(%d) vm(%s)", cpuCount, vm.getName());
@@ -169,23 +171,7 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
          throw new UnsupportedOperationException("we currently do not support multiple vms in a vAppTemplate "
                   + vAppTemplate);
 
-      if (vAppTemplate.getNetworkSection().getNetworks().size() > 1)
-         throw new UnsupportedOperationException(
-                  "we currently do not support multiple network connections in a vAppTemplate " + vAppTemplate);
-
-      Network networkToConnect = get(vAppTemplate.getNetworkSection().getNetworks(), 0);
-
-      
-      NetworkConfig config = networkConfigurationForNetworkAndOptions.apply(networkToConnect, vOptions);
-
-      // note that in VCD 1.5, the network name after instantiation will be the same as the parent
-      InstantiateVAppTemplateOptions options = addNetworkConfig(config);
-
-      // TODO make disk size specifiable
-      // disk((long) ((template.getHardware().getVolumes().get(0).getSize()) *
-      // 1024 * 1024l));
-
-
+       VmImpl vmTemplate = VmImpl.class.cast(vAppTemplate.getChildren().iterator().next());
 
       String description = VCloudTemplateOptions.class.cast(template.getOptions()).getDescription();
       if (description == null) {
@@ -193,7 +179,84 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
          description = Joiner.on('\n').withKeyValueSeparator("=").join(md);
       }
 
-      options.description(description);
+      InstantiateVAppTemplateOptions options = InstantiateVAppTemplateOptions.Builder.description(description);
+
+      /*
+       * Match up networks in the vApp template with the ones in the options we got passed in, so that
+       * the right ones can be wired together.
+       * Note that in the end the order of the network interfaces is what's important, not the names. The names
+       * might not match up. In the worst case, maybe someone called their vApp networks A and B, but really wants
+       * them cross-connected, i.e. wired up to B and A respectively.
+       * The only potential issue here is that the networks in the vOptions are stored as a Set, which makes little
+       * sense. While the API is what it is, we need to rely on people higher up using sensible underlying
+       * datastructures (that conform to the set interface), which preserve their order.
+       */
+
+      int vmTemplateNumNetworks = vmTemplate.getNetworkConnectionSection().getConnections().size();
+
+      /*
+       * Backwards-compatibility hack: we might get passed in a parent network URI and an empty vOptions.networks list.
+       * In that case, move the parent network URI into the vOptions.networks list, and remove the parent URI.
+       */
+      if (vOptions.getNetworks().size() == 0 && vmTemplateNumNetworks == 1 && vOptions.getParentNetwork() != null) {
+         ArrayList<String> netlist = new ArrayList<String>();
+         netlist.add(vOptions.getParentNetwork().toASCIIString());
+         vOptions.networks(netlist);
+         vOptions.parentNetwork(null);
+      }
+
+      URI[] vOptionsNetworkIdList = new URI[vOptions.getNetworks().size()];
+      NetworkConnection[] vAppTemplateNetworkList =
+         new NetworkConnection[vmTemplateNumNetworks];
+
+      //hopefully this preserves the original order, assuming the original underlying datastructure was ordered.
+      int i = 0;
+      for (String network: vOptions.getNetworks()) {
+         try {
+            vOptionsNetworkIdList[i] = new URI(network);
+         } catch (URISyntaxException e) {
+             logger.error(e, "Failed to convert href '" + network + "' to URI. We expect a href to a network to be " +
+               "passed in, not a name for example.");
+            return null;
+         }
+         i++;
+      }
+
+      //iterate over the NetworkConnectionSection, and put them in order of their connection indices
+      // into the vAppTemplateNetworkList.
+      for (NetworkConnection netCon: vmTemplate.getNetworkConnectionSection().getConnections()) {
+         vAppTemplateNetworkList[netCon.getNetworkConnectionIndex()] = netCon;
+      }
+
+      for (i = 0; i < vOptionsNetworkIdList.length; i++) {
+         URI parentNetwork = vOptionsNetworkIdList[i];
+         NetworkConnection networkConnectionParams = vAppTemplateNetworkList.length > i ? vAppTemplateNetworkList[i] : null;
+         //hook 'em up.
+
+         //use network name from vAppTemplate if possible
+         String networkName;
+         if (networkConnectionParams != null) {
+            networkName = networkConnectionParams.getNetwork();
+         } else {
+            networkName = "jclouds-net-" + String.valueOf(i);
+         }
+
+         Network n = new Network(networkName, null); // ignore description, not needed here.
+         VCloudTemplateOptions networkTemplateOptions = vOptions.clone(); //we'll modify bits here
+         networkTemplateOptions.parentNetwork(parentNetwork);
+
+         NetworkConfig config = networkConfigurationForNetworkAndOptions.apply(n, networkTemplateOptions);
+         // note that in VCD 1.5, the network name after instantiation will be the same as the parent
+         options.addNetworkConfig(config);
+         logger.debug("Connecting vApp network " + n.getName() + " to org network " + parentNetwork + ".");
+      }
+
+      // TODO make disk size specifiable
+      // disk((long) ((template.getHardware().getVolumes().get(0).getSize()) *
+      // 1024 * 1024l));
+
+
+
       options.deploy(false);
       options.powerOn(false);
 
@@ -245,37 +308,161 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
       return client.getVmApi().updateGuestCustomizationOfVm(guestConfiguration, vm.getHref());
    }
 
-   public void ensureVmHasAllocationModeOrPooled(VApp vApp, @Nullable IpAddressAllocationMode ipAllocationMode) {
+   public void ensureVmHasDesiredNetworkConnectionSettings(VApp vApp, VCloudTemplateOptions vOptions) {
       Network networkToConnect = find(vApp.getNetworkSection().getNetworks(), not(networkWithNoIpAllocation));
 
       Vm vm = get(vApp.getChildren(), 0);
 
-      NetworkConnectionSection net = vm.getNetworkConnectionSection();
-      checkArgument(net.getConnections().size() > 0, "no connections on vm %s", vm);
+      NetworkConnectionSection nets = vm.getNetworkConnectionSection();
+      checkArgument(nets.getConnections().size() > 0, "no connections on vm %s", vm);
 
-      NetworkConnection toConnect = findWithPoolAllocationOrFirst(net);
+      /*
+       * Here we want to build the NetworkConnectionSection.
+       * This is not required if:
+       * - the user didn't pass in any vCloud specific NetworkConnection settings, and
+       * - there exist enough NetworkConnectionSections to cover the networks we need to
+       *   wire up to the VM
+       *
+       * In case of modifying the existing network connection, its important that
+       * those optional parameters whose value is not being changed needs to be returned
+       * with the existing values or vcloud puts default values for them. When mac address is not
+       * modified then it needs to be returned else vclouds changes the adapter type of the NIC to E1000.
+       *
+       * There are a couple of things that might require changes:
+       * - different parameters (e.g. ip address allocation mode)
+       * - insufficient NetworkConnection items (we need to add more to trigger the
+       *   creation of more NICs)
+       * - if the user didn't pass in any vCloud specific NetworkConnections, we might need to
+       *   create new ones here.
+       * It's easier to just unconditionally rewrite the network connection section,
+       * than to write some bug-prone code that checks all of the above conditions.
+       */
 
-      if (ipAllocationMode == null)
-         ipAllocationMode = toConnect.getIpAddressAllocationMode();
+      /*
+       * We also need to add NICs. If we don't do this, we'll get new NICs, but they'll all be E1000s.
+       * We really want to replicate the type of any existing adapters.
+       *
+       * We add the NICs only when it is needed. In case of vapp template having vm with multiple NICs
+       * and if we update only the existing NICs then vcloud throws error that primary NIC not found.
+       */
+      Set<? extends ResourceAllocationSettingData> allVirtualHWItems = vm.getVirtualHardwareSection().getItems();
+      Iterable<VCloudNetworkAdapter> existingNics = Iterables.filter(allVirtualHWItems, VCloudNetworkAdapter.class);
+      // we want to program all existing nics.
+      ArrayList<VCloudNetworkAdapter> nicsToProgram = Lists.newArrayList(existingNics);
 
-      // make sure that we are in fact allocating ips
-      if (ipAllocationMode == IpAddressAllocationMode.NONE)
-         ipAllocationMode = IpAddressAllocationMode.POOL;
-
-      if (toConnect.isConnected() && toConnect.getIpAddressAllocationMode() == ipAllocationMode
-               && toConnect.getNetwork().equals(networkToConnect.getName())) {
-         // then we don't need to change the network settings, and can save a call
-      } else {
-         Builder builder = net.toBuilder();
-         builder.connections(ImmutableSet.of(toConnect.toBuilder().network(networkToConnect.getName()).connected(true)
-                  .ipAddressAllocationMode(ipAllocationMode).build()));
-         logger.trace(">> updating networkConnection vm(%s)", vm.getName());
-
-         waitForTask(client.getVmApi().updateNetworkConnectionOfVm(builder.build(), vm.getHref()));
-         logger.trace("<< updated networkConnection vm(%s)", vm.getName());
-
+      //the first adapter type will be used as default for newly added ones.
+      String firstAdapterType = "E1000";
+      int nextInstanceID = 1;
+      if (nicsToProgram.size() >= 1) {
+         firstAdapterType = nicsToProgram.get(0).getResourceSubType();
+         nextInstanceID = 1 + Integer.valueOf(nicsToProgram.get(nicsToProgram.size() - 1).getInstanceID());
       }
 
+      int i = 0;
+      LinkedHashSet<NetworkConnection> connectionsToProgram = new LinkedHashSet<NetworkConnection>();
+      for (String netUuid: vOptions.getNetworks()) {
+         NetworkConnection desiredNC = vOptions.getNetworkConnections().get(netUuid);
+         String netName;
+         String macAddr;
+         NetworkConnection vappNC = findNetworkConnectionByIndexOrNull(nets, i);
+         if (vappNC != null && vappNC.getNetwork() != null) {
+            netName = vappNC.getNetwork();
+         } else {
+            netName = null;
+         }
+
+         if (vappNC != null && vappNC.getMACAddress() != null) {
+            macAddr = vappNC.getMACAddress();
+         } else {
+            macAddr = null;
+         }
+
+         if (desiredNC != null
+             && desiredNC.getNetworkConnectionIndex() != i) {
+            logger.error("Data consistency error: the network '" + netUuid + "'s connection index has been specified "
+               + "in the vCloud specific NetworkConnection settings in VCloudTemplateOptions.networkConnections, but "
+               + "the connection index does not match the "
+               + "position of the network in the TemplateOptions.networks object. Ignoring vCloud specific options for this net.");
+            desiredNC = null;
+         }
+         /*
+              Its not yet clear why the mac address in desiredNC is null. This needs to be explored.
+              This special handling is needed as the mac address is null and if it is not set, it results in NIC
+              type as E1000
+          */
+         if (desiredNC != null && macAddr != null && desiredNC.getMACAddress() == null){
+            NetworkConnection.Builder desiredNCBuilder = desiredNC.toBuilder();
+            desiredNCBuilder.MACAddress(macAddr);
+            desiredNC = desiredNCBuilder.build();
+         }
+         if (desiredNC != null && desiredNC.getIpAddressAllocationMode() == null
+            || desiredNC.getIpAddressAllocationMode() == IpAddressAllocationMode.NONE) {
+            logger.error("Data consistency error: the network '" + netUuid + "'s IP address allocation mode"
+               + "has been set to 'none' or null in the vCloud specific NetworkConnection settings in VCloudTemplateOptions.networkConnections. "
+               + "This is invalid. Ignoring vCloud specific options for this net.");
+            desiredNC = null;
+         }
+
+          NetworkConnection ncToAdd = null;
+          if (desiredNC == null) {
+            // use default settings
+            ncToAdd = new NetworkConnection(netName, i, null, null, true, null,
+               IpAddressAllocationMode.POOL);
+         } else {
+            if (netName != null && !netName.equals(desiredNC.getNetwork())) {
+               //something's probably wrong.
+               logger.warn("vcloud overridden network name '" + desiredNC.getNetwork() + "' doesn't match the vApp's "
+                  + " network with index " + i + " name '" + netName + "'");
+            }
+
+            if (netName == null && desiredNC.getNetwork() == null) {
+               //ok we need to come up with some network name.
+               netName = "jclouds-net-" + String.valueOf(i);
+               NetworkConnection.Builder ncBuilder = desiredNC.toBuilder();
+               ncToAdd = ncBuilder.network(netName).connected(desiredNC.isConnected())
+                  .externalIpAddress(desiredNC.getExternalIpAddress())
+                  .ipAddress(desiredNC.getIpAddress()).ipAddressAllocationMode(desiredNC.getIpAddressAllocationMode())
+                  .MACAddress(desiredNC.getMACAddress()).networkConnectionIndex(desiredNC.getNetworkConnectionIndex()).build();
+            } else {
+               ncToAdd = desiredNC;
+            }
+         }
+         connectionsToProgram.add(ncToAdd);
+
+         //OK, we've now setup the network connection. Now we want to check if we need to add a new NIC for it.
+         if (nicsToProgram.size() < connectionsToProgram.size()) {
+            VCloudNetworkAdapter.Builder nicBuilder = VCloudNetworkAdapter.builder();
+            //interesting values
+            nicBuilder.addressOnParent(String.valueOf(i));
+            nicBuilder.automaticAllocation(true);
+            nicBuilder.connection(ncToAdd.getNetwork());
+            nicBuilder.ipAddressingMode(ncToAdd.getIpAddressAllocationMode().toString());
+            nicBuilder.elementName("Network adapter " + String.valueOf(i));
+            nicBuilder.instanceID(String.valueOf(nextInstanceID));
+            nextInstanceID += 1;
+            nicBuilder.resourceSubType(firstAdapterType);
+            nicBuilder.resourceType(ResourceAllocationSettingData.ResourceType.ETHERNET_ADAPTER);
+
+            VCloudNetworkAdapter newNic = nicBuilder.build();
+            nicsToProgram.add(newNic);
+         }
+         i++;
+      }
+
+      // Add new nics only if they are needed
+      if (nicsToProgram.size() < connectionsToProgram.size()) {
+         logger.debug("Programming NICs: %s", nicsToProgram);
+         Task t = client.getVmApi().updateNetworkCardsOfVm(nicsToProgram, vm.getHref());
+         waitForTask(t);
+      }
+
+      // update the NetworkConnectionSection.
+      Builder builder = nets.toBuilder();
+      builder.connections(connectionsToProgram);
+      logger.trace(">> updating networkConnection vm(%s)", vm.getName());
+      logger.debug("New NetworkConnectionSection for VM %s: %s", vm.getName(), builder.build().toString());
+      waitForTask(client.getVmApi().updateNetworkConnectionOfVm(builder.build(), vm.getHref()));
+      logger.trace("<< updated networkConnection vm(%s)", vm.getName());
    }
 
    private NetworkConnection findWithPoolAllocationOrFirst(NetworkConnectionSection net) {
@@ -288,6 +475,17 @@ public class InstantiateVAppTemplateWithGroupEncodedIntoNameThenCustomizeDeployA
 
       }, get(net.getConnections(), 0));
    }
+
+    private NetworkConnection findNetworkConnectionByIndexOrNull(NetworkConnectionSection net, final int index) {
+        return find(net.getConnections(), new Predicate<NetworkConnection>() {
+
+            @Override
+            public boolean apply(NetworkConnection input) {
+                return input.getNetworkConnectionIndex() == index;
+            }
+
+        }, null);
+    }
 
    public Task updateCPUCountOfVm(Vm vm, int cpuCount) {
       return client.getVmApi().updateCPUCountOfVm(cpuCount, vm.getHref());

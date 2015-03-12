@@ -21,9 +21,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.emptyToNull;
 
 import java.net.URI;
+import java.util.Hashtable;
 import java.util.Map;
 
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.vcloud.domain.NetworkConnection;
 import org.jclouds.vcloud.domain.network.FenceMode;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
 
@@ -62,10 +64,8 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
             eTo.customizationScript(getCustomizationScript());
          if (getDescription() != null)
             eTo.description(getDescription());
-         if (getIpAddressAllocationMode() != null)
-            eTo.ipAddressAllocationMode(getIpAddressAllocationMode());
-         if (getIpAddressAllocationMode() != null)
-            eTo.ipAddressAllocationMode(getIpAddressAllocationMode());
+         if (getNetworkConnections() != null)
+            eTo.networkConnections(getNetworkConnections());
          if (getParentNetwork() != null)
             eTo.parentNetwork(getParentNetwork());
          if (getFenceMode() != null)
@@ -75,7 +75,9 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
 
    private String description = null;
    private String customizationScript = null;
-   private IpAddressAllocationMode ipAddressAllocationMode = null;
+   // This Hashtable maps TemplateOptions.networks[i] to each networks' specific vCloud options
+   // We index by network 'name' (href in vCloud)
+   private Hashtable<String, NetworkConnection> networkConnections = null;
    private URI parentNetwork = null;
    private FenceMode fenceMode = null;
 
@@ -88,20 +90,20 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
       VCloudTemplateOptions that = VCloudTemplateOptions.class.cast(o);
       return super.equals(that) && equal(this.description, that.description)
             && equal(this.customizationScript, that.customizationScript)
-            && equal(this.ipAddressAllocationMode, that.ipAddressAllocationMode)
+            && equal(this.networkConnections, that.networkConnections)
             && equal(this.parentNetwork, that.parentNetwork);
    }
 
    @Override
    public int hashCode() {
-      return Objects.hashCode(super.hashCode(), description, customizationScript, ipAddressAllocationMode,
+      return Objects.hashCode(super.hashCode(), description, customizationScript, networkConnections,
             parentNetwork);
    }
 
    @Override
    public ToStringHelper string() {
       return super.string().add("description", description).add("customizationScript", customizationScript)
-            .add("ipAddressAllocationMode", ipAddressAllocationMode).add("parentNetwork", parentNetwork);
+            .add("networkConnections", networkConnections).add("parentNetwork", parentNetwork);
    }
 
    /**
@@ -122,11 +124,12 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
    }
 
    /**
-    * Specifies the ipAddressAllocationMode used to for network interfaces on
-    * the VMs
+    * Specifies the networkConnections settings used to for network interfaces on
+    * the VMs. This lets you specify things like ip address allocation mode,
+    * the actual IP (in case of fixed IP) etc.
     */
-   public VCloudTemplateOptions ipAddressAllocationMode(IpAddressAllocationMode ipAddressAllocationMode) {
-      this.ipAddressAllocationMode = ipAddressAllocationMode;
+   public VCloudTemplateOptions networkConnections(Hashtable<String, NetworkConnection> networkConnections) {
+      this.networkConnections = networkConnections;
       return this;
    }
 
@@ -167,10 +170,10 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
       }
 
       /**
-       * @see VCloudTemplateOptions#ipAddressAllocationMode
+       * @see VCloudTemplateOptions#networkConnections
        */
-      public static VCloudTemplateOptions ipAddressAllocationMode(IpAddressAllocationMode ipAddressAllocationMode) {
-         return new VCloudTemplateOptions().ipAddressAllocationMode(ipAddressAllocationMode);
+      public static VCloudTemplateOptions networkConnections(Hashtable<String, NetworkConnection> networkConnections) {
+         return new VCloudTemplateOptions().networkConnections(networkConnections);
       }
 
       /**
@@ -255,9 +258,7 @@ public class VCloudTemplateOptions extends TemplateOptions implements Cloneable 
    /**
     * @return ipAddressAllocationMode on the vms
     */
-   public IpAddressAllocationMode getIpAddressAllocationMode() {
-      return ipAddressAllocationMode;
-   }
+   public Hashtable<String, NetworkConnection> getNetworkConnections() { return networkConnections; }
 
    /**
     * @return parentNetwork to connect to the vms

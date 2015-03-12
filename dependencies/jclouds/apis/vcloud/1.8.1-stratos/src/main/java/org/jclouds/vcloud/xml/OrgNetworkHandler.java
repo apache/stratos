@@ -251,7 +251,7 @@ public class OrgNetworkHandler extends ParseSax.HandlerWithResult<OrgNetwork> {
          natType = NatType.fromValue(currentOrNull());
       } else if (SaxUtils.equalsOrSuffix(qName, "MappingMode")) {
          mappingMode = MappingMode.fromValue(currentOrNull());
-      } else if (qName.equalsIgnoreCase("ExternalIP")) {
+      } else if (qName.equalsIgnoreCase("ExternalIPAddress")) {
          externalIP = currentOrNull();
       } else if (qName.equalsIgnoreCase("VAppScopedVmId")) {
          vAppScopedVmId = currentOrNull();
@@ -267,7 +267,7 @@ public class OrgNetworkHandler extends ParseSax.HandlerWithResult<OrgNetwork> {
          this.vmNicId = -1;
       } else if (qName.equalsIgnoreCase("ExternalPort")) {
          externalPort = Integer.parseInt(currentOrNull());
-      } else if (qName.equalsIgnoreCase("InternalIP")) {
+      } else if (qName.equalsIgnoreCase("InternalIPAddress")) {
          internalIP = currentOrNull();
       } else if (qName.equalsIgnoreCase("InternalPort")) {
          internalPort = Integer.parseInt(currentOrNull());

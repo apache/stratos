@@ -20,6 +20,7 @@ import static org.jclouds.vcloud.VCloudMediaType.DEPLOYVAPPPARAMS_XML;
 import static org.jclouds.vcloud.VCloudMediaType.GUESTCUSTOMIZATIONSECTION_XML;
 import static org.jclouds.vcloud.VCloudMediaType.NETWORKCONNECTIONSECTION_XML;
 import static org.jclouds.vcloud.VCloudMediaType.RASDITEM_XML;
+import static org.jclouds.vcloud.VCloudMediaType.RASDITEMLIST_XML;
 import static org.jclouds.vcloud.VCloudMediaType.TASK_XML;
 import static org.jclouds.vcloud.VCloudMediaType.UNDEPLOYVAPPPARAMS_XML;
 import static org.jclouds.vcloud.VCloudMediaType.VM_XML;
@@ -35,23 +36,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.jclouds.Fallbacks;
-import org.jclouds.rest.annotations.BinderParam;
-import org.jclouds.rest.annotations.EndpointParam;
-import org.jclouds.rest.annotations.Fallback;
-import org.jclouds.rest.annotations.MapBinder;
-import org.jclouds.rest.annotations.PayloadParams;
-import org.jclouds.rest.annotations.RequestFilters;
-import org.jclouds.rest.annotations.XMLResponseParser;
-import org.jclouds.vcloud.binders.BindCPUCountToXmlPayload;
-import org.jclouds.vcloud.binders.BindDeployVAppParamsToXmlPayload;
-import org.jclouds.vcloud.binders.BindGuestCustomizationSectionToXmlPayload;
-import org.jclouds.vcloud.binders.BindMemoryToXmlPayload;
-import org.jclouds.vcloud.binders.BindNetworkConnectionSectionToXmlPayload;
-import org.jclouds.vcloud.binders.BindUndeployVAppParamsToXmlPayload;
-import org.jclouds.vcloud.domain.GuestCustomizationSection;
-import org.jclouds.vcloud.domain.NetworkConnectionSection;
-import org.jclouds.vcloud.domain.Task;
-import org.jclouds.vcloud.domain.Vm;
+import org.jclouds.rest.annotations.*;
+import org.jclouds.vcloud.binders.*;
+import org.jclouds.vcloud.domain.*;
+import org.jclouds.vcloud.domain.ovf.VCloudNetworkAdapter;
 import org.jclouds.vcloud.filters.AddVCloudAuthorizationAndCookieToRequest;
 import org.jclouds.vcloud.xml.TaskHandler;
 import org.jclouds.vcloud.xml.VmHandler;
@@ -60,6 +48,8 @@ import org.jclouds.vcloud.xml.VmHandler;
 /**
  * Provides access to VM functionality in vCloud
  * <p/>
+ * 
+ * @author Adrian Cole
  */
 @RequestFilters(AddVCloudAuthorizationAndCookieToRequest.class)
 public interface VmApi {
@@ -160,6 +150,32 @@ public interface VmApi {
    @Path("/power/action/powerOff")
    @XMLResponseParser(TaskHandler.class)
    Task powerOffVm(@EndpointParam URI href);
+
+    /**
+     * Detach disk
+     */
+    @POST
+    @Consumes(TASK_XML)
+    @Produces(DiskAttachOrDetachParams.DISK_XML)
+    @Path("/disk/action/detach")
+    @MapBinder(BindDiskAttachOrDetachParamsToXmlPayload.class)
+    @XMLResponseParser(TaskHandler.class)
+    Task detachDisk(
+            @EndpointParam URI href,
+            @PayloadParam("params") DiskAttachOrDetachParams diskAttachOrDetachParams);
+
+    /**
+     * Attach disk
+     */
+    @POST
+    @Consumes(TASK_XML)
+    @Produces("application/vnd.vmware.vcloud.diskAttachOrDetachParams+xml")
+    @Path("/disk/action/attach")
+    @MapBinder(BindDiskAttachOrDetachParamsToXmlPayload.class)
+    @XMLResponseParser(TaskHandler.class)
+    Task attachDisk(
+            @EndpointParam URI href,
+            @PayloadParam("params") DiskAttachOrDetachParams diskAttachOrDetachParams);
 
    /**
     * A shutdown request to a vApp URL shuts down all of the virtual machines in the vApp, as
@@ -290,4 +306,21 @@ public interface VmApi {
    @XMLResponseParser(TaskHandler.class)
    Task updateMemoryMBOfVm(@BinderParam(BindMemoryToXmlPayload.class) int memoryInMB,
                                              @EndpointParam URI href);
+
+   /**
+    * update the networkCards of an existing VM
+    *
+    * @param href
+    *           to update
+    * @param networkCards
+    *           new list of Network Interface Cards (NICs)
+    */
+   @PUT
+   @Consumes(TASK_XML)
+   @Produces(RASDITEMLIST_XML)
+   @Path("/virtualHardwareSection/networkCards")
+   @MapBinder(BindVCloudNetworkAdapterToXmlPayload.class)
+   @XMLResponseParser(TaskHandler.class)
+   Task updateNetworkCardsOfVm(@PayloadParam("params") Iterable<VCloudNetworkAdapter> networkCards,
+                               @EndpointParam URI href);
 }

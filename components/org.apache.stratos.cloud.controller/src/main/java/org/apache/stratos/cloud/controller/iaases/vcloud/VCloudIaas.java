@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.jclouds.compute.ComputeService;
+import org.jclouds.compute.ComputeServiceContext;
 import org.jclouds.compute.domain.NodeMetadata;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
@@ -38,7 +39,34 @@ import org.wso2.carbon.utils.CarbonUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.Hashtable;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.net.URI;
+
+import org.apache.stratos.cloud.controller.domain.IaasProvider;
+import org.apache.stratos.cloud.controller.domain.NetworkInterface;
+import org.apache.stratos.cloud.controller.iaases.vcloud.VCloudPartitionValidator;
+import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
+import org.jclouds.ContextBuilder;
+import org.jclouds.rest.RestContext;
+import org.jclouds.vcloud.VCloudApi;
+import org.jclouds.vcloud.domain.NetworkConnectionSection;
+import org.jclouds.vcloud.domain.ovf.VCloudHardDisk;
+import org.jclouds.vcloud.domain.NetworkConnection;
+import org.jclouds.vcloud.domain.Task;
+import org.jclouds.vcloud.domain.Vm;
+import org.jclouds.vcloud.domain.network.OrgNetwork;
+import org.jclouds.vcloud.domain.ovf.VCloudVirtualHardwareSection;
+import org.jclouds.vcloud.features.VAppApi;
+import org.jclouds.vcloud.features.VmApi;
+import org.jclouds.vcloud.domain.VApp;
+import org.jclouds.vcloud.options.InstantiateVAppTemplateOptions;
+import org.jclouds.vcloud.domain.DiskAttachOrDetachParams;
+
+
 
 public class VCloudIaas extends JcloudsIaas {
 
@@ -74,6 +102,12 @@ public class VCloudIaas extends JcloudsIaas {
 			log.fatal(msg);
 			throw new CloudControllerException(msg);
 		}
+		
+		//get 'native' version of jclouds' vCloud API.
+		ComputeServiceContext context = iaasInfo.getComputeService().getContext();
+		VCloudApi api = context.unwrapApi(VCloudApi.class);
+		
+
 
 		TemplateBuilder templateBuilder = iaasInfo.getComputeService()
 				.templateBuilder();
@@ -98,9 +132,49 @@ public class VCloudIaas extends JcloudsIaas {
 		// groups by Jclouds.
 		template.getOptions().as(TemplateOptions.class)
 				.inboundPorts(22, 80, 8080, 443, 8243);
+		
+        if (iaasInfo.getNetworkInterfaces() != null) {
+            Set<String> networksSet = new LinkedHashSet<String>(iaasInfo.getNetworkInterfaces().length);
+            Hashtable<String, NetworkConnection> vcloudNetworkOptions = new Hashtable<String, NetworkConnection>(iaasInfo.getNetworkInterfaces().length);
 
-		template.getOptions().as(VCloudTemplateOptions.class)
-				.ipAddressAllocationMode(IpAddressAllocationMode.POOL);
+            int i = 0;
+            for (NetworkInterface ni : iaasInfo.getNetworkInterfaces()) {
+
+                String networkUuid = ni.getNetworkUuid();
+                String networkName = null;
+                IpAddressAllocationMode ipAllocMode = IpAddressAllocationMode.NONE;
+                if (ni.getFixedIp() != null && !ni.getFixedIp().equals("")) {
+                    ipAllocMode = IpAddressAllocationMode.MANUAL;
+                } else {
+                    ipAllocMode = IpAddressAllocationMode.POOL;
+                }
+
+                //fetch network name.
+                try {
+                    OrgNetwork orgNet = api.getNetworkApi().getNetwork(new URI(networkUuid));
+                    networkName = orgNet.getName();
+                } catch (URISyntaxException e) {
+                    log.error("Network UUID '" + networkUuid + "' is not a URI/href.");
+                }
+                NetworkConnection nc = new NetworkConnection(networkName, i, ni.getFixedIp(), null, true,
+                        null, //TODO: support fixed Mac addrs.
+                        ipAllocMode);
+                networksSet.add(networkUuid);
+                vcloudNetworkOptions.put(networkUuid, nc);
+
+                i++;
+            }
+            //new NetworkConnectionSection()
+
+            //VmApi vmApi = api.getVmApi();
+            //vmApi.updateNetworkConnectionOfVm();
+
+            template.getOptions().networks(networksSet);
+            template.getOptions().as(VCloudTemplateOptions.class).networkConnections(vcloudNetworkOptions);
+        }
+
+		//template.getOptions().as(VCloudTemplateOptions.class)
+		//		.ipAddressAllocationMode(IpAddressAllocationMode.POOL);
 
 		// set Template
 		iaasInfo.setTemplate(template);
@@ -111,7 +185,7 @@ public class VCloudIaas extends JcloudsIaas {
 		// in vCloud case we need to run a script
 		IaasProvider iaasProvider = getIaasProvider();
 
-		if (iaasProvider.getTemplate() == null) {
+		if (iaasProvider.getTemplate() == null || payload == null) {
 			if (log.isDebugEnabled()) {
 				log.debug("Payload for vCloud not found");
 			}
@@ -177,9 +251,23 @@ public class VCloudIaas extends JcloudsIaas {
 		if (log.isDebugEnabled()) {
 			log.debug(String.format("The vCloud Customization script\n%s", customizationScript));
 		}
+		
+		// Ensure the script is run.
+		if (customizationScript.length() >= 49000) {
+			log.warn("The vCloud customization script is >=49000 bytes in size; uploading dummy script and running real script via ssh.");
+			String dummyCustomizationScript = "#!/bin/sh\n"
+				+ "#STRATOS: the real customization script will be invoked via ssh, since it exceeds the 49000 byte limit "
+				+ "imposed by vCloud;\n"
+				+ "#see "
+				+ "http://pubs.vmware.com/vcd-55/topic/com.vmware.vcloud.api.doc_55/GUID-1BA3B7C5-B46C-48F7-8704-945BC47A940D.html\n";
+			template.getOptions().as(VCloudTemplateOptions.class).customizationScript(dummyCustomizationScript);
+			template.getOptions().runScript(customizationScript);
+		} else {
+			template.getOptions().as(VCloudTemplateOptions.class).customizationScript(customizationScript);
+		}
 
 		// Run the script
-		template.getOptions().runScript(customizationScript);
+		//template.getOptions().runScript(customizationScript);
 	}
 
 	@Override
@@ -238,8 +326,63 @@ public class VCloudIaas extends JcloudsIaas {
 
 	@Override
 	public String attachVolume(String instanceId, String volumeId, String deviceName) {
-		// TODO Auto-generated method stub
-		return null;
+        IaasProvider iaasInfo = getIaasProvider();
+
+        if (StringUtils.isEmpty(volumeId)) {
+            log.error("Volume provided to attach can not be null");
+        }
+
+        if (StringUtils.isEmpty(instanceId)) {
+            log.error("Instance provided to attach can not be null");
+        }
+
+        URI instanceIdHref = null;
+        URI volumeIdHref = null;
+        try {
+            //the instanceId format is a bit silly for vCloud.
+            instanceIdHref = new URI("https:/" + instanceId);
+        } catch (URISyntaxException e) {
+            log.error("Failed to attach volume, because the instance id cannot be converted into a url by concatenating "
+                + "'https:/' with " + instanceId + ". Full stacktrace: " + e.toString());
+            return null;
+        }
+        try {
+            volumeIdHref = new URI(volumeId);
+        } catch (URISyntaxException e) {
+            log.error("Failed to attach voluume, because the volume id '" + volumeId + "' is not a valid href (URI))"
+                    + e.toString());
+        }
+
+        //get 'native' version of jclouds' vCloud API.
+        ComputeServiceContext context = iaasInfo.getComputeService()
+                .getContext();
+
+        VCloudApi api = context.unwrapApi(VCloudApi.class);
+
+        //Disks need to be attached to individual VMs, not vApps. The instanceId is the VApp.
+        VAppApi vAppApi = api.getVAppApi();
+        Set<Vm> vmsInVapp = vAppApi.getVApp(instanceIdHref).getChildren();
+        //Each vApp today has just 1 VM in it. Validate assumption.
+        assert(vmsInVapp.size() == 1);
+        Vm vm = vmsInVapp.iterator().next();
+        URI vmHref = vm.getHref();
+        VmApi vmApi = api.getVmApi();
+
+        // invest
+        /*
+        VCloudHardDisk.Builder hardDiskBuilder = new VCloudHardDisk.Builder();
+        VCloudHardDisk hardDisk = hardDiskBuilder.instanceID(volumeId).build();
+        VCloudVirtualHardwareSection vvhs = vm.getVirtualHardwareSection();
+        VCloudHardDisk.Builder Vchd = new VCloudHardDisk.Builder();
+        vvhs.toBuilder().item(Vchd.capacity(3).instanceID("hgfhgf").build()).build();
+        VApp va = vAppApi.getVApp(instanceIdHref);
+
+        */ //EO invest
+        DiskAttachOrDetachParams params = new DiskAttachOrDetachParams(volumeIdHref);
+        Task t = vmApi.attachDisk(vmHref, params);
+
+        log.info(String.format("Volume [id]: %s attachment for instance [id]: %s was successful [status]: Attaching. Iaas : %s, Task: %s", volumeId, instanceId, iaasInfo, t));
+        return "Attaching";
 	}
 
 	@Override

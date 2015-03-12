@@ -205,6 +205,10 @@ public interface VCloudMediaType {
     */
    public static final String RASDITEM_XML = "application/vnd.vmware.vcloud.rasdItem+xml";
    /**
+    * "application/vnd.vmware.vcloud.rasdItemsList+xml"
+    */
+   public static final String RASDITEMLIST_XML = "application/vnd.vmware.vcloud.rasdItemsList+xml";
+   /**
     * "application/vnd.vmware.vcloud.rasdItem+xml"
     */
    public static final MediaType RASDITEM_XML_TYPE = new MediaType("application", "vnd.vmware.vcloud.rasdItem+xml");

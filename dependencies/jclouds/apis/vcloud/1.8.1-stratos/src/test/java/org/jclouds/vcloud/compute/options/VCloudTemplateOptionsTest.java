@@ -20,15 +20,17 @@ import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.b
 import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.customizationScript;
 import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.description;
 import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.inboundPorts;
-import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.ipAddressAllocationMode;
 import static org.jclouds.vcloud.compute.options.VCloudTemplateOptions.Builder.parentNetwork;
 import static org.testng.Assert.assertEquals;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Hashtable;
 
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.vcloud.domain.NetworkConnection;
 import org.jclouds.vcloud.domain.network.IpAddressAllocationMode;
+import org.jclouds.vcloud.endpoints.Network;
 import org.testng.annotations.Test;
 
 /**
@@ -37,16 +39,14 @@ import org.testng.annotations.Test;
  */
 public class VCloudTemplateOptionsTest {
    @Test
-   public void testipAddressAllocationMode() {
+   public void testnetworkConnections() {
       VCloudTemplateOptions options = new VCloudTemplateOptions();
-      options.ipAddressAllocationMode(IpAddressAllocationMode.NONE);
-      assertEquals(options.getIpAddressAllocationMode(), IpAddressAllocationMode.NONE);
-   }
-
-   @Test
-   public void testipAddressAllocationModeStatic() {
-      VCloudTemplateOptions options = ipAddressAllocationMode(IpAddressAllocationMode.NONE);
-      assertEquals(options.getIpAddressAllocationMode(), IpAddressAllocationMode.NONE);
+      String netUuid = "https://myfunvcloud.com/api/admin/network/aaaabbbb-cccc-1122-3344-1234567890ab";
+      Hashtable<String, NetworkConnection> nets = new Hashtable<String, NetworkConnection>(1);
+      NetworkConnection nc = new NetworkConnection(netUuid, 0, null, null, true, null, IpAddressAllocationMode.POOL);
+      nets.put(netUuid, nc);
+      options.networkConnections(nets);
+      assertEquals(options.getNetworkConnections().get(netUuid), nc);
    }
 
    public void testAs() {
