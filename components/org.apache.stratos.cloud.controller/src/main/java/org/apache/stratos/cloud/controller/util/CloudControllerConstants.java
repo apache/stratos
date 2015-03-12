@@ -61,7 +61,6 @@ public final class CloudControllerConstants {
 	public static final String SCALE_DOWN_ORDER_ELEMENT = "scaleDownOrder";
 	public static final String SCALE_UP_ORDER_ELEMENT = "scaleUpOrder";
 	public static final String CLASS_NAME_ELEMENT = "className";
-	public static final String MAX_INSTANCE_LIMIT_ELEMENT = "maxInstanceLimit";
 	public static final String PROVIDER_ELEMENT = "provider";
 	public static final String IDENTITY_ELEMENT = "identity";
 	public static final String TYPE_ELEMENT = "type";

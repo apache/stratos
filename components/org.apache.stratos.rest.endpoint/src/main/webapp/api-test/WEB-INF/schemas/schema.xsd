@@ -127,7 +127,6 @@
                         <xs:sequence>
                             <xs:element name="type" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
                             <xs:element name="imageId" type="xs:string" minOccurs="1" maxOccurs="1" nillable="false"/>
-                            <xs:element name="maxInstanceLimit" type="xs:int" minOccurs="1" maxOccurs="1" nillable="false"/>
                             <xs:element name="property" minOccurs="0" maxOccurs="unbounded">
                                 <xs:complexType>
                                     <xs:all>
