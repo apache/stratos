@@ -1274,7 +1274,7 @@ public class RestCommandLineService {
                     ENDPOINT_DOMAIN_MAPPINGS.replace("{applicationId}", applicationId),
                     listType, "domain mappings");
             if ((list == null) && (list.size() <= 0)) {
-                System.out.println("No domain mappings found in application: [application-id] " + applicationId);
+                System.out.println("No domain mappings found in application: " + applicationId);
                 return;
             }
 
@@ -1289,10 +1289,10 @@ public class RestCommandLineService {
 
             DomainMappingBean[] array = new DomainMappingBean[list.size()];
             array = list.toArray(array);
-            System.out.println("Domain mappings found in application: [application-id] " + applicationId);
+            System.out.println("Domain mappings found in application: " + applicationId);
             CliUtils.printTable(array, rowMapper, "Domain Name", "Context Path");
         } catch (Exception e) {
-            String message = "Could not list domain mappings in application: [application-id] " + applicationId;
+            String message = "Could not list domain mappings in application: " + applicationId;
             printError(message, e);
         }
     }
