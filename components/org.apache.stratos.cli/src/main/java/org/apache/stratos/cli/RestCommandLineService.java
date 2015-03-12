@@ -957,12 +957,10 @@ public class RestCommandLineService {
 
             RowMapper<ApplicationBean> rowMapper = new RowMapper<ApplicationBean>() {
                 public String[] getData(ApplicationBean applicationDefinition) {
-                    String[] data = new String[4];
+                    String[] data = new String[3];
                     data[0] = applicationDefinition.getApplicationId();
-                    data[1] = StringUtils.isEmpty(applicationDefinition.getName()) ? "" :
-                            applicationDefinition.getName();
-                    data[2] = applicationDefinition.getAlias();
-                    data[3] = applicationDefinition.getStatus();
+                    data[1] = applicationDefinition.getAlias();
+                    data[2] = applicationDefinition.getStatus();
                     return data;
                 }
             };
@@ -971,7 +969,7 @@ public class RestCommandLineService {
             array = list.toArray(array);
 
             System.out.println("Applications found:");
-            CliUtils.printTable(array, rowMapper, "Application ID", "Name", "Alias", "Status");
+            CliUtils.printTable(array, rowMapper, "Application ID","Alias", "Status");
         } catch (Exception e) {
             String message = "Could not list applications";
             printError(message, e);
