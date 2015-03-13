@@ -414,10 +414,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void deleteApplication(String applicationId) {
-        if (AutoscalerContext.getInstance().removeApplicationContext(applicationId) == null) {
+     
+    	ApplicationContext appContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+    	
+    	if (appContext == null) {
             String msg = String.format("Application not found : [application-id] %s", applicationId);
             throw new RuntimeException(msg);
         }
+        
+    	if (ApplicationContext.STATUS_DEPLOYED.equals(appContext.getStatus())) {
+            String msg = String.format("Application is deployed : [application-id] %s. Please undeploy before deleting it.", applicationId);
+            throw new AutoScalerException(msg);
+        }
+    	
+    	AutoscalerContext.getInstance().removeApplicationContext(applicationId);
+        
+        if (RegistryManager.getInstance().getApplication(applicationId)== null) {
+            String msg = String.format("Application not found : [application-id] %s", applicationId);
+            throw new RuntimeException(msg);
+        }
+        ApplicationBuilder.handleApplicationRemoval(applicationId);
+        RegistryManager.getInstance().removeApplication(applicationId);
+        
         log.info(String.format("Application deleted successfully: [application-id] ", applicationId));
     }
 

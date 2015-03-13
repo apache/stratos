@@ -909,9 +909,9 @@ public class StratosApiV41 extends AbstractApi {
         if (applicationDefinition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
-	    if (StratosApiV41Utils.getApplicationRuntime(applicationId) != null) {
-		    return Response.status(Response.Status.NOT_ACCEPTABLE).build();
-	    }
+//	    if (StratosApiV41Utils.getApplicationRuntime(applicationId) != null) {
+//		    return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+//	    }
         StratosApiV41Utils.removeApplication(applicationId);
         return Response.ok().entity(
         		new SuccessResponseBean(Response.Status.OK.getStatusCode(),

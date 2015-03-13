@@ -227,7 +227,7 @@ public class ApplicationBuilder {
 
     public static void handleApplicationRemoval(String appId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application unDeployment for [application-id] " + appId);
+            log.debug("Handling application delete for [application-id] " + appId);
         }
         Set<ClusterDataHolder> appClusterDataToSend;
         Application application;
@@ -324,7 +324,7 @@ public class ApplicationBuilder {
                         PrivilegedCarbonContext.endTenantFlow();
                     }
                     //removing the clusters and persisted application
-                    handleApplicationRemoval(appId);
+//                    handleApplicationRemoval(appId);
                 }
             } else {
                 log.warn(String.format("Application state transition is not valid: [application-id] %s " +
