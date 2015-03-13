@@ -708,7 +708,7 @@ $(document).ready(function(){
             }
         })
             .always(function () {
-                btn.html('Deploy Application Definition');
+                btn.html('Add New Application Definition');
             });
 
     });
