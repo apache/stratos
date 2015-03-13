@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class DescribeKubernetesMasterCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DescribeKubernetesMasterCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DescribeKubernetesMasterCommand.class);
 
     @Override
     public String getName() {
@@ -54,16 +54,16 @@ public class DescribeKubernetesMasterCommand implements Command<StratosCommandCo
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
-            String id = args[0];
-            if (logger.isDebugEnabled()) {
-                logger.debug("Getting Kubernetes master info {}", id);
+            String clusterId = args[0];
+            if (log.isDebugEnabled()) {
+                log.debug("Getting Kubernetes master info {}", clusterId);
             }
-            RestCommandLineService.getInstance().getKubernetesMaster(id);
+            RestCommandLineService.getInstance().getKubernetesMaster(clusterId);
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

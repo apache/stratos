@@ -30,7 +30,7 @@ import org.apache.stratos.cli.utils.CliConstants;
 
 public class ListCartridgesCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListCartridgesCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(ListCartridgesCommand.class);
 
 	public ListCartridgesCommand() {
 	}
@@ -47,9 +47,9 @@ public class ListCartridgesCommand implements Command<StratosCommandContext> {
 		return null;
 	}
 
-	public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-		if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+	public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+		if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args == null || args.length == 0) {
             RestCommandLineService.getInstance().listCartridges();

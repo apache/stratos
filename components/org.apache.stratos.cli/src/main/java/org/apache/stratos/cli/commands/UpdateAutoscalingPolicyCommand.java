@@ -25,17 +25,16 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateAutoscalingPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateAutoscalingPolicyCommand.class);
 
     private final Options options;
 
@@ -70,14 +69,14 @@ public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandCon
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String autoscalingPolicyDeployment = null;
+            String resourceFileContent = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -85,31 +84,31 @@ public class UpdateAutoscalingPolicyCommand implements Command<StratosCommandCon
             try {
                 commandLine = parser.parse(options, args);
                 //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+                Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Updating autoscaling policy");
+                if (log.isDebugEnabled()) {
+                    log.debug("Updating autoscaling policy");
                 }
 
                 if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Resource path option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Resource path option is passed");
                     }
                     resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
-                    autoscalingPolicyDeployment = CliUtils.readResource(resourcePath);
+                    resourceFileContent = CliUtils.readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-p <resource path>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().updateAutoscalingPolicy(autoscalingPolicyDeployment);
+                RestCommandLineService.getInstance().updateAutoscalingPolicy(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

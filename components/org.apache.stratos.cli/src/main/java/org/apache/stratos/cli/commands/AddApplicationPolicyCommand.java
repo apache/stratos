@@ -25,15 +25,14 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
+import org.apache.stratos.cli.utils.CliUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 
 public class AddApplicationPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(AddApplicationPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(AddApplicationPolicyCommand.class);
 
     private final Options options;
 
@@ -64,14 +63,14 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args,Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args,Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String applicationPolicyDeployment = null;
+            String resourceFileContent = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -79,29 +78,29 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
             try {
                 commandLine = parser.parse(options, args);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Application policy deployment");
+                if (log.isDebugEnabled()) {
+                    log.debug("Application policy deployment");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Resource path option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    applicationPolicyDeployment = readResource(resourcePath);
+                    resourceFileContent = CliUtils.readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-p <resource path>]");
+                    System.out.println("usage: " + getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().addApplicationPolicy(applicationPolicyDeployment);
+                RestCommandLineService.getInstance().addApplicationPolicy(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;
@@ -112,23 +111,6 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
         } else {
             context.getStratosApplication().printUsage(getName());
             return CliConstants.COMMAND_FAILED;
-        }
-    }
-
-    private String readResource(String fileName) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(fileName));
-        try {
-            StringBuilder sb = new StringBuilder();
-            String line = br.readLine();
-
-            while (line != null) {
-                sb.append(line);
-                sb.append("\n");
-                line = br.readLine();
-            }
-            return sb.toString();
-        } finally {
-            br.close();
         }
     }
 

@@ -29,8 +29,8 @@ import org.apache.stratos.cli.utils.CliConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DescibeApplicationPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DescibeApplicationPolicyCommand.class);
+public class DescribeApplicationPolicyCommand implements Command<StratosCommandContext> {
+    private static final Logger log = LoggerFactory.getLogger(DescribeApplicationPolicyCommand.class);
 
     @Override
     public String getName() {
@@ -53,14 +53,14 @@ public class DescibeApplicationPolicyCommand implements Command<StratosCommandCo
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
             String applicationPolicyId = args[0];
-            if (logger.isDebugEnabled()) {
-                logger.debug("Getting application policy {}", applicationPolicyId);
+            if (log.isDebugEnabled()) {
+                log.debug("Getting application policy {}", applicationPolicyId);
             }
             RestCommandLineService.getInstance().describeApplicationPolicy(applicationPolicyId);
             return CliConstants.COMMAND_SUCCESSFULL;

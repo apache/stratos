@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DescribeCartridgeCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DescribeAutoScalingPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DescribeCartridgeCommand.class);
 
     @Override
     public String getName() {
@@ -42,7 +42,7 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getArgumentSyntax() {
-        return "[Cartridge-Type]";
+        return "[cartridge-type]";
     }
 
     @Override
@@ -51,14 +51,14 @@ public class DescribeCartridgeCommand implements Command<StratosCommandContext> 
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
 			String id = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting cartridge info {}", id);
+			if (log.isDebugEnabled()) {
+				log.debug("Getting cartridge info {}", id);
 			}
 			 RestCommandLineService.getInstance().describeCartridge(id);
 			return CliConstants.COMMAND_SUCCESSFULL;

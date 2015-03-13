@@ -20,6 +20,8 @@ package org.apache.stratos.cli.utils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,9 +35,6 @@ import java.io.InputStreamReader;
 import java.net.SocketException;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
-
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 
 public class CliUtils {
     private static Log log = LogFactory.getLog(CliUtils.class);
@@ -117,7 +116,7 @@ public class CliUtils {
 
             while (line != null) {
                 sb.append(line);
-                sb.append("\n");
+                sb.append(System.lineSeparator());
                 line = br.readLine();
             }
             return sb.toString();

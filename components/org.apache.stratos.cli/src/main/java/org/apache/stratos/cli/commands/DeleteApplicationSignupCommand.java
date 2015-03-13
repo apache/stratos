@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DeleteApplicationSignupCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DeleteApplicationSignupCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DeleteApplicationSignupCommand.class);
 
     @Override
     public String getName() {
@@ -43,7 +43,7 @@ public class DeleteApplicationSignupCommand implements Command<StratosCommandCon
 
     @Override
     public String getArgumentSyntax() {
-        return "[Application Id]";
+        return "[application-id]";
     }
 
     @Override
@@ -52,16 +52,16 @@ public class DeleteApplicationSignupCommand implements Command<StratosCommandCon
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String id = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting delete application id {}", id);
+			String applicationId = args[0];
+			if (log.isDebugEnabled()) {
+				log.debug("Getting delete application id {}", applicationId);
 			}
-			RestCommandLineService.getInstance().deleteApplicationSignup(id);
+			RestCommandLineService.getInstance().deleteApplicationSignup(applicationId);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

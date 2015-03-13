@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DescribeDeploymentPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(DescribeDeploymentPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DescribeDeploymentPolicyCommand.class);
 
     @Override
     public String getName() {
@@ -51,14 +51,14 @@ public class DescribeDeploymentPolicyCommand implements Command<StratosCommandCo
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
 			String deploymentPolicyId = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting deployment policy {}", deploymentPolicyId);
+			if (log.isDebugEnabled()) {
+				log.debug("Getting deployment policy {}", deploymentPolicyId);
 			}
 			 RestCommandLineService.getInstance().describeDeploymentPolicy(deploymentPolicyId);
 			return CliConstants.COMMAND_SUCCESSFULL;

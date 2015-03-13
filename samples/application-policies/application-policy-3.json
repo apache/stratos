@@ -11,9 +11,7 @@
     "properties":[
         {
             "name": "network-partition-groups",
-            "value": "network-partition-1|network-partition-2, 
-                      network-partition-3, 
-                      network-partition-4|network-partition-5"
+            "value": "network-partition-1|network-partition-2, network-partition-3, network-partition-4|network-partition-5"
         }
     ]
 }

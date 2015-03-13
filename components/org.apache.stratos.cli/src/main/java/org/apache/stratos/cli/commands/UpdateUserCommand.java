@@ -25,12 +25,13 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
+
 public class UpdateUserCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(UpdateUserCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateUserCommand.class);
 
     private final Options options;
 
@@ -42,8 +43,8 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
         final Options options = new Options();
 
         Option usernameOption = new Option(CliConstants.USERNAME_OPTION, CliConstants.USERNAME_LONG_OPTION, true,
-                "User name");
-        usernameOption.setArgName("userName");
+                "Username");
+        usernameOption.setArgName("username");
         options.addOption(usernameOption);
 
         Option passwordOption = new Option(CliConstants.PASSWORD_OPTION, CliConstants.PASSWORD_LONG_OPTION, true,
@@ -52,14 +53,14 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
         options.addOption(passwordOption);
 
         Option roleOption = new Option(CliConstants.ROLE_NAME_OPTION, CliConstants.ROLE_NAME_LONG_OPTION, true,
-                "User Role");
+                "User role");
         roleOption.setArgName("role");
         options.addOption(roleOption);
 
-        Option fistnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
+        Option firstnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
                 "User first name");
-        fistnameOption.setArgName("firstName");
-        options.addOption(fistnameOption);
+        firstnameOption.setArgName("firstName");
+        options.addOption(firstnameOption);
 
         Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
                 "User last name");
@@ -91,9 +92,9 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
@@ -111,58 +112,58 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
             try {
                 commandLine = parser.parse(options, args);
                 //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+                Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Update user");
+                if (log.isDebugEnabled()) {
+                    log.debug("Update user");
                 }
 
                 if (opts.hasOption(CliConstants.USERNAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Username option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Username option is passed");
                     }
                     userName = opts.getOption(CliConstants.USERNAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.PASSWORD_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Credential option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Credential option is passed");
                     }
                     credential = opts.getOption(CliConstants.PASSWORD_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.ROLE_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Role option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Role option is passed");
                     }
                     role = opts.getOption(CliConstants.ROLE_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.FIRST_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("First name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("First name option is passed");
                     }
                     firstName = opts.getOption(CliConstants.FIRST_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.LAST_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Last name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Last name option is passed");
                     }
                     lastName = opts.getOption(CliConstants.LAST_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.EMAIL_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Email option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Email option is passed");
                     }
                     email = opts.getOption(CliConstants.EMAIL_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.PROFILE_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Profile name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Profile name option is passed");
                     }
                     profileName = opts.getOption(CliConstants.PROFILE_NAME_OPTION).getValue();
                 }
 
 
                 if (userName == null || credential == null || role == null || firstName == null || lastName == null || email == null) {
-                    System.out.println("usage: " + getName() + " [-u <user name>] [-p <credential>] [-r <role>] [-f <first name>] [-l <last name>] [-e <email>] [-pr <profile name>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
@@ -170,8 +171,8 @@ public class UpdateUserCommand implements Command<StratosCommandContext> {
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

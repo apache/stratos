@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RemoveApplicationPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(RemoveApplicationPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoveApplicationPolicyCommand.class);
 
     @Override
     public String getName() {
@@ -44,7 +44,7 @@ public class RemoveApplicationPolicyCommand implements Command<StratosCommandCon
 
     @Override
     public String getArgumentSyntax() {
-        return "[Application-policy Id]";
+        return "[application-policy-id]";
     }
 
     @Override
@@ -53,16 +53,16 @@ public class RemoveApplicationPolicyCommand implements Command<StratosCommandCon
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args,Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args,Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
         if (args != null && args.length == 1) {
-            String id = args[0];
-            if (logger.isDebugEnabled()) {
-                logger.debug("Getting application-policy Id {}", id);
+            String applicationPolicyId = args[0];
+            if (log.isDebugEnabled()) {
+                log.debug("Getting application policy id {}", applicationPolicyId);
             }
-            RestCommandLineService.getInstance().deleteApplicationPolicy(id);
+            RestCommandLineService.getInstance().deleteApplicationPolicy(applicationPolicyId);
             return CliConstants.COMMAND_SUCCESSFULL;
         } else {
             context.getStratosApplication().printUsage(getName());

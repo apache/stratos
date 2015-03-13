@@ -25,12 +25,13 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
+
 public class UpdateTenantCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(UpdateTenantCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateTenantCommand.class);
 
     private final Options options;
 
@@ -46,10 +47,10 @@ public class UpdateTenantCommand implements Command<StratosCommandContext> {
         usernameOption.setArgName("username");
         options.addOption(usernameOption);
 
-        Option fistnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
+        Option firstnameOption = new Option(CliConstants.FIRST_NAME_OPTION, CliConstants.FIRST_NAME_LONG_OPTION, true,
                 "Tenant first name");
-        fistnameOption.setArgName("firstname");
-        options.addOption(fistnameOption);
+        firstnameOption.setArgName("firstname");
+        options.addOption(firstnameOption);
 
         Option lastnameOption = new Option(CliConstants.LAST_NAME_OPTION, CliConstants.LAST_NAME_LONG_OPTION, true,
                 "Tenant last name");
@@ -91,15 +92,15 @@ public class UpdateTenantCommand implements Command<StratosCommandContext> {
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
             String admin = null;
             String firstName = null;
-            String lastaName = null;
+            String lastName = null;
             String password = null;
             String domain = null;
             String email = null;
@@ -111,69 +112,69 @@ public class UpdateTenantCommand implements Command<StratosCommandContext> {
             try {
                 commandLine = parser.parse(options, args);
                 //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+                Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Update tenant");
+                if (log.isDebugEnabled()) {
+                    log.debug("Update tenant");
                 }
 
                 if (opts.hasOption(CliConstants.USERNAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Username option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Username option is passed");
                     }
                     admin = opts.getOption(CliConstants.USERNAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.FIRST_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("First name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("First name option is passed");
                     }
                     firstName = opts.getOption(CliConstants.FIRST_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.LAST_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Last name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Last name option is passed");
                     }
-                    lastaName = opts.getOption(CliConstants.LAST_NAME_OPTION).getValue();
+                    lastName = opts.getOption(CliConstants.LAST_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.PASSWORD_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Password option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Password option is passed");
                     }
                     password = opts.getOption(CliConstants.PASSWORD_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.DOMAIN_NAME_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Domain name option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Domain name option is passed");
                     }
                     domain = opts.getOption(CliConstants.DOMAIN_NAME_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.EMAIL_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Email option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Email option is passed");
                     }
                     email = opts.getOption(CliConstants.EMAIL_OPTION).getValue();
 
                 }
 
                 if (opts.hasOption(CliConstants.ID_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Id option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Id option is passed");
                     }
                     id = Integer.parseInt(opts.getOption(CliConstants.ID_OPTION).getValue());
 
                 }
 
-                if (id == 0 ||admin == null || firstName == null || lastaName == null || password == null || domain == null || email == null) {
-                    System.out.println("usage: " + getName() + " [-u <user name>] [-f <first name>] [-l <last name>] [-p <password>] [-d <domain name>] [-e <email>] [-i <tenant-id>]");
+                if (id == 0 ||admin == null || firstName == null || lastName == null || password == null || domain == null || email == null) {
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().updateTenant(id,admin, firstName, lastaName, password, domain, email);
+                RestCommandLineService.getInstance().updateTenant(id,admin, firstName, lastName, password, domain, email);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

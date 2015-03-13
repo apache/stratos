@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class UpdateApplicationPolicyCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(UpdateApplicationPolicyCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateApplicationPolicyCommand.class);
 
     private final Options options;
 
@@ -67,14 +67,14 @@ public class UpdateApplicationPolicyCommand implements Command<StratosCommandCon
         return null;
     }
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
             String resourcePath = null;
-            String applicationPolicyDeployment = null;
+            String resourceFileContent = null;
 
             final CommandLineParser parser = new GnuParser();
             CommandLine commandLine;
@@ -82,29 +82,29 @@ public class UpdateApplicationPolicyCommand implements Command<StratosCommandCon
             try {
                 commandLine = parser.parse(options, args);
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Updating application policy");
+                if (log.isDebugEnabled()) {
+                    log.debug("Updating application policy");
                 }
 
                 if (commandLine.hasOption(CliConstants.RESOURCE_PATH)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Resource path option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Resource path option is passed");
                     }
                     resourcePath = commandLine.getOptionValue(CliConstants.RESOURCE_PATH);
-                    applicationPolicyDeployment = CliUtils.readResource(resourcePath);
+                    resourceFileContent = CliUtils.readResource(resourcePath);
                 }
 
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-p <resource path>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
-                RestCommandLineService.getInstance().updateApplicationPolicy(applicationPolicyDeployment);
+                RestCommandLineService.getInstance().updateApplicationPolicy(resourceFileContent);
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

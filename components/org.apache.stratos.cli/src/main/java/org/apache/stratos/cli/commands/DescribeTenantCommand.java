@@ -80,7 +80,7 @@ public class DescribeTenantCommand implements Command<StratosCommandContext> {
      * @throws org.apache.stratos.cli.exception.CommandException if any errors occur when executing the command
      */
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
         if (logger.isDebugEnabled()) {
             logger.debug("Executing {} command...", getName());
         }

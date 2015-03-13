@@ -25,16 +25,17 @@ import org.apache.stratos.cli.RestCommandLineService;
 import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 /**
  * Deploy application command.
  */
 public class DeployApplicationCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(DeployApplicationCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(DeployApplicationCommand.class);
 
     private Options options;
 
@@ -70,7 +71,7 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
 
     @Override
     public String getArgumentSyntax() {
-        return "[application-id]";
+        return null;
     }
 
     @Override
@@ -79,9 +80,9 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
@@ -95,27 +96,27 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
                 commandLine = parser.parse(options, args);
 
                 //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+                Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("Deploy application");
+                if (log.isDebugEnabled()) {
+                    log.debug("Deploy application");
                 }
 
                 if (opts.hasOption(CliConstants.APPLICATION_ID_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Application Id option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Application Id option is passed");
                     }
                     applicationId = opts.getOption(CliConstants.APPLICATION_ID_OPTION).getValue();
                 }
                 if (opts.hasOption(CliConstants.APPLICATION_POLICY_ID_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Application policy Id option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Application policy Id option is passed");
                     }
                     applicationPolicyId = opts.getOption(CliConstants.APPLICATION_POLICY_ID_OPTION).getValue();
                 }
 
                 if (applicationId == null || applicationPolicyId == null) {
-                    System.out.println("usage: " + getName() + " [-a <application id>] [-ap <application policy id>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
@@ -123,8 +124,8 @@ public class DeployApplicationCommand implements Command<StratosCommandContext> 
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

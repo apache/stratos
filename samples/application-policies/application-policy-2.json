@@ -3,6 +3,16 @@
     "algorithm":"all-at-once",
     "networkPartitions":[
         "network-partition-3"
+    ],
+    "properties":[
+        {
+            "name": "key-1",
+            "value": "value-1"
+        },
+        {
+            "name": "key-2",
+            "value": "value-2"
+        }
     ]
 }
 

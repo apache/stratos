@@ -32,7 +32,7 @@ import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 public class ListKubernetesHostsCommand implements Command<StratosCommandContext> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ListKubernetesHostsCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(ListKubernetesHostsCommand.class);
 
     private final Options options;
 
@@ -63,9 +63,9 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
 		return null;
 	}
 
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing {} command...", getName());
         }
 
         if (args != null && args.length > 0) {
@@ -77,15 +77,15 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
             try {
                 commandLine = parser.parse(options, args);
                 //merge newly discovered options with previously discovered ones.
-                Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+                Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
 
-                if (logger.isDebugEnabled()) {
-                    logger.debug("List kubernetes hosts of a cluster");
+                if (log.isDebugEnabled()) {
+                    log.debug("List kubernetes hosts of a cluster");
                 }
 
                 if (opts.hasOption(CliConstants.CLUSTER_ID_OPTION)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Cluster id option is passed");
+                    if (log.isTraceEnabled()) {
+                        log.trace("Cluster id option is passed");
                     }
                     clusterId = opts.getOption(CliConstants.CLUSTER_ID_OPTION).getValue();
                 }
@@ -99,8 +99,8 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
                 return CliConstants.COMMAND_SUCCESSFULL;
 
             } catch (ParseException e) {
-                if (logger.isErrorEnabled()) {
-                    logger.error("Error parsing arguments", e);
+                if (log.isErrorEnabled()) {
+                    log.error("Error parsing arguments", e);
                 }
                 System.out.println(e.getMessage());
                 return CliConstants.COMMAND_FAILED;

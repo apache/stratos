@@ -52,7 +52,7 @@ public class DeleteTenantCommand implements Command<StratosCommandContext> {
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
         if (logger.isDebugEnabled()) {
 			logger.debug("Executing {} command...", getName());
 		}

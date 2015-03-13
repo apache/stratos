@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class RemoveCartridgeCommand implements Command<StratosCommandContext> {
-    private static final Logger logger = LoggerFactory.getLogger(RemoveCartridgeCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoveCartridgeCommand.class);
 
     @Override
     public String getName() {
@@ -52,16 +52,16 @@ public class RemoveCartridgeCommand implements Command<StratosCommandContext> {
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-			logger.debug("Executing {} command...", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+			log.debug("Executing {} command...", getName());
 		}
 		if (args != null && args.length == 1) {
-			String id = args[0];
-			if (logger.isDebugEnabled()) {
-				logger.debug("Getting Remove cartridge definition info {}", id);
+			String cartridgeType = args[0];
+			if (log.isDebugEnabled()) {
+				log.debug("Getting Remove cartridge definition info {}", cartridgeType);
 			}
-			RestCommandLineService.getInstance().undeployCartrigdeDefinition(id);
+			RestCommandLineService.getInstance().undeployCartrigdeDefinition(cartridgeType);
 			return CliConstants.COMMAND_SUCCESSFULL;
 		} else {
 			context.getStratosApplication().printUsage(getName());

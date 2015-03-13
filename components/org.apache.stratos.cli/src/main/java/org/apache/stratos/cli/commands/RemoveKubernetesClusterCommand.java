@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class RemoveKubernetesClusterCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(RemoveKubernetesClusterCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(RemoveKubernetesClusterCommand.class);
 
     public RemoveKubernetesClusterCommand() {
     }
@@ -59,9 +59,9 @@ public class RemoveKubernetesClusterCommand implements Command<StratosCommandCon
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing command: ", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing command: ", getName());
         }
 
         if ((args == null) || (args.length <= 0)) {

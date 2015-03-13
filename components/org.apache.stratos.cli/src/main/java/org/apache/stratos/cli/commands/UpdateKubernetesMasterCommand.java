@@ -25,18 +25,19 @@ import org.apache.stratos.cli.StratosCommandContext;
 import org.apache.stratos.cli.exception.CommandException;
 import org.apache.stratos.cli.utils.CliConstants;
 import org.apache.stratos.cli.utils.CliUtils;
-import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+
+import static org.apache.stratos.cli.utils.CliUtils.mergeOptionArrays;
 
 /**
  * Update kubernetes master command.
  */
 public class UpdateKubernetesMasterCommand implements Command<StratosCommandContext> {
 
-    private static final Logger logger = LoggerFactory.getLogger(UpdateKubernetesMasterCommand.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateKubernetesMasterCommand.class);
 
     private Options options;
 
@@ -44,10 +45,13 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
         options = new Options();
         Option resourcePathOption = new Option(CliConstants.RESOURCE_PATH, CliConstants.RESOURCE_PATH_LONG_OPTION, true,
                 "Kubernetes master resource path");
+        resourcePathOption.setArgName("resource path");
+        options.addOption(resourcePathOption);
+
         Option clusterIdOption = new Option(CliConstants.CLUSTER_ID_OPTION, CliConstants.CLUSTER_ID_LONG_OPTION, true,
                 "Kubernetes cluster id");
+        clusterIdOption.setArgName("cluster id");
         options.addOption(clusterIdOption);
-        options.addOption(resourcePathOption);
     }
     @Override
     public String getName() {
@@ -70,9 +74,9 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
     }
 
     @Override
-    public int execute(StratosCommandContext context, String[] args, Option[] already_parsed_opts) throws CommandException {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Executing command: ", getName());
+    public int execute(StratosCommandContext context, String[] args, Option[] alreadyParsedOpts) throws CommandException {
+        if (log.isDebugEnabled()) {
+            log.debug("Executing command: ", getName());
         }
         
         if ((args == null) || (args.length <= 0)) {
@@ -84,7 +88,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
             CommandLineParser parser = new GnuParser();
             CommandLine commandLine = parser.parse(options, args);
             //merge newly discovered options with previously discovered ones.
-            Options opts = mergeOptionArrays(already_parsed_opts, commandLine.getOptions());
+            Options opts = mergeOptionArrays(alreadyParsedOpts, commandLine.getOptions());
             if((opts.hasOption(CliConstants.RESOURCE_PATH)) && (opts.hasOption(CliConstants.CLUSTER_ID_OPTION))) {
             	               
                 // get cluster id arg value
@@ -110,7 +114,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
             }
             
         } catch (ParseException e) {
-            logger.error("Error parsing arguments", e);
+            log.error("Error parsing arguments", e);
             System.out.println(e.getMessage());
             return CliConstants.COMMAND_FAILED;
         } catch (IOException e) {
@@ -119,7 +123,7 @@ public class UpdateKubernetesMasterCommand implements Command<StratosCommandCont
         } catch (Exception e) {
             String message = "Unknown error occurred: " + e.getMessage();
             System.out.println(message);
-            logger.error(message, e);
+            log.error(message, e);
             return CliConstants.COMMAND_FAILED;
         }
     }
