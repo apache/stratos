@@ -91,7 +91,7 @@ public class AddApplicationPolicyCommand implements Command<StratosCommandContex
                 }
 
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName());
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 

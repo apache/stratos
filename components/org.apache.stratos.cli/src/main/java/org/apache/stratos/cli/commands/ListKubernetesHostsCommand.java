@@ -91,7 +91,7 @@ public class ListKubernetesHostsCommand implements Command<StratosCommandContext
                 }
 
                 if (clusterId == null) {
-                    System.out.println("usage: " + getName() + "usage: " + getName() + " [-c <cluster-id>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 

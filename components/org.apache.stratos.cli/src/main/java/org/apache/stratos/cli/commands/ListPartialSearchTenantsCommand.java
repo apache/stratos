@@ -91,7 +91,7 @@ public class ListPartialSearchTenantsCommand implements Command<StratosCommandCo
                 }
 
                 if (partialDomain == null) {
-                    System.out.println("usage: " + getName() + "usage: " + getName() + " [-d <partialDomain>]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 

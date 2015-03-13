@@ -89,8 +89,7 @@ public class AddDomainMappingsCommand implements Command<StratosCommandContext> 
             if (opts.hasOption(CliConstants.RESOURCE_PATH)) {
                 String resourcePath = opts.getOption(CliConstants.RESOURCE_PATH).getValue();
                 if (resourcePath == null) {
-                    System.out.println("usage: " + getName() + " [-" + CliConstants.RESOURCE_PATH + " "
-                            + CliConstants.RESOURCE_PATH_LONG_OPTION + "]");
+                    context.getStratosApplication().printUsage(getName());
                     return CliConstants.COMMAND_FAILED;
                 }
 
