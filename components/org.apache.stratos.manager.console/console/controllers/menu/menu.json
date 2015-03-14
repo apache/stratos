@@ -55,6 +55,15 @@
                     "description": "Define and manage single/multi tenant cartridges."
                 },
                 {
+                    "link": "configure/groups/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Cartridge Groups",
+                    "icon": "fa-briefcase",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "description": "Manage cartridge groups"
+                },
+                {
                     "link": "configure/docker/",
                     "linkexternal": false,
                     "context": "/configure",
@@ -103,15 +112,6 @@
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
             "description": "Manage cartridge groups, application policies and applications",
             "sub-menu": [
-                {
-                    "link": "applications/groups/",
-                    "linkexternal": false,
-                    "context": "/applications",
-                    "title": "Cartridge Groups",
-                    "icon": "fa-briefcase",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Manage cartridge groups"
-                },
                 {
                     "link": "applications/applications/",
                     "linkexternal": false,

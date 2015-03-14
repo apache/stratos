@@ -21,71 +21,140 @@
 var render = function (theme, data, meta, require) {
 
     if(data.error.length === 0 ){
-        theme('index', {
-            page_meta: [
-                {
-                    partial: 'index_title',
-                    context: {
-                        page_title: 'Apache Stratos - Configure',
-                        page_description: 'Apache Stratos - Configure'
-                    }
-                }
-            ],
-            header:[
-                {
-                    partial: 'index_header',
-                    context:{
-                    }
-                }
-            ],
-            sub_header:[
-                {
-                    partial:'index_sub_header',
-                    context:{
-                        breadcrumbPathLevelOne:data.breadcrumbPathLevelOne,
-                        breadcrumbPathLevelTwo:data.breadcrumbPathLevelTwo
-                    }
-                }
-            ],
-            left_menu:[
-                {
-                    partial:'index_left_menu',
-                    context:{
-                        left_menu:data.left_menu
-                    }
-                }
-            ],
-            right_menu_help:[
-                {
-                    partial:'index_right_menu_help',
-                    context:{
-
-                    }
-                }
-            ],
-            content: [
-                {
-                    partial:'configure_form',
-                    context:{
-                        formContext: data.breadcrumbPathLevelTwo,
-                        form_action: data.form_action,
-                        formData: data.formData,
-                        formDataRaw: data.formDataRaw,
-                        formTitle: data.formTitle,
-                        formtype: data.formtype,
-                        buttonText: data.buttonText,
-                        dependancy:data.dependancy,
-                        isForm: data.isForm,
-                        isEdit:data.isEdit,
-                        formDataEdit:data.formDataEdit,
-                        content_body: {sections:
-                                        data.list_data
+        switch (data.applicationHbs) {
+            case "applicationsGroupEditor":
+                theme('index', {
+                    page_meta: [
+                        {
+                            partial: 'index_title',
+                            context: {
+                                page_title: 'Apache Stratos - Application Managment',
+                                page_description: 'Apache Stratos - Application Managment'
+                            }
                         }
-                    }
-                }
+                    ],
+                    header: [
+                        {
+                            partial: 'index_header',
+                            context: {
+                            }
+                        }
+                    ],
+                    sub_header: [
+                        {
+                            partial: 'index_sub_header',
+                            context: {
+                                breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                                breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
+                            }
+                        }
+                    ],
+                    left_menu: [
+                        {
+                            partial: 'index_left_menu',
+                            context: {
+                                left_menu: data.left_menu
+                            }
+                        }
+                    ],
+                    right_menu_help: [
+                        {
+                            partial: 'index_right_menu_help',
+                            context: {
 
-            ]
-        });
+                            }
+                        }
+                    ],
+                    content: [
+                        {
+                            partial: 'applications_group_editor',
+                            context: {
+                                formContext: data.breadcrumbPathLevelTwo,
+                                appName: data.appName,
+                                editorCartridges: data.editorCartridges,
+                                form_action: data.form_action,
+                                formHtml: data.formHtml,
+                                formData: data.formData,
+                                formDataRaw: data.formDataRaw,
+                                formDataEdit: data.formDataEdit,
+                                isForm: data.isForm,
+                                isEdit: data.isEdit,
+                                formTitle: data.formTitle
+
+                            }
+                        }
+
+                    ]
+                });
+                break;
+
+            default:
+            theme
+                ('index', {
+                    page_meta: [
+                        {
+                            partial: 'index_title',
+                            context: {
+                                page_title: 'Apache Stratos - Configure',
+                                page_description: 'Apache Stratos - Configure'
+                            }
+                        }
+                    ],
+                    header: [
+                        {
+                            partial: 'index_header',
+                            context: {
+                            }
+                        }
+                    ],
+                    sub_header: [
+                        {
+                            partial: 'index_sub_header',
+                            context: {
+                                breadcrumbPathLevelOne: data.breadcrumbPathLevelOne,
+                                breadcrumbPathLevelTwo: data.breadcrumbPathLevelTwo
+                            }
+                        }
+                    ],
+                    left_menu: [
+                        {
+                            partial: 'index_left_menu',
+                            context: {
+                                left_menu: data.left_menu
+                            }
+                        }
+                    ],
+                    right_menu_help: [
+                        {
+                            partial: 'index_right_menu_help',
+                            context: {
+
+                            }
+                        }
+                    ],
+                    content: [
+                        {
+                            partial: 'configure_form',
+                            context: {
+                                formContext: data.breadcrumbPathLevelTwo,
+                                form_action: data.form_action,
+                                formData: data.formData,
+                                formDataRaw: data.formDataRaw,
+                                formTitle: data.formTitle,
+                                formtype: data.formtype,
+                                buttonText: data.buttonText,
+                                dependancy: data.dependancy,
+                                isForm: data.isForm,
+                                isEdit: data.isEdit,
+                                formDataEdit: data.formDataEdit,
+                                content_body: {sections: data.list_data
+                                }
+                            }
+                        }
+
+                    ]
+                });
+        }
 
     }else{
 

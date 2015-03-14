@@ -33,7 +33,7 @@ var log = new Log("apachestratos.configure_form"),
         uriMatcher = new URIMatcher(request.getRequestURI()),
         elements = uriMatcher.match('/{context}/configure/{formtype}/'),
         breadcrumbPathLevelOne = 'configure',
-        formDataEdit = '',
+        formDataEdit = editorCartridges = applicationHbs = '',
         isEdit = false,
         dependancy = '',
         isForm = false;
@@ -58,6 +58,11 @@ if (!elements) {
     } catch (e) {
             log.error(e.message);
             error.push({"errorMessage": e.message});
+    }
+
+    if(elements.formtype == 'groups' && elements.action == 'new'){
+        applicationHbs = 'applicationsGroupEditor';
+        editorCartridges = util.RESTCalls.getCartridges();
     }
 
 }
@@ -99,6 +104,15 @@ if(isEdit == false && elements.action != 'new') {
             formTitle = "Cartridge",
                     buttonText = "Cartridge";
             list_data = util.RESTCalls.getCartridges();
+            if (list_data && list_data.length === 0) {
+                list_data = null;
+            }
+            break;
+
+        case "groups":
+            formTitle = "Cartridge Group Definition",
+                    buttonText = "Cartridge Group Definition";
+            list_data = util.RESTCalls.getGroups();
             if (list_data && list_data.length === 0) {
                 list_data = null;
             }
@@ -157,6 +171,10 @@ if (elements.action != 'new' && isEdit) {
             formDataEdit = util.RESTCalls.getCartridge(id);
             break;
 
+        case "groups":
+            formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
+            break;
+
         case "docker":
             formDataEdit = util.RESTCalls.getKubernetesCluster(id);
             break;
@@ -175,6 +193,8 @@ var caramelData = {
     isForm: isForm,
     isEdit: isEdit,
     dependancy:dependancy,
+    editorCartridges: JSON.stringify(editorCartridges),
+    applicationHbs: applicationHbs,
     formDataEdit: JSON.stringify(formDataEdit),
     formTitle: formTitle,
     formDataRaw: JSON.stringify(formDataRaw),

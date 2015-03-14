@@ -84,26 +84,6 @@ if (!elements) {
             editorCartridges = util.RESTCalls.getCartridges();
             editorAutoscalePolicies = util.RESTCalls.getPolicyAutoScales();
             editorDeploymentPolicies = util.RESTCalls.getPolicyDeployments();
-        }else  if(elements.formtype == 'groups' && elements.action == 'new'){
-            applicationHbs = 'applicationsGroupEditor';
-            editorCartridges = util.RESTCalls.getCartridges();
-        }else  if( (elements.formtype == 'groups' || elements.formtype == 'applicationpolicies') && elements.action != 'new'){
-            isEdit = true;
-
-            //get the detail view for each listing
-            if (elements.action != 'new' && isEdit) {
-                formTitle = formData.title + ' Details - ' + elements.action;
-
-                var formtype = elements.formtype,
-                        id = escape(elements.action);
-
-                switch (formtype) {
-
-                    case "groups":
-                        formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
-                        break;
-                }
-            }
         }
 
     }
@@ -114,14 +94,6 @@ if (!elements) {
 var formtype = elements.formtype;
 
 switch (formtype) {
-    case "groups":
-        formTitle = "Cartridge Group Definition",
-                buttonText = "Cartridge Group Definition";
-        list_data = util.RESTCalls.getGroups();
-        if (list_data && list_data.length === 0) {
-            list_data = null;
-        }
-        break;
     case "applications":
         formTitle = "Application Definition",
                 buttonText = "Application Definition";

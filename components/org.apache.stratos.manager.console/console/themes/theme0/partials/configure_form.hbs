@@ -261,6 +261,34 @@
                         </div>
                     {{/each}}
                 {{/ifCond}}
+                {{#ifCond formtype "==" "groups"}}
+                    {{#each content_body.sections}}
+                        <div class="block col-md-4 grid-group-item border-right">
+                            <div class="toggle-menu-icon">
+                                <i class="fa fa-th-large"></i>
+                            </div>
+                            <h2 class="truncate">{{name}} </h2>
+
+                            <div class="toggle-menu-description">{{description}} </div>
+                            <div class="list-button" style="display: none;">
+                                <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                        id="{{name}}" data-formtype="delete-groups"> Delete</button>
+                                <button class="btn btn-info btn-lg hover-details" type="button" id="details_list_{{name}}"
+                                        data-url="{{url ""}}/configure/groups/{{name}}/" > Details
+                                </button>
+                            </div>
+                            <div class="bottom-bar-wrapper">
+                                <div class="bottom-bar">
+                                    <button class="btn btn-danger btn-lg hover-delete" type="button"
+                                            id="{{name}}" data-formtype="delete-groups"> Delete</button>
+                                    <button class="btn btn-info btn-lg hover-details" type="button" id="details_{{name}}"
+                                            data-url="{{url ""}}/configure/groups/{{name}}/" > Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    {{/each}}
+                {{/ifCond}}
             </div>
         </div>
     </div>

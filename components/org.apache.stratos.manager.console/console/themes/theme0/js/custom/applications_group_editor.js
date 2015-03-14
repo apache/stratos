@@ -361,7 +361,7 @@ $(document).ready(function(){
         btn.html("<i class='fa fa-spinner fa-spin'></i> Adding...");
         $.ajax({
             type: "POST",
-            url: caramel.context + "/controllers/applications/application_requests.jag",
+            url: caramel.context + "/controllers/configure/configure_requests.jag",
             dataType: 'json',
             data: { "formPayload": JSON.stringify(payload), "formtype": formtype },
             success: function (data) {
