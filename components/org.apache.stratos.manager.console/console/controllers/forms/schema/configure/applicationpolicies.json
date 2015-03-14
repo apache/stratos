@@ -11,27 +11,40 @@
     "properties": {
         "id": {
             "id": "root/id",
-            "type": "string"
+            "type": "string",
+            "title": "Application Policy Id ",
+            "name": "Application Policy Id",
         },
         "algorithm": {
             "id": "root/algorithm",
-            "type": "string"
+            "type": "string",
+            "title": "Application Policy Algorithm ",
+            "name": "Application Policy Algorithm",
+            "enum": ["one-after-another","all-at-once","weighted-one-after-another"],
         },
         "networkPartitions": {
             "id": "root/networkPartitions",
             "type": "array",
+            "title": "Network Partitions ",
+            "name": "Network Partitions",
             "items": {
                 "id": "root/networkPartitions/0",
-                "type": "string"
+                "type": "string",
+                "title": "Network Partitions ",
+                "name": "Network Partitions"
             }
         },
         "properties": {
             "id": "root/properties",
             "type": "array",
+            "title": "Properties ",
+            "name": "Properties",
             "items": [
                 {
                     "id": "root/properties/0",
                     "type": "object",
+                    "title": "Properties ",
+                    "name": "Properties",
                     "properties": {
                         "name": {
                             "id": "root/properties/0/name",
@@ -46,6 +59,8 @@
                 {
                     "id": "root/properties/1",
                     "type": "object",
+                    "title": "Properties ",
+                    "name": "Properties",
                     "properties": {
                         "name": {
                             "id": "root/properties/1/name",
