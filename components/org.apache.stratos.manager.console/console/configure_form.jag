@@ -113,6 +113,15 @@ if(isEdit == false && elements.action != 'new') {
             }
             break;
 
+        case "applicationpolicies":
+            formTitle = "Application Policy Definition",
+                    buttonText = "Application Policy Definition";
+            list_data = util.RESTCalls.getApplicationPolicies();
+            if (list_data && list_data.length === 0) {
+                list_data = null;
+            }
+            break;
+
         default:
             error.push({"errorMessage": "Incorrect resource path found"});
 
@@ -150,6 +159,10 @@ if (elements.action != 'new' && isEdit) {
 
         case "docker":
             formDataEdit = util.RESTCalls.getKubernetesCluster(id);
+            break;
+
+        case "applicationpolicies":
+            formDataEdit = util.RESTCalls.getPolicyApplication(id);
             break;
     }
 }

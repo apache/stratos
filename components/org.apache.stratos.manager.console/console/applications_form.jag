@@ -98,9 +98,7 @@ if (!elements) {
                         id = escape(elements.action);
 
                 switch (formtype) {
-                    case "applicationpolicies":
-                        formDataEdit = util.RESTCalls.getPolicyApplication(id);
-                        break;
+
                     case "groups":
                         formDataEdit = util.RESTCalls.getPolicyCartridgeGroup(id);
                         break;
@@ -128,15 +126,6 @@ switch (formtype) {
         formTitle = "Application Definition",
                 buttonText = "Application Definition";
         list_data = util.RESTCalls.getApplications();
-        if (list_data && list_data.length === 0) {
-            list_data = null;
-        }
-        break;
-
-    case "applicationpolicies":
-        formTitle = "Application Policy Definition",
-                buttonText = "Application Policy Definition";
-        list_data = util.RESTCalls.getApplicationPolicies();
         if (list_data && list_data.length === 0) {
             list_data = null;
         }

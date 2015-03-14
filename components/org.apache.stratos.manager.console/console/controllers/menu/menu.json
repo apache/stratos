@@ -37,6 +37,15 @@
                     "description": "Define specific policies for application deployment."
                 },
                 {
+                    "link": "configure/applicationpolicies/",
+                    "linkexternal": false,
+                    "context": "/configure",
+                    "title": "Application Policies",
+                    "icon": "fa-cube",
+                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
+                    "description": "Manage application policies"
+                },
+                {
                     "link": "configure/cartridges/",
                     "linkexternal": false,
                     "context": "/configure",
@@ -102,15 +111,6 @@
                     "icon": "fa-briefcase",
                     "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
                     "description": "Manage cartridge groups"
-                },
-                {
-                    "link": "applications/applicationpolicies/",
-                    "linkexternal": false,
-                    "context": "/applications",
-                    "title": "Application Policies",
-                    "icon": "fa-road",
-                    "permissionPaths": ["/permission", "/permission/admin", "/permission/admin/manage/view/subscription"],
-                    "description": "Manage application policies"
                 },
                 {
                     "link": "applications/applications/",

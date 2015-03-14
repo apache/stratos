@@ -45,6 +45,12 @@ try {
         case "docker":
             formSubmit = util.RESTCalls.deployKubernetesClusterDefinition(formPayload);
             break;
+        case "applicationpolicies":
+            formSubmit = util.RESTCalls.deployApplicationPolicyDefinition(formPayload);
+            break;
+        case "delete-applicationpolicies":
+            formSubmit = util.RESTCalls.deleteApplicationPolicyDefinition(formPayload);
+            break;
         case "delete-partitions":
             formSubmit = util.RESTCalls.deletePartiions(formPayload);
             break;
