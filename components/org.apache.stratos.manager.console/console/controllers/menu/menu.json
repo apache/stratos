@@ -104,20 +104,20 @@
             ]
         },
         {
-            "link": "applications/",
+            "link": "applications/applications/",
             "linkexternal": false,
             "context": "/",
             "title": "Application Management",
-            "icon": "fa-archive",
+            "icon": "fa-cubes",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
-            "description": "Manage cartridge groups, application policies and applications",
+            "description": "Manage applications",
             "sub-menu": [
                 {
                     "link": "applications/applications/",
                     "linkexternal": false,
                     "context": "/applications",
                     "title": "Applications",
-                    "icon": "fa-archive",
+                    "icon": "fa-cubes",
                     "permissionPaths": ["/permission", "/permission/admin","/permission/admin/manage/view/subscription" ],
                     "description": "Manage applications"
                 }
