@@ -41,8 +41,8 @@ import org.apache.stratos.kubernetes.client.KubernetesConstants;
 import org.apache.stratos.kubernetes.client.exceptions.KubernetesClientException;
 import org.apache.stratos.kubernetes.client.model.EnvironmentVariable;
 import org.apache.stratos.kubernetes.client.model.Pod;
-import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.kubernetes.client.model.Port;
+import org.apache.stratos.kubernetes.client.model.Service;
 import org.apache.stratos.messaging.domain.topology.KubernetesService;
 
 import java.util.ArrayList;
@@ -202,19 +202,19 @@ public class KubernetesIaas extends Iaas {
                 }
             }
 
-            KubernetesClusterContext kubClusterContext = getKubernetesClusterContext(kubernetesClusterId,
+            KubernetesClusterContext kubernetesClusterContext = getKubernetesClusterContext(kubernetesClusterId,
                     kubernetesMasterIp, kubernetesMasterPort, kubernetesPortRange.getUpper(),
                     kubernetesPortRange.getLower());
 
             // Generate kubernetes service ports and update port mappings in cartridge
-            generateKubernetesServicePorts(kubClusterContext, clusterContext.getClusterId(), cartridge);
+            generateKubernetesServicePorts(kubernetesClusterContext, clusterContext.getClusterId(), cartridge);
 
             // Create kubernetes services for port mappings
-            KubernetesApiClient kubernetesApi = kubClusterContext.getKubApi();
-            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster);
+            KubernetesApiClient kubernetesApi = kubernetesClusterContext.getKubApi();
+            createKubernetesServices(kubernetesApi, clusterContext, kubernetesCluster, kubernetesClusterContext);
 
             // Create pod
-            createPod(clusterContext, memberContext, kubernetesApi);
+            createPod(clusterContext, memberContext, kubernetesApi, kubernetesClusterContext);
 
             // Wait for pod status to be changed to running
             Pod pod = waitForPodToBeActivated(memberContext, kubernetesApi);
@@ -338,10 +338,11 @@ public class KubernetesIaas extends Iaas {
      *
      * @param memberContext
      * @param kubernetesApi
+     * @param kubernetesClusterContext
      * @throws KubernetesClientException
      */
     private void createPod(ClusterContext clusterContext, MemberContext memberContext,
-                           KubernetesApiClient kubernetesApi)
+                           KubernetesApiClient kubernetesApi, KubernetesClusterContext kubernetesClusterContext)
             throws KubernetesClientException {
 
         String applicationId = memberContext.getApplicationId();
@@ -381,7 +382,8 @@ public class KubernetesIaas extends Iaas {
         memberContext.setDynamicPayload(payload.toArray(new NameValuePair[payload.size()]));
 
         // Create pod
-        String podId = KubernetesIaasUtil.fixSpecialCharacters(memberId);
+        long podSeqNo = kubernetesClusterContext.getPodSeqNo().incrementAndGet();
+        String podId = "pod" + "-" + podSeqNo;
         String podLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
         String dockerImage = iaasProvider.getImage();
         EnvironmentVariable[] environmentVariables = KubernetesIaasUtil.prepareEnvironmentVariables(
@@ -390,9 +392,10 @@ public class KubernetesIaas extends Iaas {
         List<Port> ports = KubernetesIaasUtil.convertPortMappings(cartridge.getPortMappings());
         kubernetesApi.createPod(podId, podLabel, dockerImage, ports, environmentVariables);
 
-        // Add pod id to member context and persist
+        // Add pod id to member context
         memberContext.setKubernetesPodId(podId);
         memberContext.setKubernetesPodLabel(podLabel);
+        // Persist cloud controller context
         CloudControllerContext.getInstance().persist();
 
         if (log.isInfoEnabled()) {
@@ -408,10 +411,12 @@ public class KubernetesIaas extends Iaas {
      * @param kubernetesApi
      * @param clusterContext
      * @param kubernetesCluster
+     * @param kubernetesClusterContext
      * @throws KubernetesClientException
      */
     private void createKubernetesServices(KubernetesApiClient kubernetesApi, ClusterContext clusterContext,
-                                                             KubernetesCluster kubernetesCluster)
+                                          KubernetesCluster kubernetesCluster,
+                                          KubernetesClusterContext kubernetesClusterContext)
             throws KubernetesClientException {
 
         String clusterId = clusterContext.getClusterId();
@@ -446,7 +451,6 @@ public class KubernetesIaas extends Iaas {
             log.debug(String.format("Minion public IPs: %s", minionPublicIPs));
         }
 
-        int kubernetesServiceSeqNo = CloudControllerContext.getInstance().getKubernetesServiceSeqNo();
         for (PortMapping portMapping : cartridge.getPortMappings()) {
 
             // Skip if already created
@@ -455,8 +459,9 @@ public class KubernetesIaas extends Iaas {
                 continue;
             }
 
-            // Service id = cluster id + kubernetes service seq number of cluster
-            String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (++kubernetesServiceSeqNo));
+            // Find next service sequence no
+            long serviceSeqNo = kubernetesClusterContext.getServiceSeqNo().incrementAndGet();
+            String serviceId = KubernetesIaasUtil.fixSpecialCharacters("service" + "-" + (serviceSeqNo));
             String serviceLabel = KubernetesIaasUtil.fixSpecialCharacters(clusterId);
 
             if (log.isInfoEnabled()) {
@@ -475,7 +480,6 @@ public class KubernetesIaas extends Iaas {
                         minionPublicIPs.toArray(new String[minionPublicIPs.size()]));
             } finally {
                 // Persist kubernetes service sequence no
-                CloudControllerContext.getInstance().setKubernetesServiceSeqNo(kubernetesServiceSeqNo);
                 CloudControllerContext.getInstance().persist();
             }
 

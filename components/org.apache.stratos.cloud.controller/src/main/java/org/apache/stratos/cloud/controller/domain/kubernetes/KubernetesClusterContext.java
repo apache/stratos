@@ -18,13 +18,14 @@
  */
 package org.apache.stratos.cloud.controller.domain.kubernetes;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.kubernetes.client.KubernetesApiClient;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Holds information about a Kubernetes Cluster.
@@ -47,7 +48,9 @@ public class KubernetesClusterContext implements Serializable {
     private List<Integer> servicePorts;
     // kubernetes client API instance
     private transient KubernetesApiClient kubApi;
-    
+    private AtomicLong serviceSeqNo;
+    private AtomicLong podSeqNo;
+
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
     	servicePorts = new ArrayList<Integer>();
         this.lowerPort = lowerPort;
@@ -58,6 +61,8 @@ public class KubernetesClusterContext implements Serializable {
     	this.masterIp = masterIp;
     	this.masterPort = masterPort;
     	this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
+        this.serviceSeqNo = new AtomicLong();
+        this.podSeqNo = new AtomicLong();
     	
 	}
     
@@ -136,6 +141,14 @@ public class KubernetesClusterContext implements Serializable {
         this.lowerPort = lowerPort;
     }
 
+    public AtomicLong getServiceSeqNo() {
+        return serviceSeqNo;
+    }
+
+    public AtomicLong getPodSeqNo() {
+        return podSeqNo;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -184,5 +197,4 @@ public class KubernetesClusterContext implements Serializable {
             return false;
         return true;
     }
-
 }

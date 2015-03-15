@@ -168,7 +168,6 @@ public class CloudControllerContext implements Serializable {
 
     private transient AsyncDataPublisher dataPublisher;
     private boolean coordinator;
-    private int kubernetesServiceSeqNo;
 
     private CloudControllerContext() {
         // Check clustering status
@@ -729,13 +728,5 @@ public class CloudControllerContext implements Serializable {
         for(Object item : sourceList) {
             destinationList.add(item);
         }
-    }
-
-    public int getKubernetesServiceSeqNo() {
-        return kubernetesServiceSeqNo;
-    }
-
-    public void setKubernetesServiceSeqNo(int kubernetesServiceSeqNo) {
-        this.kubernetesServiceSeqNo = kubernetesServiceSeqNo;
     }
 }
