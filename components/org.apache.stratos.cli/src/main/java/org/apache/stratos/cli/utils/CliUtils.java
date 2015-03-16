@@ -39,6 +39,7 @@ import java.util.ResourceBundle;
 public class CliUtils {
     private static Log log = LogFactory.getLog(CliUtils.class);
 
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle("Resources");
 
 	public static <T> void printTable(T[] data, RowMapper<T> mapper, String... headers) {
@@ -116,7 +117,7 @@ public class CliUtils {
 
             while (line != null) {
                 sb.append(line);
-                sb.append(System.lineSeparator());
+                sb.append(LINE_SEPARATOR);
                 line = br.readLine();
             }
             return sb.toString();
