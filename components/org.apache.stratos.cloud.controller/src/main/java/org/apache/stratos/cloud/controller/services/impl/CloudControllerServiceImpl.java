@@ -396,7 +396,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // Create member context
             String applicationId = clusterContext.getApplicationId();
             MemberContext memberContext = createMemberContext(applicationId, cartridgeType, memberId,
-                    cartridge.getLoadBalancingIPType(), instanceContext);
+                    CloudControllerUtil.getLoadBalancingIPTypeEnumFromString(cartridge.getLoadBalancingIPType()), instanceContext);
 
             // Prepare payload
             StringBuilder payload = new StringBuilder(clusterContext.getPayload());
@@ -1615,4 +1615,3 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
     }
 }
-

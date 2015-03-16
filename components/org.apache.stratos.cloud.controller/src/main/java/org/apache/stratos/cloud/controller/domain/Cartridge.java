@@ -48,7 +48,7 @@ public class Cartridge implements Serializable{
     private List<PortMapping> portMappings;
     private Persistence persistence;
     private List<AppType> appTypeMappings;
-    private LoadBalancingIPType loadBalancingIPType;
+    private String loadBalancingIPType;
 	private String[] metadataKeys;
 
     /**
@@ -345,11 +345,11 @@ public class Cartridge implements Serializable{
 		this.metadataKeys = metadataKeys;
 	}
 
-    public LoadBalancingIPType getLoadBalancingIPType() {
+    public String getLoadBalancingIPType() {
         return loadBalancingIPType;
     }
 
-    public void setLoadBalancingIPType(LoadBalancingIPType loadBalancingIPType) {
+    public void setLoadBalancingIPType(String loadBalancingIPType) {
         this.loadBalancingIPType = loadBalancingIPType;
     }
 

@@ -106,10 +106,10 @@ public class CloudControllerUtil {
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setTenantPartitions(config.getTenantPartitions());
-        cartridge.setLoadBalancingIPType(LoadBalancingIPType.Private);
+        cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Private));
         if(StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
             if(config.getLoadBalancingIPType().equals("public")) {
-                cartridge.setLoadBalancingIPType(LoadBalancingIPType.Public);
+                cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Public));
             }
         }
 
@@ -465,5 +465,25 @@ public class CloudControllerUtil {
         } catch (InvalidKubernetesHostException e) {
             throw new InvalidKubernetesMasterException(e.getMessage());
         }
+    }
+
+    public static String getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType loadBalancingIPType) {
+        if (loadBalancingIPType == LoadBalancingIPType.Private) {
+            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE;
+        }
+        else if (loadBalancingIPType == LoadBalancingIPType.Public) {
+            return CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE;
+        }
+        return null;
+    }
+
+    public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {
+        if(loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE)) {
+            return LoadBalancingIPType.Public;
+        }
+        else if(loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE)) {
+            return LoadBalancingIPType.Private;
+        }
+        return null;
     }
 }
