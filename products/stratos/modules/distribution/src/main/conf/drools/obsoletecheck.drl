@@ -70,7 +70,7 @@ dialect "mvel"
             eval(log.debug("[instance-cleanup-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Pending termination member count: " + ctxt.getTerminationPendingMembers().size()))
             eval(ctxt.getTerminationPendingMembers().size() > 0)
             member : MemberContext() from ctxt.getTerminationPendingMembers()
-            eval(log.debug("[instance-cleanup-check ] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Member id: " + member.getMemberId()))
+            eval(log.debug("[instance-cleanup-check] [network-partition] " + ctxt.getNetworkPartitionId() + " [partition] " + ctxt.getPartitionId() + " [cluster] " + clusterId + " Member id: " + member.getMemberId()))
         then
            delegator.delegateInstanceCleanup(member.getMemberId());
 end
