@@ -28,15 +28,15 @@ public class PersistenceBean {
     private boolean isRequired;
     private List<VolumeBean> volumes;
 
-    public String toString () {
+    public String toString() {
         return " [ Persistence Required : " + isRequired() + "\n" +
                 "volume: " + getVolumes() + "] ";
     }
 
     private String getVolumes() {
         StringBuilder volumeBuilder = new StringBuilder();
-        if(getVolume() != null && !getVolume().isEmpty()) {
-            for(VolumeBean volumeBean : getVolume()) {
+        if (getVolume() != null && !getVolume().isEmpty()) {
+            for (VolumeBean volumeBean : getVolume()) {
                 volumeBuilder.append(volumeBean.toString());
             }
         }

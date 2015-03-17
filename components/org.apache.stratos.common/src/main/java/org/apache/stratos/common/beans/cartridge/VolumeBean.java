@@ -31,7 +31,7 @@ public class VolumeBean {
     private String snapshotId;
     private String volumeId;
 
-    public String toString () {
+    public String toString() {
         return " [ Persistence Required : " + ", Size: " + getSize() + ", device: " +
                 getDevice() + " remove on termination " + isRemoveOnTermination() +
                 ", mappingPath : " + getMappingPath() + "] ";
