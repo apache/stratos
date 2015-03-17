@@ -97,10 +97,11 @@ public class CartridgeAgent implements Runnable {
         }
         
         // Start tenant event receiver thread
+        /*
         registerTenantEventListeners();
         if (log.isInfoEnabled()) {
             log.info("Cartridge agent registerTenantEventListeners done");
-        }
+        } */
         
         // Start application event receiver thread
         registerApplicationEventListeners();

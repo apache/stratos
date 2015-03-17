@@ -12,18 +12,19 @@ import org.apache.stratos.messaging.event.instance.notifier.ArtifactUpdatedEvent
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupClusterEvent;
 import org.apache.stratos.messaging.event.instance.notifier.InstanceCleanupMemberEvent;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
-import org.apache.stratos.messaging.event.tenant.TenantSubscribedEvent;
-import org.apache.stratos.messaging.event.tenant.TenantUnSubscribedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantCreatedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantRemovedEvent;
+import org.apache.stratos.messaging.event.tenant.TenantUpdatedEvent;
 import org.apache.stratos.messaging.event.topology.*;
 import org.apache.stratos.messaging.listener.application.signup.ApplicationSignUpRemovedEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.ArtifactUpdateEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupClusterEventListener;
 import org.apache.stratos.messaging.listener.instance.notifier.InstanceCleanupMemberEventListener;
 import org.apache.stratos.messaging.listener.tenant.CompleteTenantEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantSubscribedEventListener;
-import org.apache.stratos.messaging.listener.tenant.TenantUnSubscribedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantCreatedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantRemovedEventListener;
+import org.apache.stratos.messaging.listener.tenant.TenantUpdatedEventListener;
 import org.apache.stratos.messaging.listener.topology.*;
-import org.apache.stratos.messaging.message.receiver.application.ApplicationsEventReceiver;
 import org.apache.stratos.messaging.message.receiver.application.signup.ApplicationSignUpEventReceiver;
 import org.apache.stratos.messaging.message.receiver.instance.notifier.InstanceNotifierEventReceiver;
 import org.apache.stratos.messaging.message.receiver.tenant.TenantEventReceiver;
@@ -407,16 +408,18 @@ public class CartridgeAgentEventListeners
             }
         });
 
-        tenantEventReceiver.addEventListener(new TenantSubscribedEventListener() {
+        tenantEventReceiver.addEventListener(new TenantRemovedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
                     TenantManager.acquireReadLock();
                     if (log.isDebugEnabled()) {
-                        log.debug("Tenant subscribed event received");
+                        log.debug("Tenant removed event received");
                     }
-                    TenantSubscribedEvent tenantSubscribedEvent = (TenantSubscribedEvent) event;
-                    extensionHandler.onTenantSubscribedEvent(tenantSubscribedEvent);
+                    TenantRemovedEvent tenantRemovedEvent = (TenantRemovedEvent) event;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Tenant removed event received: " + tenantRemovedEvent);
+                    }
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
                         log.error("Error processing tenant subscribed event", e);
@@ -427,19 +430,43 @@ public class CartridgeAgentEventListeners
             }
         });
 
-        tenantEventReceiver.addEventListener(new TenantUnSubscribedEventListener() {
+        tenantEventReceiver.addEventListener(new TenantUpdatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 try {
                     TenantManager.acquireReadLock();
                     if (log.isDebugEnabled()) {
-                        log.debug("Tenant unSubscribed event received");
+                        log.debug("Tenant updated event received");
                     }
-                    TenantUnSubscribedEvent tenantUnSubscribedEvent = (TenantUnSubscribedEvent) event;
-                    extensionHandler.onTenantUnSubscribedEvent(tenantUnSubscribedEvent);
+                    TenantUpdatedEvent tenantUpdatedEvent = (TenantUpdatedEvent) event;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Tenant updated event received: " + tenantUpdatedEvent);
+                    }
                 } catch (Exception e) {
                     if (log.isErrorEnabled()) {
-                        log.error("Error processing tenant unSubscribed event", e);
+                        log.error("Error processing tenant updated event", e);
+                    }
+                } finally {
+                    TenantManager.releaseReadLock();
+                }
+            }
+        });
+        
+        tenantEventReceiver.addEventListener(new TenantCreatedEventListener() {
+            @Override
+            protected void onEvent(Event event) {
+                try {
+                    TenantManager.acquireReadLock();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Tenant updated event received");
+                    }
+                    TenantCreatedEvent tenantCreatedEvent = (TenantCreatedEvent) event;
+                    if (log.isDebugEnabled()) {
+                        log.debug("Tenant updated event received: " + tenantCreatedEvent);
+                    }
+                } catch (Exception e) {
+                    if (log.isErrorEnabled()) {
+                        log.error("Error processing tenant updated event", e);
                     }
                 } finally {
                     TenantManager.releaseReadLock();
@@ -450,7 +477,7 @@ public class CartridgeAgentEventListeners
         if(log.isInfoEnabled()) {
             log.info("Tenant event listener added ... ");
         }
-    }
+    } 
     
     private void addApplicationsEventListeners() {
         applicationsEventReceiver.addEventListener(new ApplicationSignUpRemovedEventListener() {
