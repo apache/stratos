@@ -65,7 +65,8 @@ public class RuleTasksDelegator {
     }
 
 
-    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float requestsServedPerInstance, float averageRequestsServedPerInstance, boolean arspiReset) {
+    public int getNumberOfInstancesRequiredBasedOnRif(float rifPredictedValue, float requestsServedPerInstance, float
+            averageRequestsServedPerInstance, boolean arspiReset) {
 
 
         float requestsInstanceCanHandle = requestsServedPerInstance;
@@ -133,7 +134,8 @@ public class RuleTasksDelegator {
         if (laReset) {
             laBasedRequiredInstances = numberOfInstancesReuquiredBasedOnLoadAverage;
         }
-        numberOfInstances = Math.max(Math.max(numberOfInstancesRequiredBasedOnMemoryConsumption, numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesRequiredBasedOnRif);
+        numberOfInstances = Math.max(Math.max(numberOfInstancesRequiredBasedOnMemoryConsumption,
+                numberOfInstancesReuquiredBasedOnLoadAverage), numberOfInstancesRequiredBasedOnRif);
         return numberOfInstances;
     }
 
@@ -189,7 +191,8 @@ public class RuleTasksDelegator {
             int minimumCountOfNetworkPartition = 0;
             ClusterMonitor clusterMonitor = (ClusterMonitor) AutoscalerContext.getInstance().getClusterMonitor(clusterId);
             ClusterContext clusterContext = (ClusterContext) clusterMonitor.getClusterContext();
-            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext = clusterContext.getNetworkPartitionCtxt(nwPartitionId);
+            ClusterLevelNetworkPartitionContext clusterLevelNetworkPartitionContext =
+                    clusterContext.getNetworkPartitionCtxt(nwPartitionId);
             ClusterInstanceContext clusterInstanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
                             getInstanceContext(clusterInstanceId);
@@ -272,18 +275,20 @@ public class RuleTasksDelegator {
             //Moving member to pending termination list
             if (clusterMonitorPartitionContext.activeMemberAvailable(memberId)) {
 
-                log.info(String.format("[scale-down] Moving active member to termination pending list [member id] %s [partition] %s " +
-                                "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
+                log.info(String.format("[scale-down] Moving active member to termination pending list [member id] %s " +
+                                "[partition] %s [network partition] %s" , memberId,
+                        clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
-                clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
-                clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
+                        clusterMonitorPartitionContext.moveActiveMemberToTerminationPendingMembers(memberId);
+                        clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             } else if (clusterMonitorPartitionContext.pendingMemberAvailable(memberId)) {
 
-                log.info(String.format("[scale-down] Moving pending member to termination pending list [member id] %s [partition] %s " +
-                                "[network partition] %s" , memberId, clusterMonitorPartitionContext.getPartitionId(),
+                log.info(String.format("[scale-down] Moving pending member to termination pending list [member id] %s " +
+                                "[partition] %s [network partition] %s" , memberId,
+                        clusterMonitorPartitionContext.getPartitionId(),
                         clusterMonitorPartitionContext.getNetworkPartitionId()));
-                clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
-                clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
+                        clusterMonitorPartitionContext.movePendingMemberToObsoleteMembers(memberId);
+                        clusterMonitorPartitionContext.removeMemberStatsContext(memberId);
             }
         } catch (Exception e) {
             log.error("[scale-down] Cannot move member to termination pending list ", e);
@@ -345,10 +350,13 @@ public class RuleTasksDelegator {
                 float memberGredientLoadAverage = memberStatsContext.getLoadAverage().getGradient();
                 float memberSecondDerivativeLoadAverage = memberStatsContext.getLoadAverage().getSecondDerivative();
 
-                double memberPredictedLoadAverage = getPredictedValueForNextMinute(memberAverageLoadAverage, memberGredientLoadAverage, memberSecondDerivativeLoadAverage, 1);
+                double memberPredictedLoadAverage = getPredictedValueForNextMinute(memberAverageLoadAverage,
+                        memberGredientLoadAverage, memberSecondDerivativeLoadAverage, 1);
 
-                log.debug("Member ID : " + memberStatsContext.getMemberId() + " : Predicted Load Average : " + memberPredictedLoadAverage);
-
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("[member-id] $s [predicted load average] $s ", memberStatsContext.getMemberId()
+                            , memberPredictedLoadAverage));
+                }
                 loadAveragePredicted += memberPredictedLoadAverage;
                 ++totalMemberCount;
             }
@@ -372,10 +380,13 @@ public class RuleTasksDelegator {
                 float memberMemoryConsumptionGredient = memberStatsContext.getMemoryConsumption().getGradient();
                 float memberMemoryConsumptionSecondDerivative = memberStatsContext.getMemoryConsumption().getSecondDerivative();
 
-                double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage, memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
+                double memberPredictedMemoryConsumption = getPredictedValueForNextMinute(memberMemoryConsumptionAverage,
+                        memberMemoryConsumptionGredient, memberMemoryConsumptionSecondDerivative, 1);
 
-                log.debug("Member ID : " + memberStatsContext.getMemberId() + " : Predicted Memory Consumption : " + memberPredictedMemoryConsumption);
-
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("[member-id] $s [predicted memory consumption] $s ", memberStatsContext.getMemberId()
+                            , memberPredictedMemoryConsumption));
+                }
                 memoryConsumptionPredicted += memberPredictedMemoryConsumption;
                 ++totalMemberCount;
             }
