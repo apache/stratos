@@ -229,10 +229,10 @@ public class ClusterMonitor extends Monitor implements Runnable {
          * then won't send the notification to parent.
          */
         ClusterInstance instance = (ClusterInstance) this.instanceIdToInstanceMap.get(instanceId);
-        if(instance == null) {
+        if (instance == null) {
             log.warn("The required cluster [instance] " + instanceId + " not found in the ClusterMonitor");
         } else {
-            if(instance.getStatus() != status) {
+            if (instance.getStatus() != status) {
                 instance.setStatus(status);
             }
             /*if (instance.getStatus() == ClusterStatus.Inactive && !this.hasStartupDependents) {
@@ -386,27 +386,27 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
         return groupScalingEnabledSubtree;
     }
-    
-	private static void createClusterInstance(String serviceType,
-	        String clusterId, String alias, String instanceId,
-	        String partitionId, String networkPartitionId) {
-		
-			try {
-	            CloudControllerServiceClient.getInstance().createClusterInstance(
-	                    serviceType, clusterId, alias, instanceId, partitionId,
-	                    networkPartitionId);
-			} catch (RemoteException e) {
-				String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId 
-	            		+ "] instance-id ["+instanceId+"] service-type ["+serviceType+"]"
-	            		+ "] alias ["+alias+"] partition-id ["+partitionId+"]"
-	            		+ "] network-parition-id ["+networkPartitionId+"]"
-	            				+ " .Reason ["+e.getMessage()+"]" ;
-	            log.error(msg);
-	            throw new RuntimeException(msg, e);
-            }
-		
 
-	}
+    private static void createClusterInstance(String serviceType,
+                                              String clusterId, String alias, String instanceId,
+                                              String partitionId, String networkPartitionId) {
+
+        try {
+            CloudControllerServiceClient.getInstance().createClusterInstance(
+                    serviceType, clusterId, alias, instanceId, partitionId,
+                    networkPartitionId);
+        } catch (RemoteException e) {
+            String msg = " Exception occurred in creating cluster instance with cluster-id [" + clusterId
+                    + "] instance-id [" + instanceId + "] service-type [" + serviceType + "]"
+                    + "] alias [" + alias + "] partition-id [" + partitionId + "]"
+                    + "] network-parition-id [" + networkPartitionId + "]"
+                    + " .Reason [" + e.getMessage() + "]";
+            log.error(msg);
+            throw new RuntimeException(msg, e);
+        }
+
+
+    }
 
     public void addClusterLevelNWPartitionContext(ClusterLevelNetworkPartitionContext clusterLevelNWPartitionCtxt) {
         networkPartitionIdToClusterLevelNetworkPartitionCtxts.put(clusterLevelNWPartitionCtxt.getId(), clusterLevelNWPartitionCtxt);
@@ -685,9 +685,9 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
 
         log.info("Parent scaling event received to [cluster]: " + this.getClusterId()
-                    + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
-                    + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
-                    + ", [factor] " + scalingEvent.getFactor());
+                + ", [network partition]: " + scalingEvent.getNetworkPartitionId()
+                + ", [event] " + scalingEvent.getId() + ", [group instance] " + scalingEvent.getInstanceId()
+                + ", [factor] " + scalingEvent.getFactor());
 
 
         this.scalingFactorBasedOnDependencies = scalingEvent.getFactor();
@@ -1317,7 +1317,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
 
                 ClusterInstanceContext instanceContext =
                         (ClusterInstanceContext) getAllNetworkPartitionCtxts().get(networkPartitionId)
-                                                                    .getInstanceContext(instanceId);
+                                .getInstanceContext(instanceId);
                 boolean allMovedToObsolete = true;
                 for (ClusterLevelPartitionContext partitionContext : instanceContext.getPartitionCtxts()) {
                     if (log.isInfoEnabled()) {
@@ -1355,14 +1355,14 @@ public class ClusterMonitor extends Monitor implements Runnable {
                         }
                         partitionContext.movePendingMemberToObsoleteMembers(memberId);
                     }
-                    if(partitionContext.getTotalMemberCount() == 0) {
+                    if (partitionContext.getTotalMemberCount() == 0) {
                         allMovedToObsolete = allMovedToObsolete && true;
                     } else {
                         allMovedToObsolete = false;
                     }
                 }
 
-                if(allMovedToObsolete) {
+                if (allMovedToObsolete) {
                     monitor.monitor();
                 }
             }
@@ -1375,19 +1375,21 @@ public class ClusterMonitor extends Monitor implements Runnable {
         return ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
     }
 
-    public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {Map<String, ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
+    public ClusterInstanceContext getClusterInstanceContext(String networkPartitionId, String instanceId) {
+        Map<String,
+                ClusterLevelNetworkPartitionContext> clusterLevelNetworkPartitionContextMap =
                 ((ClusterContext) this.clusterContext).getNetworkPartitionCtxts();
-        if(StringUtils.isBlank(networkPartitionId)) {
+        if (StringUtils.isBlank(networkPartitionId)) {
             throw new RuntimeException("Network partition id is null");
         }
         ClusterLevelNetworkPartitionContext networkPartitionContext =
                 clusterLevelNetworkPartitionContextMap.get(networkPartitionId);
-        if(networkPartitionContext == null) {
+        if (networkPartitionContext == null) {
             throw new RuntimeException("Network partition context not found: [network-partition-id] " +
-            networkPartitionId);
+                    networkPartitionId);
         }
         ClusterInstanceContext instanceContext = (ClusterInstanceContext) networkPartitionContext.
-                                                        getInstanceContext(instanceId);
+                getInstanceContext(instanceId);
         return instanceContext;
     }
 
