@@ -35,6 +35,7 @@ public class SubscribableInfoContext implements Serializable {
     private String[] dependencyAliases;
     private ArtifactRepositoryContext artifactRepositoryContext;
     private Properties properties;
+    private PersistenceContext persistenceContext;
 
     public String getAlias() {
         return alias;
@@ -98,5 +99,13 @@ public class SubscribableInfoContext implements Serializable {
 
     public void setArtifactRepositoryContext(ArtifactRepositoryContext artifactRepositoryContext) {
         this.artifactRepositoryContext = artifactRepositoryContext;
+    }
+
+    public PersistenceContext getPersistenceContext() {
+        return persistenceContext;
+    }
+
+    public void setPersistenceContext(PersistenceContext persistenceContext) {
+        this.persistenceContext = persistenceContext;
     }
 }

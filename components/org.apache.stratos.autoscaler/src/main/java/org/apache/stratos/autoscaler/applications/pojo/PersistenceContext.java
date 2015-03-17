@@ -26,7 +26,7 @@ public class PersistenceContext implements Serializable{
 	private static final long serialVersionUID = 3455721979991902731L;
 
     private boolean persistanceRequired;
-	private Volume[] volumes;
+	private VolumeContext[] volumes;
 
     public String toString () {
         return "Persistence Required: " + isPersistanceRequired();
@@ -40,13 +40,13 @@ public class PersistenceContext implements Serializable{
         this.persistanceRequired = persistanceRequired;
     }
 
-    public Volume[] getVolumes() {
+    public VolumeContext[] getVolumes() {
         return volumes;
     }
 
-    public void setVolumes(Volume[] volumes) {
+    public void setVolumes(VolumeContext[] volumes) {
         if(volumes == null) {
-            this.volumes = new Volume[0];
+            this.volumes = new VolumeContext[0];
         } else {
             this.volumes = Arrays.copyOf(volumes, volumes.length);
         }
