@@ -146,47 +146,48 @@ public class StratosApiV41 extends AbstractApi {
 
         String cartridgeType = cartridgeDefinitionBean.getType();
         CartridgeBean cartridgeBean = StratosApiV41Utils.getCartridgeForValidate(cartridgeType);
-        if(cartridgeBean != null) {
-        	String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
+        if (cartridgeBean != null) {
+            String msg = String.format("Cartridge already exists: [cartridge-type] %s", cartridgeType);
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(new ErrorResponseBean(
-            		Response.Status.CONFLICT.getStatusCode(),msg)).build();
+                    Response.Status.CONFLICT.getStatusCode(), msg)).build();
         }
 
         StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(), 
-        		String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
     }
 
-	/**
-	 * Creates the Deployement Policy Definition.
-	 *
-	 * @param deploymentPolicyDefinitionBean the deployment policy bean
-	 * @return the response
-	 * @throws RestAPIException the rest api exception
-	 */
-	@POST
-	@Path("/deploymentPolicies")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/addDeploymentPolicy")
-	public Response addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
-			throws RestAPIException {
+    /**
+     * Creates the Deployement Policy Definition.
+     *
+     * @param deploymentPolicyDefinitionBean the deployment policy bean
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @POST
+    @Path("/deploymentPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/addDeploymentPolicy")
+    public Response addDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
+            throws RestAPIException {
 
-		String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
-		// TODO :: Deployment policy validation
-		StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
-		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                                            String.format(
-				                                                            "Deployment policy added successfully: " +
-				                                                            "[deployment-policy-id] %s",
-				                                                            deploymentPolicyID))).build();
-	}
-	
+        String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+        // TODO :: Deployment policy validation
+        StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format(
+                        "Deployment policy added successfully: " +
+                                "[deployment-policy-id] %s",
+                        deploymentPolicyID))).build();
+    }
+
     /**
      * Get deployment policy by deployment policy id
+     *
      * @return the response
      * @throws RestAPIException
      */
@@ -199,9 +200,10 @@ public class StratosApiV41 extends AbstractApi {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
         return Response.ok(deploymentPolicyBean).build();
     }
-    
+
     /**
      * Get deployment policies
+     *
      * @return the response
      * @throws RestAPIException
      */
@@ -211,80 +213,82 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/getDeploymentPolicy")
     public Response getDeploymentPolicies() throws RestAPIException {
-    	DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
+        DeploymentPolicyBean[] deploymentPolicies = StratosApiV41Utils.getDeployementPolicies();
         return Response.ok(deploymentPolicies).build();
     }
 
-	/**
-	 * Updates the Deployment Policy Definition.
-	 *
-	 * @param deploymentPolicyDefinitionBean the deployment policy bean
-	 * @return the response
-	 * @throws RestAPIException the rest api exception
-	 */
-	@PUT
-	@Path("/deploymentPolicies")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/updateDeploymentPolicy")
-	public Response updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
-			throws RestAPIException {
+    /**
+     * Updates the Deployment Policy Definition.
+     *
+     * @param deploymentPolicyDefinitionBean the deployment policy bean
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @PUT
+    @Path("/deploymentPolicies")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/updateDeploymentPolicy")
+    public Response updateDeploymentPolicy(DeploymentPolicyBean deploymentPolicyDefinitionBean)
+            throws RestAPIException {
 
-		String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
-		// TODO :: Deployment policy validation
+        String deploymentPolicyID = deploymentPolicyDefinitionBean.getId();
+        // TODO :: Deployment policy validation
 
-		StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
-		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                                            String.format(
-				                                                            "Deployment policy updated successfully: " +
-				                                                            "[deployment-policy-id] %s",
-				                                                            deploymentPolicyID))).build();
-	}
+        StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format(
+                        "Deployment policy updated successfully: " +
+                                "[deployment-policy-id] %s",
+                        deploymentPolicyID))).build();
+    }
 
-	/**
-	 * Updates the Deployment Policy Definition.
-	 *
-	 * @param deploymentPolicyID the deployment policy id
-	 * @return the response
-	 * @throws RestAPIException the rest api exception
-	 */
-	@DELETE
-	@Path("/deploymentPolicies/{depolymentPolicyID}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
-	public Response removeDeploymentPolicy(@PathParam("depolymentPolicyID") String deploymentPolicyID)
-			throws RestAPIException {
+    /**
+     * Updates the Deployment Policy Definition.
+     *
+     * @param deploymentPolicyID the deployment policy id
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @DELETE
+    @Path("/deploymentPolicies/{depolymentPolicyID}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/removeDeploymentPolicy")
+    public Response removeDeploymentPolicy(@PathParam("depolymentPolicyID") String deploymentPolicyID)
+            throws RestAPIException {
 
-		StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
-		URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                                            String.format(
-				                                                            "Deployment policy removed successfully: " +
-				                                                            "[deployment-policy-id] %s",
-				                                                            deploymentPolicyID))).build();
-	}
-	/**
-	 * Updates the cartridge definition.
-	 *
-	 * @param cartridgeDefinitionBean the cartridge definition bean
-	 * @return the response
-	 * @throws RestAPIException the rest api exception
-	 */
-	@PUT
-	@Path("/cartridges")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/updateCartridge")
-	public Response updateCartridge(CartridgeBean cartridgeDefinitionBean)
-			throws RestAPIException {
-		StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
-		URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
-		return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(), 
-        		"Cartridge updated successfully")).build();
+        StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
+        URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                String.format(
+                        "Deployment policy removed successfully: " +
+                                "[deployment-policy-id] %s",
+                        deploymentPolicyID))).build();
+    }
 
-	}
+    /**
+     * Updates the cartridge definition.
+     *
+     * @param cartridgeDefinitionBean the cartridge definition bean
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @PUT
+    @Path("/cartridges")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/updateCartridge")
+    public Response updateCartridge(CartridgeBean cartridgeDefinitionBean)
+            throws RestAPIException {
+        StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
+        URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                "Cartridge updated successfully")).build();
+
+    }
+
     /**
      * Gets all available cartridges.
      *
@@ -381,8 +385,8 @@ public class StratosApiV41 extends AbstractApi {
     public Response removeCartridge(@PathParam("cartridgeType") String cartridgeType) throws RestAPIException {
         StratosApiV41Utils.removeCartridge(cartridgeType);
         return Response.ok().entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        		String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();        
-        
+                String.format("Cartridge deleted successfully: [cartridge-type] %s", cartridgeType))).build();
+
     }
 
     // API methods for cartridge groups
@@ -405,7 +409,8 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
         URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
         return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        		String.format("Service Group added successfully: [service-group] %s", serviceGroupDefinition.getName()))).build();
+                String.format("Service Group added successfully: [service-group] %s",
+                        serviceGroupDefinition.getName()))).build();
     }
 
     /**
@@ -474,14 +479,15 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeServiceGroup(groupDefinitionName);
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Service Group deleted successfully: [service-group] %s",groupDefinitionName))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Service Group deleted successfully: [service-group] %s", groupDefinitionName))).build();
     }
 
     // API methods for network partitions
 
     /**
      * Add network partition
+     *
      * @param networkPartitionBean
      * @return
      * @throws RestAPIException
@@ -495,21 +501,22 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         String networkPartitionId = networkPartitionBean.getId();
         NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
-        if(networkPartition != null) {
-        	String msg = String.format("Network partition already exists: [network-partition-id] %s", networkPartitionId);
+        if (networkPartition != null) {
+            String msg = String.format("Network partition already exists: [network-partition-id] %s", networkPartitionId);
             log.warn(msg);
             return Response.status(Response.Status.CONFLICT).entity(
-            		new ErrorResponseBean(Response.Status.CONFLICT.getStatusCode(), msg)).build();
+                    new ErrorResponseBean(Response.Status.CONFLICT.getStatusCode(), msg)).build();
         }
         StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
         return Response.created(url).entity(new SuccessResponseBean(
-		        Response.Status.OK.getStatusCode(),
-		        String.format("Network partition added successfully: [network-partition] %s", networkPartitionId))).build();
+                Response.Status.OK.getStatusCode(),
+                String.format("Network partition added successfully: [network-partition] %s", networkPartitionId))).build();
     }
 
     /**
      * Get network partitions
+     *
      * @return
      * @throws RestAPIException
      */
@@ -525,6 +532,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Get network partition by network partition id
+     *
      * @return
      * @throws RestAPIException
      */
@@ -540,6 +548,7 @@ public class StratosApiV41 extends AbstractApi {
 
     /**
      * Remove network partition by network partition id
+     *
      * @return
      * @throws RestAPIException
      */
@@ -548,14 +557,14 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/removeNetworkPartition")
     public Response removeNetworkPartition(@PathParam("networkPartitionId") String networkPartitionId) throws RestAPIException {
         NetworkPartitionBean networkPartition = StratosApiV41Utils.getNetworkPartition(networkPartitionId);
-        if(networkPartition == null) {
+        if (networkPartition == null) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         StratosApiV41Utils.removeNetworkPartition(networkPartitionId);
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Network Partition deleted successfully: [network-partition] %s",
-		                                              networkPartitionId))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Network Partition deleted successfully: [network-partition] %s",
+                                networkPartitionId))).build();
     }
 
     // API methods for applications
@@ -577,9 +586,9 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Application added successfully: [application] %s",
-		                                              applicationDefinition.getApplicationId()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Application added successfully: [application] %s",
+                                applicationDefinition.getApplicationId()))).build();
     }
 
     /**
@@ -595,7 +604,8 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getApplications")
     public Response getApplications() throws RestAPIException {
         List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
-        ApplicationBean[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationBean[applicationDefinitions.size()]);
+        ApplicationBean[] applicationDefinitionsArray = applicationDefinitions.toArray(new ApplicationBean[
+                applicationDefinitions.size()]);
         return Response.ok(applicationDefinitionsArray).build();
     }
 
@@ -623,7 +633,8 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Deploy application.
      *
-     * @param applicationPolicy the application policy
+     * @param applicationId
+     * @param applicationPolicyId the application policy id
      * @return the response
      * @throws RestAPIException the rest api exception
      */
@@ -632,16 +643,16 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/deployApplication")
-    public Response deployApplication(@PathParam("applicationId") String applicationId, 
-    		@PathParam("applicationPolicyId") String applicationPolicyId)
+    public Response deployApplication(@PathParam("applicationId") String applicationId,
+                                      @PathParam("applicationPolicyId") String applicationPolicyId)
             throws RestAPIException {
         StratosApiV41Utils.deployApplication(applicationId, applicationPolicyId);
         return Response.accepted().entity(
-		        new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
-		                                String.format("Application deployed successfully: [application] %s",
-		                                              applicationId))).build();
+                new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
+                        String.format("Application deployed successfully: [application] %s",
+                                applicationId))).build();
     }
-    
+
     @POST
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -652,8 +663,9 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
         return Response.created(url).entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Application policy added successfully: [application-policy] %s", applicationPolicy.getId() ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Application policy added successfully: [application-policy] %s",
+                                applicationPolicy.getId()))).build();
     }
 
     @GET
@@ -665,7 +677,7 @@ public class StratosApiV41 extends AbstractApi {
         ApplicationPolicyBean applicationPolicyBean = StratosApiV41Utils.getApplicationPolicy(applicationPolicyId);
         return Response.ok(applicationPolicyBean).build();
     }
-    
+
     @GET
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -674,21 +686,22 @@ public class StratosApiV41 extends AbstractApi {
     public Response getApplicationPolicies() throws RestAPIException {
         return Response.ok().entity(StratosApiV41Utils.getApplicationPolicies()).build();
     }
-    
-	@DELETE
-	@Path("/applicationPolicies/{applicationPolicyId}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/removeApplicationPolicy")
-	public Response removeApplicationPolicy(@PathParam("applicationPolicyId") String applicationPolicyId)
-			throws RestAPIException {
 
-		StratosApiV41Utils.removeApplicationPolicy(applicationPolicyId);
-		return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s", applicationPolicyId))).build();
-	}
-	
+    @DELETE
+    @Path("/applicationPolicies/{applicationPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/removeApplicationPolicy")
+    public Response removeApplicationPolicy(@PathParam("applicationPolicyId") String applicationPolicyId)
+            throws RestAPIException {
+
+        StratosApiV41Utils.removeApplicationPolicy(applicationPolicyId);
+        return Response.ok().entity(
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s",
+                                applicationPolicyId))).build();
+    }
+
     @PUT
     @Path("/applicationPolicies")
     @Produces("application/json")
@@ -699,12 +712,14 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.updateApplicationPolicy(applicationPolicy);
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Application policy updated successfully: [application-policy] %s", applicationPolicy.getId() ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Application policy updated successfully: [application-policy] %s",
+                                applicationPolicy.getId()))).build();
     }
-    
+
     /**
      * Get network partition ids used in an application
+     *
      * @return
      * @throws RestAPIException
      */
@@ -714,14 +729,15 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/getApplicationNetworkPartitions")
     public Response getApplicationNetworkPartitions(@PathParam("applicationId") String applicationId) throws RestAPIException {
-    	ApplicationNetworkPartitionIdListBean appNetworkPartitionsBean = StratosApiV41Utils.getApplicationNetworkPartitions(applicationId);
+        ApplicationNetworkPartitionIdListBean appNetworkPartitionsBean
+                = StratosApiV41Utils.getApplicationNetworkPartitions(applicationId);
         return Response.ok(appNetworkPartitionsBean).build();
     }
 
     /**
      * Signs up for an application.
      *
-     * @param applicationId the application id
+     * @param applicationId         the application id
      * @param applicationSignUpBean the application sign up bean
      * @return the response
      * @throws RestAPIException the rest api exception
@@ -735,8 +751,8 @@ public class StratosApiV41 extends AbstractApi {
                                          ApplicationSignUpBean applicationSignUpBean) throws RestAPIException {
         StratosApiV41Utils.addApplicationSignUp(applicationId, applicationSignUpBean);
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Successfully signed up for: [application] %s", applicationId))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Successfully signed up for: [application] %s", applicationId))).build();
     }
 
     /**
@@ -779,7 +795,7 @@ public class StratosApiV41 extends AbstractApi {
     /**
      * Adds the domain mappings for an application.
      *
-     * @param applicationId the application id
+     * @param applicationId       the application id
      * @param domainMapppingsBean the domain mapppings bean
      * @return the response
      * @throws RestAPIException the rest api exception
@@ -790,22 +806,22 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/addDomainMappings")
     public Response addDomainMappings(@PathParam("applicationId") String applicationId,
-                                         ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+                                      ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
         StratosApiV41Utils.addApplicationDomainMappings(applicationId, domainMapppingsBean);
         List<DomainMappingBean> mappings = domainMapppingsBean.getDomainMappings();
         List<String> domainMappingList = new ArrayList<String>();
         for (DomainMappingBean domainMappingBean : mappings) {
-        	domainMappingList.add(domainMappingBean.getDomainName());
+            domainMappingList.add(domainMappingBean.getDomainName());
         }
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Domain Mappings added successfully: [domain-mappings] %s",domainMappingList ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Domain Mappings added successfully: [domain-mappings] %s", domainMappingList))).build();
     }
 
     /**
      * Removes the domain mappings for an application.
      *
-     * @param applicationId the application id
+     * @param applicationId       the application id
      * @param domainMapppingsBean the domain mapppings bean
      * @return the response
      * @throws RestAPIException the rest api exception
@@ -816,16 +832,16 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/removeDomainMappings")
     public Response removeDomainMappings(@PathParam("applicationId") String applicationId,
-                                     ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
+                                         ApplicationDomainMappingsBean domainMapppingsBean) throws RestAPIException {
         StratosApiV41Utils.removeApplicationDomainMappings(applicationId, domainMapppingsBean);
         List<DomainMappingBean> mappings = domainMapppingsBean.getDomainMappings();
         List<String> domainMappingList = new ArrayList<String>();
         for (DomainMappingBean domainMappingBean : mappings) {
-        	domainMappingList.add(domainMappingBean.getDomainName());
+            domainMappingList.add(domainMappingBean.getDomainName());
         }
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Domain Mappings deleted successfully: [domain-mappings] %s", domainMappingList ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Domain Mappings deleted successfully: [domain-mappings] %s", domainMappingList))).build();
     }
 
     /**
@@ -863,9 +879,9 @@ public class StratosApiV41 extends AbstractApi {
             throws RestAPIException {
         StratosApiV41Utils.undeployApplication(applicationId);
         return Response.accepted().entity(
-		        new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
-		                                String.format("Application undeployed successfully: [application] %s",
-		                                              applicationId))).build();
+                new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
+                        String.format("Application undeployed successfully: [application] %s",
+                                applicationId))).build();
     }
 
     /**
@@ -914,8 +930,8 @@ public class StratosApiV41 extends AbstractApi {
 //	    }
         StratosApiV41Utils.removeApplication(applicationId);
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Application deleted successfully: [application] %s", applicationId ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Application deleted successfully: [application] %s", applicationId))).build();
     }
 
     // API methods for autoscaling policies
@@ -974,8 +990,8 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
         return Response.created(url).entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Autoscaling policy added successfully: [autoscale-policy] %s", autoscalePolicy.getId() ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Autoscaling policy added successfully: [autoscale-policy] %s", autoscalePolicy.getId()))).build();
     }
 
     /**
@@ -995,8 +1011,9 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.updateAutoscalingPolicy(autoscalePolicy);
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Autoscaling policy updated successfully: [autoscale-policy] %s", autoscalePolicy.getId() ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Autoscaling policy updated successfully: [autoscale-policy] %s",
+                                autoscalePolicy.getId()))).build();
     }
 
     @PUT
@@ -1008,30 +1025,32 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.updateNetworkPartition(networkPartition);
         return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Network Partition updated successfully: [network-partition] %s", networkPartition.getId() ))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Network Partition updated successfully: [network-partition] %s",
+                                networkPartition.getId()))).build();
     }
 
-	/**
-	 * Remove autoscaling policy.
-	 *
-	 * @param autoscalingPolicyId the autoscale policy
-	 * @return the response
-	 * @throws RestAPIException the rest api exception
-	 */
-	@DELETE
-	@Path("/autoscalingPolicies/{autoscalingPolicyId}")
-	@Produces("application/json")
-	@Consumes("application/json")
-	@AuthorizationAction("/permission/admin/manage/removeAutoscalingPolicy")
-	public Response removeAutoscalingPolicy(@PathParam("autoscalingPolicyId") String autoscalingPolicyId)
-			throws RestAPIException {
+    /**
+     * Remove autoscaling policy.
+     *
+     * @param autoscalingPolicyId the autoscale policy
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @DELETE
+    @Path("/autoscalingPolicies/{autoscalingPolicyId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/removeAutoscalingPolicy")
+    public Response removeAutoscalingPolicy(@PathParam("autoscalingPolicyId") String autoscalingPolicyId)
+            throws RestAPIException {
 
-		StratosApiV41Utils.removeAutoscalingPolicy(autoscalingPolicyId);
-		return Response.ok().entity(
-        		new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-        				String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s", autoscalingPolicyId))).build();
-	}
+        StratosApiV41Utils.removeAutoscalingPolicy(autoscalingPolicyId);
+        return Response.ok().entity(
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s",
+                                autoscalingPolicyId))).build();
+    }
     // API methods for tenants
 
     /**
@@ -1071,7 +1090,7 @@ public class StratosApiV41 extends AbstractApi {
             log.error("Security alert! User registry is null. A user is trying create a tenant "
                     + " without an authenticated session.");
             throw new RestAPIException("Security alert! User registry is null. A user is trying create a tenant "
-                    + " without an authenticated session."); 
+                    + " without an authenticated session.");
         }
 
         if (userRegistry.getTenantId() != MultitenantConstants.SUPER_TENANT_ID) {
@@ -1129,8 +1148,8 @@ public class StratosApiV41 extends AbstractApi {
 
         URI url = uriInfo.getAbsolutePathBuilder().path(tenant.getDomain()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
     }
 
     /**
@@ -1158,9 +1177,9 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Tenant updated successfully: [tenant] %s",
-		                                              tenantInfoBean.getTenantDomain()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Tenant updated successfully: [tenant] %s",
+                                tenantInfoBean.getTenantDomain()))).build();
     }
 
     private void updateExistingTenant(org.apache.stratos.common.beans.TenantInfoBean tenantInfoBean) throws Exception {
@@ -1297,7 +1316,8 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @AuthorizationAction("/permission/protected/manage/getTenantForDomain")
     @SuperTenantService(true)
-    public org.apache.stratos.common.beans.TenantInfoBean getTenantForDomain(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
+    public org.apache.stratos.common.beans.TenantInfoBean getTenantForDomain(@PathParam("tenantDomain") String tenantDomain)
+            throws RestAPIException {
 
         try {
             return getTenantByDomain(tenantDomain);
@@ -1331,7 +1351,8 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         org.apache.stratos.common.beans.TenantInfoBean bean =
-                ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
+                ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(
+                        TenantMgtUtil.initializeTenantInfoBean(tenantId, tenant));
 
         // retrieve first and last names from the UserStoreManager
         bean.setFirstname(ClaimsMgtUtil.getFirstNamefromUserStoreManager(
@@ -1367,8 +1388,8 @@ public class StratosApiV41 extends AbstractApi {
     @SuperTenantService(true)
     public Response removeTenant(@PathParam("tenantDomain") String tenantDomain) throws RestAPIException {
 
-	    return Response.status(Response.Status.NOT_ACCEPTABLE).entity(new ErrorResponseBean(
-	    		Response.Status.NOT_ACCEPTABLE.getStatusCode(),"Please use the tenant deactivate method")).build();
+        return Response.status(Response.Status.NOT_ACCEPTABLE).entity(new ErrorResponseBean(
+                Response.Status.NOT_ACCEPTABLE.getStatusCode(), "Please use the tenant deactivate method")).build();
 
     }
 
@@ -1406,7 +1427,8 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList
+                = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
             org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(
                     TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
@@ -1454,7 +1476,8 @@ public class StratosApiV41 extends AbstractApi {
             throw new RestAPIException(msg);
         }
 
-        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
+        List<org.apache.stratos.common.beans.TenantInfoBean> tenantList
+                = new ArrayList<org.apache.stratos.common.beans.TenantInfoBean>();
         for (Tenant tenant : tenants) {
             org.apache.stratos.common.beans.TenantInfoBean bean = ObjectConverter.convertCarbonTenantInfoBeanToTenantInfoBean(
                     TenantMgtUtil.getTenantInfoBeanfromTenant(tenant.getId(), tenant));
@@ -1506,8 +1529,8 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Tenant activated successfully: [tenant] %s", tenantDomain))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Tenant activated successfully: [tenant] %s", tenantDomain))).build();
     }
 
     /**
@@ -1555,8 +1578,8 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Tenant deactivated successfully: [tenant] %s", tenantDomain))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Tenant deactivated successfully: [tenant] %s", tenantDomain))).build();
     }
 
     // API methods for repositories
@@ -1602,9 +1625,9 @@ public class StratosApiV41 extends AbstractApi {
         log.info("Successfully added an user with Username " + userInfoBean.getUserName());
         URI url = uriInfo.getAbsolutePathBuilder().path(userInfoBean.getUserName()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("User added successfully: [user] %s",
-		                                              userInfoBean.getUserName()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("User added successfully: [user] %s",
+                                userInfoBean.getUserName()))).build();
     }
 
     /**
@@ -1630,8 +1653,8 @@ public class StratosApiV41 extends AbstractApi {
         }
         log.info("Successfully removed user: [username] " + userName);
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("User deleted successfully: [user] %s", userName))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("User deleted successfully: [user] %s", userName))).build();
     }
 
     /**
@@ -1659,9 +1682,9 @@ public class StratosApiV41 extends AbstractApi {
 
         log.info("Successfully updated an user with Username " + userInfoBean.getUserName());
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("User updated successfully: [user] %s",
-		                                              userInfoBean.getUserName()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("User updated successfully: [user] %s",
+                                userInfoBean.getUserName()))).build();
     }
 
     /**
@@ -1732,10 +1755,10 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addKubernetesCluster(kubernetesCluster);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesCluster.getClusterId()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format(
-				                                "Kubernetes Host Cluster added successfully: [kub-host-cluster] %s",
-				                                kubernetesCluster.getClusterId()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format(
+                                "Kubernetes Host Cluster added successfully: [kub-host-cluster] %s",
+                                kubernetesCluster.getClusterId()))).build();
     }
 
     /**
@@ -1757,9 +1780,9 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.addKubernetesHost(kubernetesClusterId, kubernetesHost);
         URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
         return Response.created(url).entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Kubernetes Host added successfully: [kub-host] %s",
-		                                              kubernetesHost.getHostId()))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Kubernetes Host added successfully: [kub-host] %s",
+                                kubernetesHost.getHostId()))).build();
     }
 
     /**
@@ -1779,9 +1802,9 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.updateKubernetesMaster(kubernetesMaster);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesMaster.getHostId()).build();
             return Response.created(url).entity(
-		            new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                    String.format("Kubernetes Master updated successfully: [kub-master] %s",
-		                                                  kubernetesMaster.getHostId()))).build();
+                    new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                            String.format("Kubernetes Master updated successfully: [kub-master] %s",
+                                    kubernetesMaster.getHostId()))).build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -1798,9 +1821,9 @@ public class StratosApiV41 extends AbstractApi {
             StratosApiV41Utils.updateKubernetesHost(kubernetesHost);
             URI url = uriInfo.getAbsolutePathBuilder().path(kubernetesHost.getHostId()).build();
             return Response.created(url).entity(
-		            new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                    String.format("Kubernetes Host updated successfully: [kub-host] %s",
-		                                                  kubernetesHost.getHostId()))).build();
+                    new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                            String.format("Kubernetes Host updated successfully: [kub-host] %s",
+                                    kubernetesHost.getHostId()))).build();
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
@@ -1853,7 +1876,8 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/getKubernetesHostClusters")
-    public Response getKubernetesHostsOfKubernetesCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
+    public Response getKubernetesHostsOfKubernetesCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId)
+            throws RestAPIException {
         try {
             return Response.ok().entity(StratosApiV41Utils.getKubernetesHosts(kubernetesClusterId)).build();
         } catch (RestAPIException e) {
@@ -1873,7 +1897,8 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/getKubernetesHostClusters")
-    public Response getKubernetesMasterOfKubernetesCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
+    public Response getKubernetesMasterOfKubernetesCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId)
+            throws RestAPIException {
         try {
             return Response.ok().entity(StratosApiV41Utils.getKubernetesMaster(kubernetesClusterId)).build();
         } catch (RestAPIException e) {
@@ -1893,15 +1918,16 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/admin/manage/removeKubernetesHostCluster")
-    public Response removeKubernetesHostCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId) throws RestAPIException {
+    public Response removeKubernetesHostCluster(@PathParam("kubernetesClusterId") String kubernetesClusterId)
+            throws RestAPIException {
         try {
             StratosApiV41Utils.removeKubernetesCluster(kubernetesClusterId);
         } catch (RestAPIException e) {
             return Response.status(Response.Status.NOT_FOUND).entity(
-		            new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                    String.format(
-				                                    "Kubernetes Host Cluster removed successfully: [kub-cluster] %s",
-				                                    kubernetesClusterId))).build();
+                    new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                            String.format(
+                                    "Kubernetes Host Cluster removed successfully: [kub-cluster] %s",
+                                    kubernetesClusterId))).build();
         }
         return Response.noContent().build();
     }
@@ -1925,9 +1951,9 @@ public class StratosApiV41 extends AbstractApi {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
         return Response.ok().entity(
-		        new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-		                                String.format("Kubernetes Host removed successfully: [kub-host] %s",
-		                                              kubernetesHostId))).build();
+                new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+                        String.format("Kubernetes Host removed successfully: [kub-host] %s",
+                                kubernetesHostId))).build();
     }
 
 }
