@@ -1313,7 +1313,35 @@ public class ObjectConverter {
 
             subscribableInfo.setArtifactRepository(artifactRepository);
         }
+        if (subscribableInfoContext.getPersistenceContext() != null){
+            PersistenceContext persistenceContext = subscribableInfoContext.getPersistenceContext();
+
+            PersistenceBean persistenceBean = new PersistenceBean();
+            persistenceBean.setRequired(persistenceContext.getPersistanceRequired());
+            persistenceBean.setVolume(convertStubVolumeToVolume(persistenceContext.getVolumes()));
+
+            subscribableInfo.setPersistenceBean(persistenceBean);
+        }
         return subscribableInfo;
+    }
+
+    private static List<VolumeBean> convertStubVolumeToVolume(VolumeContext[] volumes) {
+
+        List<VolumeBean> volumeBeans = new ArrayList<VolumeBean>();
+        for(VolumeContext volumeContext: volumes){
+
+            VolumeBean volumeBean = new VolumeBean();
+            volumeBean.setRemoveOnTermination(volumeContext.getRemoveOntermination());
+            volumeBean.setVolumeId(volumeContext.getVolumeId());
+            volumeBean.setMappingPath(volumeContext.getMappingPath());
+            volumeBean.setDevice(volumeContext.getDevice());
+            volumeBean.setSize(String.valueOf(volumeContext.getSize()));
+            volumeBean.setSnapshotId(volumeContext.getSnapshotId());
+            volumeBean.setId(volumeContext.getId());
+
+        }
+        return volumeBeans;
+
     }
 
     private static List<org.apache.stratos.common.beans.PropertyBean>
@@ -1352,8 +1380,7 @@ public class ObjectConverter {
         return cartridgeContextArray;
     }
 
-    private static SubscribableInfoContext convertSubscribableInfo(
-            SubscribableInfo subscribableInfo) {
+    private static SubscribableInfoContext convertSubscribableInfo(SubscribableInfo subscribableInfo) {
 
         SubscribableInfoContext infoContext = new SubscribableInfoContext();
         infoContext.setAlias(subscribableInfo.getAlias());
@@ -1375,8 +1402,34 @@ public class ObjectConverter {
             infoContext.setArtifactRepositoryContext(artifactRepositoryContext);
         }
 
+        if (subscribableInfo.getPersistenceBean() != null){
+            PersistenceBean persistenceBean = subscribableInfo.getPersistenceBean();
+
+            PersistenceContext persistenceContext = new PersistenceContext();
+            persistenceContext.setPersistanceRequired(persistenceBean.isRequired());
+            persistenceContext.setVolumes(convertVolumeToStubVolume(persistenceBean.getVolume()));
+        }
         infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
         return infoContext;
+    }
+
+    private static VolumeContext[] convertVolumeToStubVolume(List<VolumeBean> volumes) {
+
+        List<VolumeContext> volumeContexts = new ArrayList<VolumeContext>();
+        for(VolumeBean volumeBean: volumes){
+
+            VolumeContext volumeContext = new VolumeContext();
+            volumeContext.setRemoveOntermination(volumeBean.isRemoveOnTermination());
+            volumeContext.setVolumeId(volumeBean.getVolumeId());
+            volumeContext.setMappingPath(volumeBean.getMappingPath());
+            volumeContext.setDevice(volumeBean.getDevice());
+            volumeContext.setSize(Integer.parseInt(volumeBean.getSize()));
+            volumeContext.setSnapshotId(volumeBean.getSnapshotId());
+            volumeContext.setId(volumeBean.getId());
+
+            volumeContexts.add(volumeContext);
+        }
+        return (VolumeContext[]) volumeContexts.toArray();
     }
 
     private static org.apache.stratos.autoscaler.stub.Properties convertPropertyBeansToStubProperties(

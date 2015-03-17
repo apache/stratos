@@ -21,6 +21,7 @@ package org.apache.stratos.common.beans.application;
 
 import org.apache.stratos.common.beans.PropertyBean;
 import org.apache.stratos.common.beans.artifact.repository.ArtifactRepositoryBean;
+import org.apache.stratos.common.beans.cartridge.PersistenceBean;
 
 import java.io.Serializable;
 import java.util.List;
@@ -40,6 +41,7 @@ public class SubscribableInfo implements Serializable {
     private String[] dependencyAliases;
     private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
+    private PersistenceBean persistenceBean;
 
     public String getAlias() {
         return alias;
@@ -103,5 +105,13 @@ public class SubscribableInfo implements Serializable {
 
     public void setArtifactRepository(ArtifactRepositoryBean artifactRepository) {
         this.artifactRepository = artifactRepository;
+    }
+
+    public PersistenceBean getPersistenceBean() {
+        return persistenceBean;
+    }
+
+    public void setPersistenceBean(PersistenceBean persistenceBean) {
+        this.persistenceBean = persistenceBean;
     }
 }
