@@ -1161,8 +1161,9 @@ public class StratosApiV41 extends AbstractApi {
         }
 
         URI url = uriInfo.getAbsolutePathBuilder().path(tenant.getDomain()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
-                String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
+        return Response.created(url).entity(
+		        new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
+		                                String.format("Tenant added successfully: [tenant] %s", tenantDomain))).build();
     }
 
     /**
