@@ -160,7 +160,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                                    Cartridge sourceCartridge) {
 
         List<IaasProvider> newIaasProviders = destCartridge.getIaases();
-        Map<String, IaasProvider> iaasProviderMap = sourceCartridge.getPartitionToIaasProvider();
+        Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getType());
 
         for (Entry<String, IaasProvider> entry : iaasProviderMap.entrySet()) {
             if (entry == null) {
@@ -173,7 +173,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                     log.debug("Copying partition from the cartridge that is undeployed, to the new cartridge: "
                             + "[partition-id] " + partitionId + " [cartridge-type] " + destCartridge.getType());
                 }
-                destCartridge.addIaasProvider(partitionId, newIaasProviders.get(newIaasProviders.indexOf(iaasProvider)));
+                CloudControllerContext.getInstance().addIaasProvider(destCartridge.getType(), partitionId,
+                        newIaasProviders.get(newIaasProviders.indexOf(iaasProvider)));
             }
         }
     }
@@ -380,12 +381,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // Validate iaas provider
-            IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partitionId);
+            IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partitionId);
             if (iaasProvider == null) {
                 String msg = String.format("Could not start instance, " +
                                 "IaaS provider not found in cartridge %s for partition %s, " +
                                 "partitions found: %s ", cartridgeType, partitionId,
-                        cartridge.getPartitionToIaasProvider().keySet().toString());
+                       CloudControllerContext.getInstance().getPartitionToIaasProvider(cartridge.getType()).keySet().toString());
                 log.error(msg);
                 throw new InvalidIaasProviderException(msg);
             }
@@ -937,7 +938,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             // if and only if the deployment policy valid
-            cartridge.addIaasProviders(partitionToIaasProviders);
+            CloudControllerContext.getInstance().addIaasProviders(cartridgeType, partitionToIaasProviders);
             CloudControllerContext.getInstance().updateCartridge(cartridge);
 
             // persist data

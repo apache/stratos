@@ -371,7 +371,7 @@ public class KubernetesIaas extends Iaas {
             throw new RuntimeException(message);
         }
 
-        IaasProvider iaasProvider = cartridge.getIaasProviderOfPartition(partition.getId());
+        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProviderOfPartition(cartridge.getType(), partition.getId());
         if (iaasProvider == null) {
             String message = "Could not find iaas provider: [partition] " + partition.getId();
             log.error(message);

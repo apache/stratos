@@ -27,6 +27,7 @@ import org.apache.stratos.cloud.controller.exception.InvalidMemberException;
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventPublisher;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.common.*;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.topology.*;
@@ -41,6 +42,7 @@ import org.apache.stratos.metadata.client.defaults.DefaultMetaDataServiceClient;
 import org.apache.stratos.metadata.client.defaults.MetaDataServiceClient;
 
 import java.util.*;
+import java.util.Properties;
 
 /**
  * this is to manipulate the received events by cloud controller
@@ -67,9 +69,29 @@ public class TopologyBuilder {
                     service = new Service(cartridge.getType(), serviceType);
                     List<PortMapping> portMappings = cartridge.getPortMappings();
                     Properties properties = new Properties();
-                    for (Map.Entry<String, String> entry : cartridge.getProperties().entrySet()) {
-                        properties.setProperty(entry.getKey(), entry.getValue());
+
+                    try {
+                        Property[] propertyArray = null;
+
+                        if (cartridge.getProperties() != null) {
+                            if (cartridge.getProperties().getProperties() != null){
+                                propertyArray = cartridge.getProperties().getProperties();
+                            }
+                        }
+
+                        List<Property> propertyList = new ArrayList<Property>();
+                        if (propertyArray != null) {
+                            propertyList = Arrays.asList(propertyArray);
+                            if (propertyList != null) {
+                                for (Property property : propertyList) {
+                                    properties.setProperty(property.getName(), property.getValue());
+                                }
+                            }
+                        }
+                    } catch(Exception e) {
+                        log.error(e);
                     }
+
                     service.setProperties(properties);
                     Port port;
                     //adding ports to the event
@@ -85,7 +107,6 @@ public class TopologyBuilder {
             TopologyManager.releaseWriteLock();
         }
         TopologyEventPublisher.sendServiceCreateEvent(cartridgeList);
-
     }
 
     public static void handleServiceRemoved(List<Cartridge> cartridgeList) {

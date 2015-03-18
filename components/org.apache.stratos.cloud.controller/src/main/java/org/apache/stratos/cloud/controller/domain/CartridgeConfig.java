@@ -114,7 +114,7 @@ public class CartridgeConfig implements Serializable {
         return isPublic;
     }
 
-    public void setisPublic(boolean isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 

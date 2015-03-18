@@ -229,16 +229,23 @@ public class CloudControllerUtil {
 		List<Property> propList = new ArrayList<Property>();
         cartridgeInfo.setPersistence(cartridge.getPersistence());
 		
-		for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
+		/*for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")
             Map.Entry<String, String> entry = (Entry<String, String>) iterator.next();
 	        
 	        Property prop = new Property(entry.getKey(), entry.getValue());
 	        propList.add(prop);
+        }*/
+
+        List<Property> propertyList = new ArrayList<Property>();
+        if (cartridge.getProperties()!= null) {
+            if (cartridge.getProperties().getProperties() != null) {
+                propertyList = Arrays.asList(cartridge.getProperties().getProperties());
+                Property[] props = new Property[propertyList.size()];
+                cartridgeInfo.setProperties(propertyList.toArray(props));
+            }
         }
-		Property[] props = new Property[propList.size()];
-		
-		cartridgeInfo.setProperties(propList.toArray(props));
+
 	    cartridgeInfo.setMetadataKeys(cartridge.getMetadataKeys());
 
 		return cartridgeInfo;

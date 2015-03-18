@@ -22,12 +22,7 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.domain.Cartridge;
-import org.apache.stratos.cloud.controller.domain.ClusterContext;
-import org.apache.stratos.cloud.controller.domain.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.domain.MemberContext;
-import org.apache.stratos.cloud.controller.domain.NetworkPartition;
-import org.apache.stratos.cloud.controller.domain.ServiceGroup;
+import org.apache.stratos.cloud.controller.domain.*;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesClusterContext;
 import org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesHost;
@@ -77,6 +72,7 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGES_WRITE_LOCK = "CC_CARTRIDGES_WRITE_LOCK";
     private static final String CC_SERVICE_GROUPS_WRITE_LOCK = "CC_SERVICE_GROUPS_WRITE_LOCK";
 
+    private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
     private static volatile CloudControllerContext instance;
 
     private final transient DistributedObjectProvider distributedObjectProvider;
@@ -161,6 +157,14 @@ public class CloudControllerContext implements Serializable {
 	 */
 	private Map<String, NetworkPartition> networkPartitionIDToNetworkPartitionMap;
 
+
+    /**
+     * Key - cartridge id (cartridge type is used as an unique identifier)
+     * Value - Inner Key - partition id
+     * Value - Inner Value - Corresponding IaasProvider.
+     */
+    private Map<String, Map<String, IaasProvider>> partitionToIaasProviderByCartridge;
+
     private String streamId;
     private boolean isPublisherRunning;
     private boolean isTopologySyncRunning;
@@ -191,7 +195,7 @@ public class CloudControllerContext implements Serializable {
         serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
 		deploymentPolicyIDToDeployPolicyMap=distributedObjectProvider.getMap(CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP);
 		networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
-
+        partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
         // Update context from the registry
         updateContextFromRegistry();
     }
@@ -728,5 +732,46 @@ public class CloudControllerContext implements Serializable {
         for(Object item : sourceList) {
             destinationList.add(item);
         }
+    }
+
+    public Map<String, Map<String, IaasProvider>> getPartitionToIaasProviderByCartridge() {
+        return partitionToIaasProviderByCartridge;
+    }
+
+    public void setPartitionToIaasProvider(Map<String, Map<String, IaasProvider>> partitionToIaasProviderByCartridge) {
+        this.partitionToIaasProviderByCartridge = partitionToIaasProviderByCartridge;
+    }
+
+    public void addIaasProvider(String cartridgeId, String partitionId, IaasProvider iaasProvider) {
+        Map<String, IaasProvider> partitionToIaasProvider = new ConcurrentHashMap<String, IaasProvider>();
+        partitionToIaasProvider.put(partitionId, iaasProvider);
+        this.partitionToIaasProviderByCartridge.put(cartridgeId, partitionToIaasProvider);
+    }
+
+    public void addIaasProviders(String cartridgeId, Map<String, IaasProvider> map) {
+        Map<String, IaasProvider> partitionToIaasProvider = new ConcurrentHashMap<String, IaasProvider>();
+        for (Iterator<String> iterator = map.keySet().iterator(); iterator.hasNext(); ) {
+            String key = iterator.next();
+            IaasProvider value = map.get(key);
+
+            partitionToIaasProvider.put(key, value);
+            if (log.isDebugEnabled()) {
+                log.debug("Partition map updated for the Cartridge: " + this.hashCode() + ". "
+                        + "Current Partition List: " + partitionToIaasProvider.keySet().toString());
+            }
+        }
+        this.partitionToIaasProviderByCartridge.put(cartridgeId, partitionToIaasProvider);
+    }
+
+    public IaasProvider getIaasProviderOfPartition(String cartridgeId, String partitionId) {
+        if (log.isDebugEnabled()) {
+            log.debug("Retrieving partition: " + partitionId + " for the Cartridge: " + this.hashCode() + ". "
+                    + "Current Partition List: " + getPartitionToIaasProvider(cartridgeId).keySet().toString());
+        }
+        return getPartitionToIaasProvider(cartridgeId).get(partitionId);
+    }
+
+    public Map<String, IaasProvider> getPartitionToIaasProvider(String cartridgeId) {
+        return this.partitionToIaasProviderByCartridge.get(cartridgeId);
     }
 }

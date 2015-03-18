@@ -101,7 +101,6 @@ public class CartridgeInfo {
 	    this.deploymentDirs = new String[deploymentDirsList.size()];
 	    
 	    deploymentDirsList.toArray(deploymentDirs);
-	    
     }
 	
     public String getProvider() {
