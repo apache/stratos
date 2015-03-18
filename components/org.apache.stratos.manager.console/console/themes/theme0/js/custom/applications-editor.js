@@ -357,31 +357,14 @@ function generateGroupPreview(data) {
 
 var applicationJson = {};
 //Definition JSON builder
-function generateJsplumbTree(collector, connections){
+function generateJsplumbTree(collector, connections, appeditor){
 
-    //get general data
-    $('input.level-root').each(function(){
-        var inputId = $(this).attr('id');
-        collector[inputId] = $(this).val();
-    });
+    collector = appeditor.getValue();
     collector['components']={};
-    collector['components']['dependencies']={};
     collector['components']['groups']=[];
     collector['components']['cartridges']=[];
-    collector['components']['dependencies']['startupOrders']=[];
-    collector['components']['dependencies']['scalingDependents']=[];
-    var startupOrders = $('input#startupOrders').val().split(' ').join('').split(/["][,]+/g);
-    for (var i = 0; i < startupOrders.length; i++) {
-        startupOrders[i] = startupOrders[i].replace(/"/g, "");
-    }
 
-    var scalingDependents = $('input#scalingDependents').val().split(' ').join('').split(/["][,]+/g);
-    for (var i = 0; i < scalingDependents.length; i++) {
-        scalingDependents[i] = scalingDependents[i].replace(/"/g, "");
-    }
-    collector['components']['dependencies']['startupOrders'] = startupOrders;
-    collector['components']['dependencies']['scalingDependents'] = scalingDependents;
-    collector['components']['dependencies']['terminationBehaviour']=$('select#terminationBehaviour').val();
+    console.log(collector)
 
     //generate raw data tree from connections
     var rawtree = [];
@@ -454,6 +437,17 @@ function generateJsplumbTree(collector, connections){
     traverse(collector);
 
     return collector;
+}
+
+//UUID generator
+function uuid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
 }
 
 //setting up schema and defaults
@@ -610,6 +604,97 @@ var groupBlockDefault = {
     "groupScalingEnabled":"false"
 };
 
+var applicationBlockTemplate = {
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "id": "root",
+    "type": "object",
+    "title":" ",
+    "options":{
+        "disable_properties":true,
+        "disable_collapse": true
+    },
+    "properties": {
+        "applicationId": {
+            "id": "root/applicationId",
+            "type": "string",
+            "options": {
+                "hidden": true
+            }
+        },
+        "alias": {
+            "id": "root/alias",
+            "type": "string",
+            "title": "Application Alias",
+            "name": "Application Alias"
+        },
+        "multiTenant": {
+            "id": "root/multiTenant",
+            "type": "boolean",
+            "title": "Application Multi Tenancy",
+            "name": "Application Multi Tenancy"
+        },
+        "dependencies": {
+            "id": "root/dependencies",
+            "type": "object",
+            "title": "Dependencies",
+            "name": "Dependencies",
+            "options": {
+                "hidden": false,
+                "disable_properties":true,
+                "collapsed": true
+            },
+            "properties": {
+                "startupOrders": {
+                    "id": "root/dependencies/startupOrders",
+                    "type": "array",
+                    "title": "Startup Orders",
+                    "name": "Startup Orders",
+                    "items": {
+                        "id": "root/dependencies/startupOrders/0",
+                        "type": "string",
+                        "title": "Startup Order",
+                        "name": "Startup Order"
+                    }
+                },
+                "scalingDependents": {
+                    "id": "root/dependencies/scalingDependents",
+                    "type": "array",
+                    "title": "Scaling Dependents",
+                    "name": "Scaling Dependents",
+                    "items": {
+                        "id": "root/dependencies/scalingDependents/0",
+                        "type": "string",
+                        "title": "Scaling Dependent",
+                        "name": "Scaling Dependent"
+                    }
+                },
+                "terminationBehaviour": {
+                    "id": "root/dependencies/terminationBehaviour",
+                    "type": "string",
+                    "title": "Termination Behaviour",
+                    "name": "Termination Behaviour",
+                    "enum": ["terminate-none","terminate-dependents","terminate-all"],
+                }
+            }
+        }
+    }
+};
+
+var applicationBlockDefault = {
+    "applicationId": "",
+    "alias": "",
+    "multiTenant": false,
+    "dependencies": {
+        "startupOrders": [
+            "group.my-group1,cartridge.my-c4"
+        ],
+        "scalingDependents": [
+            "group.my-group1,cartridge.my-c4"
+        ],
+        "terminationBehaviour": "terminate-dependents"
+    }
+};
+
 //create cartridge list
 var cartridgeListHtml='';
 function generateCartridges(data){
@@ -685,7 +770,7 @@ $(document).ready(function(){
     $('#deploy').attr('disabled','disabled');
 
     $('#deploy').on('click', function(){
-        var appJSON = generateJsplumbTree(applicationJson, jsPlumb.getConnections());
+        var appJSON = generateJsplumbTree(applicationJson, jsPlumb.getConnections(), appeditor);
         var btn = $(this);
         var formtype = 'applications';
         btn.html("<i class='fa fa-spinner fa-spin'></i> Adding...");
@@ -717,7 +802,19 @@ $(document).ready(function(){
     JSONEditor.defaults.theme = 'bootstrap3';
     JSONEditor.defaults.iconlib = 'fontawesome4';
     JSONEditor.defaults.show_errors = "always";
-    var editor, blockId;
+    var editor, blockId, appeditor;
+
+    //set hidden UUID
+    applicationBlockDefault.applicationId = uuid();
+
+    // Initialize the editor for main section
+    appeditor = new JSONEditor(document.getElementById('general'), {
+        ajax: false,
+        disable_edit_json: true,
+        schema: applicationBlockTemplate,
+        format: "grid",
+        startval: applicationBlockDefault
+    });
 
 
     DragEl(".stepnode");

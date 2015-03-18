@@ -185,3 +185,7 @@
     color: rgb(93, 170, 254);
     padding-top: 2px;
 }
+
+div#general>div>h3 {
+    display: none;
+}
