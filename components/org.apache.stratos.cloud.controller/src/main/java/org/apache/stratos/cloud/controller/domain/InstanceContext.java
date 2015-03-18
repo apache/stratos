@@ -19,6 +19,7 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.stratos.common.Properties;
 
 /**
@@ -33,6 +34,8 @@ public class InstanceContext {
     private Partition partition;
     private String cartridgeType;
     private Properties properties;
+    private boolean isVolumeRequired;
+    private Volume[] volumes;
 
     public String getClusterId() {
         return clusterId;
@@ -97,4 +100,21 @@ public class InstanceContext {
     public void setObsoleteExpiryTime(long obsoleteExpiryTime) {
         this.obsoleteExpiryTime = obsoleteExpiryTime;
     }
+
+    public boolean isVolumeRequired() {
+        return isVolumeRequired;
+    }
+
+    public void setVolumeRequired(boolean isVolumeRequired) {
+        this.isVolumeRequired = isVolumeRequired;
+    }
+
+    public Volume[] getVolumes() {
+        return volumes;
+    }
+
+    public void setVolumes(Volume[] volumes) {
+        this.volumes = ArrayUtils.clone(volumes);
+    }
+
 }
