@@ -29,14 +29,14 @@ public class PersistenceContext implements Serializable{
 	private VolumeContext[] volumes;
 
     public String toString () {
-        return "Persistence Required: " + isPersistanceRequired();
+        return "Persistence Required: " + isPersistenceRequired();
     }
 
-    public boolean isPersistanceRequired() {
+    public boolean isPersistenceRequired() {
         return persistanceRequired;
     }
 
-    public void setPersistanceRequired(boolean persistanceRequired) {
+    public void setPersistenceRequired(boolean persistenceRequired) {
         this.persistanceRequired = persistanceRequired;
     }
 
