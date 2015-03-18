@@ -35,8 +35,6 @@ public class ApplicationClusterContext implements Serializable {
     private String textPayload;
     // host name
     private String hostName;
-    // flag to indicate LB cluster
-    private boolean isLbCluster;
     // autoscaling policy
     private String autoscalePolicyName;
     // deployment policy
@@ -57,7 +55,6 @@ public class ApplicationClusterContext implements Serializable {
         this.hostName = hostName;
         this.textPayload = textPayload;
         this.deploymentPolicyName = deploymentPolicyName;
-        this.isLbCluster = isLbCluster;
         this.tenantRange = tenantRange;
 	    this.dependencyClusterIds = dependencyClusterIds;
     }
@@ -92,14 +89,6 @@ public class ApplicationClusterContext implements Serializable {
 
     public void setHostName(String hostName) {
         this.hostName = hostName;
-    }
-
-    public boolean isLbCluster() {
-        return isLbCluster;
-    }
-
-    public void setLbCluster(boolean lbCluster) {
-        isLbCluster = lbCluster;
     }
 
     public String getAutoscalePolicyName() {
