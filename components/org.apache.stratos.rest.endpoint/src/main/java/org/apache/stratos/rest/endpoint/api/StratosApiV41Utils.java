@@ -431,34 +431,9 @@ public class StratosApiV41Utils {
         cartridge.setDescription(cartridgeInfo.getDescription());
         cartridge.setVersion(cartridgeInfo.getVersion());
         cartridge.setMultiTenant(cartridgeInfo.getMultiTenant());
-        cartridge.setPersistence(convertPersistenceToPersistenceBean(cartridgeInfo.getPersistence()));
         cartridge.setLoadBalancingIPType(cartridgeInfo.getLoadBalancingIPType());
         cartridge.setMetadataKeys(cartridgeInfo.getMetadataKeys());
         return cartridge;
-    }
-
-    private static PersistenceBean convertPersistenceToPersistenceBean(Persistence persistence) {
-        if (persistence == null) {
-            return null;
-        }
-
-        PersistenceBean persistenceBean = new PersistenceBean();
-        persistenceBean.setRequired(persistence.isPersistanceRequiredSpecified());
-        persistenceBean.setVolume(convertVolumesToVolumeBeans(persistence.getVolumes()));
-        return persistenceBean;
-    }
-
-    private static List<VolumeBean> convertVolumesToVolumeBeans(Volume[] volumes) {
-        List<VolumeBean> list = new ArrayList<VolumeBean>();
-        for (Volume volume : volumes) {
-            VolumeBean volumeBean = new VolumeBean();
-            volumeBean.setId(volume.getId());
-            volumeBean.setDevice(volume.getDevice());
-            volumeBean.setSize(String.valueOf(volume.getSize()));
-            volumeBean.setSnapshotId(volume.getSnapshotId());
-            list.add(volumeBean);
-        }
-        return list;
     }
 
     private static boolean isAlreadySubscribed(String cartridgeType, int tenantId) {
