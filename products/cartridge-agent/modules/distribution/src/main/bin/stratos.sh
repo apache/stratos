@@ -49,7 +49,7 @@ properties="-Dmb.ip=MB-IP
 	    -Dmonitoring.server.admin.username=MONITORING-SERVER-ADMIN-USERNAME
 	    -Dmonitoring.server.admin.password=MONITORING-SERVER-ADMIN-PASSWORD
 	    -Dlog.file.paths=LOG_FILE_PATHS
-	    -DAPP_PATH=APP_PATH
+	    -DAPPLICATION_PATH=APP_PATH
             -Dsuper.tenant.repository.path=/repository/deployment/server/
             -Dtenant.repository.path=/repository/tenants/
 	    -Dextension.instance.started=instance-started.sh
