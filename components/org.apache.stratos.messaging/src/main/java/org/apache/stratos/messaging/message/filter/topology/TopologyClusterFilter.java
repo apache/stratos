@@ -34,7 +34,7 @@ public class TopologyClusterFilter extends MessageFilter {
     private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
 
     public static final String TOPOLOGY_CLUSTER_FILTER_CLUSTER_ID = "cluster-id";
-	public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
+    public static final String TOPOLOGY_CLUSTER_FILTER = "stratos.topology.cluster.filter";
 
     private static volatile TopologyClusterFilter instance;
 
@@ -44,12 +44,13 @@ public class TopologyClusterFilter extends MessageFilter {
 
     /**
      * Returns true if cluster is excluded else returns false.
+     *
      * @param clusterId
      * @return
      */
     public static boolean apply(String clusterId) {
         boolean excluded = false;
-        if(getInstance().isActive()) {
+        if (getInstance().isActive()) {
             if (StringUtils.isNotBlank(clusterId) && getInstance().clusterExcluded(clusterId)) {
                 excluded = true;
             }

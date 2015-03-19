@@ -28,7 +28,7 @@ import java.util.*;
  * Defines a service in the topology. A service represents a cartridge type.
  * Key: serviceName
  */
-public class Service implements Serializable{
+public class Service implements Serializable {
 
     private static final long serialVersionUID = -8835648141999889756L;
 
@@ -87,7 +87,7 @@ public class Service implements Serializable{
     }
 
     public Port getPort(int proxy) {
-        if(portMap.containsKey(proxy)) {
+        if (portMap.containsKey(proxy)) {
             return portMap.get(proxy);
         }
         return null;
@@ -98,7 +98,7 @@ public class Service implements Serializable{
     }
 
     public void addPorts(Collection<Port> ports) {
-        for(Port port : ports) {
+        for (Port port : ports) {
             addPort(port);
         }
     }
@@ -122,7 +122,7 @@ public class Service implements Serializable{
     @Override
     public String toString() {
         return "Service [serviceName=" + serviceName + ", serviceType=" + serviceType +
-               ", clusterIdClusterMap=" + clusterIdClusterMap + ", portMap=" + portMap +
-               ", properties=" + properties + "]";
+                ", clusterIdClusterMap=" + clusterIdClusterMap + ", portMap=" + portMap +
+                ", properties=" + properties + "]";
     }
 }

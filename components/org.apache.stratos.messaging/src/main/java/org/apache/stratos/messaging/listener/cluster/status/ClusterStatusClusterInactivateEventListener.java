@@ -20,5 +20,5 @@ package org.apache.stratos.messaging.listener.cluster.status;
 
 import org.apache.stratos.messaging.listener.EventListener;
 
-public abstract class ClusterStatusClusterInactivateEventListener extends EventListener{
+public abstract class ClusterStatusClusterInactivateEventListener extends EventListener {
 }

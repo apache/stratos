@@ -90,7 +90,7 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
         } else {
             // Apply changes to the applications
             ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +
                             "[instanceId] %s", event.getAppId(), event.getInstanceId()));

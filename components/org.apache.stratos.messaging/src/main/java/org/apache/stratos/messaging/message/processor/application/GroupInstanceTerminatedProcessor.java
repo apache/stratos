@@ -95,7 +95,7 @@ public class GroupInstanceTerminatedProcessor extends MessageProcessor {
             }
         } else {
             GroupInstance context = group.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Group Instance alread removed in Group: [AppId] %s [groupId] %s " +
                                     "[instanceId] %s", event.getAppId(), event.getGroupId(),

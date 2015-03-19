@@ -39,9 +39,9 @@ public class ClusterStatusClusterTerminatingMessageProcessor extends MessageProc
         if (ClusterStatusClusterTerminatingEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterStatusClusterTerminatingEvent event = (ClusterStatusClusterTerminatingEvent) MessagingUtil.
-                                                jsonToObject(message, ClusterStatusClusterTerminatingEvent.class);
+                    jsonToObject(message, ClusterStatusClusterTerminatingEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterTerminatingEvent: " + event.toString());
             }
             // Notify event listeners

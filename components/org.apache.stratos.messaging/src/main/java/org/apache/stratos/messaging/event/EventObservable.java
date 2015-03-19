@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.listener.EventListener;
 import java.util.Observable;
 
 /**
- *  Event observable definition.
+ * Event observable definition.
  */
 public abstract class EventObservable extends Observable {
 
@@ -37,14 +37,14 @@ public abstract class EventObservable extends Observable {
     }
 
     public void removeEventListener(EventListener eventListener) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Removing event listeners: [event-listener] %s", eventListener.getClass().getName()));
         }
         deleteObserver(eventListener);
     }
 
     public void notifyEventListeners(Event event) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Notifying event listeners: [event] %s", event.getClass().getName()));
         }
         setChanged();

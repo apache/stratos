@@ -30,63 +30,63 @@ import org.apache.stratos.messaging.util.MessagingUtil;
  * A thread for receiving instance notifier information from message broker.
  */
 public class InstanceNotifierEventReceiver {
-	private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
-	private final InstanceNotifierEventMessageDelegator messageDelegator;
-	private final InstanceNotifierEventMessageListener messageListener;
-	private EventSubscriber eventSubscriber;
-	private boolean terminated;
+    private static final Log log = LogFactory.getLog(InstanceNotifierEventReceiver.class);
+    private final InstanceNotifierEventMessageDelegator messageDelegator;
+    private final InstanceNotifierEventMessageListener messageListener;
+    private EventSubscriber eventSubscriber;
+    private boolean terminated;
 
-	public InstanceNotifierEventReceiver() {
-		InstanceNotifierEventMessageQueue messageQueue = new InstanceNotifierEventMessageQueue();
-		this.messageDelegator = new InstanceNotifierEventMessageDelegator(messageQueue);
-		this.messageListener = new InstanceNotifierEventMessageListener(messageQueue);
-	}
+    public InstanceNotifierEventReceiver() {
+        InstanceNotifierEventMessageQueue messageQueue = new InstanceNotifierEventMessageQueue();
+        this.messageDelegator = new InstanceNotifierEventMessageDelegator(messageQueue);
+        this.messageListener = new InstanceNotifierEventMessageListener(messageQueue);
+    }
 
-	public void addEventListener(EventListener eventListener) {
-		messageDelegator.addEventListener(eventListener);
-	}
+    public void addEventListener(EventListener eventListener) {
+        messageDelegator.addEventListener(eventListener);
+    }
 
 
-	public void execute() {
-		try {
-			// Start topic subscriber thread
-			eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
+    public void execute() {
+        try {
+            // Start topic subscriber thread
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.INSTANCE_NOTIFIER_TOPIC.getTopicName(), messageListener);
 //			subscriber.setMessageListener(messageListener);
-			Thread subscriberThread = new Thread(eventSubscriber);
+            Thread subscriberThread = new Thread(eventSubscriber);
 
-			subscriberThread.start();
-			if (log.isDebugEnabled()) {
-				log.debug("InstanceNotifier event message receiver thread started");
-			}
+            subscriberThread.start();
+            if (log.isDebugEnabled()) {
+                log.debug("InstanceNotifier event message receiver thread started");
+            }
 
-			// Start instance notifier event message delegator thread
-			Thread receiverThread = new Thread(messageDelegator);
-			receiverThread.start();
-			if (log.isDebugEnabled()) {
-				log.debug("InstanceNotifier event message delegator thread started");
-			}
+            // Start instance notifier event message delegator thread
+            Thread receiverThread = new Thread(messageDelegator);
+            receiverThread.start();
+            if (log.isDebugEnabled()) {
+                log.debug("InstanceNotifier event message delegator thread started");
+            }
 
-			// Keep the thread live until terminated
-			while (!terminated) {
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException ignore) {
-				}
-			}
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error("InstanceNotifier receiver failed", e);
-			}
-		}
-	}
+            // Keep the thread live until terminated
+            while (!terminated) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("InstanceNotifier receiver failed", e);
+            }
+        }
+    }
 
-	public boolean isSubscribed() {
-		return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
-	}
+    public boolean isSubscribed() {
+        return ((eventSubscriber != null) && (eventSubscriber.isSubscribed()));
+    }
 
-	public void terminate() {
-		eventSubscriber.terminate();
-		messageDelegator.terminate();
-		terminated = true;
-	}
+    public void terminate() {
+        eventSubscriber.terminate();
+        messageDelegator.terminate();
+        terminated = true;
+    }
 }

@@ -68,13 +68,14 @@ public class MemberTerminatedEvent extends TopologyEvent implements Serializable
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
-	public String getGroupId() {
-		return groupId;
-	}
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public Properties getProperties() {
         return properties;

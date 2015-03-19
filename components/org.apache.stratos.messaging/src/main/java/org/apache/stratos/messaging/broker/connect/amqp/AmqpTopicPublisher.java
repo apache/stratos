@@ -37,7 +37,9 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
     private static final Log log = LogFactory.getLog(AmqpTopicConnector.class);
 
     private final String topicName;
-    private enum ConnectionStatus { Connected, ReConnecting, ReConnected }
+
+    private enum ConnectionStatus {Connected, ReConnecting, ReConnected}
+
     private ConnectionStatus connectionStatus;
 
     public AmqpTopicPublisher(String topicName) {
@@ -47,13 +49,14 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
 
     /**
      * Publish message to message broker.
+     *
      * @param message Message to be published
-     * @param retry Retry if message broker is not available
+     * @param retry   Retry if message broker is not available
      */
     @Override
     public void publish(String message, boolean retry) {
         boolean published = false;
-        while(!published) {
+        while (!published) {
             try {
                 while (connectionStatus == ConnectionStatus.ReConnecting) {
                     // Connection has been broken, wait until reconnected
@@ -83,7 +86,7 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
             } catch (Exception e) {
                 String errorMessage = "Could not publish to topic: [topic-name] %s";
                 log.error(errorMessage, e);
-                if(!retry) {
+                if (!retry) {
                     // Retry is disabled, throw exception
                     throw new MessagingException(errorMessage, e);
                 }
@@ -97,11 +100,11 @@ public class AmqpTopicPublisher extends AmqpTopicConnector implements TopicPubli
     protected void reconnect() {
         connectionStatus = ConnectionStatus.ReConnecting;
         RetryTimer retryTimer = new RetryTimer();
-        while(connectionStatus == ConnectionStatus.ReConnecting) {
+        while (connectionStatus == ConnectionStatus.ReConnecting) {
             try {
                 long interval = retryTimer.getNextInterval();
                 log.info(String.format("Topic publisher will try to reconnect in %d seconds: [topic-name] %s",
-                        (interval/1000), topicName));
+                        (interval / 1000), topicName));
                 Thread.sleep(interval);
             } catch (InterruptedException ignore) {
             }

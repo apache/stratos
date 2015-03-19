@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.health.stat;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- *  This event is fired by Event processing engine to send average of requests in flight
+ * This event is fired by Event processing engine to send average of requests in flight
  */
 public class AverageRequestsInFlightEvent extends Event {
     private final String networkPartitionId;
@@ -32,7 +32,7 @@ public class AverageRequestsInFlightEvent extends Event {
     private final float servedCount;
     private final float activeInstances;
 
-    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float activeInstances, float value, float servedCount ) {
+    public AverageRequestsInFlightEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float activeInstances, float value, float servedCount) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;
@@ -54,9 +54,13 @@ public class AverageRequestsInFlightEvent extends Event {
         return networkPartitionId;
     }
 
-    public float getServedCount() { return servedCount;}
+    public float getServedCount() {
+        return servedCount;
+    }
 
-    public float getActiveInstances() { return activeInstances;}
+    public float getActiveInstances() {
+        return activeInstances;
+    }
 
     public String getClusterInstanceId() {
         return clusterInstanceId;

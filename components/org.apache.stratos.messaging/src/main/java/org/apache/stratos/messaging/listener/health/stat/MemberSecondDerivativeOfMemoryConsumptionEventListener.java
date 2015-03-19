@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Second derivative of memory consumption event listener
+ * Second derivative of memory consumption event listener
  */
 public class MemberSecondDerivativeOfMemoryConsumptionEventListener extends EventListener {
     @Override

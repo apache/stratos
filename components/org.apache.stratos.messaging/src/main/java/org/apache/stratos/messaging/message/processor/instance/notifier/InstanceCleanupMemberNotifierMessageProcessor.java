@@ -25,9 +25,10 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 public class InstanceCleanupMemberNotifierMessageProcessor extends MessageProcessor {
-     private static final Log log = LogFactory.getLog(InstanceCleanupMemberNotifierMessageProcessor.class);
+    private static final Log log = LogFactory.getLog(InstanceCleanupMemberNotifierMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
@@ -42,12 +43,10 @@ public class InstanceCleanupMemberNotifierMessageProcessor extends MessageProces
             // Notify event listeners
             notifyEventListeners(event);
             return true;
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process instance clean up using available message processors: [type] %s [body] %s", type, message));
             }
         }

@@ -91,9 +91,9 @@ public class ApplicationInstanceTerminatedMessageProcessor extends MessageProces
         if (applications.applicationExists(appId)) {
             log.warn("Application with id [ " + appId + " ] still exists in Applications, removing it");
             ApplicationInstance instance = applications.getApplication(appId).
-                                                getInstanceContexts(instanceId);
-            if(instance == null) {
-                if(log.isDebugEnabled()) {
+                    getInstanceContexts(instanceId);
+            if (instance == null) {
+                if (log.isDebugEnabled()) {
                     log.debug("Application [Instance] " + instanceId + " has already been removed");
                 }
             } else {

@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.event.application.signup;
 
 import org.apache.stratos.messaging.event.Event;
+
 import java.io.Serializable;
 
 /**

@@ -67,7 +67,7 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
         }
     }
 
-    private boolean doProcess (ApplicationClustersRemovedEvent event,Topology topology) {
+    private boolean doProcess(ApplicationClustersRemovedEvent event, Topology topology) {
 
         Set<ClusterDataHolder> clusterData = event.getClusterData();
         if (clusterData != null) {
@@ -96,7 +96,7 @@ public class ApplicationClustersRemovedMessageProcessor extends MessageProcessor
             }
 
         } else {
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("No cluster data found in application " + event.getAppId() + " to remove from Topology");
             }
         }

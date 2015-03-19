@@ -42,7 +42,7 @@ public class InstanceStatusMemberMaintenanceMessageProcessor extends MessageProc
             InstanceMaintenanceModeEvent event = (InstanceMaintenanceModeEvent) MessagingUtil.
                     jsonToObject(message, InstanceMaintenanceModeEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterActivatedEvent: " + event.toString());
             }
             // Notify event listeners

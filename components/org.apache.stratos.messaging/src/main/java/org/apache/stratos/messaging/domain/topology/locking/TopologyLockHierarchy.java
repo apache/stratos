@@ -43,14 +43,14 @@ public class TopologyLockHierarchy {
 
     private static volatile TopologyLockHierarchy topologyLockHierarchy;
 
-    private TopologyLockHierarchy () {
+    private TopologyLockHierarchy() {
         this.completeTopologyLock = new TopologyLock();
         this.serviceLock = new TopologyLock();
         this.serviceNameToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
         this.clusterIdToTopologyLockMap = new ConcurrentHashMap<String, TopologyLock>();
     }
 
-    public static TopologyLockHierarchy getInstance () {
+    public static TopologyLockHierarchy getInstance() {
         if (topologyLockHierarchy == null) {
             synchronized (TopologyLockHierarchy.class) {
                 if (topologyLockHierarchy == null) {
@@ -61,11 +61,11 @@ public class TopologyLockHierarchy {
         return topologyLockHierarchy;
     }
 
-    public TopologyLock getTopologyLockForService (String serviceName) {
+    public TopologyLock getTopologyLockForService(String serviceName) {
         TopologyLock topologyLock = serviceNameToTopologyLockMap.get(serviceName);
-        if(topologyLock == null) {
+        if (topologyLock == null) {
             synchronized (TopologyLockHierarchy.class) {
-                if(topologyLock == null) {
+                if (topologyLock == null) {
                     topologyLock = new TopologyLock();
                     serviceNameToTopologyLockMap.put(serviceName, topologyLock);
                 }
@@ -74,11 +74,11 @@ public class TopologyLockHierarchy {
         return topologyLock;
     }
 
-    public TopologyLock getTopologyLockForCluster (String clusterId) {
+    public TopologyLock getTopologyLockForCluster(String clusterId) {
         TopologyLock topologyLock = clusterIdToTopologyLockMap.get(clusterId);
-        if(topologyLock == null) {
+        if (topologyLock == null) {
             synchronized (TopologyLockHierarchy.class) {
-                if(topologyLock == null) {
+                if (topologyLock == null) {
                     topologyLock = new TopologyLock();
                     clusterIdToTopologyLockMap.put(clusterId, topologyLock);
                 }
@@ -87,7 +87,7 @@ public class TopologyLockHierarchy {
         return topologyLock;
     }
 
-    public void removeTopologyLockForService (String serviceName) {
+    public void removeTopologyLockForService(String serviceName) {
         if (serviceNameToTopologyLockMap.remove(serviceName) != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Removed lock for service " + serviceName);
@@ -99,7 +99,7 @@ public class TopologyLockHierarchy {
         }
     }
 
-    public void removeTopologyLockForCluster (String clusterId) {
+    public void removeTopologyLockForCluster(String clusterId) {
         if (clusterIdToTopologyLockMap.remove(clusterId) != null) {
             if (log.isDebugEnabled()) {
                 log.debug("Removed lock for cluster " + clusterId);

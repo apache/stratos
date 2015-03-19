@@ -21,8 +21,8 @@ package org.apache.stratos.messaging.event.instance.status;
 import java.io.Serializable;
 
 /**
- *  This event is fired by cartridge agent when it has cleaned up the data and
- *  ready to shutdown.
+ * This event is fired by cartridge agent when it has cleaned up the data and
+ * ready to shutdown.
  */
 public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements Serializable {
     private final String serviceName;
@@ -63,13 +63,13 @@ public class InstanceReadyToShutdownEvent extends InstanceStatusEvent implements
         return networkPartitionId;
     }
 
-	public String getGroupId() {
-		return groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public String getClusterInstanceId() {
         return clusterInstanceId;

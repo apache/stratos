@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.health.stat;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- *  This event is fired by Event processing engine to send member fault event
+ * This event is fired by Event processing engine to send member fault event
  */
 public class MemberFaultEvent extends Event {
     private final String clusterId;

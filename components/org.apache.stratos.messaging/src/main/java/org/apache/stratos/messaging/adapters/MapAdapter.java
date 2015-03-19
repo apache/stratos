@@ -23,14 +23,14 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapAdapter<S, T> extends XmlAdapter<MapType,Map<S, T>> {
+public class MapAdapter<S, T> extends XmlAdapter<MapType, Map<S, T>> {
 
     @Override
     public MapType marshal(Map<S, T> v) throws Exception {
 
         MapType mapType = new MapType();
 
-        for(Map.Entry entry : v.entrySet()) {
+        for (Map.Entry entry : v.entrySet()) {
             MapEntryType myMapEntryType = new MapEntryType();
             myMapEntryType.key = entry.getKey();
             myMapEntryType.value = entry.getValue();
@@ -44,7 +44,7 @@ public class MapAdapter<S, T> extends XmlAdapter<MapType,Map<S, T>> {
 
         Map hashMap = new HashMap();
 
-        for(MapEntryType mapEntryType : v.entry) {
+        for (MapEntryType mapEntryType : v.entry) {
             hashMap.put(mapEntryType.key, mapEntryType.value);
         }
         return hashMap;

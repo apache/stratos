@@ -50,7 +50,7 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
 
             // Parse complete message and build event
             MemberMaintenanceModeEvent event = (MemberMaintenanceModeEvent) MessagingUtil.
-                                            jsonToObject(message, MemberMaintenanceModeEvent.class);
+                    jsonToObject(message, MemberMaintenanceModeEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
@@ -70,18 +70,18 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (MemberMaintenanceModeEvent event,Topology topology) {
+    private boolean doProcess(MemberMaintenanceModeEvent event, Topology topology) {
 
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -114,14 +114,14 @@ public class MemberMaintenanceModeProcessor extends MessageProcessor {
         }
 
         // Apply member filter
-        if(TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
+        if (TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
             return false;
         }
 
         if (member.getStatus() == MemberStatus.In_Maintenance) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member already updated as In_Maintenance: " +
-                        "[service] %s [cluster] %s [member] %s",
+                                "[service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId()));

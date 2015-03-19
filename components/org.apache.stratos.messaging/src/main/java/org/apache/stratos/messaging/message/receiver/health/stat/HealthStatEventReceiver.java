@@ -31,55 +31,55 @@ import java.util.concurrent.ExecutorService;
  * A thread for receiving health stat information from message broker
  */
 public class HealthStatEventReceiver {
-	private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
+    private static final Log log = LogFactory.getLog(HealthStatEventReceiver.class);
 
-	private final HealthStatEventMessageDelegator messageDelegator;
-	private final HealthStatEventMessageListener messageListener;
-	private EventSubscriber eventSubscriber;
-	private boolean terminated;
-	private ExecutorService executorService;
+    private final HealthStatEventMessageDelegator messageDelegator;
+    private final HealthStatEventMessageListener messageListener;
+    private EventSubscriber eventSubscriber;
+    private boolean terminated;
+    private ExecutorService executorService;
 
-	public HealthStatEventReceiver() {
-		HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
-		this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
-		this.messageListener = new HealthStatEventMessageListener(messageQueue);
-	}
+    public HealthStatEventReceiver() {
+        HealthStatEventMessageQueue messageQueue = new HealthStatEventMessageQueue();
+        this.messageDelegator = new HealthStatEventMessageDelegator(messageQueue);
+        this.messageListener = new HealthStatEventMessageListener(messageQueue);
+    }
 
-	public void addEventListener(EventListener eventListener) {
-		messageDelegator.addEventListener(eventListener);
-	}
+    public void addEventListener(EventListener eventListener) {
+        messageDelegator.addEventListener(eventListener);
+    }
 
 
-	public void execute() {
-		try {
-			// Start topic subscriber thread
-			eventSubscriber = new EventSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
+    public void execute() {
+        try {
+            // Start topic subscriber thread
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.HEALTH_STAT_TOPIC.getTopicName(), messageListener);
 
             executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
-				log.debug("Health stats event message delegator thread started");
-			}
+                log.debug("Health stats event message delegator thread started");
+            }
             // Start health stat event message delegator thread
             executorService.execute(messageDelegator);
-		} catch (Exception e) {
-			if (log.isErrorEnabled()) {
-				log.error("Health stats receiver failed", e);
-			}
-		}
-	}
+        } catch (Exception e) {
+            if (log.isErrorEnabled()) {
+                log.error("Health stats receiver failed", e);
+            }
+        }
+    }
 
-	public void terminate() {
-		eventSubscriber.terminate();
-		messageDelegator.terminate();
-		terminated = true;
-	}
+    public void terminate() {
+        eventSubscriber.terminate();
+        messageDelegator.terminate();
+        terminated = true;
+    }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

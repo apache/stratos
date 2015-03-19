@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.health.stat;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- *  This event is fired by Event processing engine to send second derivative of memory consumption
+ * This event is fired by Event processing engine to send second derivative of memory consumption
  */
 public class MemberSecondDerivativeOfMemoryConsumptionEvent extends Event {
     private final String clusterInstanceId;

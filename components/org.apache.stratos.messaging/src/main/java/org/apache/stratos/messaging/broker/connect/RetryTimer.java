@@ -45,7 +45,7 @@ public class RetryTimer {
     }
 
     public synchronized long getNextInterval() {
-        if(iterator.hasNext()) {
+        if (iterator.hasNext()) {
             // Return next value
             return iterator.next();
         }

@@ -88,14 +88,14 @@ public class ApplicationCreatedMessageProcessor extends MessageProcessor {
 
         // check if an Application with same name exists in applications
         if (applications.applicationExists(event.getApplication().getUniqueIdentifier())) {
-            if(log.isDebugEnabled()) {
-            	log.debug("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists");	
+            if (log.isDebugEnabled()) {
+                log.debug("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] already exists");
             }
         } else {
             // add application and the clusters to Topology
             applications.addApplication(event.getApplication());
-            if(log.isInfoEnabled()) {
-            	log.info("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] created");	
+            if (log.isInfoEnabled()) {
+                log.info("Application with id [ " + event.getApplication().getUniqueIdentifier() + " ] created");
             }
         }
 

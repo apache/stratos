@@ -9,7 +9,7 @@ import org.apache.stratos.messaging.util.MessagingUtil;
 /**
  * Created by asiri on 8/15/14.
  */
-public class AverageRequestsServingCapabilityMessageProcessor  extends MessageProcessor {
+public class AverageRequestsServingCapabilityMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(AverageRequestsServingCapabilityMessageProcessor.class);
 
     private MessageProcessor nextProcessor;
@@ -29,21 +29,18 @@ public class AverageRequestsServingCapabilityMessageProcessor  extends MessagePr
             // Notify event listeners
             notifyEventListeners(event);
 
-            if(log.isDebugEnabled()){
-                log.debug(String.format("%s event processor notified listeners ... " , type));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("%s event processor notified listeners ... ", type));
             }
             return true;
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process health stat message using available message processors: [type] %s [body] %s", type, message));
             }
         }
     }
-
 
 
 }

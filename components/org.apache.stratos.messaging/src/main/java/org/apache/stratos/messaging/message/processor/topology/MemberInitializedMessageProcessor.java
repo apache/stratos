@@ -67,18 +67,18 @@ public class MemberInitializedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(MemberInitializedEvent event,Topology topology) {
+    private boolean doProcess(MemberInitializedEvent event, Topology topology) {
 
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -111,7 +111,7 @@ public class MemberInitializedMessageProcessor extends MessageProcessor {
         }
 
         // Apply member filter
-        if(TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
+        if (TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
             return false;
         }
 

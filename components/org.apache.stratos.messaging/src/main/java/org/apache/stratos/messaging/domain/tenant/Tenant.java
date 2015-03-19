@@ -24,7 +24,7 @@ import java.io.Serializable;
 /**
  * Tenant definition.
  */
-public class Tenant implements Serializable{
+public class Tenant implements Serializable {
     private static final long serialVersionUID = 2154359124188618021L;
 
     private int tenantId;

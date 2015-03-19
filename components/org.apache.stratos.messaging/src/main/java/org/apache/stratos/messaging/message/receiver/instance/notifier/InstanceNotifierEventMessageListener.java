@@ -31,13 +31,13 @@ import org.apache.stratos.messaging.domain.Message;
  */
 class InstanceNotifierEventMessageListener implements MessageListener {
 
-	private static final Log log = LogFactory.getLog(InstanceNotifierEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(InstanceNotifierEventMessageListener.class);
 
-	private final InstanceNotifierEventMessageQueue messageQueue;
+    private final InstanceNotifierEventMessageQueue messageQueue;
 
-	public InstanceNotifierEventMessageListener(InstanceNotifierEventMessageQueue messageQueue) {
-		this.messageQueue = messageQueue;
-	}
+    public InstanceNotifierEventMessageListener(InstanceNotifierEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
     @Override
     public void messageReceived(Message message) {

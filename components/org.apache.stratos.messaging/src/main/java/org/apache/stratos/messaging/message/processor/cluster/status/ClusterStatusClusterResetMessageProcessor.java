@@ -41,7 +41,7 @@ public class ClusterStatusClusterResetMessageProcessor extends MessageProcessor 
             ClusterStatusClusterResetEvent event = (ClusterStatusClusterResetEvent) MessagingUtil.
                     jsonToObject(message, ClusterStatusClusterResetEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterResettedEvent: " + event.toString());
             }
             // Notify event listeners

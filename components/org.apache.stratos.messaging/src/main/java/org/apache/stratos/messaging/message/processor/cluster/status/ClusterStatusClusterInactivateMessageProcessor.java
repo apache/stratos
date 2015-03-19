@@ -39,9 +39,9 @@ public class ClusterStatusClusterInactivateMessageProcessor extends MessageProce
         if (ClusterStatusClusterInactivateEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             ClusterStatusClusterInactivateEvent event = (ClusterStatusClusterInactivateEvent) MessagingUtil.
-                                                jsonToObject(message, ClusterStatusClusterInactivateEvent.class);
+                    jsonToObject(message, ClusterStatusClusterInactivateEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterInactivateEvent: " + event.toString());
             }
             // Notify event listeners

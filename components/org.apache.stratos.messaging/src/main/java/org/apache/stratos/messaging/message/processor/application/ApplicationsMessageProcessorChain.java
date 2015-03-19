@@ -71,7 +71,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
 
         applicationCreatedMessageProcessor = new ApplicationCreatedMessageProcessor();
         add(applicationCreatedMessageProcessor);
-        
+
         applicationDeletedMessageProcessor = new ApplicationDeletedMessageProcessor();
         add(applicationDeletedMessageProcessor);
 
@@ -109,7 +109,7 @@ public class ApplicationsMessageProcessorChain extends MessageProcessorChain {
         } else if (eventListener instanceof ApplicationCreatedEventListener) {
             applicationCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationDeletedEventListener) {
-            applicationDeletedMessageProcessor.addEventListener(eventListener); 
+            applicationDeletedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationInstanceActivatedEventListener) {
             applicationActivatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationInstanceInactivatedEventListener) {

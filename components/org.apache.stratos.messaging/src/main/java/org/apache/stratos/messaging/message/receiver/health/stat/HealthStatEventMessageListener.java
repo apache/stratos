@@ -31,13 +31,13 @@ import org.apache.stratos.messaging.domain.Message;
  */
 public class HealthStatEventMessageListener implements MessageListener {
 
-	private static final Log log = LogFactory.getLog(HealthStatEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(HealthStatEventMessageListener.class);
 
-	private final HealthStatEventMessageQueue messageQueue;
+    private final HealthStatEventMessageQueue messageQueue;
 
-	public HealthStatEventMessageListener(HealthStatEventMessageQueue messageQueue) {
-		this.messageQueue = messageQueue;
-	}
+    public HealthStatEventMessageListener(HealthStatEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
     @Override
     public void messageReceived(Message message) {

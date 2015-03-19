@@ -44,12 +44,13 @@ public class TopologyServiceFilter extends MessageFilter {
 
     /**
      * Returns true if service is excluded else returns false.
+     *
      * @param serviceName service name
      * @return
      */
     public static boolean apply(String serviceName) {
         boolean excluded = false;
-        if(getInstance().isActive()) {
+        if (getInstance().isActive()) {
             if (StringUtils.isNotBlank(serviceName) && getInstance().serviceExcluded(serviceName)) {
                 excluded = true;
             }

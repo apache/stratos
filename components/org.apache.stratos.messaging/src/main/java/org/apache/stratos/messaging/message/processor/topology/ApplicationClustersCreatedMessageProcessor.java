@@ -38,6 +38,7 @@ import java.util.List;
 public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(ApplicationClustersCreatedMessageProcessor.class);
     private MessageProcessor nextProcessor;
+
     @Override
     public void setNext(MessageProcessor nextProcessor) {
         this.nextProcessor = nextProcessor;
@@ -54,8 +55,8 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
 
             // Parse complete message and build event
             ApplicationClustersCreatedEvent event = (ApplicationClustersCreatedEvent) MessagingUtil.
-                                                jsonToObject(message, ApplicationClustersCreatedEvent.class);
-                return doProcess(event, topology);
+                    jsonToObject(message, ApplicationClustersCreatedEvent.class);
+            return doProcess(event, topology);
 
 
         } else {
@@ -68,22 +69,22 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
         }
     }
 
-    private boolean doProcess (ApplicationClustersCreatedEvent event,Topology topology) {
+    private boolean doProcess(ApplicationClustersCreatedEvent event, Topology topology) {
         List<Cluster> clusters = event.getClusterList();
 
-        for(Cluster cluster : clusters) {
+        for (Cluster cluster : clusters) {
             String serviceName = cluster.getServiceName();
             String clusterId = cluster.getClusterId();
             TopologyUpdater.acquireWriteLockForService(serviceName);
             try {
 
                 // Apply service filter
-                if(TopologyServiceFilter.apply(serviceName)) {
+                if (TopologyServiceFilter.apply(serviceName)) {
                     continue;
                 }
 
                 // Apply cluster filter
-                if(TopologyClusterFilter.apply(clusterId)) {
+                if (TopologyClusterFilter.apply(clusterId)) {
                     continue;
                 }
 
@@ -99,7 +100,7 @@ public class ApplicationClustersCreatedMessageProcessor extends MessageProcessor
                 if (service.clusterExists(clusterId)) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Cluster already exists in service: [service] %s " +
-                                        "[cluster] %s",serviceName ,
+                                        "[cluster] %s", serviceName,
                                 clusterId));
                     }
                 } else {

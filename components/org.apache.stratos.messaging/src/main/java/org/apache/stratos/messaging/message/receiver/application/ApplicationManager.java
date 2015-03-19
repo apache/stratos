@@ -33,13 +33,13 @@ public class ApplicationManager {
     private static volatile ApplicationLockHierarchy applicationLockHierarchy =
             ApplicationLockHierarchy.getInstance();
 
-    public static Applications getApplications () {
+    public static Applications getApplications() {
 
         if (applications == null) {
-            synchronized (ApplicationManager.class){
+            synchronized (ApplicationManager.class) {
                 if (applications == null) {
                     applications = new Applications();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Applications object created");
                     }
                 }
@@ -52,7 +52,7 @@ public class ApplicationManager {
      * Acquires read lock for all Applications
      */
     public static synchronized void acquireReadLockForApplications() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock acquired for applications");
         }
         applicationLockHierarchy.getApplicationLock().acquireReadLock();
@@ -62,7 +62,7 @@ public class ApplicationManager {
      * Releases read lock for all Applications
      */
     public static synchronized void releaseReadLockForApplications() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock released for applications");
         }
         applicationLockHierarchy.getApplicationLock().releaseReadLock();

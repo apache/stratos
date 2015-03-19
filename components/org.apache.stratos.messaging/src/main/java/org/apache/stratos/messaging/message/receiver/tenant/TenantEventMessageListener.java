@@ -31,13 +31,13 @@ import org.apache.stratos.messaging.domain.Message;
  */
 class TenantEventMessageListener implements MessageListener {
 
-	private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
+    private static final Log log = LogFactory.getLog(TenantEventMessageListener.class);
 
-	private final TenantEventMessageQueue messageQueue;
+    private final TenantEventMessageQueue messageQueue;
 
-	public TenantEventMessageListener(TenantEventMessageQueue messageQueue) {
-		this.messageQueue = messageQueue;
-	}
+    public TenantEventMessageListener(TenantEventMessageQueue messageQueue) {
+        this.messageQueue = messageQueue;
+    }
 
     @Override
     public void messageReceived(Message message) {

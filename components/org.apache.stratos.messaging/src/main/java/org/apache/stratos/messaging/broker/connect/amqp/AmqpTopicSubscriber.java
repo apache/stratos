@@ -62,17 +62,17 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
                     try {
                         String topicName = null, messageText = null;
 
-                        if(message instanceof ActiveMQTextMessage) {
-                            ActiveMQTextMessage textMessage = (ActiveMQTextMessage)message;
+                        if (message instanceof ActiveMQTextMessage) {
+                            ActiveMQTextMessage textMessage = (ActiveMQTextMessage) message;
                             topicName = textMessage.getDestination().getPhysicalName();
                             messageText = textMessage.getText();
-                        } else if(message instanceof ActiveMQBytesMessage) {
-                            ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage)message;
+                        } else if (message instanceof ActiveMQBytesMessage) {
+                            ActiveMQBytesMessage bytesMessage = (ActiveMQBytesMessage) message;
                             topicName = bytesMessage.getDestination().getPhysicalName();
                             messageText = new String(bytesMessage.getContent().data);
                         } else {
                             throw new RuntimeException(String.format("Could not receive message, " +
-                                            "unknown JMS message type: %s", message.getClass().getName()));
+                                    "unknown JMS message type: %s", message.getClass().getName()));
                         }
                         org.apache.stratos.messaging.domain.Message message_ =
                                 new org.apache.stratos.messaging.domain.Message(topicName, messageText);
@@ -94,11 +94,11 @@ public class AmqpTopicSubscriber extends AmqpTopicConnector implements TopicSubs
     protected void reconnect() {
         RetryTimer retryTimer = new RetryTimer();
         boolean connected = false;
-        while(!connected) {
+        while (!connected) {
             try {
                 long interval = retryTimer.getNextInterval();
                 log.info(String.format("Topic subscriber will try to reconnect in %d seconds: [topic-name] %s",
-                        (interval/1000), topicName));
+                        (interval / 1000), topicName));
                 Thread.sleep(interval);
             } catch (InterruptedException ignore) {
             }

@@ -57,7 +57,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
     }
 
     public Port getPort(int proxy) {
-        if(portMap.containsKey(proxy)) {
+        if (portMap.containsKey(proxy)) {
             return portMap.get(proxy);
         }
         return null;
@@ -68,7 +68,7 @@ public class ServiceCreatedEvent extends TopologyEvent implements Serializable {
     }
 
     public void addPorts(Collection<Port> ports) {
-        for(Port port : ports) {
+        for (Port port : ports) {
             addPort(port);
         }
     }

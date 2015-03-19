@@ -49,11 +49,11 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
         this.instanceProperties = new Properties();
     }
 
-    public void addProperty (String name, String value) {
+    public void addProperty(String name, String value) {
         instanceProperties.put(name, value);
     }
 
-    public String getProperty (String name) {
+    public String getProperty(String name) {
         return instanceProperties.getProperty(name);
     }
 
@@ -66,20 +66,20 @@ public abstract class Instance<T extends LifeCycleState> implements Serializable
     }
 
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof Instance)) {
+        if (other == null || !(other instanceof Instance)) {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
-        Instance that = (Instance)other;
+        Instance that = (Instance) other;
         return this.alias.equals(that.alias) &&
                 this.instanceId.equals(that.instanceId);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return alias.hashCode() + instanceId.hashCode();
     }
 

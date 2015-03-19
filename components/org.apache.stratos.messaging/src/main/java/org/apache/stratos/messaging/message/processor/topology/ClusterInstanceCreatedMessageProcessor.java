@@ -73,18 +73,18 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ClusterInstanceCreatedEvent event,Topology topology) {
+    private boolean doProcess(ClusterInstanceCreatedEvent event, Topology topology) {
 
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -108,7 +108,7 @@ public class ClusterInstanceCreatedMessageProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             ClusterInstance clusterInstance = event.getClusterInstance();
-            if(cluster.getInstanceContexts(clusterInstance.getInstanceId()) != null) {
+            if (cluster.getInstanceContexts(clusterInstance.getInstanceId()) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug(String.format("Cluster Instance already exists in service: " +
                                     "[service] %s [cluster] %s [Instance] %s", event.getServiceName(),

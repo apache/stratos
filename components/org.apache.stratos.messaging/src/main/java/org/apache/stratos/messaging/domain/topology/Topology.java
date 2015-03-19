@@ -79,7 +79,7 @@ public class Topology implements Serializable {
         this.serviceMap.clear();
     }
 
-	public void setInitialized(boolean initialized) {
+    public void setInitialized(boolean initialized) {
         this.initialized = initialized;
     }
 

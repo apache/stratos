@@ -24,15 +24,15 @@ import java.util.Set;
 
 public class DependencyOrder implements Serializable {
 
-	private static final long serialVersionUID = -599600831844477527L;
+    private static final long serialVersionUID = -599600831844477527L;
 
-	private Set<StartupOrder> startupOrders;
+    private Set<StartupOrder> startupOrders;
 
-	private Set<ScalingDependentList> scalingDependents;
+    private Set<ScalingDependentList> scalingDependents;
 
     private String terminationBehaviour;
 
-    public DependencyOrder () {
+    public DependencyOrder() {
 
     }
 
@@ -44,21 +44,21 @@ public class DependencyOrder implements Serializable {
         this.terminationBehaviour = terminationBehaviour;
     }
 
-	public Set<StartupOrder> getStartupOrders() {
-		return startupOrders;
-	}
+    public Set<StartupOrder> getStartupOrders() {
+        return startupOrders;
+    }
 
-	public void setStartupOrders(Set<StartupOrder> startupOrders) {
-		this.startupOrders = startupOrders;
-	}
+    public void setStartupOrders(Set<StartupOrder> startupOrders) {
+        this.startupOrders = startupOrders;
+    }
 
-	public Set<ScalingDependentList> getScalingDependents() {
-		return scalingDependents;
-	}
+    public Set<ScalingDependentList> getScalingDependents() {
+        return scalingDependents;
+    }
 
-	public void setScalingDependents(Set<ScalingDependentList> scalingDependents) {
-		this.scalingDependents = scalingDependents;
-	}
+    public void setScalingDependents(Set<ScalingDependentList> scalingDependents) {
+        this.scalingDependents = scalingDependents;
+    }
 
-	
+
 }

@@ -29,9 +29,9 @@ import org.apache.stratos.messaging.util.MessagingConstants;
 public class TopicPublisherFactory {
 
     public static TopicPublisher createTopicPublisher(String protocol, String topicName) {
-        if(MessagingConstants.AMQP.equals(protocol)) {
+        if (MessagingConstants.AMQP.equals(protocol)) {
             return new AmqpTopicPublisher(topicName);
-        } else if(MessagingConstants.MQTT.equals(protocol)) {
+        } else if (MessagingConstants.MQTT.equals(protocol)) {
             return new MqttTopicPublisher(topicName);
         } else {
             throw new RuntimeException("Could not create topic publisher, unknown protocol: " + protocol);

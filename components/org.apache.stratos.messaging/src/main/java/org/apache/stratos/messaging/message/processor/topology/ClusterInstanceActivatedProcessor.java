@@ -83,12 +83,12 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -112,13 +112,13 @@ public class ClusterInstanceActivatedProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             List<KubernetesService> kubernetesServices = event.getKubernetesServices();
-            if(kubernetesServices != null) {
+            if (kubernetesServices != null) {
                 // Set kubernetes services
                 cluster.setKubernetesServices(kubernetesServices);
             }
 
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 log.warn("Cluster instance context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
                         event.getInstanceId());

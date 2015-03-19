@@ -37,12 +37,12 @@ public class ApplicationLockHierarchy {
 
     private static volatile ApplicationLockHierarchy applicationLockHierarchy;
 
-    private ApplicationLockHierarchy () {
+    private ApplicationLockHierarchy() {
         this.applicationLock = new ApplicationLock();
         this.appIdToApplicationLockMap = new HashMap<String, ApplicationLock>();
     }
 
-    public static ApplicationLockHierarchy getInstance () {
+    public static ApplicationLockHierarchy getInstance() {
 
         if (applicationLockHierarchy == null) {
             synchronized (ApplicationLockHierarchy.class) {
@@ -57,9 +57,9 @@ public class ApplicationLockHierarchy {
 
     public ApplicationLock getLockForApplication(String appId) {
         ApplicationLock applicationLock = appIdToApplicationLockMap.get(appId);
-        if(applicationLock == null) {
+        if (applicationLock == null) {
             synchronized (ApplicationLockHierarchy.class) {
-                if(applicationLock == null) {
+                if (applicationLock == null) {
                     applicationLock = new ApplicationLock();
                     appIdToApplicationLockMap.put(appId, applicationLock);
                 }
@@ -68,7 +68,7 @@ public class ApplicationLockHierarchy {
         return applicationLock;
     }
 
-    public void removeLockForApplication (String appId) {
+    public void removeLockForApplication(String appId) {
         if (appIdToApplicationLockMap.remove(appId) != null) {
             log.info("Removed lock for application: [application-id] " + appId);
         } else {

@@ -66,7 +66,7 @@ class HealthStatEventMessageDelegator implements Runnable {
                         log.debug("Health event message received: [message] " + messageText);
                     }
                     EventMessage eventMessage = jsonToEventMessage(messageText);
-                    if(eventMessage == null){
+                    if (eventMessage == null) {
                         log.error("Error occurred while extracting message");
                         continue;
                     }
@@ -115,7 +115,7 @@ class HealthStatEventMessageDelegator implements Runnable {
 
         String eventType = MessageParts[0].trim();
         eventType = eventType.substring(eventType.indexOf("\"") + 1, eventType.lastIndexOf("\""));
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Extracted [event type] %s", eventType));
         }
 
@@ -123,13 +123,13 @@ class HealthStatEventMessageDelegator implements Runnable {
         String messageTag = MessageParts[1];
         messageTag = messageTag.substring(messageTag.indexOf("\"") + 1, messageTag.lastIndexOf("\""));
 
-        if("message".equals(messageTag)){
+        if ("message".equals(messageTag)) {
             message = MessageParts[2].trim();
             //Remove trailing bracket twice to get the message
             message = message.substring(0, message.lastIndexOf("}")).trim();
             message = message.substring(0, message.lastIndexOf("}")).trim();
-            if(message.indexOf('{') == 0 && message.indexOf('}') == message.length() - 1){
-                if(log.isDebugEnabled()) {
+            if (message.indexOf('{') == 0 && message.indexOf('}') == message.length() - 1) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("[Extracted message] %s ", message));
                 }
                 event.setMessage(message);

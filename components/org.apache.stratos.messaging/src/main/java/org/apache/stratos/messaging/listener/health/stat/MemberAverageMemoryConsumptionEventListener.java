@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Average of memory consumption event listener
+ * Average of memory consumption event listener
  */
 public class MemberAverageMemoryConsumptionEventListener extends EventListener {
     @Override

@@ -26,6 +26,7 @@ public interface TopicPublisher extends TopicConnector {
 
     /**
      * Publish a message to a topic in the message broker.
+     *
      * @param message
      * @param retry
      */

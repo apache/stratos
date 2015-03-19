@@ -27,7 +27,7 @@ import java.util.List;
  * This will have the list of clusters which associated with an application
  */
 public class ApplicationClustersCreatedEvent extends TopologyEvent implements Serializable {
-    private  List<Cluster> clusterList;
+    private List<Cluster> clusterList;
     private String appId;
 
     public ApplicationClustersCreatedEvent(List<Cluster> clusters, String appId) {

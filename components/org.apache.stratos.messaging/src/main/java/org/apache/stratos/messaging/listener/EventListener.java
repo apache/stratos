@@ -27,16 +27,16 @@ import java.util.Observable;
 import java.util.Observer;
 
 /**
- *  Event listener definition.
+ * Event listener definition.
  */
 public abstract class EventListener implements Observer {
     private static final Log log = LogFactory.getLog(EventListener.class);
 
     @Override
     public void update(Observable o, Object arg) {
-        if(arg instanceof Event) {
+        if (arg instanceof Event) {
             Event event = (Event) arg;
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Event received: %s", event.getClass().getName()));
             }
             onEvent(event);
@@ -45,6 +45,7 @@ public abstract class EventListener implements Observer {
 
     /**
      * Triggered when an event is received.
+     *
      * @param event
      */
     protected abstract void onEvent(Event event);

@@ -63,7 +63,7 @@ class DomainMappingEventMessageDelegator implements Runnable {
 
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Domain mapping event message received from queue: [event-class-name] %s " +
-                                        "[message-queue] %s", type, messageQueue.getClass()));
+                                "[message-queue] %s", type, messageQueue.getClass()));
                     }
 
                     if (log.isDebugEnabled()) {

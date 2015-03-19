@@ -49,8 +49,8 @@ public abstract class MqttTopicConnector implements TopicConnector {
                 log.debug("Connecting to message broker");
             }
 
-            if(mqttClient == null) {
-                if(log.isDebugEnabled()) {
+            if (mqttClient == null) {
+                if (log.isDebugEnabled()) {
                     log.debug("MQTT client initialization has failed previously, trying again");
                 }
                 create();
@@ -80,7 +80,7 @@ public abstract class MqttTopicConnector implements TopicConnector {
 
         try {
             String mqttUrl = System.getProperty("mqtturl");
-            if(StringUtils.isBlank(mqttUrl)) {
+            if (StringUtils.isBlank(mqttUrl)) {
                 mqttUrl = MessagingConstants.MQTT_PROPERTIES.getProperty("mqtturl", MessagingConstants.MQTT_URL_DEFAULT);
             }
             MemoryPersistence memoryPersistence = new MemoryPersistence();
@@ -106,8 +106,8 @@ public abstract class MqttTopicConnector implements TopicConnector {
                 log.debug("Disconnecting from message broker");
             }
 
-            if(mqttClient == null) {
-                if(log.isWarnEnabled()) {
+            if (mqttClient == null) {
+                if (log.isWarnEnabled()) {
                     log.warn("Could not disconnect from message broker, MQTT client has not been initialized");
                 }
                 return;
@@ -125,14 +125,14 @@ public abstract class MqttTopicConnector implements TopicConnector {
         }
     }
 
-    private void closeConnection () {
+    private void closeConnection() {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Closing connection to message broker");
             }
 
-            if(mqttClient == null) {
-                if(log.isWarnEnabled()) {
+            if (mqttClient == null) {
+                if (log.isWarnEnabled()) {
                     log.warn("Could not close connection, MQTT client has not been initialized");
                 }
                 return;
@@ -149,11 +149,12 @@ public abstract class MqttTopicConnector implements TopicConnector {
 
     /**
      * Return server URI.
+     *
      * @return
      */
     @Override
     public String getServerURI() {
-        if(mqttClient == null) {
+        if (mqttClient == null) {
             return null;
         }
 

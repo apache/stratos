@@ -42,7 +42,7 @@ public class InstanceStatusMemberActivatedMessageProcessor extends MessageProces
             InstanceActivatedEvent event = (InstanceActivatedEvent) MessagingUtil.
                     jsonToObject(message, InstanceActivatedEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterActivatedEvent: " + event.toString());
             }
             // Notify event listeners

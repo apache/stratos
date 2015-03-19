@@ -22,28 +22,26 @@ import com.google.gson.Gson;
 
 /**
  * Represents a message that would traverse through Stratos
- *
- *
  */
 public class JsonMessage {
-	
-	private Object object;
 
-	public JsonMessage(Object obj) {
-		object = obj;
-	}
+    private Object object;
 
-	public JsonMessage(String text, Class type) {
-		Gson gson = new Gson();
-		object = gson.fromJson(text, type);
-	}
+    public JsonMessage(Object obj) {
+        object = obj;
+    }
 
-	public Object getObject() {
-		return this.object;
-	}
+    public JsonMessage(String text, Class type) {
+        Gson gson = new Gson();
+        object = gson.fromJson(text, type);
+    }
 
-	public String getText() {
-		Gson gson = new Gson();
-		return gson.toJson(object);
-	}
+    public Object getObject() {
+        return this.object;
+    }
+
+    public String getText() {
+        Gson gson = new Gson();
+        return gson.toJson(object);
+    }
 }

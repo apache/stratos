@@ -48,12 +48,10 @@ public class ArtifactUpdateMessageProcessor extends MessageProcessor {
             // Notify event listeners
             notifyEventListeners(event);
             return true;
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process artifact update message using available message processors: [type] %s [body] %s", type, message));
             }
         }

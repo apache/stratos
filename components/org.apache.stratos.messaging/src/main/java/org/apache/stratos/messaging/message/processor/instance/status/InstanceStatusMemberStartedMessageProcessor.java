@@ -40,9 +40,9 @@ public class InstanceStatusMemberStartedMessageProcessor extends MessageProcesso
         if (InstanceStartedEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             InstanceStartedEvent event = (InstanceStartedEvent) MessagingUtil.
-                                                jsonToObject(message, InstanceStartedEvent.class);
+                    jsonToObject(message, InstanceStartedEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterInactivateEvent: " + event.toString());
             }
             // Notify event listeners

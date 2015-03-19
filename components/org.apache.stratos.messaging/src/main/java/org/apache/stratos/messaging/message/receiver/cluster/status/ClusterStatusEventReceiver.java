@@ -30,13 +30,13 @@ import java.util.concurrent.ExecutorService;
 /**
  * A thread for receiving instance notifier information from message broker.
  */
-public class ClusterStatusEventReceiver{
+public class ClusterStatusEventReceiver {
     private static final Log log = LogFactory.getLog(ClusterStatusEventReceiver.class);
     private final ClusterStatusEventMessageDelegator messageDelegator;
     private final ClusterStatusEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
     private boolean terminated;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
     public ClusterStatusEventReceiver() {
         ClusterStatusEventMessageQueue messageQueue = new ClusterStatusEventMessageQueue();
@@ -60,7 +60,7 @@ public class ClusterStatusEventReceiver{
             }
 
             // Start instance notifier event message delegator thread
-	        executorService.execute(messageDelegator);
+            executorService.execute(messageDelegator);
             if (log.isDebugEnabled()) {
                 log.debug("InstanceNotifier event message delegator thread started");
             }
@@ -83,11 +83,11 @@ public class ClusterStatusEventReceiver{
         terminated = true;
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

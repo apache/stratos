@@ -44,14 +44,14 @@ public class ApplicationSignUpAddedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
 
-        if(type.equals(ApplicationSignUpAddedEvent.class.getName())) {
+        if (type.equals(ApplicationSignUpAddedEvent.class.getName())) {
             ApplicationSignUpAddedEvent event = (ApplicationSignUpAddedEvent) MessagingUtil.jsonToObject(message,
                     ApplicationSignUpAddedEvent.class);
             if (event == null) {
                 log.error("Unable to convert the JSON message to ApplicationSignUpAddedEvent");
                 return false;
             }
-            if(event.getClusterIds() == null) {
+            if (event.getClusterIds() == null) {
                 log.error(String.format("Cluster ids not found in application signup added event: " +
                         "[application] %s [tenant] %d", event.getApplicationId(), event.getTenantId()));
             }
@@ -65,7 +65,7 @@ public class ApplicationSignUpAddedMessageProcessor extends MessageProcessor {
                 applicationSignUp.setClusterIds(event.getClusterIds().toArray(new String[event.getClusterIds().size()]));
 
                 ApplicationSignUpManager.getInstance().addApplicationSignUp(applicationSignUp);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Application signup added: [application-id] %s [tenant-id] %s",
                             applicationSignUp.getApplicationId(), applicationSignUp.getTenantId()));
                 }

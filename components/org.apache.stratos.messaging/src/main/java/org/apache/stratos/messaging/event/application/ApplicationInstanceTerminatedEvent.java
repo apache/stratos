@@ -30,6 +30,7 @@ public class ApplicationInstanceTerminatedEvent extends Event implements Seriali
 
     private String appId;
     private String instanceId;
+
     public ApplicationInstanceTerminatedEvent(String appId, String instanceId) {
         this.appId = appId;
         this.instanceId = instanceId;

@@ -51,37 +51,37 @@ public class ArtifactUpdatedEvent extends InstanceNotifierEvent implements Seria
         this.status = status;
     }
 
-	public String getRepoUserName() {
-		return repoUserName;
-	}
+    public String getRepoUserName() {
+        return repoUserName;
+    }
 
-	public void setRepoUserName(String repoUserName) {
-		this.repoUserName = repoUserName;
-	}
+    public void setRepoUserName(String repoUserName) {
+        this.repoUserName = repoUserName;
+    }
 
-	public String getRepoPassword() {
-		return repoPassword;
-	}
+    public String getRepoPassword() {
+        return repoPassword;
+    }
 
-	public void setRepoPassword(String repoPassword) {
-		this.repoPassword = repoPassword;
-	}
+    public void setRepoPassword(String repoPassword) {
+        this.repoPassword = repoPassword;
+    }
 
-	public String getRepoURL() {
-		return repoURL;
-	}
+    public String getRepoURL() {
+        return repoURL;
+    }
 
-	public void setRepoURL(String repoURL) {
-		this.repoURL = repoURL;
-	}
+    public void setRepoURL(String repoURL) {
+        this.repoURL = repoURL;
+    }
 
-	public String getTenantId() {
-		return tenantId;
-	}
+    public String getTenantId() {
+        return tenantId;
+    }
 
-	public void setTenantId(String tenantId) {
-		this.tenantId = tenantId;
-	}
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
 
     @Override
     public String toString() {

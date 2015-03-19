@@ -22,7 +22,7 @@ package org.apache.stratos.messaging.event.health.stat;
 import org.apache.stratos.messaging.event.Event;
 
 /**
- *  This event is fired by Event processing engine to send average of memory consumption
+ * This event is fired by Event processing engine to send average of memory consumption
  */
 public class AverageMemoryConsumptionEvent extends Event {
     private final String networkPartitionId;
@@ -30,7 +30,7 @@ public class AverageMemoryConsumptionEvent extends Event {
     private final String clusterInstanceId;
     private final float value;
 
-    public AverageMemoryConsumptionEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float value){
+    public AverageMemoryConsumptionEvent(String networkPartitionId, String clusterId, String clusterInstanceId, float value) {
         this.networkPartitionId = networkPartitionId;
         this.clusterId = clusterId;
         this.clusterInstanceId = clusterInstanceId;

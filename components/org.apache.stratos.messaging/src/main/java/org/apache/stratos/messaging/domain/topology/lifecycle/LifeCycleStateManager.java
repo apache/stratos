@@ -42,7 +42,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
         stateStack = new Stack<T>();
         stateStack.push(initialState);
 
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Lifecycle state manager initialized: [identifier] %s [state] %s",
                     identifier, initialState.toString()));
         }
@@ -51,12 +51,12 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
     /**
      * checks if any conditions that should be met for the state transfer is valid
      *
-     * @param nextState possible next state for the topology element
+     * @param nextState     possible next state for the topology element
      * @param topologyEvent relevant ToplogyEvent
-     * @param <S> subclass of Topology event
+     * @param <S>           subclass of Topology event
      * @return true if preconditions are valid and satisfied, else false
      */
-    public <S extends TopologyEvent> boolean isPreConditionsValid (T nextState, S topologyEvent) {
+    public <S extends TopologyEvent> boolean isPreConditionsValid(T nextState, S topologyEvent) {
         // TODO: implement
         return true;
     }
@@ -67,7 +67,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      * @param nextState possible next state for the topology element
      * @return true if transitioning for nextState from current state is valid, else false
      */
-    public boolean isStateTransitionValid (T nextState) {
+    public boolean isStateTransitionValid(T nextState) {
 
         return stateStack.peek().getNextStates().contains(nextState);
     }
@@ -77,23 +77,23 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      *
      * @param nextState the next state to change
      * @return true if current state changed to nextState, else false.
-     *         Returns false if a state transitions to the same state (currentState = nextState).
+     * Returns false if a state transitions to the same state (currentState = nextState).
      */
-    public synchronized boolean changeState (T nextState)  {
+    public synchronized boolean changeState(T nextState) {
 
         boolean stateChanged = false;
 
         if (getCurrentState() != nextState) {
             stateStack.push(nextState);
             stateChanged = true;
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Lifecycle state changed: [identifier] %s [prev-state] %s [current-state] %s ",
                         getIdentifier(), getPreviousState(), getCurrentState()));
             }
         } else {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Lifecycle state already changed: [identifier] %s [prev-state] %s " +
-                                "[current-state] %s ", getIdentifier(), getPreviousState(), getCurrentState()));
+                        "[current-state] %s ", getIdentifier(), getPreviousState(), getCurrentState()));
             }
         }
         if (log.isDebugEnabled()) {
@@ -108,7 +108,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      *
      * @return Stack of states
      */
-    public Stack<T> getStateStack () {
+    public Stack<T> getStateStack() {
         return stateStack;
     }
 
@@ -117,7 +117,7 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      *
      * @return the current state
      */
-    public T getCurrentState () {
+    public T getCurrentState() {
         return stateStack.peek();
     }
 
@@ -126,14 +126,14 @@ public class LifeCycleStateManager<T extends LifeCycleState> implements Serializ
      *
      * @return previous state
      */
-    public T getPreviousState () {
+    public T getPreviousState() {
         return stateStack.get(stateStack.size() - 2);
     }
 
     /**
      * Print utility to print transitioned states
      */
-    private static <T extends LifeCycleState> void printStateTransitions (Stack<T> stateStack, String id) {
+    private static <T extends LifeCycleState> void printStateTransitions(Stack<T> stateStack, String id) {
 
         // print all transitions till now
         StringBuilder stateTransitions = new StringBuilder("Transitioned states for " + id + ": [START]");

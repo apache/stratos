@@ -74,7 +74,7 @@ public class DomainMappingAddedEvent extends Event implements Serializable {
     @Override
     public String toString() {
         return String.format("[application-id] %s [tenant-id] %d [service-name] %s [cluster-id] %s [domain-name] %s " +
-                "[context-path] %s", getApplicationId(), getTenantId(), getServiceName(), getClusterId(), getDomainName(),
+                        "[context-path] %s", getApplicationId(), getTenantId(), getServiceName(), getClusterId(), getDomainName(),
                 getContextPath());
     }
 }

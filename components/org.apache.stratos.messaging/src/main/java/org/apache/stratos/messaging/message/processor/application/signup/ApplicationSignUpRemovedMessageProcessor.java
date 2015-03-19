@@ -44,7 +44,7 @@ public class ApplicationSignUpRemovedMessageProcessor extends MessageProcessor {
     @Override
     public boolean process(String type, String message, Object object) {
 
-        if(type.equals(ApplicationSignUpRemovedEvent.class.getName())) {
+        if (type.equals(ApplicationSignUpRemovedEvent.class.getName())) {
             ApplicationSignUpRemovedEvent event = (ApplicationSignUpRemovedEvent) MessagingUtil.jsonToObject(message,
                     ApplicationSignUpRemovedEvent.class);
             if (event == null) {
@@ -59,8 +59,8 @@ public class ApplicationSignUpRemovedMessageProcessor extends MessageProcessor {
 
                 ApplicationSignUp applicationSignUp = ApplicationSignUpManager.getInstance().getApplicationSignUp(
                         applicationId, tenantId);
-                if(applicationSignUp == null) {
-                    if(log.isWarnEnabled()) {
+                if (applicationSignUp == null) {
+                    if (log.isWarnEnabled()) {
                         log.warn(String.format("Application signup not found: [application-id] %s [tenant-id] %d",
                                 applicationId, tenantId));
                     }
@@ -68,7 +68,7 @@ public class ApplicationSignUpRemovedMessageProcessor extends MessageProcessor {
                 }
 
                 ApplicationSignUpManager.getInstance().removeApplicationSignUp(applicationId, tenantId);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Application signup removed: [application-id] %s [tenant-id] %d",
                             applicationSignUp.getApplicationId(), applicationSignUp.getTenantId()));
                 }

@@ -38,13 +38,13 @@ public class CompleteApplicationSignUpsMessageProcessor extends MessageProcessor
 
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-         this.nextProcessor = nextProcessor;
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
     public boolean process(String type, String message, Object object) {
 
-        if(type.equals(CompleteApplicationSignUpsEvent.class.getName())) {
+        if (type.equals(CompleteApplicationSignUpsEvent.class.getName())) {
             CompleteApplicationSignUpsEvent event = (CompleteApplicationSignUpsEvent) MessagingUtil.jsonToObject(message,
                     CompleteApplicationSignUpsEvent.class);
             if (event == null) {
@@ -52,10 +52,10 @@ public class CompleteApplicationSignUpsMessageProcessor extends MessageProcessor
                 return false;
             }
 
-            if(!ApplicationSignUpManager.getInstance().isInitialized()) {
+            if (!ApplicationSignUpManager.getInstance().isInitialized()) {
                 try {
                     ApplicationSignUpManager.acquireWriteLock();
-                    for(ApplicationSignUp applicationSignUp : event.getApplicationSignUps()) {
+                    for (ApplicationSignUp applicationSignUp : event.getApplicationSignUps()) {
                         ApplicationSignUpManager.getInstance().addApplicationSignUp(applicationSignUp);
                         if (log.isDebugEnabled()) {
                             log.debug(String.format("Application signup added: [application-id] %s [tenant-id] %s",

@@ -26,17 +26,17 @@ import java.util.Arrays;
  */
 public class Properties {
 
-	private Property[] properties;
+    private Property[] properties;
 
-	public Property[] getProperties() {
-		return properties;
-	}
+    public Property[] getProperties() {
+        return properties;
+    }
 
-	public void setProperties(Property[] properties) {
-        if(properties == null) {
+    public void setProperties(Property[] properties) {
+        if (properties == null) {
             this.properties = new Property[0];
         } else {
             this.properties = Arrays.copyOf(properties, properties.length);
         }
-	}
+    }
 }

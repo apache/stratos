@@ -35,40 +35,41 @@ public class EventPublisher {
 
     private static final Log log = LogFactory.getLog(EventPublisher.class);
 
-	private final String topicName;
-	private final TopicPublisher topicPublisher;
+    private final String topicName;
+    private final TopicPublisher topicPublisher;
 
     /**
-	 * @param topicName topic name of this publisher instance.
-	 */
-	EventPublisher(String topicName) {
-		this.topicName = topicName;
+     * @param topicName topic name of this publisher instance.
+     */
+    EventPublisher(String topicName) {
+        this.topicName = topicName;
         String protocol = MessagingUtil.getMessagingProtocol();
         this.topicPublisher = TopicPublisherFactory.createTopicPublisher(protocol, topicName);
-		if (log.isDebugEnabled()) {
-			log.debug(String.format("Topic publisher created: [protocol] %s [topic] %s", protocol, topicName));
-		}
-	}
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Topic publisher created: [protocol] %s [topic] %s", protocol, topicName));
+        }
+    }
 
     /**
      * Publish event.
+     *
      * @param event event to be published
      */
     public void publish(Event event) {
         publish(event, true);
     }
 
-	/**
-	 * Convert the object to its JSON representation and publish to the given topic.
-	 */
+    /**
+     * Convert the object to its JSON representation and publish to the given topic.
+     */
 
-	public void publish(Object messageObj, boolean retry) {
-		synchronized (EventPublisher.class) {
+    public void publish(Object messageObj, boolean retry) {
+        synchronized (EventPublisher.class) {
             Gson gson = new Gson();
             String message = gson.toJson(messageObj);
 
             topicPublisher.connect();
             topicPublisher.publish(message, retry);
         }
-	}
+    }
 }

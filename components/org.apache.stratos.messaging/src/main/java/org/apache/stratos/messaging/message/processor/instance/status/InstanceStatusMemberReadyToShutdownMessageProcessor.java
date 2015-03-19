@@ -40,9 +40,9 @@ public class InstanceStatusMemberReadyToShutdownMessageProcessor extends Message
         if (InstanceReadyToShutdownEvent.class.getName().equals(type)) {
             // Parse complete message and build event
             InstanceReadyToShutdownEvent event = (InstanceReadyToShutdownEvent) MessagingUtil.
-                                                jsonToObject(message, InstanceReadyToShutdownEvent.class);
+                    jsonToObject(message, InstanceReadyToShutdownEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterInactivateEvent: " + event.toString());
             }
             // Notify event listeners

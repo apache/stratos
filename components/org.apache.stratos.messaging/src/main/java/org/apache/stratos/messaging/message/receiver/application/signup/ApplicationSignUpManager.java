@@ -48,28 +48,28 @@ public class ApplicationSignUpManager {
     }
 
     public static void acquireReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
         lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
         lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
         lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
         lock.releaseWriteLock();
@@ -77,10 +77,10 @@ public class ApplicationSignUpManager {
 
     public static ApplicationSignUpManager getInstance() {
         if (instance == null) {
-            synchronized (ApplicationSignUpManager.class){
+            synchronized (ApplicationSignUpManager.class) {
                 if (instance == null) {
                     instance = new ApplicationSignUpManager();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Application signup manager instance created");
                     }
                 }
@@ -92,20 +92,20 @@ public class ApplicationSignUpManager {
     public void addApplicationSignUp(ApplicationSignUp applicationSignUp) {
         String applicationId = applicationSignUp.getApplicationId();
         Map<Integer, ApplicationSignUp> applicationSignUpMap = applicationIdToApplicationSignUpsMap.get(applicationId);
-        if(applicationSignUpMap == null) {
+        if (applicationSignUpMap == null) {
             applicationSignUpMap = new HashMap<Integer, ApplicationSignUp>();
             applicationIdToApplicationSignUpsMap.put(applicationId, applicationSignUpMap);
         }
 
         int tenantId = applicationSignUp.getTenantId();
-        if(applicationSignUpMap.get(tenantId) == null) {
+        if (applicationSignUpMap.get(tenantId) == null) {
             applicationSignUpMap.put(tenantId, applicationSignUp);
         }
     }
 
     public Collection<ApplicationSignUp> getApplicationSignUps(String applicationId) {
         Map<Integer, ApplicationSignUp> applicationSignUpMap = applicationIdToApplicationSignUpsMap.get(applicationId);
-        if(applicationSignUpMap != null) {
+        if (applicationSignUpMap != null) {
             return applicationSignUpMap.values();
         }
         return null;
@@ -113,8 +113,8 @@ public class ApplicationSignUpManager {
 
     public ApplicationSignUp getApplicationSignUp(String applicationId, int tenantId) {
         Map<Integer, ApplicationSignUp> applicationSignUpMap = applicationIdToApplicationSignUpsMap.get(applicationId);
-        if(applicationSignUpMap != null) {
-            if(applicationSignUpMap.containsKey(tenantId)) {
+        if (applicationSignUpMap != null) {
+            if (applicationSignUpMap.containsKey(tenantId)) {
                 return applicationSignUpMap.get(tenantId);
             }
         }
@@ -123,8 +123,8 @@ public class ApplicationSignUpManager {
 
     public void removeApplicationSignUp(String applicationId, int tenantId) {
         Map<Integer, ApplicationSignUp> applicationSignUpMap = applicationIdToApplicationSignUpsMap.get(applicationId);
-        if(applicationSignUpMap != null) {
-            if(applicationSignUpMap.containsKey(tenantId)) {
+        if (applicationSignUpMap != null) {
+            if (applicationSignUpMap.containsKey(tenantId)) {
                 applicationSignUpMap.remove(tenantId);
             }
         }

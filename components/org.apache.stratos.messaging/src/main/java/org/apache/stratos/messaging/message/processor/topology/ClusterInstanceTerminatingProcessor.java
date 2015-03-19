@@ -83,12 +83,12 @@ public class ClusterInstanceTerminatingProcessor extends MessageProcessor {
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -111,7 +111,7 @@ public class ClusterInstanceTerminatingProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
                         event.getInstanceId());

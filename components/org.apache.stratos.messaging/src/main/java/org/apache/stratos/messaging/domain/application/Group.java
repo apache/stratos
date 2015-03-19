@@ -48,7 +48,7 @@ public class Group extends ParentComponent<GroupInstance> {
     // Life cycle state manager
     //protected LifeCycleStateManager<GroupStatus> groupStateManager;
 
-    public Group (String applicationId, String name, String alias) {
+    public Group(String applicationId, String name, String alias) {
         super();
         this.applicationId = applicationId;
         this.name = name;
@@ -95,19 +95,19 @@ public class Group extends ParentComponent<GroupInstance> {
     }
 
     public boolean equals(Object other) {
-        if(other == null || !(other instanceof Group)) {
+        if (other == null || !(other instanceof Group)) {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
-        Group that = (Group)other;
+        Group that = (Group) other;
         return this.name.equals(that.name) && this.alias.equals(that.alias);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return name.hashCode() + alias.hashCode();
     }
 

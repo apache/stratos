@@ -26,7 +26,7 @@ public class StartupOrder implements Serializable {
 
     private List<String> startupOrderComponentList;
 
-    public StartupOrder (List<String> startList) {
+    public StartupOrder(List<String> startList) {
         this.startupOrderComponentList = startList;
     }
 

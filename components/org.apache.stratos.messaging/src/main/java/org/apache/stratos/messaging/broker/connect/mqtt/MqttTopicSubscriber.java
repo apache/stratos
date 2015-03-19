@@ -59,9 +59,9 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                 log.debug("Subscribing to topic " + topicName);
             }
 
-            if(mqttClient == null) {
+            if (mqttClient == null) {
                 String error = "Could not subscribe to topic, MQTT client has not been initialized";
-                if(log.isErrorEnabled()) {
+                if (log.isErrorEnabled()) {
                     log.error(error);
                 }
                 throw new MessagingException(error);
@@ -74,7 +74,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
             }
 
         } catch (Exception e) {
-            String errorMsg = "Error in subscribing to topic "  + topicName;
+            String errorMsg = "Error in subscribing to topic " + topicName;
             log.error(errorMsg, e);
             throw new MessagingException(errorMsg, e);
         }
@@ -84,11 +84,11 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
 
         @Override
         public synchronized void connectionLost(Throwable cause) {
-            if(log.isWarnEnabled()) {
+            if (log.isWarnEnabled()) {
                 log.warn("MQTT Connection is lost, topic: " + topicName, cause);
             }
             if (mqttClient.isConnected()) {
-                if(log.isDebugEnabled()){
+                if (log.isDebugEnabled()) {
                     log.debug("MQTT client is already re-connected");
                 }
                 return;
@@ -98,7 +98,7 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
 
         private void reconnect() {
             boolean reconnected = false;
-            while(!reconnected) {
+            while (!reconnected) {
                 try {
                     if (log.isInfoEnabled()) {
                         log.info("Will try to subscribe again in " +
@@ -117,13 +117,13 @@ public class MqttTopicSubscriber extends MqttTopicConnector implements TopicSubs
                     subscribe();
                     reconnected = true;
                 } catch (Exception e) {
-                    if(log.isErrorEnabled()) {
+                    if (log.isErrorEnabled()) {
                         log.error("Could not reconnect", e);
                     }
                 }
             }
 
-            if(log.isInfoEnabled()) {
+            if (log.isInfoEnabled()) {
                 log.info("Re-connected and subscribed to topic " + topicName);
             }
         }

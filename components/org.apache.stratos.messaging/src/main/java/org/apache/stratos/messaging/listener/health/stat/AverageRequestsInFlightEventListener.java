@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Average of requests in flight  event listener
+ * Average of requests in flight  event listener
  */
 public class AverageRequestsInFlightEventListener extends EventListener {
     @Override

@@ -69,9 +69,9 @@ public class ClusterStatusMessageProcessorChain extends MessageProcessorChain {
 
     @Override
     public void addEventListener(EventListener eventListener) {
-        if(eventListener instanceof ClusterStatusClusterCreatedEventListener) {
+        if (eventListener instanceof ClusterStatusClusterCreatedEventListener) {
             clusterCreatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ClusterStatusClusterResetEventListener) {
+        } else if (eventListener instanceof ClusterStatusClusterResetEventListener) {
             clusterResetMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterStatusClusterInactivateEventListener) {
             clusterInactivateMessageProcessor.addEventListener(eventListener);

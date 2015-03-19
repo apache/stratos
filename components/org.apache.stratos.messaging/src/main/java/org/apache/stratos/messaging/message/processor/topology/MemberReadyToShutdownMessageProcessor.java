@@ -29,7 +29,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.message.processor.topology.updater.TopologyUpdater;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
-public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
+public class MemberReadyToShutdownMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(MemberReadyToShutdownMessageProcessor.class);
     private MessageProcessor nextProcessor;
 
@@ -49,7 +49,7 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
 
             // Parse complete message and build event
             MemberReadyToShutdownEvent event = (MemberReadyToShutdownEvent) MessagingUtil.
-                                            jsonToObject(message, MemberReadyToShutdownEvent.class);
+                    jsonToObject(message, MemberReadyToShutdownEvent.class);
 
             TopologyUpdater.acquireWriteLockForCluster(event.getServiceName(), event.getClusterId());
             try {
@@ -69,18 +69,18 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
         }
     }
 
-    private boolean doProcess (MemberReadyToShutdownEvent event,Topology topology) {
+    private boolean doProcess(MemberReadyToShutdownEvent event, Topology topology) {
 
         String serviceName = event.getServiceName();
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -113,14 +113,14 @@ public class MemberReadyToShutdownMessageProcessor extends MessageProcessor{
         }
 
         // Apply member filter
-        if(TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
+        if (TopologyMemberFilter.apply(member.getLbClusterId(), member.getNetworkPartitionId())) {
             return false;
         }
 
         if (member.getStatus() == MemberStatus.ReadyToShutDown) {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Member already updated as Ready to Shutdown: " +
-                        "[service] %s [cluster] %s [member] %s",
+                                "[service] %s [cluster] %s [member] %s",
                         event.getServiceName(),
                         event.getClusterId(),
                         event.getMemberId()));

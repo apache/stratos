@@ -89,10 +89,10 @@ public class ApplicationInstanceActivatedMessageProcessor extends MessageProcess
         } else {
             // Apply changes to the applications
             ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Application instance not exists in group: [AppId] %s" +
-                                    "[instanceId] %s", event.getAppId(), event.getInstanceId()));
+                            "[instanceId] %s", event.getAppId(), event.getInstanceId()));
                     return false;
                 }
             }

@@ -64,8 +64,8 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
             try {
                 TenantManager.acquireWriteLock();
                 Tenant tenant = TenantManager.getInstance().getTenant(tenantId);
-                if(tenant == null) {
-                    if(log.isWarnEnabled()) {
+                if (tenant == null) {
+                    if (log.isWarnEnabled()) {
                         log.warn(String.format("Tenant not found: [tenant-id] %d", event.getTenantId()));
                     }
                     return false;
@@ -84,7 +84,7 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
                     DomainMappingManager.acquireReadLock();
                     DomainMapping domainMapping = DomainMappingManager.getInstance().getDomainMapping(
                             event.getClusterId(), event.getDomainName());
-                    if(domainMapping == null) {
+                    if (domainMapping == null) {
                         if (log.isWarnEnabled()) {
                             log.warn(String.format("Domain mapping not found: [application-id] %s [cluster-id] %s " +
                                             "[domain-name]", event.getApplicationId(), event.getClusterId(),
@@ -110,19 +110,17 @@ public class DomainMappingRemovedMessageProcessor extends MessageProcessor {
                     return true;
                 } catch (Exception e) {
                     String error = String.format("Could not remove domain mapping: [application-id] %s [cluster-id] %s " +
-                                    "[domain-name]", event.getApplicationId(), event.getClusterId(), event.getDomainName());
+                            "[domain-name]", event.getApplicationId(), event.getClusterId(), event.getDomainName());
                     log.error(error, e);
                     return false;
                 } finally {
                     DomainMappingManager.releaseWriteLock();
                 }
-            }
-            finally {
-	            ApplicationManager.releaseReadLockForApplication(applicationId);
+            } finally {
+                ApplicationManager.releaseReadLockForApplication(applicationId);
                 TenantManager.releaseWriteLock();
             }
-        }
-        else {
+        } else {
             if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
             } else {

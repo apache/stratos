@@ -40,28 +40,28 @@ public class DomainMappingManager {
     private boolean initialized;
 
     public static void acquireReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
         lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
         lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
         lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
         lock.releaseWriteLock();
@@ -69,10 +69,10 @@ public class DomainMappingManager {
 
     public static DomainMappingManager getInstance() {
         if (instance == null) {
-            synchronized (DomainMappingManager.class){
+            synchronized (DomainMappingManager.class) {
                 if (instance == null) {
                     instance = new DomainMappingManager();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Domain mapping manager instance created");
                     }
                 }
@@ -87,21 +87,23 @@ public class DomainMappingManager {
 
     /**
      * Add domain mappings
+     *
      * @param domainMappings
      */
     public void addDomainMappings(List<DomainMapping> domainMappings) {
-        for(DomainMapping domainMapping : domainMappings) {
+        for (DomainMapping domainMapping : domainMappings) {
             addDomainMapping(domainMapping);
         }
     }
 
     /**
      * Add domain mapping.
+     *
      * @param domainMapping
      */
     public void addDomainMapping(DomainMapping domainMapping) {
         List<DomainMapping> domainMappings = getDomainMappings(domainMapping.getClusterId());
-        if(domainMappings == null) {
+        if (domainMappings == null) {
             domainMappings = new ArrayList<DomainMapping>();
             clusterIdToDomainMappingsMap.put(domainMapping.getClusterId(), domainMappings);
         }
@@ -110,11 +112,12 @@ public class DomainMappingManager {
 
     /**
      * Get domain mappings of cluster.
+     *
      * @param clusterId
      * @return
      */
     public List<DomainMapping> getDomainMappings(String clusterId) {
-        if(clusterIdToDomainMappingsMap.containsKey(clusterId)) {
+        if (clusterIdToDomainMappingsMap.containsKey(clusterId)) {
             return clusterIdToDomainMappingsMap.get(clusterId);
         }
         return null;
@@ -122,21 +125,22 @@ public class DomainMappingManager {
 
     /**
      * Get domain mapping of cluster by domain name.
+     *
      * @param clusterId
      * @param domainName
      * @return
      */
     public DomainMapping getDomainMapping(String clusterId, String domainName) {
         List<DomainMapping> domainMappings = getDomainMappings(clusterId);
-        if(domainMappings == null) {
+        if (domainMappings == null) {
             log.warn(String.format("Domain mappings not found for cluster: [cluster-id] %s", clusterId));
             return null;
         }
 
         Iterator<DomainMapping> iterator = domainMappings.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             DomainMapping domainMapping = iterator.next();
-            if(domainMapping.getDomainName().equals(domainName)) {
+            if (domainMapping.getDomainName().equals(domainName)) {
                 return domainMapping;
             }
         }
@@ -145,21 +149,22 @@ public class DomainMappingManager {
 
     /**
      * Remove domain mapping of cluster by domain name.
+     *
      * @param clusterId
      * @param domainName
      */
     public void removeDomainMapping(String clusterId, String domainName) {
         List<DomainMapping> domainMappings = getDomainMappings(clusterId);
-        if(domainMappings == null) {
+        if (domainMappings == null) {
             throw new RuntimeException(String.format("Domain mappings not found for cluster: [cluster-id] %s", clusterId));
         }
 
         Iterator<DomainMapping> iterator = domainMappings.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             DomainMapping domainMapping = iterator.next();
-            if(domainMapping.getDomainName().equals(domainName)) {
+            if (domainMapping.getDomainName().equals(domainName)) {
                 iterator.remove();
-                if(log.isInfoEnabled()) {
+                if (log.isInfoEnabled()) {
                     log.info(String.format("Domain mapping removed: [cluster-id] %s [domain-name] %s",
                             clusterId, domainName));
                 }

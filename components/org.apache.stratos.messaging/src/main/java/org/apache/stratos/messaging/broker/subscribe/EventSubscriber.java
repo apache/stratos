@@ -34,21 +34,21 @@ public class EventSubscriber implements Runnable {
     private static final Log log = LogFactory.getLog(EventSubscriber.class);
     private final org.apache.stratos.messaging.broker.connect.TopicSubscriber topicSubscriber;
 
-	private final String topicName;
-	private boolean subscribed;
+    private final String topicName;
+    private boolean subscribed;
 
-	/**
-	 * @param topicName topic name of this subscriber instance.
-	 */
-	public EventSubscriber(String topicName, MessageListener messageListener) {
-		this.topicName = topicName;
+    /**
+     * @param topicName topic name of this subscriber instance.
+     */
+    public EventSubscriber(String topicName, MessageListener messageListener) {
+        this.topicName = topicName;
         String protocol = MessagingUtil.getMessagingProtocol();
         this.topicSubscriber = TopicSubscriberFactory.createTopicSubscriber(protocol, messageListener, topicName);
 
-		if (log.isDebugEnabled()) {
-			log.debug(String.format("Topic subscriber created: [protocol] %s [topic] %s", protocol, topicName));
-		}
-	}
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Topic subscriber created: [protocol] %s [topic] %s", protocol, topicName));
+        }
+    }
 
     private void doSubscribe() throws MqttException {
         if (log.isDebugEnabled()) {
@@ -61,13 +61,13 @@ public class EventSubscriber implements Runnable {
         subscribed = true;
     }
 
-	/**
-	 * Subscribes to a topic. If for some reason the connection to the topic got
-	 * lost, this will perform re-subscription periodically, until a connection
-	 * obtained.
-	 */
-	@Override
-	public void run() {
+    /**
+     * Subscribes to a topic. If for some reason the connection to the topic got
+     * lost, this will perform re-subscription periodically, until a connection
+     * obtained.
+     */
+    @Override
+    public void run() {
 
         RetryTimer retryTimer = new RetryTimer();
         while (!subscribed) {
@@ -75,13 +75,13 @@ public class EventSubscriber implements Runnable {
                 doSubscribe();
             } catch (Exception e) {
                 subscribed = false;
-                if(log.isErrorEnabled()) {
+                if (log.isErrorEnabled()) {
                     log.error("Error while subscribing to topic: " + topicName, e);
                 }
 
                 long interval = retryTimer.getNextInterval();
                 if (log.isInfoEnabled()) {
-                    log.info("Will try to subscribe again in " + interval/ 1000 + " sec");
+                    log.info("Will try to subscribe again in " + interval / 1000 + " sec");
                 }
                 try {
                     Thread.sleep(interval);
@@ -91,16 +91,16 @@ public class EventSubscriber implements Runnable {
         }
     }
 
-	/**
-	 * Terminate topic subscriber.
-	 */
-	public void terminate() {
-        if(topicSubscriber != null) {
+    /**
+     * Terminate topic subscriber.
+     */
+    public void terminate() {
+        if (topicSubscriber != null) {
             topicSubscriber.disconnect();
         }
     }
 
-	public boolean isSubscribed() {
-		return subscribed;
-	}
+    public boolean isSubscribed() {
+        return subscribed;
+    }
 }

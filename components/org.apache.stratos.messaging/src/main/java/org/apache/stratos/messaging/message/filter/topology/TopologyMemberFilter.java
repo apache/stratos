@@ -47,13 +47,14 @@ public class TopologyMemberFilter extends MessageFilter {
 
     /**
      * Returns true if member is excluded else returns false.
-     * @param lbClusterId load balancer cluster id of the member
+     *
+     * @param lbClusterId        load balancer cluster id of the member
      * @param networkPartitionId network partition id of the member
      * @return
      */
     public static boolean apply(String lbClusterId, String networkPartitionId) {
         boolean excluded = false;
-        if(getInstance().isActive()) {
+        if (getInstance().isActive()) {
             if (StringUtils.isNotBlank(lbClusterId) && getInstance().lbClusterIdExcluded(lbClusterId)) {
                 excluded = true;
             }
@@ -69,10 +70,10 @@ public class TopologyMemberFilter extends MessageFilter {
 
     public static TopologyMemberFilter getInstance() {
         if (instance == null) {
-            synchronized (TopologyMemberFilter.class){
+            synchronized (TopologyMemberFilter.class) {
                 if (instance == null) {
                     instance = new TopologyMemberFilter();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Topology member filter instance created");
                     }
                 }

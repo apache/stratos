@@ -60,7 +60,7 @@ public class Cluster implements Serializable {
     private Properties properties;
     private Map<String, ClusterInstance> instanceIdToInstanceContextMap;
     //private LifeCycleStateManager<ClusterStatus> clusterStateManager;
-	private List<String> accessUrls;
+    private List<String> accessUrls;
     private List<KubernetesService> kubernetesServices;
 
     public Cluster(Cluster cluster) {
@@ -81,7 +81,7 @@ public class Cluster implements Serializable {
         this.accessUrls = cluster.getAccessUrls();
         this.kubernetesServices = cluster.getKubernetesServices();
     }
-    
+
     public Cluster(String serviceName, String clusterId, String deploymentPolicyName,
                    String autoscalePolicyName, String appId) {
         this.serviceName = serviceName;
@@ -177,10 +177,10 @@ public class Cluster implements Serializable {
     public void setLbCluster(boolean isLbCluster) {
         this.isLbCluster = isLbCluster;
     }
-        
+
     public boolean isKubernetesCluster() {
-		return isKubernetesCluster;
-	}
+        return isKubernetesCluster;
+    }
 
     public void setKubernetesCluster(boolean isKubernetesCluster) {
         this.isKubernetesCluster = isKubernetesCluster;
@@ -241,27 +241,27 @@ public class Cluster implements Serializable {
     }
 
     public ClusterStatus getStatus(String applicationInstanceId) {
-    	ClusterInstance clusterInstance = getInstanceIdToInstanceContextMap().get(applicationInstanceId);
-    	if(clusterInstance != null) {
-    		return clusterInstance.getStatus();
-    	}
-    	return null;
+        ClusterInstance clusterInstance = getInstanceIdToInstanceContextMap().get(applicationInstanceId);
+        if (clusterInstance != null) {
+            return clusterInstance.getStatus();
+        }
+        return null;
     }
 
     public boolean setStatus(ClusterStatus newStatus, String applicationInstanceId) {
         return getInstanceIdToInstanceContextMap().get(applicationInstanceId).setStatus(newStatus);
     }
 
-    public void addInstanceContext (String instanceId, ClusterInstance instanceContext) {
+    public void addInstanceContext(String instanceId, ClusterInstance instanceContext) {
 
         getInstanceIdToInstanceContextMap().put(instanceId, instanceContext);
     }
 
-    public void removeInstanceContext (String instanceId) {
+    public void removeInstanceContext(String instanceId) {
         this.instanceIdToInstanceContextMap.remove(instanceId);
     }
 
-    public ClusterInstance getInstanceContexts (String instanceId) {
+    public ClusterInstance getInstanceContexts(String instanceId) {
         // if map is empty, return null
         if (getInstanceIdToInstanceContextMap().isEmpty()) {
             return null;
@@ -275,7 +275,7 @@ public class Cluster implements Serializable {
         return getInstanceIdToInstanceContextMap().get(instanceId);
     }
 
-    public int getInstanceContextCount () {
+    public int getInstanceContextCount() {
 
         return getInstanceIdToInstanceContextMap().keySet().size();
     }
@@ -333,19 +333,19 @@ public class Cluster implements Serializable {
         return this.instanceIdToInstanceContextMap.values();
     }
 
-	public List<String> getAccessUrls() {
-		return accessUrls;
-	}
+    public List<String> getAccessUrls() {
+        return accessUrls;
+    }
 
-	public void setAccessUrls(List<String> accessUrls) {
-		this.accessUrls = accessUrls;
-	}
+    public void setAccessUrls(List<String> accessUrls) {
+        this.accessUrls = accessUrls;
+    }
 
     public void addAccessUrl(String accessUrl) {
-        if(accessUrls == null) {
+        if (accessUrls == null) {
             accessUrls = new ArrayList<String>();
         }
-        if(!accessUrls.contains(accessUrl)) {
+        if (!accessUrls.contains(accessUrl)) {
             accessUrls.add(accessUrl);
         }
     }
@@ -364,8 +364,8 @@ public class Cluster implements Serializable {
         return String.format("[serviceName=%s, clusterId=%s, autoscalePolicyName=%s, deploymentPolicyName=%s, " +
                         "hostNames=%s, tenantRange=%s, loadBalanceAlgorithmName=%s, appId=%s, parentId=%s, " +
                         "accessUrls=%s, kubernetesServices=%s]", serviceName, clusterId, autoscalePolicyName,
-                deploymentPolicyName, hostNames, tenantRange,loadBalanceAlgorithmName, appId, parentId,
-                accessUrls, kubernetesServices );
+                deploymentPolicyName, hostNames, tenantRange, loadBalanceAlgorithmName, appId, parentId,
+                accessUrls, kubernetesServices);
     }
 }
 

@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.message.receiver.domain.mapping;
 
 import org.apache.stratos.messaging.domain.Message;
+
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**

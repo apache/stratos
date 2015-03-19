@@ -35,15 +35,15 @@ public class EventPublisherPool {
 
     public static EventPublisher getPublisher(String topicName) {
         synchronized (EventPublisherPool.class) {
-            if(topicNameEventPublisherMap.containsKey(topicName)) {
-                if(log.isDebugEnabled()) {
+            if (topicNameEventPublisherMap.containsKey(topicName)) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Event publisher fetched from pool: [topic] %s", topicName));
                 }
                 return topicNameEventPublisherMap.get(topicName);
             }
             EventPublisher eventPublisher = new EventPublisher(topicName);
             topicNameEventPublisherMap.put(topicName, eventPublisher);
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("Event publisher instance created: [topic] %s", topicName));
             }
             return eventPublisher;
@@ -52,14 +52,13 @@ public class EventPublisherPool {
 
     public static void close(String topicName) {
         synchronized (EventPublisherPool.class) {
-            if(topicNameEventPublisherMap.containsKey(topicName)) {
+            if (topicNameEventPublisherMap.containsKey(topicName)) {
                 topicNameEventPublisherMap.remove(topicName);
-                if(log.isDebugEnabled()) {
+                if (log.isDebugEnabled()) {
                     log.debug(String.format("Event publisher closed and removed from pool: [topic] %s", topicName));
                 }
-            }
-            else {
-                if(log.isWarnEnabled()) {
+            } else {
+                if (log.isWarnEnabled()) {
                     log.warn(String.format("Event publisher instance not found in pool: [topic] %s", topicName));
                 }
             }

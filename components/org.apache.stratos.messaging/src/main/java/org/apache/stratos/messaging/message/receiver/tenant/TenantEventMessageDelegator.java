@@ -27,8 +27,6 @@ import org.apache.stratos.messaging.message.processor.MessageProcessorChain;
 import org.apache.stratos.messaging.message.processor.tenant.TenantMessageProcessorChain;
 
 
-
-
 /**
  * Implements logic for processing topology event messages based on a given
  * topology process chain.

@@ -27,10 +27,11 @@ public interface TopicConnector {
     /**
      * Create the connector client
      */
-    public abstract void create ();
+    public abstract void create();
 
     /**
      * Return service URI
+     *
      * @return
      */
     public abstract String getServerURI();

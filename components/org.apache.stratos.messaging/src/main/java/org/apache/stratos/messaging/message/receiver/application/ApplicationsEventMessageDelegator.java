@@ -54,7 +54,7 @@ public class ApplicationsEventMessageDelegator implements Runnable {
                     String type = message.getEventClassName();
 
                     // Skip application signup events
-                    if(!type.startsWith("org.apache.stratos.messaging.event.application.signup")) {
+                    if (!type.startsWith("org.apache.stratos.messaging.event.application.signup")) {
 
                         // Retrieve the actual message
                         String json = message.getText();

@@ -23,5 +23,5 @@ import org.apache.stratos.messaging.listener.EventListener;
 /**
  * This will get triggered when clusters created for an application.
  */
-abstract public class ApplicationClustersCreatedEventListener extends EventListener{
+abstract public class ApplicationClustersCreatedEventListener extends EventListener {
 }

@@ -83,12 +83,12 @@ public class ClusterInstanceTerminatedProcessor extends MessageProcessor {
         String clusterId = event.getClusterId();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 
         // Apply cluster filter
-        if(TopologyClusterFilter.apply(clusterId)) {
+        if (TopologyClusterFilter.apply(clusterId)) {
             return false;
         }
 
@@ -112,8 +112,8 @@ public class ClusterInstanceTerminatedProcessor extends MessageProcessor {
         } else {
             // Apply changes to the topology
             ClusterInstance context = cluster.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
-                if(log.isDebugEnabled()) {
+            if (context == null) {
+                if (log.isDebugEnabled()) {
                     log.warn("Cluster Instance Context is already removed for [cluster] " +
                             event.getClusterId() + " [instance-id] " +
                             event.getInstanceId());

@@ -45,7 +45,7 @@ public class CompleteTenantMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         if (CompleteTenantEvent.class.getName().equals(type)) {
             // Return if tenant manager has already initialized
-            if(TenantManager.getInstance().isInitialized()) {
+            if (TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
@@ -55,7 +55,7 @@ public class CompleteTenantMessageProcessor extends MessageProcessor {
             try {
                 TenantManager.acquireWriteLock();
                 TenantManager.getInstance().addTenants(event.getTenants());
-                if(log.isInfoEnabled()) {
+                if (log.isInfoEnabled()) {
                     log.info("Tenant initialized");
                 }
                 TenantManager.getInstance().setInitialized(true);
@@ -63,16 +63,13 @@ public class CompleteTenantMessageProcessor extends MessageProcessor {
                 // Notify event listeners
                 notifyEventListeners(event);
                 return true;
-            }
-            finally {
+            } finally {
                 TenantManager.releaseWriteLock();
             }
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process tenant message using available message processors: [type] %s [body] %s", type, message));
             }
         }

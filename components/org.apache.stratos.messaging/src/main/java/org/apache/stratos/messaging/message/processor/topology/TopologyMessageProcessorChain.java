@@ -141,15 +141,15 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             clusterRemovedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ClusterInstanceCreatedEventListener) {
             clusterInstanceCreatedMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ClusterInstanceTerminatedEventListener){
+        } else if (eventListener instanceof ClusterInstanceTerminatedEventListener) {
             clusterTerminatedProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ClusterResetEventListener){
+        } else if (eventListener instanceof ClusterResetEventListener) {
             clusterResetMessageProcessor.addEventListener(eventListener);
-        } else if(eventListener instanceof ClusterInstanceTerminatingEventListener){
+        } else if (eventListener instanceof ClusterInstanceTerminatingEventListener) {
             clusterTerminatingProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberCreatedEventListener) {
             memberCreatedMessageProcessor.addEventListener(eventListener);
-        }  else if (eventListener instanceof MemberInitializedEventListener) {
+        } else if (eventListener instanceof MemberInitializedEventListener) {
             memberInitializedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof MemberActivatedEventListener) {
             memberActivatedMessageProcessor.addEventListener(eventListener);
@@ -165,7 +165,7 @@ public class TopologyMessageProcessorChain extends MessageProcessorChain {
             serviceCreatedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ServiceRemovedEventListener) {
             serviceRemovedMessageProcessor.addEventListener(eventListener);
-        } else if (eventListener instanceof  MemberMaintenanceListener) {
+        } else if (eventListener instanceof MemberMaintenanceListener) {
             memberMaintenanceModeProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");

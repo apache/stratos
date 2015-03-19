@@ -26,7 +26,7 @@ import org.apache.stratos.messaging.message.processor.MessageProcessor;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 /**
- *  Processes event that is fired by Event processing engine to send second derivative of requests in flight
+ * Processes event that is fired by Event processing engine to send second derivative of requests in flight
  */
 public class SecondDerivativeOfRequestsInFlightMessageProcessor extends MessageProcessor {
     private static final Log log = LogFactory.getLog(SecondDerivativeOfRequestsInFlightMessageProcessor.class);
@@ -35,7 +35,7 @@ public class SecondDerivativeOfRequestsInFlightMessageProcessor extends MessageP
 
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-      this.nextProcessor = nextProcessor;
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
@@ -49,16 +49,14 @@ public class SecondDerivativeOfRequestsInFlightMessageProcessor extends MessageP
             // Notify event listeners
             notifyEventListeners(event);
 
-            if(log.isDebugEnabled()){
-                log.debug(String.format("%s event processor notified listeners ... " , type));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("%s event processor notified listeners ... ", type));
             }
             return true;
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process health stat message using available message processors: [type] %s [body] %s", type, message));
             }
         }

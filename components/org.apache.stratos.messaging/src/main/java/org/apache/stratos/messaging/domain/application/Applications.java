@@ -35,15 +35,15 @@ public class Applications implements Serializable {
 
     private boolean initialized;
 
-    public Applications () {
+    public Applications() {
         this.applicationMap = new HashMap<String, Application>();
     }
 
-    public synchronized void addApplication (Application application) {
+    public synchronized void addApplication(Application application) {
         this.applicationMap.put(application.getUniqueIdentifier(), application);
     }
 
-    public Application getApplication (String appId) {
+    public Application getApplication(String appId) {
         return this.getApplications().get(appId);
     }
 
@@ -63,7 +63,7 @@ public class Applications implements Serializable {
         return applicationMap;
     }
 
-    public synchronized void removeApplication (String appId) {
+    public synchronized void removeApplication(String appId) {
         this.applicationMap.remove(appId);
         ApplicationLockHierarchy.getInstance().removeLockForApplication(appId);
     }

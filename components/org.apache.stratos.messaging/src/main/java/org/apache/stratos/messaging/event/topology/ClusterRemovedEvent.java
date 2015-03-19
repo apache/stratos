@@ -51,8 +51,8 @@ public class ClusterRemovedEvent extends TopologyEvent implements Serializable {
         return isLbCluster;
     }
 
-	public String getDeploymentPolicy() {
-		return deploymentPolicy;
-	}
-	
+    public String getDeploymentPolicy() {
+        return deploymentPolicy;
+    }
+
 }

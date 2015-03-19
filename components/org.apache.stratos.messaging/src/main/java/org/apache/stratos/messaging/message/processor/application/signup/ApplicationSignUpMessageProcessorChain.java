@@ -60,8 +60,7 @@ public class ApplicationSignUpMessageProcessorChain extends MessageProcessorChai
             applicationSignUpAddedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof ApplicationSignUpRemovedEventListener) {
             applicationSignUpRemovedMessageProcessor.addEventListener(eventListener);
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown event listener");
         }
     }

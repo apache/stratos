@@ -71,9 +71,9 @@ public class InstanceStatusMessageProcessorChain extends MessageProcessorChain {
             instanceStatusMemberStartedMessageProcessor.addEventListener(eventListener);
         } else if (eventListener instanceof InstanceReadyToShutdownEventListener) {
             instanceStatusMemberReadyToShutdownMessageProcessor.addEventListener(eventListener);
-        }  else if (eventListener instanceof InstanceMaintenanceListener) {
+        } else if (eventListener instanceof InstanceMaintenanceListener) {
             instanceStatusMemberMaintenanceMessageProcessor.addEventListener(eventListener);
-        }  else if (eventListener instanceof InstanceActivatedEventListener) {
+        } else if (eventListener instanceof InstanceActivatedEventListener) {
             instanceStatusMemberActivatedMessageProcessor.addEventListener(eventListener);
         } else {
             throw new RuntimeException("Unknown event listener");

@@ -46,7 +46,7 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
     public boolean process(String type, String message, Object object) {
         if (TenantRemovedEvent.class.getName().equals(type)) {
             // Return if tenant manager has not initialized
-            if(!TenantManager.getInstance().isInitialized()) {
+            if (!TenantManager.getInstance().isInitialized()) {
                 return false;
             }
 
@@ -56,14 +56,13 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
             try {
                 TenantManager.acquireWriteLock();
                 Tenant tenant = TenantManager.getInstance().getTenant(event.getTenantId());
-                if(tenant == null) {
-                    if(log.isWarnEnabled()) {
+                if (tenant == null) {
+                    if (log.isWarnEnabled()) {
                         log.warn(String.format("Tenant already removed: [tenant-id] %d", event.getTenantId()));
                     }
-                }
-                else {
+                } else {
                     TenantManager.getInstance().removeTenant(event.getTenantId());
-                    if(log.isInfoEnabled()) {
+                    if (log.isInfoEnabled()) {
                         log.info(String.format("Tenant removed: [tenant-id] %d [tenant-domain] %s", tenant.getTenantId(), tenant.getTenantDomain()));
                     }
                 }
@@ -71,16 +70,13 @@ public class TenantRemovedMessageProcessor extends MessageProcessor {
                 // Notify event listeners
                 notifyEventListeners(event);
                 return true;
-            }
-            finally {
+            } finally {
                 TenantManager.releaseWriteLock();
             }
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process tenant message using available message processors: [type] %s [body] %s", type, message));
             }
         }

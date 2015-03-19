@@ -85,7 +85,7 @@ public abstract class AmqpTopicConnector implements TopicConnector {
 
     @Override
     public void disconnect() {
-        if(topicConnection != null) {
+        if (topicConnection != null) {
             try {
                 topicConnection.stop();
             } catch (JMSException ignore) {

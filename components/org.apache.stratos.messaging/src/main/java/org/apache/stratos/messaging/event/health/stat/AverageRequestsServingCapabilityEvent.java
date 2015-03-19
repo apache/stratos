@@ -3,8 +3,10 @@ package org.apache.stratos.messaging.event.health.stat;
 /**
  * Created by asiri on 8/10/14.
  */
+
 import org.apache.stratos.messaging.event.Event;
-public class AverageRequestsServingCapabilityEvent extends  Event{
+
+public class AverageRequestsServingCapabilityEvent extends Event {
     private final String networkPartitionId;
     private final String clusterId;
     private final String clusterInstanceId;
@@ -16,6 +18,7 @@ public class AverageRequestsServingCapabilityEvent extends  Event{
         this.clusterInstanceId = clusterInstanceId;
         this.value = value;
     }
+
     public String getClusterId() {
         return clusterId;
     }

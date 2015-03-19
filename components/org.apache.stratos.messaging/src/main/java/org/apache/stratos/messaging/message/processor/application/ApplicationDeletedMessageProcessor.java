@@ -71,24 +71,24 @@ public class ApplicationDeletedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {    	
-        
-    	// check if required properties are available
+    private boolean doProcess(ApplicationDeletedEvent event, Applications applications) {
+
+        // check if required properties are available
         if (event.getAppId() == null || event.getAppId().isEmpty()) {
             String errorMsg = "App id of application deleted event is invalid: [ " + event.getAppId() + " ]";
             log.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
-      
-    	// Remove application and clusters from topology
+
+        // Remove application and clusters from topology
         applications.removeApplication(event.getAppId());
 
         notifyEventListeners(event);
-        
+
         if (log.isInfoEnabled()) {
-        	log.info("[Application] " + event.getAppId() + " has been successfully removed");
+            log.info("[Application] " + event.getAppId() + " has been successfully removed");
         }
-        
+
         return true;
     }
 }

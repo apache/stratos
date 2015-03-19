@@ -38,7 +38,7 @@ public class TopologyEventReceiver {
     private TopologyEventMessageDelegator messageDelegator;
     private TopologyEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
     public TopologyEventReceiver() {
         TopologyEventMessageQueue messageQueue = new TopologyEventMessageQueue();
@@ -51,12 +51,12 @@ public class TopologyEventReceiver {
     }
 
 
-	public void execute() {
-		try {
-			// Start topic subscriber thread
-			eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
-			// subscriber.setMessageListener(messageListener);
-			executorService.execute(eventSubscriber);
+    public void execute() {
+        try {
+            // Start topic subscriber thread
+            eventSubscriber = new EventSubscriber(MessagingUtil.Topics.TOPOLOGY_TOPIC.getTopicName(), messageListener);
+            // subscriber.setMessageListener(messageListener);
+            executorService.execute(eventSubscriber);
 
 
             if (log.isDebugEnabled()) {
@@ -82,11 +82,11 @@ public class TopologyEventReceiver {
         messageDelegator.terminate();
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

@@ -27,6 +27,7 @@ import org.apache.stratos.messaging.domain.Message;
 public interface MessageListener {
     /**
      * Invoked when a message is received.
+     *
      * @param message Message received
      */
     public void messageReceived(Message message);

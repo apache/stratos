@@ -29,8 +29,8 @@ import java.util.Set;
  */
 public class ApplicationDeletedEvent extends Event implements Serializable {
 
-	private static final long serialVersionUID = 7541596367530563340L;	
-	private String applicationId;
+    private static final long serialVersionUID = 7541596367530563340L;
+    private String applicationId;
     private Set<ClusterDataHolder> clusterData;
 
     public ApplicationDeletedEvent(String applicationId, Set<ClusterDataHolder> clusterData) {
@@ -45,5 +45,5 @@ public class ApplicationDeletedEvent extends Event implements Serializable {
     public Set<ClusterDataHolder> getClusterData() {
         return clusterData;
     }
-    
+
 }

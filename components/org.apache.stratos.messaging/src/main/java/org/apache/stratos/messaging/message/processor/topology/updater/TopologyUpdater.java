@@ -27,32 +27,32 @@ import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
 /**
  * Used to lock the Topology for writes by messaging component
- *
- *  Acquire a write lock:
- *
- *  From root level, acquire read lock, and acquire a write lock only for the
- *  relevant sub tree.
- *
- *  Example 1: Acquiring write lock for a Cluster to modify the Cluster object -
- *           acquiring:
- *           public static void acquireWriteLockForCluster (String serviceName, String clusterId)
- *
- *           releasing:
- *           public static void releaseWriteLockForCluster (String serviceName, String clusterId)
- *
- *  Example 2: Acquiring write lock to add a new Cluster object -
- *           acquiring:
- *           public static void acquireWriteLockForService (String serviceName)
- *
- *           releasing:
- *           public static void releaseWriteLockForService (String serviceName)
- *
- *  Example 3: Acquiring the write lock to add a deploy a Cartridge (add a new Service)
- *           acquire:
- *           public static void acquireWriteLockForServices()
- *
- *           release:
- *           public static void releaseWriteLockForServices()
+ * <p/>
+ * Acquire a write lock:
+ * <p/>
+ * From root level, acquire read lock, and acquire a write lock only for the
+ * relevant sub tree.
+ * <p/>
+ * Example 1: Acquiring write lock for a Cluster to modify the Cluster object -
+ * acquiring:
+ * public static void acquireWriteLockForCluster (String serviceName, String clusterId)
+ * <p/>
+ * releasing:
+ * public static void releaseWriteLockForCluster (String serviceName, String clusterId)
+ * <p/>
+ * Example 2: Acquiring write lock to add a new Cluster object -
+ * acquiring:
+ * public static void acquireWriteLockForService (String serviceName)
+ * <p/>
+ * releasing:
+ * public static void releaseWriteLockForService (String serviceName)
+ * <p/>
+ * Example 3: Acquiring the write lock to add a deploy a Cartridge (add a new Service)
+ * acquire:
+ * public static void acquireWriteLockForServices()
+ * <p/>
+ * release:
+ * public static void releaseWriteLockForServices()
  */
 
 public class TopologyUpdater {
@@ -67,7 +67,7 @@ public class TopologyUpdater {
      * Acquires write lock for the Complete Topology
      */
     public static void acquireWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired for Topology");
         }
         topologyLockHierarchy.getCompleteTopologyLock().acquireWriteLock();
@@ -77,18 +77,19 @@ public class TopologyUpdater {
      * Releases write lock for the Complete Topology
      */
     public static void releaseWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released for Topology");
         }
         topologyLockHierarchy.getCompleteTopologyLock().releaseWriteLock();
     }
 
     // Service write locks
+
     /**
      * Acquires write lock for the all Services
      */
     public static void acquireWriteLockForServices() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired for Services");
         }
         topologyLockHierarchy.getServiceLock().acquireWriteLock();
@@ -98,7 +99,7 @@ public class TopologyUpdater {
      * Releases write lock for the all Services
      */
     public static void releaseWriteLockForServices() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released for Services");
         }
         topologyLockHierarchy.getServiceLock().releaseWriteLock();
@@ -109,7 +110,7 @@ public class TopologyUpdater {
      *
      * @param serviceName service name to acquire write lock
      */
-    public static void acquireWriteLockForService (String serviceName) {
+    public static void acquireWriteLockForService(String serviceName) {
 
         // acquire read lock for all Applications
         TopologyManager.acquireReadLockForServices();
@@ -120,7 +121,7 @@ public class TopologyUpdater {
 
         } else {
             topologyServiceLock.acquireWriteLock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock acquired for Service " + serviceName);
             }
         }
@@ -131,7 +132,7 @@ public class TopologyUpdater {
      *
      * @param serviceName service name to release write lock
      */
-    public static void releaseWriteLockForService (String serviceName) {
+    public static void releaseWriteLockForService(String serviceName) {
 
         TopologyLock topologyServiceLock = topologyLockHierarchy.getTopologyLockForService(serviceName);
         if (topologyServiceLock == null) {
@@ -139,7 +140,7 @@ public class TopologyUpdater {
 
         } else {
             topologyServiceLock.releaseWriteLock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock released for Service " + serviceName);
             }
         }
@@ -150,13 +151,13 @@ public class TopologyUpdater {
 
     /**
      * Acquires write lock for a Cluster. This will acquire the write lock in the following order
-     *      1. for the Service
-     *      2. for the Cluster
+     * 1. for the Service
+     * 2. for the Cluster
      *
      * @param serviceName service name to acquire write lock
-     * @param clusterId cluster id to acquire write lock
+     * @param clusterId   cluster id to acquire write lock
      */
-    public static void acquireWriteLockForCluster (String serviceName, String clusterId) {
+    public static void acquireWriteLockForCluster(String serviceName, String clusterId) {
 
         // acquire read lock for the relevant Services
         TopologyManager.acquireReadLockForService(serviceName);
@@ -167,7 +168,7 @@ public class TopologyUpdater {
 
         } else {
             topologyClusterLock.acquireWriteLock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock acquired for Cluster " + clusterId);
             }
         }
@@ -175,13 +176,13 @@ public class TopologyUpdater {
 
     /**
      * Releases write lock for a Cluster. This will release the write lock in the following order
-     *      1. for the Cluster
-     *      2. for the Service
+     * 1. for the Cluster
+     * 2. for the Service
      *
      * @param serviceName service name to release write lock
-     * @param clusterId cluster id to release write lock
+     * @param clusterId   cluster id to release write lock
      */
-    public static void releaseWriteLockForCluster (String serviceName, String clusterId) {
+    public static void releaseWriteLockForCluster(String serviceName, String clusterId) {
 
         TopologyLock topologyClusterLock = topologyLockHierarchy.getTopologyLockForCluster(clusterId);
         if (topologyClusterLock == null) {
@@ -189,7 +190,7 @@ public class TopologyUpdater {
 
         } else {
             topologyClusterLock.releaseWriteLock();
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Write lock released for Cluster " + clusterId);
             }
         }
@@ -198,7 +199,7 @@ public class TopologyUpdater {
         TopologyManager.releaseReadLockForService(serviceName);
     }
 
-    private static void handleLockNotFound (String errorMsg) {
+    private static void handleLockNotFound(String errorMsg) {
         log.warn(errorMsg);
         //throw new RuntimeException(errorMsg);
     }

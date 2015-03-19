@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *  A singleton class for managing the tenant information.
- *
- *  Usage:
- *  Acquire a relevant lock and invoke a method inside a try block.
- *  Once processing is done release the lock using a finally block.
+ * A singleton class for managing the tenant information.
+ * <p/>
+ * Usage:
+ * Acquire a relevant lock and invoke a method inside a try block.
+ * Once processing is done release the lock using a finally block.
  */
 public class TenantManager {
     private static final Log log = LogFactory.getLog(TenantManager.class);
@@ -47,28 +47,28 @@ public class TenantManager {
     private boolean initialized;
 
     public static void acquireReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
         lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
         lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
         lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
         lock.releaseWriteLock();
@@ -77,18 +77,18 @@ public class TenantManager {
     private TenantManager() {
         this.tenantIdTenantMap = new HashMap<Integer, Tenant>();
         this.tenantDomainTenantMap = new HashMap<String, Tenant>();
-        Tenant superTenant = new Tenant(MultitenantConstants.SUPER_TENANT_ID, 
-        		MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        Tenant superTenant = new Tenant(MultitenantConstants.SUPER_TENANT_ID,
+                MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
         this.tenantIdTenantMap.put(MultitenantConstants.SUPER_TENANT_ID, superTenant);
         this.tenantDomainTenantMap.put(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME, superTenant);
     }
 
     public static TenantManager getInstance() {
         if (instance == null) {
-            synchronized (TenantManager.class){
+            synchronized (TenantManager.class) {
                 if (instance == null) {
                     instance = new TenantManager();
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("TenantManager object created");
                     }
                 }
@@ -103,7 +103,7 @@ public class TenantManager {
     }
 
     public void addTenants(List<Tenant> tenants) {
-        for(Tenant tenant : tenants) {
+        for (Tenant tenant : tenants) {
             addTenant(tenant);
         }
     }
@@ -122,7 +122,7 @@ public class TenantManager {
 
     public void removeTenant(int tenantId) {
         Tenant tenant = getTenant(tenantId);
-        if(tenant != null) {
+        if (tenant != null) {
             tenantIdTenantMap.remove(tenant.getTenantId());
             tenantDomainTenantMap.remove(tenant.getTenantDomain());
         }

@@ -35,7 +35,7 @@ public class GradientOfRequestsInFlightMessageProcessor extends MessageProcessor
 
     @Override
     public void setNext(MessageProcessor nextProcessor) {
-      this.nextProcessor = nextProcessor;
+        this.nextProcessor = nextProcessor;
     }
 
     @Override
@@ -49,16 +49,14 @@ public class GradientOfRequestsInFlightMessageProcessor extends MessageProcessor
             // Notify event listeners
             notifyEventListeners(event);
 
-            if(log.isDebugEnabled()){
-                log.debug(String.format("%s event processor notified listeners ... " , type));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("%s event processor notified listeners ... ", type));
             }
             return true;
-        }
-        else {
-            if(nextProcessor != null) {
+        } else {
+            if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
-            }
-            else {
+            } else {
                 throw new RuntimeException(String.format("Failed to process health stat message using available message processors: [type] %s [body] %s", type, message));
             }
         }

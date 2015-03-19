@@ -19,18 +19,18 @@
 package org.apache.stratos.messaging.util;
 
 /**
- * Holds a property 
+ * Holds a property
  */
 public class Property {
-    
+
     private String name;
     private String value;
-    
-    public Property(){
-        
+
+    public Property() {
+
     }
-    
-    public Property(String name, String value){
+
+    public Property(String name, String value) {
         this.setName(name);
         this.setValue(value);
     }

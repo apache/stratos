@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Second derivative of requests in flight event listener
+ * Second derivative of requests in flight event listener
  */
 public class SecondDerivativeOfRequestsInFlightEventListener extends EventListener {
     @Override

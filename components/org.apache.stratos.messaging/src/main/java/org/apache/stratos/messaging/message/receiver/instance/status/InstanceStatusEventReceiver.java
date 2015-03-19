@@ -36,7 +36,7 @@ public class InstanceStatusEventReceiver {
     private final InstanceStatusEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
     private boolean terminated;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
     public InstanceStatusEventReceiver() {
         InstanceStatusEventMessageQueue messageQueue = new InstanceStatusEventMessageQueue();
@@ -80,11 +80,11 @@ public class InstanceStatusEventReceiver {
         terminated = true;
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

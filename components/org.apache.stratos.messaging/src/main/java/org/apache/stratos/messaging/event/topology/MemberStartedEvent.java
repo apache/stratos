@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
+
 import java.io.Serializable;
 import java.util.Properties;
 
@@ -77,21 +78,21 @@ public class MemberStartedEvent extends TopologyEvent implements Serializable {
         this.properties = properties;
     }
 
-	public String getPartitionId() {
-		return partitionId;
-	}
+    public String getPartitionId() {
+        return partitionId;
+    }
 
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
 
-	public String getGroupId() {
-		return groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public String getClusterInstanceId() {
         return clusterInstanceId;

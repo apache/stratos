@@ -24,9 +24,9 @@ import org.apache.stratos.messaging.domain.tenant.Tenant;
 import java.util.List;
 
 /**
- *  This event is fired periodically with all the available tenants. It would be a
- *  starting point for subscribers to initialize the list of tenants before receiving
- *  other tenant events.
+ * This event is fired periodically with all the available tenants. It would be a
+ * starting point for subscribers to initialize the list of tenants before receiving
+ * other tenant events.
  */
 public class CompleteTenantEvent extends TenantEvent {
 

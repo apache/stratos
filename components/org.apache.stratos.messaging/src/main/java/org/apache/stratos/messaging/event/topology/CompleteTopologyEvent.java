@@ -24,9 +24,9 @@ import org.apache.stratos.messaging.domain.topology.Topology;
 import java.io.Serializable;
 
 /**
- *  This event is fired periodically with the complete topology. It would be a
- *  starting point for subscribers to initialize the current state of the topology
- *  before receiving other topology events.
+ * This event is fired periodically with the complete topology. It would be a
+ * starting point for subscribers to initialize the current state of the topology
+ * before receiving other topology events.
  */
 public class CompleteTopologyEvent extends TopologyEvent implements Serializable {
     private static final long serialVersionUID = 8580862188444892004L;

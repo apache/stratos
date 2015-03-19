@@ -41,7 +41,7 @@ public class ClusterStatusClusterActivatedMessageProcessor extends MessageProces
             ClusterStatusClusterActivatedEvent event = (ClusterStatusClusterActivatedEvent) MessagingUtil.
                     jsonToObject(message, ClusterStatusClusterActivatedEvent.class);
 
-            if(log.isDebugEnabled()) {
+            if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterActivatedEvent: " + event.toString());
             }
             // Notify event listeners

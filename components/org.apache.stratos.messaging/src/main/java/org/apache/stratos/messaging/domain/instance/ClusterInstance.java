@@ -58,7 +58,7 @@ public class ClusterInstance extends Instance<ClusterStatus> implements LifeCycl
      *
      * @return the current state
      */
-    public ClusterStatus getCurrentState () {
+    public ClusterStatus getCurrentState() {
         return lifeCycleStateManager.getCurrentState();
     }
 
@@ -67,7 +67,7 @@ public class ClusterInstance extends Instance<ClusterStatus> implements LifeCycl
      *
      * @return previous state
      */
-    public ClusterStatus getPreviousState () {
+    public ClusterStatus getPreviousState() {
         return lifeCycleStateManager.getPreviousState();
     }
 

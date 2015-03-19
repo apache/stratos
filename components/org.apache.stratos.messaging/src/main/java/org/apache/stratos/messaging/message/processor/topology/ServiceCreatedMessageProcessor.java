@@ -69,12 +69,12 @@ public class ServiceCreatedMessageProcessor extends MessageProcessor {
         }
     }
 
-    private boolean doProcess (ServiceCreatedEvent event, Topology topology) {
+    private boolean doProcess(ServiceCreatedEvent event, Topology topology) {
 
         String serviceName = event.getServiceName();
 
         // Apply service filter
-        if(TopologyServiceFilter.apply(serviceName)) {
+        if (TopologyServiceFilter.apply(serviceName)) {
             return false;
         }
 

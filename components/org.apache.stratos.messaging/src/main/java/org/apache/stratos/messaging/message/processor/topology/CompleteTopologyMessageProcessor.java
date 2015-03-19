@@ -50,8 +50,8 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         Topology topology = (Topology) object;
 
         if (CompleteTopologyEvent.class.getName().equals(type)) {
-        	// Parse complete message and build event
-        	CompleteTopologyEvent event = (CompleteTopologyEvent) MessagingUtil.jsonToObject(message, CompleteTopologyEvent.class);
+            // Parse complete message and build event
+            CompleteTopologyEvent event = (CompleteTopologyEvent) MessagingUtil.jsonToObject(message, CompleteTopologyEvent.class);
 
             if (!topology.isInitialized()) {
                 TopologyUpdater.acquireWriteLock();
@@ -77,11 +77,11 @@ public class CompleteTopologyMessageProcessor extends MessageProcessor {
         }
     }
 
-    private void doProcess (CompleteTopologyEvent event, Topology topology) {
+    private void doProcess(CompleteTopologyEvent event, Topology topology) {
 
         for (Service service : event.getTopology().getServices()) {
             // Apply service filter
-            if(TopologyServiceFilter.apply(service.getServiceName())) {
+            if (TopologyServiceFilter.apply(service.getServiceName())) {
                 continue;
             }
             // Add service

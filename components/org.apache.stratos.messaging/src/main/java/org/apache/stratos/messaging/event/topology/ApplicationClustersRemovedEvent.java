@@ -29,7 +29,7 @@ public class ApplicationClustersRemovedEvent extends TopologyEvent implements Se
     private Set<ClusterDataHolder> clusterData;
     private String appId;
 
-    public ApplicationClustersRemovedEvent (Set<ClusterDataHolder> clusterData, String appId) {
+    public ApplicationClustersRemovedEvent(Set<ClusterDataHolder> clusterData, String appId) {
         this.clusterData = clusterData;
         this.appId = appId;
     }

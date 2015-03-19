@@ -30,12 +30,12 @@ import org.apache.stratos.messaging.util.MessagingConstants;
 public class TopicSubscriberFactory {
 
     public static TopicSubscriber createTopicSubscriber(String protocol, MessageListener messageListener, String topicName) {
-         if(MessagingConstants.AMQP.equals(protocol)) {
-             return new AmqpTopicSubscriber(messageListener, topicName);
-         } else if (MessagingConstants.MQTT.equals(protocol)) {
+        if (MessagingConstants.AMQP.equals(protocol)) {
+            return new AmqpTopicSubscriber(messageListener, topicName);
+        } else if (MessagingConstants.MQTT.equals(protocol)) {
             return new MqttTopicSubscriber(messageListener, topicName);
-         } else {
-             throw new RuntimeException("Could not create topic subscriber, unknown protocol: " + protocol);
-         }
+        } else {
+            throw new RuntimeException("Could not create topic subscriber, unknown protocol: " + protocol);
+        }
     }
 }

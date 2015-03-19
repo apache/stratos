@@ -27,35 +27,35 @@ import java.util.Set;
 
 public enum ApplicationStatus implements LifeCycleState {
 
-    Created (0) {
+    Created(0) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Created,
                     ApplicationStatus.Active, ApplicationStatus.Terminating));
         }
     },
-    Active (1) {
+    Active(1) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Active,
                     ApplicationStatus.Terminating, ApplicationStatus.Inactive));
         }
     },
-    Inactive (2) {
+    Inactive(2) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Inactive, ApplicationStatus.Active,
                     ApplicationStatus.Terminating));
         }
     },
-    Terminating (3) {
+    Terminating(3) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminating,
                     ApplicationStatus.Terminated));
         }
     },
-    Terminated (4) {
+    Terminated(4) {
         @Override
         public Set<LifeCycleState> getNextStates() {
             return new HashSet<LifeCycleState>(Arrays.asList(ApplicationStatus.Terminated));
@@ -64,7 +64,7 @@ public enum ApplicationStatus implements LifeCycleState {
 
     private int code;
 
-    private ApplicationStatus (int code) {
+    private ApplicationStatus(int code) {
         this.code = code;
     }
 

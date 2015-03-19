@@ -36,10 +36,11 @@ public abstract class MessageProcessorChain {
     }
 
     protected abstract void initialize();
+
     public abstract void addEventListener(EventListener eventListener);
 
     public void add(MessageProcessor messageProcessor) {
-        if(list.size() > 0) {
+        if (list.size() > 0) {
             list.getLast().setNext(messageProcessor);
         }
         list.add(messageProcessor);
@@ -47,14 +48,14 @@ public abstract class MessageProcessorChain {
 
     public void removeLast() {
         list.removeLast();
-        if(list.size() > 0) {
+        if (list.size() > 0) {
             list.getLast().setNext(null);
         }
     }
 
     public boolean process(String type, String message, Object object) {
         MessageProcessor root = list.getFirst();
-        if(root == null) {
+        if (root == null) {
             throw new RuntimeException("Message processor chain is not initialized");
         }
         return root.process(type, message, object);

@@ -71,13 +71,13 @@ public class InstanceStartedEvent extends InstanceStatusEvent implements Seriali
         return networkPartitionId;
     }
 
-	public String getGroupId() {
-		return groupId;
-	}
-	
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public String getClusterInstanceId() {
         return clusterInstanceId;
@@ -86,7 +86,7 @@ public class InstanceStartedEvent extends InstanceStatusEvent implements Seriali
     @Override
     public String toString() {
         return String.format("[service-name] %s [cluster-id] %s [cluster-instance-id] %s [member-id] %s" +
-                "[network-partition-id] %s [partition-id] %s", getServiceName(), getClusterId(),
+                        "[network-partition-id] %s [partition-id] %s", getServiceName(), getClusterId(),
                 getClusterInstanceId(), getMemberId(), getNetworkPartitionId(), getPartitionId());
     }
 }

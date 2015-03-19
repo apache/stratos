@@ -25,7 +25,7 @@ public interface LifeCycleStateTransitionBehavior<T extends LifeCycleState> {
 
     public boolean isStateTransitionValid(T newState);
 
-    public Stack<T> getTransitionedStates ();
+    public Stack<T> getTransitionedStates();
 
     public T getStatus();
 

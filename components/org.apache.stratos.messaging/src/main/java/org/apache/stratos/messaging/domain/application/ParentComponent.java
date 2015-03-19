@@ -36,10 +36,10 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
     protected final Map<String, Group> aliasToGroupMap;
     // Cluster Id map, key = subscription alias for the cartridge type
     protected final Map<String, ClusterDataHolder> aliasToClusterDataMap;
-	// Cluster Id map, key = cartridge type
-	private final Map<String, ClusterDataHolder> typeToClusterDataMap;
-	// alias to deployment policy id, key = cartridge or cartridge-group alias
-	private Map<String, String> aliasToDeploymentPolicyIdMap;
+    // Cluster Id map, key = cartridge type
+    private final Map<String, ClusterDataHolder> typeToClusterDataMap;
+    // alias to deployment policy id, key = cartridge or cartridge-group alias
+    private Map<String, String> aliasToDeploymentPolicyIdMap;
     // Group/Cluster Instance Context map, key = instance id
     private Map<String, T> instanceIdToInstanceContextMap;
     // Dependency Order
@@ -59,7 +59,7 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         this.isGroupInstanceMonitoringEnabled = false;
         aliasToGroupMap = new HashMap<String, Group>();
         aliasToClusterDataMap = new HashMap<String, ClusterDataHolder>();
-	    typeToClusterDataMap=new HashMap<String, ClusterDataHolder>();
+        typeToClusterDataMap = new HashMap<String, ClusterDataHolder>();
         instanceIdSequence = new AtomicInteger();
     }
 
@@ -399,33 +399,33 @@ public abstract class ParentComponent<T extends Instance> implements Serializabl
         return instanceId;
     }
 
-	public void setInstanceIdToInstanceContextMap(Map<String, T> instanceIdToInstanceContextMap) {
-		this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
-	}
+    public void setInstanceIdToInstanceContextMap(Map<String, T> instanceIdToInstanceContextMap) {
+        this.instanceIdToInstanceContextMap = instanceIdToInstanceContextMap;
+    }
 
-	public Map<String, ClusterDataHolder> getClusterDataForType() {
-		return typeToClusterDataMap;
-	}
+    public Map<String, ClusterDataHolder> getClusterDataForType() {
+        return typeToClusterDataMap;
+    }
 
     public Map<String, ClusterDataHolder> getClusterDataForAlias() {
         return aliasToClusterDataMap;
     }
 
     /**
-	 * Setter for alias to Cluster Data map
-	 *
-	 * @param typeToClusterData Map, key = alias given to the cluster, value =  ClusterData object
-	 */
-	public void setClusterDataForType(Map<String, ClusterDataHolder> typeToClusterData) {
-		this.typeToClusterDataMap.putAll(typeToClusterData);
-	}
+     * Setter for alias to Cluster Data map
+     *
+     * @param typeToClusterData Map, key = alias given to the cluster, value =  ClusterData object
+     */
+    public void setClusterDataForType(Map<String, ClusterDataHolder> typeToClusterData) {
+        this.typeToClusterDataMap.putAll(typeToClusterData);
+    }
 
-	public Map<String, String> getAliasToDeploymentPolicyIdMap() {
-		return aliasToDeploymentPolicyIdMap;
-	}
+    public Map<String, String> getAliasToDeploymentPolicyIdMap() {
+        return aliasToDeploymentPolicyIdMap;
+    }
 
-	public void setAliasToDeploymentPolicyIdMap(
-			Map<String, String> aliasToDeploymentPolicyIdMap) {
-		this.aliasToDeploymentPolicyIdMap = aliasToDeploymentPolicyIdMap;
-	}
+    public void setAliasToDeploymentPolicyIdMap(
+            Map<String, String> aliasToDeploymentPolicyIdMap) {
+        this.aliasToDeploymentPolicyIdMap = aliasToDeploymentPolicyIdMap;
+    }
 }

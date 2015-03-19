@@ -127,11 +127,10 @@ public class HealthStatMessageProcessorChain extends MessageProcessorChain {
         } else if (eventListener instanceof SecondDerivativeOfMemoryConsumptionEventListener) {
             secondDerivativeOfMemoryConsumptionMessageProcessor.addEventListener(eventListener);
 
-        }else if (eventListener instanceof SecondDerivativeOfRequestsInFlightEventListener) {
+        } else if (eventListener instanceof SecondDerivativeOfRequestsInFlightEventListener) {
             secondDerivativeOfRequestsInFlightMessageProcessor.addEventListener(eventListener);
 
-        }
-        else {
+        } else {
             throw new RuntimeException("Unknown event listener");
         }
     }

@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Member fault event listener
+ * Member fault event listener
  */
 public class MemberFaultEventListener extends EventListener {
     @Override

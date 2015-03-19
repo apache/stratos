@@ -69,14 +69,14 @@ public class InstanceActivatedEvent extends InstanceStatusEvent implements Seria
     public String getNetworkPartitionId() {
         return networkPartitionId;
     }
-    
+
     public String getGroupId() {
-		return groupId;
-	}
-	
-	public void setGroupId(String groupId) {
-		this.groupId = groupId;
-	}
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
 
     public String getInstanceId() {
         return instanceId;

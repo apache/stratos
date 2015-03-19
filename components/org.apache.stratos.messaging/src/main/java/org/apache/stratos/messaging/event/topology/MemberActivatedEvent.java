@@ -21,7 +21,9 @@ package org.apache.stratos.messaging.event.topology;
 
 import java.io.Serializable;
 import java.util.*;
+
 import org.apache.stratos.messaging.domain.topology.Port;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +75,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
         return networkPartitionId;
     }
 
-    public String getPartitionId(){
+    public String getPartitionId() {
         return this.partitionId;
     }
 
@@ -86,7 +88,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     }
 
     public Port getPort(int proxy) {
-        if(portMap.containsKey(proxy)) {
+        if (portMap.containsKey(proxy)) {
             return portMap.get(proxy);
         }
         return null;
@@ -97,7 +99,7 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     }
 
     public void addPorts(Collection<Port> ports) {
-        for(Port port : ports) {
+        for (Port port : ports) {
             addPort(port);
         }
     }
@@ -109,13 +111,13 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     public boolean portExists(Port port) {
         return this.portMap.containsKey(port.getProxy());
     }
-    
+
     public List<String> getMemberPrivateIPs() {
-    	return memberPrivateIPs;
+        return memberPrivateIPs;
     }
-    
+
     public void setMemberPrivateIPs(List<String> memberPrivateIPs) {
-    	this.memberPrivateIPs = memberPrivateIPs;
+        this.memberPrivateIPs = memberPrivateIPs;
     }
 
     public String getDefaultPrivateIP() {
@@ -141,13 +143,13 @@ public class MemberActivatedEvent extends TopologyEvent implements Serializable 
     public void setApplicationId(String applicationId) {
         this.applicationId = applicationId;
     }
-    
+
     public List<String> getMemberPublicIPs() {
-    	return memberPublicIPs;
+        return memberPublicIPs;
     }
-    
+
     public void setMemberPublicIPs(List<String> memberPublicIp) {
-    	this.memberPublicIPs = memberPublicIp;
+        this.memberPublicIPs = memberPublicIp;
     }
 
     public String getDefaultPublicIP() {

@@ -34,93 +34,93 @@ import java.util.*;
  */
 public class MessageFilter {
 
-	private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
-	public static final String FILTER_VALUE_ASSIGN_OPERATOR = "=";
-	public static final String FILTER_KEY_VALUE_PAIR_SEPARATOR = "|";
+    private static final Log log = LogFactory.getLog(TopologyServiceFilter.class);
+    public static final String FILTER_VALUE_ASSIGN_OPERATOR = "=";
+    public static final String FILTER_KEY_VALUE_PAIR_SEPARATOR = "|";
 
-	private String filterName;
-	private Map<String, Map<String, Boolean>> filterMap;
+    private String filterName;
+    private Map<String, Map<String, Boolean>> filterMap;
 
-	public MessageFilter(String filterName) {
-		this.filterName = filterName;
-		this.filterMap = new HashMap<String, Map<String, Boolean>>();
-		init();
-	}
+    public MessageFilter(String filterName) {
+        this.filterName = filterName;
+        this.filterMap = new HashMap<String, Map<String, Boolean>>();
+        init();
+    }
 
-	private Map<String, String> splitToMap(String filter) {
-		HashMap<String, String> keyValuePairMap = new HashMap<String, String>();
-		List<String> keyValuePairList = splitUsingTokenizer(filter, FILTER_KEY_VALUE_PAIR_SEPARATOR);
-		for (String keyValuePair : keyValuePairList) {
-			List<String> keyValueList = splitUsingTokenizer(keyValuePair, FILTER_VALUE_ASSIGN_OPERATOR);
-			if (keyValueList.size() == 2) {
-				keyValuePairMap.put(keyValueList.get(0).trim(), keyValueList.get(1).trim());
-			} else {
-				throw new RuntimeException(String.format("Invalid key-value pair: %s", keyValuePair));
-			}
-		}
-		return keyValuePairMap;
-	}
+    private Map<String, String> splitToMap(String filter) {
+        HashMap<String, String> keyValuePairMap = new HashMap<String, String>();
+        List<String> keyValuePairList = splitUsingTokenizer(filter, FILTER_KEY_VALUE_PAIR_SEPARATOR);
+        for (String keyValuePair : keyValuePairList) {
+            List<String> keyValueList = splitUsingTokenizer(keyValuePair, FILTER_VALUE_ASSIGN_OPERATOR);
+            if (keyValueList.size() == 2) {
+                keyValuePairMap.put(keyValueList.get(0).trim(), keyValueList.get(1).trim());
+            } else {
+                throw new RuntimeException(String.format("Invalid key-value pair: %s", keyValuePair));
+            }
+        }
+        return keyValuePairMap;
+    }
 
-	public static List<String> splitUsingTokenizer(String string, String delimiter) {
-		StringTokenizer tokenizer = new StringTokenizer(string, delimiter);
-		List<String> list = new ArrayList<String>(string.length());
-		while (tokenizer.hasMoreTokens()) {
-			list.add(tokenizer.nextToken());
-		}
-		return list;
-	}
+    public static List<String> splitUsingTokenizer(String string, String delimiter) {
+        StringTokenizer tokenizer = new StringTokenizer(string, delimiter);
+        List<String> list = new ArrayList<String>(string.length());
+        while (tokenizer.hasMoreTokens()) {
+            list.add(tokenizer.nextToken());
+        }
+        return list;
+    }
 
-	/**
-	 * Initialize message filter using system property.
-	 */
-	public void init() {
-		String filter = System.getProperty(filterName);
-		if (StringUtils.isNotBlank(filter)) {
-			if (log.isDebugEnabled()) {
-				log.debug(String.format("Initializing filter: %s", filterName));
-			}
+    /**
+     * Initialize message filter using system property.
+     */
+    public void init() {
+        String filter = System.getProperty(filterName);
+        if (StringUtils.isNotBlank(filter)) {
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Initializing filter: %s", filterName));
+            }
 
-			String propertyValue;
-			Map<String, Boolean> propertyValueMap;
-			String[] propertyValueArray;
-			Map<String, String> keyValuePairMap = splitToMap(filter);
+            String propertyValue;
+            Map<String, Boolean> propertyValueMap;
+            String[] propertyValueArray;
+            Map<String, String> keyValuePairMap = splitToMap(filter);
 
-			for (String propertyName : keyValuePairMap.keySet()) {
-				propertyValue = keyValuePairMap.get(propertyName);
-				propertyValueMap = new HashMap<String, Boolean>();
-				propertyValueArray = propertyValue.split(StratosConstants.FILTER_VALUE_SEPARATOR);
-				for (String value : propertyValueArray) {
-					propertyValueMap.put(value, true);
-					if (log.isDebugEnabled()) {
-						log.debug(String.format("Filter property value found: [property] %s [value] %s", propertyName,
-						                        value));
-					}
-				}
-				filterMap.put(propertyName, propertyValueMap);
-			}
-		}
-	}
+            for (String propertyName : keyValuePairMap.keySet()) {
+                propertyValue = keyValuePairMap.get(propertyName);
+                propertyValueMap = new HashMap<String, Boolean>();
+                propertyValueArray = propertyValue.split(StratosConstants.FILTER_VALUE_SEPARATOR);
+                for (String value : propertyValueArray) {
+                    propertyValueMap.put(value, true);
+                    if (log.isDebugEnabled()) {
+                        log.debug(String.format("Filter property value found: [property] %s [value] %s", propertyName,
+                                value));
+                    }
+                }
+                filterMap.put(propertyName, propertyValueMap);
+            }
+        }
+    }
 
-	public boolean isActive() {
-		return filterMap.size() > 0;
-	}
+    public boolean isActive() {
+        return filterMap.size() > 0;
+    }
 
-	public boolean included(String propertyName, String propertyValue) {
-		if (filterMap.containsKey(propertyName)) {
-			Map<String, Boolean> propertyValueMap = filterMap.get(propertyName);
-			return propertyValueMap.containsKey(propertyValue);
-		}
-		return false;
-	}
+    public boolean included(String propertyName, String propertyValue) {
+        if (filterMap.containsKey(propertyName)) {
+            Map<String, Boolean> propertyValueMap = filterMap.get(propertyName);
+            return propertyValueMap.containsKey(propertyValue);
+        }
+        return false;
+    }
 
-	public boolean excluded(String propertyName, String propertyValue) {
-		return !included(propertyName, propertyValue);
-	}
+    public boolean excluded(String propertyName, String propertyValue) {
+        return !included(propertyName, propertyValue);
+    }
 
-	public Collection<String> getIncludedPropertyValues(String propertyName) {
-		if (filterMap.containsKey(propertyName)) {
-			return filterMap.get(propertyName).keySet();
-		}
-		return CollectionUtils.EMPTY_COLLECTION;
-	}
+    public Collection<String> getIncludedPropertyValues(String propertyName) {
+        if (filterMap.containsKey(propertyName)) {
+            return filterMap.get(propertyName).keySet();
+        }
+        return CollectionUtils.EMPTY_COLLECTION;
+    }
 }

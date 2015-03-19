@@ -108,13 +108,11 @@ public class DomainMappingAddedMessageProcessor extends MessageProcessor {
                 } finally {
                     DomainMappingManager.releaseWriteLock();
                 }
-            }
-            finally {
+            } finally {
                 ApplicationManager.releaseReadLockForApplication(applicationId);
                 TenantManager.releaseReadLock();
             }
-        }
-        else {
+        } else {
             if (nextProcessor != null) {
                 return nextProcessor.process(type, message, object);
             } else {

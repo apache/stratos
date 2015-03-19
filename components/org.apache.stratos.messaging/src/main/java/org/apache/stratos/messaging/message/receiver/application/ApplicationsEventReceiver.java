@@ -33,7 +33,7 @@ public class ApplicationsEventReceiver {
     private ApplicationsEventMessageListener messageListener;
     private EventSubscriber eventSubscriber;
     private boolean terminated;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
     public ApplicationsEventReceiver() {
         ApplicationsEventMessageQueue messageQueue = new ApplicationsEventMessageQueue();
@@ -50,14 +50,14 @@ public class ApplicationsEventReceiver {
         try {
             // Start topic subscriber thread
             eventSubscriber = new EventSubscriber(MessagingUtil.Topics.APPLICATION_TOPIC.getTopicName(), messageListener);
-			executorService.execute(eventSubscriber);
+            executorService.execute(eventSubscriber);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message receiver thread started");
             }
 
             // Start Application status event message delegator thread
-	        executorService.execute(messageDelegator);
+            executorService.execute(messageDelegator);
 
             if (log.isDebugEnabled()) {
                 log.debug("Application status event message delegator thread started");
@@ -77,11 +77,11 @@ public class ApplicationsEventReceiver {
         terminated = true;
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

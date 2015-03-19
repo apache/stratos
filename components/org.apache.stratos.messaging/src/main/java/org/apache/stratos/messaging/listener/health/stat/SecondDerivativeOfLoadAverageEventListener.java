@@ -23,7 +23,7 @@ import org.apache.stratos.messaging.event.Event;
 import org.apache.stratos.messaging.listener.EventListener;
 
 /**
- *  Second derivative of Load average event listener
+ * Second derivative of Load average event listener
  */
 public class SecondDerivativeOfLoadAverageEventListener extends EventListener {
     @Override

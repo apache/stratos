@@ -95,7 +95,7 @@ public class GroupInstanceActivatedProcessor extends MessageProcessor {
             }
         } else {
             GroupInstance context = group.getInstanceContexts(event.getInstanceId());
-            if(context == null) {
+            if (context == null) {
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Group Instance not exists in Group: [AppId] %s [groupId] %s " +
                                     "[instanceId] %s", event.getAppId(), event.getGroupId(),

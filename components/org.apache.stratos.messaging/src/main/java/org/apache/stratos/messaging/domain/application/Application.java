@@ -48,7 +48,7 @@ public class Application extends ParentComponent<ApplicationInstance> {
     private String tenantAdminUserName;
     // Life cycle state manager
     //protected LifeCycleStateManager<ApplicationStatus> applicationStateManager;
-    
+
     // application policy id
     private String applicationPolicyId;
 
@@ -102,14 +102,14 @@ public class Application extends ParentComponent<ApplicationInstance> {
     }
 
     public ApplicationStatus getStatus() {
-        if((getInstanceIdToInstanceContextMap() != null) && (getInstanceIdToInstanceContextMap().size() > 0)) {
+        if ((getInstanceIdToInstanceContextMap() != null) && (getInstanceIdToInstanceContextMap().size() > 0)) {
             boolean applicationActive = true;
             for (ApplicationInstance applicationInstance : getInstanceIdToInstanceContextMap().values()) {
-                if(applicationInstance.getStatus() != ApplicationStatus.Active) {
+                if (applicationInstance.getStatus() != ApplicationStatus.Active) {
                     applicationActive = false;
                 }
             }
-            if(applicationActive) {
+            if (applicationActive) {
                 return ApplicationStatus.Active;
             }
         }
@@ -173,11 +173,11 @@ public class Application extends ParentComponent<ApplicationInstance> {
         this.description = description;
     }
 
-	public String getApplicationPolicyId() {
-		return applicationPolicyId;
-	}
+    public String getApplicationPolicyId() {
+        return applicationPolicyId;
+    }
 
-	public void setApplicationPolicyId(String applicationPolicyId) {
-		this.applicationPolicyId = applicationPolicyId;
-	}
+    public void setApplicationPolicyId(String applicationPolicyId) {
+        this.applicationPolicyId = applicationPolicyId;
+    }
 }

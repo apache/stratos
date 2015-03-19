@@ -20,6 +20,7 @@
 package org.apache.stratos.messaging.event.topology;
 
 import org.apache.stratos.messaging.domain.topology.Cluster;
+
 import java.io.Serializable;
 
 /**
