@@ -1408,6 +1408,8 @@ public class ObjectConverter {
             PersistenceContext persistenceContext = new PersistenceContext();
             persistenceContext.setPersistenceRequired(true);
             persistenceContext.setVolumes(convertVolumeToStubVolume(persistenceBean.getVolume()));
+
+            infoContext.setPersistenceContext(persistenceContext);
         }
         infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
         return infoContext;
