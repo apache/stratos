@@ -21,23 +21,23 @@ package org.apache.stratos.cloud.controller.domain;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class Persistence implements Serializable{
-	
-	private static final long serialVersionUID = 3455721979991902731L;
+public class Persistence implements Serializable {
 
-    private boolean persistanceRequired;
-	private Volume[] volumes;
+    private static final long serialVersionUID = 3455721979991902731L;
 
-    public String toString () {
-        return "Persistence Required: " + isPersistanceRequired();
+    private boolean persistenceRequired;
+    private Volume[] volumes;
+
+    public String toString() {
+        return "Persistence Required: " + isPersistenceRequired();
     }
 
-    public boolean isPersistanceRequired() {
-        return persistanceRequired;
+    public boolean isPersistenceRequired() {
+        return persistenceRequired;
     }
 
-    public void setPersistanceRequired(boolean persistanceRequired) {
-        this.persistanceRequired = persistanceRequired;
+    public void setPersistenceRequired(boolean persistenceRequired) {
+        this.persistenceRequired = persistenceRequired;
     }
 
     public Volume[] getVolumes() {
@@ -45,7 +45,7 @@ public class Persistence implements Serializable{
     }
 
     public void setVolumes(Volume[] volumes) {
-        if(volumes == null) {
+        if (volumes == null) {
             this.volumes = new Volume[0];
         } else {
             this.volumes = Arrays.copyOf(volumes, volumes.length);

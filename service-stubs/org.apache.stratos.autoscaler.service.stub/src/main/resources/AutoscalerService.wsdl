@@ -104,7 +104,7 @@
             </xs:complexType>
             <xs:complexType name="PersistenceContext">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="persistanceRequired" type="xs:boolean"/>
+                    <xs:element minOccurs="0" name="persistenceRequired" type="xs:boolean"/>
                     <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax25:VolumeContext"/>
                 </xs:sequence>
             </xs:complexType>

@@ -32,7 +32,7 @@ echo -e "Starting mounting volumes" 2>&1 | tee -a $log
 echo -e "launh param file location $1" | tee -a $log
 #source /opt/apache-stratos-cartridge-agent/launch.params
 PERSISTENCE_MAPPING=$1
-echo -e "Persistance mappings : $PERSISTENCE_MAPPING" 2>&1 | tee -a $log
+echo -e "Persistence mappings : $PERSISTENCE_MAPPING" 2>&1 | tee -a $log
 
 mount_volume(){
 
