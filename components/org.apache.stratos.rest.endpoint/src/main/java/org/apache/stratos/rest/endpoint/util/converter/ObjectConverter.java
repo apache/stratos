@@ -163,7 +163,7 @@ public class ObjectConverter {
     public static Persistence convertPersistenceBeanToStubPersistence(
             org.apache.stratos.common.beans.cartridge.PersistenceBean persistenceBean) {
         Persistence persistence = new Persistence();
-        persistence.setPersistenceRequired(persistenceBean.isRequired());
+        persistence.setPersistenceRequired(true);
         VolumeBean[] volumeBean = new VolumeBean[persistenceBean.getVolume().size()];
         persistenceBean.getVolume().toArray(volumeBean);
         Volume[] volumes = new Volume[persistenceBean.getVolume().size()];
@@ -1406,7 +1406,7 @@ public class ObjectConverter {
             PersistenceBean persistenceBean = subscribableInfo.getPersistence();
 
             PersistenceContext persistenceContext = new PersistenceContext();
-            persistenceContext.setPersistenceRequired(persistenceBean.isRequired());
+            persistenceContext.setPersistenceRequired(true);
             persistenceContext.setVolumes(convertVolumeToStubVolume(persistenceBean.getVolume()));
         }
         infoContext.setProperties(convertPropertyBeansToStubProperties(subscribableInfo.getProperty()));
