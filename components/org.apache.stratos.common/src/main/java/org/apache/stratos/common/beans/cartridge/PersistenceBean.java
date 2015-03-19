@@ -22,7 +22,7 @@ package org.apache.stratos.common.beans.cartridge;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
-@XmlRootElement
+@XmlRootElement(name = "persistence")
 public class PersistenceBean {
 
     private boolean isRequired;

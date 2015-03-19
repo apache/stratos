@@ -20,7 +20,7 @@ package org.apache.stratos.common.beans.cartridge;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-@XmlRootElement
+@XmlRootElement(name = "volume")
 public class VolumeBean {
 
     private String id;
