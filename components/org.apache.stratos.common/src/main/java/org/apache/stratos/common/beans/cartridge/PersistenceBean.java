@@ -19,8 +19,8 @@
 
 package org.apache.stratos.common.beans.cartridge;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "persistence")
 public class PersistenceBean {

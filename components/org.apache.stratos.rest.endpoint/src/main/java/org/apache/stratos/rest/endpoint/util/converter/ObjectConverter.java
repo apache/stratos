@@ -1320,7 +1320,7 @@ public class ObjectConverter {
             persistenceBean.setRequired(persistenceContext.getPersistenceRequired());
             persistenceBean.setVolume(convertStubVolumeToVolume(persistenceContext.getVolumes()));
 
-            subscribableInfo.setPersistenceBean(persistenceBean);
+            subscribableInfo.setPersistence(persistenceBean);
         }
         return subscribableInfo;
     }
@@ -1402,8 +1402,8 @@ public class ObjectConverter {
             infoContext.setArtifactRepositoryContext(artifactRepositoryContext);
         }
 
-        if (subscribableInfo.getPersistenceBean() != null){
-            PersistenceBean persistenceBean = subscribableInfo.getPersistenceBean();
+        if (subscribableInfo.getPersistence() != null){
+            PersistenceBean persistenceBean = subscribableInfo.getPersistence();
 
             PersistenceContext persistenceContext = new PersistenceContext();
             persistenceContext.setPersistenceRequired(persistenceBean.isRequired());
@@ -1429,7 +1429,7 @@ public class ObjectConverter {
 
             volumeContexts.add(volumeContext);
         }
-        return (VolumeContext[]) volumeContexts.toArray();
+        return volumeContexts.toArray(new VolumeContext[volumeContexts.size()]);
     }
 
     private static org.apache.stratos.autoscaler.stub.Properties convertPropertyBeansToStubProperties(

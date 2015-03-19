@@ -41,7 +41,7 @@ public class SubscribableInfo implements Serializable {
     private String[] dependencyAliases;
     private ArtifactRepositoryBean artifactRepository;
     private List<PropertyBean> property;
-    private PersistenceBean persistenceBean;
+    private PersistenceBean persistence;
 
     public String getAlias() {
         return alias;
@@ -107,11 +107,11 @@ public class SubscribableInfo implements Serializable {
         this.artifactRepository = artifactRepository;
     }
 
-    public PersistenceBean getPersistenceBean() {
-        return persistenceBean;
+    public PersistenceBean getPersistence() {
+        return persistence;
     }
 
-    public void setPersistenceBean(PersistenceBean persistenceBean) {
-        this.persistenceBean = persistenceBean;
+    public void setPersistence(PersistenceBean persistence) {
+        this.persistence = persistence;
     }
 }
