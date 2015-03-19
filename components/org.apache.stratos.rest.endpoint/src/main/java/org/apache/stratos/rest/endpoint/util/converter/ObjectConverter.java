@@ -1317,7 +1317,7 @@ public class ObjectConverter {
             PersistenceContext persistenceContext = subscribableInfoContext.getPersistenceContext();
 
             PersistenceBean persistenceBean = new PersistenceBean();
-            persistenceBean.setRequired(persistenceContext.getPersistenceRequired());
+            persistenceBean.setRequired(true);
             persistenceBean.setVolume(convertStubVolumeToVolume(persistenceContext.getVolumes()));
 
             subscribableInfo.setPersistence(persistenceBean);
