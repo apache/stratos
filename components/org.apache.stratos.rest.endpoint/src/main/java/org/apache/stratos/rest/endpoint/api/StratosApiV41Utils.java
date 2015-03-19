@@ -865,7 +865,7 @@ public class StratosApiV41Utils {
             }
 
         } catch (Exception e) {
-            String message = "Could not add cartridge group";
+            String message = "Could not add cartridge group:" + e.getMessage();
             log.error(message, e);
             throw new RestAPIException(message, e);
         }
