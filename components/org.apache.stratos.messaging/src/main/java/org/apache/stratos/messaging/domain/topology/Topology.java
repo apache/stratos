@@ -33,6 +33,7 @@ import java.util.Map;
  */
 public class Topology implements Serializable {
     private static final long serialVersionUID = -2453583548027402122L;
+    private final HashMap<String, Cluster> clusterMap;
     // Key: Service.serviceName
     private Map<String, Service> serviceMap;
 
@@ -41,6 +42,7 @@ public class Topology implements Serializable {
 
     public Topology() {
         this.serviceMap = new HashMap<String, Service>();
+        this.clusterMap = new HashMap<String, Cluster>();
     }
 
     public Collection<Service> getServices() {
@@ -75,8 +77,26 @@ public class Topology implements Serializable {
         return this.serviceMap.containsKey(serviceName);
     }
 
+    public void addToCluterMap(Cluster cluster){
+        this.clusterMap.put(cluster.getClusterId(), cluster);
+    }
+
+    public void removeFromClusterMap(String cluserId){
+        clusterMap.remove(cluserId);
+        TopologyLockHierarchy.getInstance().removeTopologyLockForCluster(cluserId);
+    }
+
+    public Cluster getCluster(String clusterId){
+        return this.clusterMap.get(clusterId);
+    }
+
+    public boolean clusterExist(String clusterId){
+        return clusterMap.get(clusterId) != null;
+    }
+
     public void clear() {
         this.serviceMap.clear();
+        this.clusterMap.clear();
     }
 
     public void setInitialized(boolean initialized) {

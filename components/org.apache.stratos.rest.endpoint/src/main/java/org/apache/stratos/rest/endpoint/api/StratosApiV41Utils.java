@@ -56,6 +56,7 @@ import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
 import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
 import org.apache.stratos.common.beans.topology.ApplicationInstanceBean;
+import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.apache.stratos.common.beans.topology.GroupInstanceBean;
 import org.apache.stratos.common.client.AutoscalerServiceClient;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -2161,4 +2162,13 @@ public class StratosApiV41Utils {
 			throw new RestAPIException(msg);
 		}
 	}
+
+
+    public static ClusterBean getClusterInfo(String clusterId) throws RestAPIException {
+        if(StringUtils.isEmpty(clusterId)){
+            throw new RestAPIException("Cluster Id can not be empty");
+        }
+
+        return ObjectConverter.convertClusterToClusterBean(TopologyManager.getTopology().getCluster(clusterId), clusterId);
+    }
 }

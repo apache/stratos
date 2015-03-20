@@ -20,23 +20,27 @@ package org.apache.stratos.rest.endpoint.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.beans.*;
+import org.apache.stratos.common.beans.ApiResponseBean;
+import org.apache.stratos.common.beans.ErrorResponseBean;
+import org.apache.stratos.common.beans.SuccessResponseBean;
+import org.apache.stratos.common.beans.UserInfoBean;
 import org.apache.stratos.common.beans.application.ApplicationBean;
 import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
 import org.apache.stratos.common.beans.application.GroupBean;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
-import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
-import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
-import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
-import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
+import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesClusterBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesHostBean;
 import org.apache.stratos.common.beans.kubernetes.KubernetesMasterBean;
-import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
+import org.apache.stratos.common.beans.policy.autoscale.AutoscalePolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.ApplicationPolicyBean;
+import org.apache.stratos.common.beans.policy.deployment.DeploymentPolicyBean;
 import org.apache.stratos.common.beans.topology.ApplicationInfoBean;
+import org.apache.stratos.common.beans.topology.ClusterBean;
 import org.apache.stratos.common.util.ClaimsMgtUtil;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.user.management.StratosUserManager;
@@ -70,7 +74,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -1062,6 +1065,32 @@ public class StratosApiV41 extends AbstractApi {
                 String.format("Autoscaling policy deleted successfully: [autoscale-policy] %s",
                         autoscalingPolicyId))).build();
     }
+
+
+    /**
+     * Get cluster for a given cluster id
+     *
+     * @param clusterId id of the cluster
+     * @return the response
+     * @throws RestAPIException the rest api exception
+     */
+    @GET
+    @Path("/cluster/{clusterId}")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @AuthorizationAction("/permission/admin/manage/cluster")
+    public Response getCluster(
+            @PathParam("clusterId") String clusterId) throws RestAPIException {
+
+        ClusterBean clusterBean = StratosApiV41Utils.getClusterInfo(clusterId);
+        if(clusterBean == null){
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }else{
+            return Response.ok().entity(clusterBean).build();
+        }
+    }
+
+
     // API methods for tenants
 
     /**

@@ -22,6 +22,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.messaging.event.cluster.status.ClusterStatusClusterTerminatedEvent;
 import org.apache.stratos.messaging.message.processor.MessageProcessor;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.apache.stratos.messaging.util.MessagingUtil;
 
 
@@ -44,6 +45,8 @@ public class ClusterStatusClusterTerminatedMessageProcessor extends MessageProce
             if (log.isDebugEnabled()) {
                 log.debug("Received ClusterStatusClusterTerminatedEvent: " + event.toString());
             }
+
+            TopologyManager.getTopology().removeFromClusterMap(event.getClusterId());
             // Notify event listeners
             notifyEventListeners(event);
             return true;
