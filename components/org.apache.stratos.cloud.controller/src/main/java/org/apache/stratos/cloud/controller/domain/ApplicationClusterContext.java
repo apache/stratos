@@ -19,7 +19,6 @@
 
 package org.apache.stratos.cloud.controller.domain;
 
-
 import org.apache.stratos.common.Properties;
 
 public class ApplicationClusterContext {
@@ -44,6 +43,10 @@ public class ApplicationClusterContext {
     private Properties properties;
 	//dependencyclusterid
 	private String[] dependencyClusterIds;
+
+    private boolean isVolumeRequired;
+
+    private Volume[] volumes;
 
     public ApplicationClusterContext() {
     }
@@ -147,4 +150,21 @@ public class ApplicationClusterContext {
 	public void setDependencyClusterIds(String[] dependencyClusterIds) {
 		this.dependencyClusterIds = dependencyClusterIds;
 	}
+
+    public boolean isVolumeRequired() {
+        return isVolumeRequired;
+    }
+
+    public void setVolumeRequired(boolean isVolumeRequired) {
+        this.isVolumeRequired = isVolumeRequired;
+    }
+
+    public Volume[] getVolumes() {
+        return volumes;
+    }
+
+    public void setVolumes(Volume[] volumes) {
+        this.volumes = volumes;
+    }
+
 }

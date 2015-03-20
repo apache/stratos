@@ -24,6 +24,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
+import org.apache.stratos.autoscaler.applications.pojo.VolumeContext;
 import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
 import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
@@ -33,10 +34,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.domain.InstanceContext;
-import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.*;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -163,6 +161,11 @@ public class CloudControllerClient {
                     dto.setTextPayload(applicationClusterContext.getTextPayload());
                     dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
                     dto.setDependencyClusterIds(applicationClusterContext.getDependencyClusterIds());
+                    if(applicationClusterContext.getPersistenceContext() != null){
+                        dto.setVolumeRequired(true);
+                        dto.setVolumes(convertVolumesToStubVolumes(
+                                applicationClusterContext.getPersistenceContext().getVolumes()));
+                    }
                     contextDTOs.add(dto);
                 }
             }
@@ -184,6 +187,26 @@ public class CloudControllerClient {
 
 
     }
-   
-    
+
+
+    private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
+
+        ArrayList<Volume> volumes = new ArrayList<Volume>();
+
+        for(VolumeContext volumeContext : volumeContexts){
+            Volume volume = new Volume();
+            volume.setRemoveOntermination(volumeContext.isRemoveOntermination());
+            volume.setMappingPath(volumeContext.getMappingPath());
+            volume.setId(volumeContext.getId());
+            volume.setDevice(volumeContext.getDevice());
+            volume.setIaasType(volumeContext.getIaasType());
+            volume.setSnapshotId(volumeContext.getSnapshotId());
+            volume.setVolumeId(volumeContext.getVolumeId());
+            volume.setSize(volumeContext.getSize());
+            volumes.add(volume);
+        }
+
+        return volumes.toArray(new Volume[volumes.size()]);
+    }
+
 }

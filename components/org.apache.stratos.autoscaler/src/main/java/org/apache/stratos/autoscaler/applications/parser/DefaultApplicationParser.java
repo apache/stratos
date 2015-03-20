@@ -44,6 +44,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.*;
@@ -452,6 +453,9 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
+            if(subscribableInfoContext.getPersistenceContext() != null){
+                appClusterCtxt.setPersistenceContext(subscribableInfoContext.getPersistenceContext());
+            }
             this.applicationClusterContexts.add(appClusterCtxt);
 
 

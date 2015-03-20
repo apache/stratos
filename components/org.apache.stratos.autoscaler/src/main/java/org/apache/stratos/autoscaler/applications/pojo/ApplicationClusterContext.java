@@ -46,6 +46,16 @@ public class ApplicationClusterContext implements Serializable {
 
 	private String[] dependencyClusterIds;
 
+    public PersistenceContext getPersistenceContext() {
+        return persistenceContext;
+    }
+
+    public void setPersistenceContext(PersistenceContext persistenceContext) {
+        this.persistenceContext = persistenceContext;
+    }
+
+    private PersistenceContext persistenceContext;
+
     public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
                                       String textPayload, String deploymentPolicyName, boolean isLbCluster,
                                       String tenantRange, String[] dependencyClusterIds) {

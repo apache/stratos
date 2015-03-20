@@ -21,6 +21,7 @@ package org.apache.stratos.cloud.controller.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.autoscaler.stub.pojo.PersistenceContext;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -1040,6 +1041,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         appClusterCtxt.getTextPayload(), appClusterCtxt.getHostName(),
                         appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
 
+                if(appClusterCtxt.isVolumeRequired()){
+                    appClusterCtxt.setVolumeRequired(true);
+                    appClusterCtxt.setVolumes(appClusterCtxt.getVolumes());
+                }
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
 	            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
