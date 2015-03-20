@@ -1042,8 +1042,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         appClusterCtxt.isLbCluster(), appClusterCtxt.getProperties());
 
                 if(appClusterCtxt.isVolumeRequired()){
-                    appClusterCtxt.setVolumeRequired(true);
-                    appClusterCtxt.setVolumes(appClusterCtxt.getVolumes());
+                    clusterContext.setVolumeRequired(true);
+                    clusterContext.setVolumes(appClusterCtxt.getVolumes());
                 }
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
