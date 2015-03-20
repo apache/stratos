@@ -1486,11 +1486,13 @@ public class ObjectConverter {
             if (groupDefinition.getGroups() != null) {
                 groupContext.setGroupContexts(convertGroupDefinitionsToStubGroupContexts(groupDefinition.getGroups()));
             }
-
-            groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges()));
+            
+            // Cartridges
+            if (groupDefinition.getCartridges() != null) {
+            	groupContext.setCartridgeContexts(convertCartridgeReferenceBeansToStubCartridgeContexts(groupDefinition.getCartridges()));
+			}
             groupContexts[i++] = groupContext;
         }
-
         return groupContexts;
     }
 
