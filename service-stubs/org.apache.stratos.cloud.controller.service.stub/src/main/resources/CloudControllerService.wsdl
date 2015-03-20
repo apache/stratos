@@ -322,22 +322,24 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getDeploymentPolicies">
-                <xs:complexType>
-                    <xs:sequence></xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="getDeploymentPoliciesResponse">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax228:DeploymentPolicy"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="CloudControllerServiceInvalidCartridgeDefinitionException">
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="InvalidCartridgeDefinitionException" nillable="true" type="ax225:InvalidCartridgeDefinitionException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax225:CartridgeAlreadyExistsException"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="addCartridge">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax228:CartridgeConfig"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -506,17 +508,15 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceCartridgeAlreadyExistsException">
+            <xs:element name="getDeploymentPolicies">
                 <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="CartridgeAlreadyExistsException" nillable="true" type="ax225:CartridgeAlreadyExistsException"></xs:element>
-                    </xs:sequence>
+                    <xs:sequence></xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="addCartridge">
+            <xs:element name="getDeploymentPoliciesResponse">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="cartridgeConfig" nillable="true" type="ax228:CartridgeConfig"></xs:element>
+                        <xs:element maxOccurs="unbounded" minOccurs="0" name="return" nillable="true" type="ax228:DeploymentPolicy"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -583,20 +583,6 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="CloudControllerServiceUnregisteredClusterException">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax225:UnregisteredClusterException"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
-            <xs:element name="unregisterService">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
-                    </xs:sequence>
-                </xs:complexType>
-            </xs:element>
             <xs:element name="CloudControllerServiceInvalidMemberException">
                 <xs:complexType>
                     <xs:sequence>
@@ -625,17 +611,17 @@
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroup">
+            <xs:element name="CloudControllerServiceUnregisteredClusterException">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                        <xs:element minOccurs="0" name="UnregisteredClusterException" nillable="true" type="ax225:UnregisteredClusterException"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
-            <xs:element name="getServiceGroupResponse">
+            <xs:element name="unregisterService">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element minOccurs="0" name="return" nillable="true" type="ax228:ServiceGroup"></xs:element>
+                        <xs:element minOccurs="0" name="clusterId" nillable="true" type="xs:string"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -650,6 +636,20 @@
                 <xs:complexType>
                     <xs:sequence>
                         <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroup">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="name" nillable="true" type="xs:string"></xs:element>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="getServiceGroupResponse">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element minOccurs="0" name="return" nillable="true" type="ax228:ServiceGroup"></xs:element>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -759,6 +759,9 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
+            <xs:complexType name="CartridgeAlreadyExistsException">
+                <xs:sequence></xs:sequence>
+            </xs:complexType>
             <xs:complexType name="CartridgeDefinitionNotExistsException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
@@ -790,20 +793,17 @@
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="CartridgeAlreadyExistsException">
-                <xs:sequence></xs:sequence>
-            </xs:complexType>
             <xs:complexType name="InvalidKubernetesClusterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="UnregisteredClusterException">
+            <xs:complexType name="InvalidMemberException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
             </xs:complexType>
-            <xs:complexType name="InvalidMemberException">
+            <xs:complexType name="UnregisteredClusterException">
                 <xs:sequence>
                     <xs:element minOccurs="0" name="message" nillable="true" type="xs:string"></xs:element>
                 </xs:sequence>
@@ -1017,6 +1017,8 @@
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax230:Properties"></xs:element>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"></xs:element>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"></xs:element>
+                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"></xs:element>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax227:Volume"></xs:element>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="DeploymentPolicy">
@@ -1402,17 +1404,17 @@
     <wsdl:message name="removeCartridgeRequest">
         <wsdl:part name="parameters" element="ns:removeCartridge"></wsdl:part>
     </wsdl:message>
-    <wsdl:message name="addCartridgeRequest">
-        <wsdl:part name="parameters" element="ns:addCartridge"></wsdl:part>
-    </wsdl:message>
-    <wsdl:message name="CloudControllerServiceCartridgeAlreadyExistsException">
-        <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeAlreadyExistsException"></wsdl:part>
-    </wsdl:message>
     <wsdl:message name="getNetworkPartitionsRequest">
         <wsdl:part name="parameters" element="ns:getNetworkPartitions"></wsdl:part>
     </wsdl:message>
     <wsdl:message name="getNetworkPartitionsResponse">
         <wsdl:part name="parameters" element="ns:getNetworkPartitionsResponse"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="addCartridgeRequest">
+        <wsdl:part name="parameters" element="ns:addCartridge"></wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="CloudControllerServiceCartridgeAlreadyExistsException">
+        <wsdl:part name="parameters" element="ns:CloudControllerServiceCartridgeAlreadyExistsException"></wsdl:part>
     </wsdl:message>
     <wsdl:portType name="CloudControllerServicePortType">
         <wsdl:operation name="getDeploymentPolicies">
@@ -1612,15 +1614,15 @@
             <wsdl:input message="ns:removeCartridgeRequest" wsaw:Action="urn:removeCartridge"></wsdl:input>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeTypeException" name="CloudControllerServiceInvalidCartridgeTypeException" wsaw:Action="urn:removeCartridgeCloudControllerServiceInvalidCartridgeTypeException"></wsdl:fault>
         </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"></wsdl:input>
+            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"></wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <wsdl:input message="ns:addCartridgeRequest" wsaw:Action="urn:addCartridge"></wsdl:input>
             <wsdl:fault message="ns:CloudControllerServiceInvalidCartridgeDefinitionException" name="CloudControllerServiceInvalidCartridgeDefinitionException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidCartridgeDefinitionException"></wsdl:fault>
             <wsdl:fault message="ns:CloudControllerServiceInvalidIaasProviderException" name="CloudControllerServiceInvalidIaasProviderException" wsaw:Action="urn:addCartridgeCloudControllerServiceInvalidIaasProviderException"></wsdl:fault>
             <wsdl:fault message="ns:CloudControllerServiceCartridgeAlreadyExistsException" name="CloudControllerServiceCartridgeAlreadyExistsException" wsaw:Action="urn:addCartridgeCloudControllerServiceCartridgeAlreadyExistsException"></wsdl:fault>
-        </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <wsdl:input message="ns:getNetworkPartitionsRequest" wsaw:Action="urn:getNetworkPartitions"></wsdl:input>
-            <wsdl:output message="ns:getNetworkPartitionsResponse" wsaw:Action="urn:getNetworkPartitionsResponse"></wsdl:output>
         </wsdl:operation>
     </wsdl:portType>
     <wsdl:binding name="CloudControllerServiceSoap11Binding" type="ns:CloudControllerServicePortType">
@@ -2093,15 +2095,6 @@
                 <soap:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap:operation soapAction="urn:getNetworkPartitions" style="document"></soap:operation>
-            <wsdl:input>
-                <soap:body use="literal"></soap:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap:body use="literal"></soap:body>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap:operation soapAction="urn:addCartridge" style="document"></soap:operation>
             <wsdl:input>
@@ -2116,6 +2109,15 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"></soap:fault>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap:operation soapAction="urn:getNetworkPartitions" style="document"></soap:operation>
+            <wsdl:input>
+                <soap:body use="literal"></soap:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal"></soap:body>
+            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceSoap12Binding" type="ns:CloudControllerServicePortType">
@@ -2588,15 +2590,6 @@
                 <soap12:fault use="literal" name="CloudControllerServiceInvalidCartridgeTypeException"></soap12:fault>
             </wsdl:fault>
         </wsdl:operation>
-        <wsdl:operation name="getNetworkPartitions">
-            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"></soap12:operation>
-            <wsdl:input>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:input>
-            <wsdl:output>
-                <soap12:body use="literal"></soap12:body>
-            </wsdl:output>
-        </wsdl:operation>
         <wsdl:operation name="addCartridge">
             <soap12:operation soapAction="urn:addCartridge" style="document"></soap12:operation>
             <wsdl:input>
@@ -2611,6 +2604,15 @@
             <wsdl:fault name="CloudControllerServiceCartridgeAlreadyExistsException">
                 <soap12:fault use="literal" name="CloudControllerServiceCartridgeAlreadyExistsException"></soap12:fault>
             </wsdl:fault>
+        </wsdl:operation>
+        <wsdl:operation name="getNetworkPartitions">
+            <soap12:operation soapAction="urn:getNetworkPartitions" style="document"></soap12:operation>
+            <wsdl:input>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:input>
+            <wsdl:output>
+                <soap12:body use="literal"></soap12:body>
+            </wsdl:output>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:binding name="CloudControllerServiceHttpBinding" type="ns:CloudControllerServicePortType">
@@ -2936,6 +2938,12 @@
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:input>
         </wsdl:operation>
+        <wsdl:operation name="addCartridge">
+            <http:operation location="addCartridge"></http:operation>
+            <wsdl:input>
+                <mime:content type="text/xml" part="parameters"></mime:content>
+            </wsdl:input>
+        </wsdl:operation>
         <wsdl:operation name="getNetworkPartitions">
             <http:operation location="getNetworkPartitions"></http:operation>
             <wsdl:input>
@@ -2944,12 +2952,6 @@
             <wsdl:output>
                 <mime:content type="text/xml" part="parameters"></mime:content>
             </wsdl:output>
-        </wsdl:operation>
-        <wsdl:operation name="addCartridge">
-            <http:operation location="addCartridge"></http:operation>
-            <wsdl:input>
-                <mime:content type="text/xml" part="parameters"></mime:content>
-            </wsdl:input>
         </wsdl:operation>
     </wsdl:binding>
     <wsdl:service name="CloudControllerService">
