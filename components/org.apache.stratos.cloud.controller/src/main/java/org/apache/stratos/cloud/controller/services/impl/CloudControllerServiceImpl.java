@@ -431,14 +431,18 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             iaas.setDynamicPayload(iaasProvider.getPayload());
 
             if (clusterContext.isVolumeRequired()) {
-                if (clusterContext.getVolumes() != null) {
-                    for (Volume volume : clusterContext.getVolumes()) {
-                        if (volume.getId() == null) {
+                
+                Volume[] volumes = clusterContext.getVolumes();
+                if (volumes != null) {
+                    for (int i = 0; i < volumes.length; i++) {
+
+                        if (volumes[i].getId() == null) {
                             // Create a new volume
-                            createVolumeAndSetInClusterContext(volume, iaasProvider);
+                            volumes[i] = createVolumeAndSetInClusterContext(volumes[i], iaasProvider);
                         }
                     }
                 }
+                clusterContext.setVolumes(volumes);
             }
 
             // Handle member created event
@@ -481,7 +485,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         return memberContext;
     }
 
-    private void createVolumeAndSetInClusterContext(Volume volume,
+    private Volume createVolumeAndSetInClusterContext(Volume volume,
                                                     IaasProvider iaasProvider) {
         // iaas cannot be null at this state #startInstance method
         Iaas iaas = iaasProvider.getIaas();
@@ -499,6 +503,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
         }
 
         volume.setIaasType(iaasProvider.getType());
+
+        return volume;
     }
 
 
