@@ -133,8 +133,8 @@ public class InstanceCreator implements Runnable {
                     } catch (Exception e) {
                         // continue without throwing an exception, since
                         // there is an instance already running
-                        log.error("Attaching volume to instance [ "
-                                + memberContext.getInstanceId() + " ] failed!", e);
+                        log.error(String.format("Could not attache volume, [instance] %s [volume] %s ",
+                                memberContext.getInstanceId(), volume.toString()), e);
                     }
                 }
             }
