@@ -92,7 +92,12 @@ public class TopologyBuilder {
         Topology topology = TopologyManager.getTopology();
 
         for (Cartridge cartridge : cartridgeList) {
-            if (topology.getService(cartridge.getType()).getClusters().size() == 0) {
+            Service service = topology.getService(cartridge.getType());
+            if(service == null){
+                log.warn("Cartridge does not exist [cartidge] " + cartridge);
+                return;
+            }
+            if (service.getClusters().size() == 0) {
                 if (topology.serviceExists(cartridge.getType())) {
                     try {
                         TopologyManager.acquireWriteLock();
