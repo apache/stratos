@@ -353,6 +353,11 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     }
 
     private void updateArtifactRepositoryList(List<ArtifactRepository> artifactRepositoryList, CartridgeContext[] cartridgeContexts) {
+    	
+    	if (cartridgeContexts == null) {
+			return;
+		}
+    	
         for(CartridgeContext cartridgeContext : cartridgeContexts) {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             ArtifactRepositoryContext artifactRepositoryContext = subscribableInfoContext.getArtifactRepositoryContext();
