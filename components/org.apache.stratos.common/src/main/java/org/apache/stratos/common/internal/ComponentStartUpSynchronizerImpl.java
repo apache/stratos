@@ -111,7 +111,7 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
             while (!cloudControllerService.isActive()) {
                 log.info(String.format("Waiting for %s web service to become active...", serviceName));
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(componentActivationCheckInterval);
                 } catch (InterruptedException ignore) {
                     return;
                 }
