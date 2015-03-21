@@ -2077,26 +2077,28 @@ public class StratosApiV41Utils {
 	 */
 	public static DeploymentPolicyBean getDeployementPolicy(String deploymentPolicyID) throws RestAPIException {
 
-		DeploymentPolicyBean deploymentPolicy = null;
-		try {
-			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
-			deploymentPolicy = ObjectConverter
-					.convetCCStubDeploymentPolicytoDeploymentPolicy(cloudControllerServiceClient.getDeploymentPolicy
-							(deploymentPolicyID));
-		} catch (Exception e) {
-			String msg = "Could not find deployment policy deployment-policy-id " + deploymentPolicyID;
-			log.error(msg, e);
-			throw new RestAPIException(msg);
-		}
+        DeploymentPolicyBean deploymentPolicyBean = null;
+        try {
+            CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
+            DeploymentPolicy deploymentPolicy = cloudControllerServiceClient.getDeploymentPolicy(deploymentPolicyID);
+            if(deploymentPolicy == null) {
+                return null;
+            }
+            deploymentPolicyBean = ObjectConverter.convetCCStubDeploymentPolicytoDeploymentPolicy(deploymentPolicy);
+        } catch (Exception e) {
+            String msg = "Could not find deployment policy: [deployment-policy-id] " + deploymentPolicyID;
+            log.error(msg, e);
+            throw new RestAPIException(msg);
+        }
+        return deploymentPolicyBean;
+    }
 
-		return deploymentPolicy;
-	}
-	
-	/**
-	 * Get deployment policies
-	 * @return array of {@link DeploymentPolicyBean}
-	 */
-	public static DeploymentPolicyBean[] getDeployementPolicies() {
+    /**
+     * Get deployment policies
+     *
+     * @return array of {@link DeploymentPolicyBean}
+     */
+    public static DeploymentPolicyBean[] getDeployementPolicies() {
         try {
             CloudControllerServiceClient serviceClient = CloudControllerServiceClient.getInstance();
             DeploymentPolicy[] deploymentPolicies = serviceClient.getDeploymentPolicies();

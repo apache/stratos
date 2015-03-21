@@ -375,7 +375,7 @@ public interface CloudControllerService {
 	 * @param deploymentPolicyID
 	 * @return
 	 */
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException;
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
 	
     /**
      * Get deployment policies

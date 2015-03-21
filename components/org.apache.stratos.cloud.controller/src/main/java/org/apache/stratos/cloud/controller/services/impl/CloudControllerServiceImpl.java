@@ -1403,19 +1403,11 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 	}
 
 	@Override
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID)
-			throws DeploymentPolicyNotExistsException {
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
 		if (log.isInfoEnabled()) {
 			log.info("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
 		}
-		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
-			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
-			log.error(message);
-			throw new DeploymentPolicyNotExistsException(message);
-		}
-		DeploymentPolicy deploymentPolicy =
-				CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
-		return deploymentPolicy;
+        return CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
 	}
 	
     @Override

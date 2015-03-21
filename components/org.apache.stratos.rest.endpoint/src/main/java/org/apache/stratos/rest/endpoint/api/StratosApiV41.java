@@ -197,6 +197,9 @@ public class StratosApiV41 extends AbstractApi {
     public Response getDeploymentPolicy(
             @PathParam("deploymentPolicyId") String deploymentPolicyId) throws RestAPIException {
         DeploymentPolicyBean deploymentPolicyBean = StratosApiV41Utils.getDeployementPolicy(deploymentPolicyId);
+        if(deploymentPolicyBean == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.ok(deploymentPolicyBean).build();
     }
 
