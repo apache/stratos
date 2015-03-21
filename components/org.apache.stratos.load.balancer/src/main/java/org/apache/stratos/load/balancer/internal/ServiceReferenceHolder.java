@@ -23,7 +23,7 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.exception.TenantAwareLoadBalanceEndpointException;
 import org.apache.synapse.config.SynapseConfiguration;
 import org.wso2.carbon.mediation.dependency.mgt.services.DependencyManagementService;

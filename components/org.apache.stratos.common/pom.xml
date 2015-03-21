@@ -47,7 +47,7 @@
                         <Export-Package>
                             org.apache.stratos.common.*,
                             org.apache.stratos.common.client.*,
-                            org.apache.stratos.common.clustering.*,
+                            org.apache.stratos.common.services.*,
                             org.apache.stratos.common.statistics.publisher.*,
                             org.apache.stratos.common.concurrent.locks.*,
                         </Export-Package>

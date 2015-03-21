@@ -27,13 +27,11 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
-import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +52,7 @@ public class AutoscalerContext {
 	private boolean clustered;
 	private boolean coordinator;
 	
-    private static final AutoscalerContext INSTANCE = new AutoscalerContext();
+    private static volatile AutoscalerContext instance;
     private final transient DistributedObjectProvider distributedObjectProvider;
 
     // Map<ApplicationId, ApplicationContext>
@@ -103,7 +101,14 @@ public class AutoscalerContext {
     }
     
     public static AutoscalerContext getInstance() {
-        return INSTANCE;
+        if(instance == null) {
+            synchronized (AutoscalerContext.class) {
+                if(instance == null) {
+                    instance = new AutoscalerContext();
+                }
+            }
+        }
+        return instance;
     }
 
     public void addClusterMonitor(ClusterMonitor clusterMonitor) {

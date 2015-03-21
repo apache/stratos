@@ -22,9 +22,10 @@ import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
 import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvider;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.common.util.StratosConfiguration;
 import org.osgi.framework.BundleContext;
@@ -52,9 +53,9 @@ import org.wso2.carbon.utils.ConfigurationContextService;
  *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  *
  */
-public class StratosCommonServiceComponent {
+public class CommonServiceComponent {
 
-    private static Log log = LogFactory.getLog(StratosCommonServiceComponent.class);
+    private static Log log = LogFactory.getLog(CommonServiceComponent.class);
 
     protected void activate(ComponentContext context) {
         try {
@@ -87,6 +88,8 @@ public class StratosCommonServiceComponent {
                                 }
                             }
                             registerDistributedObjectProviderService(bundleContext);
+                            registerComponentStartUpSynchronizer(bundleContext);
+
                         } catch (Exception e) {
                             log.error(e);
                         }
@@ -97,6 +100,7 @@ public class StratosCommonServiceComponent {
             } else {
                 // Register distributed object provider service
                 registerDistributedObjectProviderService(bundleContext);
+                registerComponentStartUpSynchronizer(bundleContext);
             }
 
             // Register manager configuration service
@@ -118,7 +122,15 @@ public class StratosCommonServiceComponent {
 
     private void registerDistributedObjectProviderService(BundleContext bundleContext) {
         DistributedObjectProvider distributedObjectProvider = new HazelcastDistributedObjectProvider();
+        ServiceReferenceHolder.getInstance().setDistributedObjectProvider(distributedObjectProvider);
         bundleContext.registerService(DistributedObjectProvider.class, distributedObjectProvider, null);
+    }
+
+    private void registerComponentStartUpSynchronizer(BundleContext bundleContext) {
+        ComponentStartUpSynchronizer componentStartUpSynchronizer =
+                new ComponentStartUpSynchronizerImpl(
+                        ServiceReferenceHolder.getInstance().getDistributedObjectProvider());
+        bundleContext.registerService(ComponentStartUpSynchronizer.class, componentStartUpSynchronizer, null);
     }
 
     protected void deactivate(ComponentContext context) {

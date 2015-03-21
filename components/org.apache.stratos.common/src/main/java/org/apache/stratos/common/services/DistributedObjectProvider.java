@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.common.clustering;
+package org.apache.stratos.common.services;
 
 import java.io.Serializable;
 import java.util.List;

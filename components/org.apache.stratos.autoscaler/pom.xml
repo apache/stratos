@@ -224,6 +224,7 @@
                         </Export-Package>
                         <Import-Package>
                             org.osgi.framework.*;resolution:=optional,
+                            org.apache.stratos.common.services.*; version="${project.version}",
                             *;resolution:=optional
                         </Import-Package>
                         <Bundle-Activator>org.apache.stratos.autoscaler.internal.ASBundleActivater</Bundle-Activator>

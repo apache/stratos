@@ -20,7 +20,8 @@ package org.apache.stratos.cloud.controller.internal;
 
 import com.hazelcast.core.HazelcastInstance;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -37,6 +38,7 @@ public class ServiceReferenceHolder {
     private AxisConfiguration axisConfiguration;
     private DistributedObjectProvider distributedObjectProvider;
     private HazelcastInstance hazelcastInstance;
+    private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
     private ServiceReferenceHolder() {
     }
@@ -90,5 +92,13 @@ public class ServiceReferenceHolder {
 
     public HazelcastInstance getHazelcastInstance() {
         return hazelcastInstance;
+    }
+
+    public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        this.componentStartUpSynchronizer = componentStartUpSynchronizer;
+    }
+
+    public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
+        return componentStartUpSynchronizer;
     }
 }

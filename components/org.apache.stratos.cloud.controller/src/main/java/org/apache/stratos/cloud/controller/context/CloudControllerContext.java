@@ -37,7 +37,7 @@ import org.apache.stratos.cloud.controller.exception.NonExistingKubernetesHostEx
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.cloud.controller.registry.RegistryManager;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.wso2.carbon.databridge.agent.thrift.AsyncDataPublisher;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;

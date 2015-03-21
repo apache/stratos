@@ -24,7 +24,8 @@ package org.apache.stratos.autoscaler.util;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusProcessorChain;
 import org.apache.stratos.autoscaler.status.processor.group.GroupStatusProcessorChain;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.wso2.carbon.ntask.core.service.TaskService;
 import org.wso2.carbon.registry.core.Registry;
 import org.wso2.carbon.registry.core.session.UserRegistry;
@@ -44,15 +45,20 @@ public class ServiceReferenceHolder {
     private DistributedObjectProvider distributedObjectProvider;
     private HazelcastInstance hazelcastInstance;
     private ExecutorService executorService;
+    private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
     private ServiceReferenceHolder() {
 	}
 	 
 	public static ServiceReferenceHolder getInstance() {
-	    if (instance == null) {
-	        instance = new ServiceReferenceHolder();
-	    }
-	        return instance;
+        if(instance == null) {
+            synchronized (ServiceReferenceHolder.class) {
+                if (instance == null) {
+                    instance = new ServiceReferenceHolder();
+                }
+            }
+        }
+        return instance;
 	}
 	
 	public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
@@ -117,5 +123,13 @@ public class ServiceReferenceHolder {
 
     public ExecutorService getExecutorService() {
         return executorService;
+    }
+
+    public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        this.componentStartUpSynchronizer = componentStartUpSynchronizer;
+    }
+
+    public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
+        return componentStartUpSynchronizer;
     }
 }

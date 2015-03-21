@@ -18,10 +18,10 @@
  */
 package org.apache.cartridge.autoscaler.service.axiom;
 
+import junit.framework.TestCase;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
-import junit.framework.TestCase;
 import org.apache.stratos.cloud.controller.internal.ServiceReferenceHolder;
 import org.apache.stratos.common.clustering.impl.HazelcastDistributedObjectProvider;
 

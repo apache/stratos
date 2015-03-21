@@ -1,4 +1,3 @@
-package org.apache.stratos.cloud.controller.internal;
 /*
  *
  * Licensed to the Apache Software Foundation (ASF) under one
@@ -20,6 +19,8 @@ package org.apache.stratos.cloud.controller.internal;
  *
 */
 
+package org.apache.stratos.cloud.controller.internal;
+
 import com.hazelcast.core.HazelcastInstance;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,9 @@ import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.Clu
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
 import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.util.MessagingUtil;
@@ -52,8 +55,10 @@ import java.util.concurrent.ExecutorService;
  * @scr.component name="org.apache.stratos.cloud.controller" immediate="true"
  * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
  *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
- * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.clustering.DistributedObjectProvider"
+ * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.services.DistributedObjectProvider"
  *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
+ * @scr.reference name="componentStartUpSynchronizer" interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
+ *                cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
  *                cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
@@ -74,38 +79,53 @@ public class CloudControllerServiceComponent {
 	private static final int THREAD_POOL_SIZE = 10;
     private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "CLOUD_CONTROLLER_COORDINATOR_LOCK";
 
-    protected void activate(ComponentContext context) {
+    protected void activate(final ComponentContext context) {
 		try {
-			executorService = StratosThreadPool.getExecutorService(DEFAULT_IDENTIFIER, THREAD_POOL_SIZE);
+            executorService = StratosThreadPool.getExecutorService(DEFAULT_IDENTIFIER, THREAD_POOL_SIZE);
+            Runnable cloudControllerActivator = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        ComponentStartUpSynchronizer componentStartUpSynchronizer =
+                                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
 
-			// Register cloud controller service
-			BundleContext bundleContext = context.getBundleContext();
-			bundleContext.registerService(CloudControllerService.class.getName(),
-			                              new CloudControllerServiceImpl(), null);
+                        // Register cloud controller service
+                        BundleContext bundleContext = context.getBundleContext();
+                        bundleContext.registerService(CloudControllerService.class.getName(),
+                                new CloudControllerServiceImpl(), null);
 
-            if(CloudControllerContext.getInstance().isClustered()) {
-                Thread coordinatorElectorThread = new Thread() {
-                    @Override
-                    public void run() {
-                        ServiceReferenceHolder.getInstance().getHazelcastInstance()
-                                .getLock(CLOUD_CONTROLLER_COORDINATOR_LOCK).lock();
+                        if(CloudControllerContext.getInstance().isClustered()) {
+                            Thread coordinatorElectorThread = new Thread() {
+                                @Override
+                                public void run() {
+                                    ServiceReferenceHolder.getInstance().getHazelcastInstance()
+                                            .getLock(CLOUD_CONTROLLER_COORDINATOR_LOCK).lock();
 
-                        String localMemberId = ServiceReferenceHolder.getInstance().getHazelcastInstance()
-                                .getCluster().getLocalMember().getUuid();
-                        log.info("Elected this member [" + localMemberId + "] " +
-                                "as the cloud controller coordinator for the cluster");
+                                    String localMemberId = ServiceReferenceHolder.getInstance().getHazelcastInstance()
+                                            .getCluster().getLocalMember().getUuid();
+                                    log.info("Elected member [" + localMemberId + "] " +
+                                            "as the cloud controller coordinator of the cluster");
 
-                        CloudControllerContext.getInstance().setCoordinator(true);
-                        executeCoordinatorTasks();
+                                    CloudControllerContext.getInstance().setCoordinator(true);
+                                    executeCoordinatorTasks();
+                                }
+                            };
+                            coordinatorElectorThread.setName("Cloud controller coordinator elector thread");
+                            executorService.submit(coordinatorElectorThread);
+                        } else {
+                            executeCoordinatorTasks();
+                        }
+
+                        componentStartUpSynchronizer.waitForWebServiceActivation("CloudControllerService");
+                        componentStartUpSynchronizer.setComponentStatus(Component.CloudController, true);
+                        log.info("Cloud controller service component activated");
+                    } catch (Exception e) {
+                        log.error("Could not activate cloud controller service component", e);
                     }
-                };
-                coordinatorElectorThread.setName("Cloud controller coordinator elector thread");
-                executorService.submit(coordinatorElectorThread);
-            } else {
-                executeCoordinatorTasks();
-            }
-
-            log.info("Cloud controller service component activated");
+                }
+            };
+            Thread cloudControllerActivatorThread = new Thread(cloudControllerActivator);
+            cloudControllerActivatorThread.start();
 		} catch (Exception e) {
 			log.error("Could not activate cloud controller service component", e);
         }
@@ -204,6 +224,14 @@ public class CloudControllerServiceComponent {
 
     protected void unsetDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(null);
+    }
+
+    protected void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        ServiceReferenceHolder.getInstance().setComponentStartUpSynchronizer(componentStartUpSynchronizer);
+    }
+
+    protected void unsetComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        ServiceReferenceHolder.getInstance().setComponentStartUpSynchronizer(null);
     }
 
 	protected void deactivate(ComponentContext ctx) {

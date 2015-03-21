@@ -25,7 +25,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.constants.StratosConstants;
 import org.apache.stratos.common.internal.ServiceReferenceHolder;
-import org.apache.stratos.common.internal.StratosCommonServiceComponent;
 import org.wso2.carbon.CarbonConstants;
 import org.wso2.carbon.registry.core.ActionConstants;
 import org.wso2.carbon.registry.core.RegistryConstants;

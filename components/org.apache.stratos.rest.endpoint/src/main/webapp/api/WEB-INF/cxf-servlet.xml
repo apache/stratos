@@ -38,6 +38,7 @@
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
+            <ref bean="componentSynchronizerHandler"/>
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilterV41"/>
@@ -55,6 +56,7 @@
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
+            <ref bean="componentSynchronizerHandler"/>
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilterV40"/>
@@ -72,6 +74,7 @@
             <ref bean="badRequestExceptionHandler"/>
             <ref bean="jsonProvider"/>
             <ref bean="exceptionHandler"/>
+            <ref bean="componentSynchronizerHandler"/>
             <ref bean="basicAuthenticationFilter"/>
             <ref bean="sessionAuthenticationFilter"/>
             <ref bean="authorizationFilterV41"/>
@@ -92,6 +95,7 @@
     <bean id="badRequestExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.BadRequestExceptionMapper"/>
     <bean id="genericExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.GenericExceptionMapper"/>
     <bean id="throwableExceptionHandler" class="org.apache.stratos.rest.endpoint.handlers.CustomThrowableExceptionMapper"/>
+    <bean id="componentSynchronizerHandler" class="org.apache.stratos.rest.endpoint.handlers.ComponentSynchronizerHandler"/>
     <!--The below config enables OAuth based authentication/authorization for REST API-->
     <bean id="OAuthFilter" class="org.apache.stratos.rest.endpoint.handlers.OAuthHandler">
         <property name="password" value="admin"/>

@@ -19,7 +19,7 @@
 
 package org.apache.stratos.load.balancer.context;
 
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.load.balancer.internal.ServiceReferenceHolder;
 
 import java.util.Map;

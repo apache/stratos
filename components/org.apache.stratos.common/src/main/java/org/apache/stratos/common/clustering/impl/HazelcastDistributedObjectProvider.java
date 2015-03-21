@@ -26,7 +26,7 @@ import com.hazelcast.core.IMap;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.common.clustering.DistributedObjectProvider;
+import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.internal.ServiceReferenceHolder;
 import org.wso2.carbon.caching.impl.MapEntryListener;
 import org.wso2.carbon.core.clustering.hazelcast.HazelcastDistributedMapProvider;
@@ -39,9 +39,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Provides objects to be managed in distributed and non-distributed environments.
+ * Implements DistributedObjectProvider osgi service interface for providing objects to be managed
+ * in distributed and non-distributed environments.
  */
 public class HazelcastDistributedObjectProvider implements DistributedObjectProvider {
+
     private static final Log log = LogFactory.getLog(HazelcastDistributedObjectProvider.class);
 
     private HazelcastDistributedMapProvider mapProvider;
