@@ -25,16 +25,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext;
 import org.apache.stratos.autoscaler.applications.pojo.VolumeContext;
-import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
-import org.apache.stratos.autoscaler.exception.cartridge.TerminationException;
-import org.apache.stratos.autoscaler.exception.partition.PartitionValidationException;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.InstanceContext;
+import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
+import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
@@ -49,6 +48,7 @@ import java.util.List;
 public class CloudControllerClient {
 
     private static final Log log = LogFactory.getLog(CloudControllerClient.class);
+
     private static CloudControllerServiceStub stub;
 
     /* An instance of a CloudControllerClient is created when the class is loaded. 
@@ -73,13 +73,13 @@ public class CloudControllerClient {
 
             stub = new CloudControllerServiceStub(epr);
             stub._getServiceClient().getOptions().setProperty(HTTPConstants.SO_TIMEOUT, cloudControllerClientTimeout);
-            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT, cloudControllerClientTimeout);
+            stub._getServiceClient().getOptions().setProperty(HTTPConstants.CONNECTION_TIMEOUT,
+                    cloudControllerClientTimeout);
         } catch (Exception e) {
             log.error("Could not initialize cloud controller client", e);
         }
     }
-    
-  
+
     public synchronized MemberContext startInstance(Partition partition,
                                                     String clusterId, String clusterInstanceId,
                                                     String networkPartitionId, boolean isPrimary,
@@ -143,7 +143,6 @@ public class CloudControllerClient {
         }
     }
 
-    
     public synchronized void createApplicationClusters(String appId,
                                                        ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
@@ -151,7 +150,8 @@ public class CloudControllerClient {
         if(applicationClusterContexts != null) {
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
                 if(applicationClusterContext != null) {
-                    org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto = new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
+                    org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto =
+                            new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
                     dto.setClusterId(applicationClusterContext.getClusterId());
                     dto.setAutoscalePolicyName(applicationClusterContext.getAutoscalePolicyName());
                     dto.setDeploymentPolicyName(applicationClusterContext.getDeploymentPolicyName());
@@ -179,20 +179,16 @@ public class CloudControllerClient {
         } catch (RemoteException e) {
             String msg = e.getMessage();
             log.error(msg, e);
-            //throw new TerminationException(msg, e);
         } catch (CloudControllerServiceApplicationClusterRegistrationExceptionException e) {
             String msg = e.getMessage();
             log.error(msg, e);
         }
-
-
     }
 
 
     private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
         ArrayList<Volume> volumes = new ArrayList<Volume>();
-
         for(VolumeContext volumeContext : volumeContexts){
             Volume volume = new Volume();
             volume.setRemoveOntermination(volumeContext.isRemoveOntermination());
@@ -205,8 +201,6 @@ public class CloudControllerClient {
             volume.setSize(volumeContext.getSize());
             volumes.add(volume);
         }
-
         return volumes.toArray(new Volume[volumes.size()]);
     }
-
 }
