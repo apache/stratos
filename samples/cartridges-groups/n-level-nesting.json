@@ -1,0 +1,50 @@
+{
+    "name": "n-level-nesting",
+    "groupScalingEnabled": "true",
+    "groups": [
+        {
+            "name": "level-one-group",
+            "cartridges": [
+                "esb",
+                "tomcat"
+            ],
+            "groups": [
+        	{
+        	    "name": "level-two-group",
+        	    "cartridges": [
+        	        "esb",
+        	        "tomcat"
+        	    ],
+                    "groups": [
+                	{
+                	    "name": "level-three-group",
+                	    "cartridges": [
+                	        "esb",
+                	        "tomcat"
+                	    ],
+			    "groups": [
+        		        {
+                		    "name": "level-four-group",
+                		    "cartridges": [
+                		        "esb",
+                		        "tomcat"
+                		    ],
+				    "groups": [
+                			{
+                			    "name": "level-five-group",
+                			    "cartridges": [
+                			        "esb",
+                			        "tomcat"
+                			    ]
+               		 		}
+             			    ]
+                		}
+             		    ]
+                	}
+             	    ]
+        	}
+   	     ]
+        }
+    ]
+}
+

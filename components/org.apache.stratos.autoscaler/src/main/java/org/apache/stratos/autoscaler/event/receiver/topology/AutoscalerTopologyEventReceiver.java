@@ -73,6 +73,7 @@ import org.apache.stratos.messaging.listener.topology.MemberStartedEventListener
 import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListener;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
+import org.apache.tools.ant.taskdefs.Sleep;
 
 /**
  * Autoscaler topology receiver.
@@ -152,23 +153,44 @@ public class AutoscalerTopologyEventReceiver {
                     ApplicationClustersCreatedEvent applicationClustersCreatedEvent =
                             (ApplicationClustersCreatedEvent) event;
                     String appId = applicationClustersCreatedEvent.getAppId();
-                    try {
-                        //acquire read lock
-                        ApplicationHolder.acquireReadLock();
-                        //start the application monitor
-                        ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
-                        if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                        	if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
-                        		AutoscalerUtil.getInstance().startApplicationMonitor(appId);
-                        	}
+                    boolean appMonitorCreationTriggered = false;
+                    int retries = 5;
+                    while(!appMonitorCreationTriggered && retries > 0){
+                        try {
+                            //acquire read lock
+                            ApplicationHolder.acquireReadLock();
+                            //start the application monitor
+                            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
+                            if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                            	if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
+                            		appMonitorCreationTriggered = true;
+                            		AutoscalerUtil.getInstance().startApplicationMonitor(appId);
+                            		break;
+                            	}
+    						}
+                        } catch (Exception e) {
+                            String msg = "Error processing event " + e.getLocalizedMessage();
+                            log.error(msg, e);
+                        } finally {
+                            //release read lock
+                            ApplicationHolder.releaseReadLock();
+                        }
+                        
+                        try {
+                        	retries--;
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
 						}
-                    } catch (Exception e) {
-                        String msg = "Error processing event " + e.getLocalizedMessage();
-                        log.error(msg, e);
-                    } finally {
-                        //release read lock
-                        ApplicationHolder.releaseReadLock();
                     }
+                    
+                    // Reason is to re-try 5 time is because application status might not become "deployed" yet, refer deployApplication API for more information.
+                    // Reason why not throwing error after 5 times is because this not the only place we trigger app-monitor creation.
+                    if (!appMonitorCreationTriggered) {
+						String msg = String.format("Application monitor creation is not triggered on application "
+								+ "clusters created event even after 5 retries [application-id] %s. "
+								+ "Possible cause is either application context is null or application status didn't become %s yet.", appId, ApplicationContext.STATUS_DEPLOYED);
+						log.warn(msg);
+					}
                 } catch (ClassCastException e) {
                     String msg = "Error while casting the event " + e.getLocalizedMessage();
                     log.error(msg, e);
