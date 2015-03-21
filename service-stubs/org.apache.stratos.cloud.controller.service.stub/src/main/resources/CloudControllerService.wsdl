@@ -1000,6 +1000,8 @@
                     <xs:element minOccurs="0" name="properties" nillable="true" type="ax25:Properties"/>
                     <xs:element minOccurs="0" name="tenantRange" nillable="true" type="xs:string"/>
                     <xs:element minOccurs="0" name="textPayload" nillable="true" type="xs:string"/>
+                    <xs:element minOccurs="0" name="volumeRequired" type="xs:boolean"/>
+                    <xs:element maxOccurs="unbounded" minOccurs="0" name="volumes" nillable="true" type="ax23:Volume"/>
                 </xs:sequence>
             </xs:complexType>
             <xs:complexType name="DeploymentPolicy">
