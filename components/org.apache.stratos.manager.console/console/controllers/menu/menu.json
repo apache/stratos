@@ -107,7 +107,7 @@
             "link": "applications/applications/",
             "linkexternal": false,
             "context": "/",
-            "title": "Application Management",
+            "title": "Applications",
             "icon": "fa-cubes",
             "permissionPaths": ["/permission", "/permission/admin/manage/view/cartridge"],
             "description": "Manage applications",
