@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.services.impl;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.pojo.PersistenceContext;
 import org.apache.stratos.cloud.controller.concurrent.PartitionValidatorCallable;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
@@ -1404,8 +1403,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
 	@Override
 	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
-		if (log.isInfoEnabled()) {
-			log.info("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
+		if (log.isDebugEnabled()) {
+			log.debug("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
 		}
         return CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
 	}
