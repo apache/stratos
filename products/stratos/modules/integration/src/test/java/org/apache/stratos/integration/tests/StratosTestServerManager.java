@@ -140,7 +140,7 @@ public class StratosTestServerManager extends TestServerManager {
 
     private boolean serverStarted(TestLogAppender testLogAppender) {
         for(String message : testLogAppender.getMessages()) {
-            if(message.contains("StratosManager component became active")) {
+            if(message.contains("Topology initialized")) {
                 return true;
             }
         }

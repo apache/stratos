@@ -167,8 +167,7 @@ public class CloudControllerServiceComponent {
         componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
             @Override
             public void activated(Component component) {
-                if(component == Component.Autoscaler) {
-                    // Execute topology synchronizer at the server startup
+                if(component == Component.StratosManager) {
                     TopologySynchronizerTask topologySynchronizerTask = new TopologySynchronizerTask();
                     topologySynchronizerTask.execute();
                 }

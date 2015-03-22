@@ -1384,7 +1384,6 @@ public class StratosApiV41Utils {
                 addClustersInstancesToApplicationInstanceBean(instanceBean, application);
                 addGroupsInstancesToApplicationInstanceBean(instanceBean, application);
             }
-
         } finally {
             ApplicationManager.releaseReadLockForApplication(applicationId);
         }
