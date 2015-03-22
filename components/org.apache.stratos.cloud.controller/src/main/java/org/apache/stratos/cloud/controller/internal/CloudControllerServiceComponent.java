@@ -34,6 +34,7 @@ import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.In
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
 import org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentActivationEventListener;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -160,9 +161,19 @@ public class CloudControllerServiceComponent {
             log.info("Scheduling topology synchronizer task");
         }
         TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
-        // Execute topology synchronizer at the server startup
-        TopologySynchronizerTask topologySynchronizerTask = new TopologySynchronizerTask();
-        topologySynchronizerTask.execute();
+
+        ComponentStartUpSynchronizer componentStartUpSynchronizer =
+                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
+        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+            @Override
+            public void activated(Component component) {
+                if(component == Component.Autoscaler) {
+                    // Execute topology synchronizer at the server startup
+                    TopologySynchronizerTask topologySynchronizerTask = new TopologySynchronizerTask();
+                    topologySynchronizerTask.execute();
+                }
+            }
+        });
     }
 
     protected void setTaskService(TaskService taskService) {

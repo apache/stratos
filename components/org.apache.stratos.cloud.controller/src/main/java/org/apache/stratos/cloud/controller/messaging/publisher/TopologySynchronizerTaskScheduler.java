@@ -57,8 +57,9 @@ public class TopologySynchronizerTaskScheduler {
                         TopologySynchronizerTask.class.getName(),
                         new HashMap<String, String>(), triggerInfo);
                 taskManager.registerTask(taskInfo);
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Topology synchronization task scheduled: %s", CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME));
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Synchronization task scheduled: [task] %s [cron] %s",
+                            CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME, cron));
                 }
             }
 
@@ -73,7 +74,8 @@ public class TopologySynchronizerTaskScheduler {
                 }
             }
             
-            String msg = String.format("Could not schedule topology synchronization task: %s", CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME);
+            String msg = String.format("Could not schedule synchronization task: %s",
+                    CloudControllerConstants.TOPOLOGY_SYNC_TASK_NAME);
             log.error(msg, e);
 			throw new RuntimeException(msg, e);
         }

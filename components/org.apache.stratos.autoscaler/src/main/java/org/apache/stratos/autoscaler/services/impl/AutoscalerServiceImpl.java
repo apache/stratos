@@ -127,7 +127,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         ApplicationParser applicationParser = new DefaultApplicationParser();
         Application application = applicationParser.parse(applicationContext);
-        RegistryManager.getInstance().persistApplication(application);
+        ApplicationHolder.persistApplication(application);
 
         List<ApplicationClusterContext> applicationClusterContexts = applicationParser.getApplicationClusterContexts();
         ApplicationClusterContext[] applicationClusterContextsArray = applicationClusterContexts.toArray(
@@ -136,6 +136,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
         applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
         AutoscalerContext.getInstance().addApplicationContext(applicationContext);
+
         if(log.isInfoEnabled()) {
             log.info(String.format("Application added successfully: [application-id] %s",
                     applicationContext.getApplicationId()));
@@ -156,7 +157,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     @Override
     public boolean deployApplication(String applicationId, String applicationPolicyId) throws ApplicationDefinitionException {
         try {
-            Application application = RegistryManager.getInstance().getApplication(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if (application == null) {
                 throw new RuntimeException("Application not found: " + applicationId);
             }
@@ -172,7 +173,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			// validating application policy against the application
             AutoscalerUtil.validateApplicationPolicyAgainstApplication(applicationId, applicationPolicyId);
 
-            // setting application policy id in application object
+            // Setting application policy id in application object
             try {
             	ApplicationHolder.acquireWriteLock();
             	application = ApplicationHolder.getApplications().getApplication(applicationId);
@@ -194,28 +195,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			applicationContext.setStatus(ApplicationContext.STATUS_DEPLOYED);
 			AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
 
-            // Check whether all the clusters are there
-            boolean allClusterInitialized = false;
-            try {
-                ApplicationHolder.acquireReadLock();
-                application = ApplicationHolder.getApplications().getApplication(applicationId);
-                if (application != null) {
-                    allClusterInitialized = AutoscalerUtil.allClustersInitialized(application);
-                }
-            } finally {
-                ApplicationHolder.releaseReadLock();
-            }
-            
-            if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(applicationId)) {
-                if (allClusterInitialized) {
-                    AutoscalerUtil.getInstance().startApplicationMonitor(applicationId);
-                } else {
-                    log.info("The application clusters are not yet created. " +
-                            "Waiting for them to be created");
-                }
-            } else {
-                log.info("The application monitor has already been created: [application-id] " + applicationId);
-            }
+            log.info("Waiting for application clusters to be created: [application] " + applicationId);
             return true;
         } catch (Exception e) {
             ApplicationContext applicationContext = RegistryManager.getInstance().getApplicationContext(applicationId);
@@ -434,7 +414,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
     	
     	AutoscalerContext.getInstance().removeApplicationContext(applicationId);
         
-        if (RegistryManager.getInstance().getApplication(applicationId)== null) {
+        if (ApplicationHolder.getApplications().getApplication(applicationId) == null) {
             String msg = String.format("Application not found : [application-id] %s", applicationId);
             throw new RuntimeException(msg);
         }

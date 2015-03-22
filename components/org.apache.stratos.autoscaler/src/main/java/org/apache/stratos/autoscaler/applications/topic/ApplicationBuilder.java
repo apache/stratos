@@ -18,10 +18,6 @@
  */
 package org.apache.stratos.autoscaler.applications.topic;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.ApplicationHolder;
@@ -35,14 +31,7 @@ import org.apache.stratos.autoscaler.event.publisher.ClusterStatusEventPublisher
 import org.apache.stratos.autoscaler.monitor.Monitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
-import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
-import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
-import org.apache.stratos.messaging.domain.application.Application;
-import org.apache.stratos.messaging.domain.application.ApplicationStatus;
-import org.apache.stratos.messaging.domain.application.Applications;
-import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
-import org.apache.stratos.messaging.domain.application.Group;
-import org.apache.stratos.messaging.domain.application.GroupStatus;
+import org.apache.stratos.messaging.domain.application.*;
 import org.apache.stratos.messaging.domain.instance.ApplicationInstance;
 import org.apache.stratos.messaging.domain.instance.ClusterInstance;
 import org.apache.stratos.messaging.domain.instance.GroupInstance;
@@ -51,6 +40,10 @@ import org.apache.stratos.messaging.domain.topology.Service;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.base.MultitenantConstants;
 import org.wso2.carbon.context.PrivilegedCarbonContext;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This will build the application.
@@ -82,15 +75,9 @@ public class ApplicationBuilder {
             log.debug("Handling application creation event: [application-id] " +
                     application.getUniqueIdentifier());
         }
-	    Applications applications = ApplicationHolder.getApplications();
-	    if (applications.getApplication(application.getUniqueIdentifier()) == null) {
-		    CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
+        CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
 		                                                                  appClusterContexts);
-		    ApplicationHolder.persistApplication(application);
-	    } else {
-		    log.warn("Application already exists: [application-id] " + application.getUniqueIdentifier());
-	    }
-
+        ApplicationHolder.persistApplication(application);
 	    ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 

@@ -141,20 +141,21 @@ public class AutoscalerUtil {
                             allClustersInitialized = true;
                             return allClustersInitialized;
                         } else {
-                            if (log.isDebugEnabled()) {
-                                log.debug("[Cluster] " + holder.getClusterId() + " is not found in " +
-                                        "the Topology");
+                            if (log.isWarnEnabled()) {
+                                log.warn(String.format("Cluster not found in service: [service] %s [cluster] %s",
+                                        holder.getServiceType(), holder.getClusterId()));
                             }
                             allClustersInitialized = false;
                         }
                     } else {
-                        if (log.isDebugEnabled()) {
-                            log.debug("Service is null in the CompleteTopologyEvent");
+                        if (log.isWarnEnabled()) {
+                            log.warn(String.format("Service not found in topology: [service] %s",
+                                    holder.getServiceType()));
                         }
                     }
                 } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Topology is null in the CompleteTopologyEvent");
+                    if (log.isWarnEnabled()) {
+                        log.warn("Topology not found in topology manager");
                     }
                 }
             } finally {

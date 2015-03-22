@@ -19,21 +19,8 @@
 
 package org.apache.stratos.common.services;
 
-import org.apache.axis2.AxisFault;
-import org.apache.stratos.common.Component;
-
 /**
- * Component startup synchronizer service interface.
+ * Component startup event listener.
  */
-public interface ComponentStartUpSynchronizer {
-
-    void setComponentStatus(Component component, boolean active);
-
-    boolean isComponentActive(Component component);
-
-    void waitForComponentActivation(Component owner, Component component);
-
-    void waitForWebServiceActivation(String serviceName) throws AxisFault;
-
-    void addEventListener(ComponentStartUpEventListener eventListener);
+public interface ComponentStartUpEventListener {
 }

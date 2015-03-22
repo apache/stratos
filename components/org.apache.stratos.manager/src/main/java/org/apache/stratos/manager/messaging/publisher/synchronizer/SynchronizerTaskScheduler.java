@@ -48,11 +48,12 @@ public class SynchronizerTaskScheduler {
 
                 // Register task
                 taskManager = taskService.getTaskManager(taskType);
-                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(StratosManagerConstants.DEFAULT_CRON);
+                String cron = StratosManagerConstants.DEFAULT_CRON;
+                TaskInfo.TriggerInfo triggerInfo = new TaskInfo.TriggerInfo(cron);
                 TaskInfo taskInfo = new TaskInfo(taskName, taskClass.getName(), new HashMap<String, String>(), triggerInfo);
                 taskManager.registerTask(taskInfo);
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Synchronization task scheduled: %s", taskName));
+                    log.info(String.format("Synchronization task scheduled: [task] %s [cron] %s", taskName, cron));
                 }
             }
         } catch (Exception e) {

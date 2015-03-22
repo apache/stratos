@@ -25,10 +25,14 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentActivationEventListener;
+import org.apache.stratos.common.services.ComponentStartUpEventListener;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.wso2.carbon.core.CarbonConfigurationContextFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,16 +45,18 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
     private static final String COMPONENT_STATUS_MAP = "stratos.component.status.map";
     private static final String COMPONENT_ACTIVATION_CHECK_INTERVAL = "stratos.component.activation.check.interval";
     private static final String COMPONENT_ACTIVATION_TIMEOUT = "stratos.component.activation.timeout";
-    private static final long DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL = 5000;
+    private static final long DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL = 1000;
     private static final long DEFAULT_COMPONENT_ACTIVATION_TIMEOUT = 600000;
 
     private Map<Component, Boolean> componentStatusMap;
+    private List<ComponentStartUpEventListener> eventListeners;
     private long componentActivationCheckInterval;
     private long componentActivationTimeout;
 
     ComponentStartUpSynchronizerImpl(DistributedObjectProvider distributedObjectProvider) {
         componentStatusMap = distributedObjectProvider.getMap(COMPONENT_STATUS_MAP);
-        
+        eventListeners = new ArrayList<ComponentStartUpEventListener>();
+
         componentActivationCheckInterval = Long.getLong(COMPONENT_ACTIVATION_CHECK_INTERVAL,
                 DEFAULT_COMPONENT_ACTIVATION_CHECK_INTERVAL);
         log.info(String.format("Component activation check interval: %s seconds",
@@ -66,9 +72,24 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
         componentStatusMap.put(component, active);
 
         if(active) {
+            notifyComponentActivationEventListeners(component);
             log.info(String.format("%s component became active", component));
         } else {
             log.info(String.format("%s component became inactive", component));
+        }
+    }
+
+    private void notifyComponentActivationEventListeners(Component component) {
+        for(ComponentStartUpEventListener eventListener : eventListeners) {
+            if(eventListener instanceof ComponentActivationEventListener) {
+                try {
+                    ComponentActivationEventListener componentActivationEventListener =
+                            (ComponentActivationEventListener) eventListener;
+                    componentActivationEventListener.activated(component);
+                } catch (Exception e) {
+                    log.error("An error occurred while notifying component activation event listener", e);
+                }
+            }
         }
     }
 
@@ -83,9 +104,13 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
     @Override
     public void waitForComponentActivation(Component owner, Component component) {
         long startTime = System.currentTimeMillis();
+        boolean logged = false;
         while(!isComponentActive(component)) {
-            log.info(String.format("%s component is waiting for %s component to become active...",
-                    owner, component));
+            if(!logged) {
+                log.info(String.format("%s component is waiting for %s component to become active...",
+                        owner, component));
+                logged = true;
+            }
 
             try {
                 Thread.sleep(componentActivationCheckInterval);
@@ -117,8 +142,11 @@ public class ComponentStartUpSynchronizerImpl implements ComponentStartUpSynchro
                 }
             }
             log.info(String.format("%s web service became active", serviceName));
-        } else {
-            log.debug(String.format("%s web service is active", serviceName));
         }
+    }
+
+    @Override
+    public void addEventListener(ComponentStartUpEventListener eventListener) {
+         eventListeners.add(eventListener);
     }
 }

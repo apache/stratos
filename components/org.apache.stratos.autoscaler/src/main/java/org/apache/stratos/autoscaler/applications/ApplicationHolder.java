@@ -68,18 +68,17 @@ public class ApplicationHolder {
     }
 
     public static Applications getApplications () {
-
         if (applications == null) {
             synchronized (ApplicationHolder.class) {
                 if (applications == null) {
                     // retrieve from registry
-                    applications = AutoscalerUtil.getApplications();
                     if (log.isDebugEnabled()) {
-                        log.debug("Trying to retrieve Applications from registry");
+                        log.debug("Trying to retrieve applications from registry...");
                     }
+                    applications = AutoscalerUtil.getApplications();
                     if (applications == null) {
                         if (log.isDebugEnabled()) {
-                            log.debug("No applications found in Registry");
+                            log.debug("No applications found in registry");
                         }
                         // create a new Applications object
                         applications = new Applications();
@@ -87,32 +86,27 @@ public class ApplicationHolder {
                 }
             }
         }
-
         return applications;
     }
 
     public static void persistApplication (Application application) {
-
         synchronized (ApplicationHolder.class) {
-            applications.addApplication(application);
+            getApplications().addApplication(application);
             AutoscalerUtil.persistApplication(application);
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Topology updated: %s", toJson(applications)));
+                log.debug(String.format("Applications updated: %s", toJson(applications)));
             }
         }
-
     }
 
     public static void removeApplication (String applicationId) {
-
         synchronized (ApplicationHolder.class) {
-            applications.removeApplication(applicationId);
+            getApplications().removeApplication(applicationId);
             AutoscalerUtil.removeApplication(applicationId);
             if (log.isDebugEnabled()) {
-                log.debug("Application [ " + applicationId + " ] removed from Applications");
+                log.debug("Application [ " + applicationId + " ] removed from applications");
             }
         }
-
     }
 
     private static String toJson(Object object) {
