@@ -30,6 +30,7 @@ import java.io.Serializable;
  * before receiving other topology events.
  */
 public class CompleteApplicationsEvent extends TopologyEvent implements Serializable {
+
     private static final long serialVersionUID = 8580862188444892004L;
 
     private final Applications applications;

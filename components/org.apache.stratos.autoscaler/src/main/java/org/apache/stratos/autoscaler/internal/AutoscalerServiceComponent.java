@@ -23,6 +23,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
+import org.apache.stratos.autoscaler.applications.ApplicationSynchronizeTask;
 import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
@@ -39,6 +40,7 @@ import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentActivationEventListener;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -194,9 +196,19 @@ public class AutoscalerServiceComponent {
 			log.info("Scheduling tasks to publish applications");
 		}
 
-		ApplicationSynchronizerTaskScheduler
-				.schedule(ServiceReferenceHolder.getInstance()
-				                                .getTaskService());
+		ApplicationSynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
+
+        ComponentStartUpSynchronizer componentStartUpSynchronizer =
+                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
+        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+            @Override
+            public void activated(Component component) {
+                if(component == Component.StratosManager) {
+                    ApplicationSynchronizeTask applicationSynchronizeTask = new ApplicationSynchronizeTask();
+                    applicationSynchronizeTask.execute();
+                }
+            }
+        });
 	}
 
     protected void deactivate(ComponentContext context) {

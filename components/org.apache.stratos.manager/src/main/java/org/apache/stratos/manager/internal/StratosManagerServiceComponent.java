@@ -22,6 +22,7 @@ import com.hazelcast.core.HazelcastInstance;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.Component;
+import org.apache.stratos.common.services.ComponentActivationEventListener;
 import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.apache.stratos.common.services.DistributedObjectProvider;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -244,13 +245,28 @@ public class StratosManagerServiceComponent {
         if(log.isDebugEnabled()) {
             log.debug("Initializing tenant event publisher...");
         }
-        TenantEventPublisher tenantEventPublisher = new TenantEventPublisher();
+        final TenantEventPublisher tenantEventPublisher = new TenantEventPublisher();
         componentContext.getBundleContext().registerService(
                 org.apache.stratos.common.listeners.TenantMgtListener.class.getName(),
                 tenantEventPublisher, null);
         if(log.isInfoEnabled()) {
             log.info("Tenant event publisher initialized");
         }
+
+        ComponentStartUpSynchronizer componentStartUpSynchronizer =
+                ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
+        componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
+            @Override
+            public void activated(Component component) {
+                if(component == Component.StratosManager) {
+                    TenantSynzhronizerTask tenantSynzhronizerTask = new TenantSynzhronizerTask();
+                    tenantSynzhronizerTask.execute();
+
+                    ApplicationSignUpSynchronizerTask applicationSignUpSynchronizerTask = new ApplicationSignUpSynchronizerTask();
+                    applicationSignUpSynchronizerTask.execute();
+                }
+            }
+        });
     }
 
     protected void setConfigurationContextService(ConfigurationContextService contextService) {

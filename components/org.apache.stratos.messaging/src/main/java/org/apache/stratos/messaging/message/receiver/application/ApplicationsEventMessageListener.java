@@ -36,7 +36,7 @@ public class ApplicationsEventMessageListener implements MessageListener {
     public void messageReceived(Message message) {
         try {
             if (log.isDebugEnabled()) {
-                log.debug(String.format("Tenant message received: %s", message.getText()));
+                log.debug(String.format("Application event message received: %s", message.getText()));
             }
             // Add received message to the queue
             messageQueue.add(message);

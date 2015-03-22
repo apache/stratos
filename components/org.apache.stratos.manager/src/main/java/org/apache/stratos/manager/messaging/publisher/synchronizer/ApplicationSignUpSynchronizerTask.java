@@ -38,6 +38,10 @@ public class ApplicationSignUpSynchronizerTask implements Task {
 
     private ApplicationSignUpHandler applicationSignUpHandler;
 
+    public ApplicationSignUpSynchronizerTask() {
+        init();
+    }
+
     @Override
     public void setProperties(Map<String, String> map) {
     }
