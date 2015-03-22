@@ -52,6 +52,7 @@ public class StratosTestServerManager extends TestServerManager {
     private static final String ACTIVEMQ_BIND_ADDRESS = "tcp://localhost:61617";
     private static final String MOCK_IAAS_XML_FILE = "mock-iaas.xml";
     private static final String JNDI_PROPERTIES_FILE = "jndi.properties";
+    private static final String JMS_OUTPUT_ADAPTER_FILE = "JMSOutputAdaptor.xml";
 
     private ServerUtils serverUtils;
     private String carbonHome;
@@ -126,16 +127,21 @@ public class StratosTestServerManager extends TestServerManager {
     protected void copyArtifacts(String carbonHome) throws IOException {
         copyConfigFile(carbonHome, MOCK_IAAS_XML_FILE);
         copyConfigFile(carbonHome, JNDI_PROPERTIES_FILE);
+        copyConfigFile(carbonHome, JMS_OUTPUT_ADAPTER_FILE, "repository/deployment/server/outputeventadaptors");
     }
 
-    private void copyConfigFile(String carbonHome, String fileName) throws IOException {
-        log.info("Copying " + fileName + " configuration file...");
-        URL fileURL = getClass().getResource("/" + fileName);
+    private void copyConfigFile(String carbonHome, String sourceFilePath) throws IOException {
+        copyConfigFile(carbonHome, sourceFilePath, "repository/conf");
+    }
+
+    private void copyConfigFile(String carbonHome, String sourceFilePath, String destinationFolder) throws IOException {
+        log.info("Copying file: " + sourceFilePath);
+        URL fileURL = getClass().getResource("/" + sourceFilePath);
         assertNotNull(fileURL);
         File srcFile = new File(fileURL.getFile());
-        File destFile = new File(carbonHome + "/repository/conf/" + fileName);
+        File destFile = new File(carbonHome + "/" + destinationFolder + "/" + sourceFilePath);
         FileUtils.copyFile(srcFile, destFile);
-        log.info(fileName + " configuration file copied");
+        log.info(sourceFilePath + " file copied");
     }
 
     private boolean serverStarted(TestLogAppender testLogAppender) {
