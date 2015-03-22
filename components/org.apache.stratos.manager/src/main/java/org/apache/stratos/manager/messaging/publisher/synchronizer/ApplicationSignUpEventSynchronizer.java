@@ -24,38 +24,28 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.manager.components.ApplicationSignUpHandler;
 import org.apache.stratos.manager.messaging.publisher.ApplicationSignUpEventPublisher;
 import org.apache.stratos.messaging.domain.application.signup.ApplicationSignUp;
-import org.wso2.carbon.ntask.core.Task;
 
 import java.util.List;
-import java.util.Map;
 
 /**
- * Application signup synchronizer task.
+ * Application signup synchronizer publishes complete application signup event periodically.
  */
-public class ApplicationSignUpSynchronizerTask implements Task {
+public class ApplicationSignUpEventSynchronizer implements Runnable {
 
-    private static final Log log = LogFactory.getLog(ApplicationSignUpSynchronizerTask.class);
+    private static final Log log = LogFactory.getLog(ApplicationSignUpEventSynchronizer.class);
 
     private ApplicationSignUpHandler applicationSignUpHandler;
 
-    public ApplicationSignUpSynchronizerTask() {
-        init();
-    }
-
-    @Override
-    public void setProperties(Map<String, String> map) {
-    }
-
-    @Override
-    public void init() {
+    public ApplicationSignUpEventSynchronizer() {
         applicationSignUpHandler = new ApplicationSignUpHandler();
     }
 
     @Override
-    public void execute() {
+    public void run() {
         try {
             List<ApplicationSignUp> applicationSignUps = applicationSignUpHandler.getApplicationSignUps();
             if((applicationSignUps != null) && (applicationSignUps.size() > 0)) {
+                log.debug("Publishing complete application signup event");
                 ApplicationSignUpEventPublisher.publishCompleteApplicationSignUpsEvent(applicationSignUps);
             }
         } catch (Exception e) {

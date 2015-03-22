@@ -26,8 +26,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.exception.CloudControllerException;
-import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTask;
-import org.apache.stratos.cloud.controller.messaging.publisher.TopologySynchronizerTaskScheduler;
+import org.apache.stratos.cloud.controller.messaging.publisher.TopologyEventSynchronizer;
 import org.apache.stratos.cloud.controller.messaging.receiver.application.ApplicationEventReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.cluster.status.ClusterStatusTopicReceiver;
 import org.apache.stratos.cloud.controller.messaging.receiver.instance.status.InstanceStatusTopicReceiver;
@@ -49,6 +48,8 @@ import org.wso2.carbon.registry.core.session.UserRegistry;
 import org.wso2.carbon.utils.ConfigurationContextService;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Registering Cloud Controller Service.
@@ -71,18 +72,24 @@ public class CloudControllerServiceComponent {
 
 	private static final Log log = LogFactory.getLog(CloudControllerServiceComponent.class);
 
+    private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "cloud.controller.coordinator.lock";
+    private static final String THREAD_POOL_ID = "cloud.controller.thread.pool";
+    private static final String SCHEDULER_THREAD_POOL_ID = "cloud.controller.scheduler.thread.pool";
+    private static final int THREAD_POOL_SIZE = 10;
+    private static final int SCHEDULER_THREAD_POOL_SIZE = 5;
+
 	private ClusterStatusTopicReceiver clusterStatusTopicReceiver;
 	private InstanceStatusTopicReceiver instanceStatusTopicReceiver;
 	private ApplicationEventReceiver applicationEventReceiver;
     private ExecutorService executorService;
-
-	private static final String DEFAULT_IDENTIFIER = "Cloud-Controller";
-	private static final int THREAD_POOL_SIZE = 10;
-    private static final String CLOUD_CONTROLLER_COORDINATOR_LOCK = "CLOUD_CONTROLLER_COORDINATOR_LOCK";
+    private ScheduledExecutorService scheduler;
 
     protected void activate(final ComponentContext context) {
 		try {
-            executorService = StratosThreadPool.getExecutorService(DEFAULT_IDENTIFIER, THREAD_POOL_SIZE);
+            executorService = StratosThreadPool.getExecutorService(THREAD_POOL_ID, THREAD_POOL_SIZE);
+            scheduler = StratosThreadPool.getScheduledExecutorService(SCHEDULER_THREAD_POOL_ID,
+                    SCHEDULER_THREAD_POOL_SIZE);
+
             Runnable cloudControllerActivator = new Runnable() {
                 @Override
                 public void run() {
@@ -160,7 +167,6 @@ public class CloudControllerServiceComponent {
         if (log.isInfoEnabled()) {
             log.info("Scheduling topology synchronizer task");
         }
-        TopologySynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
 
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
@@ -168,8 +174,8 @@ public class CloudControllerServiceComponent {
             @Override
             public void activated(Component component) {
                 if(component == Component.StratosManager) {
-                    TopologySynchronizerTask topologySynchronizerTask = new TopologySynchronizerTask();
-                    topologySynchronizerTask.execute();
+                    Runnable topologySynchronizer = new TopologyEventSynchronizer();
+                    scheduler.scheduleAtFixedRate(topologySynchronizer, 0, 1, TimeUnit.MINUTES);
                 }
             }
         });
@@ -253,12 +259,31 @@ public class CloudControllerServiceComponent {
         }
 
         // Shutdown executor service
-        if(executorService != null) {
-            try {
-                executorService.shutdownNow();
-            } catch (Exception e) {
-                log.warn("An error occurred while shutting down cloud controller executor service", e);
-            }
-        }
+        shutdownExecutorService(THREAD_POOL_ID);
+
+        // Shutdown scheduler
+        shutdownScheduledExecutorService(SCHEDULER_THREAD_POOL_ID);
 	}
+
+    private void shutdownExecutorService(String executorServiceId) {
+        ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
+        if(executorService != null) {
+            shutdownExecutorService(executorService);
+        }
+    }
+
+    private void shutdownScheduledExecutorService(String executorServiceId) {
+        ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
+        if(executorService != null) {
+            shutdownExecutorService(executorService);
+        }
+    }
+
+    private void shutdownExecutorService(ExecutorService executorService) {
+        try {
+            executorService.shutdownNow();
+        } catch (Exception e) {
+            log.warn("An error occurred while shutting down executor service", e);
+        }
+    }
 }

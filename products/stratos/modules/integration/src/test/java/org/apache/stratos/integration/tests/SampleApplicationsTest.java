@@ -59,7 +59,6 @@ public class SampleApplicationsTest extends StratosTestServerManager {
     public void testSingleCartridgeApplication() {
         try {
             initializeApplicationEventReceiver();
-
             runApplicationTest("single-cartridge", "single-cartridge-app");
         } catch (Exception e) {
             log.error(e);
@@ -117,6 +116,10 @@ public class SampleApplicationsTest extends StratosTestServerManager {
         long startTime = System.currentTimeMillis();
         Application application = ApplicationManager.getApplications().getApplication(applicationName);
         while(!((application != null) && (application.getStatus() == ApplicationStatus.Active))) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignore) {
+            }
             application = ApplicationManager.getApplications().getApplication(applicationName);
             if((System.currentTimeMillis() - startTime) > APPLICATION_ACTIVATION_TIMEOUT) {
                 break;

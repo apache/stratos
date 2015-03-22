@@ -23,18 +23,18 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
-import org.wso2.carbon.ntask.core.Task;
 
-import java.util.Map;
+/**
+ * Topology event synchronizer publishes complete topology event periodically.
+ */
+public class TopologyEventSynchronizer implements Runnable {
 
-public class TopologySynchronizerTask implements Task {
-
-    private static final Log log = LogFactory.getLog(TopologySynchronizerTask.class);
+    private static final Log log = LogFactory.getLog(TopologyEventSynchronizer.class);
 
     @Override
-    public void execute() {
+    public void run() {
         if (log.isDebugEnabled()) {
-            log.debug("Executing topology synchronization task");
+            log.debug("Executing topology synchronizer");
         }
         
         if(!CloudControllerConfig.getInstance().isTopologySyncEnabled()) {
@@ -61,11 +61,4 @@ public class TopologySynchronizerTask implements Task {
             CloudControllerContext.getInstance().setTopologySyncRunning(false);
         }
     }
-    
-    @Override
-    public void init() {
-    }
-
-    @Override
-    public void setProperties(Map<String, String> arg0) {}
 }

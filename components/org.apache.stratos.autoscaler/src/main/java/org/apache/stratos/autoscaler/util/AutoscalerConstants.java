@@ -35,6 +35,9 @@ public final class AutoscalerConstants {
     public static final String PROPERTY_VALUE_ATTR = "value";
     public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
     public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
+    public static final String AUTOSCALER_SCHEDULER_ID = "autoscaler.scheduler.thread.pool";
+    public static final String SCHEDULER_THREAD_POOL_SIZE_KEY = "autoscaler.scheduler.thread.pool.size";
+    public static final int AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE = 5;
     public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
     public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
             File.separator + "stratos-config.xml";
@@ -74,7 +77,7 @@ public final class AutoscalerConstants {
     public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
     public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
     public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
-	public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
+    public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
 	//scheduler
 	public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;
 	public static final int SCHEDULE_DEFAULT_PERIOD = 15;
@@ -117,5 +120,5 @@ public final class AutoscalerConstants {
 	public static final String OAUTH_SERVICE_SFX = "services/OAuthAdminService";
 	public static final String IDENTITY_APPLICATION_SERVICE_SFX = "services/IdentityApplicationManagementService";
 	public static final String TOKEN_ENDPOINT_SFX = "oauth2/token";
-	public static final String TERMINATE_DEPENDENTS = "terminate-dependents";	
+	public static final String TERMINATE_DEPENDENTS = "terminate-dependents";
 }

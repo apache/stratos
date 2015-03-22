@@ -27,26 +27,20 @@ import org.apache.stratos.messaging.broker.publish.EventPublisherPool;
 import org.apache.stratos.messaging.domain.tenant.Tenant;
 import org.apache.stratos.messaging.event.tenant.CompleteTenantEvent;
 import org.apache.stratos.messaging.util.MessagingUtil;
-import org.wso2.carbon.ntask.core.Task;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.user.core.tenant.TenantManager;
 
 import java.util.*;
 
 /**
- * Tenant synchronizer task for publishing complete tenant event periodically
- * to message broker.
+ * Tenant event synchronizer publishes complete tenant event periodically.
  */
-public class TenantSynzhronizerTask implements Task {
+public class TenantEventSynchronizer implements Runnable {
 
-	private static final Log log = LogFactory.getLog(TenantSynzhronizerTask.class);
-
-	@Override
-	public void init() {
-	}
+	private static final Log log = LogFactory.getLog(TenantEventSynchronizer.class);
 
 	@Override
-	public void execute() {
+	public void run() {
 		try {
 			if (log.isDebugEnabled()) {
 				log.debug(String.format("Publishing complete tenant event"));
@@ -86,9 +80,5 @@ public class TenantSynzhronizerTask implements Task {
 				log.error("Could not publish complete tenant event", e);
 			}
 		}
-	}
-
-	@Override
-	public void setProperties(Map<String, String> stringStringMap) {
 	}
 }

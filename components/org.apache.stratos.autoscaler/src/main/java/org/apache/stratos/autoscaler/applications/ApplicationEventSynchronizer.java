@@ -22,16 +22,13 @@ package org.apache.stratos.autoscaler.applications;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.applications.topic.ApplicationBuilder;
-import org.apache.stratos.autoscaler.applications.topic.ApplicationsEventPublisher;
-import org.wso2.carbon.ntask.core.Task;
 
-import java.util.Map;
+public class ApplicationEventSynchronizer implements Runnable {
 
-public class ApplicationSynchronizeTask implements Task {
-    private static final Log log = LogFactory.getLog(ApplicationSynchronizeTask.class);
+    private static final Log log = LogFactory.getLog(ApplicationEventSynchronizer.class);
 
     @Override
-    public void execute() {
+    public void run() {
         if (log.isDebugEnabled()) {
             log.debug("Executing topology synchronization task");
         }
@@ -40,15 +37,4 @@ public class ApplicationSynchronizeTask implements Task {
             ApplicationBuilder.handleCompleteApplication(ApplicationHolder.getApplications());
         }
     }
-
-    @Override
-    public void init() {
-        if(log.isDebugEnabled()) {
-            log.debug("Applications Complete Event publisher task has been started...");
-        }
-
-    }
-
-    @Override
-    public void setProperties(Map<String, String> arg0) {}
 }

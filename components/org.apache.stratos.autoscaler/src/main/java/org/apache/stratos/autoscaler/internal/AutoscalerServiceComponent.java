@@ -23,8 +23,7 @@ import org.apache.commons.configuration.XMLConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
-import org.apache.stratos.autoscaler.applications.ApplicationSynchronizeTask;
-import org.apache.stratos.autoscaler.applications.ApplicationSynchronizerTaskScheduler;
+import org.apache.stratos.autoscaler.applications.ApplicationEventSynchronizer;
 import org.apache.stratos.autoscaler.context.AutoscalerContext;
 import org.apache.stratos.autoscaler.event.receiver.health.AutoscalerHealthStatEventReceiver;
 import org.apache.stratos.autoscaler.event.receiver.topology.AutoscalerTopologyEventReceiver;
@@ -53,6 +52,8 @@ import org.wso2.carbon.utils.ConfigurationContextService;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServiceComponent" immediate="true"
@@ -79,6 +80,7 @@ public class AutoscalerServiceComponent {
 	private AutoscalerTopologyEventReceiver asTopologyReceiver;
 	private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
 	private ExecutorService executorService;
+    private ScheduledExecutorService scheduler;
 
 	protected void activate(ComponentContext componentContext) throws Exception {
 		try {
@@ -87,6 +89,11 @@ public class AutoscalerServiceComponent {
                     AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
             executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
                     threadPoolSize);
+
+            int schedulerThreadPoolSize = conf.getInt(AutoscalerConstants.SCHEDULER_THREAD_POOL_SIZE_KEY,
+                    AutoscalerConstants.AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE);
+            scheduler = StratosThreadPool.getScheduledExecutorService(AutoscalerConstants.AUTOSCALER_SCHEDULER_ID,
+                    schedulerThreadPoolSize);
 
             Runnable autoscalerActivator = new Runnable() {
                 @Override
@@ -196,16 +203,14 @@ public class AutoscalerServiceComponent {
 			log.info("Scheduling tasks to publish applications");
 		}
 
-		ApplicationSynchronizerTaskScheduler.schedule(ServiceReferenceHolder.getInstance().getTaskService());
-
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
         componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
             @Override
             public void activated(Component component) {
                 if(component == Component.StratosManager) {
-                    ApplicationSynchronizeTask applicationSynchronizeTask = new ApplicationSynchronizeTask();
-                    applicationSynchronizeTask.execute();
+                    Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
+                    scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
                 }
             }
         });
@@ -229,9 +234,10 @@ public class AutoscalerServiceComponent {
         }
 
         // Shutdown executor service
-        if(executorService != null) {
-            shutdownExecutorService(executorService);
-        }
+        shutdownExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID);
+
+        // Shutdown scheduler
+        shutdownScheduledExecutorService(AutoscalerConstants.AUTOSCALER_SCHEDULER_ID);
 
         // Shutdown application monitor executor service
         shutdownExecutorService(AutoscalerConstants.APPLICATION_MONITOR_THREAD_POOL_ID);
