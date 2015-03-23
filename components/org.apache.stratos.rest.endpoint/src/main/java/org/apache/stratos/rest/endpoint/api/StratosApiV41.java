@@ -158,7 +158,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.addCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeType).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Cartridge added successfully: [cartridge-type] %s", cartridgeType))).build();
     }
 
@@ -181,7 +181,7 @@ public class StratosApiV41 extends AbstractApi {
         // TODO :: Deployment policy validation
         StratosApiV41Utils.addDeploymentPolicy(deploymentPolicyDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Deployment policy added successfully: " + "[deployment-policy-id] %s",
                         deploymentPolicyID))).build();
     }
@@ -243,7 +243,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.updateDeploymentPolicy(deploymentPolicyDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Deployment policy updated successfully: " + "[deployment-policy-id] %s",
                         deploymentPolicyID))).build();
     }
@@ -265,7 +265,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.removeDeploymentPolicy(deploymentPolicyID);
         URI url = uriInfo.getAbsolutePathBuilder().path(deploymentPolicyID).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Deployment policy removed successfully: " + "[deployment-policy-id] %s",
                         deploymentPolicyID))).build();
     }
@@ -287,7 +287,7 @@ public class StratosApiV41 extends AbstractApi {
         StratosApiV41Utils.updateCartridge(cartridgeDefinitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(cartridgeDefinitionBean.getType()).build();
         return Response.created(url)
-                .entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(), "Cartridge updated successfully"))
+                .entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(), "Cartridge updated successfully"))
                 .build();
 
     }
@@ -418,7 +418,7 @@ public class StratosApiV41 extends AbstractApi {
             GroupBean serviceGroupDefinition) throws RestAPIException {
         StratosApiV41Utils.addServiceGroup(serviceGroupDefinition);
         URI url = uriInfo.getAbsolutePathBuilder().path(serviceGroupDefinition.getName()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Service Group added successfully: [service-group] %s",
                         serviceGroupDefinition.getName()))).build();
     }
@@ -521,7 +521,7 @@ public class StratosApiV41 extends AbstractApi {
         }
         StratosApiV41Utils.addNetworkPartition(networkPartitionBean);
         URI url = uriInfo.getAbsolutePathBuilder().path(networkPartitionId).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Network partition added successfully: [network-partition] %s", networkPartitionId)))
                 .build();
     }
@@ -599,7 +599,7 @@ public class StratosApiV41 extends AbstractApi {
             ApplicationBean applicationDefinition) throws RestAPIException {
         StratosApiV41Utils.addApplication(applicationDefinition, getConfigContext(), getUsername(), getTenantDomain());
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationDefinition.getApplicationId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Application added successfully: [application] %s",
                         applicationDefinition.getApplicationId()))).build();
     }
@@ -674,7 +674,7 @@ public class StratosApiV41 extends AbstractApi {
             ApplicationPolicyBean applicationPolicy) throws RestAPIException {
         StratosApiV41Utils.addApplicationPolicy(applicationPolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(applicationPolicy.getId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Application policy added successfully: [application-policy] %s",
                         applicationPolicy.getId()))).build();
     }
@@ -1005,7 +1005,7 @@ public class StratosApiV41 extends AbstractApi {
 
         StratosApiV41Utils.addAutoscalingPolicy(autoscalePolicy);
         URI url = uriInfo.getAbsolutePathBuilder().path(autoscalePolicy.getId()).build();
-        return Response.created(url).entity(new SuccessResponseBean(Response.Status.OK.getStatusCode(),
+        return Response.created(url).entity(new SuccessResponseBean(Response.Status.CREATED.getStatusCode(),
                 String.format("Autoscaling policy added successfully: [autoscale-policy] %s",
                         autoscalePolicy.getId()))).build();
     }
