@@ -43,8 +43,7 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
-import org.apache.stratos.cloud.controller.stub.domain.Volume;
+import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.messaging.domain.application.*;
@@ -360,7 +359,7 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-            CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
+            Cartridge cartridgeInfo = getCartridge(cartridgeType);
             if(cartridgeInfo == null) {
                 throw new RuntimeException("Cartridge not found: " + cartridgeType);
             }
@@ -404,7 +403,7 @@ public class DefaultApplicationParser implements ApplicationParser {
                                 throw new RuntimeException(String.format("Could not find dependent cartridge for " +
                                         "cartridge alias: [application] %s [cartridge-alias] %s", appId, cartridgeAlias));
                             }
-                            CartridgeInfo dependencyCartridge = getCartridge(dependentCartridgeType);
+                            Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
 		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
 		                    if (dataHolder != null) {
@@ -491,7 +490,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 			String subscriptionAlias = subscribableInfoContext.getAlias();
 
 			// check if a cartridgeInfo with relevant type is already deployed. else, can't continue
-			CartridgeInfo cartridgeInfo = getCartridge(cartridgeType);
+			Cartridge cartridgeInfo = getCartridge(cartridgeType);
 			if (cartridgeInfo == null) {
 				handleError("No deployed Cartridge found with type [ " + cartridgeType +
 				            " ] for Composite Application");
@@ -935,7 +934,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return ApplicationClusterContext object with relevant information
      * @throws ApplicationDefinitionException If any error occurs
      */
-    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, CartridgeInfo cartridgeInfo,
+    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, Cartridge cartridgeInfo,
                                                                       String subscriptionKey, int tenantId, String repoUrl,
                                                                       String alias, String clusterId, String hostname,
                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
@@ -987,7 +986,7 @@ public class DefaultApplicationParser implements ApplicationParser {
         return token;
     }
 
-    private CartridgeInfo getCartridge(String cartridgeType) throws ApplicationDefinitionException {
+    private Cartridge getCartridge(String cartridgeType) throws ApplicationDefinitionException {
 
         try {
             return CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);

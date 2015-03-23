@@ -78,14 +78,14 @@ public class CloudControllerServiceClient {
         return instance;
     }
 
-    public void addCartridge(CartridgeConfig cartridgeConfig)
+    public void addCartridge(Cartridge cartridgeConfig)
             throws RemoteException, CloudControllerServiceCartridgeAlreadyExistsExceptionException,
             CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
             CloudControllerServiceInvalidIaasProviderExceptionException {
 		stub.addCartridge(cartridgeConfig);
 	}
 
-	public void updateCartridge(CartridgeConfig cartridgeConfig)
+	public void updateCartridge(Cartridge cartridgeConfig)
 			throws RemoteException, CloudControllerServiceInvalidCartridgeDefinitionExceptionException,
 			       CloudControllerServiceInvalidIaasProviderExceptionException,
 			       CloudControllerServiceCartridgeDefinitionNotExistsExceptionException {
@@ -142,7 +142,7 @@ public class CloudControllerServiceClient {
 		return stub.getCartridges();
 	}
 
-	public CartridgeInfo getCartridgeInfo(String cartridgeType) throws RemoteException, 
+	public Cartridge getCartridgeInfo(String cartridgeType) throws RemoteException,
 	CloudControllerServiceCartridgeNotFoundExceptionException {
 		return stub.getCartridgeInfo(cartridgeType);
 	}

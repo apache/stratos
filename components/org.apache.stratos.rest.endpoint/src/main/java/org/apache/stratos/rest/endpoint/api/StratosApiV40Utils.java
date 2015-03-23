@@ -27,8 +27,7 @@ import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeA
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeDefinitionExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidCartridgeTypeExceptionException;
 import org.apache.stratos.cloud.controller.stub.CloudControllerServiceInvalidIaasProviderExceptionException;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeConfig;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.common.beans.ApiResponseBean;
 import org.apache.stratos.common.beans.artifact.repository.GitNotificationPayloadBean;
 import org.apache.stratos.common.beans.cartridge.CartridgeBean;
@@ -70,7 +69,7 @@ public class StratosApiV40Utils {
 
         if (cloudControllerServiceClient != null) {
 
-            CartridgeConfig cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinitionBean);
+            Cartridge cartridgeConfig = ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinitionBean);
 
             if(cartridgeConfig == null) {
                 throw new RestAPIException("Populated CartridgeConfig instance is null, cartridge deployment aborted");
@@ -373,7 +372,7 @@ public class StratosApiV40Utils {
 
             if (availableCartridges != null) {
                 for (String cartridgeType : availableCartridges) {
-                    CartridgeInfo cartridgeInfo = null;
+                    Cartridge cartridgeInfo = null;
                     try {
                         cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
                     } catch (Exception e) {
@@ -753,7 +752,7 @@ public class StratosApiV40Utils {
         return null;
     }
 
-    static boolean cartridgeMatches(CartridgeInfo cartridgeInfo, Pattern pattern) {
+    static boolean cartridgeMatches(Cartridge cartridgeInfo, Pattern pattern) {
         if (pattern != null) {
             boolean matches = false;
             if (cartridgeInfo.getDisplayName() != null) {

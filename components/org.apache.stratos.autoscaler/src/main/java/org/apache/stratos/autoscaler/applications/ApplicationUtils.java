@@ -27,7 +27,7 @@ import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.payload.PayloadFactory;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.cloud.controller.stub.domain.CartridgeInfo;
+import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.PortMapping;
 import org.apache.stratos.common.Property;
 
@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class ApplicationUtils {
     private static final Log log = LogFactory.getLog(ApplicationUtils.class);
 
-    public static final String TOKEN_PAYLOD_PARAM_NAME = "TOKEN";
+    public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
     private static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid (String alias) {
@@ -137,7 +137,7 @@ public class ApplicationUtils {
 //        return metaDataHolder;
 //    }
 
-    private static String createPortMappingPayloadString (CartridgeInfo cartridge) {
+    private static String createPortMappingPayloadString (Cartridge cartridge) {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
@@ -191,7 +191,7 @@ public class ApplicationUtils {
         return payloadBuilder;
     }
 
-    public static PayloadData createPayload(String appId, String groupName, CartridgeInfo cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
+    public static PayloadData createPayload(String appId, String groupName, Cartridge cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
                                             org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs,
                                             String[] exportMetadata, String[] importMetadata)
@@ -207,31 +207,35 @@ public class ApplicationUtils {
                 cartridgeInfo.getType(), basicPayloadData);
 
         // get the payload parameters defined in the cartridgeInfo definition file for this cartridgeInfo type
-        if (cartridgeInfo.getProperties() != null && cartridgeInfo.getProperties().length != 0) {
 
-            org.apache.stratos.common.Properties cartridgeProps = AutoscalerUtil.toCommonProperties(cartridgeInfo.getProperties());
-            
-            if (cartridgeProps != null) {
+        if (cartridgeInfo.getProperties() != null) {
+            if (cartridgeInfo.getProperties().getProperties() != null && cartridgeInfo.getProperties().getProperties().length != 0) {
 
-                for (Property propertyEntry : cartridgeProps.getProperties()) {
-                    // check if a property is related to the payload. Currently
-                    // this is done by checking if the
-                    // property name starts with 'payload_parameter.' suffix. If
-                    // so the payload param name will
-                    // be taken as the substring from the index of '.' to the
-                    // end of the property name.
-                    if (propertyEntry.getName().startsWith("payload_parameter.")) {
-                        String payloadParamName = propertyEntry.getName();
-                        String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
-                        if ("DEPLOYMENT".equals(payloadParamSubstring)) {
-                            payloadData.getBasicPayloadData().setDeployment(payloadParamSubstring);
-                            continue;
+                org.apache.stratos.common.Properties cartridgeProps = AutoscalerUtil.toCommonProperties(cartridgeInfo.getProperties().getProperties());
+
+                if (cartridgeProps != null) {
+
+                    for (Property propertyEntry : cartridgeProps.getProperties()) {
+                        // check if a property is related to the payload. Currently
+                        // this is done by checking if the
+                        // property name starts with 'payload_parameter.' suffix. If
+                        // so the payload param name will
+                        // be taken as the substring from the index of '.' to the
+                        // end of the property name.
+                        if (propertyEntry.getName().startsWith("payload_parameter.")) {
+                            String payloadParamName = propertyEntry.getName();
+                            String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
+                            if ("DEPLOYMENT".equals(payloadParamSubstring)) {
+                                payloadData.getBasicPayloadData().setDeployment(payloadParamSubstring);
+                                continue;
+                            }
+                            payloadData.add(payloadParamSubstring, propertyEntry.getValue());
                         }
-                        payloadData.add(payloadParamSubstring, propertyEntry.getValue());
                     }
                 }
             }
         }
+
         
         // get subscription payload parameters (MB_IP, MB_PORT so on) and set them to payload (kubernetes scenario)
         if (properties != null && properties.getProperties() != null && properties.getProperties().length != 0) {
@@ -245,7 +249,7 @@ public class ApplicationUtils {
 		}
 
         if(!StringUtils.isEmpty(oauthToken)){
-            payloadData.add(TOKEN_PAYLOD_PARAM_NAME, oauthToken);
+            payloadData.add(TOKEN_PAYLOAD_PARAM_NAME, oauthToken);
         }
         //check if there are any custom payload entries defined
         if (customPayloadEntries != null) {
@@ -259,7 +263,7 @@ public class ApplicationUtils {
         return payloadData;
     }
 
-    private static BasicPayloadData createBasicPayload(String appId, String groupName, CartridgeInfo cartridge,
+    private static BasicPayloadData createBasicPayload(String appId, String groupName, Cartridge cartridge,
                                                        String subscriptionKey, String clusterId,
                                                        String hostName, String repoUrl, String alias,
                                                        int tenantId, String[] dependencyAliases,String[] dependencyCLusterIDs,

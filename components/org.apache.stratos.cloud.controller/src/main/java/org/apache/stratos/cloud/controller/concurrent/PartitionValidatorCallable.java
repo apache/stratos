@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.cloud.controller.domain.Cartridge;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
@@ -45,7 +46,7 @@ public class PartitionValidatorCallable implements Callable<IaasProvider> {
             log.debug("Partition validation started for " + partition + " of " + cartridge);
         }
         String provider = partition.getProvider();
-        IaasProvider iaasProvider = cartridge.getIaasProvider(provider);
+        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider(cartridge.getType(), provider);
 
         IaasProvider updatedIaasProvider =
                 CloudControllerServiceUtil.validatePartitionAndGetIaasProvider(partition, iaasProvider);

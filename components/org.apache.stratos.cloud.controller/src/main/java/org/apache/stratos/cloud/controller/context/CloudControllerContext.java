@@ -73,6 +73,7 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_SERVICE_GROUPS_WRITE_LOCK = "CC_SERVICE_GROUPS_WRITE_LOCK";
 
     private static final String CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP = "CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP";
+    private static final String CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP = "CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP";
     private static volatile CloudControllerContext instance;
 
     private final transient DistributedObjectProvider distributedObjectProvider;
@@ -165,6 +166,12 @@ public class CloudControllerContext implements Serializable {
      */
     private Map<String, Map<String, IaasProvider>> partitionToIaasProviderByCartridge;
 
+    /**
+     * Key - cartridge id (cartridge type is used as an unique identifier)
+     * Value - IaasProvider
+     */
+    private Map<String, List<IaasProvider>> cartridgeTypeToIaasProvider;
+
     private String streamId;
     private boolean isPublisherRunning;
     private boolean isTopologySyncRunning;
@@ -196,6 +203,7 @@ public class CloudControllerContext implements Serializable {
 		deploymentPolicyIDToDeployPolicyMap=distributedObjectProvider.getMap(CC_DEPLOYMENT_POLICY_ID_TO_DEPLOYEMENT_POLICY_MAP);
 		networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
         partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
+        cartridgeTypeToIaasProvider = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
         // Update context from the registry
         updateContextFromRegistry();
     }
@@ -773,5 +781,56 @@ public class CloudControllerContext implements Serializable {
 
     public Map<String, IaasProvider> getPartitionToIaasProvider(String cartridgeId) {
         return this.partitionToIaasProviderByCartridge.get(cartridgeId);
+    }
+
+    public Map<String, List<IaasProvider>> getCartridgeTypeToIaasProvider() {
+        return this.cartridgeTypeToIaasProvider;
+    }
+
+    public void setCartridgeTypeToIaasProvider(Map<String, List<IaasProvider>> cartridgeTypeToIaasProvider) {
+        this.cartridgeTypeToIaasProvider = cartridgeTypeToIaasProvider;
+    }
+
+    public void addIaasProvider(String cartridgeId, IaasProvider iaas) {
+        List<IaasProvider> iaasProviderList = new ArrayList<IaasProvider>();
+        if (cartridgeTypeToIaasProvider.get(cartridgeId) != null) {
+            iaasProviderList = cartridgeTypeToIaasProvider.get(cartridgeId);
+        }
+
+        if (iaasProviderList != null) {
+            for (IaasProvider anIaas : iaasProviderList) {
+                if (anIaas.equals(iaas)) {
+                    int idx = iaasProviderList.indexOf(anIaas);
+                    iaasProviderList.remove(idx);
+                    iaasProviderList.add(idx, iaas);
+                    return;
+                }
+            }
+        }
+
+        iaasProviderList.add(iaas);
+        this.cartridgeTypeToIaasProvider.put(cartridgeId, iaasProviderList);
+    }
+
+    public IaasProvider getIaasProvider(String cartridgeId, String iaasType){
+        List<IaasProvider> iaasProviderList = cartridgeTypeToIaasProvider.get(cartridgeId);
+
+        if (iaasProviderList != null) {
+            for (IaasProvider iaas : iaasProviderList) {
+                if(iaas.getType().equals(iaasType)){
+                    return iaas;
+                }
+            }
+        }
+        return null;
+    }
+
+    public List<IaasProvider> getIaases(String cartridgeId) {
+        List<IaasProvider> iaasProviderList = cartridgeTypeToIaasProvider.get(cartridgeId);
+
+        if (iaasProviderList != null) {
+            return iaasProviderList;
+        }
+        return  null;
     }
 }

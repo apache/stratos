@@ -77,7 +77,7 @@ public class CloudControllerUtil {
         }
     }
 
-    public static Cartridge toCartridge(CartridgeConfig config) {
+    public static Cartridge toCartridge(Cartridge config) {
         if (config == null) {
             return null;
         }
@@ -89,16 +89,14 @@ public class CloudControllerUtil {
 	    cartridge.setDescription(config.getDescription());
 	    cartridge.setHostName(config.getHostName());
 	    String[] deploymentDirs = config.getDeploymentDirs();
-	    if ((deploymentDirs != null) && (deploymentDirs.length > 0)) {
-		    cartridge.setDeploymentDirs(Arrays.asList(deploymentDirs));
-	    }
+	    cartridge.setDeploymentDirs(deploymentDirs);
 	    cartridge.setProvider(config.getProvider());
 	    cartridge.setCategory(config.getCategory());
 	    cartridge.setVersion(config.getVersion());
 	    cartridge.setBaseDir(config.getBaseDir());
         
         if (config.getPortMappings() != null) {
-			cartridge.setPortMappings(Arrays.asList(config.getPortMappings()));
+			cartridge.setPortMappings(config.getPortMappings());
 		}
         
         if(config.getPersistence() != null){
@@ -195,7 +193,7 @@ public class CloudControllerUtil {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
                     }
 
-                    cartridge.addIaasProvider(iaasProvider);
+                    CloudControllerContext.getInstance().addIaasProvider(cartridge.getType(), iaasProvider);
                 }
             }
         }
@@ -207,35 +205,36 @@ public class CloudControllerUtil {
         return cartridge;
     }
 	  
-    public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
+    /*public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
 
 		CartridgeInfo cartridgeInfo = new CartridgeInfo();
 		cartridgeInfo.setType(cartridge.getType());
 		cartridgeInfo.setDisplayName(cartridge.getDisplayName());
 		cartridgeInfo.setDescription(cartridge.getDescription());
 		cartridgeInfo.setHostName(cartridge.getHostName());
-		cartridgeInfo.setDeploymentDirs(cartridge.getDeploymentDirs());
+
+        if ((cartridge.getDeploymentDirs() != null) && (cartridge.getDeploymentDirs().length > 0)) {
+            cartridgeInfo.setDeploymentDirs(Arrays.asList(cartridge.getDeploymentDirs()));
+        }
 		cartridgeInfo.setProvider(cartridge.getProvider());
 	    cartridgeInfo.setCategory(cartridge.getCategory());
 		cartridgeInfo.setVersion(cartridge.getVersion());
 		cartridgeInfo.setMultiTenant(cartridge.isMultiTenant());
 		cartridgeInfo.setBaseDir(cartridge.getBaseDir());
         cartridgeInfo.setTenantPartitions(cartridge.getTenantPartitions());
-		cartridgeInfo.setPortMappings(cartridge.getPortMappings()
-                .toArray(new PortMapping[cartridge.getPortMappings().size()]));
-		cartridgeInfo.setAppTypes(cartridge.getAppTypeMappings()
-                .toArray(new AppType[cartridge.getAppTypeMappings().size()]));
+		cartridgeInfo.setPortMappings(cartridge.getPortMappings());
+		cartridgeInfo.setAppTypes(cartridge.getAppTypeMappings());
 
 		List<Property> propList = new ArrayList<Property>();
         cartridgeInfo.setPersistence(cartridge.getPersistence());
 		
-		/*for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
+		*//*for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
 	        @SuppressWarnings("unchecked")
             Map.Entry<String, String> entry = (Entry<String, String>) iterator.next();
 	        
 	        Property prop = new Property(entry.getKey(), entry.getValue());
 	        propList.add(prop);
-        }*/
+        }*//*
 
         List<Property> propertyList = new ArrayList<Property>();
         if (cartridge.getProperties()!= null) {
@@ -249,7 +248,7 @@ public class CloudControllerUtil {
 	    cartridgeInfo.setMetadataKeys(cartridge.getMetadataKeys());
 
 		return cartridgeInfo;
-	}
+	}*/
 
     public static void sleep(long time){
     	try {

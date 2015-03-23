@@ -40,7 +40,7 @@ public interface CloudControllerService {
 	 * @throws InvalidIaasProviderException        if the iaas providers configured are not valid.
 	 * @throws IllegalArgumentException            if the provided argument is not valid.
 	 */
-	void addCartridge(CartridgeConfig cartridgeConfig)
+	void addCartridge(Cartridge cartridgeConfig)
 			throws InvalidCartridgeDefinitionException, InvalidIaasProviderException, CartridgeAlreadyExistsException;
 
 	/**
@@ -51,7 +51,7 @@ public interface CloudControllerService {
 	 * @throws InvalidIaasProviderException
 	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeDefinitionNotExistsException
 	 */
-	public void updateCartridge(CartridgeConfig cartridgeConfig) throws InvalidCartridgeDefinitionException,
+	public void updateCartridge(Cartridge cartridgeConfig) throws InvalidCartridgeDefinitionException,
 	                                                                    InvalidIaasProviderException,
 	                                                                    CartridgeDefinitionNotExistsException;
 
@@ -207,12 +207,12 @@ public interface CloudControllerService {
 	 * Else this will return <code>null</code>.
 	 *
 	 * @param cartridgeType type of the cartridge.
-	 * @return {@link org.apache.stratos.cloud.controller.domain.CartridgeInfo} of the given cartridge type or
+	 * @return {@link org.apache.stratos.cloud.controller.domain.Cartridge} of the given cartridge type or
 	 * <code>null</code>.
 	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
 	 * cartridge with this type.
 	 */
-	CartridgeInfo getCartridgeInfo(String cartridgeType) throws CartridgeNotFoundException;
+	Cartridge getCartridgeInfo(String cartridgeType) throws CartridgeNotFoundException;
 
 	/**
 	 * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.domain

@@ -19,6 +19,7 @@
 package org.apache.stratos.cloud.controller.domain;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.*;
@@ -44,24 +45,23 @@ public class Cartridge implements Serializable{
     private String version;
     private boolean multiTenant;
     private String tenantPartitions;
-    private List<PortMapping> portMappings;
+    private PortMapping[] portMappings;
     private Persistence persistence;
-    private List<AppType> appTypeMappings;
+    private AppType[] appTypeMappings;
     private String loadBalancingIPType;
 	private String[] metadataKeys;
 
+    private boolean isPublic;
+
     /**
-     * Property map of this Cartridge.
+     * Property of this Cartridge.
      */
     private org.apache.stratos.common.Properties properties;
-    
-    /**
-     * A Cartridge can have 1..n {@link IaasProvider}s
-     */
-    private List<IaasProvider> iaases;
-    private List<String> deploymentDirs;
-    private IaasProvider lastlyUsedIaas;
+
+    private String[] deploymentDirs;
     private String[] exportingProperties;
+
+    private IaasConfig[] iaasConfigs;
 
     public Cartridge(){
     	init();
@@ -77,11 +77,6 @@ public class Cartridge implements Serializable{
     }
     
     private void init() {
-    	portMappings = new ArrayList<PortMapping>();
-    	portMappings = new ArrayList<PortMapping>();
-    	appTypeMappings = new ArrayList<AppType>();
-    	iaases = new ArrayList<IaasProvider>();
-    	deploymentDirs = new ArrayList<String>();
         tenantPartitions = "*";
     }
 
@@ -109,37 +104,7 @@ public class Cartridge implements Serializable{
     public void setProperties(org.apache.stratos.common.Properties properties) {
         this.properties = properties;
     }
-    
-    public void addIaasProvider(IaasProvider iaas) {
-        for (IaasProvider anIaas : iaases) {
-            if(anIaas.equals(iaas)){
-                int idx = iaases.indexOf(anIaas);
-                iaases.remove(idx);
-                iaases.add(idx, iaas);
-                return;
-            }
-        }
-        this.iaases.add(iaas);
-    }
-    
-    public IaasProvider getIaasProvider(String iaasType){
-    	for (IaasProvider iaas : iaases) {
-	        if(iaas.getType().equals(iaasType)){
-	        	return iaas;
-	        }
-        }
-    	
-    	return null;
-    }
 
-    public List<IaasProvider> getIaases() {
-        return iaases;
-    }
-
-	public void setIaases(List<IaasProvider> iaases) {
-        this.iaases = iaases;
-    }
-    
 	public boolean equals(Object obj) {
 		if (obj instanceof Cartridge) {
 			return this.type.equals(((Cartridge)obj).getType());
@@ -151,14 +116,6 @@ public class Cartridge implements Serializable{
         return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
             append(type).
             toHashCode();
-    }
-
-    public IaasProvider getLastlyUsedIaas() {
-        return lastlyUsedIaas;
-    }
-
-    public void setLastlyUsedIaas(IaasProvider lastlyUsedIaas) {
-        this.lastlyUsedIaas = lastlyUsedIaas;
     }
 
 	public String getDisplayName() {
@@ -188,24 +145,33 @@ public class Cartridge implements Serializable{
 	public void reset(){
 	}
 
-	public List<String> getDeploymentDirs() {
+	public String[] getDeploymentDirs() {
 	    return deploymentDirs;
     }
 
-	public void setDeploymentDirs(List<String> deploymentDirs) {
+	public void setDeploymentDirs(String[] deploymentDirs) {
 	    this.deploymentDirs = deploymentDirs;
     }
 	
 	public void addDeploymentDir(String dir){
-		deploymentDirs.add(dir);
+        List<String> deploymentDirList = null;
+        if (dir != null) {
+            deploymentDirList = Arrays.asList(dir);
+        }
+        deploymentDirList.add(dir);
+        deploymentDirs = deploymentDirList.toArray(new String[deploymentDirList.size()]);
 	}
 	
 	public void addPortMapping(PortMapping mapping){
-		portMappings.add(mapping);
+        List<PortMapping> portMappingList = Arrays.asList(mapping);
+        portMappingList.add(mapping);
+        portMappingList.toArray(this.portMappings);
 	}
 	
 	public void addAppType(AppType type){
-		appTypeMappings.add(type);
+        List<AppType> appTypeList = Arrays.asList(type);
+        appTypeList.add(type);
+        appTypeList.toArray(this.appTypeMappings);
 	}
 
 	public String getProvider() {
@@ -240,19 +206,19 @@ public class Cartridge implements Serializable{
 	    this.baseDir = baseDir;
     }
 
-	public List<PortMapping> getPortMappings() {
+	public PortMapping[] getPortMappings() {
 	    return portMappings;
     }
 
-	public void setPortMappings(List<PortMapping> portMappings) {
+	public void setPortMappings(PortMapping[] portMappings) {
 	    this.portMappings = portMappings;
     }
 
-	public List<AppType> getAppTypeMappings() {
+	public AppType[] getAppTypeMappings() {
     	return appTypeMappings;
     }
 
-	public void setAppTypeMappings(List<AppType> appTypeMappings) {
+	public void setAppTypeMappings(AppType[] appTypeMappings) {
     	this.appTypeMappings = appTypeMappings;
     }
 
@@ -310,6 +276,22 @@ public class Cartridge implements Serializable{
         this.loadBalancingIPType = loadBalancingIPType;
     }
 
+    public IaasConfig[] getIaasConfigs() {
+        return iaasConfigs;
+    }
+
+    public void setIaasConfigs(IaasConfig[] iaasConfigs) {
+        this.iaasConfigs = ArrayUtils.clone(iaasConfigs);
+    }
+
+    public boolean getIsPublic() {
+        return isPublic;
+    }
+
+    public void setIsPublic(boolean isPublic) {
+        this.isPublic = isPublic;
+    }
+
     @Override
     public String toString() {
         return "Cartridge [type=" + type
@@ -320,5 +302,4 @@ public class Cartridge implements Serializable{
                 + ", properties=" + properties
                 + "]";
     }
-
 }

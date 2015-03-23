@@ -61,14 +61,14 @@ import java.util.*;
 
 public class ObjectConverter {
 
-    public static CartridgeConfig convertCartridgeBeanToStubCartridgeConfig(
+    public static Cartridge convertCartridgeBeanToStubCartridgeConfig(
             CartridgeBean cartridgeBean) {
     	
     	if (cartridgeBean == null) {
 			return null;
 		}
 
-        CartridgeConfig cartridgeConfig = new CartridgeConfig();
+        Cartridge cartridgeConfig = new Cartridge();
 
         cartridgeConfig.setType(cartridgeBean.getType());
         cartridgeConfig.setHostName(cartridgeBean.getHost());

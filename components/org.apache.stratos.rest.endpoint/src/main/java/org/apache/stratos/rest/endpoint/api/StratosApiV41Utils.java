@@ -101,7 +101,7 @@ public class StratosApiV41Utils {
                 log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
             }
 
-	        CartridgeConfig cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
+	        Cartridge cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
             CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
             cloudControllerServiceClient.addCartridge(cartridgeConfig);
 
@@ -122,7 +122,7 @@ public class StratosApiV41Utils {
 				log.debug(String.format("Adding cartridge: [cartridge-type] %s ", cartridgeDefinition.getType()));
 			}
 
-			CartridgeConfig cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
+			Cartridge cartridgeConfig = createCartridgeConfig(cartridgeDefinition);
 			CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance();
 			cloudControllerServiceClient.updateCartridge(cartridgeConfig);
 
@@ -141,9 +141,9 @@ public class StratosApiV41Utils {
 		}
 	}
 
-	private static CartridgeConfig createCartridgeConfig(CartridgeBean cartridgeDefinition)
+	private static Cartridge createCartridgeConfig(CartridgeBean cartridgeDefinition)
 			throws RestAPIException {
-		CartridgeConfig cartridgeConfig =
+		Cartridge cartridgeConfig =
 				ObjectConverter.convertCartridgeBeanToStubCartridgeConfig(cartridgeDefinition);
 		if (cartridgeConfig == null) {
 			throw new RestAPIException("Could not read cartridge definition, cartridge deployment failed");
@@ -250,7 +250,7 @@ public class StratosApiV41Utils {
 
 			if (availableCartridges != null) {
 				for (String cartridgeType : availableCartridges) {
-					CartridgeInfo cartridgeInfo = null;
+					Cartridge cartridgeInfo = null;
 					try {
 						cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
 					} catch (Exception e) {
@@ -318,7 +318,7 @@ public class StratosApiV41Utils {
 
             if (availableCartridges != null) {
                 for (String cartridgeType : availableCartridges) {
-                    CartridgeInfo cartridgeInfo = null;
+                    Cartridge cartridgeInfo = null;
                     try {
                         cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
                     } catch (Exception e) {
@@ -386,7 +386,7 @@ public class StratosApiV41Utils {
 
     public static CartridgeBean getCartridge(String cartridgeType) throws RestAPIException {
         try {
-            CartridgeInfo cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
             if(cartridgeInfo == null) {
                 return null;
             }
@@ -404,7 +404,7 @@ public class StratosApiV41Utils {
 
 	public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException {
 		try {
-			CartridgeInfo cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+			Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
 			if (cartridgeInfo == null) {
 				return null;
 			}
@@ -421,7 +421,7 @@ public class StratosApiV41Utils {
 
 	}
 
-    private static CartridgeBean convertCartridgeToCartridgeDefinitionBean(CartridgeInfo cartridgeInfo) {
+    private static CartridgeBean convertCartridgeToCartridgeDefinitionBean(Cartridge cartridgeInfo) {
         CartridgeBean cartridge = new CartridgeBean();
         cartridge.setType(cartridgeInfo.getType());
         cartridge.setProvider(cartridgeInfo.getProvider());
@@ -483,7 +483,7 @@ public class StratosApiV41Utils {
         return null;
     }
 
-    private static boolean cartridgeMatches(CartridgeInfo cartridgeInfo, Pattern pattern) {
+    private static boolean cartridgeMatches(Cartridge cartridgeInfo, Pattern pattern) {
         if (pattern != null) {
             boolean matches = false;
             if (cartridgeInfo.getDisplayName() != null) {

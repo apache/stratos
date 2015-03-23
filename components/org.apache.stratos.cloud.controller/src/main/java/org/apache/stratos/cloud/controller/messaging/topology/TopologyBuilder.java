@@ -67,7 +67,7 @@ public class TopologyBuilder {
                 if (!topology.serviceExists(cartridge.getType())) {
                     ServiceType serviceType = cartridge.isMultiTenant() ? ServiceType.MultiTenant : ServiceType.SingleTenant;
                     service = new Service(cartridge.getType(), serviceType);
-                    List<PortMapping> portMappings = cartridge.getPortMappings();
+                    List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                     Properties properties = new Properties();
 
                     try {
@@ -627,7 +627,7 @@ public class TopologyBuilder {
                     }
 
                     Port port; int portValue;
-                    List<PortMapping> portMappings = cartridge.getPortMappings();
+                    List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
                     String clusterId = cluster.getClusterId();
                     ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
                     List<KubernetesService> kubernetesServices = clusterContext.getKubernetesServices();

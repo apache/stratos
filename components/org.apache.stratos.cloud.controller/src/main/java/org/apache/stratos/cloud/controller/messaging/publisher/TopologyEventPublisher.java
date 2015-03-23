@@ -58,7 +58,7 @@ public class TopologyEventPublisher {
 
             // Add ports to the event
             Port port;
-            List<PortMapping> portMappings = cartridge.getPortMappings();
+            List<PortMapping> portMappings = Arrays.asList(cartridge.getPortMappings());
             for (PortMapping portMapping : portMappings) {
                 port = new Port(portMapping.getProtocol(), portMapping.getPort(), portMapping.getProxyPort());
                 serviceCreatedEvent.addPort(port);
