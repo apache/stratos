@@ -212,7 +212,7 @@ public interface CloudControllerService {
 	 * @throws org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException if there is no registered
 	 * cartridge with this type.
 	 */
-	Cartridge getCartridgeInfo(String cartridgeType) throws CartridgeNotFoundException;
+	Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException;
 
 	/**
 	 * Calling this method will result in returning the types of {@link org.apache.stratos.cloud.controller.domain

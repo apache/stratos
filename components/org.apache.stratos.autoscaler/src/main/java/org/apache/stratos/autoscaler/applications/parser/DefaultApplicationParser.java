@@ -30,19 +30,16 @@ import org.apache.stratos.autoscaler.applications.MTClusterInformation;
 import org.apache.stratos.autoscaler.applications.STClusterInformation;
 import org.apache.stratos.autoscaler.applications.payload.PayloadData;
 import org.apache.stratos.autoscaler.applications.pojo.*;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.client.IdentityApplicationManagementServiceClient;
 import org.apache.stratos.autoscaler.client.OAuthAdminServiceClient;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
-import org.apache.stratos.autoscaler.exception.cartridge.CartridgeInformationException;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.cloud.controller.stub.CloudControllerServiceCartridgeNotFoundExceptionException;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
@@ -359,13 +356,13 @@ public class DefaultApplicationParser implements ApplicationParser {
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
-            Cartridge cartridgeInfo = getCartridge(cartridgeType);
-            if(cartridgeInfo == null) {
+            Cartridge cartridge = getCartridge(cartridgeType);
+            if(cartridge == null) {
                 throw new RuntimeException("Cartridge not found: " + cartridgeType);
             }
 
             // Add metadata keys defined in cartridges as export metadata keys
-		    String[] metadataKeys = cartridgeInfo.getMetadataKeys();
+		    String[] metadataKeys = cartridge.getMetadataKeys();
 		    if (metadataKeys != null) {
 		    	for (String str : metadataKeys) {
 		    		if(!StringUtils.isBlank(str)) {
@@ -377,13 +374,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             // get hostname and cluster id
             ClusterInformation clusterInfo;
-            if (cartridgeInfo.getMultiTenant()) {
+            if (cartridge.getMultiTenant()) {
                 clusterInfo = new MTClusterInformation();
             } else {
                 clusterInfo = new STClusterInformation();
             }
 
-            String hostname = clusterInfo.getHostName(appId, subscriptionAlias, cartridgeInfo.getHostName());
+            String hostname = clusterInfo.getHostName(appId, subscriptionAlias, cartridge.getHostName());
             String clusterId = clusterInfo.getClusterId(appId, subscriptionAlias, cartridgeType);
             String repoUrl = null;
             if (subscribableInfoContext.getArtifactRepositoryContext() != null) {
@@ -437,13 +434,13 @@ public class DefaultApplicationParser implements ApplicationParser {
 		    arrImportMetadata = importMetadataKeys.toArray(arrImportMetadata);
 
             // Find tenant range of cluster
-            String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridgeInfo.getTenantPartitions());
+            String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridge.getTenantPartitions());
 		    Boolean isLB=false;
-			if(cartridgeInfo.getCategory().equals("lb")){
+			if(cartridge.getCategory().equals("lb")){
 				isLB=true;
 		    }
             // create and collect this cluster's information
-            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridgeInfo,
+            ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
                     subscribableInfoContext.getDeploymentPolicy(), isLB,
                     tenantRange, subscribableInfoContext.getDependencyAliases(),
@@ -489,17 +486,17 @@ public class DefaultApplicationParser implements ApplicationParser {
 			SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
 			String subscriptionAlias = subscribableInfoContext.getAlias();
 
-			// check if a cartridgeInfo with relevant type is already deployed. else, can't continue
-			Cartridge cartridgeInfo = getCartridge(cartridgeType);
-			if (cartridgeInfo == null) {
+			// check if a cartridge with relevant type is already deployed. else, can't continue
+			Cartridge cartridge = getCartridge(cartridgeType);
+			if (cartridge == null) {
 				handleError("No deployed Cartridge found with type [ " + cartridgeType +
 				            " ] for Composite Application");
 			}
 
 			// get hostname and cluster id
 			ClusterInformation clusterInfo;
-			assert cartridgeInfo != null;
-			if (cartridgeInfo.getMultiTenant()) {
+			assert cartridge != null;
+			if (cartridge.getMultiTenant()) {
 				clusterInfo = new MTClusterInformation();
 			} else {
 				clusterInfo = new STClusterInformation();
@@ -921,7 +918,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      *
      * @param appId                Application id
      * @param groupName            Group name
-     * @param cartridgeInfo        Cartridge information
+     * @param cartridge            Cartridge information
      * @param subscriptionKey      Generated key for the Application
      * @param tenantId             Tenant Id of the tenant which deployed the Application
      * @param repoUrl              Repository URL
@@ -934,7 +931,7 @@ public class DefaultApplicationParser implements ApplicationParser {
      * @return ApplicationClusterContext object with relevant information
      * @throws ApplicationDefinitionException If any error occurs
      */
-    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, Cartridge cartridgeInfo,
+    private ApplicationClusterContext createApplicationClusterContext(String appId, String groupName, Cartridge cartridge,
                                                                       String subscriptionKey, int tenantId, String repoUrl,
                                                                       String alias, String clusterId, String hostname,
                                                                       String deploymentPolicy, boolean isLB, String tenantRange,
@@ -943,12 +940,12 @@ public class DefaultApplicationParser implements ApplicationParser {
             throws ApplicationDefinitionException {
 
         // Create text payload
-        PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridgeInfo, subscriptionKey, tenantId, clusterId,
+        PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
                 hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs,exportMetadata,importMetadata);
 
         String textPayload = payloadData.toString();
         log.debug("Payload :: " + textPayload);
-        return new ApplicationClusterContext(cartridgeInfo.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange, dependencyClustorIDs);
+        return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange, dependencyClustorIDs);
     }
 
     public String createToken(String applicationId) throws AutoScalerException {
@@ -989,7 +986,7 @@ public class DefaultApplicationParser implements ApplicationParser {
     private Cartridge getCartridge(String cartridgeType) throws ApplicationDefinitionException {
 
         try {
-            return CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+            return CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
         } catch (Exception e) {
             throw new ApplicationDefinitionException(e);
         }

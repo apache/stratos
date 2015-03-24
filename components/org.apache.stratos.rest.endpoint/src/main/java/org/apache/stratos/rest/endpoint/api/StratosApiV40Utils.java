@@ -374,7 +374,7 @@ public class StratosApiV40Utils {
                 for (String cartridgeType : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "

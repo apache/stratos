@@ -38,6 +38,8 @@ public class ApplicationUtils {
     private static final Log log = LogFactory.getLog(ApplicationUtils.class);
 
     public static final String TOKEN_PAYLOAD_PARAM_NAME = "TOKEN";
+    public static final String DEPLOYMENT = "DEPLOYMENT";
+    public static final String PAYLOAD_PARAMETER = "payload_parameter.";
     private static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
     public static boolean isAliasValid (String alias) {
@@ -71,71 +73,6 @@ public class ApplicationUtils {
 
         return globalProperties;
     }
-
-//    public static MetaDataHolder getClusterLevelPayloadData (String appId, String groupName, int tenantId, String key,
-//                                                                String hostname, String tenantRange, String clusterId,
-//                                                                SubscribableContext subscribableCtxt,
-//                                                                SubscribableInfoContext subscribableInfoCtxt,
-//                                                                Cartridge cartridge) {
-//
-//        MetaDataHolder metaDataHolder;
-//        if (groupName != null) {
-//            metaDataHolder = new MetaDataHolder(appId, groupName, clusterId);
-//        } else {
-//            metaDataHolder = new MetaDataHolder(appId, clusterId);
-//        }
-//
-//        Properties clusterLevelPayloadProperties = new Properties();
-//        // app id
-//        clusterLevelPayloadProperties.setProperty("APP_ID", appId);
-//        // group name
-//        if (groupName != null) {
-//            clusterLevelPayloadProperties.setProperty("GROUP_NAME", groupName);
-//        }
-//        // service name
-//        if (subscribableCtxt.getType() != null) {
-//            clusterLevelPayloadProperties.put("SERVICE_NAME", subscribableCtxt.getType());
-//        }
-//        // host name
-//        if  (hostname != null) {
-//            clusterLevelPayloadProperties.put("HOST_NAME", hostname);
-//        }
-//        // multi tenant
-//        clusterLevelPayloadProperties.put("MULTITENANT", String.valueOf(cartridge.isMultiTenant()));
-//        // tenant range
-//        if (tenantRange != null) {
-//            clusterLevelPayloadProperties.put("TENANT_RANGE", tenantRange);
-//        }
-//        // cartridge alias
-//        if (subscribableCtxt.getAlias() != null) {
-//            clusterLevelPayloadProperties.put("CARTRIDGE_ALIAS", subscribableCtxt.getAlias());
-//        }
-//        // cluster id
-//        if (clusterId != null) {
-//            clusterLevelPayloadProperties.put("CLUSTER_ID", clusterId);
-//        }
-//        // repo url
-//        if (subscribableInfoCtxt.getRepoUrl() != null) {
-//            clusterLevelPayloadProperties.put("REPO_URL", subscribableInfoCtxt.getRepoUrl());
-//        }
-//        // ports
-////        if (createPortMappingPayloadString(cartridge) != null) {
-////            clusterLevelPayloadProperties.put("PORTS", createPortMappingPayloadString(cartridge));
-////        }
-//        // provider
-//        if (cartridge.getProvider() != null) {
-//            clusterLevelPayloadProperties.put("PROVIDER", cartridge.getProvider());
-//        }
-//        // tenant id
-//        clusterLevelPayloadProperties.setProperty("TENANT_ID", String.valueOf(tenantId));
-//        // cartridge key
-//        clusterLevelPayloadProperties.setProperty("CARTRIDGE_KEY", key);
-//        // get global payload params
-//        //clusterLevelPayloadProperties.putAll(ApplicationUtils.getGlobalPayloadData());
-//
-//        metaDataHolder.setProperties(clusterLevelPayloadProperties);
-//        return metaDataHolder;
-//    }
 
     private static String createPortMappingPayloadString (Cartridge cartridge) {
 
@@ -191,27 +128,27 @@ public class ApplicationUtils {
         return payloadBuilder;
     }
 
-    public static PayloadData createPayload(String appId, String groupName, Cartridge cartridgeInfo, String subscriptionKey, int tenantId, String clusterId,
+    public static PayloadData createPayload(String appId, String groupName, Cartridge cartridge, String subscriptionKey, int tenantId, String clusterId,
                                             String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
                                             org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs,
                                             String[] exportMetadata, String[] importMetadata)
             throws ApplicationDefinitionException {
 
         //Create the payload
-        BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridgeInfo, subscriptionKey,
+        BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridge, subscriptionKey,
                 clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs,exportMetadata,importMetadata);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
-        PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridgeInfo.getProvider(),
-                cartridgeInfo.getType(), basicPayloadData);
+        PayloadData payloadData = PayloadFactory.getPayloadDataInstance(cartridge.getProvider(),
+                cartridge.getType(), basicPayloadData);
 
-        // get the payload parameters defined in the cartridgeInfo definition file for this cartridgeInfo type
+        // get the payload parameters defined in the cartridge definition file for this cartridge type
 
-        if (cartridgeInfo.getProperties() != null) {
-            if (cartridgeInfo.getProperties().getProperties() != null && cartridgeInfo.getProperties().getProperties().length != 0) {
+        if (cartridge.getProperties() != null) {
+            if (cartridge.getProperties().getProperties() != null && cartridge.getProperties().getProperties().length != 0) {
 
-                org.apache.stratos.common.Properties cartridgeProps = AutoscalerUtil.toCommonProperties(cartridgeInfo.getProperties().getProperties());
+                org.apache.stratos.common.Properties cartridgeProps = AutoscalerUtil.toCommonProperties(cartridge.getProperties().getProperties());
 
                 if (cartridgeProps != null) {
 
@@ -222,14 +159,14 @@ public class ApplicationUtils {
                         // so the payload param name will
                         // be taken as the substring from the index of '.' to the
                         // end of the property name.
-                        if (propertyEntry.getName().startsWith("payload_parameter.")) {
-                            String payloadParamName = propertyEntry.getName();
-                            String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
-                            if ("DEPLOYMENT".equals(payloadParamSubstring)) {
-                                payloadData.getBasicPayloadData().setDeployment(payloadParamSubstring);
+                        if (propertyEntry.getName().startsWith(PAYLOAD_PARAMETER)) {
+                            String propertyName = propertyEntry.getName();
+                            String payloadParamName = propertyName.substring(propertyName.indexOf(".") + 1);
+                            if (DEPLOYMENT.equals(payloadParamName)) {
+                                payloadData.getBasicPayloadData().setDeployment(payloadParamName);
                                 continue;
                             }
-                            payloadData.add(payloadParamSubstring, propertyEntry.getValue());
+                            payloadData.add(payloadParamName, propertyEntry.getValue());
                         }
                     }
                 }
@@ -240,7 +177,7 @@ public class ApplicationUtils {
         // get subscription payload parameters (MB_IP, MB_PORT so on) and set them to payload (kubernetes scenario)
         if (properties != null && properties.getProperties() != null && properties.getProperties().length != 0) {
 			for (Property property : properties.getProperties()) {
-				if (property.getName().startsWith("payload_parameter.")) {
+				if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
                     String payloadParamName = property.getName();
                     String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
                     payloadData.add(payloadParamSubstring, property.getValue());
@@ -303,11 +240,6 @@ public class ApplicationUtils {
 	    basicPayloadData.setDependencyClusterIDs(dependencyCLusterIDs);
 	    basicPayloadData.setExportMetadataKeys(exportMetadata);
 	    basicPayloadData.setImportMetadataKeys(importMetadata);
-//        if(cartridge.getExportingProperties() != null){
-//            basicPayloadData.setExportingProperties(cartridge.getExportingProperties());
-//            log.info("testing1 getExportingProperties " + cartridge.getExportingProperties());
-//
-//        }
 
         return basicPayloadData;
     }

@@ -204,51 +204,6 @@ public class CloudControllerUtil {
 
         return cartridge;
     }
-	  
-    /*public static CartridgeInfo toCartridgeInfo(Cartridge cartridge) {
-
-		CartridgeInfo cartridgeInfo = new CartridgeInfo();
-		cartridgeInfo.setType(cartridge.getType());
-		cartridgeInfo.setDisplayName(cartridge.getDisplayName());
-		cartridgeInfo.setDescription(cartridge.getDescription());
-		cartridgeInfo.setHostName(cartridge.getHostName());
-
-        if ((cartridge.getDeploymentDirs() != null) && (cartridge.getDeploymentDirs().length > 0)) {
-            cartridgeInfo.setDeploymentDirs(Arrays.asList(cartridge.getDeploymentDirs()));
-        }
-		cartridgeInfo.setProvider(cartridge.getProvider());
-	    cartridgeInfo.setCategory(cartridge.getCategory());
-		cartridgeInfo.setVersion(cartridge.getVersion());
-		cartridgeInfo.setMultiTenant(cartridge.isMultiTenant());
-		cartridgeInfo.setBaseDir(cartridge.getBaseDir());
-        cartridgeInfo.setTenantPartitions(cartridge.getTenantPartitions());
-		cartridgeInfo.setPortMappings(cartridge.getPortMappings());
-		cartridgeInfo.setAppTypes(cartridge.getAppTypeMappings());
-
-		List<Property> propList = new ArrayList<Property>();
-        cartridgeInfo.setPersistence(cartridge.getPersistence());
-		
-		*//*for (Iterator<?> iterator = cartridge.getProperties().entrySet().iterator(); iterator.hasNext();) {
-	        @SuppressWarnings("unchecked")
-            Map.Entry<String, String> entry = (Entry<String, String>) iterator.next();
-	        
-	        Property prop = new Property(entry.getKey(), entry.getValue());
-	        propList.add(prop);
-        }*//*
-
-        List<Property> propertyList = new ArrayList<Property>();
-        if (cartridge.getProperties()!= null) {
-            if (cartridge.getProperties().getProperties() != null) {
-                propertyList = Arrays.asList(cartridge.getProperties().getProperties());
-                Property[] props = new Property[propertyList.size()];
-                cartridgeInfo.setProperties(propertyList.toArray(props));
-            }
-        }
-
-	    cartridgeInfo.setMetadataKeys(cartridge.getMetadataKeys());
-
-		return cartridgeInfo;
-	}*/
 
     public static void sleep(long time){
     	try {

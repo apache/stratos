@@ -163,7 +163,7 @@ public class StratosApiV41Utils {
             }
 
             CloudControllerServiceClient cloudControllerServiceClient = getCloudControllerServiceClient();
-            if(cloudControllerServiceClient.getCartridgeInfo(cartridgeType) == null) {
+            if(cloudControllerServiceClient.getCartridge(cartridgeType) == null) {
                 throw new RuntimeException("Cartridge not found: [cartridge-type] " + cartridgeType);
             }
             
@@ -252,7 +252,7 @@ public class StratosApiV41Utils {
 				for (String cartridgeType : availableCartridges) {
 					Cartridge cartridgeInfo = null;
 					try {
-						cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+						cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
 					} catch (Exception e) {
 						if (log.isWarnEnabled()) {
 							log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
@@ -320,7 +320,7 @@ public class StratosApiV41Utils {
                 for (String cartridgeType : availableCartridges) {
                     Cartridge cartridgeInfo = null;
                     try {
-                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+                        cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
                     } catch (Exception e) {
                         if (log.isWarnEnabled()) {
                             log.warn("Error when calling getCartridgeInfo for " + cartridgeType + ", Error: "
@@ -386,7 +386,7 @@ public class StratosApiV41Utils {
 
     public static CartridgeBean getCartridge(String cartridgeType) throws RestAPIException {
         try {
-            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+            Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
             if(cartridgeInfo == null) {
                 return null;
             }
@@ -404,7 +404,7 @@ public class StratosApiV41Utils {
 
 	public static CartridgeBean getCartridgeForValidate(String cartridgeType) throws RestAPIException {
 		try {
-			Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridgeInfo(cartridgeType);
+			Cartridge cartridgeInfo = CloudControllerServiceClient.getInstance().getCartridge(cartridgeType);
 			if (cartridgeInfo == null) {
 				return null;
 			}
@@ -829,7 +829,7 @@ public class StratosApiV41Utils {
                 int i=0;
                 for (String cartridgeType : cartridgeTypes) {
                     try {
-                        if (ccServiceClient.getCartridgeInfo(cartridgeType) == null) {
+                        if (ccServiceClient.getCartridge(cartridgeType) == null) {
                             // cartridge is not deployed, can't continue
                             log.error("invalid cartridge found in cartridge group " + cartridgeType);
                             throw new RestAPIException("No Cartridge Definition found with type " + cartridgeType);

@@ -718,7 +718,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     }
 
     @Override
-    public Cartridge getCartridgeInfo(String cartridgeType) throws CartridgeNotFoundException {
+    public Cartridge getCartridge(String cartridgeType) throws CartridgeNotFoundException {
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
         if (cartridge != null) {
             return cartridge;
