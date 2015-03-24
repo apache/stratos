@@ -54,7 +54,7 @@
                         </div>
                     </div>
                     <div class="col-md-7 col-sm-3 text-right">
-                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formContext}}</a>
+                        <a type="button" class="btn btn-primary btn-lg" href="new/">Add New {{formTitle}}</a>
                     </div>
                 </div>
             {{else}}
@@ -338,7 +338,7 @@
 
         $('.help-block').hide();
         $('.fa-question-circle').click(function(){
-            $(this).parent().find('.help-block').toggle();
+            $(this).parent().find('.help-block').not('.errormsg').toggle();
         });
 
     });

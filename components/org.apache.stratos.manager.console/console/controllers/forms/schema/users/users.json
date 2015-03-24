@@ -9,41 +9,6 @@
     },
     "required":["userName","credential","role"],
     "properties":{
-        "userName": {
-            "type":"string",
-            "id": "root/userName",
-            "title": "User Name",
-            "name": "User Name",
-            "minLength":4,
-            "required":true,
-            "default": ""
-        },
-        "credential": {
-            "type":"string",
-            "id": "root/credential",
-            "minLength":6,
-            "format":"password",
-            "title": "Password",
-            "name": "Password",
-            "default": ""
-        },
-        "role": {
-            "type":"string",
-            "id": "root/role",
-            "title": "User Role",
-            "name": "User Role",
-            "enum":["admin","Internal/user"],
-            "default": "Internal/user"
-        },
-        "email": {
-            "type":"string",
-            "id": "root/email",
-            "title": "Email",
-            "name": "Email",
-            "format":"email",
-            "default": "name@host.com",
-            "required":false
-        },
         "firstName": {
             "type":"string",
             "id": "root/firstName",
@@ -59,6 +24,42 @@
             "name": "Last Name",
             "default": "",
             "required":false
+        },
+        "userName": {
+            "type":"string",
+            "id": "root/userName",
+            "title": "User Name",
+            "name": "User Name",
+            "minLength":2,
+            "required":true,
+            "default": ""
+        },
+        "credential": {
+            "type":"string",
+            "id": "root/credential",
+            "minLength":6,
+            "description":"Enter six characters long password",
+            "format":"password",
+            "title": "Password",
+            "name": "Password",
+            "default": ""
+        },
+        "email": {
+            "type":"string",
+            "id": "root/email",
+            "title": "Email",
+            "name": "Email",
+            "format":"email",
+            "default": "name@host.com",
+            "required":false
+        },
+        "role": {
+            "type":"string",
+            "id": "root/role",
+            "title": "User Role",
+            "name": "User Role",
+            "enum":["admin","Internal/user"],
+            "default": "Internal/user"
         }
     }
 }
