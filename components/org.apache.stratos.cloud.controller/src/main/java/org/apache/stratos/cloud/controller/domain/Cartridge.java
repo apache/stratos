@@ -152,27 +152,27 @@ public class Cartridge implements Serializable{
 	public void setDeploymentDirs(String[] deploymentDirs) {
 	    this.deploymentDirs = deploymentDirs;
     }
-	
-	public void addDeploymentDir(String dir){
+
+    public void addDeploymentDir(String dir) {
         List<String> deploymentDirList = null;
         if (dir != null) {
             deploymentDirList = Arrays.asList(dir);
         }
         deploymentDirList.add(dir);
         deploymentDirs = deploymentDirList.toArray(new String[deploymentDirList.size()]);
-	}
-	
-	public void addPortMapping(PortMapping mapping){
+    }
+
+    public void addPortMapping(PortMapping mapping) {
         List<PortMapping> portMappingList = Arrays.asList(mapping);
         portMappingList.add(mapping);
         portMappingList.toArray(this.portMappings);
-	}
-	
-	public void addAppType(AppType type){
+    }
+
+    public void addAppType(AppType type) {
         List<AppType> appTypeList = Arrays.asList(type);
         appTypeList.add(type);
         appTypeList.toArray(this.appTypeMappings);
-	}
+    }
 
 	public String getProvider() {
 	    return provider;
@@ -230,7 +230,7 @@ public class Cartridge implements Serializable{
     }
 
     /**
-	 * @param persistence the peristanceMappings to set
+	 * @param persistence the persistenceMappings to set
 	 */
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
