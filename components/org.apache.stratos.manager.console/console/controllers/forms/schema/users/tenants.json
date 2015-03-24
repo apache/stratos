@@ -10,49 +10,51 @@
     },
     "required":["admin","adminPassword","email", "firstname", "lastname", "tenantDomain"],
     "properties":{
+        "firstname": {
+            "type":"string",
+            "id": "root/firstname",
+            "default": "Frank",
+            "title": "First Name",
+            "name": "First Name"
+        },
+        "lastname": {
+            "type":"string",
+            "id": "root/lastname",
+            "default": "Myers",
+            "title": "Last Name",
+            "name": "Last Name"
+        },
         "admin": {
             "type":"string",
             "id": "root/admin",
             "default": "admin",
-            "title": "Admin user name",
-            "name": "Admin user name"
+            "title": "Admin User Name",
+            "name": "Admin User Name"
         },
         "adminPassword": {
             "type":"string",
             "id": "root/adminPassword",
             "format":"password",
             "default": "admin123",
-            "title": "Admin user password",
+            "minLength":6,
+            "title": "Admin User Password",
             "description":"You need to add least 6 characters including number",
-            "name": "Admin user password"
+            "name": "Admin User Password"
         },
         "email": {
             "type":"string",
             "id": "root/email",
             "default": "foo@bar.com",
-            "title": "Admin email",
-            "name": "Admin email"
-        },
-        "firstname": {
-            "type":"string",
-            "id": "root/firstname",
-            "default": "Frank",
-            "title": "First name",
-            "name": "First name"
-        },
-        "lastname": {
-            "type":"string",
-            "id": "root/lastname",
-            "default": "Myers",
-            "title": "Last name",
-            "name": "Last name"
+            "format": "email",
+            "title": "Admin Email",
+            "name": "Admin Email"
         },
         "tenantDomain": {
             "type":"string",
             "id": "root/tenantDomain",
             "default": "frank.com",
-            "title": "Tenant domain",
-            "name": "Tenant domain"
+            "title": "Tenant Domain",
+            "name": "Tenant Domain"
         },
         "active": {
             "type":"boolean",
