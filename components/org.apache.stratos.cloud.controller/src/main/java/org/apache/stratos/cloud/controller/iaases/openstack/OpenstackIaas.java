@@ -18,11 +18,7 @@
  */
 package org.apache.stratos.cloud.controller.iaases.openstack;
 
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.TimeoutException;
-
+import com.google.common.base.Optional;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -33,10 +29,10 @@ import org.apache.stratos.cloud.controller.exception.InvalidHostException;
 import org.apache.stratos.cloud.controller.exception.InvalidRegionException;
 import org.apache.stratos.cloud.controller.exception.InvalidZoneException;
 import org.apache.stratos.cloud.controller.iaases.JcloudsIaas;
+import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.iaases.openstack.networking.NeutronNetworkingApi;
 import org.apache.stratos.cloud.controller.iaases.openstack.networking.NovaNetworkingApi;
 import org.apache.stratos.cloud.controller.iaases.openstack.networking.OpenstackNetworkingApi;
-import org.apache.stratos.cloud.controller.iaases.PartitionValidator;
 import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.ComputeServiceBuilderUtil;
 import org.jclouds.compute.ComputeService;
@@ -47,20 +43,15 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.openstack.nova.v2_0.NovaApi;
 import org.jclouds.openstack.nova.v2_0.compute.options.NovaTemplateOptions;
-import org.jclouds.openstack.nova.v2_0.domain.HostAggregate;
-import org.jclouds.openstack.nova.v2_0.domain.KeyPair;
-import org.jclouds.openstack.nova.v2_0.domain.Network;
-import org.jclouds.openstack.nova.v2_0.domain.Volume;
-import org.jclouds.openstack.nova.v2_0.domain.VolumeAttachment;
+import org.jclouds.openstack.nova.v2_0.domain.*;
 import org.jclouds.openstack.nova.v2_0.domain.zonescoped.AvailabilityZone;
-import org.jclouds.openstack.nova.v2_0.extensions.AvailabilityZoneApi;
-import org.jclouds.openstack.nova.v2_0.extensions.HostAggregateApi;
-import org.jclouds.openstack.nova.v2_0.extensions.KeyPairApi;
-import org.jclouds.openstack.nova.v2_0.extensions.VolumeApi;
-import org.jclouds.openstack.nova.v2_0.extensions.VolumeAttachmentApi;
+import org.jclouds.openstack.nova.v2_0.extensions.*;
 import org.jclouds.openstack.nova.v2_0.options.CreateVolumeOptions;
 
-import com.google.common.base.Optional;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeoutException;
 
 public class OpenstackIaas extends JcloudsIaas {
 
@@ -473,18 +464,14 @@ public class OpenstackIaas extends JcloudsIaas {
 
         VolumeAttachment attachment = null;
         if (volumeBecameAvailable) {
-            attachment = volumeAttachmentApi.attachVolumeToServerAsDevice(volumeId, instanceId, device);
+
+            attachment = volumeAttachmentApi.attachVolumeToServerAsDevice(volumeId, removeRegionPrefix(instanceId), device);
 
             try {
                 volumeBecameAttached = waitForStatus(volumeId, Volume.Status.IN_USE, 2);
             } catch (TimeoutException e) {
                 log.error("[Volume ID] " + volumeId + "did not become IN_USE within expected timeout");
             }
-        }
-        try {
-            // waiting 5seconds till volumes are actually attached.
-            Thread.sleep(5000);
-        } catch (InterruptedException ignore) {
         }
 
         if (attachment == null) {
@@ -500,7 +487,16 @@ public class OpenstackIaas extends JcloudsIaas {
 		return "Attaching";
 	}
 
-	@Override
+    private String removeRegionPrefix(String instanceId) {
+        String instaneIdDelimeter = "/";
+        if(instanceId.contains(instaneIdDelimeter)) {
+            return instanceId.split(instaneIdDelimeter)[1];
+        }else{
+            return instanceId;
+        }
+    }
+
+    @Override
 	public void detachVolume(String instanceId, String volumeId) {
 		IaasProvider iaasInfo = getIaasProvider();
 
@@ -508,6 +504,10 @@ public class OpenstackIaas extends JcloudsIaas {
 				.getContext();
 		
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
+
+
+        //NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        //VolumeApi api = novaApi.getVolumeExtensionForZone(region).get();
 		
 		if(region == null) {
 			log.fatal(String.format("Cannot detach the volume [id]: %s from the instance [id]: %s. Extracted region is null for Iaas : %s", volumeId, instanceId, iaasInfo));
@@ -518,13 +518,14 @@ public class OpenstackIaas extends JcloudsIaas {
         }
 
         NovaApi novaApi = context.unwrapApi(NovaApi.class);
-        VolumeAttachmentApi api = novaApi.getVolumeAttachmentExtensionForZone(region).get();
-        if (api.detachVolumeFromServer(volumeId, instanceId)) {
+        VolumeAttachmentApi attachmentApiapi = novaApi.getVolumeAttachmentExtensionForZone(region).get();
+        VolumeApi volumeApi = novaApi.getVolumeExtensionForZone(region).get();
+
+        if (attachmentApiapi.detachVolumeFromServer(volumeId, removeRegionPrefix(instanceId))) {
         	log.info(String.format("Detachment of Volume [id]: %s from instance [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, instanceId, region, iaasInfo));
         }else{
-            log.error(String.format("Detachment of Volume [id]: %s from instance [id]: %s was unsuccessful. [volume Status] : %s", volumeId, instanceId, region, iaasInfo));
+            log.error(String.format("Detachment of Volume [id]: %s from instance [id]: %s was unsuccessful. [region] : %s [volume Status] : %s", volumeId, instanceId, region, getVolumeStatus(volumeApi, volumeId)));
         }
-        
 	}
 
 	@Override
@@ -535,16 +536,40 @@ public class OpenstackIaas extends JcloudsIaas {
 				.getContext();
 		
 		String region = ComputeServiceBuilderUtil.extractRegion(iaasInfo);
-		
+        NovaApi novaApi = context.unwrapApi(NovaApi.class);
+        VolumeApi api = novaApi.getVolumeExtensionForZone(region).get();
+
+
 		if(region == null) {
 			log.fatal(String.format("Cannot delete the volume [id]: %s. Extracted region is null for Iaas : %s", volumeId, iaasInfo));
 			return;
 		}
 
-        NovaApi novaApi = context.unwrapApi(NovaApi.class);
-		VolumeApi api = novaApi.getVolumeExtensionForZone(region).get();
+        Volume volume = api.get(volumeId);
+        if(volume == null){
+            log.warn(String.format("Could not remove volume [id] %s since volume does not exist" , volumeId));
+            return;
+        }
+
+        Volume.Status volumeStatus = volume.getStatus();
+
+        if(volumeStatus == Volume.Status.IN_USE){
+            try {
+                waitForStatus(volumeId, Volume.Status.AVAILABLE, 2);
+            } catch (TimeoutException e) {
+                //Timeout Exception is occurred if the instance did not become available withing expected time period.
+                //Hence volume will not be deleted.
+
+                log.error("[Volume ID] " + volumeId + "did not become AVAILABLE within expected timeout, hence returning without deleting the volume");
+                return;
+            }
+        }
+
+        // Coming here means either AVAILABLE or ERROR
         if (api.delete(volumeId)) {
         	log.info(String.format("Deletion of Volume [id]: %s was successful. [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
+        }else{
+            log.error(String.format("Deletion of Volume [id]: %s was unsuccessful. [region] : %s of Iaas : %s", volumeId, region, iaasInfo));
         }
 	}
 
@@ -554,6 +579,11 @@ public class OpenstackIaas extends JcloudsIaas {
     }
 
     private Volume.Status getVolumeStatus(VolumeApi volumeApi, String volumeId){
-        return volumeApi.get(volumeId).getStatus();
+        Volume volume = volumeApi.get(volumeId);
+        if(volume != null) {
+            return volume.getStatus();
+        }
+
+        return null;
     }
 }

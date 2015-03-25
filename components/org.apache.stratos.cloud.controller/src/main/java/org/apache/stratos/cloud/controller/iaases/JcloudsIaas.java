@@ -323,6 +323,7 @@ public abstract class JcloudsIaas extends Iaas {
      */
     private void destroyNode(String nodeId, MemberContext memberContext) {
         // Detach volumes if any
+
         detachVolume(memberContext);
 
         // Destroy the node via jclouds
@@ -351,6 +352,9 @@ public abstract class JcloudsIaas extends Iaas {
                         return;
                     }
                     detachVolume(ctxt.getInstanceId(), volumeId);
+                    if(volume.isRemoveOntermination()){
+                        deleteVolume(volumeId);
+                    }
                 } catch (ResourceNotFoundException ignore) {
                     if (log.isDebugEnabled()) {
                         log.debug(ignore);
@@ -359,6 +363,7 @@ public abstract class JcloudsIaas extends Iaas {
             }
         }
     }
+
 
     public NodeMetadata findNodeMetadata(String nodeId) {
         ComputeService computeService = getIaasProvider().getComputeService();

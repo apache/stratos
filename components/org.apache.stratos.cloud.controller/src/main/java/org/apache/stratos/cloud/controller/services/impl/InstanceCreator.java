@@ -58,7 +58,6 @@ public class InstanceCreator implements Runnable {
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             Iaas iaas = iaasProvider.getIaas();
 
-            // Start instance
             memberContext = startInstance(iaas, memberContext);
 
             if (log.isInfoEnabled()) {
@@ -69,8 +68,9 @@ public class InstanceCreator implements Runnable {
                         memberContext.getDefaultPublicIP()));
             }
 
-            // Attach volumes
-            attachVolumes(iaas, clusterContext, memberContext);
+            if(clusterContext.isVolumeRequired()) {
+                attachVolumes(iaas, clusterContext, memberContext);
+            }
 
             // Allocate IP addresses
             iaas.allocateIpAddresses(clusterId, memberContext, partition);
@@ -133,7 +133,7 @@ public class InstanceCreator implements Runnable {
                     } catch (Exception e) {
                         // continue without throwing an exception, since
                         // there is an instance already running
-                        log.error(String.format("Could not attache volume, [instance] %s [volume] %s ",
+                        log.error(String.format("Could not attach volume, [instance] %s [volume] %s ",
                                 memberContext.getInstanceId(), volume.toString()), e);
                     }
                 }
