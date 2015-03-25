@@ -123,6 +123,8 @@
                     "id": "root/portMapping/0",
                     "required": ["port", "protocol", "proxyPort"],
                     "format": "grid",
+                    "title": "Port Mapping",
+                    "name": "Port Mapping",
                     "properties": {
                         "protocol": {
                             "type": "string",
@@ -154,6 +156,8 @@
                     "id": "root/portMapping/1",
                     "required": false,
                     "format": "grid",
+                    "title": "Port Mapping",
+                    "name": "Port Mapping",
                     "properties": {
                         "protocol": {
                             "type": "string",
@@ -195,6 +199,8 @@
                 "id": "root/iaasProvider/0",
                 "format": "grid",
                 "required": ["type", "imageId"],
+                "title": "iaas Provider",
+                "name": "iaas Provider",
                 "properties": {
                     "type": {
                         "type": "string",
@@ -214,6 +220,8 @@
                     "property": {
                         "type": "array",
                         "id": "root/iaasProvider/0/property",
+                        "title": "Property",
+                        "name": "Property",
                         "required": false,
                         "items": [
                             {
@@ -221,6 +229,8 @@
                                 "id": "root/iaasProvider/0/property/0",
                                 "format": "grid",
                                 "required": ["name", "value"],
+                                "title": "Properties",
+                                "name": "Properties",
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -239,6 +249,8 @@
                                 "id": "root/iaasProvider/0/property/1",
                                 "required": false,
                                 "format": "grid",
+                                "title": "Properties",
+                                "name": "Properties",
                                 "properties": {
                                     "name": {
                                         "type": "string",
@@ -267,6 +279,8 @@
                                 "type":"object",
                                 "id": "root/iaasProvider/0/networkInterfaces/0",
                                 "required":["networkUuid"],
+                                "title": "Network Interface",
+                                "name": "Network Interface",
                                 "properties":{
                                     "networkUuid": {
                                         "type":"string",
@@ -282,6 +296,8 @@
                                 "type":"object",
                                 "id": "root/iaasProvider/0/networkInterfaces/1",
                                 "required":["networkUuid"],
+                                "title": "Network Interface",
+                                "name": "Network Interface",
                                 "properties":{
                                     "networkUuid": {
                                         "type":"string",
