@@ -1477,7 +1477,12 @@ public class ObjectConverter {
             volumeContext.setVolumeId(volumeBean.getVolumeId());
             volumeContext.setMappingPath(volumeBean.getMappingPath());
             volumeContext.setDevice(volumeBean.getDevice());
-            volumeContext.setSize(Integer.parseInt(volumeBean.getSize()));
+
+            // When volumeId is specified, volume size is not relavent.
+            if(volumeBean.getSize() != null){
+                volumeContext.setSize(Integer.parseInt(volumeBean.getSize()));
+            }
+
             volumeContext.setSnapshotId(volumeBean.getSnapshotId());
             volumeContext.setId(volumeBean.getId());
 
