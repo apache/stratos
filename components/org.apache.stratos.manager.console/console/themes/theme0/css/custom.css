@@ -196,3 +196,7 @@ button.hover-unsubscribe, button.hover-details, button.hover-delete,button.hover
 button.hover-undeploy{
     margin-top: .7em;
 }
+
+div#textform>div>h3 {
+    display: none;
+}
