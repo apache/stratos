@@ -304,7 +304,8 @@ var groupBlockTemplate = {
                     "title": "Startup Orders: ",
                     "items": {
                         "id": "root/dependencies/startupOrders/0",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Startup Order "
                     }
                 },
                 "scalingDependants": {
@@ -313,7 +314,8 @@ var groupBlockTemplate = {
                     "title": "Scaling Dependants: ",
                     "items": {
                         "id": "root/dependencies/scalingDependants/0",
-                        "type": "string"
+                        "type": "string",
+                        "title": "Scaling Dependant "
                     }
                 },
                 "terminationBehaviour": {
