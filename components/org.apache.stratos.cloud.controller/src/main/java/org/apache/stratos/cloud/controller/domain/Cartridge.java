@@ -73,6 +73,7 @@ public class Cartridge implements Serializable{
         this.provider = provider;
         this.version = version;
         this.multiTenant = multiTenant;
+        properties = new org.apache.stratos.common.Properties();
         init();
     }
     
