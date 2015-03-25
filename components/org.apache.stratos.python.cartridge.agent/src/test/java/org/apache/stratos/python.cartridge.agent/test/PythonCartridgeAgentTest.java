@@ -199,7 +199,7 @@ public class PythonCartridgeAgentTest {
         ArtifactUpdatedEvent privateRepoEvent = createTestArtifactUpdatedEvent();
         privateRepoEvent.setRepoURL("https://bitbucket.org/testapache2211/testrepo.git");
         privateRepoEvent.setRepoUserName("testapache2211");
-        privateRepoEvent.setRepoPassword("iF7qT+BKKPE3PGV1TeDsJA==");
+        privateRepoEvent.setRepoPassword("RExPDGa4GkPJj4kJDzSROQ==");
 
         ArtifactUpdatedEvent privateRepoEvent2 = createTestArtifactUpdatedEvent();
         privateRepoEvent2.setRepoURL("https://testapache2211@bitbucket.org/testapache2211/testrepo.git");
@@ -256,7 +256,7 @@ public class PythonCartridgeAgentTest {
                                 log.info("Member initialized event published");
 
                                 // Simulate server socket
-                                startServerSocket(9080);
+                                startServerSocket(8080);
                             }
                             if (line.contains("Artifact repository found")) {
                                 // Send artifact updated event
