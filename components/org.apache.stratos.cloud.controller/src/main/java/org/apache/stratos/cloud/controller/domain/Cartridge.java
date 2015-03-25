@@ -64,6 +64,7 @@ public class Cartridge implements Serializable{
     private IaasConfig[] iaasConfigs;
 
     public Cartridge(){
+        properties = new org.apache.stratos.common.Properties();
     	init();
     }
     
