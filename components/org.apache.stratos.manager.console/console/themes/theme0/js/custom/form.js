@@ -41,6 +41,8 @@ var currentJson;
 
 $(document).ready(function() {
     $('#list').click(function(event){
+        $(this).addClass('active');
+        $('#grid').removeClass('active');
        // event.preventDefault();
         $('.general-table .block').addClass('list-group-item');
         $('.general-table .block').removeClass('grid-group-item');
@@ -48,6 +50,8 @@ $(document).ready(function() {
     });
     $('#grid').click(function(event){
         //event.preventDefault();
+        $(this).addClass('active');
+        $('#list').removeClass('active');
         $('.general-table .block').removeClass('list-group-item');
         $('.general-table .block').addClass('grid-group-item');
         $('.general-table .block .list-button').css({"display":"none"});
