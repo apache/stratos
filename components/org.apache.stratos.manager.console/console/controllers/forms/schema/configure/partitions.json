@@ -31,7 +31,8 @@
                 "properties": {
                     "id": {
                         "id": "root/partitions/0/id",
-                        "type": "string"
+                        "type": "string",
+                        "title":"Partition Id"
                     },
                     "property": {
                         "id": "root/partitions/0/property",
@@ -57,6 +58,7 @@
     },
     "required": [
         "id",
-        "partitions"
+        "partitions",
+        "provider"
     ]
 }
