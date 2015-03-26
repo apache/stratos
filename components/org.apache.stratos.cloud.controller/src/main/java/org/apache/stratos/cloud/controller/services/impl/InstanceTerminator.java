@@ -21,7 +21,6 @@ package org.apache.stratos.cloud.controller.services.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.cloud.controller.config.CloudControllerConfig;
 import org.apache.stratos.cloud.controller.context.CloudControllerContext;
 import org.apache.stratos.cloud.controller.domain.IaasProvider;
 import org.apache.stratos.cloud.controller.domain.MemberContext;
@@ -42,9 +41,10 @@ public class InstanceTerminator implements Runnable {
 
     public InstanceTerminator(MemberContext memberContext) {
         String provider = memberContext.getPartition().getProvider();
-        IaasProvider iaasProvider = CloudControllerConfig.getInstance().getIaasProvider(provider);
+        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider(memberContext.getCartridgeType(), provider);
         this.iaas = iaasProvider.getIaas();
         this.memberContext = memberContext;
+
     }
 
     @Override
