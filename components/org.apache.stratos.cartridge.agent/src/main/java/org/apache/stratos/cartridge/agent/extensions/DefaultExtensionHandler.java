@@ -142,6 +142,9 @@ public class DefaultExtensionHandler implements ExtensionHandler {
             if (!cloneExists && !isMultitenant) {
                 // Executed git clone, publish instance activated event
                 CartridgeAgentEventPublisher.publishInstanceActivatedEvent();
+
+                // Execute instance activated shell script
+                ExtensionUtils.executeInstanceActivatedExtension();
             }
 
             // Start the artifact update task
