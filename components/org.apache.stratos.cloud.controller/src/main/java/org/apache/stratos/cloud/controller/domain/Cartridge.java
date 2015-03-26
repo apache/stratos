@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.stratos.common.*;
+import org.apache.stratos.common.Properties;
 
 import java.io.Serializable;
 import java.util.*;
@@ -80,6 +81,7 @@ public class Cartridge implements Serializable{
     
     private void init() {
         tenantPartitions = "*";
+        properties = new Properties();
     }
 
     public String getType() {
