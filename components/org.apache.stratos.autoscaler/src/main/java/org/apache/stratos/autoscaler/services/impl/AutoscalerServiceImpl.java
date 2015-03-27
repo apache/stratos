@@ -378,20 +378,17 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
             // Remove application signup(s) in stratos manager
             removeApplicationSignUp(applicationContext);
-            
+
             // Remove network partition algorithm context
             AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
-            
-            ApplicationBuilder.handleApplicationUnDeployedEvent(applicationId);
 
-            applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
-            AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
+            ApplicationBuilder.handleApplicationUnDeployedEvent(applicationId);
             
             if (log.isInfoEnabled()) {
-                log.info("Application undeployed successfully: [application-id] " + applicationId);
+                log.info("Application undeployment process started: [application-id] " + applicationId);
             }
         } catch (Exception e) {
-            String message = "Could not undeploy application: [application-id] " + applicationId;
+            String message = "Could not start application undeployment process: [application-id] " + applicationId;
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
