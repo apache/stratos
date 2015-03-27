@@ -363,27 +363,27 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                 log.info("Starting to undeploy application: [application-id] " + applicationId);
             }
 
-            ApplicationContext application = AutoscalerContext.getInstance().getApplicationContext(applicationId);
-            if ( application == null){
-                String msg = String.format("Application not found : [application-id] %s", applicationId);
+            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+            if ((applicationContext == null) || (application == null)) {
+                String msg = String.format("Application not found: [application-id] %s", applicationId);
                 throw new RuntimeException(msg);
             }
 
-            if (!application.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+            if (!applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
                 String message = String.format("Application is not deployed: [application-id] %s", applicationId);
                 log.error(message);
                 throw new RuntimeException(message);
             }
 
-            // Remove Application SignUp(s) in stratos manager
-            removeApplicationSignUp(application);
+            // Remove application signup(s) in stratos manager
+            removeApplicationSignUp(applicationContext);
             
             // Remove network partition algorithm context
             AutoscalerContext.getInstance().removeNetworkPartitionAlgorithmContext(applicationId);
             
-            ApplicationBuilder.handleApplicationUndeployed(applicationId);
+            ApplicationBuilder.handleApplicationUnDeployedEvent(applicationId);
 
-            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
             applicationContext.setStatus(ApplicationContext.STATUS_CREATED);
             AutoscalerContext.getInstance().updateApplicationContext(applicationContext);
             
@@ -399,29 +399,35 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void deleteApplication(String applicationId) {
-     
-    	ApplicationContext appContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
-    	
-    	if (appContext == null) {
-            String msg = String.format("Application not found : [application-id] %s", applicationId);
-            throw new RuntimeException(msg);
+
+        try {
+            ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
+            Application application = ApplicationHolder.getApplications().getApplication(applicationId);
+            if ((applicationContext == null) || (application == null)) {
+                String msg = String.format("Application not found: [application-id] %s", applicationId);
+                throw new RuntimeException(msg);
+            }
+
+            if (ApplicationContext.STATUS_DEPLOYED.equals(applicationContext.getStatus())) {
+                String msg = String.format("Application is in deployed state, please undeploy it before deleting: " +
+                        "[application-id] %s", applicationId);
+                throw new AutoScalerException(msg);
+            }
+
+            if (application.getInstanceContextCount() > 0) {
+                String message = String.format("Application undeployment process is still in progress: " +
+                        "[application-id] %s", applicationId);
+                log.error(message);
+                throw new RuntimeException(message);
+            }
+
+            ApplicationBuilder.handleApplicationRemoval(applicationId);
+            log.info(String.format("Application deleted successfully: [application-id] %s", applicationId));
+        } catch (Exception e) {
+            String message = String.format("Could not delete application: [application-id] %s", applicationId);
+            log.error(message, e);
+            throw new RuntimeException(message, e);
         }
-        
-    	if (ApplicationContext.STATUS_DEPLOYED.equals(appContext.getStatus())) {
-            String msg = String.format("Application is deployed : [application-id] %s. Please undeploy before deleting it.", applicationId);
-            throw new AutoScalerException(msg);
-        }
-    	
-    	AutoscalerContext.getInstance().removeApplicationContext(applicationId);
-        
-        if (ApplicationHolder.getApplications().getApplication(applicationId) == null) {
-            String msg = String.format("Application not found : [application-id] %s", applicationId);
-            throw new RuntimeException(msg);
-        }
-        ApplicationBuilder.handleApplicationRemoval(applicationId);
-        RegistryManager.getInstance().removeApplication(applicationId);
-        
-        log.info(String.format("Application deleted successfully: [application-id] ", applicationId));
     }
 
     public void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException {

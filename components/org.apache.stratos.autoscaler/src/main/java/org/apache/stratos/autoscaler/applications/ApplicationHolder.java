@@ -104,7 +104,7 @@ public class ApplicationHolder {
             getApplications().removeApplication(applicationId);
             AutoscalerUtil.removeApplication(applicationId);
             if (log.isDebugEnabled()) {
-                log.debug("Application [ " + applicationId + " ] removed from applications");
+                log.debug("Application [ " + applicationId + " ] removed from application holder");
             }
         }
     }

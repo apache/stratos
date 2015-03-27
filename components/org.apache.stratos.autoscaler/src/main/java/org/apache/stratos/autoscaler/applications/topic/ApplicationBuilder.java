@@ -183,26 +183,24 @@ public class ApplicationBuilder {
 
     public static void handleApplicationInstanceTerminatingEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
-            log.debug("Handling application Terminating event: [application-id] " + appId +
+            log.debug("Handling application terminating event: [application-id] " + appId +
                     " [instance] " + instanceId);
         }
 
         Applications applications = ApplicationHolder.getApplications();
         Application application = applications.getApplication(appId);
-        //update the status of the Group
+        // update the status of the Group
         if (application == null) {
-            log.warn(String.format("Application does not exist: [application-id] %s",
-                    appId));
+            log.warn(String.format("Application does not exist: [application-id] %s", appId));
             return;
         }
 
         ApplicationStatus status = ApplicationStatus.Terminating;
         ApplicationInstance applicationInstance = application.getInstanceContexts(instanceId);
         if (applicationInstance.isStateTransitionValid(status)) {
-            //setting the status, persist and publish
+            // setting the status, persist and publish
             application.setStatus(status, instanceId);
-            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
-                    instanceId);
+            updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(), instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
         } else {
@@ -248,6 +246,7 @@ public class ApplicationBuilder {
                 appClusterDataToSend.add(newClusterData);
             }
 
+            AutoscalerContext.getInstance().removeApplicationContext(appId);
             ApplicationHolder.removeApplication(appId);
 
         } finally {
@@ -299,8 +298,8 @@ public class ApplicationBuilder {
                     //stopping application thread
                     applicationMonitor.destroy();
                     AutoscalerContext.getInstance().removeAppMonitor(appId);
-                    log.info("Application run time is removed: [application-id] " + appId);
-                    //Removing the application from memory and registry
+                    log.info("Application runtime is removed: [application-id] " + appId);
+                    // Removing the application from memory and registry
                     PrivilegedCarbonContext.startTenantFlow();
                     try {
                         PrivilegedCarbonContext.getThreadLocalCarbonContext().
@@ -322,7 +321,7 @@ public class ApplicationBuilder {
         }
     }
 
-    public static boolean handleApplicationUndeployed(String applicationId) {
+    public static boolean handleApplicationUnDeployedEvent(String applicationId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application terminating event: [application-id] " + applicationId);
         }

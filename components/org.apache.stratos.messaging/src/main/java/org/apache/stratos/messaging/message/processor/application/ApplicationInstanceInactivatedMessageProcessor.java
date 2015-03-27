@@ -92,23 +92,21 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
             ApplicationInstance context = application.getInstanceContexts(event.getInstanceId());
             if (context == null) {
                 if (log.isWarnEnabled()) {
-                    log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +
-                            "[instanceId] %s", event.getAppId(), event.getInstanceId()));
+                    log.warn(String.format("Application instance not exists in group: [application-id] %s" +
+                            "[instance-id] %s", event.getAppId(), event.getInstanceId()));
                     return false;
                 }
             }
             ApplicationStatus status = ApplicationStatus.Inactive;
             if (!context.isStateTransitionValid(status)) {
-                log.error("Invalid State transfer from [ " + context.getStatus() +
+                log.error("Invalid state transfer from [ " + context.getStatus() +
                         " ] to [ " + status + " ]");
             }
             context.setStatus(status);
-
         }
 
         // Notify event listeners
         notifyEventListeners(event);
         return true;
-
     }
 }

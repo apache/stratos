@@ -41,10 +41,10 @@ public class InstanceTerminator implements Runnable {
 
     public InstanceTerminator(MemberContext memberContext) {
         String provider = memberContext.getPartition().getProvider();
-        IaasProvider iaasProvider = CloudControllerContext.getInstance().getIaasProvider(memberContext.getCartridgeType(), provider);
+        IaasProvider iaasProvider = CloudControllerContext.getInstance()
+                .getIaasProvider(memberContext.getCartridgeType(), provider);
         this.iaas = iaasProvider.getIaas();
         this.memberContext = memberContext;
-
     }
 
     @Override
