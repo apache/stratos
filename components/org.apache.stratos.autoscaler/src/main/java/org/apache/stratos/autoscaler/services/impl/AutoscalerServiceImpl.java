@@ -399,12 +399,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void deleteApplication(String applicationId) {
-
         try {
             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(applicationId);
             Application application = ApplicationHolder.getApplications().getApplication(applicationId);
             if ((applicationContext == null) || (application == null)) {
-                String msg = String.format("Application not found: [application-id] %s", applicationId);
+                String msg = String.format("Application cannot be deleted, application not found: [application-id] %s",
+                        applicationId);
                 throw new RuntimeException(msg);
             }
 
@@ -415,8 +415,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             }
 
             if (application.getInstanceContextCount() > 0) {
-                String message = String.format("Application undeployment process is still in progress: " +
-                        "[application-id] %s", applicationId);
+                String message = String.format("Application cannot be deleted, undeployment process is still in " +
+                        "progress: [application-id] %s", applicationId);
                 log.error(message);
                 throw new RuntimeException(message);
             }
