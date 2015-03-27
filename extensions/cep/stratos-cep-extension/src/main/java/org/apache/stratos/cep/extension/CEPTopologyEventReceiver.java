@@ -31,29 +31,29 @@ import org.apache.stratos.messaging.listener.topology.MemberTerminatedEventListe
 import org.apache.stratos.messaging.message.receiver.topology.TopologyEventReceiver;
 import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * CEP Topology Receiver for Fault Handling Window Processor.
  */
-public class CEPTopologyEventReceiver implements Runnable {
+public class CEPTopologyEventReceiver extends TopologyEventReceiver {
 
     private static final Log log = LogFactory.getLog(CEPTopologyEventReceiver.class);
 
-    private TopologyEventReceiver topologyEventReceiver;
-    private boolean terminated;
     private FaultHandlingWindowProcessor faultHandler;
-	private ExecutorService executorService;
 
     public CEPTopologyEventReceiver(FaultHandlingWindowProcessor faultHandler) {
-        this.topologyEventReceiver = new TopologyEventReceiver();
         this.faultHandler = faultHandler;
         addEventListeners();
     }
 
+    @Override
+    public void execute() {
+        super.execute();
+        log.info("CEP topology event receiver thread started");
+    }
+
     private void addEventListeners() {
         // Load member time stamp map from the topology as a one time task
-        topologyEventReceiver.addEventListener(new CompleteTopologyEventListener() {
+        addEventListener(new CompleteTopologyEventListener() {
             private boolean initialized;
 
             @Override
@@ -61,7 +61,7 @@ public class CEPTopologyEventReceiver implements Runnable {
                 if (!initialized) {
                     try {
                         TopologyManager.acquireReadLock();
-                        log.info("Complete topology event received to fault handling window processor.");
+                        log.debug("Complete topology event received to fault handling window processor.");
                         CompleteTopologyEvent completeTopologyEvent = (CompleteTopologyEvent) event;
                         initialized = faultHandler.loadTimeStampMapFromTopology(completeTopologyEvent.getTopology());
                     } catch (Exception e) {
@@ -74,64 +74,26 @@ public class CEPTopologyEventReceiver implements Runnable {
         });
 
         // Remove member from the time stamp map when MemberTerminated event is received.
-        topologyEventReceiver.addEventListener(new MemberTerminatedEventListener() {
+        addEventListener(new MemberTerminatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 MemberTerminatedEvent memberTerminatedEvent = (MemberTerminatedEvent) event;
                 faultHandler.getMemberTimeStampMap().remove(memberTerminatedEvent.getMemberId());
-                log.info("Member [member id] " + memberTerminatedEvent.getMemberId() +
-                            " was removed from the time stamp map.");
+                log.debug("Member was removed from the timestamp map: [member] " + memberTerminatedEvent.getMemberId());
             }
         });
 
         // Add member to time stamp map whenever member is activated
-        topologyEventReceiver.addEventListener(new MemberActivatedEventListener() {
+        addEventListener(new MemberActivatedEventListener() {
             @Override
             protected void onEvent(Event event) {
                 MemberActivatedEvent memberActivatedEvent = (MemberActivatedEvent) event;
 
                 // do not put this member if we have already received a health event
-                faultHandler.getMemberTimeStampMap().putIfAbsent(memberActivatedEvent.getMemberId(), System.currentTimeMillis());
-                log.info("Member [member id] " + memberActivatedEvent.getMemberId() +
-                        " was added to the time stamp map.");
+                faultHandler.getMemberTimeStampMap().putIfAbsent(memberActivatedEvent.getMemberId(),
+                        System.currentTimeMillis());
+                log.debug("Member was added to the timestamp map: [member] " + memberActivatedEvent.getMemberId());
             }
         });
     }
-
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(15000);
-        } catch (InterruptedException ignore) {
-        }
-        topologyEventReceiver.setExecutorService(executorService);
-	    topologyEventReceiver.execute();
-	 //   executorService.execute(topologyEventReceiver);
-        log.info("CEP topology receiver thread started");
-
-        // Keep the thread live until terminated
-        while (!terminated) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ignore) {
-            }
-        }
-        log.info("CEP topology receiver thread terminated");
-    }
-
-    /**
-     * Terminate CEP topology receiver thread.
-     */
-    public void terminate() {
-        topologyEventReceiver.terminate();
-        terminated = true;
-    }
-
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
-
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
 }

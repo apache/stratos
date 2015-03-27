@@ -166,9 +166,9 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
             }
         }
 
-        log.info("Member timestamps were successfully loaded from the topology");
         if (log.isDebugEnabled()){
-            log.debug("Member timestamp map: " + memberTimeStampMap);
+            log.debug("Member timestamps were successfully loaded from the topology: [timestamps] " +
+                    memberTimeStampMap);
         }
         return true;
     }
@@ -285,7 +285,7 @@ public class FaultHandlingWindowProcessor extends WindowProcessor implements Run
 	    executorService = StratosThreadPool.getExecutorService(CEP_EXTENSION_THREAD_POOL_KEY,
                 CEP_EXTENSION_THREAD_POOL_SIZE);
 	    cepTopologyEventReceiver.setExecutorService(executorService);
-	    executorService.execute(cepTopologyEventReceiver);
+        cepTopologyEventReceiver.execute();
 
         //Ordinary scheduling
         window.schedule();
