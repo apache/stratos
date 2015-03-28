@@ -23,5 +23,5 @@ package org.apache.stratos.common;
  * Stratos components enumeration.
  */
 public enum Component {
-    MessageBroker, StratosManager, CloudController, Autoscaler, ComplexEventProcessor
+    MessageBroker, StratosManager, CloudController, Autoscaler, ComplexEventProcessor, MockIaaS
 }

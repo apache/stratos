@@ -19,6 +19,7 @@
 
 package org.apache.stratos.mock.iaas.internal;
 
+import org.apache.stratos.common.services.ComponentStartUpSynchronizer;
 import org.wso2.carbon.registry.core.session.UserRegistry;
 
 /**
@@ -28,6 +29,7 @@ public class ServiceReferenceHolder {
 
     private static volatile ServiceReferenceHolder instance;
     private UserRegistry registry;
+    private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
     private ServiceReferenceHolder() {
     }
@@ -49,5 +51,13 @@ public class ServiceReferenceHolder {
 
     public UserRegistry getRegistry() {
         return registry;
+    }
+
+    public void setComponentStartUpSynchronizer(ComponentStartUpSynchronizer componentStartUpSynchronizer) {
+        this.componentStartUpSynchronizer = componentStartUpSynchronizer;
+    }
+
+    public ComponentStartUpSynchronizer getComponentStartUpSynchronizer() {
+        return componentStartUpSynchronizer;
     }
 }

@@ -107,7 +107,7 @@ public class StratosManagerServiceComponent {
                         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
 
-                        // Wait for cloud controller and autoscaler components to start
+                        // Wait for cloud controller and autoscaler components to be activated
                         componentStartUpSynchronizer.waitForComponentActivation(Component.StratosManager,
                                 Component.CloudController);
                         componentStartUpSynchronizer.waitForComponentActivation(Component.StratosManager,

@@ -101,7 +101,7 @@ public class AutoscalerServiceComponent {
                     try {
                         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
-                        // Wait for cloud controller component to start
+                        // Wait for cloud controller component to be activated
                         componentStartUpSynchronizer.waitForComponentActivation(Component.Autoscaler,
                                 Component.CloudController);
 
