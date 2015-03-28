@@ -120,7 +120,7 @@ public class DependencyTree {
         for (ApplicationChildContext context : contexts) {
             //TODO check for the status
             if (context.getId().equals(id)) {
-                return parent;
+                return context;
             }
         }
         //if not found in the top level search recursively
