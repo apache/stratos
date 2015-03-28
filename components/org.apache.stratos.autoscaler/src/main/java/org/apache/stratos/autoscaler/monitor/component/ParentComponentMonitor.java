@@ -101,7 +101,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         id = component.getUniqueIdentifier();
 
         // Building the startup dependencies for this monitor within the immediate children
-        startupDependencyTree = DependencyBuilder.getInstance().buildDependency(id, component);
+        startupDependencyTree = DependencyBuilder.getInstance().buildDependency(component);
 
         // Building the scaling dependencies for this monitor within the immediate children
         if ((component.getDependencyOrder() != null) &&
