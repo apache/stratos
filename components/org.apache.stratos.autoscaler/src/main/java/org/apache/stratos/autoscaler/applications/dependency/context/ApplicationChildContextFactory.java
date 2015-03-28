@@ -39,7 +39,7 @@ public class ApplicationChildContextFactory {
      * @param tree kill dependent behaviour of this component
      * @return Context
      */
-    public static ApplicationChildContext createApplicationChildContext(String applicationId, String startUpOrder,
+    public static ApplicationChildContext createApplicationChildContext(String componentId, String startUpOrder,
                                                                         ParentComponent component,
                                                                         DependencyTree tree) {
 
@@ -56,7 +56,7 @@ public class ApplicationChildContextFactory {
             return createClusterChildContext(clusterDataHolder, hasDependents);
         } else {
             throw new RuntimeException(String.format("Startup order contains an unknown reference: " +
-                            "[application-id] %s [startup-order] %s", applicationId, startUpOrder));
+                            "[component] %s [startup-order] %s", componentId, startUpOrder));
         }
     }
 

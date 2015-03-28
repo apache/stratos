@@ -98,19 +98,21 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
         inactiveInstancesMap = new ConcurrentHashMap<String, List<String>>();
         terminatingInstancesMap = new ConcurrentHashMap<String, List<String>>();
         pendingMonitorsList = new ArrayList<String>();
-        //clusterIdToClusterMonitorsMap = new HashMap<String, AbstractClusterMonitor>();
-        this.id = component.getUniqueIdentifier();
-        //Building the startup dependencies for this monitor within the immediate children
-        startupDependencyTree = DependencyBuilder.getInstance().buildDependency(getAppId(), component);
-        //Building the scaling dependencies for this monitor within the immediate children
-        if ((component.getDependencyOrder() != null) && (component.getDependencyOrder().
-                                                            getScalingDependents() != null)) {
+        id = component.getUniqueIdentifier();
+
+        // Building the startup dependencies for this monitor within the immediate children
+        startupDependencyTree = DependencyBuilder.getInstance().buildDependency(id, component);
+
+        // Building the scaling dependencies for this monitor within the immediate children
+        if ((component.getDependencyOrder() != null) &&
+                (component.getDependencyOrder().getScalingDependents() != null)) {
             scalingDependencies = DependencyBuilder.getInstance().buildScalingDependencies(component);
         } else {
             // No scaling dependencies found, initialize to an empty set
             scalingDependencies = new HashSet<ScalingDependentList>();
         }
-        //Create the executor service with identifier and thread pool size
+
+        // Create the executor service with identifier and thread pool size
         executorService = StratosThreadPool.getExecutorService(AutoscalerConstants.AUTOSCALER_THREAD_POOL_ID,
                 AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
         networkPartitionCtxts = new HashMap<String, NetworkPartitionContext>();

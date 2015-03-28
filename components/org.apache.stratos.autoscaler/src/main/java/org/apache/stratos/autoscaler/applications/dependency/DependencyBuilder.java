@@ -52,7 +52,7 @@ public class DependencyBuilder {
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
-    public DependencyTree buildDependency(String applicationId, ParentComponent component)
+    public DependencyTree buildDependency(ParentComponent component)
             throws DependencyBuilderException{
 
         String identifier = component.getUniqueIdentifier();
@@ -60,11 +60,7 @@ public class DependencyBuilder {
         DependencyOrder dependencyOrder = component.getDependencyOrder();
 
         if (dependencyOrder != null) {
-            log.info(String.format("Building dependency tree: [application-id] %s [component] %s ",
-                    applicationId, identifier));
-
-            log.info(String.format("Setting termination behaviour: [application-id] %s [component] %s ",
-                    applicationId, identifier));
+            log.info(String.format("Building dependency tree: [component] %s ", identifier));
 
             String terminationBehaviour = dependencyOrder.getTerminationBehaviour();
             if (AutoscalerConstants.TERMINATE_NONE.equals(terminationBehaviour)) {
@@ -75,26 +71,29 @@ public class DependencyBuilder {
                 dependencyTree.setTerminationBehavior(DependencyTree.TerminationBehavior.TERMINATE_DEPENDENT);
             }
 
+            log.info(String.format("Termination behaviour set: [component] %s [termination-behaviour] %s",
+                    identifier, dependencyTree.getTerminationBehavior()));
+
             Set<StartupOrder> startupOrders = dependencyOrder.getStartupOrders();
             ApplicationChildContext parentContext;
 
             if (startupOrders != null) {
-                log.debug(String.format("Processing startup orders: [application-id] %s [component] %s " +
-                        "[startup-orders] %s", applicationId, identifier, startupOrders));
+                log.debug(String.format("Processing startup orders: [component] %s [startup-orders] %s",
+                        identifier, startupOrders));
 
                 for (StartupOrder startupOrder : startupOrders) {
                     parentContext = null;
-                    log.debug(String.format("Processing startup order: [application-id] %s [component] %s " +
-                            "[startup-order] %s", applicationId, identifier, startupOrder));
+                    log.debug(String.format("Processing startup order: [component] %s " +
+                            "[startup-order] %s", identifier, startupOrder));
 
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
                         if (startupOrderComponent != null) {
-                            log.debug(String.format("Processing startup order element: [application-id] %s " +
+                            log.debug(String.format("Processing startup order element: " +
                                             "[component] %s [startup-order] %s [element] %s",
-                                    applicationId, identifier, startupOrder, startupOrderComponent));
+                                     identifier, startupOrder, startupOrderComponent));
 
                             ApplicationChildContext applicationChildContext = ApplicationChildContextFactory.
-                                    createApplicationChildContext(applicationId, startupOrderComponent,
+                                    createApplicationChildContext(identifier, startupOrderComponent,
                                             component, dependencyTree);
                             String applicationChildContextId = applicationChildContext.getId();
 
@@ -127,7 +126,7 @@ public class DependencyBuilder {
                                     parentContext = existingApplicationChildContext;
                                     if (log.isDebugEnabled()) {
                                         log.debug(String.format("Element [%s] was found in the dependency tree," +
-                                                " making it the parent context and continuing: [dependency-tree] %s",
+                                                " making it the parent and continuing: [dependency-tree] %s",
                                                 existingApplicationChildContext.getId(), dependencyTree));
                                     }
                                 } else {
@@ -139,8 +138,8 @@ public class DependencyBuilder {
                                         // Application child context is already available in the dependency tree,
                                         // find its parent element, mark it as the parent element and continue
                                         if(log.isDebugEnabled()) {
-                                            log.debug(String.format("Found an existing parent context [%s] in the " +
-                                                            "dependency tree, making it the parent context " +
+                                            log.debug(String.format("Found an existing parent element [%s] in the " +
+                                                            "dependency tree, making it the parent " +
                                                             "and continuing: [dependency-tree] %s",
                                                     existingParentContext.getId(), dependencyTree));
                                         }
