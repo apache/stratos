@@ -79,8 +79,8 @@ public class DependencyBuilder {
             ApplicationChildContext parentContext;
 
             if (startupOrders != null) {
-                log.info(String.format("Processing startup orders: [application-id] %s [component] %s",
-                        applicationId, identifier));
+                log.info(String.format("Processing startup orders: [application-id] %s [component] %s " +
+                                "[startup-orders] %s", applicationId, identifier, startupOrders));
 
                 for (StartupOrder startupOrder : startupOrders) {
                     parentContext = null;
@@ -129,8 +129,9 @@ public class DependencyBuilder {
                                         }
                                         parentContext = existingApplicationChildContext;
                                     } else {
-                                        String msg = "Startup order is not consistent. It contains the group/cluster " +
-                                                "which has been used more than one in another startup order";
+                                        String msg = "Startup order is not valid. It contains a group/cluster " +
+                                                "which has been used more than once in another startup order: " +
+                                                startupOrder;
                                         throw new DependencyBuilderException(msg);
                                     }
                                 }
