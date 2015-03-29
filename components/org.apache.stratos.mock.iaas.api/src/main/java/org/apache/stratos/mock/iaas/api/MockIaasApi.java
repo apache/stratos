@@ -47,18 +47,6 @@ public class MockIaasApi {
     private MockIaasService mockIaasService;
 
     public MockIaasApi() {
-        try {
-            try {
-                mockIaasService = (MockIaasService) PrivilegedCarbonContext.getThreadLocalCarbonContext().
-                        getOSGiService(MockIaasService.class);
-            } catch (NullPointerException ignore) {
-                // Above carbon context method throws a NPE if service is not registered
-            }
-        } catch (Exception e) {
-            String message = "Could not initialize Mock IaaS API";
-            log.error(message, e);
-            throw new RuntimeException(message, e);
-        }
     }
 
     @POST
@@ -71,7 +59,7 @@ public class MockIaasApi {
             validateMockIaasService();
 
             log.info(String.format("Starting mock instance: [member-id] %s", mockInstanceContext.getMemberId()));
-            MockInstanceMetadata mockInstanceMetadata = mockIaasService.startInstance(mockInstanceContext);
+            MockInstanceMetadata mockInstanceMetadata = getMockIaasService().startInstance(mockInstanceContext);
             log.info(String.format("Mock instance started successfully: [member-id] %s [instance-id] %s",
                     mockInstanceContext.getMemberId(), mockInstanceContext.getInstanceId()));
             return Response.ok(mockInstanceMetadata).build();
@@ -92,7 +80,7 @@ public class MockIaasApi {
 
             log.debug(String.format("Get mock instances"));
 
-            List<MockInstanceMetadata> mockInstanceMetadataList = mockIaasService.getInstances();
+            List<MockInstanceMetadata> mockInstanceMetadataList = getMockIaasService().getInstances();
             MockInstanceMetadata[] mockInstanceMetadataArray = mockInstanceMetadataList.toArray(
                     new MockInstanceMetadata[mockInstanceMetadataList.size()]);
             return Response.ok(mockInstanceMetadataArray).build();
@@ -113,7 +101,7 @@ public class MockIaasApi {
 
             log.debug(String.format("Get mock instance: [instance-id] %s", instanceId));
 
-            MockInstanceMetadata mockInstanceMetadata = mockIaasService.getInstance(instanceId);
+            MockInstanceMetadata mockInstanceMetadata = getMockIaasService().getInstance(instanceId);
             if(mockInstanceMetadata == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
@@ -137,11 +125,11 @@ public class MockIaasApi {
 
             log.info(String.format("Allocating ip addresses: [instance-id] %s", instanceId));
 
-            MockInstanceMetadata mockInstanceMetadata = mockIaasService.getInstance(instanceId);
+            MockInstanceMetadata mockInstanceMetadata = getMockIaasService().getInstance(instanceId);
             if(mockInstanceMetadata == null) {
                 return Response.status(Response.Status.NOT_FOUND).build();
             }
-            mockInstanceMetadata = mockIaasService.allocateIpAddress(instanceId);
+            mockInstanceMetadata = getMockIaasService().allocateIpAddress(instanceId);
             log.info(String.format("IP addresses allocated: [instance-id] %s [default-private-ip] %s " +
                     "[default-public-ip] %s", instanceId, mockInstanceMetadata.getDefaultPrivateIp(),
                     mockInstanceMetadata.getDefaultPublicIp()));
@@ -161,7 +149,7 @@ public class MockIaasApi {
             validateMockIaasService();
 
             log.info(String.format("Terminating mock instance: [instance-id] %s", instanceId));
-            mockIaasService.terminateInstance(instanceId);
+            getMockIaasService().terminateInstance(instanceId);
             log.info(String.format("Mock instance terminated successfully: [instance-id] %s", instanceId));
             return Response.ok().build();
         } catch (Exception e) {
@@ -172,11 +160,37 @@ public class MockIaasApi {
     }
 
     /**
+     * Get mock iaas service instance
+     * @return
+     */
+    private MockIaasService getMockIaasService() {
+        if(mockIaasService == null) {
+            synchronized (MockIaasApi.class) {
+                if(mockIaasService == null) {
+                    try {
+                        try {
+                            mockIaasService = (MockIaasService) PrivilegedCarbonContext.getThreadLocalCarbonContext().
+                                    getOSGiService(MockIaasService.class);
+                        } catch (NullPointerException ignore) {
+                            // Above carbon context method throws a NPE if service is not registered
+                        }
+                    } catch (Exception e) {
+                        String message = "Could not initialize Mock IaaS API";
+                        log.error(message, e);
+                        throw new RuntimeException(message, e);
+                    }
+                }
+            }
+        }
+        return mockIaasService;
+    }
+
+    /**
      * Validate mock iaas service.
      */
     private void validateMockIaasService() {
-        if(mockIaasService == null) {
-            throw new RuntimeException(String.format("Mock IaaS is disabled, please check %s file",
+        if(getMockIaasService() == null) {
+            throw new RuntimeException(String.format("Mock IaaS may have been disabled, please check %s file",
                     MockIaasConfig.MOCK_IAAS_CONFIG_FILE_NAME));
         }
     }
