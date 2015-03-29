@@ -589,7 +589,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
                                     instanceContext.setMemoryConsumptionReset(false);
                                     instanceContext.setLoadAverageReset(false);
                                 } else if (log.isDebugEnabled()) {
-                                    log.debug(String.format("Scale rule will not run since the LB statistics have not " +
+                                    log.debug(String.format("Scale rule will not run since any type of statistics have not " +
                                                     "received before this cycle for [cluster instance context] %s [cluster] %s",
                                             instanceContext.getId(), clusterId));
                                 }
