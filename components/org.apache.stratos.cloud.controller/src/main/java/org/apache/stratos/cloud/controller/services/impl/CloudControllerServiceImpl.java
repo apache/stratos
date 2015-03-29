@@ -159,7 +159,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
     private void copyIaasProviders(Cartridge destCartridge,
                                    Cartridge sourceCartridge) {
 
-        List<IaasProvider> newIaasProviders = CloudControllerContext.getInstance().getIaases(destCartridge.getType());
+        List<IaasProvider> newIaasProviders = CloudControllerContext.getInstance().getIaasProviders(destCartridge.getType());
 
         Map<String, IaasProvider> iaasProviderMap = CloudControllerContext.getInstance().getPartitionToIaasProvider(sourceCartridge.getType());
 
@@ -825,7 +825,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                             lock = CloudControllerContext.getInstance().acquireCartridgesWriteLock();
 
                             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(ctxt.getCartridgeType());
-                            if (cartridge != null && CloudControllerContext.getInstance().getIaases(cartridge.getType()) != null && ctxt.getVolumes() != null) {
+                            if (cartridge != null && CloudControllerContext.getInstance().getIaasProviders(cartridge.getType()) != null && ctxt.getVolumes() != null) {
                                 for (Volume volume : ctxt.getVolumes()) {
                                     if (volume.getId() != null) {
                                         String iaasType = volume.getIaasType();
@@ -880,8 +880,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
             }
 
-            Map<String, IaasProvider> partitionToIaasProviders =
-                    new ConcurrentHashMap<String, IaasProvider>();
+            Map<String, IaasProvider> partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
 
             if (log.isDebugEnabled()) {
                 log.debug("Deployment policy validation started for cartridge type: " + cartridgeType);
@@ -889,7 +888,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 
             Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
             if (cartridge == null) {
-                String msg = "Invalid Cartridge Type: " + cartridgeType;
+                String msg = "Cartridge not found: " + cartridgeType;
                 log.error(msg);
                 throw new InvalidCartridgeTypeException(msg);
             }
@@ -898,11 +897,14 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             for (Partition partition : partitions) {
                 if (validatedPartitions != null && validatedPartitions.contains(partition.getId())) {
                     // partition cache hit
+                    String provider = partition.getProvider();
+                    IaasProvider iaasProvider = CloudControllerContext.getInstance()
+                            .getIaasProvider(cartridge.getType(), provider);
+                    partitionToIaasProviders.put(partition.getId(), iaasProvider);
                     continue;
                 }
 
-                Callable<IaasProvider> worker = new PartitionValidatorCallable(
-                        partition, cartridge);
+                Callable<IaasProvider> worker = new PartitionValidatorCallable(partition, cartridge);
                 Future<IaasProvider> job = CloudControllerContext.getInstance()
                         .getExecutorService().submit(worker);
                 jobList.put(partition.getId(), job);
@@ -916,10 +918,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 String partitionId = entry.getKey();
                 Future<IaasProvider> job = entry.getValue();
                 try {
-
                     // add to a temporary Map
                     IaasProvider iaasProvider = job.get();
-
                     if (iaasProvider != null) {
                         partitionToIaasProviders.put(partitionId, iaasProvider);
                     }
@@ -945,8 +945,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // persist data
             CloudControllerContext.getInstance().persist();
 
-            log.info("All partitions " + CloudControllerUtil.getPartitionIds(partitions) +
-                    " were validated successfully, against the Cartridge: " + cartridgeType);
+            log.info("All partitions [" + CloudControllerUtil.getPartitionIds(partitions) + "]" +
+                    " were validated successfully, against the cartridge: " + cartridgeType);
 
             return true;
         } finally {
