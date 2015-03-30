@@ -1054,8 +1054,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 }
                 CloudControllerContext.getInstance().addClusterContext(clusterContext);
 
-	            Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(clusterContext.getCartridgeType());
-
                 // Create cluster object
                 Cluster cluster = new Cluster(appClusterCtxt.getCartridgeType(), appClusterCtxt.getClusterId(),
                         appClusterCtxt.getDeploymentPolicyName(), appClusterCtxt.getAutoscalePolicyName(), appId);
@@ -1367,12 +1365,12 @@ public class CloudControllerServiceImpl implements CloudControllerService {
 			log.info("Updating deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
 		}
 		if (log.isDebugEnabled()) {
-			log.debug("Updating Deployment policy definition: " + deploymentPolicy.toString());
+			log.debug("Updating deployment policy definition: " + deploymentPolicy.toString());
 		}
 
 		String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
 		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
-			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
+			String message = "Deployment policy does not exist: [deployment-policy-id] " + deploymentPolicyID;
 			log.error(message);
 			throw new DeploymentPolicyNotExistsException(message);
 		}

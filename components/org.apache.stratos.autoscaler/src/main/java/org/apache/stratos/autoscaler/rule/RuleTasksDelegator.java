@@ -145,7 +145,7 @@ public class RuleTasksDelegator {
             partitionAlgorithm = StratosConstants.PARTITION_ONE_AFTER_ANOTHER_ALGORITHM_ID;
         }
         if (log.isDebugEnabled()) {
-            log.debug(String.format("Retrieving partition algorithm [Partition algorithm]: ", partitionAlgorithm));
+            log.debug(String.format("Retrieving partition algorithm [Partition algorithm]: %s", partitionAlgorithm));
         }
         if (StratosConstants.PARTITION_ROUND_ROBIN_ALGORITHM_ID.equals(partitionAlgorithm)) {
             autoscaleAlgorithm = new RoundRobin();

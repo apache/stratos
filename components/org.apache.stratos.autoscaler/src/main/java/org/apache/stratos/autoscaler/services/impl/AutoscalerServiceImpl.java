@@ -87,7 +87,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 			return PolicyManager.getInstance().removeAutoscalePolicy(autoscalePolicyId);
 		}
 		else{
-			throw new InvalidPolicyException("This auto-scalar policy cannot remove, since it is used in applications.");
+			throw new InvalidPolicyException("This autoscaler policy cannot be removed, since it is used in applications.");
 		}
 	}
 

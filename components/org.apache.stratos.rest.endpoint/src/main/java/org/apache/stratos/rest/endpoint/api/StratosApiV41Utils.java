@@ -183,7 +183,7 @@ public class StratosApiV41Utils {
         } catch (Exception e) {
             String msg = "Could not remove cartridge";
             log.error(msg, e);
-            throw new RestAPIException(msg);
+            throw new RestAPIException(e.getMessage(), e);
         }
     }
 
@@ -1193,13 +1193,13 @@ public class StratosApiV41Utils {
                 log.error(message);
                 throw new RestAPIException(message);
             }
-            if ((application != null) && (application.getStatus().equals(APPLICATION_STATUS_DEPLOYED))) {
+            if (application.getStatus().equals(APPLICATION_STATUS_DEPLOYED)) {
                 String message = String.format("Application is already deployed: [application-id] %s", applicationId);
                 log.error(message);
                 throw new RestAPIException(message);
             }
             if(applicationPolicyId == null) {
-                String message = String.format("Application policy id is not found: [application-policy-id] %s", applicationPolicyId);
+                String message = "Application policy id is null: [application-policy-id]";
                 log.error(message);
                 throw new RestAPIException(message);
             }
