@@ -548,7 +548,8 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         try {
             Application application = ApplicationManager.getApplications().getApplication(applicationId);
             if(application != null) {
-                ClusterDataHolder clusterData = application.getClusterData(alias);
+
+                ClusterDataHolder clusterData = application.getClusterDataHolderRecursivelyByAlias(alias);
                 if(clusterData != null) {
                     return clusterData.getClusterId();
                 }
