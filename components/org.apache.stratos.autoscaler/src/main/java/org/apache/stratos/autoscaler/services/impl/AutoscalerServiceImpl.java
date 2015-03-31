@@ -252,13 +252,10 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     updateArtifactRepositoryList(artifactRepositoryList, cartridgeContexts);
                 }
 
-                GroupContext[] groupContexts = components.getGroupContexts();
-                if (groupContexts != null) {
-                    for (GroupContext groupContext : groupContexts) {
-                        if (groupContext != null) {
-                            updateArtifactRepositoryList(artifactRepositoryList, groupContext.getCartridgeContexts());
-                        }
-                    }
+                CartridgeContext[] cartridgeContextsOfGroups = getCartridgeContextsOfGroupsRecursively(
+                        components.getGroupContexts());
+                if (cartridgeContextsOfGroups != null) {
+                    updateArtifactRepositoryList(artifactRepositoryList, cartridgeContextsOfGroups);
                 }
 
                 ArtifactRepository[] artifactRepositoryArray = artifactRepositoryList.toArray(
@@ -281,6 +278,28 @@ public class AutoscalerServiceImpl implements AutoscalerService {
             log.error(message, e);
             throw new RuntimeException(message, e);
         }
+    }
+
+
+    private CartridgeContext[] getCartridgeContextsOfGroupsRecursively(GroupContext[] passedGroupContexts) {
+
+        List<CartridgeContext> cartridgeContextsList = new ArrayList<CartridgeContext>();
+
+        for(GroupContext groupContext : passedGroupContexts){
+            if(groupContext.getCartridgeContexts() != null){
+                for(CartridgeContext cartridgeContext : groupContext.getCartridgeContexts()){
+
+                    cartridgeContextsList.add(cartridgeContext);
+                }
+            }
+            if(groupContext.getGroupContexts() != null){
+                for(CartridgeContext cartridgeContext : getCartridgeContextsOfGroupsRecursively(groupContext.getGroupContexts())){
+
+                    cartridgeContextsList.add(cartridgeContext);
+                }
+            }
+        }
+        return cartridgeContextsList.toArray(new CartridgeContext[0]);
     }
 
     private void removeApplicationSignUp(ApplicationContext applicationContext){
