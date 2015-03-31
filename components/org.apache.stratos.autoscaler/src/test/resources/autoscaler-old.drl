@@ -32,7 +32,6 @@ import org.apache.stratos.messaging.domain.policy.NetworkPartition;
 import org.apache.stratos.messaging.domain.policy.DeploymentPolicy;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.RequestsInFlight;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.LoadThresholds;
-import org.apache.stratos.autoscaler.client.CloudControllerClient;
 import org.apache.stratos.autoscaler.algorithm.AutoscaleAlgorithm;
 import org.apache.stratos.autoscaler.algorithm.OneAfterAnother;
 import org.apache.stratos.autoscaler.algorithm.RoundRobin;
