@@ -252,10 +252,12 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                     updateArtifactRepositoryList(artifactRepositoryList, cartridgeContexts);
                 }
 
-                CartridgeContext[] cartridgeContextsOfGroups = getCartridgeContextsOfGroupsRecursively(
-                        components.getGroupContexts());
-                if (cartridgeContextsOfGroups != null) {
-                    updateArtifactRepositoryList(artifactRepositoryList, cartridgeContextsOfGroups);
+                if(components.getGroupContexts() != null){
+                    CartridgeContext[] cartridgeContextsOfGroups = getCartridgeContextsOfGroupsRecursively(
+                            components.getGroupContexts());
+                    if (cartridgeContextsOfGroups != null) {
+                        updateArtifactRepositoryList(artifactRepositoryList, cartridgeContextsOfGroups);
+                    }
                 }
 
                 ArtifactRepository[] artifactRepositoryArray = artifactRepositoryList.toArray(
