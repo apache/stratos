@@ -28,7 +28,7 @@ import java.util.*;
  * This will keep track of network partition level information.
  */
 public abstract class NetworkPartitionContext {
-    private static final Log log = LogFactory.getLog(GroupLevelNetworkPartitionContext.class);
+    private static final Log log = LogFactory.getLog(NetworkPartitionContext.class);
     //id of the network partition context
     private final String id;
     //group instances kept inside a partition
