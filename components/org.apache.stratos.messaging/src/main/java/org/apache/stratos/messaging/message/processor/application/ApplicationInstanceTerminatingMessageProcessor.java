@@ -94,8 +94,9 @@ public class ApplicationInstanceTerminatingMessageProcessor extends MessageProce
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Application Instance not exists in Group: [AppId] %s" +
                             "[instanceId] %s", event.getAppId(), event.getInstanceId()));
-                    return false;
                 }
+
+                return false;
             }
             ApplicationStatus status = ApplicationStatus.Terminating;
             if (!context.isStateTransitionValid(status)) {

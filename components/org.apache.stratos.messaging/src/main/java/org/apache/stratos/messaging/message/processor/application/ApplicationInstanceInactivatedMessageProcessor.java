@@ -94,8 +94,9 @@ public class ApplicationInstanceInactivatedMessageProcessor extends MessageProce
                 if (log.isWarnEnabled()) {
                     log.warn(String.format("Application instance not exists in group: [application-id] %s" +
                             "[instance-id] %s", event.getAppId(), event.getInstanceId()));
-                    return false;
                 }
+
+                return false;
             }
             ApplicationStatus status = ApplicationStatus.Inactive;
             if (!context.isStateTransitionValid(status)) {
