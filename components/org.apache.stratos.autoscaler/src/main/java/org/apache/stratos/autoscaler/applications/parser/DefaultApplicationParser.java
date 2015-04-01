@@ -944,7 +944,9 @@ public class DefaultApplicationParser implements ApplicationParser {
                 hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs,exportMetadata,importMetadata);
 
         String textPayload = payloadData.toString();
-        log.debug("Payload :: " + textPayload);
+        if(log.isDebugEnabled()) {
+            log.debug("Payload :: " + textPayload);
+        }
         return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange, dependencyClustorIDs);
     }
 

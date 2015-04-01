@@ -58,6 +58,11 @@ public class InstanceCreator implements Runnable {
             ClusterContext clusterContext = CloudControllerContext.getInstance().getClusterContext(clusterId);
             Iaas iaas = iaasProvider.getIaas();
 
+            if(log.isDebugEnabled()){
+
+                log.debug(String.format("Payload passed to instance created, [member] %s [payload] %s",
+                        memberContext.getMemberId(),  new String(iaasProvider.getPayload())));
+            }
             memberContext = startInstance(iaas, memberContext);
 
             if (log.isInfoEnabled()) {
