@@ -115,7 +115,10 @@ public class ClusterInstanceTerminatingProcessor extends MessageProcessor {
                 log.warn("Cluster Instance Context is not found for [cluster] " +
                         event.getClusterId() + " [instance-id] " +
                         event.getInstanceId());
+
+                return false;
             }
+
             ClusterStatus status = ClusterStatus.Terminating;
             if (!context.isStateTransitionValid(status)) {
                 log.error("Invalid State Transition from " + context.getStatus() + " to " + status);

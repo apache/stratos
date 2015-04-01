@@ -1059,7 +1059,6 @@ public class TopologyBuilder {
                                 " [instance-id] %s [current-status] %s [status-requested] %s",
                         event.getClusterId(), event.getInstanceId(),
                         context.getStatus(), status));
-                return;
             }
         } finally {
             TopologyManager.releaseWriteLock();
