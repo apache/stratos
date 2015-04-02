@@ -40,6 +40,7 @@
         <module>manager</module>
         <module>messaging</module>
         <module>common</module>
+        <module>cep</module>
     </modules>
 
     <build>

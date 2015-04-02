@@ -441,7 +441,7 @@
                                 </featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.formatter.feature:1.0.0
                                 </featureArtifactDef>
-                                <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.processor.feature:1.0.0
+                                <featureArtifactDef>org.apache.stratos:org.apache.stratos.event.processor.feature:${project.version}
                                 </featureArtifactDef>
                                 <featureArtifactDef>org.wso2.carbon:org.wso2.carbon.event.tracer.feature:1.0.0
                                 </featureArtifactDef>
@@ -1158,8 +1158,8 @@
                                     <version>1.0.0</version>
                                 </feature>
                                 <feature>
-                                    <id>org.wso2.carbon.event.processor.feature.group</id>
-                                    <version>1.0.0</version>
+                                    <id>org.apache.stratos.event.processor.feature.group</id>
+                                    <version>${project.version}</version>
                                 </feature>
                                 <feature>
                                     <id>org.wso2.carbon.event.tracer.feature.group</id>

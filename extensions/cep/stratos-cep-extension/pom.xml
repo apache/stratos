@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.wso2.siddhi</groupId>
             <artifactId>siddhi-core</artifactId>
-            <version>2.0.0-wso2v4</version>
+            <version>2.0.0-wso2v5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.stratos</groupId>
