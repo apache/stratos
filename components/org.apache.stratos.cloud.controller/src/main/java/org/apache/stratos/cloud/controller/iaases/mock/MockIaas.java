@@ -54,7 +54,7 @@ public class MockIaas extends Iaas {
     }
 
     @Override
-    public MemberContext startInstance(MemberContext memberContext) {
+    public MemberContext startInstance(MemberContext memberContext, byte[] payload) {
         MockInstanceContext mockInstanceContext = new MockInstanceContext(
                 memberContext.getApplicationId(),
                 memberContext.getCartridgeType(),
@@ -64,6 +64,7 @@ public class MockIaas extends Iaas {
                 memberContext.getNetworkPartitionId(),
                 memberContext.getPartition().getId()
         );
+        setDynamicPayload(payload);
         MockInstanceMetadata mockInstanceMetadata = apiClient.startInstance(mockInstanceContext);
         memberContext.setInstanceId(mockInstanceMetadata.getInstanceId());
         return memberContext;

@@ -55,9 +55,10 @@ public abstract class Iaas {
      * Create vm/container instance.
      *
      * @param memberContext
+     * @param payload
      * @return updated memberContext
      */
-    public abstract MemberContext startInstance(MemberContext memberContext) throws CartridgeNotFoundException;
+    public abstract MemberContext startInstance(MemberContext memberContext, byte[] payload) throws CartridgeNotFoundException;
 
     /**
      * This will deallocate/release the given IP address back to pool.

@@ -101,10 +101,12 @@ public abstract class JcloudsIaas extends Iaas {
     }
 
     @Override
-    public MemberContext startInstance(MemberContext memberContext) {
+    public MemberContext startInstance(MemberContext memberContext, byte[] payload) {
         // generate the group id from domain name and sub domain name.
         // Should have lower-case ASCII letters, numbers, or dashes.
         // Should have a length between 3-15
+
+        this.setDynamicPayload(payload);
         String clusterId = memberContext.getClusterId();
         String str = clusterId.length() > 10 ? clusterId.substring(0, 10) : clusterId.substring(0, clusterId.length());
         String group = str.replaceAll("[^a-z0-9-]", "");

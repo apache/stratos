@@ -428,8 +428,8 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                 log.debug("Payload: " + payload.toString());
             }
 
-            iaasProvider.setPayload(payload.toString().getBytes());
-            iaas.setDynamicPayload(iaasProvider.getPayload());
+//            iaasProvider.setPayload(payload.toString().getBytes());
+//            iaas.setDynamicPayload(iaasProvider.getPayload());
 
             if (clusterContext.isVolumeRequired()) {
                 
@@ -459,7 +459,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
                         "[member] %s", instanceContext.getClusterId(), instanceContext.getClusterInstanceId(),
                         memberId));
             }
-            executorService.execute(new InstanceCreator(memberContext, iaasProvider));
+            executorService.execute(new InstanceCreator(memberContext, iaasProvider, payload.toString().getBytes()));
 
             return memberContext;
         } catch (Exception e) {

@@ -116,7 +116,8 @@ public class KubernetesIaas extends Iaas {
     }
 
     @Override
-    public MemberContext startInstance(MemberContext memberContext) throws CartridgeNotFoundException {
+    public MemberContext startInstance(MemberContext memberContext, byte[] payload) throws CartridgeNotFoundException {
+        setDynamicPayload(payload);
         return startContainer(memberContext);
     }
 
