@@ -388,7 +388,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                         log.info("Publishing Cluster Terminating event for [application]: " + appId +
                                 " [group] " + this.id + " [cluster]: " + terminationContext.getId());
                     }
-                    ClusterStatusEventPublisher.sendClusterTerminatingEvent(this.appId,
+                    ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(this.appId,
                             ((ClusterMonitor) monitor).getServiceId(),
                             terminationContext.getId(), instanceId);
                 }

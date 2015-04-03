@@ -36,6 +36,7 @@ import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupEx
 import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
 import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
 import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
+import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.pojo.Dependencies;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
@@ -45,20 +46,22 @@ import org.apache.stratos.autoscaler.registry.RegistryManager;
 import org.apache.stratos.autoscaler.services.AutoscalerService;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.client.StratosManagerServiceClient;
 import org.apache.stratos.common.util.CommonUtil;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ApplicationSignUp;
 import org.apache.stratos.manager.service.stub.domain.application.signup.ArtifactRepository;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.ClusterDataHolder;
+import org.apache.stratos.messaging.domain.topology.Cluster;
+import org.apache.stratos.messaging.domain.topology.Member;
 import org.apache.stratos.messaging.message.receiver.application.ApplicationManager;
+import org.apache.stratos.messaging.message.receiver.topology.TopologyManager;
 import org.wso2.carbon.registry.api.RegistryException;
 
 import java.rmi.RemoteException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * Auto Scaler Service API is responsible getting Partitions and Policies.
@@ -377,8 +380,46 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
     }
 
-    @Override
-    public void undeployApplication(String applicationId) {
+    public void undeployApplication(String applicationId, boolean force){
+
+        AutoscalerContext asCtx = AutoscalerContext.getInstance();
+        ApplicationMonitor appMonitor = asCtx.getAppMonitor(applicationId);
+
+        if(appMonitor == null){
+            log.info(String.format("Could not find application monitor for the application %s, hence returning", applicationId));
+            return;
+        }
+        if(! force){
+            // Gracefull undeployment flow
+            if(appMonitor.isTerminating()){
+                log.info("Application monitor is already in terminating, graceful undeployment is has already been attempted thus not invoking again");
+                return;
+            }else{
+                log.info(String.format("Gracefully undeploying the application " + applicationId));
+                undeployApplicationGracefully(applicationId);
+            }
+        }else{
+            // force undeployment flow
+            if (appMonitor.isTerminating()) {
+
+                if(appMonitor.isForce()){
+                    log.warn("Force undeployment is already in progress, hence not invoking again");
+                    return;
+                }else{
+                    log.info(String.format("Previous gracefull undeployment is in progress for [application-id] %s , thus  terminating instances directly", applicationId));
+                    appMonitor.setForce(true);
+                    terminateAllApplicationMembersForcefully(applicationId);
+                }
+            }else{
+                log.info(String.format("Forcefully undeploying the application " + applicationId));
+                appMonitor.setForce(true);
+                undeployApplicationGracefully(applicationId);
+            }
+        }
+
+    }
+
+    private void undeployApplicationGracefully(String applicationId) {
         try {
             if (log.isInfoEnabled()) {
                 log.info("Starting to undeploy application: [application-id] " + applicationId);
@@ -425,6 +466,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
                         applicationId);
                 throw new RuntimeException(msg);
             }
+
 
             if (ApplicationContext.STATUS_DEPLOYED.equals(applicationContext.getStatus())) {
                 String msg = String.format("Application is in deployed state, please undeploy it before deleting: " +
@@ -659,4 +701,53 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 	public ApplicationPolicy[] getApplicationPolicies() {
 		return PolicyManager.getInstance().getApplicationPolicies();
 	}
+
+    private void terminateAllApplicationMembersForcefully(String applicationId)  {
+        if (StringUtils.isEmpty(applicationId)){
+            throw new IllegalArgumentException("Application Id can not be empty");
+        }
+
+        Application application;
+        try{
+            ApplicationManager.acquireReadLockForApplication(applicationId);
+            application = ApplicationManager.getApplications().getApplication(applicationId);
+            if(application == null){
+                log.warn(String.format("Could not find application, thus no members to be terminated [application-id] %s", applicationId));
+                return;
+            }
+        }finally {
+            ApplicationManager.releaseReadLockForApplication(applicationId);
+        }
+
+
+        Set<ClusterDataHolder> allClusters = application.getClusterDataRecursively();
+        //CloudControllerServiceClient cloudControllerServiceClient = CloudControllerServiceClient.getInstance().ter
+        for(ClusterDataHolder clusterDataHolder : allClusters){
+            String serviceType = clusterDataHolder.getServiceType();
+            String clusterId = clusterDataHolder.getClusterId();
+
+            Cluster cluster;
+            try {
+                TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
+                cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+            }finally {
+                TopologyManager.releaseReadLockForCluster(serviceType, clusterId);
+            }
+
+            List<String> memberListToTerminate = new LinkedList<String>();
+            for(Member member : cluster.getMembers()){
+                memberListToTerminate.add(member.getMemberId());
+            }
+
+            for(String memberIdToTerminate : memberListToTerminate){
+                try {
+                    log.info(String.format("Terminating member forcefully [member-id] %s of the cluster [cluster-id] %s [application-id] %s", memberIdToTerminate, clusterId, application));
+                    CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberIdToTerminate);
+                } catch (Exception e) {
+                    log.error(String.format("Forcefull termination of member %s is failed, but continuing forcefull deletion of other members", memberIdToTerminate));
+                }
+            }
+
+        }
+    }
 }

@@ -70,6 +70,9 @@ public class ApplicationMonitor extends ParentComponentMonitor {
     //Flag to set whether application is terminating
     private boolean isTerminating;
 
+    // Flag to set if forcefull undeployment is invoked for the application.
+    private boolean force;
+
     public ApplicationMonitor(Application application) throws DependencyBuilderException,
             TopologyInConsistentException {
         super(application);
@@ -533,5 +536,13 @@ public class ApplicationMonitor extends ParentComponentMonitor {
 		}
     	
     	return null;
+    }
+
+    public boolean isForce() {
+        return force;
+    }
+
+    public void setForce(boolean force) {
+        this.force = force;
     }
 }

@@ -175,6 +175,8 @@ public interface CloudControllerService {
 	void terminateInstance(String memberId) throws InvalidMemberException, InvalidCartridgeTypeException,
 	                                               CloudControllerException;
 
+	void terminateInstanceForcefully(String memberId) throws  InvalidCartridgeTypeException;
+
 	/**
 	 * Calling this method will result in termination of all instances belong
 	 * to the provided cluster ID.

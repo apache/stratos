@@ -615,8 +615,7 @@ public class StratosApiV41 extends AbstractApi {
     @Produces("application/json")
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/getApplications")
-    public Response getApplications()
-            throws RestAPIException {
+    public Response getApplications() throws RestAPIException {
         List<ApplicationBean> applicationDefinitions = StratosApiV41Utils.getApplications();
         ApplicationBean[] applicationDefinitionsArray = applicationDefinitions
                 .toArray(new ApplicationBean[applicationDefinitions.size()]);
@@ -893,8 +892,9 @@ public class StratosApiV41 extends AbstractApi {
     @Consumes("application/json")
     @AuthorizationAction("/permission/protected/manage/undeployApplication")
     public Response undeployApplication(
-            @PathParam("applicationId") String applicationId) throws RestAPIException {
-        StratosApiV41Utils.undeployApplication(applicationId);
+            @PathParam("applicationId") String applicationId, @QueryParam("force") @DefaultValue("false") boolean force) throws RestAPIException {
+
+        StratosApiV41Utils.undeployApplication(applicationId, force);
         return Response.accepted().entity(new SuccessResponseBean(Response.Status.ACCEPTED.getStatusCode(),
                 String.format("Application undeployed successfully: [application] %s", applicationId))).build();
     }

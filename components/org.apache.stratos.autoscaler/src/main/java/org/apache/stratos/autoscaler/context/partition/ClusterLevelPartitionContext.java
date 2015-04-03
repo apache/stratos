@@ -25,6 +25,7 @@ import org.apache.stratos.autoscaler.context.member.MemberStatsContext;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.client.CloudControllerServiceClient;
 import org.apache.stratos.common.constants.StratosConstants;
 
 import java.io.Serializable;
@@ -68,6 +69,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
     // termination pending members, member is added to this when Autoscaler send grace fully shut down event
     private List<MemberContext> terminationPendingMembers;
 
+
     //member id: time that member is moved to termination pending status
     private Map<String, Long> terminationPendingStartedTime;
 
@@ -80,6 +82,51 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.activeMembers = new ArrayList<MemberContext>();
         this.terminationPendingMembers = new ArrayList<MemberContext>();
         this.pendingMembers = new ArrayList<MemberContext>();
+    }
+
+    public void terminateAllRemainingInstances(){
+
+        // Forcefully deleting remaining active members
+        for (Iterator<MemberContext> iterator = activeMembers.iterator(); iterator.hasNext();) {
+            MemberContext member = iterator.next();
+            iterator.remove();
+            terminateForcefully(member.getMemberId());
+        }
+
+        // Forcefully deleting remaining pending members
+        for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
+            MemberContext member = iterator.next();
+            iterator.remove();
+            terminateForcefully(member.getMemberId());
+        }
+
+        /// Forcefully deleting remaining termination pending members
+        for (Iterator<MemberContext> iterator = terminationPendingMembers.iterator(); iterator.hasNext();) {
+            MemberContext member = iterator.next();
+            // Remove the current element from the iterator and the list.
+            iterator.remove();
+            terminateForcefully(member.getMemberId());
+        }
+
+
+        // Forcefully deleting remaining obsolete members
+        for (Map.Entry<String, MemberContext> entry : obsoletedMembers.entrySet())
+        {
+            MemberContext ObsoleteMemberContext = entry.getValue();
+            obsoletedMembers.remove(entry.getKey());
+            terminateForcefully(ObsoleteMemberContext.getMemberId());
+        }
+    }
+
+    private void terminateForcefully(String  memberId) {
+        try {
+            if(log.isDebugEnabled()){
+                log.debug(String.format("Forcefully terminating member [member-id] %s" , memberId));
+            }
+            CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberId);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public ClusterLevelPartitionContext(int max, Partition partition, String networkPartitionId) {
@@ -579,6 +626,7 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         }
 
     }
+
 
 //    @Override
 //    public int getCurrentElementCount() {

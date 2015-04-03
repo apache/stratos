@@ -136,9 +136,9 @@ public class AutoscalerServiceClient {
     	return stub.getApplicationNetworkPartitions(applicationId);
     }
 
-    public void undeployApplication(String applicationId) throws
+    public void undeployApplication(String applicationId, boolean force) throws
             AutoscalerServiceApplicationDefinitionExceptionException, RemoteException {
-        stub.undeployApplication(applicationId);
+        stub.undeployApplication(applicationId, force);
     }
 
     public void deleteApplication(String applicationId) throws RemoteException {

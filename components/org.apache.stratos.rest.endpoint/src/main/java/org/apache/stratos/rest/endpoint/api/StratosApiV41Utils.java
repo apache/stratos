@@ -23,22 +23,17 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicatioinPolicyNotExistsExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoscalerServiceApplicationDefinitionExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidApplicationPolicyExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoscalerServiceInvalidPolicyExceptionException;
-import org.apache.stratos.autoscaler.stub.AutoscalerServiceRemoteExceptionException;
+import org.apache.stratos.autoscaler.stub.*;
 import org.apache.stratos.autoscaler.stub.deployment.policy.ApplicationPolicy;
 import org.apache.stratos.autoscaler.stub.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.stub.pojo.ServiceGroup;
 import org.apache.stratos.cloud.controller.stub.*;
-import org.apache.stratos.cloud.controller.stub.domain.*;
+import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
+import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
+import org.apache.stratos.cloud.controller.stub.domain.Persistence;
+import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.beans.PropertyBean;
-import org.apache.stratos.common.beans.application.ApplicationBean;
-import org.apache.stratos.common.beans.application.ApplicationNetworkPartitionIdListBean;
-import org.apache.stratos.common.beans.application.ComponentBean;
-import org.apache.stratos.common.beans.application.GroupBean;
-import org.apache.stratos.common.beans.application.GroupReferenceBean;
+import org.apache.stratos.common.beans.application.*;
 import org.apache.stratos.common.beans.application.domain.mapping.ApplicationDomainMappingsBean;
 import org.apache.stratos.common.beans.application.domain.mapping.DomainMappingBean;
 import org.apache.stratos.common.beans.application.signup.ApplicationSignUpBean;
@@ -1322,23 +1317,20 @@ public class StratosApiV41Utils {
         }
     }
 
-    public static void undeployApplication(String applicationId) throws RestAPIException {
+    public static void undeployApplication(String applicationId, boolean force) throws RestAPIException {
         AutoscalerServiceClient autoscalerServiceClient = getAutoscalerServiceClient();
+        if(force){
+            if(log.isDebugEnabled()){
+                log.debug("Forcefully undeploying application [application-id] " + applicationId);
+            }
+        }else{
+            if(log.isDebugEnabled()){
+                log.debug("Gracefully undeploying application [application-id] " + applicationId);
+            }
+        }
         if (autoscalerServiceClient != null) {
             try {
-                ApplicationContext application = autoscalerServiceClient.getApplication(applicationId);
-                if(application == null) {
-                    String message = String.format("Application is not found: [application-id] %s", applicationId);
-                    log.error(message);
-                    throw new RestAPIException(message);
-                }
-                if (!application.getStatus().equals(APPLICATION_STATUS_DEPLOYED)) {
-                    String message = String.format("Application is not deployed: [application-id] %s", applicationId);
-                    log.error(message);
-                    throw new RestAPIException(message);
-                }
-
-                autoscalerServiceClient.undeployApplication(applicationId);
+                autoscalerServiceClient.undeployApplication(applicationId, force);
             } catch (RemoteException e) {
                 String message = "Could not undeploy application: [application-id] " + applicationId;
                 log.error(message, e);
@@ -1389,6 +1381,7 @@ public class StratosApiV41Utils {
         }
         return applicationBean;
     }
+
     private static void addGroupsInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,
                                                                     Application application) {
         Collection<Group> groups = application.getGroups();
@@ -1405,9 +1398,7 @@ public class StratosApiV41Utils {
 
     }
 
-    private static void addClustersInstancesToApplicationInstanceBean(
-            ApplicationInstanceBean applicationInstanceBean,
-            Application application) {
+    private static void addClustersInstancesToApplicationInstanceBean(ApplicationInstanceBean applicationInstanceBean,Application application) {
 
         Map<String, ClusterDataHolder> topLevelClusterDataMap = application.getClusterDataMap();
         if(topLevelClusterDataMap != null) {
@@ -1418,6 +1409,7 @@ public class StratosApiV41Utils {
                 try {
                     TopologyManager.acquireReadLockForCluster(serviceType, clusterId);
                     Cluster cluster = TopologyManager.getTopology().getService(serviceType).getCluster(clusterId);
+
                     applicationInstanceBean.getClusterInstances().add(ObjectConverter.
                             convertClusterToClusterInstanceBean(applicationInstanceBean.getInstanceId(),
                                     cluster, entry.getKey()));

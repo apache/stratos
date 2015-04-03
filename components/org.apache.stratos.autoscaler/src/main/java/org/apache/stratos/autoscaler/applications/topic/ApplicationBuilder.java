@@ -349,7 +349,7 @@ public class ApplicationBuilder {
                         Cluster cluster = service.getCluster(aClusterData.getClusterId());
                         if (cluster != null) {
                             for (ClusterInstance instance : cluster.getInstanceIdToInstanceContextMap().values()) {
-                                ClusterStatusEventPublisher.sendClusterTerminatingEvent(applicationId,
+                                ClusterStatusEventPublisher.sendClusterStatusClusterTerminatingEvent(applicationId,
                                         aClusterData.getServiceType(),
                                         aClusterData.getClusterId(),
                                         instance.getInstanceId());

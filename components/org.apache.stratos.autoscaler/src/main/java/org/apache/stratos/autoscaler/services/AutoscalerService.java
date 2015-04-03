@@ -21,8 +21,6 @@
 
 package org.apache.stratos.autoscaler.services;
 
-import java.rmi.RemoteException;
-
 import org.apache.stratos.autoscaler.applications.pojo.ApplicationContext;
 import org.apache.stratos.autoscaler.exception.AutoScalerException;
 import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
@@ -35,6 +33,8 @@ import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 import org.apache.stratos.common.Properties;
+
+import java.rmi.RemoteException;
 
 public interface AutoscalerService {
     /**
@@ -106,7 +106,8 @@ public interface AutoscalerService {
      * @param applicationId
      * @return
      */
-    public void undeployApplication(String applicationId);
+
+    public void undeployApplication(String applicationId, boolean force);
 
     /**
      * Delete an application

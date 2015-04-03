@@ -123,7 +123,14 @@ public class CloudControllerServiceClient {
 			log.debug(String.format("Service call terminateInstance() returned in %dms", (endTime - startTime)));
 		}
     }
-    
+
+    public void terminateInstanceForcefully(String memberId) throws Exception {
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Terminating instance forcefully via cloud controller: [member] %s", memberId));
+        }
+        stub.terminateInstanceForcefully(memberId);
+    }
+
     public void terminateAllInstances(String clusterId) throws RemoteException, 
     								CloudControllerServiceInvalidClusterExceptionException {
     	if (log.isInfoEnabled()) {
