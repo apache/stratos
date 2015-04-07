@@ -27,17 +27,18 @@ import org.apache.stratos.autoscaler.applications.pojo.ApplicationClusterContext
 import org.apache.stratos.autoscaler.applications.pojo.VolumeContext;
 import org.apache.stratos.autoscaler.exception.cartridge.SpawningException;
 import org.apache.stratos.autoscaler.util.AutoscalerConstants;
+import org.apache.stratos.autoscaler.util.AutoscalerObjectConverter;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
 import org.apache.stratos.autoscaler.util.ConfUtil;
 import org.apache.stratos.cloud.controller.stub.*;
 import org.apache.stratos.cloud.controller.stub.domain.Cartridge;
 import org.apache.stratos.cloud.controller.stub.domain.InstanceContext;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.cloud.controller.stub.domain.Volume;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.constants.StratosConstants;
+import org.apache.stratos.common.partition.Partition;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public class CloudControllerClient {
             InstanceContext instanceContext = new InstanceContext();
             instanceContext.setClusterId(clusterId);
             instanceContext.setClusterInstanceId(clusterInstanceId);
-            instanceContext.setPartition(partition);
+            instanceContext.setPartition(AutoscalerObjectConverter.convertPartitionToCCPartition(partition));
             instanceContext.setInitTime(System.currentTimeMillis());
             instanceContext.setObsoleteExpiryTime(expiryTime);
             instanceContext.setNetworkPartitionId(networkPartitionId);

@@ -39,6 +39,7 @@ import org.wso2.carbon.registry.core.Resource;
 import org.wso2.carbon.registry.core.exceptions.RegistryException;
 import org.wso2.carbon.registry.core.exceptions.ResourceNotFoundException;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -156,6 +157,14 @@ public class RegistryManager {
                 }
             }
             throw new AutoScalerException("Could not persist data in registry", e);
+        }
+    }
+
+    public void persistDeploymentPolicy(DeploymentPolicy deploymentPolicy) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" + deploymentPolicy.getDeploymentPolicyID();
+        persist(deploymentPolicy, resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Deployment policy written to registry: %s", deploymentPolicy.toString()));
         }
     }
 
@@ -379,7 +388,39 @@ public class RegistryManager {
             endTenantFlow();
         }
     }
-    
+
+    public List<DeploymentPolicy> retrieveDeploymentPolicies() {
+        List<DeploymentPolicy> depPolicyList = new ArrayList<DeploymentPolicy>();
+        RegistryManager registryManager = RegistryManager.getInstance();
+        String[] depPolicyResourceList = (String[]) registryManager.retrieve(AutoscalerConstants.AUTOSCALER_RESOURCE
+                + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE);
+
+        if (depPolicyResourceList != null) {
+            DeploymentPolicy depPolicy;
+            for (String resourcePath : depPolicyResourceList) {
+                Object serializedObj = registryManager.retrieve(resourcePath);
+                if (serializedObj != null) {
+                    try {
+                        Object dataObj = Deserializer.deserializeFromByteArray((byte[]) serializedObj);
+                        if (dataObj instanceof DeploymentPolicy) {
+                            depPolicy = (DeploymentPolicy) dataObj;
+                            if (log.isDebugEnabled()) {
+                                log.debug(depPolicy.toString());
+                            }
+                            depPolicyList.add(depPolicy);
+                        } else {
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        String msg = "Unable to retrieve data from Registry. Hence, any historical deployment policies will not get reflected.";
+                        log.warn(msg, e);
+                    }
+                }
+            }
+        }
+        return depPolicyList;
+    }
+
     public List<ApplicationPolicy> retrieveApplicationPolicies() {
         try {
             startTenantFlow();
@@ -417,7 +458,7 @@ public class RegistryManager {
             endTenantFlow();
         }
     }
-    
+
     public List<NetworkPartitionAlgorithmContext> retrieveNetworkPartitionAlgorithmContexts() {
         try {
             startTenantFlow();
@@ -557,7 +598,17 @@ public class RegistryManager {
             endTenantFlow();
         }
     }
-    
+
+    public void removeDeploymentPolicy(String deploymentPolicyID) {
+        String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE + AutoscalerConstants.DEPLOYMENT_POLICY_RESOURCE + "/" +
+                deploymentPolicyID;
+        this.delete(resourcePath);
+        if (log.isDebugEnabled()) {
+            log.debug(String.format("Deployment policy deleted from registry: [id] %s",
+                    deploymentPolicyID));
+        }
+    }
+
     public void removeApplicationPolicy(String applicationPolicyId) {
         try {
             startTenantFlow();
@@ -571,7 +622,7 @@ public class RegistryManager {
             endTenantFlow();
         }
     }
-    
+
     public void removeNetworkPartitionAlgorithmContext(String applicationPolicyId) {
         try {
             startTenantFlow();
@@ -586,7 +637,7 @@ public class RegistryManager {
         }
     }
 
-	public void persistApplicationPolicy(ApplicationPolicy applicationPolicy) {
+    public void persistApplicationPolicy(ApplicationPolicy applicationPolicy) {
         try {
             startTenantFlow();
             String resourcePath = AutoscalerConstants.AUTOSCALER_RESOURCE +
@@ -599,8 +650,8 @@ public class RegistryManager {
             endTenantFlow();
         }
     }
-	
-	public void persistNetworkPartitionAlgorithmContext(NetworkPartitionAlgorithmContext algorithmContext) {
+
+    public void persistNetworkPartitionAlgorithmContext(NetworkPartitionAlgorithmContext algorithmContext) {
         try {
             startTenantFlow();
             String applicationId = algorithmContext.getApplicationId();
