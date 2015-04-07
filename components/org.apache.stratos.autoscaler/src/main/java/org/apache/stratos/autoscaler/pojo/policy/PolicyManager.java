@@ -187,7 +187,7 @@ public class PolicyManager {
     }
 
     public void updateDeploymentPolicyInInformationModel(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
-        if (autoscalePolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+        if (deploymentPolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
             if (log.isDebugEnabled()) {
                 log.debug("Updating deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
             }
