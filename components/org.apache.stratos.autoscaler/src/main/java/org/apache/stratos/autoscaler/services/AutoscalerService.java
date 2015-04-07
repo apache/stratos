@@ -27,11 +27,11 @@ import org.apache.stratos.autoscaler.exception.InvalidArgumentException;
 import org.apache.stratos.autoscaler.exception.application.ApplicationDefinitionException;
 import org.apache.stratos.autoscaler.exception.application.InvalidApplicationPolicyException;
 import org.apache.stratos.autoscaler.exception.application.InvalidServiceGroupException;
-import org.apache.stratos.autoscaler.exception.policy.ApplicatioinPolicyNotExistsException;
-import org.apache.stratos.autoscaler.exception.policy.InvalidPolicyException;
+import org.apache.stratos.autoscaler.exception.policy.*;
 import org.apache.stratos.autoscaler.pojo.ServiceGroup;
 import org.apache.stratos.autoscaler.pojo.policy.autoscale.AutoscalePolicy;
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.common.Properties;
 
 import java.rmi.RemoteException;
@@ -190,4 +190,44 @@ public interface AutoscalerService {
     public String findClusterId(String applicationId, String alias);
     
     public String[] getApplicationNetworkPartitions(String applicationId) throws AutoScalerException;
+
+	/**
+	 * Add a deployment policy
+	 *
+	 * @param deploymentPolicy DeployementPolicy
+	 * @throws InvalidDeploymentPolicyException    if the deployment policy is not valid
+	 * @throws IllegalArgumentException            if the provided argument is not valid.
+	 */
+	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException,
+            InvalidDeploymentPolicyException, RemoteException, DeploymentPolicyNotExistsException;
+
+	/**
+	 * Update existing deployment policy
+	 *
+	 * @param deploymentPolicy DeployementPolicy
+	 * @throws IllegalArgumentException            if the provided argument is not valid.
+	 */
+	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException;
+
+	/**
+	 * Remove deployment policy
+	 *
+	 * @param deploymentPolicyID deploymentPolicyID
+	 * @throws IllegalArgumentException            if the provided argument is not valid.
+	 */
+	public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException, DeploymentPolicyNotExistsException;
+
+	/**
+	 * Get deployment policy definition
+	 * @param deploymentPolicyID
+	 * @return
+	 */
+	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
+
+    /**
+     * Get deployment policies
+     * @return array of {@link DeploymentPolicy}
+     */
+    public DeploymentPolicy[] getDeploymentPolicies();
+
 }
