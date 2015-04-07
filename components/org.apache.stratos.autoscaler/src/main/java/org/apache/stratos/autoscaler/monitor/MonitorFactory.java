@@ -33,12 +33,13 @@ import org.apache.stratos.autoscaler.monitor.cluster.ClusterMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ApplicationMonitor;
 import org.apache.stratos.autoscaler.monitor.component.GroupMonitor;
 import org.apache.stratos.autoscaler.monitor.component.ParentComponentMonitor;
+import org.apache.stratos.autoscaler.pojo.policy.PolicyManager;
+import org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy;
 import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.cloud.controller.stub.domain.DeploymentPolicy;
-import org.apache.stratos.cloud.controller.stub.domain.NetworkPartition;
-import org.apache.stratos.cloud.controller.stub.domain.NetworkPartitionRef;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
+import org.apache.stratos.common.Property;
 import org.apache.stratos.common.client.CloudControllerServiceClient;
+import org.apache.stratos.common.partition.NetworkPartition;
+import org.apache.stratos.common.partition.Partition;
 import org.apache.stratos.messaging.domain.application.Application;
 import org.apache.stratos.messaging.domain.application.Group;
 import org.apache.stratos.messaging.domain.application.ScalingDependentList;
@@ -137,7 +138,7 @@ public class MonitorFactory {
                 } else {
                     groupMonitor.setHasStartupDependents(false);
                 }
-	            groupMonitor.startScheduler();
+                groupMonitor.startScheduler();
             }
         } finally {
             ApplicationHolder.releaseReadLock();
@@ -223,8 +224,8 @@ public class MonitorFactory {
      * @throws org.apache.stratos.autoscaler.exception.partition.PartitionValidationException
      */
     public static ClusterMonitor getClusterMonitor(ParentComponentMonitor parentMonitor,
-                                                           ClusterChildContext context,
-                                                           List<String> parentInstanceIds)
+                                                   ClusterChildContext context,
+                                                   List<String> parentInstanceIds)
             throws PolicyValidationException,
             PartitionValidationException,
             TopologyInConsistentException {
@@ -249,46 +250,38 @@ public class MonitorFactory {
                         serviceName, clusterId);
                 throw new RuntimeException(msg);
             }
-            
-            
+
+
             // deployment policy validation
             String deploymentPolicyId = AutoscalerUtil.getDeploymentPolicyIdByAlias(parentMonitor.appId, AutoscalerUtil.getAliasFromClusterId(clusterId));
             DeploymentPolicy deploymentPolicy = null;
-			try {
-				deploymentPolicy = CloudControllerServiceClient.getInstance().getDeploymentPolicy(deploymentPolicyId);
-			} catch (Exception e) {
-				String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyId);
-				log.error(msg, e);
-				throw new RuntimeException(msg, e);
-			} 
-			
+            try {
+                deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
+            } catch (Exception e) {
+                String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s", deploymentPolicyId);
+                log.error(msg, e);
+                throw new RuntimeException(msg, e);
+            }
+
             List<Partition> partitionList = new ArrayList<Partition>();
-            for (NetworkPartitionRef networkPartitionRef : deploymentPolicy.getNetworkPartitionsRef()) {
-            	
-            	if (networkPartitionRef != null) {
-            		NetworkPartition networkPartition = null;
-					try {
-						networkPartition = CloudControllerServiceClient.getInstance().getNetworkPartition(networkPartitionRef.getId());
-					} catch (Exception e) {
-						String msg = String.format("Error while getting deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
-						log.error(msg, e);
-						throw new RuntimeException(msg, e);
-					}
-					
-            		if (networkPartition != null) {
-            			for (Partition partition : networkPartition.getPartitions()) {
-            				partitionList.add(partition);
-            			}
-            		}
-            		
-            		try {
-						CloudControllerServiceClient.getInstance().validateDeploymentPolicy(serviceName, partitionList.toArray(new Partition[partitionList.size()]));
-					} catch (Exception e) {
-						String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartitionRef.getId());
-						log.error(msg, e);
-						throw new RuntimeException(msg, e);
-					}
-            	}
+            for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
+
+                if (networkPartition != null) {
+
+                    for (Partition partition : networkPartition.getPartitions()) {
+                        partitionList.add(partition);
+                    }
+
+                    try {
+                        org.apache.stratos.cloud.controller.stub.domain.Partition[] partitions
+                                = convertPartitionsToCCPartitions(partitionList.toArray(new Partition[partitionList.size()]));
+                        CloudControllerServiceClient.getInstance().validateDeploymentPolicy(serviceName, networkPartition.getId());
+                    } catch (Exception e) {
+                        String msg = String.format("Error while validating deployment policy from cloud controller [network-partition-id] %s", networkPartition.getId());
+                        log.error(msg, e);
+                        throw new RuntimeException(msg, e);
+                    }
+                }
             }
             // deployment policy validation ends
 
@@ -338,6 +331,39 @@ public class MonitorFactory {
             TopologyManager.releaseReadLockForCluster(serviceName, clusterId);
         }
     }
+
+    private static org.apache.stratos.cloud.controller.stub.domain.Partition[] convertPartitionsToCCPartitions(
+            Partition[] partitions) {
+
+        org.apache.stratos.cloud.controller.stub.domain.Partition[] ccPartitions
+                = new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
+        for(int i = 0; i < partitions.length; i++){
+            org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition
+                    = new org.apache.stratos.cloud.controller.stub.domain.Partition();
+            ccPartition.setId(partitions[i].getId());
+            ccPartition.setDescription(partitions[i].getDescription());
+            ccPartition.setIsPublic(partitions[i].getIsPublic());
+            ccPartition.setKubernetesClusterId(partitions[i].getKubernetesClusterId());
+            ccPartition.setProperties(AutoscalerUtil.toStubProperties(partitions[i].getProperties()));
+            ccPartition.setProvider(partitions[i].getProvider());
+            ccPartitions[i] = ccPartition;
+        }
+        return  ccPartitions;
+    }
+
+//    private static org.apache.stratos.cloud.controller.stub.Properties convertPropertiesToCCProperties(
+//            Properties properties) {
+//
+//        org.apache.stratos.cloud.controller.stub.Properties ccProperties
+//                = new org.apache.stratos.cloud.controller.stub.Properties();
+//        Property[] propertyArray = properties.getProperties();
+//        for(int i = 0; i < propertyArray.length; i++){
+//
+//            ccProperties.getProperties()[i].setName(properties.getProperties()[i].getName());
+//            ccProperties.getProperties()[i].setValue(properties.getProperties()[i].getValue());
+//        }
+//        return ccProperties;
+//    }
 
     private static boolean findIfChildIsInGroupScalingEnabledSubTree(GroupMonitor groupMonitor) {
         boolean groupScalingEnabledSubtree = false;

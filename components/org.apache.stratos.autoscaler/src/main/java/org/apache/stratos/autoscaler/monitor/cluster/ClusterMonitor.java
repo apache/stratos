@@ -45,10 +45,7 @@ import org.apache.stratos.autoscaler.rule.AutoscalerRuleEvaluator;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusActiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusInactiveProcessor;
 import org.apache.stratos.autoscaler.status.processor.cluster.ClusterStatusTerminatedProcessor;
-import org.apache.stratos.autoscaler.util.AutoscalerConstants;
-import org.apache.stratos.autoscaler.util.AutoscalerUtil;
-import org.apache.stratos.autoscaler.util.ConfUtil;
-import org.apache.stratos.autoscaler.util.ServiceReferenceHolder;
+import org.apache.stratos.autoscaler.util.*;
 import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 import org.apache.stratos.common.Properties;
 import org.apache.stratos.common.Property;
@@ -437,7 +434,7 @@ public class ClusterMonitor extends Monitor implements Runnable {
     }
 
     private boolean isPrimaryMember(MemberContext memberContext) {
-        Properties props = AutoscalerUtil.toCommonProperties(memberContext.getProperties());
+        Properties props = AutoscalerObjectConverter.convertCCPropertiesToProperties(memberContext.getProperties());
         if (log.isDebugEnabled()) {
             log.debug(" Properties [" + props + "] ");
         }
