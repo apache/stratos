@@ -93,6 +93,7 @@
                             org.apache.stratos.cloud.controller.stub.services.impl.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.kubernetes.*; version=${project.version},
                             org.apache.stratos.cloud.controller.stub.*; version=${project.version},
+                            org.apache.stratos.common.partition.xsd.*; version=${project.version},
                         </Export-Package>
                         <Import-Package>
                             *;resolution:=optional
