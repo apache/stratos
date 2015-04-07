@@ -71,13 +71,15 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                 getClusterMonitor(clusterId);
         boolean clusterMonitorHasMembers = clusterInstanceHasMembers(monitor, instanceId);
         boolean clusterTerminated = false;
+        String serviceId = monitor.getServiceId();
+
         try {
-            TopologyManager.acquireReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
-            Service service = TopologyManager.getTopology().getService(monitor.getServiceId());
+            TopologyManager.acquireReadLockForCluster(serviceId, clusterId);
+            Service service = TopologyManager.getTopology().getService(serviceId);
             Cluster cluster;
             String appId = monitor.getAppId();
             if (service != null) {
-                cluster = service.getCluster(monitor.getClusterId());
+                cluster = service.getCluster(clusterId);
                 if (cluster != null) {
                     try {
                         ApplicationHolder.acquireReadLock();
@@ -90,8 +92,8 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                                 log.info("Publishing Cluster terminated event for [application]: " + appId +
                                         " [cluster]: " + clusterId);
                             }
-                            ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, monitor.getServiceId(),
-                                    monitor.getClusterId(), instanceId);
+                            ClusterStatusEventPublisher.sendClusterStatusTerminatedEvent(appId, serviceId,
+                                    clusterId, instanceId);
                             clusterTerminated = true;
 
                         } else {
@@ -104,8 +106,7 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                 }
             }
         } finally {
-            TopologyManager.releaseReadLockForCluster(monitor.getServiceId(), monitor.getClusterId());
-
+            TopologyManager.releaseReadLockForCluster(serviceId, clusterId);
         }
         return clusterTerminated;
     }
