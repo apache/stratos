@@ -40,6 +40,7 @@ public class Partition implements Serializable {
     private String description;
     private boolean isPublic;
     private Properties properties = new Properties();
+    private int partitionMax;
 
     /**
      * Gets the value of the id property.
@@ -149,5 +150,13 @@ public class Partition implements Serializable {
     @Override
     public int hashCode() {
         return this.id.hashCode();
+    }
+
+    public int getPartitionMax() {
+        return partitionMax;
+    }
+
+    public void setPartitionMax(int partitionMax) {
+        this.partitionMax = partitionMax;
     }
 }

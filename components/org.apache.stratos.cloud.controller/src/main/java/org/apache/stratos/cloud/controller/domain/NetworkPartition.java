@@ -33,6 +33,7 @@ public class NetworkPartition implements Serializable {
     private String provider;
     private boolean activeByDefault;
     private Partition[] partitions;
+    private String partitionAlgo;
 
     public void setPartitions(Partition[] partitions) {
         if(partitions == null) {
@@ -90,4 +91,12 @@ public class NetworkPartition implements Serializable {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+
+    public String getPartitionAlgo() {
+        return partitionAlgo;
+    }
+
+    public void setPartitionAlgo(String partitionAlgo) {
+        this.partitionAlgo = partitionAlgo;
+    }
 }
