@@ -873,7 +873,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
 
     @Override
     public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws RemoteException,
-            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException {
+            InvalidDeploymentPolicyException, DeploymentPolicyNotExistsException, InvalidPolicyException {
 
         validateDeploymentPolicy(deploymentPolicy);
 
@@ -892,7 +892,7 @@ public class AutoscalerServiceImpl implements AutoscalerService {
         }
 
         // Add cartridge to the cloud controller context and persist
-        PolicyManager.getInstance().addDeploymentPolicy(deploymentPolicy);
+        PolicyManager.getInstance().updateDeploymentPolicy(deploymentPolicy);
         //        PolicyManager.getInstance().persist();
 
         if (log.isInfoEnabled()) {

@@ -134,6 +134,20 @@ public class PolicyManager {
         }
     }
 
+
+
+    public boolean updateDeploymentPolicy(DeploymentPolicy policy) throws InvalidPolicyException {
+        if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
+            throw new AutoScalerException("Deployment policy id cannot be empty");
+        }
+        this.updateDeploymentPolicyInInformationModel(policy);
+        RegistryManager.getInstance().persistDeploymentPolicy(policy);
+        if (log.isInfoEnabled()) {
+            log.info(String.format("Deployment policy is updated successfully: [id] %s", policy.getDeploymentPolicyID()));
+        }
+        return true;
+    }
+
     /**
      * Remove deployment policy from in memory map and registry.
      *
@@ -169,6 +183,15 @@ public class PolicyManager {
                 log.debug("Updating autoscaling policy: " + asPolicy.getId());
             }
             autoscalePolicyListMap.put(asPolicy.getId(), asPolicy);
+        }
+    }
+
+    public void updateDeploymentPolicyInInformationModel(DeploymentPolicy deploymentPolicy) throws InvalidPolicyException {
+        if (autoscalePolicyListMap.containsKey(deploymentPolicy.getDeploymentPolicyID())) {
+            if (log.isDebugEnabled()) {
+                log.debug("Updating deployment policy: " + deploymentPolicy.getDeploymentPolicyID());
+            }
+            deploymentPolicyListMap.put(deploymentPolicy.getDeploymentPolicyID(), deploymentPolicy);
         }
     }
 

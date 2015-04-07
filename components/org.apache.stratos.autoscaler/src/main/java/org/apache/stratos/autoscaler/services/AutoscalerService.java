@@ -226,7 +226,7 @@ public interface AutoscalerService {
      * @param deploymentPolicy DeployementPolicy
      * @throws IllegalArgumentException if the provided argument is not valid.
      */
-    public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException;
+    public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException, InvalidPolicyException;
 
     /**
      * Remove deployment policy
