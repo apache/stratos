@@ -33,8 +33,9 @@ import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyManager;
 import org.apache.stratos.cloud.controller.services.CloudControllerService;
-import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
 import org.apache.stratos.cloud.controller.util.CloudControllerUtil;
+import org.apache.stratos.cloud.controller.domain.NetworkPartition;
+
 import org.apache.stratos.common.Property;
 import org.apache.stratos.common.domain.LoadBalancingIPType;
 import org.apache.stratos.common.threading.StratosThreadPool;
@@ -704,10 +705,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             throw new CartridgeNotFoundException(msg);
         }
 
-        Properties properties = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
-        String property = properties.getProperty(CloudControllerConstants.IS_LOAD_BALANCER);
-        boolean isLb = property != null ? Boolean.parseBoolean(property) : false;
-        TopologyBuilder.handleClusterCreated(registrant, isLb);
+//        Properties properties = CloudControllerUtil.toJavaUtilProperties(registrant.getProperties());
+//        Property property = properties.getProperty(CloudControllerConstants.IS_LOAD_BALANCER);
+//        boolean isLb = property != null ? Boolean.parseBoolean(property.getValue()) : false;
+        TopologyBuilder.handleClusterCreated(registrant);
         CloudControllerContext.getInstance().persist();
 
         log.info("Successfully registered service: " + registrant);
@@ -888,9 +889,10 @@ public class CloudControllerServiceImpl implements CloudControllerService {
      * FIXME: A validate method shouldn't persist data
      */
     @Override
-    public boolean validateDeploymentPolicy(String cartridgeType, Partition[] partitions)
+    public boolean validateDeploymentPolicyNetworkPartition(String cartridgeType, String networkPartitionId)
             throws InvalidPartitionException, InvalidCartridgeTypeException {
 
+        NetworkPartition networkPartition = CloudControllerContext.getInstance().getNetworkPartition(networkPartitionId);
         Lock lock = null;
         try {
             lock = CloudControllerContext.getInstance().acquireCartridgesWriteLock();
@@ -918,7 +920,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             }
 
             Map<String, Future<IaasProvider>> jobList = new HashMap<String, Future<IaasProvider>>();
-            for (Partition partition : partitions) {
+            for (Partition partition : networkPartition.getPartitions()) {
                 if (validatedPartitions != null && validatedPartitions.contains(partition.getId())) {
                     // partition cache hit
                     String provider = partition.getProvider();
@@ -969,7 +971,7 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             // persist data
             CloudControllerContext.getInstance().persist();
 
-            log.info("All partitions [" + CloudControllerUtil.getPartitionIds(partitions) + "]" +
+            log.info("All partitions [" + CloudControllerUtil.getPartitionIds(networkPartition.getPartitions()) + "]" +
                     " were validated successfully, against the cartridge: " + cartridgeType);
 
             return true;
@@ -1346,102 +1348,6 @@ public class CloudControllerServiceImpl implements CloudControllerService {
             if (lock != null) {
                 CloudControllerContext.getInstance().releaseWriteLock(lock);
             }
-        }
-    }
-
-	@Override
-	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy)
-			throws DeploymentPolicyAlreadyExistsException, InvalidDeploymentPolicyException {
-
-		CloudControllerServiceUtil.validateDeploymentPolicy(deploymentPolicy);
-
-		if (log.isInfoEnabled()) {
-			log.info("Adding deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Deployment policy definition: " + deploymentPolicy.toString());
-		}
-
-		String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
-		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) != null) {
-			String message = "Deployment policy already exists: [deployment-policy-id] " + deploymentPolicyID;
-			log.error(message);
-			throw new DeploymentPolicyAlreadyExistsException(message);
-		}
-
-		// Add cartridge to the cloud controller context and persist
-		CloudControllerContext.getInstance().addDeploymentPolicy(deploymentPolicy);
-		CloudControllerContext.getInstance().persist();
-
-		if (log.isInfoEnabled()) {
-			log.info("Successfully added deployment policy: [deployment-policy-id] " + deploymentPolicyID);
-		}
-
-	}
-
-	@Override
-	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy)
-			throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException {
-		
-		CloudControllerServiceUtil.validateDeploymentPolicy(deploymentPolicy);
-
-		if (log.isInfoEnabled()) {
-			log.info("Updating deployment policy: [deployment-policy-id] " + deploymentPolicy.getDeploymentPolicyID());
-		}
-		if (log.isDebugEnabled()) {
-			log.debug("Updating deployment policy definition: " + deploymentPolicy.toString());
-		}
-
-		String deploymentPolicyID = deploymentPolicy.getDeploymentPolicyID();
-		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
-			String message = "Deployment policy does not exist: [deployment-policy-id] " + deploymentPolicyID;
-			log.error(message);
-			throw new DeploymentPolicyNotExistsException(message);
-		}
-
-		// Add cartridge to the cloud controller context and persist
-		CloudControllerContext.getInstance().addDeploymentPolicy(deploymentPolicy);
-		CloudControllerContext.getInstance().persist();
-
-		if (log.isInfoEnabled()) {
-			log.info("Successfully updated deployment policy: [deployment-policy-id] " + deploymentPolicyID);
-		}
-	}
-
-	@Override
-	public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException {
-		if (log.isInfoEnabled()) {
-			log.info("Removing deployment policy: [deployment-policy_id] " + deploymentPolicyID);
-		}
-		if (cloudControllerContext.getDeploymentPolicy(deploymentPolicyID) == null) {
-			String message = "Deployment policy not exists: [deployment-policy-id] " + deploymentPolicyID;
-			log.error(message);
-			throw new DeploymentPolicyNotExistsException(message);
-		}
-		CloudControllerContext.getInstance().removeDeploymentPolicy(deploymentPolicyID);
-		if (log.isInfoEnabled()) {
-			log.info("Successfully removed deployment policy: [deployment_policy_id] " + deploymentPolicyID);
-		}
-
-	}
-
-	@Override
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID) {
-		if (log.isDebugEnabled()) {
-			log.debug("Getting deployment policy: [deployment-policy_id] " + deploymentPolicyID);
-		}
-        return CloudControllerContext.getInstance().getDeploymentPolicy(deploymentPolicyID);
-	}
-	
-    @Override
-    public DeploymentPolicy[] getDeploymentPolicies() {
-        try {
-            Collection<DeploymentPolicy> deploymentPolicies = cloudControllerContext.getDeploymentPolicies();
-            return deploymentPolicies.toArray(new DeploymentPolicy[deploymentPolicies.size()]);
-        } catch (Exception e) {
-            String message = "Could not get deployment policies";
-            log.error(message);
-            throw new CloudControllerException(message, e);
         }
     }
 

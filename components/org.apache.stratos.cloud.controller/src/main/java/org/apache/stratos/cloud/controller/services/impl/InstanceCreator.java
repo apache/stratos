@@ -28,6 +28,7 @@ import org.apache.stratos.cloud.controller.exception.CartridgeNotFoundException;
 import org.apache.stratos.cloud.controller.iaases.Iaas;
 import org.apache.stratos.cloud.controller.statistics.publisher.BAMUsageDataPublisher;
 import org.apache.stratos.cloud.controller.messaging.topology.TopologyBuilder;
+import org.apache.stratos.cloud.controller.domain.Partition;
 import org.apache.stratos.messaging.domain.topology.MemberStatus;
 
 import java.util.concurrent.locks.Lock;
