@@ -25,30 +25,30 @@ import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 
 import org.apache.commons.lang.StringUtils;
- 
-public class ASPolicyCommands implements CommandProvider{
- 
+
+public class ASPolicyCommands implements CommandProvider {
+
     public String getHelp() {
-    	return "\nlistASPolicies - List AutoScaling policies deployed to AutoScaler. \n"
-        		+ "\t parameters : \n"
-        		+ "\t\t String   policyID : ID of the AutoScaling policy.\n";
+        return "\nlistASPolicies - List AutoScaling policies deployed to AutoScaler. \n"
+                + "\t parameters : \n"
+                + "\t\t String   policyID : ID of the AutoScaling policy.\n";
     }
- 
-    public void _listASPolicies (CommandInterpreter ci){
-    	String policyId = ci.nextArgument();
-    	
-    	PolicyManager pm = PolicyManager.getInstance();
-    	
-    	if(StringUtils.isBlank(policyId)){
-    		AutoscalePolicy[] aspolicyArr = pm.getAutoscalePolicyList();
-        	for(AutoscalePolicy asPoolicy : aspolicyArr){
-        		ci.println(asPoolicy.toString());
-        	}
-    	}else{
-    		AutoscalePolicy asPolicy = pm.getAutoscalePolicy(policyId);
-    		if(asPolicy != null){
-    			ci.println(asPolicy);
-    		}
-    	}
+
+    public void _listASPolicies(CommandInterpreter ci) {
+        String policyId = ci.nextArgument();
+
+        PolicyManager pm = PolicyManager.getInstance();
+
+        if (StringUtils.isBlank(policyId)) {
+            AutoscalePolicy[] aspolicyArr = pm.getAutoscalePolicyList();
+            for (AutoscalePolicy asPoolicy : aspolicyArr) {
+                ci.println(asPoolicy.toString());
+            }
+        } else {
+            AutoscalePolicy asPolicy = pm.getAutoscalePolicy(policyId);
+            if (asPolicy != null) {
+                ci.println(asPolicy);
+            }
+        }
     }
 }

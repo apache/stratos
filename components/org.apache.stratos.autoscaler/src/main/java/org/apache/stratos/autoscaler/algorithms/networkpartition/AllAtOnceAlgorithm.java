@@ -25,25 +25,25 @@ import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
-public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm{
+public class AllAtOnceAlgorithm implements NetworkPartitionAlgorithm {
 
-	@Override
-	public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext) {
-		
-		if (networkPartitionAlgorithmContext == null) {
-			return null;
-		}
-		
-		ApplicationPolicy applicationPolicy = networkPartitionAlgorithmContext.getApplicationPolicy();
-		if (applicationPolicy == null) {
-			return null;
-		}
-		
-		String[] networkPartitions = applicationPolicy.getNetworkPartitions();
-		if (networkPartitions == null || networkPartitions.length ==0) {
-			return null;
-		}
-		
-		return Arrays.asList(networkPartitions);
-	}
+    @Override
+    public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext) {
+
+        if (networkPartitionAlgorithmContext == null) {
+            return null;
+        }
+
+        ApplicationPolicy applicationPolicy = networkPartitionAlgorithmContext.getApplicationPolicy();
+        if (applicationPolicy == null) {
+            return null;
+        }
+
+        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        if (networkPartitions == null || networkPartitions.length == 0) {
+            return null;
+        }
+
+        return Arrays.asList(networkPartitions);
+    }
 }

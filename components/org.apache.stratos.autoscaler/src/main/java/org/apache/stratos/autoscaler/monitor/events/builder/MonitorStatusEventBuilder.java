@@ -59,7 +59,7 @@ public class MonitorStatusEventBuilder {
         log.info(String.format("Scaling event to the parent, [id] %s, [network Partition Id] %s, [instance id] %s, " +
                 "[factor] %s", id, networkPartitionId, instanceId, factor));
         //Send notifications to parent of the cluster monitor
-        ScalingEvent scalingEvent = new ScalingEvent(id, networkPartitionId, instanceId, factor) ;
+        ScalingEvent scalingEvent = new ScalingEvent(id, networkPartitionId, instanceId, factor);
         notifyParent(parent, scalingEvent);
     }
 
@@ -69,7 +69,7 @@ public class MonitorStatusEventBuilder {
 
         //Send notifications to parent of the cluster monitor
         ScalingUpBeyondMaxEvent scalingUpBeyondMaxEvent = new ScalingUpBeyondMaxEvent(appId, networkPartitionId,
-                                                            instanceId) ;
+                instanceId);
         notifyParent(parent, scalingUpBeyondMaxEvent);
     }
 
@@ -78,22 +78,23 @@ public class MonitorStatusEventBuilder {
 
         //Send notifications to parent of the cluster monitor
         ScalingDownBeyondMinEvent scalingDownBeyondMinEvent = new ScalingDownBeyondMinEvent(appId, networkPartitionId,
-                instanceId) ;
+                instanceId);
         notifyParent(parent, scalingDownBeyondMinEvent);
     }
+
     private static void notifyParent(ParentComponentMonitor parent, MonitorStatusEvent statusEvent) {
         parent.onChildStatusEvent(statusEvent);
     }
 
-    public static void notifyChildren (ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent)
-                                                            throws MonitorNotFoundException {
+    public static void notifyChildren(ParentComponentMonitor componentMonitor, MonitorStatusEvent statusEvent)
+            throws MonitorNotFoundException {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
             activeChildMonitor.onParentStatusEvent(statusEvent);
         }
     }
 
     public static void notifyChildGroup(Monitor child, GroupStatus state, String instanceId)
-                                                            throws MonitorNotFoundException {
+            throws MonitorNotFoundException {
         MonitorStatusEvent statusEvent = new GroupStatusEvent(state, child.getId(), instanceId);
         child.onParentStatusEvent(statusEvent);
     }
@@ -127,7 +128,7 @@ public class MonitorStatusEventBuilder {
         parent.onChildScalingOverMaxEvent(scalingUpBeyondMaxEvent);
     }
 
-    public static void notifyChildren (ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {
+    public static void notifyChildren(ParentComponentMonitor componentMonitor, ScalingEvent scalingEvent) {
         for (Monitor activeChildMonitor : componentMonitor.getAliasToActiveMonitorsMap().values()) {
             activeChildMonitor.onParentScalingEvent(scalingEvent);
         }

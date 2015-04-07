@@ -37,16 +37,16 @@ public class ComponentContext implements Serializable {
     public void setGroupContexts(GroupContext[] groupContexts) {
         this.groupContexts = groupContexts;
     }
-        
+
     public CartridgeContext[] getCartridgeContexts() {
-		return cartridgeContexts;
-	}
+        return cartridgeContexts;
+    }
 
-	public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
-		this.cartridgeContexts = cartridgeContexts;
-	}
+    public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
+        this.cartridgeContexts = cartridgeContexts;
+    }
 
-	public DependencyContext getDependencyContext() {
+    public DependencyContext getDependencyContext() {
         return dependencyContext;
     }
 

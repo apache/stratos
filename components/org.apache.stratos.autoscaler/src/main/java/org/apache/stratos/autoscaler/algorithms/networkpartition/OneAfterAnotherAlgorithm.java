@@ -29,140 +29,140 @@ import org.apache.stratos.common.constants.StratosConstants;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
-public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm{
-	
-	private static final Log log = LogFactory.getLog(NetworkPartitionAlgorithm.class);
+public class OneAfterAnotherAlgorithm implements NetworkPartitionAlgorithm {
 
-	@Override
-	public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext) {
-		
-		if (networkPartitionAlgorithmContext == null) {
-			if (log.isWarnEnabled()) {
-				String msg = "Network partition algorithm context is null";
-				log.warn(msg);
-			}
-			return null;
-		}
-		
-		String applicationId = networkPartitionAlgorithmContext.getApplicationId();
-		if (applicationId == null) {
-			if (log.isWarnEnabled()) {
-				String msg = "Application id is null in etwork partition algorithm context";
-				log.warn(msg);
-			}
-			return null;
-		}
-		
-		ApplicationPolicy applicationPolicy = networkPartitionAlgorithmContext.getApplicationPolicy();
-		if (applicationPolicy == null) {
-			if (log.isWarnEnabled()) {
-				String msg = String.format("No application policy found in network partition algorithm context [application-id] %s", applicationId);
-				log.warn(msg);
-			}
-			return null;
-		}
-		
-		String applicatioinPolicyId = applicationPolicy.getId();
-		String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
-		if (networkPartitionGroups != null && networkPartitionGroups.length != 0) {
-			if (log.isDebugEnabled()) {
-				String msg = String.format("Network partition groups property found in application policy [application-id] %s [application-policy-id] %s. "
-						+ "Hence using network partition groups for app bursting", applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			int totalNetworkPartitionGroups = networkPartitionGroups.length;
-			if (log.isDebugEnabled()) {
-				String msg = String.format("%s network partition groups found in application policy [application-id] %s [application-policy-id] %s", 
-						totalNetworkPartitionGroups, applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			
-			int currentPartitionIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().intValue();
-			if (log.isDebugEnabled()) {
-				String msg = String.format("Current network partition group index is %s [application-id] %s [application-policy-d]", 
-						currentPartitionIndex, applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			
-			if (currentPartitionIndex >= totalNetworkPartitionGroups) {
-				if (log.isDebugEnabled()) {
-					String msg = String.format("currentPartitionIndex >= totalNetworkPartitionGroups, hence no more network partition groups are available "
-							+ "[application-id] %s [application-policy-d]", currentPartitionIndex, applicationId, applicatioinPolicyId);
-					log.debug(msg);
-				}
-				return null;
-			}
-			
-			int selectedIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().incrementAndGet();
-			if (log.isDebugEnabled()) {
-				String msg = String.format("Selected network partition group index is %s (starting from 1,2,3...) [application-id] %s [application-policy-d]", 
-						selectedIndex, applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			
-			if (log.isDebugEnabled()) {
-				String msg = String.format("Selected network partition group is %s [application-id] %s [application-policy-d]", 
-						networkPartitionGroups[selectedIndex-1], applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			
-			String[] selectedNetworkPartitions = networkPartitionGroups[selectedIndex-1].split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
-			if (selectedNetworkPartitions == null) {
-				return null;
-			}
-			
-			return Arrays.asList(selectedNetworkPartitions);
-		}
-		
-		String[] networkPartitions = applicationPolicy.getNetworkPartitions();
-		if (networkPartitions == null || networkPartitions.length == 0) {
-			if (log.isWarnEnabled()) {
-				String msg = String.format("Network partitions found in application policy [application-id] %s [application-policy-id] %s", 
-						applicationId, applicatioinPolicyId);
-				log.warn(msg);
-			}
-			return null;
-		}
-		
-		int totalNetworkPartitions = networkPartitions.length;
-		if (log.isDebugEnabled()) {
-			String msg = String.format("%s network partitions found in application policy [application-id] %s [application-policy-id] %s", 
-					totalNetworkPartitions, applicationId, applicatioinPolicyId);
-			log.debug(msg);
-		}
-		
-		int currentPartitionIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().intValue();
-		if (log.isDebugEnabled()) {
-			String msg = String.format("Current network partition index is %s [application-id] %s [application-policy-d]", 
-					currentPartitionIndex, applicationId, applicatioinPolicyId);
-			log.debug(msg);
-		}
-		
-		if (currentPartitionIndex >= totalNetworkPartitions) {
-			if (log.isDebugEnabled()) {
-				String msg = String.format("currentPartitionIndex >= totalNetworkPartitions, hence no more network partitions are available "
-						+ "[application-id] %s [application-policy-d]", currentPartitionIndex, applicationId, applicatioinPolicyId);
-				log.debug(msg);
-			}
-			return null;
-		}
-		
-		int selectedIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().incrementAndGet();
-		if (log.isDebugEnabled()) {
-			String msg = String.format("Selected network partition index is %s (starting from 1,2,3...) [application-id] %s [application-policy-d]", 
-					selectedIndex, applicationId, applicatioinPolicyId);
-			log.debug(msg);
-		}
-		
-		if (log.isDebugEnabled()) {
-			String msg = String.format("Selected network partition is %s [application-id] %s [application-policy-d]", 
-					networkPartitions[selectedIndex-1], applicationId, applicatioinPolicyId);
-			log.debug(msg);
-		}
-		
-		List<String> nextNetworkPartitions = new ArrayList<String>();
-		nextNetworkPartitions.add(networkPartitions[selectedIndex-1]);
-		
-		return nextNetworkPartitions;
-	}
+    private static final Log log = LogFactory.getLog(NetworkPartitionAlgorithm.class);
+
+    @Override
+    public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext) {
+
+        if (networkPartitionAlgorithmContext == null) {
+            if (log.isWarnEnabled()) {
+                String msg = "Network partition algorithm context is null";
+                log.warn(msg);
+            }
+            return null;
+        }
+
+        String applicationId = networkPartitionAlgorithmContext.getApplicationId();
+        if (applicationId == null) {
+            if (log.isWarnEnabled()) {
+                String msg = "Application id is null in etwork partition algorithm context";
+                log.warn(msg);
+            }
+            return null;
+        }
+
+        ApplicationPolicy applicationPolicy = networkPartitionAlgorithmContext.getApplicationPolicy();
+        if (applicationPolicy == null) {
+            if (log.isWarnEnabled()) {
+                String msg = String.format("No application policy found in network partition algorithm context [application-id] %s", applicationId);
+                log.warn(msg);
+            }
+            return null;
+        }
+
+        String applicatioinPolicyId = applicationPolicy.getId();
+        String[] networkPartitionGroups = applicationPolicy.getNetworkPartitionGroups();
+        if (networkPartitionGroups != null && networkPartitionGroups.length != 0) {
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Network partition groups property found in application policy [application-id] %s [application-policy-id] %s. "
+                        + "Hence using network partition groups for app bursting", applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+            int totalNetworkPartitionGroups = networkPartitionGroups.length;
+            if (log.isDebugEnabled()) {
+                String msg = String.format("%s network partition groups found in application policy [application-id] %s [application-policy-id] %s",
+                        totalNetworkPartitionGroups, applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+
+            int currentPartitionIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().intValue();
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Current network partition group index is %s [application-id] %s [application-policy-d]",
+                        currentPartitionIndex, applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+
+            if (currentPartitionIndex >= totalNetworkPartitionGroups) {
+                if (log.isDebugEnabled()) {
+                    String msg = String.format("currentPartitionIndex >= totalNetworkPartitionGroups, hence no more network partition groups are available "
+                            + "[application-id] %s [application-policy-d]", currentPartitionIndex, applicationId, applicatioinPolicyId);
+                    log.debug(msg);
+                }
+                return null;
+            }
+
+            int selectedIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().incrementAndGet();
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Selected network partition group index is %s (starting from 1,2,3...) [application-id] %s [application-policy-d]",
+                        selectedIndex, applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+
+            if (log.isDebugEnabled()) {
+                String msg = String.format("Selected network partition group is %s [application-id] %s [application-policy-d]",
+                        networkPartitionGroups[selectedIndex - 1], applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+
+            String[] selectedNetworkPartitions = networkPartitionGroups[selectedIndex - 1].split(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITIONS_SPLITTER);
+            if (selectedNetworkPartitions == null) {
+                return null;
+            }
+
+            return Arrays.asList(selectedNetworkPartitions);
+        }
+
+        String[] networkPartitions = applicationPolicy.getNetworkPartitions();
+        if (networkPartitions == null || networkPartitions.length == 0) {
+            if (log.isWarnEnabled()) {
+                String msg = String.format("Network partitions found in application policy [application-id] %s [application-policy-id] %s",
+                        applicationId, applicatioinPolicyId);
+                log.warn(msg);
+            }
+            return null;
+        }
+
+        int totalNetworkPartitions = networkPartitions.length;
+        if (log.isDebugEnabled()) {
+            String msg = String.format("%s network partitions found in application policy [application-id] %s [application-policy-id] %s",
+                    totalNetworkPartitions, applicationId, applicatioinPolicyId);
+            log.debug(msg);
+        }
+
+        int currentPartitionIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().intValue();
+        if (log.isDebugEnabled()) {
+            String msg = String.format("Current network partition index is %s [application-id] %s [application-policy-d]",
+                    currentPartitionIndex, applicationId, applicatioinPolicyId);
+            log.debug(msg);
+        }
+
+        if (currentPartitionIndex >= totalNetworkPartitions) {
+            if (log.isDebugEnabled()) {
+                String msg = String.format("currentPartitionIndex >= totalNetworkPartitions, hence no more network partitions are available "
+                        + "[application-id] %s [application-policy-d]", currentPartitionIndex, applicationId, applicatioinPolicyId);
+                log.debug(msg);
+            }
+            return null;
+        }
+
+        int selectedIndex = networkPartitionAlgorithmContext.getCurrentNetworkPartitionIndex().incrementAndGet();
+        if (log.isDebugEnabled()) {
+            String msg = String.format("Selected network partition index is %s (starting from 1,2,3...) [application-id] %s [application-policy-d]",
+                    selectedIndex, applicationId, applicatioinPolicyId);
+            log.debug(msg);
+        }
+
+        if (log.isDebugEnabled()) {
+            String msg = String.format("Selected network partition is %s [application-id] %s [application-policy-d]",
+                    networkPartitions[selectedIndex - 1], applicationId, applicatioinPolicyId);
+            log.debug(msg);
+        }
+
+        List<String> nextNetworkPartitions = new ArrayList<String>();
+        nextNetworkPartitions.add(networkPartitions[selectedIndex - 1]);
+
+        return nextNetworkPartitions;
+    }
 }

@@ -25,43 +25,42 @@ import org.apache.stratos.autoscaler.algorithms.PartitionAlgorithm;
 import org.apache.stratos.autoscaler.context.partition.PartitionContext;
 
 /**
-* This class is used for selecting a {@link PartitionContext} in round robin manner and checking availability of
+ * This class is used for selecting a {@link PartitionContext} in round robin manner and checking availability of
  * {@link PartitionContext}s according to the partitions defined
  * in {@link org.apache.stratos.autoscaler.pojo.policy.deployment.DeploymentPolicy}
- *
-*/
-public class RoundRobin implements PartitionAlgorithm{
+ */
+public class RoundRobin implements PartitionAlgorithm {
 
-	private static final Log log = LogFactory.getLog(RoundRobin.class);
+    private static final Log log = LogFactory.getLog(RoundRobin.class);
 
     @Override
     public PartitionContext getNextScaleUpPartitionContext(PartitionContext[] partitionContexts) {
-    	
-    	if (partitionContexts == null) {
-			return null;
-		}
+
+        if (partitionContexts == null) {
+            return null;
+        }
 
         int selectedIndex = 0;
         int lowestInstanceCount = partitionContexts[0].getNonTerminatedMemberCount();
 
-        for(int partitionIndex = 0; partitionIndex < partitionContexts.length; partitionIndex++) {
-        	
-        	// it means we have to choose the current partitionIndex, no need to continue the loop
-        	if (lowestInstanceCount == 0) {
-				break;
-			}
-        	
-            if(partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount) {
+        for (int partitionIndex = 0; partitionIndex < partitionContexts.length; partitionIndex++) {
+
+            // it means we have to choose the current partitionIndex, no need to continue the loop
+            if (lowestInstanceCount == 0) {
+                break;
+            }
+
+            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() < lowestInstanceCount) {
                 lowestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
             }
         }
 
-        if(partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
+        if (partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
 
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("[round-robin algorithm] [scale-up] [partition] %s has space to create members. " +
-                        "[non terminated count] %s [max] %s"
+                                "[non terminated count] %s [max] %s"
                         , partitionContexts[selectedIndex].getPartitionId(),
                         partitionContexts[selectedIndex].getNonTerminatedMemberCount(),
                         partitionContexts[selectedIndex].getMax()));
@@ -76,27 +75,27 @@ public class RoundRobin implements PartitionAlgorithm{
     @Override
     public PartitionContext getNextScaleDownPartitionContext(PartitionContext[] partitionContexts) {
 
-    	if (partitionContexts == null) {
-			return null;
-		}
-    	
+        if (partitionContexts == null) {
+            return null;
+        }
+
         int selectedIndex = 0;
         int highestInstanceCount = partitionContexts[0].getNonTerminatedMemberCount();
 
-        for(int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
+        for (int partitionIndex = partitionContexts.length - 1; partitionIndex >= 0; partitionIndex--) {
 
-            if(partitionContexts[partitionIndex].getNonTerminatedMemberCount() > highestInstanceCount) {
+            if (partitionContexts[partitionIndex].getNonTerminatedMemberCount() > highestInstanceCount) {
 
                 highestInstanceCount = partitionContexts[partitionIndex].getNonTerminatedMemberCount();
                 selectedIndex = partitionIndex;
             }
         }
 
-        if(partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
+        if (partitionContexts[selectedIndex].getNonTerminatedMemberCount() < partitionContexts[selectedIndex].getMax()) {
 
-            if(log.isDebugEnabled()){
+            if (log.isDebugEnabled()) {
                 log.debug(String.format("[round-robin algorithm] [scale-down] [partition] %s has has members that" +
-                        " can be removed.[non terminated count] %s ", partitionContexts[selectedIndex].getPartitionId(),
+                                " can be removed.[non terminated count] %s ", partitionContexts[selectedIndex].getPartitionId(),
                         partitionContexts[selectedIndex].getNonTerminatedMemberCount()));
             }
             return partitionContexts[selectedIndex];

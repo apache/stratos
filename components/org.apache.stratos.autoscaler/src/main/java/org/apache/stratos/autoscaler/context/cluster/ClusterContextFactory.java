@@ -37,7 +37,7 @@ public class ClusterContextFactory {
         if (null == cluster) {
             return null;
         }
-        
+
         String autoscalePolicyName = cluster.getAutoscalePolicyName();
         AutoscalePolicy autoscalePolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalePolicyName);
 

@@ -24,9 +24,9 @@ public class Dependencies implements Serializable {
 
     private static final long serialVersionUID = 4187267350546153680L;
 
-    private String [] startupOrders;
+    private String[] startupOrders;
 
-    private String [] scalingDependants;
+    private String[] scalingDependants;
 
     private String terminationBehaviour;
 
@@ -46,12 +46,12 @@ public class Dependencies implements Serializable {
         this.startupOrders = startupOrders;
     }
 
-	public String[] getScalingDependants() {
-		return scalingDependants;
-	}
+    public String[] getScalingDependants() {
+        return scalingDependants;
+    }
 
-	public void setScalingDependants(String[] scalingDependants) {
-		this.scalingDependants = scalingDependants;
-	}
-    
+    public void setScalingDependants(String[] scalingDependants) {
+        this.scalingDependants = scalingDependants;
+    }
+
 }

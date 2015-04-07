@@ -20,16 +20,16 @@ package org.apache.stratos.autoscaler.exception;
 
 public class AutoScalerException extends RuntimeException {
 
-	private static final long serialVersionUID = 3131046757663797684L;
+    private static final long serialVersionUID = 3131046757663797684L;
 
-	public AutoScalerException(String msg) {
+    public AutoScalerException(String msg) {
         super(msg);
     }
-    
+
     public AutoScalerException(String msg, Exception ex) {
         super(msg, ex);
     }
-    
+
     public AutoScalerException(Exception ex) {
         super(ex);
     }

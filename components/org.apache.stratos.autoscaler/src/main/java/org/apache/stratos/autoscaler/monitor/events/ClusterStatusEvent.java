@@ -30,12 +30,12 @@ public class ClusterStatusEvent extends MonitorStatusEvent {
     private ClusterStatus status;
 
     public ClusterStatusEvent(ClusterStatus status, String id, String instanceId) {
-        super(id , instanceId);
+        super(id, instanceId);
         this.status = status;
     }
 
     public ClusterStatusEvent(ClusterStatus status, List<String> instanceIds, String id) {
-        super(instanceIds , id);
+        super(instanceIds, id);
         this.status = status;
     }
 

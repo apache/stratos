@@ -64,6 +64,7 @@ public class ApplicationBuilder {
 
     /**
      * Create application clusters in cloud controller and send application created event.
+     *
      * @param application
      * @param appClusterContexts
      */
@@ -74,9 +75,9 @@ public class ApplicationBuilder {
                     application.getUniqueIdentifier());
         }
         CloudControllerClient.getInstance().createApplicationClusters(application.getUniqueIdentifier(),
-		                                                                  appClusterContexts);
+                appClusterContexts);
         ApplicationHolder.persistApplication(application);
-	    ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
+        ApplicationsEventPublisher.sendApplicationCreatedEvent(application);
     }
 
     public static ApplicationInstance handleApplicationInstanceCreatedEvent(String appId,
@@ -151,7 +152,7 @@ public class ApplicationBuilder {
     public static void handleApplicationInstanceInactivateEvent(String appId, String instanceId) {
         if (log.isDebugEnabled()) {
             log.debug("Handling application Inactive event: [application-id] " + appId +
-                            " [instance] " + instanceId);
+                    " [instance] " + instanceId);
         }
 
         Applications applications = ApplicationHolder.getApplications();
@@ -169,7 +170,7 @@ public class ApplicationBuilder {
             //setting the status, persist and publish
             application.setStatus(status, instanceId);
             updateApplicationMonitor(appId, status, applicationInstance.getNetworkPartitionId(),
-                                    instanceId);
+                    instanceId);
             ApplicationHolder.persistApplication(application);
             ApplicationsEventPublisher.sendApplicationInstanceInactivatedEvent(appId, instanceId);
         } else {
@@ -225,14 +226,14 @@ public class ApplicationBuilder {
                 return;
             } else {
                 // Check whether given application is deployed
-            	ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
-            	if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-            		log.warn(String.format("Application has been found in the ApplicationsTopology" +
-            				": [application-id] %s, Please unDeploy the Application Policy " +
-            				"before deleting the Application definition.",
-            				appId));
-            		return;
-				}
+                ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
+                if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                    log.warn(String.format("Application has been found in the ApplicationsTopology" +
+                                    ": [application-id] %s, Please unDeploy the Application Policy " +
+                                    "before deleting the Application definition.",
+                            appId));
+                    return;
+                }
             }
 
             //get cluster data to send in event before deleting the application
@@ -272,12 +273,12 @@ public class ApplicationBuilder {
                 //setting the status, persist and publish
                 applicationInstance.setStatus(status);
                 updateApplicationMonitor(applicationId, status, applicationInstance.getNetworkPartitionId(),
-                                        instanceId);
+                        instanceId);
                 ApplicationMonitor applicationMonitor = AutoscalerContext.getInstance().
                         getAppMonitor(applicationId);
                 NetworkPartitionContext networkPartitionContext = applicationMonitor.
                         getNetworkPartitionContext(applicationInstance.
-                        getNetworkPartitionId());
+                                getNetworkPartitionId());
                 networkPartitionContext.removeInstanceContext(instanceId);
                 applicationMonitor.removeInstance(instanceId);
                 application.removeInstance(instanceId);
@@ -488,7 +489,7 @@ public class ApplicationBuilder {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Handling Group instance creation for the [group]: " + groupId +
-                        " in the [application] " + appId );
+                        " in the [application] " + appId);
             }
             Applications applications = ApplicationHolder.getApplications();
             Application application = applications.getApplication(appId);
@@ -642,17 +643,17 @@ public class ApplicationBuilder {
         NetworkPartitionContext context = applicationMonitor.
                 getNetworkPartitionContext(networkPartitionId);
         if (applicationMonitor != null) {
-            if(status == ApplicationStatus.Active) {
+            if (status == ApplicationStatus.Active) {
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if(status == ApplicationStatus.Terminating) {
+            } else if (status == ApplicationStatus.Terminating) {
                 applicationMonitor.setTerminating(true);
 
-                if(context.getActiveInstance(instanceId) != null) {
+                if (context.getActiveInstance(instanceId) != null) {
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if(context.getPendingInstance(instanceId) != null) {
+                } else if (context.getPendingInstance(instanceId) != null) {
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if(status == ApplicationStatus.Terminated) {
+            } else if (status == ApplicationStatus.Terminated) {
                 context.removeTerminationPendingInstance(instanceId);
             }
             applicationMonitor.setStatus(status, instanceId);
@@ -668,15 +669,15 @@ public class ApplicationBuilder {
         GroupMonitor monitor = getGroupMonitor(appId, groupId);
         if (monitor != null) {
             NetworkPartitionContext context = monitor.getNetworkPartitionContext(networkPartitionId);
-            if(status == GroupStatus.Active) {
+            if (status == GroupStatus.Active) {
                 context.movePendingInstanceToActiveInstances(instanceId);
-            } else if(status == GroupStatus.Terminating) {
-                if(context.getActiveInstance(instanceId) != null) {
+            } else if (status == GroupStatus.Terminating) {
+                if (context.getActiveInstance(instanceId) != null) {
                     context.moveActiveInstanceToTerminationPendingInstances(instanceId);
-                } else if(context.getPendingInstance(instanceId) != null) {
+                } else if (context.getPendingInstance(instanceId) != null) {
                     context.movePendingInstanceToTerminationPendingInstances(instanceId);
                 }
-            } else if(status == GroupStatus.Terminated) {
+            } else if (status == GroupStatus.Terminated) {
                 context.removeTerminationPendingInstance(instanceId);
             }
             monitor.setStatus(status, instanceId, parentInstanceId);

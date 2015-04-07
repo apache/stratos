@@ -50,7 +50,6 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
     private int currentPartitionIndex;
 
 
-
     public GroupLevelNetworkPartitionContext(String id, String partitionAlgo) {
         super(id);
         this.partitionAlgorithm = partitionAlgo;
@@ -67,7 +66,6 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         requiredInstanceCountBasedOnStats = minInstanceCount;
         requiredInstanceCountBasedOnDependencies = minInstanceCount;
     }
-
 
 
     public int getMinInstanceCount() {
@@ -215,8 +213,6 @@ public class GroupLevelNetworkPartitionContext extends NetworkPartitionContext i
         }
         return null;
     }
-
-
 
 
 }

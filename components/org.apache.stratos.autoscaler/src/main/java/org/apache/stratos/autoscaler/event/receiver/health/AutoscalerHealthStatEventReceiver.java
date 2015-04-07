@@ -73,10 +73,10 @@ public class AutoscalerHealthStatEventReceiver {
     private boolean terminated = false;
 
     private HealthStatEventReceiver healthStatEventReceiver;
-	private ExecutorService executorService;
+    private ExecutorService executorService;
 
     public AutoscalerHealthStatEventReceiver() {
-		this.healthStatEventReceiver = new HealthStatEventReceiver();
+        this.healthStatEventReceiver = new HealthStatEventReceiver();
         addEventListeners();
     }
 
@@ -86,10 +86,10 @@ public class AutoscalerHealthStatEventReceiver {
             Thread.sleep(15000);
         } catch (InterruptedException ignore) {
         }
-	    healthStatEventReceiver.setExecutorService(executorService);
+        healthStatEventReceiver.setExecutorService(executorService);
         healthStatEventReceiver.execute();
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info("Autoscaler health stat event receiver thread started");
         }
 
@@ -109,7 +109,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -129,7 +129,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -171,7 +171,7 @@ public class AutoscalerHealthStatEventReceiver {
                     }
                     return;
                 }
-                if(monitor instanceof ClusterMonitor) {
+                if (monitor instanceof ClusterMonitor) {
                     ClusterMonitor vmClusterMonitor = (ClusterMonitor) monitor;
                     vmClusterMonitor.handleAverageRequestsServingCapabilityEvent(averageRequestsServingCapabilityEvent);
                 }
@@ -189,7 +189,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -208,7 +208,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -227,7 +227,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -250,7 +250,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (!member.isActive()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member activated event has not received for the member %s. "
-                                                + "Therefore ignoring" + " the health stat", memberId));
+                                + "Therefore ignoring" + " the health stat", memberId));
                     }
                     return;
                 }
@@ -261,7 +261,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -284,7 +284,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (!member.isActive()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member activated event has not received for the member %s. "
-                                                + "Therefore ignoring" + " the health stat", memberId));
+                                + "Therefore ignoring" + " the health stat", memberId));
                     }
                     return;
                 }
@@ -295,7 +295,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -322,7 +322,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -345,7 +345,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (!member.isActive()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member activated event has not received for the member %s. "
-                                                + "Therefore ignoring" + " the health stat", memberId));
+                                + "Therefore ignoring" + " the health stat", memberId));
                     }
                     return;
                 }
@@ -356,7 +356,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -380,7 +380,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (!member.isActive()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member activated event has not received for the member %s. "
-                                                + "Therefore ignoring" + " the health stat", memberId));
+                                + "Therefore ignoring" + " the health stat", memberId));
                     }
                     return;
                 }
@@ -391,7 +391,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -414,7 +414,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (!member.isActive()) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("Member activated event has not received for the member %s. "
-                                                + "Therefore ignoring" + " the health stat", memberId));
+                                + "Therefore ignoring" + " the health stat", memberId));
                     }
                     return;
                 }
@@ -425,7 +425,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -451,7 +451,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -470,7 +470,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -490,7 +490,7 @@ public class AutoscalerHealthStatEventReceiver {
                 if (null == monitor) {
                     if (log.isDebugEnabled()) {
                         log.debug(String.format("A cluster monitor is not found in autoscaler context "
-                                                + "[cluster] %s", clusterId));
+                                + "[cluster] %s", clusterId));
                     }
                     return;
                 }
@@ -519,11 +519,11 @@ public class AutoscalerHealthStatEventReceiver {
         this.terminated = true;
     }
 
-	public ExecutorService getExecutorService() {
-		return executorService;
-	}
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
 
-	public void setExecutorService(ExecutorService executorService) {
-		this.executorService = executorService;
-	}
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

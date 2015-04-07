@@ -44,7 +44,7 @@ public class TestRulesPackaged {
         parseDroolsFile(minCheckDrlFilePath);
     }
 
-//FIXME add this when dependent scaling file is completed
+    //FIXME add this when dependent scaling file is completed
     @Test
     public void testDependentScalingDroolsFile() {
         parseDroolsFile(dependentScalingDrlFilePath);
@@ -72,7 +72,7 @@ public class TestRulesPackaged {
                 sb.append(error.getMessage());
                 log.error(error.getMessage());
             }
-            if(sb.length() > 0) {
+            if (sb.length() > 0) {
                 log.error(sb.toString());
             }
             throw new IllegalArgumentException(String.format("Could not parse drools file: %s", droolsFilePath));

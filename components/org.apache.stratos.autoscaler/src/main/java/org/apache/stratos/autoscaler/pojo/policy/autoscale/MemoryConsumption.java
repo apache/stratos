@@ -26,41 +26,41 @@ import java.io.Serializable;
  */
 public class MemoryConsumption implements Serializable {
 
-	private static final long serialVersionUID = 5755634390464664663L;
-	private float average =  0.0f;
-    private float secondDerivative =  0.0f;
-    private float gradient =  0.0f;
+    private static final long serialVersionUID = 5755634390464664663L;
+    private float average = 0.0f;
+    private float secondDerivative = 0.0f;
+    private float gradient = 0.0f;
 
     /**
-     * Gets the value of the average property.   
+     * Gets the value of the average property.
      */
     public float getAverage() {
         return average;
     }
 
     /**
-     * Sets the value of the average property.   
+     * Sets the value of the average property.
      */
     public void setAverage(float value) {
         this.average = value;
     }
 
     /**
-     * Gets the value of the second-derivative property. 
+     * Gets the value of the second-derivative property.
      */
     public float getSecondDerivative() {
         return secondDerivative;
     }
 
     /**
-     * Sets the value of the second-derivative property.   
+     * Sets the value of the second-derivative property.
      */
     public void setSecondDerivative(float value) {
         this.secondDerivative = value;
     }
 
     /**
-     * Gets the value of the gradient property. 
+     * Gets the value of the gradient property.
      */
     public float getGradient() {
         return gradient;
@@ -68,7 +68,6 @@ public class MemoryConsumption implements Serializable {
 
     /**
      * Sets the value of the gradient property.
-     *     
      */
     public void setGradient(float value) {
         this.gradient = value;

@@ -21,16 +21,16 @@ import java.util.Set;
 public class ApplicationsEventPublisher {
     private static final Log log = LogFactory.getLog(ApplicationsEventPublisher.class);
 
-    public static void sendCompleteApplicationsEvent (Applications completeApplications) {
+    public static void sendCompleteApplicationsEvent(Applications completeApplications) {
         publishEvent(new CompleteApplicationsEvent(completeApplications));
     }
 
-    public static void sendApplicationCreatedEvent (Application application) {
+    public static void sendApplicationCreatedEvent(Application application) {
         publishEvent(new ApplicationCreatedEvent(application));
     }
-    
-    public static void sendApplicationDeletedEvent (String appId, Set<ClusterDataHolder> clusterData) {
-    	publishEvent(new ApplicationDeletedEvent(appId, clusterData));
+
+    public static void sendApplicationDeletedEvent(String appId, Set<ClusterDataHolder> clusterData) {
+        publishEvent(new ApplicationDeletedEvent(appId, clusterData));
     }
 
     public static void sendApplicationInstanceCreatedEvent(String appId, ApplicationInstance applicationInstance) {

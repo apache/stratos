@@ -23,29 +23,29 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.stratos.autoscaler.pojo.policy.deployment.ApplicationPolicy;
 
-public class NetworkPartitionAlgorithmContext implements Serializable{
-	
-	private static final long serialVersionUID = -1539453541207312793L;
-	private String applicationId;
-	private ApplicationPolicy applicationPolicy;
-	private AtomicInteger currentNetworkPartitionIndex;
-	
-	public NetworkPartitionAlgorithmContext(String applicationId, ApplicationPolicy applicationPolicy, 
-			int currentNetworkPartitionIndex) {
-		this.applicationId = applicationId;
-		this.applicationPolicy = applicationPolicy;
-		this.currentNetworkPartitionIndex = new AtomicInteger(currentNetworkPartitionIndex);
-	}
+public class NetworkPartitionAlgorithmContext implements Serializable {
 
-	public AtomicInteger getCurrentNetworkPartitionIndex() {
-		return currentNetworkPartitionIndex;
-	}
+    private static final long serialVersionUID = -1539453541207312793L;
+    private String applicationId;
+    private ApplicationPolicy applicationPolicy;
+    private AtomicInteger currentNetworkPartitionIndex;
 
-	public ApplicationPolicy getApplicationPolicy() {
-		return applicationPolicy;
-	}
+    public NetworkPartitionAlgorithmContext(String applicationId, ApplicationPolicy applicationPolicy,
+                                            int currentNetworkPartitionIndex) {
+        this.applicationId = applicationId;
+        this.applicationPolicy = applicationPolicy;
+        this.currentNetworkPartitionIndex = new AtomicInteger(currentNetworkPartitionIndex);
+    }
 
-	public String getApplicationId() {
-		return applicationId;
-	}
+    public AtomicInteger getCurrentNetworkPartitionIndex() {
+        return currentNetworkPartitionIndex;
+    }
+
+    public ApplicationPolicy getApplicationPolicy() {
+        return applicationPolicy;
+    }
+
+    public String getApplicationId() {
+        return applicationId;
+    }
 }

@@ -38,6 +38,7 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
     public void setNext(StatusProcessor nextProcessor) {
         this.nextProcessor = (ClusterStatusProcessor) nextProcessor;
     }
+
     @Override
     public boolean process(String type, String clusterId, String instanceId) {
         boolean statusChanged;
@@ -66,7 +67,7 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
 
         boolean clusterInactive;
         clusterInactive = getClusterInactive(instanceId, monitor);
-        if(clusterInactive) {
+        if (clusterInactive) {
             //if the monitor is dependent, temporarily pausing it
             if (monitor.hasStartupDependents()) {
                 monitor.setHasFaultyMember(true);
@@ -88,9 +89,9 @@ public class ClusterStatusInactiveProcessor extends ClusterStatusProcessor {
                 monitor.getAllNetworkPartitionCtxts().values()) {
             ClusterInstanceContext instanceContext =
                     (ClusterInstanceContext) clusterLevelNetworkPartitionContext.
-                    getInstanceContext(instanceId);
-            if(instanceContext != null) {
-                if(instanceContext.getActiveMembers() < instanceContext.getMinInstanceCount()) {
+                            getInstanceContext(instanceId);
+            if (instanceContext != null) {
+                if (instanceContext.getActiveMembers() < instanceContext.getMinInstanceCount()) {
                     clusterInactive = true;
                     break;
                 } else {

@@ -24,22 +24,23 @@ import java.io.Serializable;
 /**
  * The model class for RequestsInFlight definition.
  */
-public class RequestsInFlightThresholds implements Serializable{
+public class RequestsInFlightThresholds implements Serializable {
 
-	private static final long serialVersionUID = 8113964958155294290L;
-	private float upperLimit = 80.0F;
+    private static final long serialVersionUID = 8113964958155294290L;
+    private float upperLimit = 80.0F;
 
-	public float getUpperLimit() {
-		return upperLimit;
-	}
-	public void setUpperLimit(float upperLimit) {
-		this.upperLimit = upperLimit;
-	}
-	@Override
-	public String toString() {
-		return "RequestsInFlight [upperLimit=" + upperLimit + "]";
-	}
-	
-	
+    public float getUpperLimit() {
+        return upperLimit;
+    }
+
+    public void setUpperLimit(float upperLimit) {
+        this.upperLimit = upperLimit;
+    }
+
+    @Override
+    public String toString() {
+        return "RequestsInFlight [upperLimit=" + upperLimit + "]";
+    }
+
 
 }

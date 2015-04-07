@@ -24,49 +24,51 @@ import org.apache.commons.logging.LogFactory;
 import java.io.*;
 
 public class Deserializer {
-    
+
     private static final Log log = LogFactory.getLog(Deserializer.class);
 
     /**
      * We deserialize only if the path to the serialized object file is exists.
+     *
      * @param filePath path to the serialized object file
      * @return the object obtained after deserialization or null if file isn't valid.
      * @throws Exception
      */
     public static Object deserialize(String filePath) throws Exception {
 
-        ObjectInputStream objIn = null; 
+        ObjectInputStream objIn = null;
         Object obj = null;
-        
-        if(!new File(filePath).isFile()){
+
+        if (!new File(filePath).isFile()) {
             return obj;
         }
-        
+
         try {
 
             objIn = new ObjectInputStream(new FileInputStream(filePath));
             obj = objIn.readObject();
 
         } catch (IOException e) {
-            log.error("Failed to deserialize the file at "+filePath , e);
+            log.error("Failed to deserialize the file at " + filePath, e);
             throw e;
-            
+
         } catch (ClassNotFoundException e) {
-            log.error("Failed to deserialize the file at "+filePath , e);
+            log.error("Failed to deserialize the file at " + filePath, e);
             throw e;
-            
+
         } finally {
             if (objIn != null) {
                 objIn.close();
             }
         }
-        
+
         return obj;
 
     }
-    
+
     /**
      * Deserialize a byte array and retrieve the object.
+     *
      * @param bytes bytes to be deserialized
      * @return the deserialized {@link Object}
      * @throws Exception if the deserialization is failed.

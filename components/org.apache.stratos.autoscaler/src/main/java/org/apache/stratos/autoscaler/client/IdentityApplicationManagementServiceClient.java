@@ -58,7 +58,7 @@ public class IdentityApplicationManagementServiceClient {
     public IdentityApplicationManagementServiceClient(String epr) throws AxisFault {
 
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        int autosclaerSocketTimeout   = conf.getInt("autoscaler.identity.clientTimeout", 180000);
+        int autosclaerSocketTimeout = conf.getInt("autoscaler.identity.clientTimeout", 180000);
         try {
             ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
             String trustStorePath = serverConfig.getFirstProperty("Security.TrustStore.Location");
@@ -86,7 +86,7 @@ public class IdentityApplicationManagementServiceClient {
             synchronized (IdentityApplicationManagementServiceClient.class) {
                 if (serviceClient == null) {
                     XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-                    String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+                    String hostname = conf.getString("autoscaler.identity.hostname", "localhost");
                     int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
                     String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.IDENTITY_APPLICATION_SERVICE_SFX;
                     serviceClient = new IdentityApplicationManagementServiceClient(epr);
@@ -102,7 +102,7 @@ public class IdentityApplicationManagementServiceClient {
 
         oAuthApplication = OAuthAdminServiceClient.getServiceClient().getOAuthApplication(appName);
 
-        if(oAuthApplication == null){
+        if (oAuthApplication == null) {
             return null;
         }
 
@@ -177,7 +177,7 @@ public class IdentityApplicationManagementServiceClient {
     }
 
     public void removeApplication(String appName) throws RemoteException, IdentityApplicationManagementServiceIdentityApplicationManagementException {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Removing application %s", appName));
         }
         stub.deleteApplication(appName);
@@ -185,18 +185,18 @@ public class IdentityApplicationManagementServiceClient {
 
     private String getIdToken(String compositeAppId, String consumerKey, String consumerSecret) throws OAuthSystemException, OAuthProblemException {
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+        String hostname = conf.getString("autoscaler.identity.hostname", "localhost");
         int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
         String tokenEndpoint = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.TOKEN_ENDPOINT_SFX;
-            OAuthClientRequest accessRequest = OAuthClientRequest.tokenLocation(tokenEndpoint)
-                    .setGrantType(GrantType.CLIENT_CREDENTIALS)
-                    .setClientId(consumerKey)
-                    .setClientSecret(consumerSecret)
-                    .setScope(compositeAppId)
-                    .buildBodyMessage();
-            OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
+        OAuthClientRequest accessRequest = OAuthClientRequest.tokenLocation(tokenEndpoint)
+                .setGrantType(GrantType.CLIENT_CREDENTIALS)
+                .setClientId(consumerKey)
+                .setClientSecret(consumerSecret)
+                .setScope(compositeAppId)
+                .buildBodyMessage();
+        OAuthClient oAuthClient = new OAuthClient(new URLConnectionClient());
 
-            OAuthClientResponse oAuthResponse = oAuthClient.accessToken(accessRequest);
+        OAuthClientResponse oAuthResponse = oAuthClient.accessToken(accessRequest);
         return oAuthResponse.getParam(ID_TOKEN);
     }
 }

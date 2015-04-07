@@ -26,7 +26,8 @@ import org.apache.stratos.autoscaler.status.processor.StatusProcessor;
 public abstract class ClusterStatusProcessor extends StatusProcessor {
     /**
      * Message processing and delegating logic.
-     * @param clusterId real message body.
+     *
+     * @param clusterId  real message body.
      * @param instanceId Object that will get updated.
      * @return whether the processing was successful or not.
      */

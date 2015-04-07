@@ -69,14 +69,14 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if (cluster.isStateTransitionValid(ClusterStatus.Created, null)){
-                    if(cluster.getStatus(null) != ClusterStatus.Created) {
+                if (cluster.isStateTransitionValid(ClusterStatus.Created, null)) {
+                    if (cluster.getStatus(null) != ClusterStatus.Created) {
                         ClusterStatusClusterResetEvent clusterCreatedEvent =
                                 new ClusterStatusClusterResetEvent(appId, serviceName, clusterId, instanceId);
 
                         publishEvent(clusterCreatedEvent);
                     } else {
-                        if(log.isDebugEnabled()){
+                        if (log.isDebugEnabled()) {
                             log.warn("Cluster is already created, [cluster] " + clusterId);
                         }
                     }
@@ -96,14 +96,14 @@ public class ClusterStatusEventPublisher {
             Service service = TopologyManager.getTopology().getService(serviceName);
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
-                if(cluster.getInstanceContexts(instanceId) == null) {
-                   log.warn("The Instance context for the cluster already exists for [cluster] " +
-                   clusterId + " [instance-id] " + instanceId);
+                if (cluster.getInstanceContexts(instanceId) == null) {
+                    log.warn("The Instance context for the cluster already exists for [cluster] " +
+                            clusterId + " [instance-id] " + instanceId);
                     return;
                 }
                 ClusterStatusClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
                         new ClusterStatusClusterInstanceCreatedEvent(alias, serviceName,
-                                                                    clusterId, instanceId);
+                                clusterId, instanceId);
 
                 publishEvent(clusterInstanceCreatedEvent);
             } else {
@@ -124,15 +124,15 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Active)){
-                    if(clusterInstance.getStatus() != ClusterStatus.Active) {
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Active)) {
+                    if (clusterInstance.getStatus() != ClusterStatus.Active) {
                         ClusterStatusClusterActivatedEvent clusterActivatedEvent =
                                 new ClusterStatusClusterActivatedEvent(appId, serviceName,
                                         clusterId, instanceId);
 
                         publishEvent(clusterActivatedEvent);
                     } else {
-                        if(log.isDebugEnabled()){
+                        if (log.isDebugEnabled()) {
                             log.warn("Cluster is already active [cluster] " + clusterId);
                         }
                     }
@@ -153,17 +153,17 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Inactive)){
-                        if(clusterInstance.getStatus() != ClusterStatus.Inactive) {
-                            ClusterStatusClusterInactivateEvent clusterInactivateEvent =
-                                    new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Inactive)) {
+                    if (clusterInstance.getStatus() != ClusterStatus.Inactive) {
+                        ClusterStatusClusterInactivateEvent clusterInactivateEvent =
+                                new ClusterStatusClusterInactivateEvent(appId, serviceName, clusterId, instanceId);
 
-                            publishEvent(clusterInactivateEvent);
-                        } else {
-                            if(log.isDebugEnabled()){
-                                log.warn("Cluster is already inactive [cluster] " + clusterId);
-                            }
+                        publishEvent(clusterInactivateEvent);
+                    } else {
+                        if (log.isDebugEnabled()) {
+                            log.warn("Cluster is already inactive [cluster] " + clusterId);
                         }
+                    }
                 } else {
                     log.warn("Inactive is not in the possible state list of [cluster] " + clusterId);
                 }
@@ -185,8 +185,8 @@ public class ClusterStatusEventPublisher {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
 
-                if(clusterInstance != null){
-                    if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminating)){
+                if (clusterInstance != null) {
+                    if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminating)) {
                         if (clusterInstance.getStatus() != ClusterStatus.Terminating) {
                             ClusterStatusClusterTerminatingEvent appStatusClusterTerminatingEvent =
                                     new ClusterStatusClusterTerminatingEvent(appId, serviceName, clusterId, instanceId);
@@ -217,19 +217,19 @@ public class ClusterStatusEventPublisher {
             if (service != null) {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance clusterInstance = cluster.getInstanceContexts(instanceId);
-                if(clusterInstance == null) {
+                if (clusterInstance == null) {
                     log.warn(String.format("Cluster instance not found: [instance-id] %s", instanceId));
                     return;
                 }
 
-                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated)){
-                    if(clusterInstance.getStatus() != ClusterStatus.Terminated) {
+                if (clusterInstance.isStateTransitionValid(ClusterStatus.Terminated)) {
+                    if (clusterInstance.getStatus() != ClusterStatus.Terminated) {
                         ClusterStatusClusterTerminatedEvent appStatusClusterTerminatedEvent =
                                 new ClusterStatusClusterTerminatedEvent(appId, serviceName, clusterId, instanceId);
 
                         publishEvent(appStatusClusterTerminatedEvent);
                     } else {
-                        if(log.isDebugEnabled()){
+                        if (log.isDebugEnabled()) {
                             log.warn("Cluster is already terminated, [cluster] " + clusterId);
                         }
                     }

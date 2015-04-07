@@ -85,10 +85,10 @@ public class AutoscalerUtil {
         private static final AutoscalerUtil INSTANCE = new AutoscalerUtil();
     }
 
-    public static Applications  getApplications () {
+    public static Applications getApplications() {
 
         Applications applications;
-        String [] appResourcePaths = RegistryManager.getInstance().getApplicationResourcePaths();
+        String[] appResourcePaths = RegistryManager.getInstance().getApplicationResourcePaths();
         if (appResourcePaths != null) {
             applications = new Applications();
             for (String appResourcePath : appResourcePaths) {
@@ -101,20 +101,20 @@ public class AutoscalerUtil {
         return null;
     }
 
-    public static Application getApplication (String appId) {
+    public static Application getApplication(String appId) {
         return getApplicationFromPath(AutoscalerConstants.AUTOSCALER_RESOURCE +
                 AutoscalerConstants.APPLICATIONS_RESOURCE + "/" + appId);
     }
 
-    public static void persistApplication (Application application) {
+    public static void persistApplication(Application application) {
         RegistryManager.getInstance().persistApplication(application);
     }
 
-    private static Application getApplicationFromPath (String appResourcePath) {
+    private static Application getApplicationFromPath(String appResourcePath) {
         return RegistryManager.getInstance().getApplicationByResourcePath(appResourcePath);
     }
 
-    public static void removeApplication (String applicationId) {
+    public static void removeApplication(String applicationId) {
         RegistryManager.getInstance().removeApplication(applicationId);
     }
 
@@ -197,7 +197,7 @@ public class AutoscalerUtil {
             propertyList.add(property);
         }
 
-        if(propertyList.isEmpty()) {
+        if (propertyList.isEmpty()) {
             return null;
         }
 
@@ -228,8 +228,8 @@ public class AutoscalerUtil {
     public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
             java.util.Properties properties) {
         org.apache.stratos.cloud.controller.stub.Properties stubProperties = new org.apache.stratos.cloud.controller.stub.Properties();
-        if(properties != null) {
-            for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+        if (properties != null) {
+            for (Map.Entry<Object, Object> entry : properties.entrySet()) {
                 org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
                 newProperty.setName(entry.getKey().toString());
                 newProperty.setValue(entry.getValue().toString());
@@ -342,9 +342,9 @@ public class AutoscalerUtil {
     }
 
     public static Monitor.MonitorType findMonitorType(ApplicationChildContext context) {
-        if(context instanceof GroupChildContext) {
+        if (context instanceof GroupChildContext) {
             return Monitor.MonitorType.Group;
-        } else if(context instanceof ClusterChildContext) {
+        } else if (context instanceof ClusterChildContext) {
             return Monitor.MonitorType.Cluster;
         } else {
             throw new RuntimeException("Unknown child context type: " + context.getClass().getName());
@@ -352,22 +352,22 @@ public class AutoscalerUtil {
     }
 
     public static String findTenantRange(int tenantId, String tenantPartitions) {
-        if(StringUtils.isNotBlank(tenantPartitions)) {
+        if (StringUtils.isNotBlank(tenantPartitions)) {
             String[] tenantRanges = tenantPartitions.trim().split(",");
-            if(tenantRanges != null) {
-                for(String tenantRange : tenantRanges) {
-                    if((tenantRange != null) && (tenantRange.contains("-"))) {
+            if (tenantRanges != null) {
+                for (String tenantRange : tenantRanges) {
+                    if ((tenantRange != null) && (tenantRange.contains("-"))) {
                         String[] tenantValues = tenantRange.trim().split("-");
-                        if((tenantValues != null) && (tenantValues.length == 2)) {
-                            if((!tenantValues[0].equals("*")) && (!tenantValues[1].equals("*"))) {
+                        if ((tenantValues != null) && (tenantValues.length == 2)) {
+                            if ((!tenantValues[0].equals("*")) && (!tenantValues[1].equals("*"))) {
                                 int startValue = Integer.parseInt(tenantValues[0]);
                                 int endValue = Integer.parseInt(tenantValues[1]);
                                 if ((tenantId >= startValue) && (tenantId <= endValue)) {
                                     return tenantRange;
                                 }
-                            } else if((!tenantValues[0].equals("*")) && (tenantValues[1].equals("*"))) {
+                            } else if ((!tenantValues[0].equals("*")) && (tenantValues[1].equals("*"))) {
                                 int startValue = Integer.parseInt(tenantValues[0]);
-                                if(tenantId >= startValue) {
+                                if (tenantId >= startValue) {
                                     return tenantRange;
                                 }
                             }
@@ -382,6 +382,7 @@ public class AutoscalerUtil {
     /**
      * Get network partition ids referred in an application. Network partition ids are not referred directly.
      * Cartridge or cartridge group can refer deployment policy which has network partition references.
+     *
      * @param applicationId the application id
      * @return list of network partition ids
      */
@@ -398,15 +399,14 @@ public class AutoscalerUtil {
                 DeploymentPolicy deploymentPolicy = PolicyManager.getInstance().getDeploymentPolicy(deploymentPolicyId);
                 if (deploymentPolicy != null) {
                     for (NetworkPartition networkPartition : deploymentPolicy.getNetworkPartitions()) {
-                        if (networkPartition !=  null) {
+                        if (networkPartition != null) {
                             if (!networkPartitionIds.contains(networkPartition.getId())) {
                                 networkPartitionIds.add(networkPartition.getId());
                             }
                         }
                     }
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 String msg = String.format("Error while getting deployment policy from cloud controller [deployment-policy-id] %s ", deploymentPolicyId);
                 log.error(msg, e);
                 throw new AutoScalerException(msg, e);
@@ -417,6 +417,7 @@ public class AutoscalerUtil {
 
     /**
      * Get deployment policy ids referred in an application.
+     *
      * @param applicationId the application id
      * @return list of deployment policy ids
      */
@@ -449,8 +450,9 @@ public class AutoscalerUtil {
 
     /**
      * Get deployment policy id of an alias in the given application
+     *
      * @param applicationId the application id
-     * @param alias the cartridge or cartridge-group alias
+     * @param alias         the cartridge or cartridge-group alias
      * @return the deployment policy id if found, null otherwise
      */
     public static String getDeploymentPolicyIdByAlias(String applicationId, String alias) {
@@ -479,6 +481,7 @@ public class AutoscalerUtil {
 
     /**
      * Get alias to deployment policy id map in the given application.
+     *
      * @param applicationId the application id
      * @return alias to deployment policy map
      */
@@ -580,9 +583,10 @@ public class AutoscalerUtil {
 
     /**
      * Validates Application Policy against the given application.
+     *
      * @param applicationPolicy the application policy to be validated
      * @throws InvalidApplicationPolicyException if application policy is not valid
-     * @throws RemoteException is anything went wrong while communicating with CC to validate network partitions
+     * @throws RemoteException                   is anything went wrong while communicating with CC to validate network partitions
      */
     public static void validateApplicationPolicy(ApplicationPolicy applicationPolicy)
             throws InvalidApplicationPolicyException, RemoteException {
@@ -652,7 +656,7 @@ public class AutoscalerUtil {
 
         // if networkPartitionGroups property is set, we need to validate that too
         Properties properties = applicationPolicy.getProperties();
-        if (properties!= null) {
+        if (properties != null) {
             Property networkPartitionGroupsProperty = properties.getProperty(StratosConstants.APPLICATION_POLICY_NETWORK_PARTITION_GROUPS);
             if (networkPartitionGroupsProperty != null) {
                 String networkPartitionGroupsPropertyValue = networkPartitionGroupsProperty.getValue();
@@ -692,6 +696,7 @@ public class AutoscalerUtil {
 
     /**
      * Validates an application policy against the application
+     *
      * @param applicationId
      * @param applicationPolicyId
      * @throws ApplicatioinPolicyNotExistsException

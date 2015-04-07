@@ -106,7 +106,7 @@ public class MonitorFactory {
             TopologyInConsistentException {
         GroupMonitor groupMonitor;
         Application application = ApplicationHolder.getApplications().getApplication(appId);
-        if(application == null) {
+        if (application == null) {
             throw new RuntimeException("Application not found: [application-id] " + appId);
         }
 
@@ -114,7 +114,7 @@ public class MonitorFactory {
             //acquiring read lock to create the monitor
             ApplicationHolder.acquireReadLock();
             Group group = application.getGroupRecursively(context.getId());
-            if(group == null) {
+            if (group == null) {
                 throw new RuntimeException("Group not found: [group-alias] " + context.getId());
             }
 
@@ -239,13 +239,13 @@ public class MonitorFactory {
         try {
             Topology topology = TopologyManager.getTopology();
             Service service = topology.getService(serviceName);
-            if(service == null) {
+            if (service == null) {
                 String msg = String.format("Service not found in topology: [service] %s", serviceName);
                 throw new RuntimeException(msg);
             }
 
             cluster = service.getCluster(clusterId);
-            if(cluster == null) {
+            if (cluster == null) {
                 String msg = String.format("Cluster not found in topology: [service] %s [cluster] %s",
                         serviceName, clusterId);
                 throw new RuntimeException(msg);
@@ -286,7 +286,7 @@ public class MonitorFactory {
             // deployment policy validation ends
 
             boolean hasScalingDependents = false;
-            if(parentMonitor.getScalingDependencies() != null) {
+            if (parentMonitor.getScalingDependencies() != null) {
                 for (ScalingDependentList scalingDependentList : parentMonitor.getScalingDependencies()) {
                     if (scalingDependentList.getScalingDependentListComponents().contains(clusterId)) {
                         hasScalingDependents = true;
@@ -337,7 +337,7 @@ public class MonitorFactory {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition[] ccPartitions
                 = new org.apache.stratos.cloud.controller.stub.domain.Partition[partitions.length];
-        for(int i = 0; i < partitions.length; i++){
+        for (int i = 0; i < partitions.length; i++) {
             org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition
                     = new org.apache.stratos.cloud.controller.stub.domain.Partition();
             ccPartition.setId(partitions[i].getId());
@@ -348,7 +348,7 @@ public class MonitorFactory {
             ccPartition.setProvider(partitions[i].getProvider());
             ccPartitions[i] = ccPartition;
         }
-        return  ccPartitions;
+        return ccPartitions;
     }
 
 //    private static org.apache.stratos.cloud.controller.stub.Properties convertPropertiesToCCProperties(

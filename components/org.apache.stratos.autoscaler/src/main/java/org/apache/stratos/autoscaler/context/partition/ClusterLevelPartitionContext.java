@@ -84,24 +84,24 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
         this.pendingMembers = new ArrayList<MemberContext>();
     }
 
-    public void terminateAllRemainingInstances(){
+    public void terminateAllRemainingInstances() {
 
         // Forcefully deleting remaining active members
-        for (Iterator<MemberContext> iterator = activeMembers.iterator(); iterator.hasNext();) {
+        for (Iterator<MemberContext> iterator = activeMembers.iterator(); iterator.hasNext(); ) {
             MemberContext member = iterator.next();
             iterator.remove();
             terminateForcefully(member.getMemberId());
         }
 
         // Forcefully deleting remaining pending members
-        for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext();) {
+        for (Iterator<MemberContext> iterator = pendingMembers.iterator(); iterator.hasNext(); ) {
             MemberContext member = iterator.next();
             iterator.remove();
             terminateForcefully(member.getMemberId());
         }
 
         /// Forcefully deleting remaining termination pending members
-        for (Iterator<MemberContext> iterator = terminationPendingMembers.iterator(); iterator.hasNext();) {
+        for (Iterator<MemberContext> iterator = terminationPendingMembers.iterator(); iterator.hasNext(); ) {
             MemberContext member = iterator.next();
             // Remove the current element from the iterator and the list.
             iterator.remove();
@@ -110,18 +110,17 @@ public class ClusterLevelPartitionContext extends PartitionContext implements Se
 
 
         // Forcefully deleting remaining obsolete members
-        for (Map.Entry<String, MemberContext> entry : obsoletedMembers.entrySet())
-        {
+        for (Map.Entry<String, MemberContext> entry : obsoletedMembers.entrySet()) {
             MemberContext ObsoleteMemberContext = entry.getValue();
             obsoletedMembers.remove(entry.getKey());
             terminateForcefully(ObsoleteMemberContext.getMemberId());
         }
     }
 
-    private void terminateForcefully(String  memberId) {
+    private void terminateForcefully(String memberId) {
         try {
-            if(log.isDebugEnabled()){
-                log.debug(String.format("Forcefully terminating member [member-id] %s" , memberId));
+            if (log.isDebugEnabled()) {
+                log.debug(String.format("Forcefully terminating member [member-id] %s", memberId));
             }
             CloudControllerServiceClient.getInstance().terminateInstanceForcefully(memberId);
         } catch (Exception e) {

@@ -117,11 +117,11 @@ public class AutoscalerTopologyEventReceiver {
                         if (applications != null) {
                             for (Application application : applications.getApplications().values()) {
                                 if (AutoscalerUtil.allClustersInitialized(application)) {
-                                	ApplicationContext applicationContext = AutoscalerContext.getInstance().
-                                			getApplicationContext(application.getUniqueIdentifier());
-                                	if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                                		AutoscalerUtil.getInstance().startApplicationMonitor(application.getUniqueIdentifier());
-									} else {
+                                    ApplicationContext applicationContext = AutoscalerContext.getInstance().
+                                            getApplicationContext(application.getUniqueIdentifier());
+                                    if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
+                                        AutoscalerUtil.getInstance().startApplicationMonitor(application.getUniqueIdentifier());
+                                    } else {
                                         log.info("The application is not yet " +
                                                 "deployed for this [application] " +
                                                 application.getUniqueIdentifier());
@@ -155,19 +155,19 @@ public class AutoscalerTopologyEventReceiver {
                     String appId = applicationClustersCreatedEvent.getAppId();
                     boolean appMonitorCreationTriggered = false;
                     int retries = 5;
-                    while(!appMonitorCreationTriggered && retries > 0){
+                    while (!appMonitorCreationTriggered && retries > 0) {
                         try {
                             //acquire read lock
                             ApplicationHolder.acquireReadLock();
                             //start the application monitor
                             ApplicationContext applicationContext = AutoscalerContext.getInstance().getApplicationContext(appId);
                             if (applicationContext != null && applicationContext.getStatus().equals(ApplicationContext.STATUS_DEPLOYED)) {
-                            	if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
-                            		appMonitorCreationTriggered = true;
-                            		AutoscalerUtil.getInstance().startApplicationMonitor(appId);
-                            		break;
-                            	}
-    						}
+                                if (!AutoscalerContext.getInstance().containsApplicationPendingMonitor(appId)) {
+                                    appMonitorCreationTriggered = true;
+                                    AutoscalerUtil.getInstance().startApplicationMonitor(appId);
+                                    break;
+                                }
+                            }
                         } catch (Exception e) {
                             String msg = "Error processing event " + e.getLocalizedMessage();
                             log.error(msg, e);
@@ -175,22 +175,22 @@ public class AutoscalerTopologyEventReceiver {
                             //release read lock
                             ApplicationHolder.releaseReadLock();
                         }
-                        
+
                         try {
-                        	retries--;
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-						}
+                            retries--;
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
                     }
-                    
+
                     // Reason is to re-try 5 time is because application status might not become "deployed" yet, refer deployApplication API for more information.
                     // Reason why not throwing error after 5 times is because this not the only place we trigger app-monitor creation.
                     if (!appMonitorCreationTriggered) {
-						String msg = String.format("Application monitor creation is not triggered on application "
-								+ "clusters created event even after 5 retries [application-id] %s. "
-								+ "Possible cause is either application context is null or application status didn't become %s yet.", appId, ApplicationContext.STATUS_DEPLOYED);
-						log.warn(msg);
-					}
+                        String msg = String.format("Application monitor creation is not triggered on application "
+                                + "clusters created event even after 5 retries [application-id] %s. "
+                                + "Possible cause is either application context is null or application status didn't become %s yet.", appId, ApplicationContext.STATUS_DEPLOYED);
+                        log.warn(msg);
+                    }
                 } catch (ClassCastException e) {
                     String msg = "Error while casting the event " + e.getLocalizedMessage();
                     log.error(msg, e);
@@ -343,7 +343,7 @@ public class AutoscalerTopologyEventReceiver {
                 monitor.notifyParentMonitor(ClusterStatus.Terminated, instanceId);
                 //Removing the instance and instanceContext
                 ClusterInstance instance = (ClusterInstance) monitor.getInstance(instanceId);
-                ((ClusterContext)monitor.getClusterContext()).
+                ((ClusterContext) monitor.getClusterContext()).
                         getNetworkPartitionCtxt(instance.getNetworkPartitionId()).
                         removeInstanceContext(instanceId);
                 monitor.removeInstance(instanceId);
@@ -360,7 +360,7 @@ public class AutoscalerTopologyEventReceiver {
             @Override
             protected void onEvent(Event event) {
                 try {
-                        log.info("[MemberReadyToShutdownEvent] Received: " + event.getClass());
+                    log.info("[MemberReadyToShutdownEvent] Received: " + event.getClass());
                     MemberReadyToShutdownEvent memberReadyToShutdownEvent = (MemberReadyToShutdownEvent) event;
                     String clusterId = memberReadyToShutdownEvent.getClusterId();
                     AutoscalerContext asCtx = AutoscalerContext.getInstance();
@@ -462,79 +462,79 @@ public class AutoscalerTopologyEventReceiver {
         });
 
         topologyEventReceiver.addEventListener(new ClusterInstanceCreatedEventListener() {
-           @Override
-           protected void onEvent(Event event) {
+                                                   @Override
+                                                   protected void onEvent(Event event) {
 
-               ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
-                       (ClusterInstanceCreatedEvent) event;
-               ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
-                       getClusterMonitor(clusterInstanceCreatedEvent.getClusterId());
-               ClusterInstance clusterInstance = ((ClusterInstanceCreatedEvent) event).
-                                                    getClusterInstance();
-               String instanceId = clusterInstance.getInstanceId();
-               //FIXME to take lock when clusterMonitor is running
-               if (clusterMonitor != null) {
-                   TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
-                           clusterInstanceCreatedEvent.getClusterId());
+                                                       ClusterInstanceCreatedEvent clusterInstanceCreatedEvent =
+                                                               (ClusterInstanceCreatedEvent) event;
+                                                       ClusterMonitor clusterMonitor = AutoscalerContext.getInstance().
+                                                               getClusterMonitor(clusterInstanceCreatedEvent.getClusterId());
+                                                       ClusterInstance clusterInstance = ((ClusterInstanceCreatedEvent) event).
+                                                               getClusterInstance();
+                                                       String instanceId = clusterInstance.getInstanceId();
+                                                       //FIXME to take lock when clusterMonitor is running
+                                                       if (clusterMonitor != null) {
+                                                           TopologyManager.acquireReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                                                                   clusterInstanceCreatedEvent.getClusterId());
 
-                   try {
-                       Service service = TopologyManager.getTopology().
-                               getService(clusterInstanceCreatedEvent.getServiceName());
+                                                           try {
+                                                               Service service = TopologyManager.getTopology().
+                                                                       getService(clusterInstanceCreatedEvent.getServiceName());
 
-                       if (service != null) {
-                           Cluster cluster = service.getCluster(clusterInstanceCreatedEvent.getClusterId());
-                            if (cluster != null) {
-                                try {
-                                    ClusterContext clusterContext =
-                                            (ClusterContext) clusterMonitor.getClusterContext();
-                                    if (clusterContext == null) {
-                                        clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster,
-                                                clusterMonitor.hasScalingDependents());
-                                        clusterMonitor.setClusterContext(clusterContext);
+                                                               if (service != null) {
+                                                                   Cluster cluster = service.getCluster(clusterInstanceCreatedEvent.getClusterId());
+                                                                   if (cluster != null) {
+                                                                       try {
+                                                                           ClusterContext clusterContext =
+                                                                                   (ClusterContext) clusterMonitor.getClusterContext();
+                                                                           if (clusterContext == null) {
+                                                                               clusterContext = ClusterContextFactory.getVMClusterContext(instanceId, cluster,
+                                                                                       clusterMonitor.hasScalingDependents());
+                                                                               clusterMonitor.setClusterContext(clusterContext);
 
-                                    }
-                                    log.info(" Cluster monitor has scaling dependents"
-                                    		+ "  ["+clusterMonitor.hasScalingDependents()+"] "); // TODO -- remove this log..
-                                    clusterContext.addInstanceContext(instanceId, cluster,
-                                            clusterMonitor.hasScalingDependents(), clusterMonitor.groupScalingEnabledSubtree());
-                                    if (clusterMonitor.getInstance(instanceId) == null) {
-                                        // adding the same instance in topology to monitor as a reference
-                                        ClusterInstance clusterInstance1 = cluster.getInstanceContexts(instanceId);
-                                        clusterMonitor.addInstance(clusterInstance1);
-                                    }
+                                                                           }
+                                                                           log.info(" Cluster monitor has scaling dependents"
+                                                                                   + "  [" + clusterMonitor.hasScalingDependents() + "] "); // TODO -- remove this log..
+                                                                           clusterContext.addInstanceContext(instanceId, cluster,
+                                                                                   clusterMonitor.hasScalingDependents(), clusterMonitor.groupScalingEnabledSubtree());
+                                                                           if (clusterMonitor.getInstance(instanceId) == null) {
+                                                                               // adding the same instance in topology to monitor as a reference
+                                                                               ClusterInstance clusterInstance1 = cluster.getInstanceContexts(instanceId);
+                                                                               clusterMonitor.addInstance(clusterInstance1);
+                                                                           }
 
-                                    if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {
-                                        clusterMonitor.startScheduler();
-                                        log.info("Monitoring task for Cluster Monitor with cluster id "
-                                                + clusterInstanceCreatedEvent.getClusterId() + " started successfully");
-                                    } else {
-                                        //monitor already started. Invoking it directly to speed up the process
-                                        ((ClusterMonitor)clusterMonitor).monitor();
-                                    }
-                                } catch (PolicyValidationException e) {
-                                    log.error(e.getMessage(), e);
-                                } catch (PartitionValidationException e) {
-                                    log.error(e.getMessage(), e);
-                                }
-                            }
+                                                                           if (clusterMonitor.hasMonitoringStarted().compareAndSet(false, true)) {
+                                                                               clusterMonitor.startScheduler();
+                                                                               log.info("Monitoring task for Cluster Monitor with cluster id "
+                                                                                       + clusterInstanceCreatedEvent.getClusterId() + " started successfully");
+                                                                           } else {
+                                                                               //monitor already started. Invoking it directly to speed up the process
+                                                                               ((ClusterMonitor) clusterMonitor).monitor();
+                                                                           }
+                                                                       } catch (PolicyValidationException e) {
+                                                                           log.error(e.getMessage(), e);
+                                                                       } catch (PartitionValidationException e) {
+                                                                           log.error(e.getMessage(), e);
+                                                                       }
+                                                                   }
 
-                       } else {
-                           log.error("Service " + clusterInstanceCreatedEvent.getServiceName() +
-                                   " not found, no cluster instance added to ClusterMonitor " +
-                                   clusterInstanceCreatedEvent.getClusterId());
-                       }
+                                                               } else {
+                                                                   log.error("Service " + clusterInstanceCreatedEvent.getServiceName() +
+                                                                           " not found, no cluster instance added to ClusterMonitor " +
+                                                                           clusterInstanceCreatedEvent.getClusterId());
+                                                               }
 
-                   } finally {
-                       TopologyManager.releaseReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
-                               clusterInstanceCreatedEvent.getClusterId());
-                   }
+                                                           } finally {
+                                                               TopologyManager.releaseReadLockForCluster(clusterInstanceCreatedEvent.getServiceName(),
+                                                                       clusterInstanceCreatedEvent.getClusterId());
+                                                           }
 
-               } else {
-                   log.error("No Cluster Monitor found for cluster id " +
-                           clusterInstanceCreatedEvent.getClusterId());
-               }
-           }
-       }
+                                                       } else {
+                                                           log.error("No Cluster Monitor found for cluster id " +
+                                                                   clusterInstanceCreatedEvent.getClusterId());
+                                                       }
+                                                   }
+                                               }
 
         );
     }

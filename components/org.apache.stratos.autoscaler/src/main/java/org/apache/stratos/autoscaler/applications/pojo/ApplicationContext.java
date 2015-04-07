@@ -76,7 +76,7 @@ public class ApplicationContext implements Serializable {
     public void setComponents(ComponentContext componentContext) {
         this.componentContext = componentContext;
     }
-    
+
     public int getTenantId() {
         return tenantId;
     }

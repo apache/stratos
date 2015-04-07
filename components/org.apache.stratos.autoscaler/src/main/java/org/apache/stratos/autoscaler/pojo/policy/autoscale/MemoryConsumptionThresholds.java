@@ -26,19 +26,20 @@ import java.io.Serializable;
  */
 public class MemoryConsumptionThresholds implements Serializable {
 
-	private static final long serialVersionUID = 5755634390464664663L;
-	private float upperLimit = 80.0F;
-	
-	public float getUpperLimit() {
-		return upperLimit;
-	}
-	public void setUpperLimit(float upperLimit) {
-		this.upperLimit = upperLimit;
-	}
-	
-	@Override
-	public String toString() {
-		return "MemoryConsumption [upperLimit=" + upperLimit + "]";
-	}
+    private static final long serialVersionUID = 5755634390464664663L;
+    private float upperLimit = 80.0F;
+
+    public float getUpperLimit() {
+        return upperLimit;
+    }
+
+    public void setUpperLimit(float upperLimit) {
+        this.upperLimit = upperLimit;
+    }
+
+    @Override
+    public String toString() {
+        return "MemoryConsumption [upperLimit=" + upperLimit + "]";
+    }
 
 }

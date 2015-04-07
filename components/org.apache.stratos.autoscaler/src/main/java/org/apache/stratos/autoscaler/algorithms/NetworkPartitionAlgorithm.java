@@ -23,11 +23,12 @@ import java.util.List;
 import org.apache.stratos.autoscaler.algorithms.networkpartition.NetworkPartitionAlgorithmContext;
 
 public interface NetworkPartitionAlgorithm {
-	
-	/**
-	 * Get a list network partitions in which application instances to be spawned
-	 * @param networkPartitionAlgorithmContext the {@link NetworkPartitionAlgorithmContext}
-	 * @return list of network partition ids
-	 */
-	public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext);
+
+    /**
+     * Get a list network partitions in which application instances to be spawned
+     *
+     * @param networkPartitionAlgorithmContext the {@link NetworkPartitionAlgorithmContext}
+     * @return list of network partition ids
+     */
+    public List<String> getNextNetworkPartitions(NetworkPartitionAlgorithmContext networkPartitionAlgorithmContext);
 }

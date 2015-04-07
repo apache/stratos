@@ -21,26 +21,26 @@ package org.apache.stratos.autoscaler.exception.policy;
 
 public class ApplicatioinPolicyNotExistsException extends Exception {
 
-	private static final long serialVersionUID = -4326762495239318515L;
-	private String message;
-	
-	public ApplicatioinPolicyNotExistsException(String message) {
-		super(message);
-		this.message = message;
-	}
-	
-	public ApplicatioinPolicyNotExistsException(String message,Throwable e) {
-		super(message,e);
-		this.message = message;
-	}
-	
-	public ApplicatioinPolicyNotExistsException(Throwable e) {
-		super(e);
-	}
-	
-	@Override
-	public String getMessage() {
-		return message;
-	}
-	
+    private static final long serialVersionUID = -4326762495239318515L;
+    private String message;
+
+    public ApplicatioinPolicyNotExistsException(String message) {
+        super(message);
+        this.message = message;
+    }
+
+    public ApplicatioinPolicyNotExistsException(String message, Throwable e) {
+        super(message, e);
+        this.message = message;
+    }
+
+    public ApplicatioinPolicyNotExistsException(Throwable e) {
+        super(e);
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
 }

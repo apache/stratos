@@ -23,21 +23,21 @@ public class ApplicationDefinitionException extends Exception {
 
     private String message;
 
-    public ApplicationDefinitionException () {
+    public ApplicationDefinitionException() {
         super();
     }
 
-    public ApplicationDefinitionException (String message, Throwable cause) {
+    public ApplicationDefinitionException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public ApplicationDefinitionException (String message) {
+    public ApplicationDefinitionException(String message) {
         super(message);
         this.message = message;
     }
 
-    public ApplicationDefinitionException (Throwable cause) {
+    public ApplicationDefinitionException(Throwable cause) {
         super(cause);
     }
 

@@ -44,7 +44,7 @@ public class OAuthAdminServiceClient {
     public OAuthAdminServiceClient(String epr) throws AxisFault {
 
         XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-        int autosclaerSocketTimeout   = conf.getInt("autoscaler.identity.clientTimeout", 180000);
+        int autosclaerSocketTimeout = conf.getInt("autoscaler.identity.clientTimeout", 180000);
 
         try {
             ServerConfiguration serverConfig = CarbonUtils.getServerConfiguration();
@@ -76,7 +76,7 @@ public class OAuthAdminServiceClient {
             synchronized (OAuthAdminServiceClient.class) {
                 if (serviceClient == null) {
                     XMLConfiguration conf = ConfUtil.getInstance(null).getConfiguration();
-                    String hostname   = conf.getString("autoscaler.identity.hostname", "localhost");
+                    String hostname = conf.getString("autoscaler.identity.hostname", "localhost");
                     int port = conf.getInt("autoscaler.cloudController.port", AutoscalerConstants.IS_DEFAULT_PORT);
                     String epr = "https://" + hostname + ":" + port + "/" + AutoscalerConstants.OAUTH_SERVICE_SFX;
                     serviceClient = new OAuthAdminServiceClient(epr);
@@ -91,7 +91,7 @@ public class OAuthAdminServiceClient {
         oAuthConsumerDTO.setApplicationName(appName);
         oAuthConsumerDTO.setOAuthVersion(OAUTH_2_0);
         oAuthConsumerDTO.setGrantTypes(GRANT_TYPE);
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Trying to register oAuth application [%s]", appName));
         }
         stub.registerOAuthApplicationData(oAuthConsumerDTO);
@@ -102,7 +102,7 @@ public class OAuthAdminServiceClient {
     }
 
     public void removeOauthApplication(String appName) throws RemoteException, OAuthAdminServiceException {
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Removing oAuth application %s", appName));
         }
         stub.removeOAuthApplicationData(appName);

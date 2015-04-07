@@ -21,14 +21,14 @@ package org.apache.stratos.autoscaler.applications.pojo;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public class PersistenceContext implements Serializable{
-	
-	private static final long serialVersionUID = 3455721979991902731L;
+public class PersistenceContext implements Serializable {
+
+    private static final long serialVersionUID = 3455721979991902731L;
 
     private boolean persistanceRequired;
-	private VolumeContext[] volumes;
+    private VolumeContext[] volumes;
 
-    public String toString () {
+    public String toString() {
         return "Persistence Required: " + isPersistenceRequired();
     }
 
@@ -45,7 +45,7 @@ public class PersistenceContext implements Serializable{
     }
 
     public void setVolumes(VolumeContext[] volumes) {
-        if(volumes == null) {
+        if (volumes == null) {
             this.volumes = new VolumeContext[0];
         } else {
             this.volumes = Arrays.copyOf(volumes, volumes.length);

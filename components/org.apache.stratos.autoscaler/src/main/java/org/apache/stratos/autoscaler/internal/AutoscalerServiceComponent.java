@@ -58,32 +58,32 @@ import java.util.concurrent.TimeUnit;
 /**
  * @scr.component name=org.apache.stratos.autoscaler.internal.AutoscalerServiceComponent" immediate="true"
  * @scr.reference name="registry.service" interface="org.wso2.carbon.registry.core.service.RegistryService"
- * 			      cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
+ * cardinality="1..1" policy="dynamic" bind="setRegistryService" unbind="unsetRegistryService"
  * @scr.reference name="ntask.component" interface="org.wso2.carbon.ntask.core.service.TaskService"
- * 				  cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
+ * cardinality="1..1" policy="dynamic" bind="setTaskService" unbind="unsetTaskService"
  * @scr.reference name="hazelcast.instance.service" interface="com.hazelcast.core.HazelcastInstance"
- *                cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
+ * cardinality="0..1"policy="dynamic" bind="setHazelcastInstance" unbind="unsetHazelcastInstance"
  * @scr.reference name="distributedObjectProvider" interface="org.apache.stratos.common.services.DistributedObjectProvider"
- *                cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
+ * cardinality="1..1" policy="dynamic" bind="setDistributedObjectProvider" unbind="unsetDistributedObjectProvider"
  * @scr.reference name="componentStartUpSynchronizer" interface="org.apache.stratos.common.services.ComponentStartUpSynchronizer"
- *                cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
+ * cardinality="1..1" policy="dynamic" bind="setComponentStartUpSynchronizer" unbind="unsetComponentStartUpSynchronizer"
  * @scr.reference name="config.context.service" interface="org.wso2.carbon.utils.ConfigurationContextService"
- *                cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
+ * cardinality="1..1" policy="dynamic" bind="setConfigurationContextService" unbind="unsetConfigurationContextService"
  */
 
 public class AutoscalerServiceComponent {
 
     private static final Log log = LogFactory.getLog(AutoscalerServiceComponent.class);
 
-	private static final String AUTOSCALER_COORDINATOR_LOCK = "AUTOSCALER_COORDINATOR_LOCK";
+    private static final String AUTOSCALER_COORDINATOR_LOCK = "AUTOSCALER_COORDINATOR_LOCK";
 
-	private AutoscalerTopologyEventReceiver asTopologyReceiver;
-	private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
-	private ExecutorService executorService;
+    private AutoscalerTopologyEventReceiver asTopologyReceiver;
+    private AutoscalerHealthStatEventReceiver autoscalerHealthStatEventReceiver;
+    private ExecutorService executorService;
     private ScheduledExecutorService scheduler;
 
-	protected void activate(ComponentContext componentContext) throws Exception {
-		try {
+    protected void activate(ComponentContext componentContext) throws Exception {
+        try {
             XMLConfiguration conf = ConfUtil.getInstance(AutoscalerConstants.COMPONENTS_CONFIG).getConfiguration();
             int threadPoolSize = conf.getInt(AutoscalerConstants.THREAD_POOL_SIZE_KEY,
                     AutoscalerConstants.AUTOSCALER_THREAD_POOL_SIZE);
@@ -144,29 +144,29 @@ public class AutoscalerServiceComponent {
             };
             Thread autoscalerActivatorThread = new Thread(autoscalerActivator);
             autoscalerActivatorThread.start();
-		} catch (Exception e) {
-			log.error("Error in activating autoscaler service component ", e);
-		}
-	}
-	
-	private void executeCoordinatorTasks() throws InvalidPolicyException {
-		
-		// Start topology receiver
-		asTopologyReceiver = new AutoscalerTopologyEventReceiver();
-		asTopologyReceiver.setExecutorService(executorService);
-		asTopologyReceiver.execute();
+        } catch (Exception e) {
+            log.error("Error in activating autoscaler service component ", e);
+        }
+    }
 
-		if (log.isDebugEnabled()) {
-			log.debug("Topology receiver executor service started");
-		}
+    private void executeCoordinatorTasks() throws InvalidPolicyException {
 
-		// Start health stat receiver
-		autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
-		autoscalerHealthStatEventReceiver.setExecutorService(executorService);
-		autoscalerHealthStatEventReceiver.execute();
-		if (log.isDebugEnabled()) {
-			log.debug("Health statistics receiver thread started");
-		}
+        // Start topology receiver
+        asTopologyReceiver = new AutoscalerTopologyEventReceiver();
+        asTopologyReceiver.setExecutorService(executorService);
+        asTopologyReceiver.execute();
+
+        if (log.isDebugEnabled()) {
+            log.debug("Topology receiver executor service started");
+        }
+
+        // Start health stat receiver
+        autoscalerHealthStatEventReceiver = new AutoscalerHealthStatEventReceiver();
+        autoscalerHealthStatEventReceiver.setExecutorService(executorService);
+        autoscalerHealthStatEventReceiver.execute();
+        if (log.isDebugEnabled()) {
+            log.debug("Health statistics receiver thread started");
+        }
 
         // Add AS policies to information model
         List<AutoscalePolicy> asPolicies = RegistryManager.getInstance().retrieveASPolicies();
@@ -175,7 +175,7 @@ public class AutoscalerServiceComponent {
             AutoscalePolicy asPolicy = asPolicyIterator.next();
             PolicyManager.getInstance().addASPolicyToInformationModel(asPolicy);
         }
-        
+
         // Add application policies to information model
         List<ApplicationPolicy> applicationPolicies = RegistryManager.getInstance().retrieveApplicationPolicies();
         Iterator<ApplicationPolicy> applicationPolicyIterator = applicationPolicies.iterator();
@@ -183,7 +183,7 @@ public class AutoscalerServiceComponent {
             ApplicationPolicy applicationPolicy = applicationPolicyIterator.next();
             PolicyManager.getInstance().addApplicationPolicyToInformationModel(applicationPolicy);
         }
-        
+
         // Add application policies to information model
         List<NetworkPartitionAlgorithmContext> networkPartitionAlgorithmContexts = RegistryManager.getInstance().retrieveNetworkPartitionAlgorithmContexts();
         Iterator<NetworkPartitionAlgorithmContext> networkPartitionAlgoCtxtIterator = networkPartitionAlgorithmContexts.iterator();
@@ -191,33 +191,33 @@ public class AutoscalerServiceComponent {
             NetworkPartitionAlgorithmContext algorithmContext = networkPartitionAlgoCtxtIterator.next();
             AutoscalerContext.getInstance().addNetworkPartitionAlgorithmContext(algorithmContext);
         }
-        
-		//starting the processor chain
-		ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
-		ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
 
-		GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
-		ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
+        //starting the processor chain
+        ClusterStatusProcessorChain clusterStatusProcessorChain = new ClusterStatusProcessorChain();
+        ServiceReferenceHolder.getInstance().setClusterStatusProcessorChain(clusterStatusProcessorChain);
 
-		if (log.isInfoEnabled()) {
-			log.info("Scheduling tasks to publish applications");
-		}
+        GroupStatusProcessorChain groupStatusProcessorChain = new GroupStatusProcessorChain();
+        ServiceReferenceHolder.getInstance().setGroupStatusProcessorChain(groupStatusProcessorChain);
+
+        if (log.isInfoEnabled()) {
+            log.info("Scheduling tasks to publish applications");
+        }
 
         ComponentStartUpSynchronizer componentStartUpSynchronizer =
                 ServiceReferenceHolder.getInstance().getComponentStartUpSynchronizer();
         componentStartUpSynchronizer.addEventListener(new ComponentActivationEventListener() {
             @Override
             public void activated(Component component) {
-                if(component == Component.StratosManager) {
+                if (component == Component.StratosManager) {
                     Runnable applicationSynchronizer = new ApplicationEventSynchronizer();
                     scheduler.scheduleAtFixedRate(applicationSynchronizer, 0, 1, TimeUnit.MINUTES);
                 }
             }
         });
-	}
+    }
 
     protected void deactivate(ComponentContext context) {
-        if(asTopologyReceiver != null) {
+        if (asTopologyReceiver != null) {
             try {
                 asTopologyReceiver.terminate();
             } catch (Exception e) {
@@ -225,7 +225,7 @@ public class AutoscalerServiceComponent {
             }
         }
 
-        if(autoscalerHealthStatEventReceiver != null) {
+        if (autoscalerHealthStatEventReceiver != null) {
             try {
                 autoscalerHealthStatEventReceiver.terminate();
             } catch (Exception e) {
@@ -254,14 +254,14 @@ public class AutoscalerServiceComponent {
 
     private void shutdownExecutorService(String executorServiceId) {
         ExecutorService executorService = StratosThreadPool.getExecutorService(executorServiceId, 1);
-        if(executorService != null) {
+        if (executorService != null) {
             shutdownExecutorService(executorService);
         }
     }
 
     private void shutdownScheduledExecutorService(String executorServiceId) {
         ExecutorService executorService = StratosThreadPool.getScheduledExecutorService(executorServiceId, 1);
-        if(executorService != null) {
+        if (executorService != null) {
             shutdownExecutorService(executorService);
         }
     }
@@ -307,7 +307,7 @@ public class AutoscalerServiceComponent {
         }
         ServiceReferenceHolder.getInstance().setTaskService(null);
     }
-    
+
     protected void setConfigurationContextService(ConfigurationContextService cfgCtxService) {
         ServiceReferenceHolder.getInstance().setAxisConfiguration(
                 cfgCtxService.getServerConfigContext().getAxisConfiguration());

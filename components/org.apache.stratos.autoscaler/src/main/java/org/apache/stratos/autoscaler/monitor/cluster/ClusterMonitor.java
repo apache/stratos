@@ -1301,8 +1301,8 @@ public class ClusterMonitor extends Monitor implements Runnable {
                     //FIXME to traverse concurrent
                     // active members
 
-                    if(AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()){
-                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s" , partitionContext.getPartitionId(), getAppId()));
+                    if (AutoscalerContext.getInstance().getAppMonitor(getAppId()).isForce()) {
+                        log.info(String.format("Terminating all remaining members of partition [partition-id] %s [application-id] %s", partitionContext.getPartitionId(), getAppId()));
                         partitionContext.terminateAllRemainingInstances();
                     }
 

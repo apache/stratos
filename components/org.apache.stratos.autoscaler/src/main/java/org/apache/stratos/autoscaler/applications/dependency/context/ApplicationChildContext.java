@@ -60,7 +60,7 @@ public abstract class ApplicationChildContext {
     }
 
     public void addStatusToLIfeCycle(ClusterStatus status) {
-       this.statusLifeCycle.push(status);
+        this.statusLifeCycle.push(status);
     }
 
     public String getId() {
@@ -85,7 +85,7 @@ public abstract class ApplicationChildContext {
 
     public boolean hasChild() {
         boolean hasChild;
-        if(this.applicationChildContextList.isEmpty()) {
+        if (this.applicationChildContextList.isEmpty()) {
             hasChild = false;
         } else {
             hasChild = true;

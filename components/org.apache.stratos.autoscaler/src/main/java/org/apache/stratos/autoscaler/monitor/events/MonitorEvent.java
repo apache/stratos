@@ -27,16 +27,17 @@ public abstract class MonitorEvent {
 
     protected List<String> instanceIds;
 
-    public MonitorEvent(String id , String instanceId) {
+    public MonitorEvent(String id, String instanceId) {
         this.id = id;
         this.instanceId = instanceId;
     }
 
-    public MonitorEvent(List<String> ids , String instanceId) {
+    public MonitorEvent(List<String> ids, String instanceId) {
         this.instanceIds = ids;
         this.instanceId = instanceId;
     }
-    public String getId(){
+
+    public String getId() {
         return id;
     }
 

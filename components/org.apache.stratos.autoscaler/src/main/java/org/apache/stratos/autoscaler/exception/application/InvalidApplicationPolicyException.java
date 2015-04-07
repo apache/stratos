@@ -18,10 +18,10 @@
  */
 package org.apache.stratos.autoscaler.exception.application;
 
-public class InvalidApplicationPolicyException extends Exception{
+public class InvalidApplicationPolicyException extends Exception {
 
-	private static final long serialVersionUID = -58978497283511866L;
-	private String message;
+    private static final long serialVersionUID = -58978497283511866L;
+    private String message;
 
     public InvalidApplicationPolicyException(final String message, final Exception exception) {
         super(message, exception);

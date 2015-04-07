@@ -68,7 +68,7 @@ public class SubscribableInfoContext implements Serializable {
     public void setDependencyAliases(String[] dependencyAliases) {
         this.dependencyAliases = dependencyAliases;
     }
-    
+
     public Properties getProperties() {
         return properties;
     }

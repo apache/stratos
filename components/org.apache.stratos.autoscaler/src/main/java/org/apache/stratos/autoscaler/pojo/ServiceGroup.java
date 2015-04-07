@@ -32,7 +32,7 @@ public class ServiceGroup implements Serializable {
 
     private ServiceGroup[] groups;
 
-    private String [] cartridges;
+    private String[] cartridges;
 
     private Dependencies dependencies;
 
@@ -44,11 +44,11 @@ public class ServiceGroup implements Serializable {
         this.name = name;
     }
 
-    public String [] getCartridges() {
+    public String[] getCartridges() {
         return cartridges;
     }
 
-    public void setCartridges(String [] cartridges) {
+    public void setCartridges(String[] cartridges) {
         this.cartridges = cartridges;
     }
 

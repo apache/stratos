@@ -111,7 +111,7 @@ public class DependencyTree {
 
 
     private ApplicationChildContext findParentContextWithId(ApplicationChildContext parent, String id,
-                                                       List<ApplicationChildContext> contexts) {
+                                                            List<ApplicationChildContext> contexts) {
         for (ApplicationChildContext context : contexts) {
             //TODO check for the status
             if (context.getId().equals(id)) {
@@ -150,8 +150,8 @@ public class DependencyTree {
     }
 
     public List<ApplicationChildContext> getStarAbleDependenciesByTermination(
-                                                                    ParentComponentMonitor monitor,
-                                                                    String instanceId) {
+            ParentComponentMonitor monitor,
+            String instanceId) {
         //Breadth First search over the graph to find out which level has the terminated contexts
 
         return traverseGraphByLevel(this.primaryApplicationContextList, monitor, instanceId);
@@ -161,20 +161,19 @@ public class DependencyTree {
     private List<ApplicationChildContext> traverseGraphByLevel(List<ApplicationChildContext> contexts,
                                                                ParentComponentMonitor parentMonitor,
                                                                String instanceId) {
-        for(ApplicationChildContext context : contexts) {
+        for (ApplicationChildContext context : contexts) {
             Monitor monitor = parentMonitor.getMonitor(context.getId());
-            if(monitor.getInstance(instanceId) == null ||
+            if (monitor.getInstance(instanceId) == null ||
                     monitor.getInstancesByParentInstanceId(instanceId).isEmpty()) {
                 return contexts;
             }
         }
 
-        for(ApplicationChildContext context : contexts) {
+        for (ApplicationChildContext context : contexts) {
             return traverseGraphByLevel(context.getApplicationChildContextList(), parentMonitor, instanceId);
         }
         return null;
     }
-
 
 
     /**
@@ -193,7 +192,7 @@ public class DependencyTree {
             findAllChildrenOfAppContext(applicationContext.getApplicationChildContextList(),
                     allChildrenOfAppContext);
             //If only particular cluster, then no need to terminated it.
-            if(allChildrenOfAppContext.size() > 0) {
+            if (allChildrenOfAppContext.size() > 0) {
                 //adding the terminated one to the list
                 allChildrenOfAppContext.add(applicationContext);
             }
@@ -211,6 +210,7 @@ public class DependencyTree {
     public List<ApplicationChildContext> getScalingDependencies(String id) {
         return null;
     }
+
     /**
      * This will help to find out all the children of a particular node
      *
@@ -219,7 +219,7 @@ public class DependencyTree {
      * @return all the children of the given node
      */
     public List<ApplicationChildContext> findAllChildrenOfAppContext(List<ApplicationChildContext> applicationContexts,
-                                                                List<ApplicationChildContext> childContexts) {
+                                                                     List<ApplicationChildContext> childContexts) {
         for (ApplicationChildContext context : applicationContexts) {
             childContexts.add(context);
             findAllChildrenOfAppContext(context.getApplicationChildContextList(), childContexts);
@@ -259,8 +259,8 @@ public class DependencyTree {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        if(primaryApplicationContextList != null) {
-            for(ApplicationChildContext applicationChildContext : primaryApplicationContextList) {
+        if (primaryApplicationContextList != null) {
+            for (ApplicationChildContext applicationChildContext : primaryApplicationContextList) {
                 buildTreeStructure(applicationChildContext, stringBuilder);
             }
         }
@@ -268,12 +268,12 @@ public class DependencyTree {
     }
 
     private void buildTreeStructure(ApplicationChildContext applicationChildContext, StringBuilder stringBuilder) {
-        if(applicationChildContext != null) {
-            if(StringUtils.isNotBlank(stringBuilder.toString())) {
+        if (applicationChildContext != null) {
+            if (StringUtils.isNotBlank(stringBuilder.toString())) {
                 stringBuilder.append(" --> ");
             }
             stringBuilder.append(applicationChildContext.getId());
-            for(ApplicationChildContext childContext : applicationChildContext.getApplicationChildContextList()) {
+            for (ApplicationChildContext childContext : applicationChildContext.getApplicationChildContextList()) {
                 buildTreeStructure(childContext, stringBuilder);
             }
         }

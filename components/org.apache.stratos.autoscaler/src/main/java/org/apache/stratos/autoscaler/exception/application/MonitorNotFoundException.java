@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.exception.application;
 /**
  * This will throw when required monitor not found
  */
-public class MonitorNotFoundException extends Exception{
+public class MonitorNotFoundException extends Exception {
     private static final long serialVersionUID = -9163807860189126883L;
     private String message;
 

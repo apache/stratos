@@ -40,23 +40,23 @@ import java.util.Map;
  * status against the rules set(written in Drools)
  */
 public class AutoscalerRuleEvaluator {
-	
-	private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
+
+    private static final Log log = LogFactory.getLog(AutoscalerRuleEvaluator.class);
 
     private static Map<String, KnowledgeBase> knowledgeBases;
 
-    public AutoscalerRuleEvaluator(){
+    public AutoscalerRuleEvaluator() {
         knowledgeBases = new HashMap<String, KnowledgeBase>();
     }
 
-    public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName){
+    public void parseAndBuildKnowledgeBaseForDroolsFile(String drlFileName) {
         knowledgeBases.put(drlFileName, readKnowledgeBase(drlFileName));
 
         if (log.isDebugEnabled()) {
             log.debug("Drools file is parsed successfully: " + drlFileName);
         }
     }
-    
+
     public static FactHandle evaluate(StatefulKnowledgeSession ksession, FactHandle handle, Object obj) {
         if (handle == null) {
             ksession.setGlobal("delegator", new RuleTasksDelegator());
@@ -65,7 +65,7 @@ public class AutoscalerRuleEvaluator {
             ksession.update(handle, obj);
         }
         ksession.fireAllRules();
-        if(log.isDebugEnabled()){
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Rule executed for: %s ", obj));
         }
         return handle;
@@ -83,10 +83,10 @@ public class AutoscalerRuleEvaluator {
         String configDir = CarbonUtils.getCarbonConfigDirPath();
         String droolsDir = configDir + File.separator + StratosConstants.DROOLS_DIR_NAME;
         Resource resource = ResourceFactory.newFileResource(droolsDir + File.separator + drlFileName);
-		kbuilder.add(resource, ResourceType.DRL);
+        kbuilder.add(resource, ResourceType.DRL);
         KnowledgeBuilderErrors errors = kbuilder.getErrors();
         if (errors.size() > 0) {
-            for (KnowledgeBuilderError error: errors) {
+            for (KnowledgeBuilderError error : errors) {
                 log.error(error.getMessage());
             }
             throw new IllegalArgumentException("Could not parse knowledge");

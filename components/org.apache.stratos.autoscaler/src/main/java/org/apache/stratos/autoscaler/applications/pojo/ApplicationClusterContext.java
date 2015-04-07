@@ -44,7 +44,7 @@ public class ApplicationClusterContext implements Serializable {
     // properties
     private Properties properties;
 
-	private String[] dependencyClusterIds;
+    private String[] dependencyClusterIds;
 
     public PersistenceContext getPersistenceContext() {
         return persistenceContext;
@@ -56,9 +56,9 @@ public class ApplicationClusterContext implements Serializable {
 
     private PersistenceContext persistenceContext;
 
-    public ApplicationClusterContext (String cartridgeType, String clusterId, String hostName,
-                                      String textPayload, String deploymentPolicyName, boolean isLbCluster,
-                                      String tenantRange, String[] dependencyClusterIds) {
+    public ApplicationClusterContext(String cartridgeType, String clusterId, String hostName,
+                                     String textPayload, String deploymentPolicyName, boolean isLbCluster,
+                                     String tenantRange, String[] dependencyClusterIds) {
 
         this.cartridgeType = cartridgeType;
         this.clusterId = clusterId;
@@ -66,7 +66,7 @@ public class ApplicationClusterContext implements Serializable {
         this.textPayload = textPayload;
         this.deploymentPolicyName = deploymentPolicyName;
         this.tenantRange = tenantRange;
-	    this.dependencyClusterIds = dependencyClusterIds;
+        this.dependencyClusterIds = dependencyClusterIds;
     }
 
     public String getClusterId() {
@@ -124,7 +124,7 @@ public class ApplicationClusterContext implements Serializable {
     public void setTenantRange(String tenantRange) {
         this.tenantRange = tenantRange;
     }
-    
+
     public Properties getProperties() {
         return properties;
     }
@@ -135,29 +135,29 @@ public class ApplicationClusterContext implements Serializable {
 
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof ApplicationClusterContext)) {
+        if (other == null || !(other instanceof ApplicationClusterContext)) {
             return false;
         }
 
-        if(this == other) {
+        if (this == other) {
             return true;
         }
 
-        ApplicationClusterContext that = (ApplicationClusterContext)other;
+        ApplicationClusterContext that = (ApplicationClusterContext) other;
 
         return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);
     }
 
-    public int hashCode () {
+    public int hashCode() {
         return this.cartridgeType.hashCode() + this.clusterId.hashCode();
     }
 
-	public String[] getDependencyClusterIds() {
-		return dependencyClusterIds;
-	}
+    public String[] getDependencyClusterIds() {
+        return dependencyClusterIds;
+    }
 
-	public void setDependencyClusterIds(String[] dependencyClusterIds) {
-		this.dependencyClusterIds = dependencyClusterIds;
-	}
+    public void setDependencyClusterIds(String[] dependencyClusterIds) {
+        this.dependencyClusterIds = dependencyClusterIds;
+    }
 }

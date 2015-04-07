@@ -42,11 +42,11 @@ public class ApplicationUtils {
     public static final String PAYLOAD_PARAMETER = "payload_parameter.";
     private static Pattern ALIAS_PATTERN = Pattern.compile("([a-z0-9]+([-][a-z0-9])*)+");
 
-    public static boolean isAliasValid (String alias) {
+    public static boolean isAliasValid(String alias) {
         return ALIAS_PATTERN.matcher(alias).matches();
     }
 
-    public static boolean isValid (String arg) {
+    public static boolean isValid(String arg) {
         if (arg == null || arg.isEmpty()) {
             return false;
         } else {
@@ -54,7 +54,7 @@ public class ApplicationUtils {
         }
     }
 
-    public static Properties getGlobalPayloadData () {
+    public static Properties getGlobalPayloadData() {
 
         Properties globalProperties = new Properties();
 
@@ -74,7 +74,7 @@ public class ApplicationUtils {
         return globalProperties;
     }
 
-    private static String createPortMappingPayloadString (Cartridge cartridge) {
+    private static String createPortMappingPayloadString(Cartridge cartridge) {
 
         // port mappings
         StringBuilder portMapBuilder = new StringBuilder();
@@ -90,7 +90,7 @@ public class ApplicationUtils {
         return portMappingString;
     }
 
-    public static StringBuilder getTextPayload (String appId, String groupName, String clusterId) {
+    public static StringBuilder getTextPayload(String appId, String groupName, String clusterId) {
 
         StringBuilder payloadBuilder = new StringBuilder();
         payloadBuilder.append("APP_ID=" + appId);
@@ -118,25 +118,25 @@ public class ApplicationUtils {
             payloadBuilder.append("PUPPET_DNS_AVAILABLE=" + System.getProperty("puppet.dns.available"));
         }
         // meta data endpoint
-       // if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
-            // TODO
-            //payloadBuilder.append(",");
-            //payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
-       // }
+        // if (MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl() != null) {
+        // TODO
+        //payloadBuilder.append(",");
+        //payloadBuilder.append("METADATA_ENDPOINT=" + MetaDataClientConfig.getInstance().getMetaDataServiceBaseUrl());
+        // }
         payloadBuilder.append(",");
 
         return payloadBuilder;
     }
 
     public static PayloadData createPayload(String appId, String groupName, Cartridge cartridge, String subscriptionKey, int tenantId, String clusterId,
-                                            String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases, 
-                                            org.apache.stratos.common.Properties properties, String oauthToken,String[] dependencyClusterIDs,
+                                            String hostName, String repoUrl, String alias, Map<String, String> customPayloadEntries, String[] dependencyAliases,
+                                            org.apache.stratos.common.Properties properties, String oauthToken, String[] dependencyClusterIDs,
                                             String[] exportMetadata, String[] importMetadata)
             throws ApplicationDefinitionException {
 
         //Create the payload
         BasicPayloadData basicPayloadData = createBasicPayload(appId, groupName, cartridge, subscriptionKey,
-                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs,exportMetadata,importMetadata);
+                clusterId, hostName, repoUrl, alias, tenantId, dependencyAliases, dependencyClusterIDs, exportMetadata, importMetadata);
         //Populate the basic payload details
         basicPayloadData.populatePayload();
 
@@ -173,25 +173,25 @@ public class ApplicationUtils {
             }
         }
 
-        
+
         // get subscription payload parameters (MB_IP, MB_PORT so on) and set them to payload (kubernetes scenario)
         if (properties != null && properties.getProperties() != null && properties.getProperties().length != 0) {
-			for (Property property : properties.getProperties()) {
-				if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
+            for (Property property : properties.getProperties()) {
+                if (property.getName().startsWith(PAYLOAD_PARAMETER)) {
                     String payloadParamName = property.getName();
                     String payloadParamSubstring = payloadParamName.substring(payloadParamName.indexOf(".") + 1);
                     payloadData.add(payloadParamSubstring, property.getValue());
-				}
-			}
-		}
+                }
+            }
+        }
 
-        if(!StringUtils.isEmpty(oauthToken)){
+        if (!StringUtils.isEmpty(oauthToken)) {
             payloadData.add(TOKEN_PAYLOAD_PARAM_NAME, oauthToken);
         }
         //check if there are any custom payload entries defined
         if (customPayloadEntries != null) {
             //add them to the payload
-            Set<Map.Entry<String,String>> entrySet = customPayloadEntries.entrySet();
+            Set<Map.Entry<String, String>> entrySet = customPayloadEntries.entrySet();
             for (Map.Entry<String, String> entry : entrySet) {
                 payloadData.add(entry.getKey(), entry.getValue());
             }
@@ -203,8 +203,8 @@ public class ApplicationUtils {
     private static BasicPayloadData createBasicPayload(String appId, String groupName, Cartridge cartridge,
                                                        String subscriptionKey, String clusterId,
                                                        String hostName, String repoUrl, String alias,
-                                                       int tenantId, String[] dependencyAliases,String[] dependencyCLusterIDs,
-                                                       String[] exportMetadata,String[] importMetadata) {
+                                                       int tenantId, String[] dependencyAliases, String[] dependencyCLusterIDs,
+                                                       String[] exportMetadata, String[] importMetadata) {
 
         BasicPayloadData basicPayloadData = new BasicPayloadData();
         basicPayloadData.setAppId(appId);
@@ -217,7 +217,7 @@ public class ApplicationUtils {
         basicPayloadData.setServiceName(cartridge.getType());
         basicPayloadData.setProvider(cartridge.getProvider());
 
-        if(repoUrl != null) {
+        if (repoUrl != null) {
             basicPayloadData.setGitRepositoryUrl(repoUrl);
         }
 
@@ -237,9 +237,9 @@ public class ApplicationUtils {
 
         basicPayloadData.setTenantRange("*");
         basicPayloadData.setDependencyAliases(dependencyAliases);
-	    basicPayloadData.setDependencyClusterIDs(dependencyCLusterIDs);
-	    basicPayloadData.setExportMetadataKeys(exportMetadata);
-	    basicPayloadData.setImportMetadataKeys(importMetadata);
+        basicPayloadData.setDependencyClusterIDs(dependencyCLusterIDs);
+        basicPayloadData.setExportMetadataKeys(exportMetadata);
+        basicPayloadData.setImportMetadataKeys(importMetadata);
 
         return basicPayloadData;
     }

@@ -24,45 +24,45 @@ import java.io.Serializable;
 /**
  * The model class for RequestsInFlight definition.
  */
-public class RequestsInFlight implements Serializable{
+public class RequestsInFlight implements Serializable {
 
-	private static final long serialVersionUID = 8113964958155294290L;
-	private float average;
+    private static final long serialVersionUID = 8113964958155294290L;
+    private float average;
     private float secondDerivative;
     private float gradient;
     private float scaleDownMarginOfGradient;
     private float scaleDownMarginOfSecondDerivative;
 
     /**
-     * Gets the value of the average property.   
+     * Gets the value of the average property.
      */
     public float getAverage() {
         return average;
     }
 
     /**
-     * Sets the value of the average property.   
+     * Sets the value of the average property.
      */
     public void setAverage(float value) {
         this.average = value;
     }
 
     /**
-     * Gets the value of the second-derivative property. 
+     * Gets the value of the second-derivative property.
      */
     public float getSecondDerivative() {
         return secondDerivative;
     }
 
     /**
-     * Sets the value of the second-derivative property.   
+     * Sets the value of the second-derivative property.
      */
     public void setSecondDerivative(float value) {
         this.secondDerivative = value;
     }
 
     /**
-     * Gets the value of the gradient property. 
+     * Gets the value of the gradient property.
      */
     public float getGradient() {
         return gradient;
@@ -70,7 +70,6 @@ public class RequestsInFlight implements Serializable{
 
     /**
      * Sets the value of the gradient property.
-     *     
      */
     public void setGradient(float value) {
         this.gradient = value;
@@ -85,7 +84,6 @@ public class RequestsInFlight implements Serializable{
 
     /**
      * Sets the value of the scaleDownSlowerMarginOfGradient property.
-     *
      */
     public void setScaleDownMarginOfGradient(float scaleDownMarginOfGradient) {
         this.scaleDownMarginOfGradient = scaleDownMarginOfGradient;
@@ -100,7 +98,6 @@ public class RequestsInFlight implements Serializable{
 
     /**
      * Sets the value of the scaleDownSlowerMarginOfSecondDerivative property.
-     *
      */
     public void setScaleDownMarginOfSecondDerivative(float scaleDownMarginOfSecondDerivative) {
         this.scaleDownMarginOfSecondDerivative = scaleDownMarginOfSecondDerivative;

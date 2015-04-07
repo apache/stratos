@@ -35,9 +35,9 @@ import com.hazelcast.core.HazelcastInstance;
 import java.util.concurrent.ExecutorService;
 
 public class ServiceReferenceHolder {
-	
-	private static ServiceReferenceHolder instance;
-	private Registry registry;
+
+    private static ServiceReferenceHolder instance;
+    private Registry registry;
     private TaskService taskService;
     private ClusterStatusProcessorChain clusterStatusProcessorChain;
     private GroupStatusProcessorChain groupStatusProcessorChain;
@@ -48,10 +48,10 @@ public class ServiceReferenceHolder {
     private ComponentStartUpSynchronizer componentStartUpSynchronizer;
 
     private ServiceReferenceHolder() {
-	}
-	 
-	public static ServiceReferenceHolder getInstance() {
-        if(instance == null) {
+    }
+
+    public static ServiceReferenceHolder getInstance() {
+        if (instance == null) {
             synchronized (ServiceReferenceHolder.class) {
                 if (instance == null) {
                     instance = new ServiceReferenceHolder();
@@ -59,16 +59,16 @@ public class ServiceReferenceHolder {
             }
         }
         return instance;
-	}
-	
-	public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
+    }
+
+    public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
         this.axisConfiguration = axisConfiguration;
     }
-    
+
     public AxisConfiguration getAxisConfiguration() {
         return axisConfiguration;
     }
-    
+
     public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {
         this.distributedObjectProvider = distributedObjectProvider;
     }
@@ -84,14 +84,14 @@ public class ServiceReferenceHolder {
     public HazelcastInstance getHazelcastInstance() {
         return hazelcastInstance;
     }
-	 
-	public void setRegistry(UserRegistry governanceSystemRegistry) {
-		registry = governanceSystemRegistry;
-	}
+
+    public void setRegistry(UserRegistry governanceSystemRegistry) {
+        registry = governanceSystemRegistry;
+    }
 
     public Registry getRegistry() {
-		return registry;
-	}
+        return registry;
+    }
 
     public TaskService getTaskService() {
         return taskService;

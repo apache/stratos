@@ -22,53 +22,53 @@ import java.io.Serializable;
 
 import org.apache.stratos.common.Properties;
 
-public class ApplicationPolicy implements Serializable{
+public class ApplicationPolicy implements Serializable {
 
-	private static final long serialVersionUID = -2851334419121310395L;
-	private String id;
-	private String algorithm;
-	private String[] networkPartitions;
-	private Properties properties;
-	// if networkPartitionGroups property is set, we are populating following variable.
-	private String[] networkPartitionGroups;
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
-	}
-	
-	public String getAlgorithm() {
-		return algorithm;
-	}
-	
-	public void setAlgorithm(String algorithm) {
-		this.algorithm = algorithm;
-	}
+    private static final long serialVersionUID = -2851334419121310395L;
+    private String id;
+    private String algorithm;
+    private String[] networkPartitions;
+    private Properties properties;
+    // if networkPartitionGroups property is set, we are populating following variable.
+    private String[] networkPartitionGroups;
 
-	public String[] getNetworkPartitions() {
-		return networkPartitions;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setNetworkPartitions(String[] networkPartitions) {
-		this.networkPartitions = networkPartitions;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public Properties getProperties() {
-		return properties;
-	}
+    public String getAlgorithm() {
+        return algorithm;
+    }
 
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
+    }
 
-	public String[] getNetworkPartitionGroups() {
-		return networkPartitionGroups;
-	}
+    public String[] getNetworkPartitions() {
+        return networkPartitions;
+    }
 
-	public void setNetworkPartitionGroups(String[] networkPartitionGroups) {
-		this.networkPartitionGroups = networkPartitionGroups;
-	}
+    public void setNetworkPartitions(String[] networkPartitions) {
+        this.networkPartitions = networkPartitions;
+    }
+
+    public Properties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
+
+    public String[] getNetworkPartitionGroups() {
+        return networkPartitionGroups;
+    }
+
+    public void setNetworkPartitionGroups(String[] networkPartitionGroups) {
+        this.networkPartitionGroups = networkPartitionGroups;
+    }
 }

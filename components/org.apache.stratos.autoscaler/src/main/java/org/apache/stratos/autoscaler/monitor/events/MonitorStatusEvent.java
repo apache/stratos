@@ -28,11 +28,11 @@ import java.util.List;
 public abstract class MonitorStatusEvent extends MonitorEvent {
 
     public MonitorStatusEvent(String id, String instanceId) {
-        super(id , instanceId);
+        super(id, instanceId);
     }
 
     public MonitorStatusEvent(List<String> id, String instanceId) {
-        super(id , instanceId);
+        super(id, instanceId);
     }
 
     public String getId() {

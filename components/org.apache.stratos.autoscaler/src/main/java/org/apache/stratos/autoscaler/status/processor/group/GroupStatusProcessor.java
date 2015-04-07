@@ -44,6 +44,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
 
     /**
      * Message processing and delegating logic.
+     *
      * @param instanceId Object that will get updated.
      * @return whether the processing was successful or not.
      */
@@ -60,8 +61,8 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
         boolean groupStat = false;
         for (Group group : groups.values()) {
             GroupInstance context = group.getInstanceContexts(instanceId);
-            if(context != null) {
-                if(context.getStatus() == status) {
+            if (context != null) {
+                if (context.getStatus() == status) {
                     groupStat = true;
                 } else {
                     groupStat = false;
@@ -72,17 +73,17 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 List<Instance> contexts = group.getInstanceContextsWithParentId(instanceId);
                 //if no instances found and requested status is terminated,
                 // then considering this group as terminated
-                if(context == null && contexts.isEmpty() && status == GroupStatus.Terminated) {
+                if (context == null && contexts.isEmpty() && status == GroupStatus.Terminated) {
                     groupStat = true;
                 } else {
                     int minGroupInstances = group.getGroupMinInstances();
                     int sameStateInstances = 0;
-                    for(Instance context1 : contexts) {
-                        if(((GroupInstance)context1).getStatus().equals(status)) {
+                    for (Instance context1 : contexts) {
+                        if (((GroupInstance) context1).getStatus().equals(status)) {
                             sameStateInstances++;
                         }
                     }
-                    if(sameStateInstances >= minGroupInstances) {
+                    if (sameStateInstances >= minGroupInstances) {
                         groupStat = true;
                     } else {
                         groupStat = false;
@@ -104,7 +105,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
      * @return whether all groups in the same state or not
      */
     protected boolean getAllClusterInSameState(Map<String, ClusterDataHolder> clusterData,
-                                             ClusterStatus status, String instanceId) {
+                                               ClusterStatus status, String instanceId) {
         boolean clusterStat = false;
         for (Map.Entry<String, ClusterDataHolder> clusterDataHolderEntry : clusterData.entrySet()) {
             String serviceName = clusterDataHolderEntry.getValue().getServiceType();
@@ -115,11 +116,11 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                 Cluster cluster = service.getCluster(clusterId);
                 ClusterInstance context = cluster.getInstanceContexts(instanceId);
                 if (context != null) {
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug("Checking the status of cluster " + clusterId + " instance status is: " +
                                 context.getStatus().toString());
                     }
-                    if(context.getStatus() == status) {
+                    if (context.getStatus() == status) {
                         clusterStat = true;
                     } else {
                         clusterStat = false;
@@ -127,7 +128,7 @@ public abstract class GroupStatusProcessor extends StatusProcessor {
                     }
                 } else {
                     //Checking whether non-existent context is for a terminated state change
-                    if(status == ClusterStatus.Terminated) {
+                    if (status == ClusterStatus.Terminated) {
                         clusterStat = true;
                     } else {
                         clusterStat = false;

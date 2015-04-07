@@ -29,7 +29,7 @@ public class MTClusterInformation implements ClusterInformation {
             throw new IllegalArgumentException("Invalid cartridge type value provided: [ " + cartridgeType + " ]");
         }
 
-        return applicationId + "." + alias + "."+cartridgeType + ".domain";
+        return applicationId + "." + alias + "." + cartridgeType + ".domain";
     }
 
     @Override

@@ -34,7 +34,7 @@ public abstract class StatusProcessorChain {
     protected abstract void initialize();
 
     public void add(StatusProcessor messageProcessor) {
-        if(list.size() > 0) {
+        if (list.size() > 0) {
             list.getLast().setNext(messageProcessor);
         }
         list.add(messageProcessor);
@@ -42,7 +42,7 @@ public abstract class StatusProcessorChain {
 
     public void removeLast() {
         list.removeLast();
-        if(list.size() > 0) {
+        if (list.size() > 0) {
             list.getLast().setNext(null);
         }
     }

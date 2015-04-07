@@ -94,7 +94,7 @@ public class PolicyManager {
     }
 
     public boolean updateAutoscalePolicy(AutoscalePolicy policy) throws InvalidPolicyException {
-        if(StringUtils.isEmpty(policy.getId())){
+        if (StringUtils.isEmpty(policy.getId())) {
             throw new AutoScalerException("Autoscaling policy id cannot be empty");
         }
         this.updateASPolicyInInformationModel(policy);
@@ -120,6 +120,7 @@ public class PolicyManager {
 
     /**
      * Add deployment policy to in memory map and persist.
+     *
      * @param policy
      * @throws InvalidPolicyException
      */
@@ -135,6 +136,7 @@ public class PolicyManager {
 
     /**
      * Remove deployment policy from in memory map and registry.
+     *
      * @param deploymentPolicyID
      * @throws InvalidPolicyException
      */
@@ -176,8 +178,7 @@ public class PolicyManager {
                 log.debug("Updating autoscaling policy: " + policyID);
             }
             autoscalePolicyListMap.remove(policyID);
-        }
-        else{
+        } else {
             throw new InvalidPolicyException("No such policy ID [" + policyID + "] exists");
         }
     }
@@ -188,8 +189,7 @@ public class PolicyManager {
                 log.debug("Removing application policy [application-id] " + applicationId);
             }
             applicationPolicyListMap.remove(applicationId);
-        }
-        else{
+        } else {
             throw new InvalidPolicyException("No such application id [" + applicationId + "] exists");
         }
     }
@@ -232,7 +232,6 @@ public class PolicyManager {
     }
 
 
-
     private void addDeploymentPolicyToPolicyListMap(DeploymentPolicy policy) {
         if (StringUtils.isEmpty(policy.getDeploymentPolicyID())) {
             throw new RuntimeException("Application id is not found in the deployment policy");
@@ -249,7 +248,7 @@ public class PolicyManager {
     }
 
     private void removeDeploymentPolicyFromMap(String applicationId) {
-        if(deploymentPolicyListMap.containsKey(applicationId)) {
+        if (deploymentPolicyListMap.containsKey(applicationId)) {
             deploymentPolicyListMap.remove(applicationId);
         }
     }
@@ -367,7 +366,7 @@ public class PolicyManager {
     }
 
     public boolean updateApplicationPolicy(ApplicationPolicy applicationPolicy) {
-        if(StringUtils.isEmpty(applicationPolicy.getId())){
+        if (StringUtils.isEmpty(applicationPolicy.getId())) {
             throw new AutoScalerException("Application policy id cannot be empty");
         }
         this.updateApplicationPolicyInInformationModel(applicationPolicy);

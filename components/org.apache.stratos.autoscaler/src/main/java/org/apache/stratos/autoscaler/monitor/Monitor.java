@@ -31,7 +31,7 @@ import java.util.Map;
  */
 public abstract class Monitor implements EventHandler {
 
-    public enum MonitorType { Application, Group, Cluster }
+    public enum MonitorType {Application, Group, Cluster}
 
     //Id of the monitor, cluster=clusterId, group=group-alias, application=app-alias
     protected String id;
@@ -63,6 +63,7 @@ public abstract class Monitor implements EventHandler {
 
     /**
      * Return the type of the monitor.
+     *
      * @return
      */
     public abstract MonitorType getMonitorType();

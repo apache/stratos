@@ -33,15 +33,16 @@ public class AutoscalerObjectConverter {
 
     /**
      * Convert autoscaler partitions to cloud controller stub partitions
+     *
      * @param partitions
      * @return
      */
     public static org.apache.stratos.cloud.controller.stub.domain.Partition[]
-        convertPartitionsToCCPartitions(Partition[] partitions) {
+    convertPartitionsToCCPartitions(Partition[] partitions) {
 
         List<org.apache.stratos.cloud.controller.stub.domain.Partition> cloudControllerPartitions
                 = new ArrayList<org.apache.stratos.cloud.controller.stub.domain.Partition>();
-        for(Partition partition : partitions) {
+        for (Partition partition : partitions) {
             org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = convertPartitionToCCPartition(partition);
             cloudControllerPartitions.add(cloudControllerPartition);
         }
@@ -51,11 +52,12 @@ public class AutoscalerObjectConverter {
 
     /**
      * Convert autoscaler partition to cloud controller partition
+     *
      * @param partition
      * @return
      */
     public static org.apache.stratos.cloud.controller.stub.domain.Partition
-        convertPartitionToCCPartition(Partition partition) {
+    convertPartitionToCCPartition(Partition partition) {
 
         org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = new
                 org.apache.stratos.cloud.controller.stub.domain.Partition();
@@ -78,7 +80,7 @@ public class AutoscalerObjectConverter {
 
         Property[] propertyArray = properties.getProperties();
 
-        for(Property property : properties.getProperties()){
+        for (Property property : properties.getProperties()) {
 
             org.apache.stratos.cloud.controller.stub.Property ccProperty
                     = new org.apache.stratos.cloud.controller.stub.Property();
@@ -94,8 +96,8 @@ public class AutoscalerObjectConverter {
 
         Properties properties = new Properties();
 
-        if(ccProperties.getProperties() != null){
-            for(org.apache.stratos.cloud.controller.stub.Property ccProperty : ccProperties.getProperties()){
+        if (ccProperties.getProperties() != null) {
+            for (org.apache.stratos.cloud.controller.stub.Property ccProperty : ccProperties.getProperties()) {
 
                 Property property = new Property();
                 property.setName(ccProperty.getName());
@@ -109,7 +111,7 @@ public class AutoscalerObjectConverter {
     public static Partition[] convertCCPartitionsToPartitions(org.apache.stratos.cloud.controller.stub.domain.Partition[] ccPartitions) {
 
         List<Partition> partitions = new ArrayList<Partition>();
-        for(org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition : ccPartitions) {
+        for (org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition : ccPartitions) {
             Partition partition = convertCCPartitionToPartition(ccPartition);
             partitions.add(partition);
         }
@@ -118,7 +120,7 @@ public class AutoscalerObjectConverter {
     }
 
     public static Partition convertCCPartitionToPartition(org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition) {
-        
+
         Partition partition = new Partition();
 
         partition.setId(ccPartition.getId());

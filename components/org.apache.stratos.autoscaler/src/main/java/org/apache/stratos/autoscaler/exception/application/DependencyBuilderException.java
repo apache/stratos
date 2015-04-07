@@ -26,17 +26,17 @@ public class DependencyBuilderException extends Exception {
     private static final long serialVersionUID = -7521673271244696906L;
     private String message;
 
-    public DependencyBuilderException(String message, Exception exception){
+    public DependencyBuilderException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
 
-    public DependencyBuilderException(Exception exception){
+    public DependencyBuilderException(Exception exception) {
         super(exception);
     }
 
-    public DependencyBuilderException(String msg){
+    public DependencyBuilderException(String msg) {
         super(msg);
         this.message = msg;
     }

@@ -28,26 +28,27 @@ public abstract class PayloadData implements Serializable {
 
     private BasicPayloadData basicPayloadData;
     private Map<String, String> completePayloadMap;
+
     public PayloadData(BasicPayloadData basicPayloadData) {
 
         this.setBasicPayloadData(basicPayloadData);
         completePayloadMap = new HashMap<String, String>();
     }
 
-    public void add (String payloadDataName, String payloadDataValue) {
+    public void add(String payloadDataName, String payloadDataValue) {
         completePayloadMap.put(payloadDataName, payloadDataValue);
     }
 
-    public StringBuilder getCompletePayloadData () {
+    public StringBuilder getCompletePayloadData() {
 
         //return completePayloadMap;
         StringBuilder completePayload = new StringBuilder();
         completePayload.append(basicPayloadData.getPayloadData());
-        Iterator< String > iter = completePayloadMap.keySet().iterator();
-        while(iter.hasNext()) {
+        Iterator<String> iter = completePayloadMap.keySet().iterator();
+        while (iter.hasNext()) {
             String key = iter.next();
             String val = completePayloadMap.get(key);
-            if(completePayload.length() > 0){
+            if (completePayload.length() > 0) {
                 completePayload.append(",");
             }
             completePayload.append(key + "=" + val);
@@ -63,7 +64,7 @@ public abstract class PayloadData implements Serializable {
         this.basicPayloadData = basicPayloadData;
     }
 
-    public String toString () {
+    public String toString() {
         return getCompletePayloadData().toString();
     }
 }

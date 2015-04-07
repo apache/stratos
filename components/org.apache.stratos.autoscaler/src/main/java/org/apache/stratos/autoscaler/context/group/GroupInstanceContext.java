@@ -46,8 +46,8 @@ public class GroupInstanceContext extends InstanceContext {
     public GroupLevelPartitionContext getPartitionCtxt(String partitionId) {
 
 
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
+        for (GroupLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
                 return partitionContext;
             }
         }
@@ -60,8 +60,8 @@ public class GroupInstanceContext extends InstanceContext {
 
     public int getNonTerminatedMemberCountOfPartition(String partitionId) {
 
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(partitionId)){
+        for (GroupLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(partitionId)) {
                 return partitionContext.getNonTerminatedInstanceCount();
             }
         }
@@ -70,8 +70,8 @@ public class GroupInstanceContext extends InstanceContext {
 
     public int getActiveMemberCount(String currentPartitionId) {
 
-        for(GroupLevelPartitionContext partitionContext : partitionCtxts){
-            if(partitionContext.getPartitionId().equals(currentPartitionId)){
+        for (GroupLevelPartitionContext partitionContext : partitionCtxts) {
+            if (partitionContext.getPartitionId().equals(currentPartitionId)) {
                 return partitionContext.getActiveInstanceCount();
             }
         }

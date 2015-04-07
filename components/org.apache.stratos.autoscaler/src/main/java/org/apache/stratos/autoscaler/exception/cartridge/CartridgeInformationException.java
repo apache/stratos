@@ -23,21 +23,21 @@ public class CartridgeInformationException extends Exception {
 
     private String message;
 
-    public CartridgeInformationException () {
+    public CartridgeInformationException() {
         super();
     }
 
-    public CartridgeInformationException (String message, Throwable cause) {
+    public CartridgeInformationException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public CartridgeInformationException (String message) {
+    public CartridgeInformationException(String message) {
         super(message);
         this.message = message;
     }
 
-    public CartridgeInformationException (Throwable cause) {
+    public CartridgeInformationException(Throwable cause) {
         super(cause);
     }
 

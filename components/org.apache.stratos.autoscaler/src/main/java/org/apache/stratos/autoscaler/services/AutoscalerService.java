@@ -39,6 +39,7 @@ import java.rmi.RemoteException;
 public interface AutoscalerService {
     /**
      * Add autoscaling policy
+     *
      * @param autoscalePolicy
      * @return
      * @throws InvalidPolicyException
@@ -47,6 +48,7 @@ public interface AutoscalerService {
 
     /**
      * Get an autoscaling policy
+     *
      * @param autoscalingPolicyId
      * @return
      */
@@ -54,25 +56,28 @@ public interface AutoscalerService {
 
     /**
      * Get autoscaling policies
+     *
      * @return
      */
     public AutoscalePolicy[] getAutoScalingPolicies();
 
     /**
      * Update an autoscaling policy
+     *
      * @param autoscalePolicy
      * @return
      * @throws InvalidPolicyException
      */
     public boolean updateAutoScalingPolicy(AutoscalePolicy autoscalePolicy) throws InvalidPolicyException;
 
-	/**
-	 * Remove autoscaling policy
-	 * @param autoscalingPolicyId
-	 * @return
-	 * @throws InvalidPolicyException
-	 */
-	public boolean removeAutoScalingPolicy(String autoscalingPolicyId) throws InvalidPolicyException;
+    /**
+     * Remove autoscaling policy
+     *
+     * @param autoscalingPolicyId
+     * @return
+     * @throws InvalidPolicyException
+     */
+    public boolean removeAutoScalingPolicy(String autoscalingPolicyId) throws InvalidPolicyException;
 
     /**
      * Add an application
@@ -84,6 +89,7 @@ public interface AutoscalerService {
 
     /**
      * Get an application
+     *
      * @param applicationId
      */
     public ApplicationContext getApplication(String applicationId);
@@ -95,14 +101,16 @@ public interface AutoscalerService {
 
     /**
      * Deploy an application in created state
+     *
      * @param applicationId
      * @param applicationPolicyId
      * @return
      */
     public boolean deployApplication(String applicationId, String applicationPolicyId) throws ApplicationDefinitionException;
-    
+
     /**
      * Undeploy an application in deployed state
+     *
      * @param applicationId
      * @return
      */
@@ -111,58 +119,66 @@ public interface AutoscalerService {
 
     /**
      * Delete an application
+     *
      * @param applicationId
      */
     public void deleteApplication(String applicationId);
-    
+
     /**
      * Add application policy
+     *
      * @param applicationPolicy the application policy to be added
-     * @throws InvalidApplicationPolicyException 
-     * @throws RemoteException 
-     * @throws InvalidPolicyException 
+     * @throws InvalidApplicationPolicyException
+     * @throws RemoteException
+     * @throws InvalidPolicyException
      */
     public void addApplicationPolicy(ApplicationPolicy applicationPolicy) throws RemoteException, InvalidApplicationPolicyException, InvalidPolicyException;
-    
+
     /**
      * Get application policy by application id
+     *
      * @param applicationPolicyId the application policy id
      * @return {@link ApplicationPolicy} used by the given application
      */
     public ApplicationPolicy getApplicationPolicy(String applicationPolicyId);
-    
+
     /**
      * Remove application policy
+     *
      * @param applicationPolicyId the application policy id
-     * @throws InvalidPolicyException 
+     * @throws InvalidPolicyException
      */
     public void removeApplicationPolicy(String applicationPolicyId) throws InvalidPolicyException;
-    
+
     /**
      * Update the given application policy if exists
+     *
      * @param applicationPolicy
-     * @throws InvalidApplicationPolicyException 
-     * @throws RemoteException 
-     * @throws ApplicatioinPolicyNotExistsException 
+     * @throws InvalidApplicationPolicyException
+     * @throws RemoteException
+     * @throws ApplicatioinPolicyNotExistsException
      */
-    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy) 
-    		throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException;
-    
+    public void updateApplicationPolicy(ApplicationPolicy applicationPolicy)
+            throws InvalidApplicationPolicyException, RemoteException, ApplicatioinPolicyNotExistsException;
+
     /**
      * Get all application policies
+     *
      * @return
      */
     public ApplicationPolicy[] getApplicationPolicies();
 
     /**
      * Dynamically update the properties of an Autoscaling Cluster Monitor
-     * @param clusterId id of the cluster.
+     *
+     * @param clusterId  id of the cluster.
      * @param properties updated properties.
      */
     void updateClusterMonitor(String clusterId, Properties properties) throws InvalidArgumentException;
 
     /**
      * Add a cartridge group
+     *
      * @param servicegroup
      * @throws InvalidServiceGroupException
      */
@@ -170,12 +186,14 @@ public interface AutoscalerService {
 
     /**
      * Remove a cartridge group
+     *
      * @param groupName
      */
     public void removeServiceGroup(String groupName);
 
     /**
      * Get cartridge group
+     *
      * @param name
      * @return
      */
@@ -183,49 +201,52 @@ public interface AutoscalerService {
 
     /**
      * Find cluster id of an application by subscription alias.
+     *
      * @param applicationId
      * @param alias
      * @return
      */
     public String findClusterId(String applicationId, String alias);
-    
+
     public String[] getApplicationNetworkPartitions(String applicationId) throws AutoScalerException;
 
-	/**
-	 * Add a deployment policy
-	 *
-	 * @param deploymentPolicy DeployementPolicy
-	 * @throws InvalidDeploymentPolicyException    if the deployment policy is not valid
-	 * @throws IllegalArgumentException            if the provided argument is not valid.
-	 */
-	public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException,
+    /**
+     * Add a deployment policy
+     *
+     * @param deploymentPolicy DeployementPolicy
+     * @throws InvalidDeploymentPolicyException if the deployment policy is not valid
+     * @throws IllegalArgumentException         if the provided argument is not valid.
+     */
+    public void addDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyAlreadyExistsException,
             InvalidDeploymentPolicyException, RemoteException, DeploymentPolicyNotExistsException;
 
-	/**
-	 * Update existing deployment policy
-	 *
-	 * @param deploymentPolicy DeployementPolicy
-	 * @throws IllegalArgumentException            if the provided argument is not valid.
-	 */
-	public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException;
+    /**
+     * Update existing deployment policy
+     *
+     * @param deploymentPolicy DeployementPolicy
+     * @throws IllegalArgumentException if the provided argument is not valid.
+     */
+    public void updateDeployementPolicy(DeploymentPolicy deploymentPolicy) throws DeploymentPolicyNotExistsException, InvalidDeploymentPolicyException, RemoteException;
 
-	/**
-	 * Remove deployment policy
-	 *
-	 * @param deploymentPolicyID deploymentPolicyID
-	 * @throws IllegalArgumentException            if the provided argument is not valid.
-	 */
-	public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException, DeploymentPolicyNotExistsException;
+    /**
+     * Remove deployment policy
+     *
+     * @param deploymentPolicyID deploymentPolicyID
+     * @throws IllegalArgumentException if the provided argument is not valid.
+     */
+    public void removeDeployementPolicy(String deploymentPolicyID) throws DeploymentPolicyNotExistsException, DeploymentPolicyNotExistsException;
 
-	/**
-	 * Get deployment policy definition
-	 * @param deploymentPolicyID
-	 * @return
-	 */
-	public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
+    /**
+     * Get deployment policy definition
+     *
+     * @param deploymentPolicyID
+     * @return
+     */
+    public DeploymentPolicy getDeploymentPolicy(String deploymentPolicyID);
 
     /**
      * Get deployment policies
+     *
      * @return array of {@link DeploymentPolicy}
      */
     public DeploymentPolicy[] getDeploymentPolicies();

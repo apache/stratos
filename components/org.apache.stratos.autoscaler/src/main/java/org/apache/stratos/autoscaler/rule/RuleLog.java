@@ -47,28 +47,28 @@ public class RuleLog {
     }
 
     public boolean info(String value) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(value);
         }
         return true;
     }
 
     public boolean debug(String value) {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(value);
         }
         return true;
     }
 
     public boolean warn(String value) {
-        if(log.isWarnEnabled()) {
+        if (log.isWarnEnabled()) {
             log.warn(value);
         }
         return true;
     }
 
     public boolean error(String value) {
-        if(log.isErrorEnabled()) {
+        if (log.isErrorEnabled()) {
             log.error(value);
         }
         return true;

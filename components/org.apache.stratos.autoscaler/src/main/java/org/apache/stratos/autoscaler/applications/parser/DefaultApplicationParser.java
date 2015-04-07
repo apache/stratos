@@ -112,24 +112,25 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Find subscribable information in cartridge contexts
-     * @param applicationId TODO
+     *
+     * @param applicationId              TODO
      * @param subscribableInfoContextMap Map to return subscribable information
-     * @param cartridgeContexts Application to read cartridge contexts
+     * @param cartridgeContexts          Application to read cartridge contexts
      * @return
      * @throws ApplicationDefinitionException
      */
-    private void findSubscribableInfoOfCartridgeContexts(String applicationId, 
-    		Map<String, SubscribableInfoContext> subscribableInfoContextMap, CartridgeContext[] cartridgeContexts)
+    private void findSubscribableInfoOfCartridgeContexts(String applicationId,
+                                                         Map<String, SubscribableInfoContext> subscribableInfoContextMap, CartridgeContext[] cartridgeContexts)
             throws ApplicationDefinitionException {
 
-    	if(cartridgeContexts != null) {
-    		for(CartridgeContext cartridgeContext : cartridgeContexts) {
-    			if(cartridgeContext != null) {
-    				SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-    				addSubscribableInfo(applicationId,cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
-    			}
-    		}
-    	}
+        if (cartridgeContexts != null) {
+            for (CartridgeContext cartridgeContext : cartridgeContexts) {
+                if (cartridgeContext != null) {
+                    SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+                    addSubscribableInfo(applicationId, cartridgeContext.getType(), subscribableInfoContextMap, subscribableInfoContext);
+                }
+            }
+        }
     }
 
     private void addSubscribableInfo(String applicationId, String cartridgeType,
@@ -147,54 +148,55 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         if (!ApplicationUtils.isAliasValid(alias)) {
             handleError(String.format("Alias is not valid: [application-id] %s " +
-                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
 
         if (subscribableInfoContextMap.get(alias) != null) {
             handleError(String.format("Alias is already defined: [application-id] %s " +
-                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
 
-        if(StringUtils.isBlank(autoscalingPolicyId)) {
+        if (StringUtils.isBlank(autoscalingPolicyId)) {
             handleError(String.format("Autoscaling policy is not defined: [application-id] %s " +
                     "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
 
         AutoscalePolicy autoscalingPolicy = PolicyManager.getInstance().getAutoscalePolicy(autoscalingPolicyId);
-        if(autoscalingPolicy == null) {
+        if (autoscalingPolicy == null) {
             handleError(String.format("Autoscaling policy is not found: [application-id] %s " +
-                    "[cartridge-type] %s [alias] %s [autoscaling-policy] %s", applicationId, cartridgeType,
+                            "[cartridge-type] %s [alias] %s [autoscaling-policy] %s", applicationId, cartridgeType,
                     alias, autoscalingPolicyId));
         }
 
         subscribableInfoContextMap.put(alias, subscribableInfoContext);
         if (log.isDebugEnabled()) {
             log.debug(String.format("Subscribable information added: [application-id] %s " +
-                            "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
+                    "[cartridge-type] %s [alias] %s", applicationId, cartridgeType, alias));
         }
     }
 
     /**
      * Get subscribable information of group contexts recursively.
+     *
      * @param subscribableInfoContextMap Map to return subscribable information
-     * @param groupContexts Group contexts to read subscribable information
+     * @param groupContexts              Group contexts to read subscribable information
      * @return
      * @throws ApplicationDefinitionException
      */
-    private void findSubscribableInfoOfGroupContexts(String applicationId, 
-    		Map<String, SubscribableInfoContext> subscribableInfoContextMap, GroupContext[] groupContexts) 
-    				throws ApplicationDefinitionException {
+    private void findSubscribableInfoOfGroupContexts(String applicationId,
+                                                     Map<String, SubscribableInfoContext> subscribableInfoContextMap, GroupContext[] groupContexts)
+            throws ApplicationDefinitionException {
 
         if (groupContexts != null) {
             for (GroupContext groupContext : groupContexts) {
-            	// finding SubscribableInfo in group
+                // finding SubscribableInfo in group
                 if (groupContext.getGroupContexts() != null) {
                     findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContext.getGroupContexts());
                 }
                 // finding SubscribableInfo in cartridge
                 if (groupContext.getCartridgeContexts() != null) {
-                	findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, groupContext.getCartridgeContexts());
-				}
+                    findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, groupContext.getCartridgeContexts());
+                }
             }
         }
     }
@@ -214,15 +216,15 @@ public class DefaultApplicationParser implements ApplicationParser {
         String applicationId = applicationContext.getApplicationId();
         ComponentContext componentContext = applicationContext.getComponents();
         if (componentContext != null) {
-			CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
-			if (cartridgeContexts != null) {
-				findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, cartridgeContexts);
-			}
-			GroupContext[] groupContexts = componentContext.getGroupContexts();
-			if (groupContexts != null) {
-				findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContexts);
-			}
-		}
+            CartridgeContext[] cartridgeContexts = componentContext.getCartridgeContexts();
+            if (cartridgeContexts != null) {
+                findSubscribableInfoOfCartridgeContexts(applicationId, subscribableInfoContextMap, cartridgeContexts);
+            }
+            GroupContext[] groupContexts = componentContext.getGroupContexts();
+            if (groupContexts != null) {
+                findSubscribableInfoOfGroupContexts(applicationId, subscribableInfoContextMap, groupContexts);
+            }
+        }
 
         return subscribableInfoContextMap;
     }
@@ -311,14 +313,14 @@ public class DefaultApplicationParser implements ApplicationParser {
             if (components.getGroupContexts() != null) {
                 application.setGroups(
                         parseGroups(applicationContext.getApplicationId(), applicationContext.getTenantId(),
-		                            application.getKey(), Arrays.asList(components.getGroupContexts()),
-		                            subscribableInfoCtxts));
+                                application.getKey(), Arrays.asList(components.getGroupContexts()),
+                                subscribableInfoCtxts));
             }
         }
-        
+
         // setting alias to deployment policy id map to the application
         application.setAliasToDeploymentPolicyIdMap(
-        		AutoscalerUtil.getAliasToDeploymentPolicyIdMapOfApplication(applicationContext));
+                AutoscalerUtil.getAliasToDeploymentPolicyIdMapOfApplication(applicationContext));
 
         if (log.isDebugEnabled()) {
             log.debug("Application parsed successfully: [application-id] " + applicationContext.getApplicationId());
@@ -346,31 +348,31 @@ public class DefaultApplicationParser implements ApplicationParser {
         Map<String, ClusterDataHolder> clusterDataMap = new HashMap<String, ClusterDataHolder>();
         Map<String, ClusterDataHolder> clusterDataMapByType = new HashMap<String, ClusterDataHolder>();
 
-	    createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType);
+        createClusterDataMap(appId, cartridgeContextList, clusterDataMap, clusterDataMapByType);
 
-	    for (CartridgeContext cartridgeContext : cartridgeContextList) {
+        for (CartridgeContext cartridgeContext : cartridgeContextList) {
             List<String> dependencyClusterIDs = new ArrayList<String>();
-		    List<String> exportMetadataKeys = new ArrayList<String>();
-		    List<String> importMetadataKeys = new ArrayList<String>();
+            List<String> exportMetadataKeys = new ArrayList<String>();
+            List<String> importMetadataKeys = new ArrayList<String>();
             String cartridgeType = cartridgeContext.getType();
             SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
             String subscriptionAlias = subscribableInfoContext.getAlias();
 
             Cartridge cartridge = getCartridge(cartridgeType);
-            if(cartridge == null) {
+            if (cartridge == null) {
                 throw new RuntimeException("Cartridge not found: " + cartridgeType);
             }
 
             // Add metadata keys defined in cartridges as export metadata keys
-		    String[] metadataKeys = cartridge.getMetadataKeys();
-		    if (metadataKeys != null) {
-		    	for (String str : metadataKeys) {
-		    		if(!StringUtils.isBlank(str)) {
-		    			exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
-		    					.getAlias() + METADATA_APPENDER + str);
-		    		}
-		    	}
-			}
+            String[] metadataKeys = cartridge.getMetadataKeys();
+            if (metadataKeys != null) {
+                for (String str : metadataKeys) {
+                    if (!StringUtils.isBlank(str)) {
+                        exportMetadataKeys.add(cartridgeContext.getSubscribableInfoContext()
+                                .getAlias() + METADATA_APPENDER + str);
+                    }
+                }
+            }
 
             // get hostname and cluster id
             ClusterInformation clusterInfo;
@@ -387,26 +389,26 @@ public class DefaultApplicationParser implements ApplicationParser {
                 repoUrl = subscribableInfoContext.getArtifactRepositoryContext().getRepoUrl();
             }
 
-           // Find import metadata keys
+            // Find import metadata keys
             if (dependencyOrder != null) {
                 for (StartupOrder startupOrder : dependencyOrder) {
                     for (String startupOrderComponent : startupOrder.getStartupOrderComponentList()) {
 
-	                    String[] arrStartUp= startupOrderComponent.split("\\.");
-	                    if(arrStartUp[0].equals("cartridge")) {
-		                    String cartridgeAlias = arrStartUp[1];
+                        String[] arrStartUp = startupOrderComponent.split("\\.");
+                        if (arrStartUp[0].equals("cartridge")) {
+                            String cartridgeAlias = arrStartUp[1];
                             String dependentCartridgeType = findCartridgeTypeFromAlias(cartridgeContextList, cartridgeAlias);
-		                    if(StringUtils.isBlank(dependentCartridgeType)) {
+                            if (StringUtils.isBlank(dependentCartridgeType)) {
                                 throw new RuntimeException(String.format("Could not find dependent cartridge for " +
                                         "cartridge alias: [application] %s [cartridge-alias] %s", appId, cartridgeAlias));
                             }
                             Cartridge dependencyCartridge = getCartridge(dependentCartridgeType);
-		                    ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
+                            ClusterDataHolder dataHolder = clusterDataMapByType.get(dependentCartridgeType);
 
-		                    if (dataHolder != null) {
-			                    if (!dataHolder.getClusterId().equals(clusterId)) {
-				                    dependencyClusterIDs.add(dataHolder.getClusterId());
-                                    if(dependencyCartridge.getMetadataKeys() != null){
+                            if (dataHolder != null) {
+                                if (!dataHolder.getClusterId().equals(clusterId)) {
+                                    dependencyClusterIDs.add(dataHolder.getClusterId());
+                                    if (dependencyCartridge.getMetadataKeys() != null) {
                                         for (String str : dependencyCartridge.getMetadataKeys()) {
                                             if (!StringUtils.isBlank(str)) {
                                                 importMetadataKeys.add(dataHolder.getClusterId().split("\\.")[0] +
@@ -414,31 +416,31 @@ public class DefaultApplicationParser implements ApplicationParser {
                                             }
                                         }
                                     }
-				                    if (!dataHolder.getClusterId().equals(clusterId)) {
-					                    if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
-						                    break;
-					                    }
-				                    }
-			                    }
-		                    }
-	                    }
+                                    if (!dataHolder.getClusterId().equals(clusterId)) {
+                                        if (startupOrderComponent.equals("cartridge.".concat(cartridgeType))) {
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
             String[] arrDependencyClusterIDs = new String[dependencyClusterIDs.size()];
             arrDependencyClusterIDs = dependencyClusterIDs.toArray(arrDependencyClusterIDs);
 
-		    String[] arrExportMetadata = new String[exportMetadataKeys.size()];
-		    arrExportMetadata = exportMetadataKeys.toArray(arrExportMetadata);
-		    String[] arrImportMetadata = new String[importMetadataKeys.size()];
-		    arrImportMetadata = importMetadataKeys.toArray(arrImportMetadata);
+            String[] arrExportMetadata = new String[exportMetadataKeys.size()];
+            arrExportMetadata = exportMetadataKeys.toArray(arrExportMetadata);
+            String[] arrImportMetadata = new String[importMetadataKeys.size()];
+            arrImportMetadata = importMetadataKeys.toArray(arrImportMetadata);
 
             // Find tenant range of cluster
             String tenantRange = AutoscalerUtil.findTenantRange(tenantId, cartridge.getTenantPartitions());
-		    Boolean isLB=false;
-			if(cartridge.getCategory().equals("lb")){
-				isLB=true;
-		    }
+            Boolean isLB = false;
+            if (cartridge.getCategory().equals("lb")) {
+                isLB = true;
+            }
             // create and collect this cluster's information
             ApplicationClusterContext appClusterCtxt = createApplicationClusterContext(appId, groupName, cartridge,
                     key, tenantId, repoUrl, subscriptionAlias, clusterId, hostname,
@@ -449,7 +451,7 @@ public class DefaultApplicationParser implements ApplicationParser {
 
             appClusterCtxt.setAutoscalePolicyName(subscribableInfoContext.getAutoscalingPolicy());
             appClusterCtxt.setProperties(subscribableInfoContext.getProperties());
-            if(subscribableInfoContext.getPersistenceContext() != null){
+            if (subscribableInfoContext.getPersistenceContext() != null) {
                 appClusterCtxt.setPersistenceContext(subscribableInfoContext.getPersistenceContext());
             }
             this.applicationClusterContexts.add(appClusterCtxt);
@@ -463,13 +465,14 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Find alias of a cartridge by cartridge type
+     *
      * @param cartridgeContextList
      * @param alias
      * @return
      */
     private String findCartridgeTypeFromAlias(List<CartridgeContext> cartridgeContextList, String alias) {
-        for(CartridgeContext cartridgeContext : cartridgeContextList) {
-            if(alias.equals(cartridgeContext.getSubscribableInfoContext().getAlias())) {
+        for (CartridgeContext cartridgeContext : cartridgeContextList) {
+            if (alias.equals(cartridgeContext.getSubscribableInfoContext().getAlias())) {
                 return cartridgeContext.getType();
             }
         }
@@ -477,47 +480,47 @@ public class DefaultApplicationParser implements ApplicationParser {
     }
 
     private void createClusterDataMap(String applicationId,
-	                                  List<CartridgeContext> cartridgeContextList,
-	                                  Map<String, ClusterDataHolder> clusterDataMap, Map<String, ClusterDataHolder> clusterDataMapByType)
-			throws ApplicationDefinitionException {
-		for (CartridgeContext cartridgeContext : cartridgeContextList) {
+                                      List<CartridgeContext> cartridgeContextList,
+                                      Map<String, ClusterDataHolder> clusterDataMap, Map<String, ClusterDataHolder> clusterDataMapByType)
+            throws ApplicationDefinitionException {
+        for (CartridgeContext cartridgeContext : cartridgeContextList) {
 
-			String cartridgeType = cartridgeContext.getType();
-			SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
-			String subscriptionAlias = subscribableInfoContext.getAlias();
+            String cartridgeType = cartridgeContext.getType();
+            SubscribableInfoContext subscribableInfoContext = cartridgeContext.getSubscribableInfoContext();
+            String subscriptionAlias = subscribableInfoContext.getAlias();
 
-			// check if a cartridge with relevant type is already deployed. else, can't continue
-			Cartridge cartridge = getCartridge(cartridgeType);
-			if (cartridge == null) {
-				handleError("No deployed Cartridge found with type [ " + cartridgeType +
-				            " ] for Composite Application");
-			}
+            // check if a cartridge with relevant type is already deployed. else, can't continue
+            Cartridge cartridge = getCartridge(cartridgeType);
+            if (cartridge == null) {
+                handleError("No deployed Cartridge found with type [ " + cartridgeType +
+                        " ] for Composite Application");
+            }
 
-			// get hostname and cluster id
-			ClusterInformation clusterInfo;
-			assert cartridge != null;
-			if (cartridge.getMultiTenant()) {
-				clusterInfo = new MTClusterInformation();
-			} else {
-				clusterInfo = new STClusterInformation();
-			}
+            // get hostname and cluster id
+            ClusterInformation clusterInfo;
+            assert cartridge != null;
+            if (cartridge.getMultiTenant()) {
+                clusterInfo = new MTClusterInformation();
+            } else {
+                clusterInfo = new STClusterInformation();
+            }
 
-			String clusterId = clusterInfo.getClusterId(applicationId, subscriptionAlias, cartridgeType);
-			// add relevant information to the map
-			ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
-			clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
-			clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
-			clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
-			// add relevant information to the map
-			ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
-			clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
-			clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
-			clusterDataMap.put(subscriptionAlias, clusterDataHolder);
+            String clusterId = clusterInfo.getClusterId(applicationId, subscriptionAlias, cartridgeType);
+            // add relevant information to the map
+            ClusterDataHolder clusterDataHolderPerType = new ClusterDataHolder(cartridgeType, clusterId);
+            clusterDataHolderPerType.setMinInstances(cartridgeContext.getCartridgeMin());
+            clusterDataHolderPerType.setMaxInstances(cartridgeContext.getCartridgeMax());
+            clusterDataMapByType.put(cartridgeType, clusterDataHolderPerType);
+            // add relevant information to the map
+            ClusterDataHolder clusterDataHolder = new ClusterDataHolder(cartridgeType, clusterId);
+            clusterDataHolder.setMinInstances(cartridgeContext.getCartridgeMin());
+            clusterDataHolder.setMaxInstances(cartridgeContext.getCartridgeMax());
+            clusterDataMap.put(subscriptionAlias, clusterDataHolder);
 
-		}
-	}
+        }
+    }
 
-	/**
+    /**
      * Validates terminationBehavior. The terminationBehavior should be one of the following:
      * 1. terminate-none
      * 2. terminate-dependents
@@ -576,15 +579,16 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Validate cartridge group reference against cartridge group definition
+     *
      * @param serviceGroup
      * @param group
      */
     private void validateCartridgeGroupReference(String applicationId, ServiceGroup serviceGroup, Group group) {
         List<String> cartridgeTypes = findCartridgeTypesInServiceGroup(serviceGroup);
-        for(String cartridgeType : cartridgeTypes) {
-            if(findClusterDataInGroup(group, cartridgeType) == null) {
+        for (String cartridgeType : cartridgeTypes) {
+            if (findClusterDataInGroup(group, cartridgeType) == null) {
                 throw new RuntimeException(String.format("Cartridge %s not defined in cartridge group: " +
-                        "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
+                                "[application] %s [cartridge-group-name] %s [cartridge-group-alias] %s",
                         cartridgeType, applicationId, group.getName(), group.getAlias()));
             }
         }
@@ -592,20 +596,21 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Find cluster data in a group recursively by cartridge type.
+     *
      * @param group
      * @param cartridgeType
      * @return
      */
     private ClusterDataHolder findClusterDataInGroup(Group group, String cartridgeType) {
         Map<String, ClusterDataHolder> clusterDataForType = group.getClusterDataForType();
-        if(clusterDataForType != null) {
+        if (clusterDataForType != null) {
             ClusterDataHolder clusterData = clusterDataForType.get(cartridgeType);
-            if(clusterData != null) {
+            if (clusterData != null) {
                 return clusterData;
             }
 
-            if(group.getGroups() != null) {
-                for(Group childGroup : group.getGroups()) {
+            if (group.getGroups() != null) {
+                for (Group childGroup : group.getGroups()) {
                     return findClusterDataInGroup(childGroup, cartridgeType);
                 }
             }
@@ -615,20 +620,21 @@ public class DefaultApplicationParser implements ApplicationParser {
 
     /**
      * Find cartridge types available in a service group recursively.
+     *
      * @param serviceGroup
      * @return
      */
     private List<String> findCartridgeTypesInServiceGroup(ServiceGroup serviceGroup) {
         List<String> cartridgeTypes = new ArrayList<String>();
-        if(serviceGroup.getCartridges() != null) {
-            for(String cartridgeType : serviceGroup.getCartridges()) {
+        if (serviceGroup.getCartridges() != null) {
+            for (String cartridgeType : serviceGroup.getCartridges()) {
                 cartridgeTypes.add(cartridgeType);
             }
         }
-        if(serviceGroup.getGroups() != null) {
-            for(ServiceGroup childServiceGroup : serviceGroup.getGroups()) {
+        if (serviceGroup.getGroups() != null) {
+            for (ServiceGroup childServiceGroup : serviceGroup.getGroups()) {
                 List<String> childCartridgeTypes = findCartridgeTypesInServiceGroup(childServiceGroup);
-                for(String cartridgeType : childCartridgeTypes) {
+                for (String cartridgeType : childCartridgeTypes) {
                     cartridgeTypes.add(cartridgeType);
                 }
             }
@@ -709,20 +715,20 @@ public class DefaultApplicationParser implements ApplicationParser {
             setStartUpOrder = ParserUtils.convertStartupOrder(startupOrders, groupCtxt);
             dependencyOrder.setStartupOrders(setStartUpOrder);
         } else {
-        	if (log.isDebugEnabled()) {
-        		String msg = String.format("No start up order defined [group-alias] %s", groupCtxt.getAlias());
-        		log.debug(msg);
-			}
+            if (log.isDebugEnabled()) {
+                String msg = String.format("No start up order defined [group-alias] %s", groupCtxt.getAlias());
+                log.debug(msg);
+            }
         }
 
         String[] scaleDependents = getScaleDependentForGroup(groupCtxt.getName(), serviceGroup);
         if (scaleDependents != null) {
             dependencyOrder.setScalingDependents(ParserUtils.convertScalingDependentList(scaleDependents, groupCtxt));
         } else {
-        	if (log.isDebugEnabled()) {
-        		String msg = String.format("No scaling dependent defined [group-alias] %s", groupCtxt.getAlias());
-        		log.debug(msg);
-			}
+            if (log.isDebugEnabled()) {
+                String msg = String.format("No scaling dependent defined [group-alias] %s", groupCtxt.getAlias());
+                log.debug(msg);
+            }
         }
 
         dependencyOrder.setTerminationBehaviour(getTerminationBehaviour(groupCtxt.getName(), serviceGroup));
@@ -941,10 +947,10 @@ public class DefaultApplicationParser implements ApplicationParser {
 
         // Create text payload
         PayloadData payloadData = ApplicationUtils.createPayload(appId, groupName, cartridge, subscriptionKey, tenantId, clusterId,
-                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs,exportMetadata,importMetadata);
+                hostname, repoUrl, alias, null, dependencyAliases, properties, oauthToken, dependencyClustorIDs, exportMetadata, importMetadata);
 
         String textPayload = payloadData.toString();
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Payload :: " + textPayload);
         }
         return new ApplicationClusterContext(cartridge.getType(), clusterId, hostname, textPayload, deploymentPolicy, isLB, tenantRange, dependencyClustorIDs);

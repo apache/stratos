@@ -24,6 +24,7 @@ package org.apache.stratos.autoscaler.status.processor;
 public abstract class StatusProcessor {
     /**
      * Link a message processor and its successor, if there's any.
+     *
      * @param nextProcessor
      */
     public abstract void setNext(StatusProcessor nextProcessor);

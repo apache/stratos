@@ -49,11 +49,12 @@ public class DependencyBuilder {
 
     /**
      * This will build the dependency tree based on the given dependencies
+     *
      * @param component it will give the necessary information to build the tree
      * @return the dependency tree out of the dependency orders
      */
     public DependencyTree buildDependency(ParentComponent component)
-            throws DependencyBuilderException{
+            throws DependencyBuilderException {
 
         String identifier = component.getUniqueIdentifier();
         DependencyTree dependencyTree = new DependencyTree(identifier);
@@ -90,7 +91,7 @@ public class DependencyBuilder {
                         if (startupOrderComponent != null) {
                             log.debug(String.format("Processing startup order element: " +
                                             "[component] %s [startup-order] %s [element] %s",
-                                     identifier, startupOrder, startupOrderComponent));
+                                    identifier, startupOrder, startupOrderComponent));
 
                             ApplicationChildContext applicationChildContext = ApplicationChildContextFactory.
                                     createApplicationChildContext(identifier, startupOrderComponent,
@@ -126,18 +127,18 @@ public class DependencyBuilder {
                                     parentContext = existingApplicationChildContext;
                                     if (log.isDebugEnabled()) {
                                         log.debug(String.format("Element [%s] was found in the dependency tree," +
-                                                " making it the parent and continuing: [dependency-tree] %s",
+                                                        " making it the parent and continuing: [dependency-tree] %s",
                                                 existingApplicationChildContext.getId(), dependencyTree));
                                     }
                                 } else {
                                     // Dependency tree is already built for the startup order up to some extent
                                     ApplicationChildContext existingParentContext =
                                             dependencyTree.findParentContextWithId(applicationChildContext.getId());
-                                    if((existingParentContext != null) &&
+                                    if ((existingParentContext != null) &&
                                             (existingParentContext.getId().equals(existingApplicationChildContext.getId()))) {
                                         // Application child context is already available in the dependency tree,
                                         // find its parent element, mark it as the parent element and continue
-                                        if(log.isDebugEnabled()) {
+                                        if (log.isDebugEnabled()) {
                                             log.debug(String.format("Found an existing parent element [%s] in the " +
                                                             "dependency tree, making it the parent " +
                                                             "and continuing: [dependency-tree] %s",
@@ -177,20 +178,18 @@ public class DependencyBuilder {
 
             }
         }
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug(String.format("Dependency tree generated: [component] %s [tree] %s",
                     component.getUniqueIdentifier(), dependencyTree.toString()));
         }
         return dependencyTree;
     }
-    
+
     /**
-     * 
      * Utility method to build scaling dependencies
-     * 
      */
-	public Set<ScalingDependentList> buildScalingDependencies(ParentComponent component) {
-		Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
+    public Set<ScalingDependentList> buildScalingDependencies(ParentComponent component) {
+        Set<ScalingDependentList> scalingDependentLists = new HashSet<ScalingDependentList>();
 
         if (component.getDependencyOrder() != null && component.getDependencyOrder().getScalingDependents() != null) {
 
@@ -205,10 +204,10 @@ public class DependencyBuilder {
                         String id = getClusterFromStartupOrder(string);
                         //getting the cluster-id from cluster alias
 
-                        if(component.getClusterDataForAlias().containsKey(id)) {
+                        if (component.getClusterDataForAlias().containsKey(id)) {
                             ClusterDataHolder clusterDataHolder = (ClusterDataHolder) component.getClusterDataForAlias().get(id);
                             scalingDependencies.add(clusterDataHolder.getClusterId());
-                        } else{
+                        } else {
 
                             log.warn("[Scaling Dependency Id]: " + id + " is not a defined cartridge or group. " +
                                     "Therefore scaling dependent will not be effective");
@@ -224,7 +223,7 @@ public class DependencyBuilder {
 
             }
         }
-	    return scalingDependentLists;
+        return scalingDependentLists;
     }
 
     /**

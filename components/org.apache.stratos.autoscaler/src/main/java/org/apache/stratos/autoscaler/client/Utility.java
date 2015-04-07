@@ -48,7 +48,7 @@ public class Utility {
      * as a claim in order to validate the user. This is an alternative to mutual auth.
      *
      * @param serviceClient Service client.
-     * @param username username which is set in header.
+     * @param username      username which is set in header.
      */
 
     public static void setAuthHeaders(ServiceClient serviceClient, String username) {

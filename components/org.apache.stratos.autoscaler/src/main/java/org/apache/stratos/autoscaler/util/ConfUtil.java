@@ -33,57 +33,57 @@ import java.util.HashMap;
  */
 public class ConfUtil {
 
-	private static Log log = LogFactory.getLog(ConfUtil.class);
+    private static Log log = LogFactory.getLog(ConfUtil.class);
 
-	private XMLConfiguration config;
+    private XMLConfiguration config;
 
-	//To maintain the map of config files
-	private static HashMap<String, ConfUtil> instanceMap = new HashMap<String, ConfUtil>();
-	private static Object mutex = new Object();
+    //To maintain the map of config files
+    private static HashMap<String, ConfUtil> instanceMap = new HashMap<String, ConfUtil>();
+    private static Object mutex = new Object();
 
-	private ConfUtil(String configFilePath) {
-		try {
-			File confFile;
-			if (configFilePath != null && !configFilePath.isEmpty()) {
-				confFile = new File(configFilePath);
+    private ConfUtil(String configFilePath) {
+        try {
+            File confFile;
+            if (configFilePath != null && !configFilePath.isEmpty()) {
+                confFile = new File(configFilePath);
 
-			} else {
-				confFile = new File(CarbonUtils.getCarbonConfigDirPath(), AutoscalerConstants.AUTOSCALER_CONFIG_FILE_NAME);
-			}
-			config = new XMLConfiguration(confFile);
-		} catch (ConfigurationException e) {
-			log.error("Unable to load configuration file", e);
-			config = new XMLConfiguration();  // continue with default values
-		}
-	}
+            } else {
+                confFile = new File(CarbonUtils.getCarbonConfigDirPath(), AutoscalerConstants.AUTOSCALER_CONFIG_FILE_NAME);
+            }
+            config = new XMLConfiguration(confFile);
+        } catch (ConfigurationException e) {
+            log.error("Unable to load configuration file", e);
+            config = new XMLConfiguration();  // continue with default values
+        }
+    }
 
-	/**
-	 * Get the instance of the configuration file
-	 *
-	 * @param configFilePath Configuration file name
-	 * @return ConfUtil instance
-	 */
-	public static ConfUtil getInstance(String configFilePath) {
+    /**
+     * Get the instance of the configuration file
+     *
+     * @param configFilePath Configuration file name
+     * @return ConfUtil instance
+     */
+    public static ConfUtil getInstance(String configFilePath) {
 
-		ConfUtil instance = instanceMap.get(configFilePath);
-		if (instance == null) {
-			synchronized (mutex) {
-				if (instance == null) {
-					instance = new ConfUtil(configFilePath);
-					instanceMap.put(configFilePath, instance);
-				}
-			}
-		}
-		return instance;
-	}
+        ConfUtil instance = instanceMap.get(configFilePath);
+        if (instance == null) {
+            synchronized (mutex) {
+                if (instance == null) {
+                    instance = new ConfUtil(configFilePath);
+                    instanceMap.put(configFilePath, instance);
+                }
+            }
+        }
+        return instance;
+    }
 
-	/**
-	 * Get configurations
-	 *
-	 * @return XMLConfiguration
-	 */
-	public XMLConfiguration getConfiguration() {
-		return config;
-	}
+    /**
+     * Get configurations
+     *
+     * @return XMLConfiguration
+     */
+    public XMLConfiguration getConfiguration() {
+        return config;
+    }
 
 }

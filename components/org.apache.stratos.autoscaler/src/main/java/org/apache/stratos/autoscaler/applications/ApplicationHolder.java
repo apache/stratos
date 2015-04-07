@@ -36,38 +36,38 @@ public class ApplicationHolder {
 
     private static ReadWriteLock lock = new ReadWriteLock("application-holder");
 
-    private ApplicationHolder () {
+    private ApplicationHolder() {
     }
 
     public static void acquireReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock acquired");
         }
         lock.acquireReadLock();
     }
 
     public static void releaseReadLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Read lock released");
         }
         lock.releaseReadLock();
     }
 
     public static void acquireWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock acquired");
         }
         lock.acquireWriteLock();
     }
 
     public static void releaseWriteLock() {
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             log.debug("Write lock released");
         }
         lock.releaseWriteLock();
     }
 
-    public static Applications getApplications () {
+    public static Applications getApplications() {
         if (applications == null) {
             synchronized (ApplicationHolder.class) {
                 if (applications == null) {
@@ -89,7 +89,7 @@ public class ApplicationHolder {
         return applications;
     }
 
-    public static void persistApplication (Application application) {
+    public static void persistApplication(Application application) {
         synchronized (ApplicationHolder.class) {
             getApplications().addApplication(application);
             AutoscalerUtil.persistApplication(application);
@@ -99,7 +99,7 @@ public class ApplicationHolder {
         }
     }
 
-    public static void removeApplication (String applicationId) {
+    public static void removeApplication(String applicationId) {
         synchronized (ApplicationHolder.class) {
             getApplications().removeApplication(applicationId);
             AutoscalerUtil.removeApplication(applicationId);

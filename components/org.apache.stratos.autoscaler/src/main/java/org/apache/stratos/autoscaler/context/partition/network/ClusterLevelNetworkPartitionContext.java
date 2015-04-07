@@ -29,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Holds runtime data of a network partition.
- *
  */
 public class ClusterLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
 

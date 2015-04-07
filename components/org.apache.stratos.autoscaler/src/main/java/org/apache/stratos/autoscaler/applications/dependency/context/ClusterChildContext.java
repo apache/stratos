@@ -25,7 +25,7 @@ public class ClusterChildContext extends ApplicationChildContext {
     private String serviceName;
 
     public ClusterChildContext(String id, boolean killDependent) {
-        super(id ,killDependent);
+        super(id, killDependent);
     }
 
     public String getServiceName() {

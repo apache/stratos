@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.autoscaler.exception.policy;
 
-public class InvalidDeploymentPolicyException extends Exception{
-	
-	public InvalidDeploymentPolicyException(String message) {
-		super(message);
-	}
+public class InvalidDeploymentPolicyException extends Exception {
+
+    public InvalidDeploymentPolicyException(String message) {
+        super(message);
+    }
 }

@@ -27,22 +27,23 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
 public class Serializer {
-	/**
+    /**
      * Serialize a object to a byte array.
+     *
      * @param serializableObj
-     * @return byte[] 
+     * @return byte[]
      * @throws IOException
      */
     public static byte[] serializeToByteArray(Object serializableObj) throws IOException {
 
-    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    	ObjectOutput out = null;
-    	try {
-    	  out = new ObjectOutputStream(bos);   
-    	  out.writeObject(serializableObj);
-    	  
-    	  return bos.toByteArray();
-    	  
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutput out = null;
+        try {
+            out = new ObjectOutputStream(bos);
+            out.writeObject(serializableObj);
+
+            return bos.toByteArray();
+
         } finally {
             if (out != null) {
                 out.close();

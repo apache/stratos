@@ -21,7 +21,7 @@ package org.apache.stratos.autoscaler.applications.pojo;
 
 import java.io.Serializable;
 
-public class GroupContext implements Serializable{
+public class GroupContext implements Serializable {
 
     private static final long serialVersionUID = 1595266728968445926L;
 
@@ -40,7 +40,7 @@ public class GroupContext implements Serializable{
     private boolean isGroupScalingEnabled;
 
     //private String autoscalingPolicy;
-    
+
     private CartridgeContext[] cartridgeContexts;
 
     //private SubscribableContext[] subscribableContexts;
@@ -120,21 +120,21 @@ public class GroupContext implements Serializable{
         this.isGroupScalingEnabled = isGroupScalingEnabled;
     }
 
-	public CartridgeContext[] getCartridgeContexts() {
-		return cartridgeContexts;
-	}
+    public CartridgeContext[] getCartridgeContexts() {
+        return cartridgeContexts;
+    }
 
-	public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
-		this.cartridgeContexts = cartridgeContexts;
-	}
+    public void setCartridgeContexts(CartridgeContext[] cartridgeContexts) {
+        this.cartridgeContexts = cartridgeContexts;
+    }
 
-   public String getDeploymentPolicy() {
+    public String getDeploymentPolicy() {
         return deploymentPolicy;
     }
 
     public void setDeploymentPolicy(String deploymentPolicy) {
         this.deploymentPolicy = deploymentPolicy;
     }
-    
-    
+
+
 }

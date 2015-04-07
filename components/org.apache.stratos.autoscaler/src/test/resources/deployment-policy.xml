@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<deploymentPolicy id ="economy-deployment">
-                <partitionGroup id="group1" >
-                        <partitionAlgo>one-after-another</partitionAlgo>
-                        <partition id="P1" >
-                                <provider>ec2</provider>
-                                <property name="region" value="ap-southeast-1"/>
-                                <partitionMax>3</partitionMax>
-                                <min>1</min>
-                        </partition>
-                        <!--partition id="P2" >
-                                <partitionMax>5</partitionMax>
-                                <min>1</min>
-                        </partition-->
-                </partitionGroup>
+<deploymentPolicy id="economy-deployment">
+    <partitionGroup id="group1">
+        <partitionAlgo>one-after-another</partitionAlgo>
+        <partition id="P1">
+            <provider>ec2</provider>
+            <property name="region" value="ap-southeast-1"/>
+            <partitionMax>3</partitionMax>
+            <min>1</min>
+        </partition>
+        <!--partition id="P2" >
+                <partitionMax>5</partitionMax>
+                <min>1</min>
+        </partition-->
+    </partitionGroup>
 </deploymentPolicy>

@@ -29,63 +29,65 @@ import java.util.Arrays;
 /**
  * The model class for Deployment-Policy definition.
  */
-public class DeploymentPolicy implements Serializable{
+public class DeploymentPolicy implements Serializable {
 
     private static final long serialVersionUID = 5675507196284400099L;
     private String deploymentPolicyID;
-	private NetworkPartition[] networkPartitions;
+    private NetworkPartition[] networkPartitions;
 
-	public String getDeploymentPolicyID() {
-		return deploymentPolicyID;
-	}
+    public String getDeploymentPolicyID() {
+        return deploymentPolicyID;
+    }
 
-	public void setDeploymentPolicyID(String deploymentPolicyID) {
-		this.deploymentPolicyID = deploymentPolicyID;
-	}
+    public void setDeploymentPolicyID(String deploymentPolicyID) {
+        this.deploymentPolicyID = deploymentPolicyID;
+    }
 
-	public NetworkPartition[] getNetworkPartitions() {
-		return networkPartitions;
-	}
+    public NetworkPartition[] getNetworkPartitions() {
+        return networkPartitions;
+    }
 
-	public void setNetworkPartitions(NetworkPartition[] networkPartitions) {
-		this.networkPartitions = networkPartitions;
-	}
-	
-	/**
-	 * Get network partition reference object by network partition id.
-	 * @param networkPartitionId
-	 * @return the {@link NetworkPartition}
-	 */
-	public NetworkPartition getNetworkPartitionByNetworkPartitionId(String networkPartitionId) {
-		if (networkPartitions != null) {
-			for (NetworkPartition networkPartition : networkPartitions) {
-				if (networkPartition.getId().equals(networkPartitionId)) {
-					return networkPartition;
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Get partition references by network partition id.
-	 * @param networkPartitionId
-	 * @return an array of {@link Partition}
-	 */
-	public Partition[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
-		if (networkPartitions != null) {
-			for (NetworkPartition networkPartition : networkPartitions) {
-				if (networkPartition.getId().equals(networkPartitionId)) {
-					return networkPartition.getPartitions();
-				}
-			}
-		}
-		return null;
-	}
+    public void setNetworkPartitions(NetworkPartition[] networkPartitions) {
+        this.networkPartitions = networkPartitions;
+    }
 
-	public String toString() {
-		return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID, 
-				Arrays.toString(networkPartitions));
-	}
+    /**
+     * Get network partition reference object by network partition id.
+     *
+     * @param networkPartitionId
+     * @return the {@link NetworkPartition}
+     */
+    public NetworkPartition getNetworkPartitionByNetworkPartitionId(String networkPartitionId) {
+        if (networkPartitions != null) {
+            for (NetworkPartition networkPartition : networkPartitions) {
+                if (networkPartition.getId().equals(networkPartitionId)) {
+                    return networkPartition;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get partition references by network partition id.
+     *
+     * @param networkPartitionId
+     * @return an array of {@link Partition}
+     */
+    public Partition[] getPartitionsByNetworkPartitionId(String networkPartitionId) {
+        if (networkPartitions != null) {
+            for (NetworkPartition networkPartition : networkPartitions) {
+                if (networkPartition.getId().equals(networkPartitionId)) {
+                    return networkPartition.getPartitions();
+                }
+            }
+        }
+        return null;
+    }
+
+    public String toString() {
+        return String.format("{ deployment-policy-id : %s, network-partitions : %s", deploymentPolicyID,
+                Arrays.toString(networkPartitions));
+    }
 
 }

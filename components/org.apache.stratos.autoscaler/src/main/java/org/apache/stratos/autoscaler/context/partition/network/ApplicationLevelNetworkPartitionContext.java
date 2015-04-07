@@ -28,7 +28,6 @@ import java.util.Map;
 
 /**
  * Holds runtime data of a network partition.
- *
  */
 public class ApplicationLevelNetworkPartitionContext extends NetworkPartitionContext implements Serializable {
     private static final Log log = LogFactory.getLog(ApplicationLevelNetworkPartitionContext.class);

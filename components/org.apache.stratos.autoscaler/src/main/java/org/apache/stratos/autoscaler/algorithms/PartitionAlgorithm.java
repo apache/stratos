@@ -29,6 +29,7 @@ public interface PartitionAlgorithm {
 
     /**
      * Returns a {@link PartitionContext} to scale up from the given list
+     *
      * @param partitionContexts is the array of partition contexts which will be select the partition context from
      * @return {@link PartitionContext} to scale up
      */
@@ -36,6 +37,7 @@ public interface PartitionAlgorithm {
 
     /**
      * Returns a {@link PartitionContext} to scale down from the given list
+     *
      * @param partitionContexts is the array of partition contexts which will be select the partition context from
      * @return {@link PartitionContext} to scale down
      */

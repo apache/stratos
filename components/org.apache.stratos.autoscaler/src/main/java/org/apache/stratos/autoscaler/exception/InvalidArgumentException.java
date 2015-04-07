@@ -23,24 +23,24 @@ public class InvalidArgumentException extends Exception {
 
     private static final long serialVersionUID = -43882156675116287L;
     private String message;
-	
-	public InvalidArgumentException(String message) {
-		super(message);
-		this.message = message;
-	}
-	
-	public InvalidArgumentException(String message,Throwable e) {
-		super(message,e);
-		this.message = message;
-	}
-	
-	public InvalidArgumentException(Throwable e) {
-		super(e);
-	}
-	
-	@Override
-	public String getMessage() {
-		return message;
-	}
-	
+
+    public InvalidArgumentException(String message) {
+        super(message);
+        this.message = message;
+    }
+
+    public InvalidArgumentException(String message, Throwable e) {
+        super(message, e);
+        this.message = message;
+    }
+
+    public InvalidArgumentException(Throwable e) {
+        super(e);
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
 }

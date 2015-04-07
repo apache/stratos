@@ -25,17 +25,17 @@ public class TopologyInConsistentException extends Exception {
     private static final long serialVersionUID = -7521673271244696906L;
     private String message;
 
-    public TopologyInConsistentException(String message, Exception exception){
+    public TopologyInConsistentException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
 
-    public TopologyInConsistentException(Exception exception){
+    public TopologyInConsistentException(Exception exception) {
         super(exception);
     }
 
-    public TopologyInConsistentException(String msg){
+    public TopologyInConsistentException(String msg) {
         super(msg);
         this.message = msg;
     }

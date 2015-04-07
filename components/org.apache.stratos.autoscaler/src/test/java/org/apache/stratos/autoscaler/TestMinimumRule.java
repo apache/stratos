@@ -56,12 +56,12 @@ public class TestMinimumRule {
             for (KnowledgeBuilderError error : errors) {
                 sb.append(error.getMessage());
             }
-            if(sb.length() > 0) {
+            if (sb.length() > 0) {
                 log.error(sb.toString());
             }
             throw new IllegalArgumentException(String.format("Could not parse drools file: %s", droolsFilePath));
         }
-        
+
         kbase = KnowledgeBaseFactory.newKnowledgeBase();
         kbase.addKnowledgePackages(kbuilder.getKnowledgePackages());
 
@@ -70,12 +70,12 @@ public class TestMinimumRule {
 
     @Test
     public void testMinimumRule() {
-        if(kbase == null) {
+        if (kbase == null) {
             throw new IllegalArgumentException("Knowledge base is null.");
         }
-        
+
         assertEquals(false, TestDelegator.isMinRuleFired());
-        
+
         ksession = kbase.newStatefulKnowledgeSession();
         ksession.setGlobal("clusterId", "lb.cluster.1");
         ksession.setGlobal("lbRef", null);
@@ -91,11 +91,11 @@ public class TestMinimumRule {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        
+
         assertEquals(true, TestDelegator.isMinRuleFired());
-        
+
     }
-    
+
     public static String get() {
         return "null";
     }

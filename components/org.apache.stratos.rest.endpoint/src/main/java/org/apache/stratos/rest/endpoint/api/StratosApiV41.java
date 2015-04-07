@@ -539,7 +539,7 @@ public class StratosApiV41 extends AbstractApi {
     @AuthorizationAction("/permission/protected/manage/getNetworkPartitions")
     public Response getNetworkPartitions()
             throws RestAPIException {
-        NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
+         NetworkPartitionBean[] networkPartitions = StratosApiV41Utils.getNetworkPartitions();
         return Response.ok(networkPartitions).build();
     }
 

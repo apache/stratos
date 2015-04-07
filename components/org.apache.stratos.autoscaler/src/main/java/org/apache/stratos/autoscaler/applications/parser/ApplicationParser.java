@@ -41,13 +41,13 @@ public interface ApplicationParser {
      * @return Application structure denoting the parsed Application
      * @throws ApplicationDefinitionException If the Application Definition is invalid
      */
-    public Application parse (ApplicationContext applicationContext) throws ApplicationDefinitionException;
+    public Application parse(ApplicationContext applicationContext) throws ApplicationDefinitionException;
 
     /**
      * Returns a set of ApplicationClusterContext which will comprise of cluster related information
      * extracted from the Application definition
      *
-     * @return  Set of ApplicationClusterContext objects
+     * @return Set of ApplicationClusterContext objects
      * @throws ApplicationDefinitionException if any error occurs
      */
     public List<ApplicationClusterContext> getApplicationClusterContexts() throws ApplicationDefinitionException;

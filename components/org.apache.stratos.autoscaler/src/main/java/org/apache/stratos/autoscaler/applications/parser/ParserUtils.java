@@ -44,7 +44,7 @@ public class ParserUtils {
         return startupOrders;
     }
 
-    private static StartupOrder getStartupOrder (String commaSeparatedStartupOrder) throws ApplicationDefinitionException{
+    private static StartupOrder getStartupOrder(String commaSeparatedStartupOrder) throws ApplicationDefinitionException {
 
         List<String> startupOrders = new ArrayList<String>();
         for (String startupOrder : Arrays.asList(commaSeparatedStartupOrder.split(","))) {
@@ -71,15 +71,15 @@ public class ParserUtils {
         for (String commaSeparatedStartupOrder : startupOrderArr) {
             // convertStartupOrder all Startup Orders to aliases-based
             List<String> components = Arrays.asList(commaSeparatedStartupOrder.split(","));
-	        StartupOrder startupOrder=new StartupOrder(components);
-	        startupOrders.add(startupOrder);
+            StartupOrder startupOrder = new StartupOrder(components);
+            startupOrders.add(startupOrder);
 
         }
 
         return startupOrders;
     }
 
-    private static StartupOrder getStartupOrder (List<String> components, GroupContext groupContext)
+    private static StartupOrder getStartupOrder(List<String> components, GroupContext groupContext)
             throws ApplicationDefinitionException {
 
         List<String> aliasBasedComponents = new ArrayList<String>();
@@ -131,7 +131,7 @@ public class ParserUtils {
         return scalingDependentLists;
     }
 
-    private static ScalingDependentList getScalingDependentList (String commaSeparatedScalingDependentList) throws ApplicationDefinitionException{
+    private static ScalingDependentList getScalingDependentList(String commaSeparatedScalingDependentList) throws ApplicationDefinitionException {
 
         List<String> scalingDependentLists = new ArrayList<String>();
         for (String scalingDependentList : Arrays.asList(commaSeparatedScalingDependentList.split(","))) {
@@ -160,7 +160,7 @@ public class ParserUtils {
         return scalingDependentLists;
     }
 
-    private static ScalingDependentList getScalingDependentList (List<String> components, GroupContext groupContext)
+    private static ScalingDependentList getScalingDependentList(List<String> components, GroupContext groupContext)
             throws ApplicationDefinitionException {
 
         List<String> aliasBasedComponents = new ArrayList<String>();
@@ -199,7 +199,7 @@ public class ParserUtils {
         return new ScalingDependentList(aliasBasedComponents);
     }
 
-    private static String getAliasForGroupName (String groupName, GroupContext groupContext) {
+    private static String getAliasForGroupName(String groupName, GroupContext groupContext) {
 
         for (GroupContext groupCtxt : groupContext.getGroupContexts()) {
             if (groupName.equals(groupCtxt.getName())) {
@@ -211,7 +211,7 @@ public class ParserUtils {
     }
 
 
-    private static String getAliasForServiceType (String serviceType, GroupContext groupContext) {
+    private static String getAliasForServiceType(String serviceType, GroupContext groupContext) {
 
         for (CartridgeContext subCtxt : groupContext.getCartridgeContexts()) {
             if (serviceType.equals(subCtxt.getType())) {

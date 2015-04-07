@@ -81,7 +81,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = instanceExpiryTime;
     }
 
-    public GroupLevelPartitionContext(int max, String partitionId, String networkPartitionIid ) {
+    public GroupLevelPartitionContext(int max, String partitionId, String networkPartitionIid) {
         super(max, partitionId, networkPartitionIid);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
@@ -110,7 +110,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         th3.start();*/
     }
 
-    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid ) {
+    public GroupLevelPartitionContext(String partitionId, String networkPartitionIid) {
         super(partitionId, networkPartitionIid);
         this.pendingInstances = new ArrayList<Instance>();
         this.activeInstances = new ArrayList<Instance>();
@@ -125,7 +125,7 @@ public class GroupLevelPartitionContext extends PartitionContext implements Seri
         pendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_MEMBER_EXPIRY_TIMEOUT, 900000);
         obsoltedInstanceExpiryTime = conf.getLong(StratosConstants.OBSOLETED_MEMBER_EXPIRY_TIMEOUT, 86400000);
         terminationPendingInstanceExpiryTime = conf.getLong(StratosConstants.PENDING_TERMINATION_MEMBER_EXPIRY_TIMEOUT, 1800000);
-        
+
         if (log.isDebugEnabled()) {
             log.debug("Instance expiry time is set to: " + pendingInstanceExpiryTime);
             log.debug("Instance obsolete expiry time is set to: " + obsoltedInstanceExpiryTime);

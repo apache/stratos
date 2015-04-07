@@ -220,7 +220,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
                 startMonitor(this, context, parentInstanceIds);
             } else {
                 log.info(String.format("Dependent monitor already created, creating instance: " +
-                                "[application] %s [component] %s", getAppId(), context.getId()));
+                        "[application] %s [component] %s", getAppId(), context.getId()));
 
                 Monitor monitor = aliasToActiveMonitorsMap.get(context.getId());
                 // Creating new instance
@@ -234,9 +234,9 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     @Override
     public void onChildScalingEvent(ScalingEvent scalingEvent) {
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Child scaling event received to [parent] %s [network-partition] %s [event-id] %s " +
-                    "[group-instance] %s [factor] %s", this.getId(), scalingEvent.getNetworkPartitionId(),
+                            "[group-instance] %s [factor] %s", this.getId(), scalingEvent.getNetworkPartitionId(),
                     scalingEvent.getId(), scalingEvent.getInstanceId(), scalingEvent.getFactor()));
         }
         String networkPartitionId = scalingEvent.getNetworkPartitionId();
@@ -667,14 +667,14 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
     protected synchronized void startMonitor(ParentComponentMonitor parent,
                                              ApplicationChildContext context, List<String> parentInstanceIds) {
-	    if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
-		    pendingMonitorsList.add(context.getId());
-		    executorService.submit(new MonitorAdder(parent, context, this.appId, parentInstanceIds));
+        if (!this.aliasToActiveMonitorsMap.containsKey(context.getId())) {
+            pendingMonitorsList.add(context.getId());
+            executorService.submit(new MonitorAdder(parent, context, this.appId, parentInstanceIds));
 
             String monitorTypeStr = AutoscalerUtil.findMonitorType(context).toString().toLowerCase();
             log.info(String.format("Monitor scheduled: [type] %s [component] %s ",
-                        monitorTypeStr, context.getId()));
-	    }
+                    monitorTypeStr, context.getId()));
+        }
     }
 
     public Map<String, Monitor> getAliasToActiveMonitorsMap() {
@@ -826,7 +826,7 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
             pendingMonitorsList.remove(context.getId());
 
             if (log.isInfoEnabled()) {
-                long startupTime = (endTime - startTime)/1000;
+                long startupTime = (endTime - startTime) / 1000;
                 log.info(String.format("Monitor started successfully: [type] %s [component] %s [dependents] %s " +
                                 "[startup-time] %d seconds", monitorTypeStr, context.getId(),
                         getIdList(context.getApplicationChildContextList()), startupTime));
@@ -835,10 +835,10 @@ public abstract class ParentComponentMonitor extends Monitor implements Runnable
 
         private String getIdList(List<ApplicationChildContext> applicationChildContextList) {
             StringBuilder stringBuilder = new StringBuilder();
-            if((applicationChildContextList != null) && (applicationChildContextList.size() > 0)) {
-                for(ApplicationChildContext applicationChildContext : applicationChildContextList) {
+            if ((applicationChildContextList != null) && (applicationChildContextList.size() > 0)) {
+                for (ApplicationChildContext applicationChildContext : applicationChildContextList) {
                     stringBuilder.append(applicationChildContext.getId());
-                    if(applicationChildContextList.indexOf(applicationChildContext) <
+                    if (applicationChildContextList.indexOf(applicationChildContext) <
                             (applicationChildContextList.size() - 1)) {
                         stringBuilder.append(", ");
                     }

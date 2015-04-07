@@ -276,7 +276,7 @@ public class ClusterContext extends AbstractClusterContext {
         //Retrieving the actual partition from application
         Partition[] partitions;
         try {
-            
+
             partitions = AutoscalerObjectConverter.convertCCPartitionsToPartitions(
                     CloudControllerServiceClient.getInstance().getNetworkPartition(nPartitionId).getPartitions());
         } catch (Exception e) {

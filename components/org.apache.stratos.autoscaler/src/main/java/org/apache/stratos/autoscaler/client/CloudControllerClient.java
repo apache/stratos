@@ -148,10 +148,10 @@ public class CloudControllerClient {
     public synchronized void createApplicationClusters(String appId,
                                                        ApplicationClusterContext[] applicationClusterContexts) {
         List<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext> contextDTOs =
-                                        new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
-        if(applicationClusterContexts != null) {
+                new ArrayList<org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext>();
+        if (applicationClusterContexts != null) {
             for (ApplicationClusterContext applicationClusterContext : applicationClusterContexts) {
-                if(applicationClusterContext != null) {
+                if (applicationClusterContext != null) {
                     org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext dto =
                             new org.apache.stratos.cloud.controller.stub.domain.ApplicationClusterContext();
                     dto.setClusterId(applicationClusterContext.getClusterId());
@@ -163,7 +163,7 @@ public class CloudControllerClient {
                     dto.setTextPayload(applicationClusterContext.getTextPayload());
                     dto.setProperties(AutoscalerUtil.toStubProperties(applicationClusterContext.getProperties()));
                     dto.setDependencyClusterIds(applicationClusterContext.getDependencyClusterIds());
-                    if(applicationClusterContext.getPersistenceContext() != null){
+                    if (applicationClusterContext.getPersistenceContext() != null) {
                         dto.setVolumeRequired(true);
                         dto.setVolumes(convertVolumesToStubVolumes(
                                 applicationClusterContext.getPersistenceContext().getVolumes()));
@@ -191,7 +191,7 @@ public class CloudControllerClient {
     private Volume[] convertVolumesToStubVolumes(VolumeContext[] volumeContexts) {
 
         ArrayList<Volume> volumes = new ArrayList<Volume>();
-        for(VolumeContext volumeContext : volumeContexts){
+        for (VolumeContext volumeContext : volumeContexts) {
             Volume volume = new Volume();
             volume.setRemoveOntermination(volumeContext.isRemoveOntermination());
             volume.setMappingPath(volumeContext.getMappingPath());

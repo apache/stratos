@@ -23,19 +23,19 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class ASBundleActivater implements BundleActivator{
+public class ASBundleActivater implements BundleActivator {
 
     private static final Log log = LogFactory.getLog(ASBundleActivater.class);
-  
+
     @Override
-	public void start(BundleContext context) throws Exception {
-    	if(log.isDebugEnabled())
-    		log.debug("AutoScaler bundle is activated.");
+    public void start(BundleContext context) throws Exception {
+        if (log.isDebugEnabled())
+            log.debug("AutoScaler bundle is activated.");
     }
 
-	@Override
-	public void stop(BundleContext context) throws Exception {
-		if(log.isDebugEnabled())
-    		log.debug("AutoScaler bundle is deActivated.");		
-	}
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        if (log.isDebugEnabled())
+            log.debug("AutoScaler bundle is deActivated.");
+    }
 }

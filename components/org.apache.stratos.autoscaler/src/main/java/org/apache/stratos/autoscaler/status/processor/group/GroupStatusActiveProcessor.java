@@ -93,7 +93,7 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
                 if (component instanceof Application) {
                     //send application activated event
 
-                    if(log.isInfoEnabled()){
+                    if (log.isInfoEnabled()) {
                         log.info(String.format("Sending application active for [application] %s [instance] %s ", appId
                                 , instanceId));
                     }
@@ -102,7 +102,7 @@ public class GroupStatusActiveProcessor extends GroupStatusProcessor {
                 } else if (component instanceof Group) {
                     //send activation to the parent
 
-                    if(log.isInfoEnabled()){
+                    if (log.isInfoEnabled()) {
                         log.info(String.format("Sending group instance active for [group] %s [instance] %s ", component.getUniqueIdentifier()
                                 , instanceId));
                     }

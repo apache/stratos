@@ -22,7 +22,7 @@ public class NonExistingLBException extends Exception {
 
     private static final long serialVersionUID = -9163807860189126883L;
     private String message;
-    
+
     public NonExistingLBException(final String message, final Exception exception) {
 
         super(message, exception);
@@ -43,12 +43,12 @@ public class NonExistingLBException extends Exception {
 
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
 }

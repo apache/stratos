@@ -34,9 +34,9 @@ public class ApplicationChildContextFactory {
     /**
      * Will create and return GroupChildContext/ClusterChildContext based on the type in start order/scaling order
      *
-     * @param startUpOrder      reference of group/cluster in the start/scaling order
-     * @param component       The component which used to build the dependency
-     * @param tree kill dependent behaviour of this component
+     * @param startUpOrder reference of group/cluster in the start/scaling order
+     * @param component    The component which used to build the dependency
+     * @param tree         kill dependent behaviour of this component
      * @return Context
      */
     public static ApplicationChildContext createApplicationChildContext(String componentId, String startUpOrder,
@@ -56,29 +56,31 @@ public class ApplicationChildContextFactory {
             return createClusterChildContext(clusterDataHolder, hasDependents);
         } else {
             throw new RuntimeException(String.format("Startup order contains an unknown reference: " +
-                            "[component] %s [startup-order] %s", componentId, startUpOrder));
+                    "[component] %s [startup-order] %s", componentId, startUpOrder));
         }
     }
 
-	/**
-	 * Get cluster child context
-	 * @param dataHolder Cluster Data holder
-	 * @param isKillDependent Whether is this a kill dependant or not
-	 * @return ApplicationChildContext
-	 */
+    /**
+     * Get cluster child context
+     *
+     * @param dataHolder      Cluster Data holder
+     * @param isKillDependent Whether is this a kill dependant or not
+     * @return ApplicationChildContext
+     */
     public static ApplicationChildContext createClusterChildContext(ClusterDataHolder dataHolder,
                                                                     boolean isKillDependent) {
         ClusterChildContext clusterChildContext = new ClusterChildContext(dataHolder.getClusterId(), isKillDependent);
         clusterChildContext.setServiceName(dataHolder.getServiceType());
-        return  clusterChildContext;
+        return clusterChildContext;
     }
 
-	/**
-	 * Get the group child context
-	 * @param id ID of the group
-	 * @param isDependent Whether is this a dependant or not
-	 * @return ApplicationChildContext
-	 */
+    /**
+     * Get the group child context
+     *
+     * @param id          ID of the group
+     * @param isDependent Whether is this a dependant or not
+     * @return ApplicationChildContext
+     */
     public static ApplicationChildContext createGroupChildContext(String id, boolean isDependent) {
         GroupChildContext groupChildContext = new GroupChildContext(id, isDependent);
         return groupChildContext;

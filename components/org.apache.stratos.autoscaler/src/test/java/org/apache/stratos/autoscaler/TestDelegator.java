@@ -26,8 +26,6 @@ import org.apache.stratos.cloud.controller.stub.domain.MemberContext;
 
 /**
  * Helper class to keep the state of the consequence of a rule.
- *
- *
  */
 public class TestDelegator {
     private static boolean isMinRuleFired;
@@ -48,10 +46,10 @@ public class TestDelegator {
     public static void setObsoletedMembers(Map<String, MemberContext> obsoletedMembers) {
         TestDelegator.obsoletedMembers = obsoletedMembers;
     }
-    
+
     public static void addObsoleteMember(MemberContext ctxt) {
-    	TestDelegator.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
+        TestDelegator.obsoletedMembers.put(ctxt.getMemberId(), ctxt);
     }
 
-    
+
 }

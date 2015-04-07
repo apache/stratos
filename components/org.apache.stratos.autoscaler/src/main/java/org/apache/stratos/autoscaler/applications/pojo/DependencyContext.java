@@ -26,9 +26,9 @@ public class DependencyContext implements Serializable {
 
     private static final long serialVersionUID = 6211713487242343226L;
 
-    private String [] startupOrdersContexts;
+    private String[] startupOrdersContexts;
 
-    private String [] scalingDependents;
+    private String[] scalingDependents;
 
     private String terminationBehaviour;
 
@@ -40,13 +40,13 @@ public class DependencyContext implements Serializable {
         this.terminationBehaviour = terminationBehaviour;
     }
 
-	public String [] getStartupOrdersContexts() {
-		return startupOrdersContexts;
-	}
+    public String[] getStartupOrdersContexts() {
+        return startupOrdersContexts;
+    }
 
-	public void setStartupOrdersContexts(String [] startupOrdersContexts) {
-		this.startupOrdersContexts = startupOrdersContexts;
-	}
+    public void setStartupOrdersContexts(String[] startupOrdersContexts) {
+        this.startupOrdersContexts = startupOrdersContexts;
+    }
 
     public String[] getScalingDependents() {
         return scalingDependents;

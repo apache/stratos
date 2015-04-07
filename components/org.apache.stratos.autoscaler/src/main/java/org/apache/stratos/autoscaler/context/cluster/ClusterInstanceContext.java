@@ -466,9 +466,9 @@ public class ClusterInstanceContext extends InstanceContext {
         return averageRequestServedPerInstanceReset;
     }
 
-	public boolean hasScalingDependants() {
-		return hasScalingDependants;
-	}
+    public boolean hasScalingDependants() {
+        return hasScalingDependants;
+    }
 
     public String getClusterId() {
         return clusterId;
