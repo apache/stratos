@@ -20,67 +20,67 @@ package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
 
-public class PortMapping implements Serializable{
-	
+public class PortMapping implements Serializable {
+
     private static final long serialVersionUID = -5387564414633460306L;
 
-	private String protocol;
-	private int port;
-	private int proxyPort;
-	private int kubernetesServicePort;
-	private boolean isKubernetesServicePortMapping;
-	
-	public PortMapping() {
-	}
-	
-	public PortMapping(String protocol, int port, int proxyPort){
-		this.protocol = protocol;
-		this.port = port;
-		this.proxyPort = proxyPort;
-	}
+    private String protocol;
+    private int port;
+    private int proxyPort;
+    private int kubernetesServicePort;
+    private boolean isKubernetesServicePortMapping;
 
-	public String getProtocol() {
-    	return protocol;
+    public PortMapping() {
     }
 
-	public void setProtocol(String protocol) {
-    	this.protocol = protocol;
+    public PortMapping(String protocol, int port, int proxyPort) {
+        this.protocol = protocol;
+        this.port = port;
+        this.proxyPort = proxyPort;
     }
 
-	public int getPort() {
-    	return port;
+    public String getProtocol() {
+        return protocol;
     }
 
-	public void setPort(int port) {
-    	this.port = port;
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
     }
 
-	public int getProxyPort() {
-    	return proxyPort;
+    public int getPort() {
+        return port;
     }
 
-	public void setProxyPort(int proxyPort) {
-    	this.proxyPort = proxyPort;
+    public void setPort(int port) {
+        this.port = port;
     }
 
-    public String toString () {
+    public int getProxyPort() {
+        return proxyPort;
+    }
+
+    public void setProxyPort(int proxyPort) {
+        this.proxyPort = proxyPort;
+    }
+
+    public String toString() {
 
         return "Protocol: " + protocol + ", Port: " + port + ", Proxy Port: " + proxyPort;
     }
 
-	public void setKubernetesServicePort(int kubernetesServicePort) {
-		this.kubernetesServicePort = kubernetesServicePort;
-	}
+    public void setKubernetesServicePort(int kubernetesServicePort) {
+        this.kubernetesServicePort = kubernetesServicePort;
+    }
 
-	public int getKubernetesServicePort() {
-		return kubernetesServicePort;
-	}
+    public int getKubernetesServicePort() {
+        return kubernetesServicePort;
+    }
 
-	public boolean isKubernetesServicePortMapping() {
-		return isKubernetesServicePortMapping;
-	}
+    public boolean isKubernetesServicePortMapping() {
+        return isKubernetesServicePortMapping;
+    }
 
-	public void setKubernetesServicePortMapping(boolean isKubernetesServicePortMapping) {
-		this.isKubernetesServicePortMapping = isKubernetesServicePortMapping;
-	}
+    public void setKubernetesServicePortMapping(boolean isKubernetesServicePortMapping) {
+        this.isKubernetesServicePortMapping = isKubernetesServicePortMapping;
+    }
 }

@@ -24,27 +24,26 @@ import java.util.Map;
 
 /**
  * Configuration related to Topology synchronization
- *
  */
-public class TopologyConfig implements Serializable{
-	
-	private static final long serialVersionUID = 4435173744617096911L;
-	
-	/**
+public class TopologyConfig implements Serializable {
+
+    private static final long serialVersionUID = 4435173744617096911L;
+
+    /**
      * Key - Value pair.
      */
     private Map<String, String> properties = new HashMap<String, String>();
-    
+
     public void setProperty(String key, String value) {
         properties.put(key, value);
     }
-    
+
     public String getProperty(String key) {
-        
-        if(properties.containsKey(key)){
+
+        if (properties.containsKey(key)) {
             return properties.get(key);
         }
-        
+
         return null;
     }
 

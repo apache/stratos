@@ -29,15 +29,13 @@ import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Holds information about a Kubernetes Cluster.
- *
- *
  */
 public class KubernetesClusterContext implements Serializable {
 
-	private static final long serialVersionUID = -802025758806195791L;
-	private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
-	
-	// id of the Kubernetes cluster
+    private static final long serialVersionUID = -802025758806195791L;
+    private static final Log log = LogFactory.getLog(KubernetesClusterContext.class);
+
+    // id of the Kubernetes cluster
     private String kubernetesClusterId;
     private int upperPort;
     private int lowerPort;
@@ -52,80 +50,80 @@ public class KubernetesClusterContext implements Serializable {
     private AtomicLong podSeqNo;
 
     public KubernetesClusterContext(String id, String masterIp, String masterPort, int lowerPort, int upperPort) {
-    	servicePorts = new ArrayList<Integer>();
+        servicePorts = new ArrayList<Integer>();
         this.lowerPort = lowerPort;
-    	this.upperPort = upperPort;
-    	// Generate the ports
+        this.upperPort = upperPort;
+        // Generate the ports
         generateServicePorts(lowerPort, upperPort);
-    	this.kubernetesClusterId = id;
-    	this.masterIp = masterIp;
-    	this.masterPort = masterPort;
-    	this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
+        this.kubernetesClusterId = id;
+        this.masterIp = masterIp;
+        this.masterPort = masterPort;
+        this.setKubApi(new KubernetesApiClient(getEndpoint(masterIp, masterPort)));
         this.serviceSeqNo = new AtomicLong();
         this.podSeqNo = new AtomicLong();
-    	
-	}
-    
-	private String getEndpoint(String ip, String port) {
-		return "http://"+ip+":"+port+"/api/v1beta1/";
-	}
 
-	public String getKubernetesClusterId() {
-		return kubernetesClusterId;
-	}
+    }
 
-	public void setKubernetesClusterId(String kubernetesClusterId) {
-		this.kubernetesClusterId = kubernetesClusterId;
-	}
+    private String getEndpoint(String ip, String port) {
+        return "http://" + ip + ":" + port + "/api/v1beta1/";
+    }
 
-	public List<Integer> getServicePorts() {
-		return servicePorts;
-	}
+    public String getKubernetesClusterId() {
+        return kubernetesClusterId;
+    }
 
-	public void setServicePorts(List<Integer> servicePorts) {
-		this.servicePorts = servicePorts;
-	}
-	
-	public int getNextServicePort() {
-	    if (servicePorts.isEmpty()) {
-	        return -1;
-	    }
-		return servicePorts.remove(0);
-	}
-	
-	public void deallocatePort(int port) {
-		if (!servicePorts.contains(port)) {
-			servicePorts.add(port);
+    public void setKubernetesClusterId(String kubernetesClusterId) {
+        this.kubernetesClusterId = kubernetesClusterId;
+    }
+
+    public List<Integer> getServicePorts() {
+        return servicePorts;
+    }
+
+    public void setServicePorts(List<Integer> servicePorts) {
+        this.servicePorts = servicePorts;
+    }
+
+    public int getNextServicePort() {
+        if (servicePorts.isEmpty()) {
+            return -1;
+        }
+        return servicePorts.remove(0);
+    }
+
+    public void deallocatePort(int port) {
+        if (!servicePorts.contains(port)) {
+            servicePorts.add(port);
             // TODO Sort elements
-		}
-	}
+        }
+    }
 
-	private void generateServicePorts(int lowerPort, int upperPort) {
-		for (int port = lowerPort; port <= upperPort; port++) {
-			servicePorts.add(port);
-		}
-	}
+    private void generateServicePorts(int lowerPort, int upperPort) {
+        for (int port = lowerPort; port <= upperPort; port++) {
+            servicePorts.add(port);
+        }
+    }
 
-	public String getMasterIp() {
-		return masterIp;
-	}
+    public String getMasterIp() {
+        return masterIp;
+    }
 
-	public void setMasterIp(String masterIp) {
-		this.masterIp = masterIp;
-	}
+    public void setMasterIp(String masterIp) {
+        this.masterIp = masterIp;
+    }
 
-	public KubernetesApiClient getKubApi() {
-		if (kubApi == null) {
-			kubApi = new KubernetesApiClient(getEndpoint(masterIp, masterPort));
-		}
-		return kubApi;
-	}
+    public KubernetesApiClient getKubApi() {
+        if (kubApi == null) {
+            kubApi = new KubernetesApiClient(getEndpoint(masterIp, masterPort));
+        }
+        return kubApi;
+    }
 
-	public void setKubApi(KubernetesApiClient kubApi) {
-		this.kubApi = kubApi;
-	}
+    public void setKubApi(KubernetesApiClient kubApi) {
+        this.kubApi = kubApi;
+    }
 
-	public int getUpperPort() {
+    public int getUpperPort() {
         return upperPort;
     }
 

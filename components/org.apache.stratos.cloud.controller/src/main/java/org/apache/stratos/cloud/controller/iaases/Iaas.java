@@ -40,6 +40,7 @@ public abstract class Iaas {
 
     /**
      * Set iaas provider.
+     *
      * @param iaasProvider
      */
     public void setIaasProvider(IaasProvider iaasProvider) {
@@ -148,6 +149,7 @@ public abstract class Iaas {
 
     /**
      * Allocates ip addresses to member.
+     *
      * @param clusterId
      * @param memberContext
      * @param partition
@@ -161,6 +163,7 @@ public abstract class Iaas {
 
     /**
      * Terminate an instance.
+     *
      * @param memberContext
      * @throws InvalidCartridgeTypeException
      * @throws InvalidMemberException

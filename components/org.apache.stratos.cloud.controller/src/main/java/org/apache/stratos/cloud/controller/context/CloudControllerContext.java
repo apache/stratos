@@ -62,7 +62,7 @@ public class CloudControllerContext implements Serializable {
     private static final String CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP = "CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP";
     private static final String CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP = "CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP";
     private static final String CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP = "CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP";
-	private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
+    private static final String CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP = "CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP";
 
     private static final String CC_CLUSTER_CTX_WRITE_LOCK = "CC_CLUSTER_CTX_WRITE_LOCK";
     private static final String CC_MEMBER_CTX_WRITE_LOCK = "CC_MEMBER_CTX_WRITE_LOCK";
@@ -79,8 +79,8 @@ public class CloudControllerContext implements Serializable {
     private final transient DistributedObjectProvider distributedObjectProvider;
 
 	/* We keep following maps in order to make the look up time, small. */
-    
-    /** 
+
+    /**
      * KubernetesClusters against clusterIds
      * Key - Kubernetes cluster id
      * Value - {@link org.apache.stratos.cloud.controller.domain.kubernetes.KubernetesCluster}
@@ -144,12 +144,12 @@ public class CloudControllerContext implements Serializable {
      */
     private Map<String, ServiceGroup> serviceGroupNameToServiceGroupMap;
 
-	/**
-	 * Map of network partitions
-	 * Key - network partition id
-	 * Value network partition
-	 */
-	private Map<String, NetworkPartition> networkPartitionIDToNetworkPartitionMap;
+    /**
+     * Map of network partitions
+     * Key - network partition id
+     * Value network partition
+     */
+    private Map<String, NetworkPartition> networkPartitionIDToNetworkPartitionMap;
 
     /**
      * Key - cartridge id (cartridge type is used as an unique identifier)
@@ -192,7 +192,7 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToPartitionIdsMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_PARTITION_IDS_MAP);
         cartridgeTypeToCartridgeMap = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_CARTRIDGES_MAP);
         serviceGroupNameToServiceGroupMap = distributedObjectProvider.getMap(CC_SERVICE_GROUP_NAME_TO_SERVICE_GROUP_MAP);
-		networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
+        networkPartitionIDToNetworkPartitionMap = distributedObjectProvider.getMap(CC_NETWORK_PARTITION_ID_TO_NETWORK_PARTITION_MAP);
         partitionToIaasProviderByCartridge = distributedObjectProvider.getMap(CC_PARTITION_TO_IAAS_PROVIDER_BY_CARTRIDGE_MAP);
         cartridgeTypeToIaasProviders = distributedObjectProvider.getMap(CC_CARTRIDGE_TYPE_TO_IAAS_PROVIDER_MAP);
         // Update context from the registry
@@ -215,13 +215,13 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void addCartridges(List<Cartridge> cartridges) {
-        for(Cartridge cartridge : cartridges) {
+        for (Cartridge cartridge : cartridges) {
             addCartridge(cartridge);
         }
     }
 
     public void addServiceGroups(List<ServiceGroup> serviceGroups) {
-        for(ServiceGroup serviceGroup : serviceGroups) {
+        for (ServiceGroup serviceGroup : serviceGroups) {
             addServiceGroup(serviceGroup);
         }
     }
@@ -274,24 +274,24 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToCartridgeMap.put(cartridge.getType(), cartridge);
     }
 
-	public void addNetworkPartition(NetworkPartition networkPartition) {
-		networkPartitionIDToNetworkPartitionMap.put(networkPartition.getId(), networkPartition);
-	}
+    public void addNetworkPartition(NetworkPartition networkPartition) {
+        networkPartitionIDToNetworkPartitionMap.put(networkPartition.getId(), networkPartition);
+    }
 
-	public NetworkPartition getNetworkPartition(String networkPartitionID) {
-		return networkPartitionIDToNetworkPartitionMap.get(networkPartitionID);
-	}
-	
-	public Collection<NetworkPartition> getNetworkPartitions() {
-		return networkPartitionIDToNetworkPartitionMap.values();
-	}
+    public NetworkPartition getNetworkPartition(String networkPartitionID) {
+        return networkPartitionIDToNetworkPartitionMap.get(networkPartitionID);
+    }
 
-	public void removeNetworkPartition(String networkPartitionID) {
-		networkPartitionIDToNetworkPartitionMap.remove(networkPartitionID);
-	}
+    public Collection<NetworkPartition> getNetworkPartitions() {
+        return networkPartitionIDToNetworkPartitionMap.values();
+    }
 
-	public void removeCartridge(Cartridge cartridge) {
-        if(cartridgeTypeToCartridgeMap.containsKey(cartridge.getType())) {
+    public void removeNetworkPartition(String networkPartitionID) {
+        networkPartitionIDToNetworkPartitionMap.remove(networkPartitionID);
+    }
+
+    public void removeCartridge(Cartridge cartridge) {
+        if (cartridgeTypeToCartridgeMap.containsKey(cartridge.getType())) {
             cartridgeTypeToCartridgeMap.remove(cartridge.getType());
         }
     }
@@ -309,13 +309,13 @@ public class CloudControllerContext implements Serializable {
     }
 
     public void removeServiceGroups(List<ServiceGroup> serviceGroups) {
-        for(ServiceGroup serviceGroup : serviceGroups) {
+        for (ServiceGroup serviceGroup : serviceGroups) {
             removeServiceGroup(serviceGroup);
         }
     }
 
     private void removeServiceGroup(ServiceGroup serviceGroup) {
-        if(serviceGroupNameToServiceGroupMap.containsKey(serviceGroup.getName())) {
+        if (serviceGroupNameToServiceGroupMap.containsKey(serviceGroup.getName())) {
             serviceGroupNameToServiceGroupMap.remove(serviceGroup.getName());
         }
     }
@@ -499,7 +499,7 @@ public class CloudControllerContext implements Serializable {
         kubClusterIdToKubClusterContextMap.put(
                 kubernetesClusterContext.getKubernetesClusterId(), kubernetesClusterContext);
     }
-    
+
     /**
      * Remove a registered Kubernetes cluster from registry
      */
@@ -559,7 +559,7 @@ public class CloudControllerContext implements Serializable {
     public void updateKubernetesCluster(KubernetesCluster kubernetesCluster) {
         kubernetesClustersMap.put(kubernetesCluster.getClusterId(), kubernetesCluster);
     }
-    
+
     public boolean kubernetesClusterExists(KubernetesCluster kubernetesCluster) {
         return kubernetesClustersMap.containsKey(kubernetesCluster);
     }
@@ -703,13 +703,13 @@ public class CloudControllerContext implements Serializable {
     }
 
     private void copyMap(Map sourceMap, Map destinationMap) {
-        for(Object key : sourceMap.keySet()) {
+        for (Object key : sourceMap.keySet()) {
             destinationMap.put(key, sourceMap.get(key));
         }
     }
 
     private void copyList(List sourceList, List destinationList) {
-        for(Object item : sourceList) {
+        for (Object item : sourceList) {
             destinationList.add(item);
         }
     }
@@ -730,7 +730,7 @@ public class CloudControllerContext implements Serializable {
 
     public void addIaasProviders(String cartridgeType, Map<String, IaasProvider> map) {
         Map<String, IaasProvider> partitionToIaasProviders;
-        if(partitionToIaasProviderByCartridge.get(cartridgeType) != null) {
+        if (partitionToIaasProviderByCartridge.get(cartridgeType) != null) {
             partitionToIaasProviders = partitionToIaasProviderByCartridge.get(cartridgeType);
         } else {
             partitionToIaasProviders = new ConcurrentHashMap<String, IaasProvider>();
@@ -789,12 +789,12 @@ public class CloudControllerContext implements Serializable {
         cartridgeTypeToIaasProviders.put(cartridgeType, iaasProviders);
     }
 
-    public IaasProvider getIaasProvider(String cartridgeType, String iaasType){
+    public IaasProvider getIaasProvider(String cartridgeType, String iaasType) {
         List<IaasProvider> iaasProviders = cartridgeTypeToIaasProviders.get(cartridgeType);
 
         if (iaasProviders != null) {
             for (IaasProvider iaasProvider : iaasProviders) {
-                if(iaasProvider.getType().equals(iaasType)){
+                if (iaasProvider.getType().equals(iaasType)) {
                     return iaasProvider;
                 }
             }

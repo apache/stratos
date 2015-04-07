@@ -27,7 +27,7 @@ package org.apache.stratos.cloud.controller.exception;
 public class KubernetesEndpointValidationException extends Exception {
     private String message;
 
-    public KubernetesEndpointValidationException(String message, Exception exception){
+    public KubernetesEndpointValidationException(String message, Exception exception) {
         super(message, exception);
         this.setMessage(message);
     }
@@ -36,7 +36,8 @@ public class KubernetesEndpointValidationException extends Exception {
         super(msg);
         this.message = msg;
     }
-    public KubernetesEndpointValidationException(Exception exception){
+
+    public KubernetesEndpointValidationException(Exception exception) {
         super(exception);
     }
 

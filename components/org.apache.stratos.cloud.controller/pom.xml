@@ -49,11 +49,11 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Name>${project.artifactId}</Bundle-Name>
                         <Export-Package>
-			                !org.apache.stratos.cloud.controller.internal.*,
-			                org.apache.stratos.cloud.controller.*,
+                            !org.apache.stratos.cloud.controller.internal.*,
+                            org.apache.stratos.cloud.controller.*,
                         </Export-Package>
                         <Private-Package>
-			                org.apache.stratos.cloud.controller.internal.*,
+                            org.apache.stratos.cloud.controller.internal.*,
                         </Private-Package>
                         <Import-Package>
                             !org.apache.commons.logging,
@@ -70,20 +70,20 @@
                 </configuration>
             </plugin>
             <plugin>
-		        <groupId>org.apache.axis2</groupId>
-		        <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
-		        <configuration>
-			       <className>org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl</className>
-			       <outputFileName>target/generated-resources/wsdl/CloudControllerService.wsdl</outputFileName>
-			       <serviceName>CloudControllerService</serviceName>
-		        </configuration>
-		        <executions>
-		           <execution>
-		             <goals>
-		               <goal>java2wsdl</goal>
-		             </goals>
-		          </execution>
-		        </executions>
+                <groupId>org.apache.axis2</groupId>
+                <artifactId>axis2-java2wsdl-maven-plugin</artifactId>
+                <configuration>
+                    <className>org.apache.stratos.cloud.controller.services.impl.CloudControllerServiceImpl</className>
+                    <outputFileName>target/generated-resources/wsdl/CloudControllerService.wsdl</outputFileName>
+                    <serviceName>CloudControllerService</serviceName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java2wsdl</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -110,7 +110,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-        	<groupId>org.apache.stratos</groupId>
+            <groupId>org.apache.stratos</groupId>
             <artifactId>org.apache.stratos.kubernetes.client</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -248,9 +248,9 @@
             <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
-          <groupId>org.apache.stratos</groupId>
-          <artifactId>gce</artifactId>
-          <version>${jclouds.stratos.version}</version>
+            <groupId>org.apache.stratos</groupId>
+            <artifactId>gce</artifactId>
+            <version>${jclouds.stratos.version}</version>
         </dependency>
         <dependency>
             <groupId>com.jamesmurty.utils.wso2</groupId>

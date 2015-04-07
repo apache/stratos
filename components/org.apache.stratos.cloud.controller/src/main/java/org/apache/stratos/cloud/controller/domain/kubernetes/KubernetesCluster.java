@@ -51,7 +51,7 @@ public class KubernetesCluster implements Serializable {
     }
 
     public void setKubernetesHosts(KubernetesHost[] kubernetesHosts) {
-        if(kubernetesHosts == null) {
+        if (kubernetesHosts == null) {
             this.kubernetesHosts = new KubernetesHost[0];
         } else {
             this.kubernetesHosts = Arrays.copyOf(kubernetesHosts, kubernetesHosts.length);

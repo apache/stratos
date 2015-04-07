@@ -18,7 +18,7 @@
   -->
 <component xmlns="http://products.wso2.org/carbon">
     <deployers>
-    	<deployer>
+        <deployer>
             <directory>../../conf</directory>
             <extension>xml</extension>
             <class>org.apache.stratos.cloud.controller.deployers.CloudControllerDeployer</class>

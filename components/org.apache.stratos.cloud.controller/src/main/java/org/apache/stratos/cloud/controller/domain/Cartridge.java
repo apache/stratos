@@ -31,15 +31,15 @@ import java.util.*;
 /**
  * Holds information regarding a Cartridge.
  */
-public class Cartridge implements Serializable{
+public class Cartridge implements Serializable {
 
-	private transient static final Log log = LogFactory.getLog(Cartridge.class);
+    private transient static final Log log = LogFactory.getLog(Cartridge.class);
     private static final long serialVersionUID = 6637409027085059072L;
 
-	private String type;
+    private String type;
     private String hostName;
     private String provider;
-	private String category;
+    private String category;
     private String displayName;
     private String description;
     private String baseDir;
@@ -50,7 +50,7 @@ public class Cartridge implements Serializable{
     private Persistence persistence;
     private AppType[] appTypeMappings;
     private String loadBalancingIPType;
-	private String[] metadataKeys;
+    private String[] metadataKeys;
 
     private boolean isPublic;
 
@@ -64,10 +64,10 @@ public class Cartridge implements Serializable{
 
     private IaasConfig[] iaasConfigs;
 
-    public Cartridge(){
-    	init();
+    public Cartridge() {
+        init();
     }
-    
+
     public Cartridge(String type, String host, String provider, String version, boolean multiTenant) {
         this.type = type;
         this.hostName = host;
@@ -76,7 +76,7 @@ public class Cartridge implements Serializable{
         this.multiTenant = multiTenant;
         init();
     }
-    
+
     private void init() {
         tenantPartitions = "*";
         properties = new Properties();
@@ -89,7 +89,7 @@ public class Cartridge implements Serializable{
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public void addProperty(String key, String val) {
         if (key != null && val != null) {
             Property property = new Property();
@@ -107,26 +107,26 @@ public class Cartridge implements Serializable{
         this.properties = properties;
     }
 
-	public boolean equals(Object obj) {
-		if (obj instanceof Cartridge) {
-			return this.type.equals(((Cartridge)obj).getType());
-		}
-		return false;
-	}
-    
-    public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-            append(type).
-            toHashCode();
+    public boolean equals(Object obj) {
+        if (obj instanceof Cartridge) {
+            return this.type.equals(((Cartridge) obj).getType());
+        }
+        return false;
     }
 
-	public String getDisplayName() {
-		return displayName;
-	}
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+                append(type).
+                toHashCode();
+    }
 
-	public void setDisplayName(String displayName) {
-		this.displayName = displayName;
-	}
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
     public String getDescription() {
         return description;
@@ -136,23 +136,23 @@ public class Cartridge implements Serializable{
         this.description = description;
     }
 
-	public String getHostName() {
-	    return hostName;
+    public String getHostName() {
+        return hostName;
     }
 
-	public void setHostName(String hostName) {
-	    this.hostName = hostName;
-    }
-	
-	public void reset(){
-	}
-
-	public String[] getDeploymentDirs() {
-	    return deploymentDirs;
+    public void setHostName(String hostName) {
+        this.hostName = hostName;
     }
 
-	public void setDeploymentDirs(String[] deploymentDirs) {
-	    this.deploymentDirs = deploymentDirs;
+    public void reset() {
+    }
+
+    public String[] getDeploymentDirs() {
+        return deploymentDirs;
+    }
+
+    public void setDeploymentDirs(String[] deploymentDirs) {
+        this.deploymentDirs = deploymentDirs;
     }
 
     public void addDeploymentDir(String dir) {
@@ -176,64 +176,64 @@ public class Cartridge implements Serializable{
         appTypeList.toArray(this.appTypeMappings);
     }
 
-	public String getProvider() {
-	    return provider;
+    public String getProvider() {
+        return provider;
     }
 
-	public void setProvider(String provider) {
-	    this.provider = provider;
+    public void setProvider(String provider) {
+        this.provider = provider;
     }
 
-	public String getVersion() {
-		return version;
-	}
-
-	public void setVersion(String version) {
-		this.version = version;
-	}
-
-	public boolean isMultiTenant() {
-		return multiTenant;
-	}
-
-	public void setMultiTenant(boolean multiTenant) {
-		this.multiTenant = multiTenant;
-	}
-
-	public String getBaseDir() {
-	    return baseDir;
+    public String getVersion() {
+        return version;
     }
 
-	public void setBaseDir(String baseDir) {
-	    this.baseDir = baseDir;
+    public void setVersion(String version) {
+        this.version = version;
     }
 
-	public PortMapping[] getPortMappings() {
-	    return portMappings;
+    public boolean isMultiTenant() {
+        return multiTenant;
     }
 
-	public void setPortMappings(PortMapping[] portMappings) {
-	    this.portMappings = portMappings;
+    public void setMultiTenant(boolean multiTenant) {
+        this.multiTenant = multiTenant;
     }
 
-	public AppType[] getAppTypeMappings() {
-    	return appTypeMappings;
+    public String getBaseDir() {
+        return baseDir;
     }
 
-	public void setAppTypeMappings(AppType[] appTypeMappings) {
-    	this.appTypeMappings = appTypeMappings;
+    public void setBaseDir(String baseDir) {
+        this.baseDir = baseDir;
+    }
+
+    public PortMapping[] getPortMappings() {
+        return portMappings;
+    }
+
+    public void setPortMappings(PortMapping[] portMappings) {
+        this.portMappings = portMappings;
+    }
+
+    public AppType[] getAppTypeMappings() {
+        return appTypeMappings;
+    }
+
+    public void setAppTypeMappings(AppType[] appTypeMappings) {
+        this.appTypeMappings = appTypeMappings;
     }
 
     /**
-	 * @return the persistence
-	 */
+     * @return the persistence
+     */
     public Persistence getPersistence() {
         return persistence;
     }
 
     /**
-	 * @param persistence the persistenceMappings to set
-	 */
+     * @param persistence the persistenceMappings to set
+     */
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
@@ -246,13 +246,13 @@ public class Cartridge implements Serializable{
         this.exportingProperties = exportingProperties;
     }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     public String getTenantPartitions() {
         return tenantPartitions;
@@ -262,13 +262,13 @@ public class Cartridge implements Serializable{
         this.tenantPartitions = tenantPartitions;
     }
 
-	public String[] getMetadataKeys() {
-		return metadataKeys;
-	}
+    public String[] getMetadataKeys() {
+        return metadataKeys;
+    }
 
-	public void setMetadataKeys(String[] metadataKeys) {
-		this.metadataKeys = metadataKeys;
-	}
+    public void setMetadataKeys(String[] metadataKeys) {
+        this.metadataKeys = metadataKeys;
+    }
 
     public String getLoadBalancingIPType() {
         return loadBalancingIPType;

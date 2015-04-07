@@ -19,26 +19,26 @@
 package org.apache.stratos.cloud.controller.exception;
 
 public class InvalidCompositeApplicationDefinitionException extends Exception {
-    
+
     private static final long serialVersionUID = -1L;
     private String message;
-    
+
     public InvalidCompositeApplicationDefinitionException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
-    
+
     public InvalidCompositeApplicationDefinitionException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
 }

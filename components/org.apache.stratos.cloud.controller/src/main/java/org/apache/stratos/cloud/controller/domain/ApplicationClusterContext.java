@@ -41,8 +41,8 @@ public class ApplicationClusterContext {
     private String tenantRange;
     // properties
     private Properties properties;
-	//dependencyclusterid
-	private String[] dependencyClusterIds;
+    //dependencyclusterid
+    private String[] dependencyClusterIds;
 
     private boolean isVolumeRequired;
 
@@ -117,7 +117,7 @@ public class ApplicationClusterContext {
 
     public boolean equals(Object other) {
 
-        if(other == null || !(other instanceof ApplicationClusterContext)) {
+        if (other == null || !(other instanceof ApplicationClusterContext)) {
             return false;
         }
 
@@ -125,7 +125,7 @@ public class ApplicationClusterContext {
             return true;
         }
 
-        ApplicationClusterContext that = (ApplicationClusterContext)other;
+        ApplicationClusterContext that = (ApplicationClusterContext) other;
 
         return this.cartridgeType.equals(that.cartridgeType) &&
                 this.clusterId.equals(that.clusterId);
@@ -143,13 +143,13 @@ public class ApplicationClusterContext {
         this.properties = properties;
     }
 
-	public String[] getDependencyClusterIds() {
-		return dependencyClusterIds;
-	}
+    public String[] getDependencyClusterIds() {
+        return dependencyClusterIds;
+    }
 
-	public void setDependencyClusterIds(String[] dependencyClusterIds) {
-		this.dependencyClusterIds = dependencyClusterIds;
-	}
+    public void setDependencyClusterIds(String[] dependencyClusterIds) {
+        this.dependencyClusterIds = dependencyClusterIds;
+    }
 
     public boolean isVolumeRequired() {
         return isVolumeRequired;

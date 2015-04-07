@@ -19,13 +19,13 @@
 package org.apache.stratos.cloud.controller.exception;
 
 public class CloudControllerException extends RuntimeException {
-    
+
     private static final long serialVersionUID = -6326227079367867222L;
 
     public CloudControllerException(String msg) {
         super(msg);
     }
-    
+
     public CloudControllerException(String msg, Exception ex) {
         super(msg, ex);
     }

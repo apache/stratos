@@ -73,12 +73,12 @@ public class CloudControllerDeployer extends AbstractDeployer {
 
             // update map
             fileToIaasProviderListMap.put(deploymentFileData.getAbsolutePath(),
-                                          new ArrayList<IaasProvider>(
-                                                                      CloudControllerConfig.getInstance()
-                                                                                            .getIaasProviders()));
+                    new ArrayList<IaasProvider>(
+                            CloudControllerConfig.getInstance()
+                                    .getIaasProviders()));
 
             log.info("Successfully deployed the cloud-controller XML file located at " +
-                     deploymentFileData.getAbsolutePath());
+                    deploymentFileData.getAbsolutePath());
         }
 
     }
@@ -90,7 +90,7 @@ public class CloudControllerDeployer extends AbstractDeployer {
                 // remove 'em
                 CloudControllerConfig.getInstance().getIaasProviders().removeAll(fileToIaasProviderListMap.get(file));
                 log.info("Successfully un-deployed the cloud-controller XML file specified at " +
-                         file);
+                        file);
             }
 
             CloudControllerConfig.getInstance().setDataPubConfig(null);

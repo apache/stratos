@@ -23,11 +23,11 @@ import java.io.Serializable;
 
 public class ServiceGroup implements Serializable {
 
-	private static final long serialVersionUID = -7413745300105885793L;
+    private static final long serialVersionUID = -7413745300105885793L;
 
-	private String name;
-    private String [] subGroups;
-    private String [] cartridges;
+    private String name;
+    private String[] subGroups;
+    private String[] cartridges;
     private Dependencies dependencies;
 
     public String getName() {
@@ -38,19 +38,19 @@ public class ServiceGroup implements Serializable {
         this.name = name;
     }
 
-    public String [] getSubGroups() {
+    public String[] getSubGroups() {
         return subGroups;
     }
 
-    public void setSubGroups(String [] subGroups) {
+    public void setSubGroups(String[] subGroups) {
         this.subGroups = subGroups;
     }
 
-    public String [] getCartridges() {
+    public String[] getCartridges() {
         return cartridges;
     }
 
-    public void setCartridges(String [] cartridges) {
+    public void setCartridges(String[] cartridges) {
         this.cartridges = cartridges;
     }
 

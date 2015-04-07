@@ -27,10 +27,8 @@ import java.util.List;
 
 /**
  * Holds runtime data of a Cluster.
- *
- *
  */
-public class ClusterContext implements Serializable{
+public class ClusterContext implements Serializable {
 
     private static final long serialVersionUID = 4830667953031229223L;
 
@@ -80,41 +78,41 @@ public class ClusterContext implements Serializable{
         return hostName;
     }
 
-	public boolean isLbCluster() {
-		return isLbCluster;
-	}
+    public boolean isLbCluster() {
+        return isLbCluster;
+    }
 
-	public boolean isVolumeRequired() {
-		return isVolumeRequired;
-	}
+    public boolean isVolumeRequired() {
+        return isVolumeRequired;
+    }
 
-	public void setVolumeRequired(boolean isVolumeRequired) {
-		this.isVolumeRequired = isVolumeRequired;
-	}
+    public void setVolumeRequired(boolean isVolumeRequired) {
+        this.isVolumeRequired = isVolumeRequired;
+    }
 
-	public long getTimeoutInMillis() {
-		return timeoutInMillis;
-	}
+    public long getTimeoutInMillis() {
+        return timeoutInMillis;
+    }
 
-	public void setTimeoutInMillis(long timeoutInMillis) {
-		this.timeoutInMillis = timeoutInMillis;
-	}
+    public void setTimeoutInMillis(long timeoutInMillis) {
+        this.timeoutInMillis = timeoutInMillis;
+    }
 
-	public Volume[] getVolumes() {
-		return volumes;
-	}
+    public Volume[] getVolumes() {
+        return volumes;
+    }
 
-	public void setVolumes(Volume[] volumes) {
-		this.volumes = ArrayUtils.clone(volumes);
-	}
+    public void setVolumes(Volume[] volumes) {
+        this.volumes = ArrayUtils.clone(volumes);
+    }
 
-	public Properties getProperties() {
-		return properties;
-	}
+    public Properties getProperties() {
+        return properties;
+    }
 
-	public void setProperties(Properties properties) {
-		this.properties = properties;
-	}
+    public void setProperties(Properties properties) {
+        this.properties = properties;
+    }
 
     public List<KubernetesService> getKubernetesServices() {
         return kubernetesServices;

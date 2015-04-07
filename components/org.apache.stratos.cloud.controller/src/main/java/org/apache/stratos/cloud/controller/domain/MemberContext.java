@@ -28,7 +28,6 @@ import java.util.Arrays;
 
 /**
  * Holds information about a Member.
- *
  */
 public class MemberContext implements Serializable {
 
@@ -91,7 +90,7 @@ public class MemberContext implements Serializable {
     public String getApplicationId() {
         return applicationId;
     }
-    
+
     public String getMemberId() {
         return memberId;
     }
@@ -119,7 +118,7 @@ public class MemberContext implements Serializable {
     public void setDefaultPublicIP(String defaultPublicIP) {
         this.defaultPublicIP = defaultPublicIP;
     }
-    
+
     public String[] getPublicIPs() {
         return publicIPs;
     }
@@ -135,7 +134,7 @@ public class MemberContext implements Serializable {
     public void setDefaultPrivateIP(String defaultPrivateIP) {
         this.defaultPrivateIP = defaultPrivateIP;
     }
-    
+
     public String[] getPrivateIPs() {
         return privateIPs;
     }
@@ -176,45 +175,45 @@ public class MemberContext implements Serializable {
         this.networkPartitionId = networkPartitionId;
     }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((clusterId == null) ? 0 : clusterId.hashCode());
-		result = prime * result
-				+ ((memberId == null) ? 0 : memberId.hashCode());
-		result = prime * result + ((instanceId == null) ? 0 : instanceId.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result
+                + ((clusterId == null) ? 0 : clusterId.hashCode());
+        result = prime * result
+                + ((memberId == null) ? 0 : memberId.hashCode());
+        result = prime * result + ((instanceId == null) ? 0 : instanceId.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
 
         MemberContext other = (MemberContext) obj;
-		if(getApplicationId().equals(other.getApplicationId()) &&
+        if (getApplicationId().equals(other.getApplicationId()) &&
                 getCartridgeType().equals(other.getCartridgeType()) &&
                 getClusterId().equals(other.getClusterId()) &&
                 getMemberId().equals(other.getMemberId()) &&
                 getInstanceId().equals(other.getInstanceId())) {
             return true;
         }
-		return false;
-	}
+        return false;
+    }
 
-	public String getInstanceId() {
-		return instanceId;
-	}
+    public String getInstanceId() {
+        return instanceId;
+    }
 
-	public void setInstanceId(String instanceId) {
-		this.instanceId = instanceId;
-	}
+    public void setInstanceId(String instanceId) {
+        this.instanceId = instanceId;
+    }
 
     public long getObsoleteExpiryTime() {
         return obsoleteExpiryTime;

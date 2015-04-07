@@ -26,7 +26,7 @@ import org.apache.stratos.cloud.controller.util.CloudControllerConstants;
  *
  *
  */
-public class DataPublisherConfig implements Serializable{
+public class DataPublisherConfig implements Serializable {
 
     private static final long serialVersionUID = -2097472019584151205L;
     private String bamUsername = CloudControllerConstants.DEFAULT_BAM_SERVER_USER_NAME;
@@ -35,7 +35,7 @@ public class DataPublisherConfig implements Serializable{
     private String cassandraConnUrl = CloudControllerConstants.DEFAULT_CASSANDRA_URL;
     private String cassandraUser = CloudControllerConstants.DEFAULT_CASSANDRA_USER;
     private String cassandraPassword = CloudControllerConstants.DEFAULT_CASSANDRA_PASSWORD;
-    
+
     public String getBamUsername() {
         return bamUsername;
     }
@@ -59,6 +59,7 @@ public class DataPublisherConfig implements Serializable{
     public void setDataPublisherCron(String dataPublisherCron) {
         this.dataPublisherCron = dataPublisherCron;
     }
+
     public String getCassandraConnUrl() {
         return cassandraConnUrl;
     }

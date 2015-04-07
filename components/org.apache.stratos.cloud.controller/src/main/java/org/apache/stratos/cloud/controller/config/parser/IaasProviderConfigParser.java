@@ -35,8 +35,6 @@ import java.util.Map;
 
 /**
  * Parse the iaas providers.
- *
- *
  */
 public class IaasProviderConfigParser {
     private static final Log log = LogFactory.getLog(IaasProviderConfigParser.class);
@@ -103,7 +101,7 @@ public class IaasProviderConfigParser {
 
         return iaas;
     }
-    
+
     private static void loadClassName(final String fileName, final IaasProvider iaas, final OMElement iaasElt) {
 
         Iterator<?> it =
@@ -227,7 +225,6 @@ public class IaasProviderConfigParser {
     }
 
 
-
     public static void loadProperties(final String fileName, final OMElement elt, final Map<String, String> propertyMap) {
 
         Iterator<?> it =
@@ -247,7 +244,7 @@ public class IaasProviderConfigParser {
             }
 
             propertyMap.put(prop.getAttribute(new QName(CloudControllerConstants.PROPERTY_NAME_ATTR))
-                    .getAttributeValue(),
+                            .getAttributeValue(),
                     prop.getAttribute(new QName(CloudControllerConstants.PROPERTY_VALUE_ATTR))
                             .getAttributeValue());
         }
@@ -296,8 +293,8 @@ public class IaasProviderConfigParser {
 
     }
 
-    
-    private static void handleException(final String msg) throws MalformedConfigurationFileException{
+
+    private static void handleException(final String msg) throws MalformedConfigurationFileException {
         log.error(msg);
         throw new MalformedConfigurationFileException(msg);
     }

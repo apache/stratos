@@ -20,35 +20,35 @@ package org.apache.stratos.cloud.controller.domain;
 
 import java.io.Serializable;
 import java.util.Arrays;
+
 /**
- * Had to wrap {@link NetworkInterface} array using a class, since there's a bug in current 
+ * Had to wrap {@link NetworkInterface} array using a class, since there's a bug in current
  * stub generation.
- *
  */
 public class NetworkInterfaces implements Serializable {
 
-	private static final long serialVersionUID = -8435710709813227055L;
-	private NetworkInterface[] networkInterfaces;
+    private static final long serialVersionUID = -8435710709813227055L;
+    private NetworkInterface[] networkInterfaces;
 
-	/**
-	 * @return the networkInterfaces
-	 */
-	public NetworkInterface[] getNetworkInterfaces() {
-		return networkInterfaces;
-	}
+    /**
+     * @return the networkInterfaces
+     */
+    public NetworkInterface[] getNetworkInterfaces() {
+        return networkInterfaces;
+    }
 
-	/**
-	 * @param networkInterfaces the networkInterfaces to set
-	 */
-	public void setNetworkInterfaces(NetworkInterface[] networkInterfaces) {
-        if(networkInterfaces == null) {
+    /**
+     * @param networkInterfaces the networkInterfaces to set
+     */
+    public void setNetworkInterfaces(NetworkInterface[] networkInterfaces) {
+        if (networkInterfaces == null) {
             this.networkInterfaces = new NetworkInterface[0];
         } else {
             this.networkInterfaces = Arrays.copyOf(networkInterfaces, networkInterfaces.length);
         }
-	}
+    }
 
-	@Override
+    @Override
     public String toString() {
         return "NetworkInterfaces [network interfaces=" + Arrays.toString(networkInterfaces) + "]";
     }

@@ -18,9 +18,9 @@
  */
 package org.apache.stratos.cloud.controller.exception;
 
-public class NetworkPartitionAlreadyExistsException extends Exception{
+public class NetworkPartitionAlreadyExistsException extends Exception {
 
-	public NetworkPartitionAlreadyExistsException(String message) {
-		super(message);
-	}
+    public NetworkPartitionAlreadyExistsException(String message) {
+        super(message);
+    }
 }

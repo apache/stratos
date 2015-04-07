@@ -25,14 +25,14 @@ public class Volume implements Serializable {
 
     private String id;
     private int size;
-	private String device;
-	private boolean removeOntermination;
+    private String device;
+    private boolean removeOntermination;
     private String mappingPath;
     private String iaasType;
     private String snapshotId;
     private String volumeId;
 
-    public String toString () {
+    public String toString() {
         return "Persistence Required: " + ", Size: " + getSize() + ", device: " + getDevice() +
                 " mapping path : " + mappingPath + " remove on termination " + isRemoveOntermination() + " SnaphotId " + snapshotId;
     }
@@ -53,7 +53,9 @@ public class Volume implements Serializable {
         this.device = device;
     }
 
-    public boolean isRemoveOntermination() {return removeOntermination;}
+    public boolean isRemoveOntermination() {
+        return removeOntermination;
+    }
 
     public void setRemoveOntermination(boolean removeOntermination) {
         this.removeOntermination = removeOntermination;
@@ -67,54 +69,54 @@ public class Volume implements Serializable {
         this.mappingPath = mappingPath;
     }
 
-	public String getId() {
-		return id;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        return result;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Volume other = (Volume) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.equals(other.id))
-			return false;
-		return true;
-	}
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Volume other = (Volume) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        return true;
+    }
 
-	public String getIaasType() {
-		return iaasType;
-	}
+    public String getIaasType() {
+        return iaasType;
+    }
 
-	public void setIaasType(String iaasType) {
-		this.iaasType = iaasType;
-	}
+    public void setIaasType(String iaasType) {
+        this.iaasType = iaasType;
+    }
 
-	public String getSnapshotId() {
-		return snapshotId;
-	}
+    public String getSnapshotId() {
+        return snapshotId;
+    }
 
-	public void setSnapshotId(String snapshotId) {
-		this.snapshotId = snapshotId;
-	}
+    public void setSnapshotId(String snapshotId) {
+        this.snapshotId = snapshotId;
+    }
 
     public String getVolumeId() {
         return volumeId;

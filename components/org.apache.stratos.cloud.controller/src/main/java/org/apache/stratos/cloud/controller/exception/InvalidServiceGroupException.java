@@ -19,28 +19,28 @@
 package org.apache.stratos.cloud.controller.exception;
 
 public class InvalidServiceGroupException extends Exception {
-    
 
-	private static final long serialVersionUID = 2651280146514042590L;
-	
-	private String message;
-    
+
+    private static final long serialVersionUID = 2651280146514042590L;
+
+    private String message;
+
     public InvalidServiceGroupException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
-    
+
     public InvalidServiceGroupException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
 }

@@ -6,16 +6,16 @@ package org.apache.stratos.cloud.controller.exception;
 public class InvalidKubernetesMasterException extends Exception {
     private String message;
 
-    public InvalidKubernetesMasterException(String message, Exception exception){
+    public InvalidKubernetesMasterException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
-    public InvalidKubernetesMasterException(Exception exception){
+    public InvalidKubernetesMasterException(Exception exception) {
         super(exception);
     }
 
-    public InvalidKubernetesMasterException(String msg){
+    public InvalidKubernetesMasterException(String msg) {
         super(msg);
         this.message = msg;
     }

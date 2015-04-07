@@ -23,21 +23,21 @@ public class ApplicationClusterRegistrationException extends Exception {
 
     private String message;
 
-    public ApplicationClusterRegistrationException () {
+    public ApplicationClusterRegistrationException() {
         super();
     }
 
-    public ApplicationClusterRegistrationException (String message, Throwable cause) {
+    public ApplicationClusterRegistrationException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public ApplicationClusterRegistrationException (String message) {
+    public ApplicationClusterRegistrationException(String message) {
         super(message);
         this.message = message;
     }
 
-    public ApplicationClusterRegistrationException (Throwable cause) {
+    public ApplicationClusterRegistrationException(Throwable cause) {
         super(cause);
     }
 

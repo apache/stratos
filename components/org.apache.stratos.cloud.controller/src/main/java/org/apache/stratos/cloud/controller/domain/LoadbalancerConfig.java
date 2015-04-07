@@ -33,9 +33,9 @@ public class LoadbalancerConfig implements Serializable {
     private static final long serialVersionUID = 289225330995632449L;
 
     private String type;
-   
+
     private Properties properties;
-    
+
     public String getType() {
         return type;
     }
@@ -52,17 +52,17 @@ public class LoadbalancerConfig implements Serializable {
         this.properties = properties;
     }
 
-    public String toString () {
+    public String toString() {
 
         return " [ Type: " + type + ", Properties: " + getIaasProperties() + " ] ";
     }
 
-    private String getIaasProperties () {
+    private String getIaasProperties() {
 
         StringBuilder iaasPropertyBuilder = new StringBuilder();
         if (properties != null) {
             Property[] propertyArray = properties.getProperties();
-            if(propertyArray.length > 0) {
+            if (propertyArray.length > 0) {
                 for (Property property : propertyArray) {
                     iaasPropertyBuilder.append(property.toString() + " | ");
                 }

@@ -23,8 +23,8 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 /**
-* The model class for NetworkPartition definition.
-*/
+ * The model class for NetworkPartition definition.
+ */
 public class NetworkPartition implements Serializable {
 
     private static final long serialVersionUID = -8043298009352097370L;
@@ -36,7 +36,7 @@ public class NetworkPartition implements Serializable {
     private String partitionAlgo;
 
     public void setPartitions(Partition[] partitions) {
-        if(partitions == null) {
+        if (partitions == null) {
             this.partitions = partitions;
         } else {
             this.partitions = Arrays.copyOf(partitions, partitions.length);
@@ -52,7 +52,7 @@ public class NetworkPartition implements Serializable {
         }
         return this.partitions;
     }
-    
+
     /**
      * Gets the value of the id.
      */
@@ -76,21 +76,21 @@ public class NetworkPartition implements Serializable {
     }
 
     public Partition getPartition(String partitionId) {
-        for(Partition partition : partitions) {
-            if(partition.getId().equals(partitionId)) {
+        for (Partition partition : partitions) {
+            if (partition.getId().equals(partitionId)) {
                 return partition;
             }
         }
         return null;
     }
 
-	public String getProvider() {
-		return provider;
-	}
+    public String getProvider() {
+        return provider;
+    }
 
-	public void setProvider(String provider) {
-		this.provider = provider;
-	}
+    public void setProvider(String provider) {
+        this.provider = provider;
+    }
 
     public String getPartitionAlgo() {
         return partitionAlgo;

@@ -33,7 +33,7 @@ public class JcloudsIaasUtil {
     private static final Log log = LogFactory.getLog(JcloudsIaasUtil.class);
 
     public static void buildComputeServiceAndTemplate(IaasProvider iaasProvider) throws InvalidIaasProviderException {
-        if(iaasProvider.getImage() != null) {
+        if (iaasProvider.getImage() != null) {
             buildComputeServiceAndTemplateFromImage(iaasProvider);
         } else {
             buildDefaultComputeService(iaasProvider);

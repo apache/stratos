@@ -35,10 +35,10 @@ import java.util.Map;
  * NOTE: If you add a new attribute, please assign it in the constructor too.
  */
 public class IaasProvider implements Serializable {
-   
+
     private static final long serialVersionUID = -940288190885166118L;
 
-	/**
+    /**
      * Type of the IaasProvider.
      */
     private String type;
@@ -48,64 +48,65 @@ public class IaasProvider implements Serializable {
      * Fully qualified class name of an implementation of {@link org.apache.stratos.cloud.controller.iaases.Iaas}
      */
     private String className;
-    
+
     /**
      * human description of this IaaS provider
      */
     private String name;
-    
+
     /**
      * Property map of this IaaS provider.
      */
     private Map<String, String> properties = new HashMap<String, String>();
-    
+
     /**
      * Network Interfaces Configuration
      */
     private NetworkInterface[] networkInterfaces;
-    
+
     /**
      * Image identifier.
      */
     private String image;
-    
+
     private String provider, identity, credential;
-    
+
     private transient ComputeService computeService;
-    
+
     private transient Template template;
-    
+
     private byte[] payload;
-    
-    /** 
+
+    /**
      * Corresponding {@link org.apache.stratos.cloud.controller.iaases.Iaas} implementation
      */
     private transient Iaas iaas;
-    
-    public IaasProvider(){}
-    
-    public IaasProvider(IaasProvider anIaasProvider){
-    	this.type = anIaasProvider.getType();
-    	this.name = anIaasProvider.getName();
-    	this.className = anIaasProvider.getClassName();
-    	this.computeService = anIaasProvider.getComputeService();
-    	this.properties = new HashMap<String,String>(anIaasProvider.getProperties());
-    	this.networkInterfaces = anIaasProvider.getNetworkInterfaces();
-    	this.image = anIaasProvider.getImage();
-    	this.provider = anIaasProvider.getProvider();
-    	this.identity = anIaasProvider.getIdentity();
-    	this.credential = anIaasProvider.getCredential();
-    	this.payload = anIaasProvider.getPayload();
+
+    public IaasProvider() {
     }
-    
+
+    public IaasProvider(IaasProvider anIaasProvider) {
+        this.type = anIaasProvider.getType();
+        this.name = anIaasProvider.getName();
+        this.className = anIaasProvider.getClassName();
+        this.computeService = anIaasProvider.getComputeService();
+        this.properties = new HashMap<String, String>(anIaasProvider.getProperties());
+        this.networkInterfaces = anIaasProvider.getNetworkInterfaces();
+        this.image = anIaasProvider.getImage();
+        this.provider = anIaasProvider.getProvider();
+        this.identity = anIaasProvider.getIdentity();
+        this.credential = anIaasProvider.getCredential();
+        this.payload = anIaasProvider.getPayload();
+    }
+
     public String getType() {
         return type;
     }
-    
+
     public void setType(String id) {
         this.type = id;
     }
-    
+
     public String getProperty(String key) {
         return properties.get(key);
     }
@@ -113,16 +114,16 @@ public class IaasProvider implements Serializable {
     public Map<String, String> getProperties() {
         return properties;
     }
-    
+
     public void addProperty(String key, String val) {
         if (key != null && val != null) {
             properties.put(key, val);
         }
     }
-    
+
     public void setProperty(String key, String value) {
-        
-        if(key != null && value != null){
+
+        if (key != null && value != null) {
             properties.put(key, value);
         }
     }
@@ -186,26 +187,25 @@ public class IaasProvider implements Serializable {
     public void setTemplate(Template template) {
         this.template = template;
     }
-    
-    
+
 
     public boolean equals(Object o) {
-        if(o instanceof IaasProvider){
+        if (o instanceof IaasProvider) {
             return ((IaasProvider) o).getType().equals(this.getType());
         }
-        
+
         return false;
     }
-    
+
     public int hashCode() {
         return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-            append(type).
-            toHashCode();
+                append(type).
+                toHashCode();
     }
-    
-    public IaasProvider copy(){
-		return new IaasProvider(this);
-	}
+
+    public IaasProvider copy() {
+        return new IaasProvider(this);
+    }
 
     public String getClassName() {
         return className;
@@ -216,9 +216,9 @@ public class IaasProvider implements Serializable {
     }
 
     public Iaas getIaas() {
-    	if (iaas == null) {
+        if (iaas == null) {
             synchronized (IaasProvider.this) {
-                if(iaas == null) {
+                if (iaas == null) {
                     try {
                         iaas = CloudControllerUtil.createIaasInstance(this);
                         iaas.initialize();
@@ -227,11 +227,11 @@ public class IaasProvider implements Serializable {
                     }
                 }
             }
-    	}
+        }
         return iaas;
     }
-    
-    public void reset(){
+
+    public void reset() {
 //    	nodeIds = new ArrayList<String>();
 //    	nodes = new HashMap<String, NodeMetadata>();
 //    	toBeRemovedNodeIds = new ArrayList<String>();

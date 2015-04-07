@@ -22,8 +22,6 @@ import org.apache.stratos.common.Properties;
 
 /**
  * Upon a new subscription, Stratos Manager would send this POJO.
- *
- *
  */
 public class Registrant {
 
@@ -36,46 +34,59 @@ public class Registrant {
     private String autoScalerPolicyName;
     private String deploymentPolicyName;
     private Persistence persistence;
-    
+
     public String getTenantRange() {
         return tenantRange;
     }
+
     public void setTenantRange(String tenantRange) {
         this.tenantRange = tenantRange;
     }
+
     public String getHostName() {
         return hostName;
     }
+
     public void setHostName(String hostName) {
         this.hostName = hostName;
     }
+
     public Properties getProperties() {
         return properties;
     }
+
     public void setProperties(Properties properties) {
         this.properties = properties;
     }
+
     public String getAutoScalerPolicyName() {
         return autoScalerPolicyName;
     }
+
     public void setAutoScalerPolicyName(String autoScalerPolicyName) {
         this.autoScalerPolicyName = autoScalerPolicyName;
     }
+
     public String getClusterId() {
         return clusterId;
     }
+
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
     }
+
     public String getCartridgeType() {
         return cartridgeType;
     }
+
     public void setCartridgeType(String cartridgeType) {
         this.cartridgeType = cartridgeType;
     }
+
     public String getPayload() {
         return payload;
     }
+
     public void setPayload(String payload) {
         this.payload = payload;
     }
@@ -87,12 +98,13 @@ public class Registrant {
     public void setDeploymentPolicyName(String deploymentPolicyName) {
         this.deploymentPolicyName = deploymentPolicyName;
     }
+
     @Override
     public String toString() {
         return "Registrant [clusterId=" + clusterId + ", tenantRange=" + tenantRange +
-               ", hostName=" + hostName + ", cartridgeType=" + cartridgeType + ", properties=" +
-               properties + ", autoScalerPolicyName=" + autoScalerPolicyName +
-               ", deploymentPolicyName=" + deploymentPolicyName + "]";
+                ", hostName=" + hostName + ", cartridgeType=" + cartridgeType + ", properties=" +
+                properties + ", autoScalerPolicyName=" + autoScalerPolicyName +
+                ", deploymentPolicyName=" + deploymentPolicyName + "]";
     }
 
     public Persistence getPersistence() {

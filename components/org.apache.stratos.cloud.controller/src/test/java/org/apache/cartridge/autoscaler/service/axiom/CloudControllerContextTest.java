@@ -30,7 +30,7 @@ public class CloudControllerContextTest extends TestCase {
     public CloudControllerContextTest(String name) {
         super(name);
     }
-    
+
     protected void setUp() throws Exception {
         super.setUp();
     }
@@ -42,48 +42,50 @@ public class CloudControllerContextTest extends TestCase {
         ServiceReferenceHolder.getInstance().setDistributedObjectProvider(new HazelcastDistributedObjectProvider());
         ServiceReferenceHolder.getInstance().setAxisConfiguration(axisConfiguration);
 
-    	CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
+        CloudControllerContext cloudControllerContext = CloudControllerContext.getInstance();
 
-		Thread t1 = new Thread(new MemberAdder(cloudControllerContext));
-    	t1.start();
-    	t1.join();
-    	assertEquals(2, cloudControllerContext.getMemberContextsOfClusterId("cluster-1").size());
+        Thread t1 = new Thread(new MemberAdder(cloudControllerContext));
+        t1.start();
+        t1.join();
+        assertEquals(2, cloudControllerContext.getMemberContextsOfClusterId("cluster-1").size());
 
-		Thread t2 = new Thread(new MemberRemover(cloudControllerContext));
-    	t2.start();
-    	t2.join();
-    	assertEquals(1, cloudControllerContext.getMemberContextsOfClusterId("cluster-1").size());
-    	
+        Thread t2 = new Thread(new MemberRemover(cloudControllerContext));
+        t2.start();
+        t2.join();
+        assertEquals(1, cloudControllerContext.getMemberContextsOfClusterId("cluster-1").size());
+
     }
 
     class MemberAdder implements Runnable {
-    	
-    	private CloudControllerContext dataHolder;
-    	public MemberAdder(CloudControllerContext data) {
-    		this.dataHolder = data;
-    	}
-    	@Override
-    	public void run() {
-    		MemberContext ctxt1 = new MemberContext("application-1", "cartridge-1", "cluster-1", "member-1");
-    		MemberContext ctxt2 = new MemberContext("application-1", "cartridge-1", "cluster-1", "member-2");
-    		MemberContext ctxt3 = new MemberContext("application-1", "cartridge-1", "cluster-2", "member-3");
-    		dataHolder.addMemberContext(ctxt1);
-    		dataHolder.addMemberContext(ctxt2);
-    		dataHolder.addMemberContext(ctxt3);
-    	}
+
+        private CloudControllerContext dataHolder;
+
+        public MemberAdder(CloudControllerContext data) {
+            this.dataHolder = data;
+        }
+
+        @Override
+        public void run() {
+            MemberContext ctxt1 = new MemberContext("application-1", "cartridge-1", "cluster-1", "member-1");
+            MemberContext ctxt2 = new MemberContext("application-1", "cartridge-1", "cluster-1", "member-2");
+            MemberContext ctxt3 = new MemberContext("application-1", "cartridge-1", "cluster-2", "member-3");
+            dataHolder.addMemberContext(ctxt1);
+            dataHolder.addMemberContext(ctxt2);
+            dataHolder.addMemberContext(ctxt3);
+        }
     }
-    
+
     class MemberRemover implements Runnable {
-    	
-    	private CloudControllerContext dataHolder;
 
-		public MemberRemover(CloudControllerContext cloudControllerContext) {
-    		this.dataHolder = cloudControllerContext;
-    	}
+        private CloudControllerContext dataHolder;
 
-		@Override
-    	public void run() {
-    		dataHolder.removeMemberContext("cluster-1", "member-1");
-    	}
+        public MemberRemover(CloudControllerContext cloudControllerContext) {
+            this.dataHolder = cloudControllerContext;
+        }
+
+        @Override
+        public void run() {
+            dataHolder.removeMemberContext("cluster-1", "member-1");
+        }
     }
 }

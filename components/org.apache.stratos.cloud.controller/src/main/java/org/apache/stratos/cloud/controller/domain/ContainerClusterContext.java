@@ -24,7 +24,6 @@ import java.io.Serializable;
 
 /**
  * Holds information about a container cluster to be started.
- *
  */
 public class ContainerClusterContext implements Serializable {
 
@@ -33,26 +32,28 @@ public class ContainerClusterContext implements Serializable {
     private String clusterId;
     // partition this member is in.
     private Partition partition;
- // instance id - derived from nodeId
+    // instance id - derived from nodeId
     private String instanceId;
-  //network partition id
+    //network partition id
     private String networkPartitionId;
     // properties
     private Properties properties;
-    
+
     public ContainerClusterContext() {
     }
-    
+
     public ContainerClusterContext(String clusterId) {
         this.clusterId = clusterId;
     }
-    
+
     public String getClusterId() {
         return clusterId;
     }
+
     public void setClusterId(String clusterId) {
         this.clusterId = clusterId;
     }
+
     public Properties getProperties() {
         return properties;
     }

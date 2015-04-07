@@ -21,29 +21,27 @@ package org.apache.stratos.cloud.controller.exception;
 
 /**
  * Throws when a {@link Partition} is evaluated to be invalid.
- *
- *
  */
 public class InvalidRegionException extends Exception {
 
     private static final long serialVersionUID = -7883324379272628566L;
-	private String message;
+    private String message;
 
     public InvalidRegionException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
-    
+
     public InvalidRegionException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }
-    
-    private void setMessage(String msg) {
-    	this.message = msg;
-	}
 
-	public String getMessage() {
+    private void setMessage(String msg) {
+        this.message = msg;
+    }
+
+    public String getMessage() {
         return this.message;
     }
 }

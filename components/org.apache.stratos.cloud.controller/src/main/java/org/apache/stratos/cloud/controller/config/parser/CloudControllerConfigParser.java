@@ -37,8 +37,6 @@ import java.util.List;
 
 /**
  * Parse the cloud-controller.xml
- *
- *
  */
 public class CloudControllerConfigParser {
     private static final Log log = LogFactory.getLog(CloudControllerConfigParser.class);
@@ -46,6 +44,7 @@ public class CloudControllerConfigParser {
 
     /**
      * Parse the cloud-controller.xml file.
+     *
      * @param documentElement document element.
      * @throws MalformedConfigurationFileException
      */
@@ -53,12 +52,10 @@ public class CloudControllerConfigParser {
 
         extractIaasProviders(documentElement, AxiomXpathParserUtil.getMatchingNodes(documentElement, CloudControllerConstants.IAAS_PROVIDER_XPATH));
         extractDataPublisherConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.DATA_PUBLISHER_ELEMENT,
-                                        CloudControllerConstants.DATA_PUBLISHER_XPATH));
+                CloudControllerConstants.DATA_PUBLISHER_XPATH));
         extractTopologySyncConfig(documentElement, AxiomXpathParserUtil.getElement(FILE_NAME, documentElement, CloudControllerConstants.TOPOLOGY_SYNC_ELEMENT,
-                        CloudControllerConstants.TOPOLOGY_SYNC_XPATH));
+                CloudControllerConstants.TOPOLOGY_SYNC_XPATH));
     }
-
-
 
 
     private static void extractIaasProviders(OMElement documentElement, List<OMNode> nodeList) {
@@ -71,18 +68,18 @@ public class CloudControllerConfigParser {
         // this is a valid scenario. User can have 0..1 iaas provider elements
         // in cloud-controller xml.
         if (nodeList == null || nodeList.isEmpty()) {
-            log.debug("No IaasProvider element found in "+FILE_NAME);
+            log.debug("No IaasProvider element found in " + FILE_NAME);
             return;
         }
-        
+
         for (OMNode node : nodeList) {
             iaasProviders.add(IaasProviderConfigParser.getIaasProvider(FILE_NAME, documentElement, node, null));
         }
     }
-    
+
     private static void extractDataPublisherConfig(OMElement documentElement, OMElement element) {
         if (element == null) {
-            log.debug("No data publisher config found in "+FILE_NAME);
+            log.debug("No data publisher config found in " + FILE_NAME);
             return;
         }
 
@@ -102,7 +99,7 @@ public class CloudControllerConfigParser {
 
             DataPublisherConfig dataPublisherConfig = new DataPublisherConfig();
             config.setDataPubConfig(dataPublisherConfig);
-            
+
             if (childElement != null) {
                 // set bam user name
                 elt =
@@ -170,13 +167,13 @@ public class CloudControllerConfigParser {
     private static void extractTopologySyncConfig(OMElement elt, OMElement element) {
 
         if (element == null) {
-            log.debug("No Topology sync config is found "+FILE_NAME);
+            log.debug("No Topology sync config is found " + FILE_NAME);
             return;
         }
 
         // get enable attribute
         boolean isEnable = Boolean.parseBoolean(element.getAttributeValue(new QName(
-                        CloudControllerConstants.ENABLE_ATTR)));
+                CloudControllerConstants.ENABLE_ATTR)));
 
         CloudControllerConfig config = CloudControllerConfig.getInstance();
         config.setEnableTopologySync(isEnable);

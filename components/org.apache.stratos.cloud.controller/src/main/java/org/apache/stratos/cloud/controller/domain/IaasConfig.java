@@ -35,69 +35,69 @@ public class IaasConfig implements Serializable {
     private static final long serialVersionUID = 3329046207651171707L;
 
     private String type;
-   
+
     private String className;
-   
+
     private String name;
-   
+
     private String provider, identity, credential;
-   
+
     private String imageId;
 
     private Properties properties;
-    
+
     private NetworkInterfaces networkInterfaces;
-    
+
     private byte[] payload;
 
     public String getClassName() {
         return className;
     }
-    
+
     public void setClassName(String className) {
         this.className = className;
     }
-    
+
     public String getName() {
         return name;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getProvider() {
         return provider;
     }
-    
+
     public void setProvider(String provider) {
         this.provider = provider;
     }
-    
+
     public String getIdentity() {
         return identity;
     }
-    
+
     public void setIdentity(String identity) {
         this.identity = identity;
     }
-    
+
     public String getCredential() {
         return credential;
     }
-    
+
     public void setCredential(String credential) {
         this.credential = credential;
     }
-    
+
     public byte[] getPayload() {
         return payload;
     }
-    
+
     public void setPayload(byte[] payload) {
         this.payload = ArrayUtils.clone(payload);
     }
-    
+
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
@@ -126,19 +126,19 @@ public class IaasConfig implements Serializable {
         this.properties = properties;
     }
 
-    public String toString () {
+    public String toString() {
 
         return " [ Type: " + type + ", Name: " + name + ", Class Name: " + className + ", Image Id: " + imageId +
                 ", Provider: " + provider + ", Identity: " + identity +
                 ", Credentials: " + credential + ", Properties: " + getIaasProperties() + " ] ";
     }
 
-    private String getIaasProperties () {
+    private String getIaasProperties() {
 
         StringBuilder iaasPropertyBuilder = new StringBuilder();
         if (properties != null) {
             Property[] propertyArray = properties.getProperties();
-            if(propertyArray.length > 0) {
+            if (propertyArray.length > 0) {
                 for (Property property : propertyArray) {
                     iaasPropertyBuilder.append(property.toString() + " | ");
                 }

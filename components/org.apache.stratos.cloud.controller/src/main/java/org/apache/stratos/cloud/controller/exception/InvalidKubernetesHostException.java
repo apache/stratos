@@ -28,16 +28,16 @@ public class InvalidKubernetesHostException extends Exception {
 
     private String message;
 
-    public InvalidKubernetesHostException(String message, Exception exception){
+    public InvalidKubernetesHostException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
-    public InvalidKubernetesHostException(Exception exception){
+    public InvalidKubernetesHostException(Exception exception) {
         super(exception);
     }
 
-    public InvalidKubernetesHostException(String msg){
+    public InvalidKubernetesHostException(String msg) {
         super(msg);
         this.message = msg;
     }

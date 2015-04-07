@@ -52,12 +52,12 @@ import java.util.Properties;
 
 
 public class CloudControllerUtil {
-	private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
+    private static final Log log = LogFactory.getLog(CloudControllerUtil.class);
 
     public static Iaas createIaasInstance(IaasProvider iaasProvider)
             throws InvalidIaasProviderException {
         try {
-            if(iaasProvider.getClassName() == null) {
+            if (iaasProvider.getClassName() == null) {
                 String msg = "You have not specified a class which represents the iaas of type: ["
                         + iaasProvider.getType() + "].";
                 log.error(msg);
@@ -82,40 +82,40 @@ public class CloudControllerUtil {
         }
         Cartridge cartridge = new Cartridge();
 
-	    // populate cartridge
-	    cartridge.setType(config.getType());
-	    cartridge.setDisplayName(config.getDisplayName());
-	    cartridge.setDescription(config.getDescription());
-	    cartridge.setHostName(config.getHostName());
-	    String[] deploymentDirs = config.getDeploymentDirs();
-	    cartridge.setDeploymentDirs(deploymentDirs);
-	    cartridge.setProvider(config.getProvider());
-	    cartridge.setCategory(config.getCategory());
-	    cartridge.setVersion(config.getVersion());
-	    cartridge.setBaseDir(config.getBaseDir());
-        
+        // populate cartridge
+        cartridge.setType(config.getType());
+        cartridge.setDisplayName(config.getDisplayName());
+        cartridge.setDescription(config.getDescription());
+        cartridge.setHostName(config.getHostName());
+        String[] deploymentDirs = config.getDeploymentDirs();
+        cartridge.setDeploymentDirs(deploymentDirs);
+        cartridge.setProvider(config.getProvider());
+        cartridge.setCategory(config.getCategory());
+        cartridge.setVersion(config.getVersion());
+        cartridge.setBaseDir(config.getBaseDir());
+
         if (config.getPortMappings() != null) {
-			cartridge.setPortMappings(config.getPortMappings());
-		}
-        
-        if(config.getPersistence() != null){
-        	cartridge.setPersistence(config.getPersistence());
+            cartridge.setPortMappings(config.getPortMappings());
+        }
+
+        if (config.getPersistence() != null) {
+            cartridge.setPersistence(config.getPersistence());
         }
         cartridge.setMultiTenant(config.isMultiTenant());
         cartridge.setTenantPartitions(config.getTenantPartitions());
         cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Private));
-        if(StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
-            if(config.getLoadBalancingIPType().equals("public")) {
+        if (StringUtils.isNotBlank(config.getLoadBalancingIPType())) {
+            if (config.getLoadBalancingIPType().equals("public")) {
                 cartridge.setLoadBalancingIPType(getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType.Public));
             }
         }
 
         if (config.getMetadataKeys() == null) {
-			cartridge.setMetadataKeys(new String[0]);
-		} else {
-			cartridge.setMetadataKeys(config.getMetadataKeys());
-		}
-        
+            cartridge.setMetadataKeys(new String[0]);
+        } else {
+            cartridge.setMetadataKeys(config.getMetadataKeys());
+        }
+
         org.apache.stratos.common.Properties props = config.getProperties();
         if (props != null) {
             for (Property prop : props.getProperties()) {
@@ -174,7 +174,7 @@ public class CloudControllerUtil {
                     if (imageId != null) {
                         iaasProvider.setImage(imageId);
                     }
-                    
+
                     byte[] payload = iaasConfig.getPayload();
                     if (payload != null) {
                         iaasProvider.setPayload(payload);
@@ -186,7 +186,7 @@ public class CloudControllerUtil {
                             iaasProvider.addProperty(prop.getName(), String.valueOf(prop.getValue()));
                         }
                     }
-                    
+
                     NetworkInterfaces networkInterfaces = iaasConfig.getNetworkInterfaces();
                     if (networkInterfaces != null && networkInterfaces.getNetworkInterfaces() != null) {
                         iaasProvider.setNetworkInterfaces(networkInterfaces.getNetworkInterfaces());
@@ -197,20 +197,21 @@ public class CloudControllerUtil {
             }
         }
 
-        if(config.getExportingProperties() != null){
+        if (config.getExportingProperties() != null) {
             cartridge.setExportingProperties(config.getExportingProperties());
         }
 
         return cartridge;
     }
 
-    public static void sleep(long time){
-    	try {
-    		Thread.sleep(time);
-    	} catch (InterruptedException ignore) {}
-    	
+    public static void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ignore) {
+        }
+
     }
-	
+
     public static String getProperty(org.apache.stratos.common.Properties properties, String key, String defaultValue) {
         Properties props = toJavaUtilProperties(properties);
 
@@ -219,7 +220,7 @@ public class CloudControllerUtil {
 
     public static String getProperty(Properties properties, String key, String defaultValue) {
         if (key != null && properties != null) {
-            for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext();) {
+            for (Iterator<Entry<Object, Object>> iterator = properties.entrySet().iterator(); iterator.hasNext(); ) {
                 Entry<Object, Object> type = iterator.next();
                 String propName = type.getKey().toString();
                 String propValue = type.getValue().toString();
@@ -243,7 +244,7 @@ public class CloudControllerUtil {
     }
 
     public static org.apache.stratos.common.Properties addProperty(org.apache.stratos.common.Properties properties,
-            String key, String value) {
+                                                                   String key, String value) {
         Property property = new Property();
         property.setName(key);
         property.setValue(value);
@@ -252,20 +253,21 @@ public class CloudControllerUtil {
         newProperties.setProperties(ArrayUtils.add(properties.getProperties(), property));
         return newProperties;
     }
-	
-	/**
-	 * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
-	 * @param properties org.apache.stratos.messaging.util.Properties
-	 * @return java.util.Properties
-	 */
+
+    /**
+     * Converts org.apache.stratos.messaging.util.Properties to java.util.Properties
+     *
+     * @param properties org.apache.stratos.messaging.util.Properties
+     * @return java.util.Properties
+     */
     public static Properties toJavaUtilProperties(
-        org.apache.stratos.common.Properties properties) {
+            org.apache.stratos.common.Properties properties) {
         Properties javaUtilsProperties = new Properties();
 
         if (properties != null && properties.getProperties() != null) {
 
             for (Property property : properties.getProperties()) {
-                if((property != null) && (property.getValue() != null)) {
+                if ((property != null) && (property.getValue() != null)) {
                     javaUtilsProperties.put(property.getName(), property.getValue());
                 }
             }
@@ -274,14 +276,14 @@ public class CloudControllerUtil {
 
         return javaUtilsProperties;
     }
-    
+
     public static void persistTopology(Topology topology) {
-      try {
-          RegistryManager.getInstance().persist(CloudControllerConstants.TOPOLOGY_RESOURCE, topology);
-      } catch (RegistryException e) {
-          String msg = "Failed to persist the Topology in registry. ";
-          log.fatal(msg, e);
-      }
+        try {
+            RegistryManager.getInstance().persist(CloudControllerConstants.TOPOLOGY_RESOURCE, topology);
+        } catch (RegistryException e) {
+            String msg = "Failed to persist the Topology in registry. ";
+            log.fatal(msg, e);
+        }
     }
 
     public static Topology retrieveTopology() {
@@ -295,31 +297,31 @@ public class CloudControllerUtil {
         }
     }
 
-	
-	public static void handleException(String msg, Exception e){
-		log.error(msg, e);
-		throw new CloudControllerException(msg, e);
-	}
-	
-	public static void handleException(String msg){
-		log.error(msg);
-		throw new CloudControllerException(msg);
-	}
 
-	public static String getPartitionIds(Partition[] partitions) {
-		StringBuilder str = new StringBuilder("");
-		for (Partition partition : partitions) {
-			str.append(partition.getId()+", ");
-		}
-		
-		String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length()-2);
-		return "[" +partitionStr+ "]";
-	}
-	
-	public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
+    public static void handleException(String msg, Exception e) {
+        log.error(msg, e);
+        throw new CloudControllerException(msg, e);
+    }
+
+    public static void handleException(String msg) {
+        log.error(msg);
+        throw new CloudControllerException(msg);
+    }
+
+    public static String getPartitionIds(Partition[] partitions) {
+        StringBuilder str = new StringBuilder("");
+        for (Partition partition : partitions) {
+            str.append(partition.getId() + ", ");
+        }
+
+        String partitionStr = str.length() == 0 ? str.toString() : str.substring(0, str.length() - 2);
+        return "[" + partitionStr + "]";
+    }
+
+    public static void validateKubernetesCluster(KubernetesCluster kubernetesCluster) throws InvalidKubernetesClusterException {
         CloudControllerContext context = CloudControllerContext.getInstance();
-	    
-	    if (kubernetesCluster == null) {
+
+        if (kubernetesCluster == null) {
             throw new InvalidKubernetesClusterException("Kubernetes cluster can not be null");
         }
         if (StringUtils.isEmpty(kubernetesCluster.getClusterId())) {
@@ -386,8 +388,8 @@ public class CloudControllerUtil {
             throw new InvalidKubernetesClusterException(e.getMessage());
         }
     }
-	
-	private static void validateKubernetesHosts(KubernetesHost[] kubernetesHosts) throws InvalidKubernetesHostException {
+
+    private static void validateKubernetesHosts(KubernetesHost[] kubernetesHosts) throws InvalidKubernetesHostException {
         if (kubernetesHosts == null || kubernetesHosts.length == 0) {
             return;
         }
@@ -430,18 +432,16 @@ public class CloudControllerUtil {
     public static String getLoadBalancingIPTypeStringFromEnum(LoadBalancingIPType loadBalancingIPType) {
         if (loadBalancingIPType == LoadBalancingIPType.Private) {
             return CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE;
-        }
-        else if (loadBalancingIPType == LoadBalancingIPType.Public) {
+        } else if (loadBalancingIPType == LoadBalancingIPType.Public) {
             return CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE;
         }
         return null;
     }
 
     public static LoadBalancingIPType getLoadBalancingIPTypeEnumFromString(String loadBalancingIPType) {
-        if(loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE)) {
+        if (loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PUBLIE)) {
             return LoadBalancingIPType.Public;
-        }
-        else if(loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE)) {
+        } else if (loadBalancingIPType.equals(CloudControllerConstants.LOADBALANCING_IP_TYPE_PRIVATE)) {
             return LoadBalancingIPType.Private;
         }
         return null;

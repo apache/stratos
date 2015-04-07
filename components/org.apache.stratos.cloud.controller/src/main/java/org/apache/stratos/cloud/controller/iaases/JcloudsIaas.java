@@ -69,15 +69,17 @@ public abstract class JcloudsIaas extends Iaas {
     /**
      * This method should create a Key Pair corresponds to a given public key in the respective region having the name given.
      * Also should override the value of the key pair in the {@link org.jclouds.compute.domain.Template} of this IaaS.
-     * @param region region that the key pair will get created.
+     *
+     * @param region      region that the key pair will get created.
      * @param keyPairName name of the key pair. NOTE: Jclouds adds a prefix : <code>jclouds#</code>
-     * @param publicKey public key, from which the key pair will be created.
+     * @param publicKey   public key, from which the key pair will be created.
      * @return whether the key pair creation is successful or not.
      */
     public abstract boolean createKeyPairFromPublicKey(String region, String keyPairName, String publicKey);
 
     /**
      * This will obtain an IP addresses from the allocated list and associate that IP with this node.
+     *
      * @param node Node to be associated with an IP.
      * @return return list of associated public IPs.
      */
@@ -86,9 +88,10 @@ public abstract class JcloudsIaas extends Iaas {
     /**
      * This will obtain a predefined IP address and associate that IP with this node, if ip is already in use allocate ip from pool
      * (through associateAddress())
+     *
      * @param node Node to be associated with an IP.
-     * @ip preallocated floating Ip
      * @return associated public IP.
+     * @ip preallocated floating Ip
      */
     public abstract String associatePredefinedAddress(NodeMetadata node, String ip);
 
@@ -174,7 +177,7 @@ public abstract class JcloudsIaas extends Iaas {
 
             ComputeService computeService = getIaasProvider().getComputeService();
             NodeMetadata nodeMetadata = computeService.getNodeMetadata(memberContext.getInstanceId());
-            if(nodeMetadata == null) {
+            if (nodeMetadata == null) {
                 String message = "Node metadata not found: [node-id] " + memberContext.getInstanceId();
                 log.error(message);
                 throw new CloudControllerException(message);
@@ -189,7 +192,7 @@ public abstract class JcloudsIaas extends Iaas {
 
                 if (StringUtils.isNotBlank(preDefinedPublicIp)) {
                     // Allocate predefined public ip
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Allocating predefined public IP address: " +
                                         "[cartridge-type] %s [member-id] %s [pre-defined-ip] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId(),
@@ -218,12 +221,12 @@ public abstract class JcloudsIaas extends Iaas {
                     associatedIPs.add(allocatedIp);
                 } else {
                     // Allocate dynamic public ip addresses
-                    if(log.isDebugEnabled()) {
+                    if (log.isDebugEnabled()) {
                         log.debug(String.format("Allocating dynamic public IP addresses: " +
                                         "[cartridge-type] %s [member-id] %s",
                                 memberContext.getCartridgeType(), memberContext.getMemberId()));
                     }
-                    
+
                     associatedIPs = associateAddresses(nodeMetadata);
 
                     // checking for null and empty is enough. If there are elements in this list, they are valid IPs
@@ -237,7 +240,7 @@ public abstract class JcloudsIaas extends Iaas {
                         throw new CloudControllerException(msg);
                     }
                 }
-                
+
                 memberContext.setAllocatedIPs(associatedIPs.toArray(new String[associatedIPs.size()]));
                 log.info(String.format("IP addresses allocated to member: [cartridge-type] %s [member-id] %s " +
                                 "[allocated-ip-addresses] %s ", memberContext.getCartridgeType(),
@@ -251,23 +254,23 @@ public abstract class JcloudsIaas extends Iaas {
             // public IPs
             Set<String> publicIPAddresses = nodeMetadata.getPublicAddresses();
             if (publicIPAddresses != null && !publicIPAddresses.isEmpty()) {
-            	memberContext.setPublicIPs(publicIPAddresses.toArray(new String[publicIPAddresses.size()]));
-            	//TODO set a flag in cartridge definition to specify the default public IP or the interface
-            	memberContext.setDefaultPublicIP(publicIPAddresses.iterator().next());
-            	log.info("Retrieving public IP addresses: " + memberContext.toString());
+                memberContext.setPublicIPs(publicIPAddresses.toArray(new String[publicIPAddresses.size()]));
+                //TODO set a flag in cartridge definition to specify the default public IP or the interface
+                memberContext.setDefaultPublicIP(publicIPAddresses.iterator().next());
+                log.info("Retrieving public IP addresses: " + memberContext.toString());
             } else {
-            	memberContext.setPublicIPs(new String[0]);
+                memberContext.setPublicIPs(new String[0]);
             }
 
             // private IPs
             Set<String> privateIPAddresses = nodeMetadata.getPrivateAddresses();
             if (privateIPAddresses != null && !privateIPAddresses.isEmpty()) {
-            	memberContext.setPrivateIPs(privateIPAddresses.toArray(new String[privateIPAddresses.size()]));
-            	//TODO set a flag in cartridge definition to specify the default private IP or the interface
-            	memberContext.setDefaultPrivateIP(privateIPAddresses.iterator().next());
-            	log.info("Retrieving private IP addresses " + memberContext.toString());
+                memberContext.setPrivateIPs(privateIPAddresses.toArray(new String[privateIPAddresses.size()]));
+                //TODO set a flag in cartridge definition to specify the default private IP or the interface
+                memberContext.setDefaultPrivateIP(privateIPAddresses.iterator().next());
+                log.info("Retrieving private IP addresses " + memberContext.toString());
             } else {
-            	memberContext.setPrivateIPs(new String[0]);
+                memberContext.setPrivateIPs(new String[0]);
             }
 
             if (log.isDebugEnabled()) {
@@ -288,7 +291,7 @@ public abstract class JcloudsIaas extends Iaas {
         String nodeId = memberContext.getInstanceId();
         Cartridge cartridge = CloudControllerContext.getInstance().getCartridge(cartridgeType);
 
-        if(log.isInfoEnabled()) {
+        if (log.isInfoEnabled()) {
             log.info(String.format("Starting to terminate member: [cartridge-type] %s [member-id] %s",
                     cartridgeType, memberId));
         }
@@ -334,9 +337,9 @@ public abstract class JcloudsIaas extends Iaas {
 
         // releasing all allocated IPs
         if (memberContext.getAllocatedIPs() != null) {
-        	for (String allocatedIP : memberContext.getAllocatedIPs()) {
-        		releaseAddress(allocatedIP);
-        	}
+            for (String allocatedIP : memberContext.getAllocatedIPs()) {
+                releaseAddress(allocatedIP);
+            }
         }
 
         if (log.isInfoEnabled()) {
@@ -355,7 +358,7 @@ public abstract class JcloudsIaas extends Iaas {
                         return;
                     }
                     detachVolume(ctxt.getInstanceId(), volumeId);
-                    if(volume.isRemoveOntermination()){
+                    if (volume.isRemoveOntermination()) {
                         deleteVolume(volumeId);
                     }
                 } catch (ResourceNotFoundException ignore) {

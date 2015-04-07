@@ -28,16 +28,16 @@ public class NonExistingKubernetesClusterException extends Exception {
 
     private String message;
 
-    public NonExistingKubernetesClusterException(String message, Exception exception){
+    public NonExistingKubernetesClusterException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
-    public NonExistingKubernetesClusterException(Exception exception){
+    public NonExistingKubernetesClusterException(Exception exception) {
         super(exception);
     }
 
-    public NonExistingKubernetesClusterException(String msg){
+    public NonExistingKubernetesClusterException(String msg) {
         super(msg);
         this.message = msg;
     }

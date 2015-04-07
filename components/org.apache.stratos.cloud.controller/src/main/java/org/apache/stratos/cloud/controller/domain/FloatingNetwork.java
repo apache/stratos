@@ -21,67 +21,68 @@ package org.apache.stratos.cloud.controller.domain;
 import java.io.Serializable;
 
 /**
- * Every {@link NetworkInterface} can have 
- * an array of {@link FloatingNetwork} 
+ * Every {@link NetworkInterface} can have
+ * an array of {@link FloatingNetwork}
  * to which the network interface is associated
+ *
  * @author rajkumar
  */
-public class FloatingNetwork implements Serializable{
+public class FloatingNetwork implements Serializable {
 
-	private static final long serialVersionUID = -432127317992004321L;
-	private String name;
-	private String networkUuid;
-	private String floatingIP;
-	
-	public FloatingNetwork() {
-	}
-	
-	public FloatingNetwork(String name, String networkUuid, String flotingIP) {
-		this.name = name;
-		this.networkUuid = networkUuid;
-		this.floatingIP = flotingIP;
-	}
-	
-	public String getName() {
-		return name;
-	}
+    private static final long serialVersionUID = -432127317992004321L;
+    private String name;
+    private String networkUuid;
+    private String floatingIP;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public FloatingNetwork() {
+    }
 
-	public String getNetworkUuid() {
-		return networkUuid;
-	}
+    public FloatingNetwork(String name, String networkUuid, String flotingIP) {
+        this.name = name;
+        this.networkUuid = networkUuid;
+        this.floatingIP = flotingIP;
+    }
 
-	public void setNetworkUuid(String networkUuid) {
-		this.networkUuid = networkUuid;
-	}
-	
-	public String getFloatingIP() {
-		return floatingIP;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setFloatingIP(String floatingIP) {
-		this.floatingIP = floatingIP;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String toString() {
-    	StringBuilder sb = new StringBuilder('{');
-    	String delimeter = "";
-    	if (name != null) {
-    		sb.append(delimeter).append("name : ").append(name);
-    		delimeter = ", ";
-    	}
-    	if (networkUuid != null) {
-    		sb.append(delimeter).append("networkUuid : ").append(networkUuid);
-    		delimeter = ", ";
-    	}
-    	if (floatingIP != null) {
-    		sb.append(delimeter).append("floatingIP : ").append(floatingIP);
-    		delimeter = ", ";
-    	}
-    	sb.append('}');
+    public String getNetworkUuid() {
+        return networkUuid;
+    }
+
+    public void setNetworkUuid(String networkUuid) {
+        this.networkUuid = networkUuid;
+    }
+
+    public String getFloatingIP() {
+        return floatingIP;
+    }
+
+    public void setFloatingIP(String floatingIP) {
+        this.floatingIP = floatingIP;
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder('{');
+        String delimeter = "";
+        if (name != null) {
+            sb.append(delimeter).append("name : ").append(name);
+            delimeter = ", ";
+        }
+        if (networkUuid != null) {
+            sb.append(delimeter).append("networkUuid : ").append(networkUuid);
+            delimeter = ", ";
+        }
+        if (floatingIP != null) {
+            sb.append(delimeter).append("floatingIP : ").append(floatingIP);
+            delimeter = ", ";
+        }
+        sb.append('}');
         return sb.toString();
-	}
+    }
 }

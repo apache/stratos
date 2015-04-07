@@ -28,16 +28,16 @@ public class InvalidKubernetesClusterException extends Exception {
 
     private String message;
 
-    public InvalidKubernetesClusterException(String message, Exception exception){
+    public InvalidKubernetesClusterException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
-    public InvalidKubernetesClusterException(Exception exception){
+    public InvalidKubernetesClusterException(Exception exception) {
         super(exception);
     }
 
-    public InvalidKubernetesClusterException(String msg){
+    public InvalidKubernetesClusterException(String msg) {
         super(msg);
         this.message = msg;
     }

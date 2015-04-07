@@ -23,21 +23,21 @@ public class ClusterInstanceCreationException extends Exception {
 
     private String message;
 
-    public ClusterInstanceCreationException () {
+    public ClusterInstanceCreationException() {
         super();
     }
 
-    public ClusterInstanceCreationException (String message, Throwable cause) {
+    public ClusterInstanceCreationException(String message, Throwable cause) {
         super(message, cause);
         this.message = message;
     }
 
-    public ClusterInstanceCreationException (String message) {
+    public ClusterInstanceCreationException(String message) {
         super(message);
         this.message = message;
     }
 
-    public ClusterInstanceCreationException (Throwable cause) {
+    public ClusterInstanceCreationException(Throwable cause) {
         super(cause);
     }
 

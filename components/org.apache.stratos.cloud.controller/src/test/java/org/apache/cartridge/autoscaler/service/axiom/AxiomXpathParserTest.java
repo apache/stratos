@@ -42,22 +42,22 @@ public class AxiomXpathParserTest extends TestCase {
 
         CloudControllerConfigParser.parse(docElt);
     }
-    
-    public void testGetMatchingNodes(){
+
+    public void testGetMatchingNodes() {
         List<OMNode> list = AxiomXpathParserUtil.getMatchingNodes("/cloudController/iaasProviders/iaasProvider/provider", docElt);
         assertEquals(1, list.size());
         assertEquals(1, CloudControllerConfig.getInstance().getIaasProviders().size());
     }
-    
+
     public void testDataPublisherConfig() {
-		assertEquals(true, CloudControllerConfig.getInstance().isBAMDataPublisherEnabled());
-		assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamUsername());
-		assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamPassword());
-	}
-    
+        assertEquals(true, CloudControllerConfig.getInstance().isBAMDataPublisherEnabled());
+        assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamUsername());
+        assertEquals("nirmal", CloudControllerConfig.getInstance().getDataPubConfig().getBamPassword());
+    }
+
     public void testTopologySynchParser() {
-		assertNotNull(CloudControllerConfig.getInstance().getTopologyConfig());
-		assertEquals("1 * * * * ? *", CloudControllerConfig.getInstance().getTopologyConfig().getProperty("cron"));
-	}
+        assertNotNull(CloudControllerConfig.getInstance().getTopologyConfig());
+        assertEquals("1 * * * * ? *", CloudControllerConfig.getInstance().getTopologyConfig().getProperty("cron"));
+    }
 
 }

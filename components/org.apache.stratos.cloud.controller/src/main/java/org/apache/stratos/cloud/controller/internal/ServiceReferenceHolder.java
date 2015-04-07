@@ -46,22 +46,22 @@ public class ServiceReferenceHolder {
     public static ServiceReferenceHolder getInstance() {
         if (instance == null) {
             synchronized (ServiceReferenceHolder.class) {
-                if(instance == null) {
+                if (instance == null) {
                     instance = new ServiceReferenceHolder();
                 }
             }
         }
         return instance;
     }
-    
+
     public void setAxisConfiguration(AxisConfiguration axisConfiguration) {
         this.axisConfiguration = axisConfiguration;
     }
-    
+
     public AxisConfiguration getAxisConfiguration() {
         return axisConfiguration;
     }
-    
+
     public TaskService getTaskService() {
         return taskService;
     }
@@ -69,13 +69,13 @@ public class ServiceReferenceHolder {
     public void setTaskService(TaskService taskService) {
         this.taskService = taskService;
     }
-    
-	public void setRegistry(UserRegistry governanceSystemRegistry) {
-		registry = governanceSystemRegistry;
+
+    public void setRegistry(UserRegistry governanceSystemRegistry) {
+        registry = governanceSystemRegistry;
     }
 
-	public Registry getRegistry() {
-	    return registry;
+    public Registry getRegistry() {
+        return registry;
     }
 
     public void setDistributedObjectProvider(DistributedObjectProvider distributedObjectProvider) {

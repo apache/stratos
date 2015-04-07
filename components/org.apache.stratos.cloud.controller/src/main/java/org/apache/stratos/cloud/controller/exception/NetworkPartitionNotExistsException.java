@@ -20,9 +20,9 @@
 */
 package org.apache.stratos.cloud.controller.exception;
 
-public class NetworkPartitionNotExistsException extends Exception{
+public class NetworkPartitionNotExistsException extends Exception {
 
-	public NetworkPartitionNotExistsException(String message) {
-		super(message);
-	}
+    public NetworkPartitionNotExistsException(String message) {
+        super(message);
+    }
 }

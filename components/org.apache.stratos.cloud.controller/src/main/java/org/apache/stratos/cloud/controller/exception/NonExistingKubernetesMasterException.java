@@ -27,16 +27,16 @@ package org.apache.stratos.cloud.controller.exception;
 public class NonExistingKubernetesMasterException extends Exception {
     private String message;
 
-    public NonExistingKubernetesMasterException(String message, Exception exception){
+    public NonExistingKubernetesMasterException(String message, Exception exception) {
         super(message, exception);
         this.message = message;
     }
 
-    public NonExistingKubernetesMasterException(Exception exception){
+    public NonExistingKubernetesMasterException(Exception exception) {
         super(exception);
     }
 
-    public NonExistingKubernetesMasterException(String msg){
+    public NonExistingKubernetesMasterException(String msg) {
         super(msg);
         this.message = msg;
     }

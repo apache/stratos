@@ -23,21 +23,23 @@ import java.util.Arrays;
 
 /**
  * Wrapping {@link FloatingNetwork} array
+ *
  * @author rajkumar
  */
-public class FloatingNetworks implements Serializable{
-	
-	private static final long serialVersionUID = -6754884581236402662L;
-	private FloatingNetwork[] floatingNetworks;
-	
-	public FloatingNetwork[] getFloatingNetworks() {
-		return floatingNetworks;
-	}
-	public void setFloatingNetworks(FloatingNetwork[] floatingNetworks) {
-		this.floatingNetworks = floatingNetworks;
-	}
-	
-	@Override
+public class FloatingNetworks implements Serializable {
+
+    private static final long serialVersionUID = -6754884581236402662L;
+    private FloatingNetwork[] floatingNetworks;
+
+    public FloatingNetwork[] getFloatingNetworks() {
+        return floatingNetworks;
+    }
+
+    public void setFloatingNetworks(FloatingNetwork[] floatingNetworks) {
+        this.floatingNetworks = floatingNetworks;
+    }
+
+    @Override
     public String toString() {
         return "FloatingNetworks [FloatingNetworks =" + Arrays.toString(floatingNetworks) + "]";
     }

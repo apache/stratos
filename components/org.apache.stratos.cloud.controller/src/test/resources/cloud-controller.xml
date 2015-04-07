@@ -16,55 +16,55 @@
   #  KIND, either express or implied.  See the License for the
   #  specific language governing permissions and limitations
   #  under the License.
-  --> 
+  -->
 <cloudController xmlns:svns="http://org.wso2.securevault/configuration">
 
-	<svns:secureVault
-		provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler" />
-	
-	<dataPublisher enable="true">
-		<!-- BAM Server Info - default values are 'admin' and 'admin' 
-			 Optional element. -->
-		<bamServer>
-			<adminUserName>nirmal</adminUserName>
-			<adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">nirmal</adminPassword>
-		</bamServer>
-		<!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
-			 Optional element. -->
-		<cron>1 * * * * ? *</cron>
-		<!-- Cassandra cluster related info -->
-		<cassandraInfo>
-			<connectionUrl>localhost:9160</connectionUrl>
-			<userName>admin</userName>
-			<password svns:secretAlias="cloud.controller.cassandra.server.password">admin</password>
-		</cassandraInfo>
-	</dataPublisher>
-	
-	<topologySync enable="true">
-		<!-- properties related to topology syncher -->
-		<property name="cron" value="1 * * * * ? *"/>
-	</topologySync>
-	
-	<!-- Specify the properties that are common to an IaaS here. This element 
-		is not necessary [0..1]. But you can use this section to avoid specifying 
-		same property over and over again. -->
-	<iaasProviders>
-		<!--<iaasProvider type="ec2" name="EC2 specific details"> <provider>aws-ec2</provider> 
-			<identity svns:secretAlias="elastic.scaler.ec2.identity">cdcd</identity> 
-			<credential svns:secretAlias="elastic.scaler.ec2.credential">cdccdc</credential> 
-			<scaleUpOrder>2</scaleUpOrder> <scaleDownOrder>1</scaleDownOrder> <property 
-			name="A.x" value="a"/> <property name="B" value="b"/> <imageId>tempEC2</imageId> 
-			</iaasProvider> -->
-		<iaasProvider type="openstack" name="openstack specific details">
-			<className>org.apache.stratos.cloud.controller.iaasese.OpenstackNovaIaas</className>
-			<provider>openstack-nova</provider>
-			<identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
-			<credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
-			<property name="jclouds.endpoint" value="http://172.17.0.1:5000/" />
-			<property name="jclouds.api-version" value="2.0/" />
-			<property name="region" value="x" />
-			<property name="Y" value="y" />
-			<imageId>tempLXC</imageId>
-		</iaasProvider>
-	</iaasProviders>
+    <svns:secureVault
+            provider="org.wso2.securevault.secret.handler.SecretManagerSecretCallbackHandler"/>
+
+    <dataPublisher enable="true">
+        <!-- BAM Server Info - default values are 'admin' and 'admin'
+             Optional element. -->
+        <bamServer>
+            <adminUserName>nirmal</adminUserName>
+            <adminPassword svns:secretAlias="cloud.controller.bam.server.admin.password">nirmal</adminPassword>
+        </bamServer>
+        <!-- Default cron expression is '1 * * * * ? *' meaning 'first second of every minute'.
+             Optional element. -->
+        <cron>1 * * * * ? *</cron>
+        <!-- Cassandra cluster related info -->
+        <cassandraInfo>
+            <connectionUrl>localhost:9160</connectionUrl>
+            <userName>admin</userName>
+            <password svns:secretAlias="cloud.controller.cassandra.server.password">admin</password>
+        </cassandraInfo>
+    </dataPublisher>
+
+    <topologySync enable="true">
+        <!-- properties related to topology syncher -->
+        <property name="cron" value="1 * * * * ? *"/>
+    </topologySync>
+
+    <!-- Specify the properties that are common to an IaaS here. This element
+        is not necessary [0..1]. But you can use this section to avoid specifying
+        same property over and over again. -->
+    <iaasProviders>
+        <!--<iaasProvider type="ec2" name="EC2 specific details"> <provider>aws-ec2</provider>
+            <identity svns:secretAlias="elastic.scaler.ec2.identity">cdcd</identity>
+            <credential svns:secretAlias="elastic.scaler.ec2.credential">cdccdc</credential>
+            <scaleUpOrder>2</scaleUpOrder> <scaleDownOrder>1</scaleDownOrder> <property
+            name="A.x" value="a"/> <property name="B" value="b"/> <imageId>tempEC2</imageId>
+            </iaasProvider> -->
+        <iaasProvider type="openstack" name="openstack specific details">
+            <className>org.apache.stratos.cloud.controller.iaasese.OpenstackNovaIaas</className>
+            <provider>openstack-nova</provider>
+            <identity svns:secretAlias="cloud.controller.openstack.identity">demo:demo</identity>
+            <credential svns:secretAlias="cloud.controller.openstack.credential">openstack</credential>
+            <property name="jclouds.endpoint" value="http://172.17.0.1:5000/"/>
+            <property name="jclouds.api-version" value="2.0/"/>
+            <property name="region" value="x"/>
+            <property name="Y" value="y"/>
+            <imageId>tempLXC</imageId>
+        </iaasProvider>
+    </iaasProviders>
 </cloudController>

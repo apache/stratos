@@ -21,29 +21,27 @@ package org.apache.stratos.cloud.controller.exception;
 
 /**
  * Throws when a {@link Partition} is evaluated to be invalid.
- *
- *
  */
 public class InvalidClusterException extends Exception {
 
     private static final long serialVersionUID = -7883324379272628566L;
     private String message;
-    
+
     public InvalidClusterException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
-    
+
     public InvalidClusterException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

@@ -66,12 +66,12 @@ public class CloudControllerConfig {
     }
 
     public IaasProvider getIaasProvider(String type) {
-        if(type == null) {
+        if (type == null) {
             return null;
         }
 
         for (IaasProvider iaasProvider : iaasProviders) {
-            if(type.equals(iaasProvider.getType())) {
+            if (type.equals(iaasProvider.getType())) {
                 return iaasProvider;
             }
         }

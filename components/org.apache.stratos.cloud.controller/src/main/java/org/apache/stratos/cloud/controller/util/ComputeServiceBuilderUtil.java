@@ -43,9 +43,9 @@ import java.util.Properties;
  * This class is responsible for creating a JClouds specific ComputeService object.
  */
 public class ComputeServiceBuilderUtil {
-    
+
     private static final Log log = LogFactory.getLog(ComputeServiceBuilderUtil.class);
-    
+
     public static byte[] getUserData(String payloadFileName) {
         byte[] bytes = null;
         try {
@@ -64,7 +64,7 @@ public class ComputeServiceBuilderUtil {
         return bytes;
     }
 
-    
+
     public static ComputeService buildDefaultComputeService(IaasProvider iaasProvider) {
 
         Properties properties = new Properties();
@@ -76,18 +76,18 @@ public class ComputeServiceBuilderUtil {
 
         // set modules
         Iterable<Module> modules =
-            ImmutableSet.<Module> of(new SshjSshClientModule(), new SLF4JLoggingModule(),
-                                     new EnterpriseConfigurationModule());
+                ImmutableSet.<Module>of(new SshjSshClientModule(), new SLF4JLoggingModule(),
+                        new EnterpriseConfigurationModule());
 
         // build context
         ContextBuilder builder =
-            ContextBuilder.newBuilder(iaasProvider.getProvider())
-                          .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
-                          .overrides(properties);
+                ContextBuilder.newBuilder(iaasProvider.getProvider())
+                        .credentials(iaasProvider.getIdentity(), iaasProvider.getCredential()).modules(modules)
+                        .overrides(properties);
 
         return builder.buildView(ComputeServiceContext.class).getComputeService();
     }
-    
+
     public static String extractRegion(IaasProvider iaas) {
         String region;
         // try to find region
@@ -99,19 +99,18 @@ public class ComputeServiceBuilderUtil {
         }
         return region;
     }
-    
-	public static String extractZone(IaasProvider iaas) {
 
-		return iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
-	}
-	
-    /** Returns the contents of the file in a byte array
+    public static String extractZone(IaasProvider iaas) {
+
+        return iaas.getProperty(CloudControllerConstants.AVAILABILITY_ZONE);
+    }
+
+    /**
+     * Returns the contents of the file in a byte array
      *
-     * @param file
-     *            - Input File
+     * @param file - Input File
      * @return Bytes from the file
-     * @throws java.io.IOException
-     *             , if retrieving the file contents failed.
+     * @throws java.io.IOException , if retrieving the file contents failed.
      */
     public static byte[] getBytesFromFile(File file) throws IOException {
         if (!file.exists()) {
@@ -124,7 +123,7 @@ public class ComputeServiceBuilderUtil {
         try {
             // Get the size of the file
             long length = file.length();
-            
+
             // You cannot create an array using a long type.
             // It needs to be an int type.
             // Before converting to an int type, check
@@ -142,7 +141,7 @@ public class ComputeServiceBuilderUtil {
             int offset = 0;
             int numRead;
             while (offset < bytes.length &&
-                (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
+                    (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                 offset += numRead;
             }
 
@@ -153,16 +152,15 @@ public class ComputeServiceBuilderUtil {
         } finally {
             // Close the input stream and return bytes
             is.close();
-         }
-        
+        }
+
         return bytes;
     }
-    
+
     /**
      * handles the exception
-     * 
-     * @param msg
-     *            exception message
+     *
+     * @param msg exception message
      */
     private static void handleException(String msg) {
         log.error(msg);
@@ -171,17 +169,15 @@ public class ComputeServiceBuilderUtil {
 
     /**
      * handles the exception
-     * 
-     * @param msg
-     *            exception message
-     * @param e
-     *            exception
+     *
+     * @param msg exception message
+     * @param e   exception
      */
     private static void handleException(String msg, Exception e) {
         log.error(msg, e);
         throw new CloudControllerException(msg, e);
 
     }
-    
-    
+
+
 }

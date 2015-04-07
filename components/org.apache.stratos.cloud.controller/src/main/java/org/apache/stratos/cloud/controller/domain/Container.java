@@ -24,36 +24,36 @@ import java.util.Map;
 
 public class Container implements Serializable {
 
-	private static final long serialVersionUID = 2232204459987683768L;
+    private static final long serialVersionUID = 2232204459987683768L;
 
-	private String imageName;
-	
-	private String dockerFileRepo;
-	
-	private Map<String, String> properties = new HashMap<String, String>();
+    private String imageName;
 
-	public String getImageName() {
-		return imageName;
-	}
+    private String dockerFileRepo;
 
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
-	}
+    private Map<String, String> properties = new HashMap<String, String>();
 
-	public String getDockerFileRepo() {
-		return dockerFileRepo;
-	}
+    public String getImageName() {
+        return imageName;
+    }
 
-	public void setDockerFileRepo(String dockerFileRepo) {
-		this.dockerFileRepo = dockerFileRepo;
-	}
+    public void setImageName(String imageName) {
+        this.imageName = imageName;
+    }
 
-	public Map<String, String> getProperties() {
-		return properties;
-	}
+    public String getDockerFileRepo() {
+        return dockerFileRepo;
+    }
 
-	public void setProperties(Map<String, String> properties) {
-		this.properties = properties;
-	}
-	
+    public void setDockerFileRepo(String dockerFileRepo) {
+        this.dockerFileRepo = dockerFileRepo;
+    }
+
+    public Map<String, String> getProperties() {
+        return properties;
+    }
+
+    public void setProperties(Map<String, String> properties) {
+        this.properties = properties;
+    }
+
 }

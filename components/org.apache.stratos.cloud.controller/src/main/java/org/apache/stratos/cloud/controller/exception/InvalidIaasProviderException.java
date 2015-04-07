@@ -20,29 +20,27 @@ package org.apache.stratos.cloud.controller.exception;
 
 /**
  * Throws when a {@link IaasProvider} is evaluated to be invalid.
- *
- *
  */
 public class InvalidIaasProviderException extends Exception {
 
     private static final long serialVersionUID = 2453133690565031869L;
     private String message;
-    
+
     public InvalidIaasProviderException(String msg) {
         super(msg);
         this.setMessage(msg);
     }
-    
+
     public InvalidIaasProviderException(String msg, Exception ex) {
         super(msg, ex);
         this.setMessage(msg);
     }
 
-	public String getMessage() {
-		return message;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

@@ -19,13 +19,13 @@
 package org.apache.stratos.cloud.controller.exception;
 
 public class DeserializationException extends RuntimeException {
-    
+
     private static final long serialVersionUID = -2426068347954381831L;
 
     public DeserializationException(String msg) {
         super(msg);
     }
-    
+
     public DeserializationException(String msg, Exception ex) {
         super(msg, ex);
     }
