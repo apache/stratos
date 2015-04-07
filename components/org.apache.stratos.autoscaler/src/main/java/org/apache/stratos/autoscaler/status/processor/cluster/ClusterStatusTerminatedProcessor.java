@@ -92,8 +92,8 @@ public class ClusterStatusTerminatedProcessor extends ClusterStatusProcessor {
                                 log.info("Publishing Cluster terminated event for [application]: " + appId +
                                         " [cluster]: " + clusterId);
                             }
-                            ClusterStatusEventPublisher.sendClusterStatusTerminatedEvent(appId, serviceId,
-                                    clusterId, instanceId);
+
+                            ClusterStatusEventPublisher.sendClusterTerminatedEvent(appId, serviceId, clusterId, instanceId);
                             clusterTerminated = true;
 
                         } else {
