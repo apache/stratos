@@ -16,15 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.stratos.autoscaler.exception.policy;
 
-package org.apache.stratos.cloud.controller.exception;
-
-/**
- * Cartridge already exists exception.
- */
-public class DeploymentPolicyNotExistsException extends Exception {
-
-    public DeploymentPolicyNotExistsException(String message) {
-        super(message);
-    }
+public class InvalidDeploymentPolicyException extends Exception{
+	
+	public InvalidDeploymentPolicyException(String message) {
+		super(message);
+	}
 }

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.exception;
+package org.apache.stratos.autoscaler.exception.policy;
 
 /**
  * Cartridge already exists exception.

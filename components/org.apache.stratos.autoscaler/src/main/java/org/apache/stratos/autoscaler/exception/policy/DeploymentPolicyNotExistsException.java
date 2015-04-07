@@ -17,41 +17,14 @@
  * under the License.
  */
 
-package org.apache.stratos.common.beans.partition;
+package org.apache.stratos.autoscaler.exception.policy;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+/**
+ * Cartridge already exists exception.
+ */
+public class DeploymentPolicyNotExistsException extends Exception {
 
-@XmlRootElement
-public class NetworkPartitionRefBean {
-
-    private String id;
-
-	private String partitionAlgo;
-
-    private List<PartitionRefBean> partitions;
-
-    public String getId() {
-        return id;
+    public DeploymentPolicyNotExistsException(String message) {
+        super(message);
     }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public List<PartitionRefBean> getPartitions() {
-        return partitions;
-    }
-
-    public void setPartitions(List<PartitionRefBean> partitions) {
-        this.partitions = partitions;
-    }
-
-	public String getPartitionAlgo() {
-		return partitionAlgo;
-	}
-
-	public void setPartitionAlgo(String partitionAlgo) {
-		this.partitionAlgo = partitionAlgo;
-	}
 }

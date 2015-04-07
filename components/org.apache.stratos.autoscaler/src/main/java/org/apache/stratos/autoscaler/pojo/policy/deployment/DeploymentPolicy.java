@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.stratos.cloud.controller.domain;
+package org.apache.stratos.autoscaler.pojo.policy.deployment;
 
 import java.io.Serializable;
 import java.util.Arrays;
