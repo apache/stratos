@@ -550,7 +550,7 @@ public class ObjectConverter {
         if (stubPartition.getProperties() != null) {
             List<org.apache.stratos.common.beans.cartridge.PropertyBean> propertyBeanList
                     = new ArrayList<org.apache.stratos.common.beans.cartridge.PropertyBean>();
-            if(stubPartition.getProperties() != null){
+            if(stubPartition.getProperties().getProperties() != null){
                 for (org.apache.stratos.cloud.controller.stub.Property stubProperty :
                         stubPartition.getProperties().getProperties()) {
                     if (stubProperty != null) {
