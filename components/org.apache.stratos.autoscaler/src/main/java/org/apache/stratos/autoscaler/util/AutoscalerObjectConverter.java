@@ -19,9 +19,9 @@
 
 package org.apache.stratos.autoscaler.util;
 
-import org.apache.stratos.cloud.controller.stub.Property;
-import org.apache.stratos.cloud.controller.stub.domain.Partition;
 import org.apache.stratos.common.Properties;
+import org.apache.stratos.common.Property;
+import org.apache.stratos.common.partition.Partition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,44 +31,167 @@ import java.util.List;
  */
 public class AutoscalerObjectConverter {
 
-//    /**
-//     * Convert autoscaler partitions to cloud controller stub partitions
-//     * @param partitions
-//     * @return
-//     */
-//    public static org.apache.stratos.cloud.controller.stub.domain.Partition[]
-//        convertASPartitionsToCCStubPartitions(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] partitions) {
-//
-//        List<Partition> cloudControllerPartitions = new ArrayList<Partition>();
-//        for(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition : partitions) {
-//            Partition cloudControllerPartition = convertASPartitionToCCPartition(partition);
-//            cloudControllerPartitions.add(cloudControllerPartition);
-//        }
-//        return cloudControllerPartitions.toArray(new Partition[cloudControllerPartitions.size()]);
-//    }
+    /**
+     * Convert autoscaler partitions to cloud controller stub partitions
+     * @param partitions
+     * @return
+     */
+    public static org.apache.stratos.cloud.controller.stub.domain.Partition[]
+        convertPartitionsToCCPartitions(Partition[] partitions) {
 
-//    /**
-//     * Convert autoscaler partition to cloud controller partition
-//     * @param partition
-//     * @return
-//     */
-//    public static org.apache.stratos.cloud.controller.stub.domain.Partition
-//        convertASPartitionToCCPartition(org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition) {
+        List<org.apache.stratos.cloud.controller.stub.domain.Partition> cloudControllerPartitions
+                = new ArrayList<org.apache.stratos.cloud.controller.stub.domain.Partition>();
+        for(Partition partition : partitions) {
+            org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = convertPartitionToCCPartition(partition);
+            cloudControllerPartitions.add(cloudControllerPartition);
+        }
+        return cloudControllerPartitions.toArray(
+                new org.apache.stratos.cloud.controller.stub.domain.Partition[cloudControllerPartitions.size()]);
+    }
+
+    /**
+     * Convert autoscaler partition to cloud controller partition
+     * @param partition
+     * @return
+     */
+    public static org.apache.stratos.cloud.controller.stub.domain.Partition
+        convertPartitionToCCPartition(Partition partition) {
+
+        org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = new
+                org.apache.stratos.cloud.controller.stub.domain.Partition();
+
+        cloudControllerPartition.setId(partition.getId());
+        cloudControllerPartition.setProvider(partition.getProvider());
+        cloudControllerPartition.setDescription(partition.getDescription());
+        cloudControllerPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
+        cloudControllerPartition.setIsPublic(partition.getIsPublic());
+        cloudControllerPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
+
+        return cloudControllerPartition;
+    }
+
+
+    public static org.apache.stratos.cloud.controller.stub.Properties convertPropertiesToCCProperties(Properties properties) {
+
+        org.apache.stratos.cloud.controller.stub.Properties ccProperties
+                = new org.apache.stratos.cloud.controller.stub.Properties();
+
+        Property[] propertyArray = properties.getProperties();
+
+        for(Property property : properties.getProperties()){
+
+            org.apache.stratos.cloud.controller.stub.Property ccProperty
+                    = new org.apache.stratos.cloud.controller.stub.Property();
+            ccProperty.setName(property.getName());
+            ccProperty.setName(property.getName());
+            ccProperties.addProperties(ccProperty);
+        }
+        return ccProperties;
+    }
+
+    public static Properties convertCCPropertiesToProperties(
+            org.apache.stratos.cloud.controller.stub.Properties ccProperties) {
+
+        Properties properties = new Properties();
+
+        if(ccProperties.getProperties() != null){
+            for(org.apache.stratos.cloud.controller.stub.Property ccProperty : ccProperties.getProperties()){
+
+                Property property = new Property();
+                property.setName(ccProperty.getName());
+                property.setValue(ccProperty.getValue());
+                properties.addProperty(property);
+            }
+        }
+        return properties;
+    }
+
+    public static Partition[] convertCCPartitionsToPartitions(org.apache.stratos.cloud.controller.stub.domain.Partition[] ccPartitions) {
+
+        List<Partition> partitions = new ArrayList<Partition>();
+        for(org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition : ccPartitions) {
+            Partition partition = convertCCPartitionToPartition(ccPartition);
+            partitions.add(partition);
+        }
+        return partitions.toArray(new Partition[ccPartitions.length]);
+
+    }
+
+    public static Partition convertCCPartitionToPartition(org.apache.stratos.cloud.controller.stub.domain.Partition ccPartition) {
+        
+        Partition partition = new Partition();
+
+        partition.setId(ccPartition.getId());
+        partition.setProvider(ccPartition.getProvider());
+        partition.setDescription(ccPartition.getDescription());
+        partition.setIsPublic(ccPartition.getIsPublic());
+        partition.setProperties(convertCCPropertiesToProperties(ccPartition.getProperties()));
+
+        return partition;
+    }
+
 //
-//        org.apache.stratos.cloud.controller.stub.domain.Partition cloudControllerPartition = new
-//                org.apache.stratos.cloud.controller.stub.domain.Partition();
+//    public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
+//            org.apache.stratos.common.Properties properties) {
+//        org.apache.stratos.cloud.controller.stub.Properties stubProps = new org.apache.stratos.cloud.controller.stub.Properties();
 //
-//        cloudControllerPartition.setId(partition.getId());
-//        cloudControllerPartition.setProvider(partition.getProvider());
-//        cloudControllerPartition.setDescription(partition.getDescription());
-//        cloudControllerPartition.setKubernetesClusterId(partition.getKubernetesClusterId());
-//        cloudControllerPartition.setIsPublic(partition.getIsPublic());
-//        cloudControllerPartition.setProperties(AutoscalerUtil.toStubProperties(partition.getProperties()));
+//        if (properties != null && properties.getProperties() != null) {
+//            for (org.apache.stratos.common.Property property : properties.getProperties()) {
+//                if ((property != null) && (property.getValue() != null)) {
+//                    org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
+//                    newProperty.setName(property.getName());
+//                    newProperty.setValue(property.getValue());
+//                    stubProps.addProperties(newProperty);
+//                }
+//            }
 //
-//        return cloudControllerPartition;
+//        }
+//        return stubProps;
 //    }
-    
-    
+//
+//    public static org.apache.stratos.cloud.controller.stub.Properties toStubProperties(
+//            java.util.Properties properties) {
+//        org.apache.stratos.cloud.controller.stub.Properties stubProperties = new org.apache.stratos.cloud.controller.stub.Properties();
+//        if(properties != null) {
+//            for(Map.Entry<Object, Object> entry : properties.entrySet()) {
+//                org.apache.stratos.cloud.controller.stub.Property newProperty = new org.apache.stratos.cloud.controller.stub.Property();
+//                newProperty.setName(entry.getKey().toString());
+//                newProperty.setValue(entry.getValue().toString());
+//                stubProperties.addProperties(newProperty);
+//            }
+//        }
+//        return stubProperties;
+//    }
+//
+//    public static org.apache.stratos.common.Properties toCommonProperties(
+//            org.apache.stratos.cloud.controller.stub.Properties properties) {
+//        org.apache.stratos.common.Properties commonProps = new org.apache.stratos.common.Properties();
+//
+//        if (properties != null && properties.getProperties() != null) {
+//
+//            for (org.apache.stratos.cloud.controller.stub.Property property : properties.getProperties()) {
+//                if ((property != null) && (property.getValue() != null)) {
+//                    org.apache.stratos.common.Property newProperty = new org.apache.stratos.common.Property();
+//                    newProperty.setName(property.getName());
+//                    newProperty.setValue(property.getValue());
+//                    commonProps.addProperty(newProperty);
+//                }
+//            }
+//
+//        }
+//
+//        return commonProps;
+//    }
+//
+//    public static org.apache.stratos.common.Properties toCommonProperties(
+//            org.apache.stratos.cloud.controller.stub.Property[] propertyArray) {
+//
+//        org.apache.stratos.cloud.controller.stub.Properties properties = new org.apache.stratos.cloud.controller.stub.Properties();
+//        properties.setProperties(propertyArray);
+//        return toCommonProperties(properties);
+//    }
+//
+
 //    public static NetworkPartition convertNetworkParitionStubToPojo(org.apache.stratos.cloud.controller.stub.domain.NetworkPartition np) {
 //    	
 //    	NetworkPartition networkPartition = new NetworkPartition();
@@ -79,15 +202,15 @@ public class AutoscalerObjectConverter {
 //    	return networkPartition;
 //    }
 
-//	private static org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[] convertPartitionStubToPojo(
+//	private static Partition[] convertPartitionStubToPojo(
 //            Partition[] partitions) {
 //		
-//		List<org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition> partitionList = 
-//				new ArrayList<org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition>();
+//		List<Partition> partitionList = 
+//				new ArrayList<Partition>();
 //		
 //		for (Partition p : partitions) {
-//			org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition partition =
-//					new org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition();
+//			Partition partition =
+//					new Partition();
 //			partition.setDescription(p.getDescription());
 //			partition.setId(p.getId());
 //			partition.setIsPublic(p.getIsPublic());
@@ -97,7 +220,7 @@ public class AutoscalerObjectConverter {
 //        }
 //		
 //	    return partitionList.toArray(
-//	    		new org.apache.stratos.autoscaler.pojo.policy.deployment.partition.network.Partition[partitions.length]);
+//	    		new Partition[partitions.length]);
 //    }
 
 //	private static Properties convertProperties(
@@ -106,7 +229,7 @@ public class AutoscalerObjectConverter {
 //		Properties props = new Properties();
 //		Property[] propArray = properties.getProperties();
 //		for (Property property : propArray) {
-//	        props.addProperty(new org.apache.stratos.common.Property(property.getName(),property.getValue()));
+//	        props.addProperty(new Property(property.getName(),property.getValue()));
 //        }
 //		
 //	    return props;

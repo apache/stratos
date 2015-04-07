@@ -24,60 +24,61 @@ import java.io.File;
 
 public final class AutoscalerConstants {
 
-    /**
-     * Constant values for Autoscaler
-     */
-    public static final String ID_ELEMENT = "id";
-    public static final String PARTITION_ELEMENT = "partition";
-    public static final String PARTITIONS_ELEMENT = "partitions";
-    public static final String PROPERTY_ELEMENT = "property";
-    public static final String PROPERTY_NAME_ATTR= "name";
-    public static final String PROPERTY_VALUE_ATTR = "value";
-    public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
-    public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
-    public static final String AUTOSCALER_SCHEDULER_ID = "autoscaler.scheduler.thread.pool";
-    public static final String SCHEDULER_THREAD_POOL_SIZE_KEY = "autoscaler.scheduler.thread.pool.size";
-    public static final int AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE = 5;
-    public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
-    public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
-            File.separator + "stratos-config.xml";
-    
-    /**
+	/**
+	 * Constant values for Autoscaler
+	 */
+	public static final String ID_ELEMENT = "id";
+	public static final String PARTITION_ELEMENT = "partition";
+	public static final String PARTITIONS_ELEMENT = "partitions";
+	public static final String PROPERTY_ELEMENT = "property";
+	public static final String PROPERTY_NAME_ATTR= "name";
+	public static final String PROPERTY_VALUE_ATTR = "value";
+	public static final String AUTOSCALER_THREAD_POOL_ID = "autoscaler.thread.pool";
+	public static final String THREAD_POOL_SIZE_KEY = "autoscaler.thread.pool.size";
+	public static final String AUTOSCALER_SCHEDULER_ID = "autoscaler.scheduler.thread.pool";
+	public static final String SCHEDULER_THREAD_POOL_SIZE_KEY = "autoscaler.scheduler.thread.pool.size";
+	public static final int AUTOSCALER_SCHEDULER_THREAD_POOL_SIZE = 5;
+	public static final int AUTOSCALER_THREAD_POOL_SIZE = 50;
+	public static final String COMPONENTS_CONFIG = CarbonUtils.getCarbonConfigDirPath() +
+			File.separator + "stratos-config.xml";
+
+	/**
 	 * Persistence
 	 */
 	public static final String AUTOSCALER_RESOURCE = "/autoscaler";
 	public static final String AS_POLICY_RESOURCE = "/policies/autoscalingPolicies";
-    public static final String APPLICATIONS_RESOURCE = "/applications";
-    public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
-    public static final String APPLICATION_POLICY_RESOURCE = "/policies/applicationPolicies";
-    public static final String NETWORK_PARTITION_ALGO_CTX_RESOURCE = "/algorithms/networkPartitionAlgorithmContext";
+	public static final String APPLICATIONS_RESOURCE = "/applications";
+	public static final String APPLICATION_CONTEXTS_RESOURCE = "/applicationContexts";
+	public static final String APPLICATION_POLICY_RESOURCE = "/policies/applicationPolicies";
+	public static final String NETWORK_PARTITION_ALGO_CTX_RESOURCE = "/algorithms/networkPartitionAlgorithmContext";
+	public static final String DEPLOYMENT_POLICY_RESOURCE = "/policies/deploymentPolicies";
 
-    /**
-     * Cluster monitoring  interval
-     */
-    public static final String Cluster_MONITOR_INTERVAL = "autoscaler.cluster.monitorInterval";
+	/**
+	 * Cluster monitoring  interval
+	 */
+	public static final String Cluster_MONITOR_INTERVAL = "autoscaler.cluster.monitorInterval";
 
-    public static final String SERVICE_GROUP = "/groups";
+	public static final String SERVICE_GROUP = "/groups";
 
-    /**
-     * PortRange min max
-     */
-    public static final int PORT_RANGE_MAX = 65535;
-    public static final int PORT_RANGE_MIN = 1;
-    
-    /**
-     * Payload values
-     */
-    public static final String PAYLOAD_DEPLOYMENT = "default";
+	/**
+	 * PortRange min max
+	 */
+	public static final int PORT_RANGE_MAX = 65535;
+	public static final int PORT_RANGE_MIN = 1;
 
-    public static final String APPLICATION_MONITOR_THREAD_POOL_ID = "application.monitor.thread.pool";
-    public static final String APPLICATION_MONITOR_THREAD_POOL_SIZE = "application.monitor.thread.pool.size";
-    public static final String GROUP_MONITOR_THREAD_POOL_ID = "group.monitor.thread.pool";
-    public static final String GROUP_MONITOR_THREAD_POOL_SIZE = "group.monitor.thread.pool.size";
-    public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
-    public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
-    public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
-    public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
+	/**
+	 * Payload values
+	 */
+	public static final String PAYLOAD_DEPLOYMENT = "default";
+
+	public static final String APPLICATION_MONITOR_THREAD_POOL_ID = "application.monitor.thread.pool";
+	public static final String APPLICATION_MONITOR_THREAD_POOL_SIZE = "application.monitor.thread.pool.size";
+	public static final String GROUP_MONITOR_THREAD_POOL_ID = "group.monitor.thread.pool";
+	public static final String GROUP_MONITOR_THREAD_POOL_SIZE = "group.monitor.thread.pool.size";
+	public static final String CLUSTER_MONITOR_SCHEDULER_ID = "cluster.monitor.scheduler";
+	public static final String CLUSTER_MONITOR_THREAD_POOL_ID = "cluster.monitor.thread.pool";
+	public static final String CLUSTER_MONITOR_THREAD_POOL_SIZE = "cluster.monitor.thread.pool.size";
+	public static final String MEMBER_FAULT_EVENT_NAME = "member_fault";
 	//scheduler
 	public static final int SCHEDULE_DEFAULT_INITIAL_DELAY = 30;
 	public static final int SCHEDULE_DEFAULT_PERIOD = 15;
