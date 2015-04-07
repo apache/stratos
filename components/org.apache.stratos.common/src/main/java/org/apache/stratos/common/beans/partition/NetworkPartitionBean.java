@@ -28,6 +28,7 @@ public class NetworkPartitionBean {
     private String id;
     private String provider;
     private List<PartitionBean> partitions;
+    private String partitionAlgo;
 
     public String getId() {
         return id;
@@ -52,4 +53,12 @@ public class NetworkPartitionBean {
 	public void setProvider(String provider) {
 		this.provider = provider;
 	}
+
+    public String getPartitionAlgo() {
+        return partitionAlgo;
+    }
+
+    public void setPartitionAlgo(String partitionAlgo) {
+        this.partitionAlgo = partitionAlgo;
+    }
 }

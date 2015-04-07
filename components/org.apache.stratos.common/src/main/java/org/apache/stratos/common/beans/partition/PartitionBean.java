@@ -32,6 +32,7 @@ public class PartitionBean {
     private boolean isPublic;
     private String kubernetesClusterId;
     private List<PropertyBean> property;
+    private int partitionMax;
 
     public String getId() {
         return id;
@@ -75,5 +76,13 @@ public class PartitionBean {
 
     public void setKubernetesClusterId(String kubernetesClusterId) {
         this.kubernetesClusterId = kubernetesClusterId;
+    }
+
+    public int getPartitionMax() {
+        return partitionMax;
+    }
+
+    public void setPartitionMax(int partitionMax) {
+        this.partitionMax = partitionMax;
     }
 }

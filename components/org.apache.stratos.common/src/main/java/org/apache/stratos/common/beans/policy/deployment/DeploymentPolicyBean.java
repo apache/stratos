@@ -19,7 +19,7 @@
 
 package org.apache.stratos.common.beans.policy.deployment;
 
-import org.apache.stratos.common.beans.partition.NetworkPartitionRefBean;
+import org.apache.stratos.common.beans.partition.NetworkPartitionBean;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
@@ -29,7 +29,7 @@ public class DeploymentPolicyBean {
 
     private String id;
 
-	private List<NetworkPartitionRefBean> networkPartitions;
+	private List<NetworkPartitionBean> networkPartitions;
 
 	public String getId() {
 		return id;
@@ -39,11 +39,11 @@ public class DeploymentPolicyBean {
 		this.id = id;
 	}
 
-	public List<NetworkPartitionRefBean> getNetworkPartitions() {
+	public List<NetworkPartitionBean> getNetworkPartitions() {
 		return networkPartitions;
 	}
 
-	public void setNetworkPartitions(List<NetworkPartitionRefBean> networkPartitions) {
+	public void setNetworkPartitions(List<NetworkPartitionBean> networkPartitions) {
 		this.networkPartitions = networkPartitions;
 	}
 }
